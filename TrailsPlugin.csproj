@@ -1,0 +1,245 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TrailsPlugin</RootNamespace>
+    <AssemblyName>TrailsPlugin</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Debug\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Data, Version=2.1.3326.18908, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Zone Five Software\SportTracks 2.1\Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Visuals, Version=2.1.3326.18913, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Zone Five Software\SportTracks 2.1\Common.Visuals.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GUIDS.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PluginMain.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Action\Action.cs" />
+    <Compile Include="UI\Activity\ActivityDetailPage.cs" />
+    <Compile Include="UI\Activity\ActivityDetailPages.cs" />
+    <Compile Include="UI\Activity\ActivityEdit.cs" />
+    <Compile Include="UI\TrailsViewer\TrailsViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\TrailsViewer\TrailsViewer.Designer.cs">
+      <DependentUpon>TrailsViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TrailsViewer\TrailsViewerRow.cs" />
+    <Compile Include="View\PluginView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\StringResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\StringResources.cs.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.da.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.de.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.en.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.es.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.fi.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.fr.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.he.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.it.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.ja.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.nl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.no.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.pl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.pt.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>StringResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.ru.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.sk.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.sv.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.zh-CN.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>StringResources.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\TrailsViewer\TrailsViewer.resx">
+      <DependentUpon>TrailsViewer.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="plugin.xml" />
+    <Content Include="TextFile1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controller\" />
+    <Folder Include="Data\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>set INSTALLPATH=C:\Documents and Settings\All Users\Application Data\ZoneFiveSoftware\SportTracks\2.0\Plugins\Installed\d75393a2-4a95-4fe7-ace2-375ff7338b2c
+REM set INSTALLPATH=C:\Users\Brendan\AppData\Local\ZoneFiveSoftware\SportTracks\2.0\Plugins\Installed\d75393a2-4a95-4fe7-ace2-375ff7338b2c
+
+REM Copy to install folder
+IF NOT EXIST "%25INSTALLPATH%25\$(ProjectName)" mkdir "%25INSTALLPATH%25\$(ProjectName)"
+xcopy "$(TargetDir)$(ProjectName)*.dll" "%25INSTALLPATH%25\$(ProjectName)\" /S /Y
+xcopy "$(ProjectDir)plugin.xml" "%25INSTALLPATH%25\$(ProjectName)\" /S /Y
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

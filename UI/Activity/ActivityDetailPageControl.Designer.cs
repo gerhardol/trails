@@ -28,9 +28,9 @@
 			this.panelTrailDetails = new System.Windows.Forms.TableLayoutPanel();
 			this.lblTrailName = new System.Windows.Forms.Label();
 			this.txtTrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
-			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
-			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.listTrailPoint = new ZoneFiveSoftware.Common.Visuals.TreeList();
+			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.panelTrailDetails.SuspendLayout();
 			this.SuspendLayout();
@@ -64,13 +64,10 @@
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(434, 253);
+			this.button1.Location = new System.Drawing.Point(0, 0);
 			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(221, 77);
-			this.button1.TabIndex = 2;
-			this.button1.Text = "button1";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
+			this.button1.Size = new System.Drawing.Size(75, 23);
+			this.button1.TabIndex = 5;
 			// 
 			// panelTrailDetails
 			// 
@@ -132,48 +129,6 @@
 			this.txtTrailName.TabIndex = 9;
 			this.txtTrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 			// 
-			// btnAdd
-			// 
-			this.btnAdd.Anchor = System.Windows.Forms.AnchorStyles.None;
-			this.btnAdd.BackColor = System.Drawing.Color.Transparent;
-			this.btnAdd.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-			this.btnAdd.CenterImage = null;
-			this.btnAdd.DialogResult = System.Windows.Forms.DialogResult.None;
-			this.btnAdd.HyperlinkStyle = false;
-			this.btnAdd.ImageMargin = 2;
-			this.btnAdd.LeftImage = null;
-			this.btnAdd.Location = new System.Drawing.Point(301, 3);
-			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.PushStyle = true;
-			this.btnAdd.RightImage = null;
-			this.btnAdd.Size = new System.Drawing.Size(14, 14);
-			this.btnAdd.TabIndex = 10;
-			this.btnAdd.Text = "A";
-			this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
-			this.btnAdd.TextLeftMargin = 2;
-			this.btnAdd.TextRightMargin = 2;
-			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-			// 
-			// btnDelete
-			// 
-			this.btnDelete.BackColor = System.Drawing.Color.Transparent;
-			this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-			this.btnDelete.CenterImage = null;
-			this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
-			this.btnDelete.HyperlinkStyle = false;
-			this.btnDelete.ImageMargin = 2;
-			this.btnDelete.LeftImage = null;
-			this.btnDelete.Location = new System.Drawing.Point(321, 3);
-			this.btnDelete.Name = "btnDelete";
-			this.btnDelete.PushStyle = true;
-			this.btnDelete.RightImage = null;
-			this.btnDelete.Size = new System.Drawing.Size(14, 14);
-			this.btnDelete.TabIndex = 13;
-			this.btnDelete.Text = "D";
-			this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
-			this.btnDelete.TextLeftMargin = 2;
-			this.btnDelete.TextRightMargin = 2;
-			// 
 			// listTrailPoint
 			// 
 			this.listTrailPoint.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -188,7 +143,7 @@
 			this.listTrailPoint.DefaultRowHeight = -1;
 			this.listTrailPoint.HeaderRowHeight = 21;
 			this.listTrailPoint.Location = new System.Drawing.Point(3, 33);
-			this.listTrailPoint.MultiSelect = true;
+			this.listTrailPoint.MultiSelect = false;
 			this.listTrailPoint.Name = "listTrailPoint";
 			this.listTrailPoint.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
 			this.listTrailPoint.NumLockedColumns = 0;
@@ -203,6 +158,49 @@
 			this.listTrailPoint.ShowPlusMinus = false;
 			this.listTrailPoint.Size = new System.Drawing.Size(355, 241);
 			this.listTrailPoint.TabIndex = 11;
+			this.listTrailPoint.SelectedChanged += new System.EventHandler(this.listTrailPoint_SelectedChanged);
+			// 
+			// btnDelete
+			// 
+			this.btnDelete.BackColor = System.Drawing.Color.Transparent;
+			this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnDelete.CenterImage = null;
+			this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnDelete.HyperlinkStyle = false;
+			this.btnDelete.ImageMargin = 2;
+			this.btnDelete.LeftImage = null;
+			this.btnDelete.Location = new System.Drawing.Point(344, 3);
+			this.btnDelete.Name = "btnDelete";
+			this.btnDelete.PushStyle = true;
+			this.btnDelete.RightImage = null;
+			this.btnDelete.Size = new System.Drawing.Size(14, 14);
+			this.btnDelete.TabIndex = 13;
+			this.btnDelete.Text = "D";
+			this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnDelete.TextLeftMargin = 2;
+			this.btnDelete.TextRightMargin = 2;
+			// 
+			// btnAdd
+			// 
+			this.btnAdd.Anchor = System.Windows.Forms.AnchorStyles.None;
+			this.btnAdd.BackColor = System.Drawing.Color.Transparent;
+			this.btnAdd.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnAdd.CenterImage = null;
+			this.btnAdd.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnAdd.HyperlinkStyle = false;
+			this.btnAdd.ImageMargin = 2;
+			this.btnAdd.LeftImage = null;
+			this.btnAdd.Location = new System.Drawing.Point(324, 3);
+			this.btnAdd.Name = "btnAdd";
+			this.btnAdd.PushStyle = true;
+			this.btnAdd.RightImage = null;
+			this.btnAdd.Size = new System.Drawing.Size(14, 14);
+			this.btnAdd.TabIndex = 10;
+			this.btnAdd.Text = "A";
+			this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnAdd.TextLeftMargin = 2;
+			this.btnAdd.TextRightMargin = 2;
+			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
 			// 
 			// btnSave
 			// 
@@ -223,6 +221,7 @@
 			this.btnSave.TextAlign = System.Drawing.StringAlignment.Center;
 			this.btnSave.TextLeftMargin = 2;
 			this.btnSave.TextRightMargin = 2;
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
 			// ActivityDetailPageControl
 			// 

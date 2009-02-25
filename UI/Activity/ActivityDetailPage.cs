@@ -6,10 +6,10 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 
-namespace TrailsPlugin {
+namespace TrailsPlugin.UI.Activity {
 	internal class ActivityDetailPage : IActivityDetailPage, IDialogPage, INotifyPropertyChanged {
 		private IActivity m_activity = null;
-		private TrailsViewer m_control = null;
+		private ActivityDetailPageControl m_control = null;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -19,7 +19,7 @@ namespace TrailsPlugin {
 				if (m_activity != null) {
 					activities.Add(m_activity);
 				}
-				m_control = new TrailsViewer(activities);
+				m_control = new ActivityDetailPageControl(activities);
 			}
 			return m_control;
 		}
@@ -51,8 +51,13 @@ namespace TrailsPlugin {
 		public IActivity Activity {
 			set {
 				m_activity = value;
-				if ((value != null) && (m_control != null)) {
-					m_control.Activities = new IActivity[] { value };
+
+				if (m_control != null) {
+					if(value != null) {
+						m_control.Activities = new IActivity[] { value };
+					} else {
+						m_control.Activities = new IActivity[0];
+					}
 				}
 			}
 		}
@@ -69,7 +74,7 @@ namespace TrailsPlugin {
 
 		public string Title {
 			get {
-				return PluginView.GetLocalizedString("TrailsPluginName");
+				return PluginView.GetLocalizedString("TrailsName");
 			}
 		}
 

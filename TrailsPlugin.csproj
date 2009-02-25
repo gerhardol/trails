@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -71,22 +71,37 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PluginMain.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="UI\Action\Action.cs" />
+    <Compile Include="UI\Actions\Action.cs" />
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />
-    <Compile Include="UI\Activity\ActivityDetailPages.cs" />
-    <Compile Include="UI\Activity\ActivityEdit.cs" />
-    <Compile Include="UI\TrailsViewer\TrailsViewer.cs">
+    <Compile Include="UI\Activity\ExtendActivityDetailPages.cs" />
+    <Compile Include="UI\Activity\ExtendActivityEditActions.cs" />
+    <Compile Include="UI\MapLayers\ExtendMapControlLayers.cs" />
+    <Compile Include="UI\MapLayers\MapControlLayer.cs" />
+    <Compile Include="UI\Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\TrailsViewer\TrailsViewer.Designer.cs">
-      <DependentUpon>TrailsViewer.cs</DependentUpon>
+    <Compile Include="UI\Settings\SettingsPageControl.Designer.cs">
+      <DependentUpon>SettingsPageControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\TrailsViewer\TrailsViewerRow.cs" />
+    <Compile Include="UI\Settings\SettingsPage.cs" />
+    <Compile Include="UI\Settings\ExtendSettingsPages.cs" />
+    <Compile Include="UI\Activity\ActivityDetailPageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Activity\ActivityDetailPageControl.Designer.cs">
+      <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Activity\TrailsViewerRow.cs" />
     <Compile Include="View\PluginView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
@@ -96,6 +111,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\StringResources.cs.resx">
       <SubType>Designer</SubType>
       <DependentUpon>StringResources.resx</DependentUpon>
@@ -173,8 +193,13 @@
       <SubType>Designer</SubType>
       <DependentUpon>StringResources.resx</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\TrailsViewer\TrailsViewer.resx">
-      <DependentUpon>TrailsViewer.cs</DependentUpon>
+    <EmbeddedResource Include="UI\Activity\ActivityDetailPageControl.resx">
+      <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Settings\SettingsPageControl.resx">
+      <DependentUpon>SettingsPageControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

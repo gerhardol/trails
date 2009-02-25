@@ -20,11 +20,15 @@ namespace TrailsPlugin {
 		}
 
 		public System.Guid Id {
-			get { return GUIDs.PluginMain; }
+			get {
+				return GUIDs.PluginMain;
+			}
 		}
 
 		public string Name {
-			get { return PluginView.GetLocalizedString("TrailsPluginName"); }
+			get {
+				return PluginView.GetLocalizedString("TrailsPluginName");
+			}
 		}
 
 		public void ReadOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {

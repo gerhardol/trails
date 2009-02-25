@@ -18,7 +18,8 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <StartWorkingDirectory>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\Plugins\Trails Plugin\</StartWorkingDirectory>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <StartWorkingDirectory>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\Plugins\Trails Plugin\</StartWorkingDirectory>

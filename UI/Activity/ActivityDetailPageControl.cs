@@ -14,15 +14,21 @@ using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 namespace TrailsPlugin.UI.Activity {
 	public partial class ActivityDetailPageControl : UserControl {
 
-		private IList<IActivity> m_activities;
-		private IList<TrailDetailsRow> m_trailData;
+		enum ControlMode {
+			View, 
+			Edit
+		}
 
-		public ActivityDetailPageControl(IList<IActivity> activities) {
+		private Data.Trail m_Trail;
+		private IActivity m_activity;
+		private ControlMode m_controlMode = ControlMode.View;
+
+		public ActivityDetailPageControl(IActivity activity) {
 			InitializeComponent();
-			m_activities = activities;
-			m_trailData = new List<TrailDetailsRow>();
+			m_activity = activity;
 
 			InitControls();
+			RefreshControls();
 		}
 
 		void InitControls() {
@@ -30,17 +36,40 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
 
 			btnAdd.BackgroundImage = CommonIcons.Add;
-			btnAdd.Text = "";
-			btnEditSave.BackgroundImage = CommonIcons.Edit;
-			btnEditSave.Text = "";
+			btnAdd.Text = "";			
+			btnEdit.BackgroundImage = CommonIcons.Edit;
+			btnEdit.Text = "";
 			btnDelete.BackgroundImage = CommonIcons.Delete;
 			btnDelete.Text = "";
 
 		}
 
-		public IActivity[] Activities {
+		void RefreshControls() {
+			switch (m_controlMode) {
+				case ControlMode.View:
+					toolTip.SetToolTip(btnAdd, "Add new trail");
+					toolTip.SetToolTip(btnEdit, "Edit this trail");
+					toolTip.SetToolTip(btnDelete, "Delete this trail");
+					btnAdd.Enabled = (m_activity != null);
+					bool enabled = (TrailName.Text.Length != 0);
+					btnEdit.Enabled = enabled;					
+					btnDelete.Enabled = enabled;
+
+
+					break;
+				case ControlMode.Edit:
+					toolTip.SetToolTip(btnAdd, "Add new trail");
+					toolTip.SetToolTip(btnEdit, "Edit this trail");
+					toolTip.SetToolTip(btnDelete, "Delete this trail");
+
+
+					break;
+			}
+		}
+
+		public IActivity Activity {
 			set {
-				m_activities = value;
+				m_activity = value;
 			}
 		}
 
@@ -48,30 +77,6 @@ namespace TrailsPlugin.UI.Activity {
 		public void ThemeChanged(ITheme visualTheme) {
 			TrailName.ThemeChanged(visualTheme);
 			List.ThemeChanged(visualTheme);			
-		}
-
-		private void btnAdd_Click(object sender, EventArgs e) {
-
-			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-			IMapControl mapControl = layer.MapControl;
-			m_trailData.Clear();
-			if (mapControl.Selected.Count > 0) {
-				layer.SelectedGPSPointsChanged += new System.EventHandler(layer_SelectedGPSPointsChanged);
-				layer.CaptureSelectedGPSPoints = true;
-			}
-		}
-
-		private void layer_SelectedGPSPointsChanged(object sender, EventArgs e) {
-
-/*
-			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-			m_trailData.Clear();
-			for (int i = 0; i < layer.SelectedGPSPoints.Count; i++) {
-				m_trailData.Add(new TrailDetailsRow(layer.SelectedGPSPoints[i]));
-			}
-			layer.CaptureSelectedGPSPoints = false;
-			this.listTrailPoint.RowData = this.m_trailData;
- */
 		}
 
 		class TrailDetailsRow {
@@ -99,21 +104,6 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		private void btnSave_Click(object sender, EventArgs e) {
-		}
-
-		private void listTrailPoint_SelectedChanged(object sender, EventArgs e) {
-/*
-			if (listTrailPoint.Selected.Count > 0) {
-				UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-				layer.HighlightGPSLocation = ((TrailDetailsRow)listTrailPoint.Selected[0]).GPSLocation;
-				layer.ShowHighlight = true;
-				layer.MapControl.Refresh();
-			}
-*/
-			this.btnDelete.Enabled = true;
-		}
-
 		private void txtTrail_ButtonClick(object sender, EventArgs e) {
 
 		}
@@ -122,5 +112,54 @@ namespace TrailsPlugin.UI.Activity {
 
 		}
 
+		private void btnDelete_Click(object sender, EventArgs e) {
+
+		}
+
+		private void btnEdit_Click(object sender, EventArgs e) {
+
+		}
+
+		private void btnAdd_Click(object sender, EventArgs e) {
+			switch (m_controlMode) {
+				case ControlMode.View:
+					m_Trail = new Data.Trail();
+					UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+					IMapControl mapControl = layer.MapControl;					
+					if (mapControl.Selected.Count > 0) {
+						layer.SelectedGPSPointsChanged += new System.EventHandler(layer_SelectedGPSPointsChanged);
+						layer.CaptureSelectedGPSPoints = true;
+					}
+					m_controlMode = ControlMode.Edit;
+					break;
+				case ControlMode.Edit:
+					break;
+			}
+		}
+
+		private void layer_SelectedGPSPointsChanged(object sender, EventArgs e) {
+
+			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+			m_Trail.points = layer.SelectedGPSPoints;
+			layer.CaptureSelectedGPSPoints = false;
+
+			RefreshControls();
+		}
+
+		private void btnSave_Click(object sender, EventArgs e) {
+
+		}
+
 	}
 }
+
+/*		private void listTrailPoint_SelectedChanged(object sender, EventArgs e) {
+			if (listTrailPoint.Selected.Count > 0) {
+				UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+				layer.HighlightGPSLocation = ((TrailDetailsRow)listTrailPoint.Selected[0]).GPSLocation;
+				layer.ShowHighlight = true;
+				layer.MapControl.Refresh();
+			}			
+			this.btnDelete.Enabled = true;
+		}
+*/

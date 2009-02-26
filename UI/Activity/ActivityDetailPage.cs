@@ -15,11 +15,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		public Control CreatePageControl() {
 			if (m_control == null) {
-				IList<IActivity> activities = new List<IActivity>();
-				if (m_activity != null) {
-					activities.Add(m_activity);
-				}
-				m_control = new ActivityDetailPageControl(activities);
+				m_control = new ActivityDetailPageControl(m_activity);
 			}
 			return m_control;
 		}
@@ -53,11 +49,7 @@ namespace TrailsPlugin.UI.Activity {
 				m_activity = value;
 
 				if (m_control != null) {
-					if(value != null) {
-						m_control.Activities = new IActivity[] { value };
-					} else {
-						m_control.Activities = new IActivity[0];
-					}
+					m_control.Activity = value;
 				}
 			}
 		}

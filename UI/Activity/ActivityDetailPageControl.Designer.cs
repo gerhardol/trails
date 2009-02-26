@@ -23,13 +23,16 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.Panel = new System.Windows.Forms.TableLayoutPanel();
+			this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.lblTrail = new System.Windows.Forms.Label();
 			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
-			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
-			this.btnEditSave = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -38,28 +41,51 @@
 			this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.Panel.ColumnCount = 5;
+			this.Panel.ColumnCount = 6;
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.Panel.Controls.Add(this.btnSave, 2, 0);
 			this.Panel.Controls.Add(this.lblTrail, 0, 0);
 			this.Panel.Controls.Add(this.List, 0, 2);
-			this.Panel.Controls.Add(this.btnDelete, 4, 0);
 			this.Panel.Controls.Add(this.btnAdd, 3, 0);
 			this.Panel.Controls.Add(this.TrailName, 1, 0);
-			this.Panel.Controls.Add(this.btnEditSave, 2, 0);
+			this.Panel.Controls.Add(this.btnDelete, 5, 0);
+			this.Panel.Controls.Add(this.btnEdit, 4, 0);
 			this.Panel.Location = new System.Drawing.Point(0, 0);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
-			this.Panel.RowCount = 4;
+			this.Panel.RowCount = 3;
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.Panel.Size = new System.Drawing.Size(350, 302);
 			this.Panel.TabIndex = 8;
+			// 
+			// btnSave
+			// 
+			this.btnSave.BackColor = System.Drawing.Color.Transparent;
+			this.btnSave.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnSave.CenterImage = null;
+			this.btnSave.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnSave.HyperlinkStyle = false;
+			this.btnSave.ImageMargin = 2;
+			this.btnSave.LeftImage = null;
+			this.btnSave.Location = new System.Drawing.Point(243, 3);
+			this.btnSave.Name = "btnSave";
+			this.btnSave.Padding = new System.Windows.Forms.Padding(2);
+			this.btnSave.PushStyle = true;
+			this.btnSave.RightImage = null;
+			this.btnSave.Size = new System.Drawing.Size(14, 16);
+			this.btnSave.TabIndex = 18;
+			this.btnSave.Text = "S";
+			this.btnSave.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnSave.TextLeftMargin = 2;
+			this.btnSave.TextRightMargin = 2;
+			this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
 			// 
 			// lblTrail
 			// 
@@ -81,7 +107,7 @@
 			this.List.BackColor = System.Drawing.Color.Transparent;
 			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
 			this.List.CheckBoxes = false;
-			this.Panel.SetColumnSpan(this.List, 5);
+			this.Panel.SetColumnSpan(this.List, 6);
 			this.List.DefaultIndent = 15;
 			this.List.DefaultRowHeight = -1;
 			this.List.HeaderRowHeight = 21;
@@ -101,27 +127,6 @@
 			this.List.ShowPlusMinus = false;
 			this.List.Size = new System.Drawing.Size(347, 262);
 			this.List.TabIndex = 11;
-			// 
-			// btnDelete
-			// 
-			this.btnDelete.BackColor = System.Drawing.Color.Transparent;
-			this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-			this.btnDelete.CenterImage = null;
-			this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
-			this.btnDelete.HyperlinkStyle = false;
-			this.btnDelete.ImageMargin = 2;
-			this.btnDelete.LeftImage = null;
-			this.btnDelete.Location = new System.Drawing.Point(283, 3);
-			this.btnDelete.Name = "btnDelete";
-			this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
-			this.btnDelete.PushStyle = true;
-			this.btnDelete.RightImage = null;
-			this.btnDelete.Size = new System.Drawing.Size(16, 16);
-			this.btnDelete.TabIndex = 13;
-			this.btnDelete.Text = "D";
-			this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
-			this.btnDelete.TextLeftMargin = 2;
-			this.btnDelete.TextRightMargin = 2;
 			// 
 			// btnAdd
 			// 
@@ -143,6 +148,7 @@
 			this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
 			this.btnAdd.TextLeftMargin = 2;
 			this.btnAdd.TextRightMargin = 2;
+			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
 			// 
 			// TrailName
 			// 
@@ -158,7 +164,7 @@
 			this.TrailName.MaxLength = 32767;
 			this.TrailName.Multiline = false;
 			this.TrailName.Name = "TrailName";
-			this.TrailName.ReadOnly = false;
+			this.TrailName.ReadOnly = true;
 			this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
 			this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
 			this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -167,26 +173,49 @@
 			this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 			this.TrailName.ButtonClick += new System.EventHandler(this.txtTrail_ButtonClick);
 			// 
-			// btnEditSave
+			// btnDelete
 			// 
-			this.btnEditSave.BackColor = System.Drawing.Color.Transparent;
-			this.btnEditSave.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-			this.btnEditSave.CenterImage = null;
-			this.btnEditSave.DialogResult = System.Windows.Forms.DialogResult.None;
-			this.btnEditSave.HyperlinkStyle = false;
-			this.btnEditSave.ImageMargin = 2;
-			this.btnEditSave.LeftImage = null;
-			this.btnEditSave.Location = new System.Drawing.Point(243, 3);
-			this.btnEditSave.Name = "btnEditSave";
-			this.btnEditSave.Padding = new System.Windows.Forms.Padding(2);
-			this.btnEditSave.PushStyle = true;
-			this.btnEditSave.RightImage = null;
-			this.btnEditSave.Size = new System.Drawing.Size(14, 16);
-			this.btnEditSave.TabIndex = 17;
-			this.btnEditSave.Text = "S";
-			this.btnEditSave.TextAlign = System.Drawing.StringAlignment.Center;
-			this.btnEditSave.TextLeftMargin = 2;
-			this.btnEditSave.TextRightMargin = 2;
+			this.btnDelete.BackColor = System.Drawing.Color.Transparent;
+			this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnDelete.CenterImage = null;
+			this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnDelete.HyperlinkStyle = false;
+			this.btnDelete.ImageMargin = 2;
+			this.btnDelete.LeftImage = null;
+			this.btnDelete.Location = new System.Drawing.Point(303, 3);
+			this.btnDelete.Name = "btnDelete";
+			this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
+			this.btnDelete.PushStyle = true;
+			this.btnDelete.RightImage = null;
+			this.btnDelete.Size = new System.Drawing.Size(16, 16);
+			this.btnDelete.TabIndex = 13;
+			this.btnDelete.Text = "D";
+			this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnDelete.TextLeftMargin = 2;
+			this.btnDelete.TextRightMargin = 2;
+			this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+			// 
+			// btnEdit
+			// 
+			this.btnEdit.BackColor = System.Drawing.Color.Transparent;
+			this.btnEdit.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnEdit.CenterImage = null;
+			this.btnEdit.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnEdit.HyperlinkStyle = false;
+			this.btnEdit.ImageMargin = 2;
+			this.btnEdit.LeftImage = null;
+			this.btnEdit.Location = new System.Drawing.Point(283, 3);
+			this.btnEdit.Name = "btnEdit";
+			this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
+			this.btnEdit.PushStyle = true;
+			this.btnEdit.RightImage = null;
+			this.btnEdit.Size = new System.Drawing.Size(14, 16);
+			this.btnEdit.TabIndex = 17;
+			this.btnEdit.Text = "S";
+			this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnEdit.TextLeftMargin = 2;
+			this.btnEdit.TextRightMargin = 2;
+			this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
 			// 
 			// ActivityDetailPageControl
 			// 
@@ -210,7 +239,9 @@
 		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
-		private ZoneFiveSoftware.Common.Visuals.Button btnEditSave;
+		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
+		private System.Windows.Forms.ToolTip toolTip;
+		private ZoneFiveSoftware.Common.Visuals.Button btnSave;
 
 	}
 }

@@ -2,8 +2,8 @@
 using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Data {
-	class Trail {
+	public class Trail {
 		public string name;
-		public IList<IGPSLocation> points;
+		public IList<TrailPoint> points = new List<TrailPoint>();
 	}
 }

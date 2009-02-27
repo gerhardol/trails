@@ -1,11 +1,11 @@
 ﻿namespace TrailsPlugin.UI.Activity {
-	partial class ActivityDetailPageControl {
-		/// <summary> 
+	partial class EditTrail {
+		/// <summary>
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 
-		/// <summary> 
+		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -16,24 +16,88 @@
 			base.Dispose(disposing);
 		}
 
-		#region Component Designer generated code
+		#region Windows Form Designer generated code
 
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
+		/// <summary>
+		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.btnOk = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.actionBanner1 = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
 			this.Panel = new System.Windows.Forms.TableLayoutPanel();
+			this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.lblTrail = new System.Windows.Forms.Label();
 			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
 			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
-			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.actionBanner1.SuspendLayout();
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
+			// 
+			// btnOk
+			// 
+			this.btnOk.BackColor = System.Drawing.Color.Transparent;
+			this.btnOk.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnOk.CenterImage = null;
+			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnOk.HyperlinkStyle = false;
+			this.btnOk.ImageMargin = 2;
+			this.btnOk.LeftImage = null;
+			this.btnOk.Location = new System.Drawing.Point(190, 3);
+			this.btnOk.Name = "btnOk";
+			this.btnOk.PushStyle = true;
+			this.btnOk.RightImage = null;
+			this.btnOk.Size = new System.Drawing.Size(75, 23);
+			this.btnOk.TabIndex = 0;
+			this.btnOk.Text = "OK";
+			this.btnOk.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnOk.TextLeftMargin = 2;
+			this.btnOk.TextRightMargin = 2;
+			this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+			// 
+			// btnCancel
+			// 
+			this.btnCancel.BackColor = System.Drawing.Color.Transparent;
+			this.btnCancel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnCancel.CenterImage = null;
+			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.btnCancel.HyperlinkStyle = false;
+			this.btnCancel.ImageMargin = 2;
+			this.btnCancel.LeftImage = null;
+			this.btnCancel.Location = new System.Drawing.Point(279, 3);
+			this.btnCancel.Name = "btnCancel";
+			this.btnCancel.PushStyle = true;
+			this.btnCancel.RightImage = null;
+			this.btnCancel.Size = new System.Drawing.Size(75, 23);
+			this.btnCancel.TabIndex = 1;
+			this.btnCancel.Text = "Cancel";
+			this.btnCancel.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnCancel.TextLeftMargin = 2;
+			this.btnCancel.TextRightMargin = 2;
+			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+			// 
+			// actionBanner1
+			// 
+			this.actionBanner1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.actionBanner1.BackColor = System.Drawing.Color.White;
+			this.actionBanner1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.actionBanner1.Controls.Add(this.btnCancel);
+			this.actionBanner1.Controls.Add(this.btnOk);
+			this.actionBanner1.HasMenuButton = false;
+			this.actionBanner1.Location = new System.Drawing.Point(0, 299);
+			this.actionBanner1.Name = "actionBanner1";
+			this.actionBanner1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.actionBanner1.Size = new System.Drawing.Size(387, 30);
+			this.actionBanner1.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
+			this.actionBanner1.TabIndex = 1;
+			this.actionBanner1.UseStyleFont = true;
 			// 
 			// Panel
 			// 
@@ -47,21 +111,46 @@
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.Panel.Controls.Add(this.btnSave, 2, 0);
 			this.Panel.Controls.Add(this.lblTrail, 0, 0);
 			this.Panel.Controls.Add(this.List, 0, 2);
 			this.Panel.Controls.Add(this.btnAdd, 3, 0);
 			this.Panel.Controls.Add(this.TrailName, 1, 0);
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
-			this.Panel.Location = new System.Drawing.Point(0, 0);
+			this.Panel.Location = new System.Drawing.Point(15, 13);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
-			this.Panel.RowCount = 3;
+			this.Panel.RowCount = 4;
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.Panel.Size = new System.Drawing.Size(350, 302);
-			this.Panel.TabIndex = 8;
+			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+			this.Panel.Size = new System.Drawing.Size(350, 271);
+			this.Panel.TabIndex = 9;
+			// 
+			// btnSave
+			// 
+			this.btnSave.BackColor = System.Drawing.Color.Transparent;
+			this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.btnSave.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnSave.CenterImage = null;
+			this.btnSave.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnSave.HyperlinkStyle = false;
+			this.btnSave.ImageMargin = 2;
+			this.btnSave.LeftImage = null;
+			this.btnSave.Location = new System.Drawing.Point(243, 3);
+			this.btnSave.Name = "btnSave";
+			this.btnSave.Padding = new System.Windows.Forms.Padding(2);
+			this.btnSave.PushStyle = true;
+			this.btnSave.RightImage = null;
+			this.btnSave.Size = new System.Drawing.Size(19, 19);
+			this.btnSave.TabIndex = 18;
+			this.btnSave.Text = "S";
+			this.btnSave.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnSave.TextLeftMargin = 2;
+			this.btnSave.TextRightMargin = 2;
+			this.btnSave.Visible = false;
 			// 
 			// lblTrail
 			// 
@@ -101,7 +190,7 @@
 			this.List.RowSeparatorLines = true;
 			this.List.ShowLines = false;
 			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(347, 262);
+			this.List.Size = new System.Drawing.Size(347, 230);
 			this.List.TabIndex = 11;
 			// 
 			// btnAdd
@@ -125,7 +214,7 @@
 			this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
 			this.btnAdd.TextLeftMargin = 2;
 			this.btnAdd.TextRightMargin = 2;
-			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+			this.btnAdd.Visible = false;
 			// 
 			// TrailName
 			// 
@@ -141,14 +230,13 @@
 			this.TrailName.MaxLength = 32767;
 			this.TrailName.Multiline = false;
 			this.TrailName.Name = "TrailName";
-			this.TrailName.ReadOnly = true;
+			this.TrailName.ReadOnly = false;
 			this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
 			this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
 			this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.TrailName.Size = new System.Drawing.Size(149, 19);
-			this.TrailName.TabIndex = 15;
+			this.TrailName.TabIndex = 1;
 			this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-			this.TrailName.ButtonClick += new System.EventHandler(this.txtTrail_ButtonClick);
 			// 
 			// btnDelete
 			// 
@@ -171,7 +259,7 @@
 			this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
 			this.btnDelete.TextLeftMargin = 2;
 			this.btnDelete.TextRightMargin = 2;
-			this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+			this.btnDelete.Visible = false;
 			// 
 			// btnEdit
 			// 
@@ -194,16 +282,23 @@
 			this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
 			this.btnEdit.TextLeftMargin = 2;
 			this.btnEdit.TextRightMargin = 2;
-			this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
+			this.btnEdit.Visible = false;
 			// 
-			// ActivityDetailPageControl
+			// EditTrail
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.btnCancel;
+			this.ClientSize = new System.Drawing.Size(381, 328);
+			this.ControlBox = false;
 			this.Controls.Add(this.Panel);
-			this.Name = "ActivityDetailPageControl";
-			this.Size = new System.Drawing.Size(350, 302);
-			this.Load += new System.EventHandler(this.ActivityDetailPageControl_Load);
+			this.Controls.Add(this.actionBanner1);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
+			this.Name = "EditTrail";
+			this.Text = "EditTrail";
+			this.actionBanner1.ResumeLayout(false);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();
 			this.ResumeLayout(false);
@@ -212,14 +307,18 @@
 
 		#endregion
 
+		private System.Windows.Forms.ToolTip toolTip;
+		private ZoneFiveSoftware.Common.Visuals.Button btnOk;
+		private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
+		private ZoneFiveSoftware.Common.Visuals.ActionBanner actionBanner1;
 		private System.Windows.Forms.TableLayoutPanel Panel;
+		private ZoneFiveSoftware.Common.Visuals.Button btnSave;
 		private System.Windows.Forms.Label lblTrail;
 		private ZoneFiveSoftware.Common.Visuals.TreeList List;
-		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
+		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
-		private System.Windows.Forms.ToolTip toolTip;
 
 	}
 }

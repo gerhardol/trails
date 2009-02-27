@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Controller\TrailsController.cs" />
     <Compile Include="Data\Trail.cs" />
+    <Compile Include="Data\TrailPoint.cs" />
     <Compile Include="GUIDS.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -83,6 +84,12 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Activity\EditTrail.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Activity\EditTrail.Designer.cs">
+      <DependentUpon>EditTrail.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\CommonIcons.cs" />
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />
@@ -197,6 +204,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Activity\ActivityDetailPageControl.resx">
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\Activity\EditTrail.resx">
+      <DependentUpon>EditTrail.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Settings\SettingsPageControl.resx">

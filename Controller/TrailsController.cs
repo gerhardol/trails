@@ -3,8 +3,8 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Controller {
 	class TrailsController {
-		static private TrailsController m_instance = null;
-		static TrailsController Instance {
+		private static TrailsController m_instance = null;
+		public static TrailsController Instance {
 			get {
 				if (m_instance == null) {
 					m_instance = new TrailsController();

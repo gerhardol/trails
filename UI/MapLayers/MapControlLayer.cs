@@ -26,7 +26,7 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-		private MapControlLayer() {			
+		private MapControlLayer() {
 		}
 
 		private IMapControl m_mapControl;
@@ -59,14 +59,10 @@ namespace TrailsPlugin.UI.MapLayers {
 			return list;
 		}
 
-		public bool CaptureSelectedGPSPoints {
-			set {
-				m_CaptureSelectedGPSPoints = value;
-				if (value == true) {
-					m_SelectedGPSPoints.Clear();
-					m_mapControl.Refresh();
-				}
-			}
+		public void CaptureSelectedGPSPoints() {
+			m_SelectedGPSPoints.Clear();
+			m_CaptureSelectedGPSPoints = true;
+			m_mapControl.Refresh();
 		}
 
 		public IList<IGPSLocation> SelectedGPSPoints {
@@ -92,6 +88,7 @@ namespace TrailsPlugin.UI.MapLayers {
 
 		public void Draw(IMapDrawContext drawContext) {
 			if (m_CaptureSelectedGPSPoints) {
+				m_CaptureSelectedGPSPoints = false;
 				if (m_SelectedGPSPoints.Count != MapControl.Selected.Count) {
 					m_SelectedGPSPoints = getSelectedGPSPoints(drawContext);
 					SelectedGPSPointsChanged(this, new System.EventArgs());
@@ -102,8 +99,8 @@ namespace TrailsPlugin.UI.MapLayers {
 				//drawContext.Center				
 				Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, m_HighlightGPSLocation);
 				Pen pen = new Pen(Color.Red, 10.0F);
-				int X = point.X +(drawContext.DrawRectangle.Width / 2)-4;
-				int Y= point.Y +(drawContext.DrawRectangle.Height / 2)-4;
+				int X = point.X + (drawContext.DrawRectangle.Width / 2) - 4;
+				int Y = point.Y + (drawContext.DrawRectangle.Height / 2) - 4;
 				drawContext.Graphics.DrawEllipse(pen, X, Y, 10, 10);
 				drawContext.Graphics.DrawEllipse(pen, 10, 10, 10, 10);
 			}

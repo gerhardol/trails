@@ -237,6 +237,7 @@
 			this.TrailName.Size = new System.Drawing.Size(149, 19);
 			this.TrailName.TabIndex = 1;
 			this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+			this.TrailName.Validating += new System.ComponentModel.CancelEventHandler(this.TrailName_Validating);
 			// 
 			// btnDelete
 			// 
@@ -286,6 +287,7 @@
 			// 
 			// EditTrail
 			// 
+			this.AcceptButton = this.btnOk;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
@@ -298,6 +300,7 @@
 			this.MinimizeBox = false;
 			this.Name = "EditTrail";
 			this.Text = "EditTrail";
+			this.Activated += new System.EventHandler(this.EditTrail_Activated);
 			this.actionBanner1.ResumeLayout(false);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();

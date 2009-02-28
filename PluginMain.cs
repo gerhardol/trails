@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using System.Xml;
 
 namespace TrailsPlugin {
 	class PluginMain : IPlugin {
@@ -32,6 +33,14 @@ namespace TrailsPlugin {
 		}
 
 		public void ReadOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {
+
+			
+			TrailSettings.Instance.AllTrails.Clear();
+			nsmgr.AddNamespace(string.Empty, "urn:uuid:D0EB2ED5-49B6-44e3-B13C-CF15BE7DD7DD");
+			foreach (XmlNode node in pluginNode.FirstChild.ChildNodes) {
+				Data.Trail trail = Data.Trail.FromXml(node);
+				TrailSettings.Instance.AllTrails.Add(trail.name, trail);
+			}
 		}
 
 		public string Version {
@@ -39,6 +48,13 @@ namespace TrailsPlugin {
 		}
 
 		public void WriteOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement pluginNode) {
+
+			XmlNode trails = xmlDoc.CreateElement("Trails");
+			pluginNode.AppendChild(trails);
+			foreach (Data.Trail trail in TrailSettings.Instance.AllTrails.Values) {
+				trails.AppendChild(trail.ToXml(xmlDoc));
+			}
+			pluginNode.AppendChild(trails);
 		}
 
 		#endregion

@@ -148,7 +148,7 @@
 			this.TrailName.Size = new System.Drawing.Size(149, 19);
 			this.TrailName.TabIndex = 15;
 			this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-			this.TrailName.ButtonClick += new System.EventHandler(this.txtTrail_ButtonClick);
+			this.TrailName.ButtonClick += new System.EventHandler(this.TrailName_ButtonClick);
 			// 
 			// btnDelete
 			// 
@@ -203,7 +203,6 @@
 			this.Controls.Add(this.Panel);
 			this.Name = "ActivityDetailPageControl";
 			this.Size = new System.Drawing.Size(350, 302);
-			this.Load += new System.EventHandler(this.ActivityDetailPageControl_Load);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();
 			this.ResumeLayout(false);

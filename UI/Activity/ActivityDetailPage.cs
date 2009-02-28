@@ -11,10 +11,8 @@ namespace TrailsPlugin.UI.Activity {
 		private IActivity m_activity = null;
 		private ActivityDetailPageControl m_control = null;
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
 		public Control CreatePageControl() {
-			if (m_control == null) {
+			if (m_control == null) {				
 				m_control = new ActivityDetailPageControl(m_activity);
 			}
 			return m_control;
@@ -70,5 +68,11 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
+
+		#region INotifyPropertyChanged Members
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		#endregion
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using ZoneFiveSoftware.Common.Data.GPS;
-
+using System.Xml;
 
 namespace TrailsPlugin.Data {
 	public class TrailPoint {
@@ -16,6 +16,27 @@ namespace TrailsPlugin.Data {
 			get {
 				return m_gpsLocation.LongitudeDegrees.ToString();
 			}
+		}
+
+		static public TrailPoint FromXml(XmlNode node) {
+
+			IGPSLocation gpsLocation = new GPSLocation(
+				float.Parse(node.Attributes["latitude"].Value),
+				float.Parse(node.Attributes["longitude"].Value)
+			);
+
+			return new TrailPoint(gpsLocation);
+		}
+
+		public XmlNode ToXml(XmlDocument doc) {
+			XmlNode trailPointNode = doc.CreateElement("TrailPoint");
+			XmlAttribute a = doc.CreateAttribute("latitude");
+			a.Value = this.Latitude;
+			trailPointNode.Attributes.Append(a);
+			a = doc.CreateAttribute("longitude");
+			a.Value = this.Latitude;
+			trailPointNode.Attributes.Append(a);
+			return trailPointNode;
 		}
 
 	}

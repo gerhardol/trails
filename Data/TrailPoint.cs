@@ -18,6 +18,12 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+		public IGPSLocation GPSLocation {
+			get {
+				return m_gpsLocation;
+			}
+		}
+
 		static public TrailPoint FromXml(XmlNode node) {
 
 			IGPSLocation gpsLocation = new GPSLocation(
@@ -34,7 +40,7 @@ namespace TrailsPlugin.Data {
 			a.Value = this.Latitude;
 			trailPointNode.Attributes.Append(a);
 			a = doc.CreateAttribute("longitude");
-			a.Value = this.Latitude;
+			a.Value = this.Longitude;
 			trailPointNode.Attributes.Append(a);
 			return trailPointNode;
 		}

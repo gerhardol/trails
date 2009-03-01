@@ -18,6 +18,7 @@ namespace TrailsPlugin.UI.Activity {
 		private ITheme m_visualTheme;
 		private IActivity m_activity;
 		private Data.Trail m_currentTrail;
+		private IList<string> m_trailNames;
 
 		public ActivityDetailPageControl(IActivity activity) {
 			InitializeComponent();
@@ -25,7 +26,7 @@ namespace TrailsPlugin.UI.Activity {
 
 			InitControls();
 			RefreshControlState();
-
+			RefreshData();			
 		}
 
 		void InitControls() {
@@ -41,19 +42,34 @@ namespace TrailsPlugin.UI.Activity {
 			toolTip.SetToolTip(btnAdd, "Add new trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnEdit, "Edit this trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
-
 		}
 
 		private void RefreshControlState() {
 
-			btnAdd.Enabled = (m_activity != null);
-			bool enabled = (TrailName.Text.Length != 0);
+			bool enabled = (m_activity != null);
+			btnAdd.Enabled = enabled;
+			TrailName.Enabled = enabled;
+
+			enabled = (TrailName.Text.Length != 0);
 			btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
+			
 		}
 
 		private void RefreshData() {
-			TrailName.Text = m_currentTrail.name;
+			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+			layer.HighlightedGPSLocations.Clear();
+			TrailName.Text = "";
+			layer.ShowHighlight = false;
+
+			if (m_currentTrail != null) {
+				TrailName.Text = m_currentTrail.name;
+				foreach (Data.TrailPoint point in m_currentTrail.points) {
+					layer.HighlightedGPSLocations.Add(point.GPSLocation);
+				}
+				layer.ShowHighlight = true;
+				m_currentTrail.Results(m_activity);
+			}
 		}
 
 
@@ -66,6 +82,21 @@ namespace TrailsPlugin.UI.Activity {
 		public IActivity Activity {
 			set {
 				m_activity = value;
+				m_currentTrail = null;				
+				if (m_activity != null) {
+					List<string> m_trailNames = new List<string>();
+					IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
+					foreach (Data.Trail trail in TrailSettings.Instance.AllTrails.Values) {
+						if (trail.IsInBounds(gpsBounds)) {
+							m_trailNames.Add(trail.name);
+							if (m_currentTrail == null) {
+								m_currentTrail = trail;
+							}
+						}
+					}
+			
+				}
+				RefreshData();
 				RefreshControlState();
 			}
 		}
@@ -76,12 +107,12 @@ namespace TrailsPlugin.UI.Activity {
 			IMapControl mapControl = layer.MapControl;
 			if (mapControl.Selected.Count > 1) {
 
-				layer.SelectedGPSPointsChanged += new System.EventHandler(layer_SelectedGPSPointsChanged_AddTrail);
-				layer.CaptureSelectedGPSPoints();
+				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
+				layer.CaptureSelectedGPSLocations();
 				EditTrail dialog = new EditTrail(m_currentTrail, m_visualTheme, true);
 				dialog.ShowDialog();
 				RefreshData();
-				
+
 			} else {
 				MessageBox.Show("You must select at least two activities on the map", "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
@@ -97,63 +128,38 @@ namespace TrailsPlugin.UI.Activity {
 
 		}
 
-		private void layer_SelectedGPSPointsChanged_AddTrail(object sender, EventArgs e) {
+		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e) {
 
 			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			layer.SelectedGPSPointsChanged -= new System.EventHandler(layer_SelectedGPSPointsChanged_AddTrail);
+			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 
 			m_currentTrail = new Data.Trail();
-			for (int i = 0; i < layer.SelectedGPSPoints.Count; i++) {
-				m_currentTrail.points.Add(new Data.TrailPoint(layer.SelectedGPSPoints[i]));
+			for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
+				m_currentTrail.points.Add(new Data.TrailPoint(layer.SelectedGPSLocations[i]));
 			}
 		}
 
-		private void TrailName_ButtonClick(object sender, EventArgs e) {						
-            /*
-			if ((activity == null) || (Logbook == null))
-                return;
-            SortedList<string,string> sortedList = new SortedList<string,string>();
-            IList<IActivity> ilist = ActivityCategory.ActivitiesForCategory(Logbook.Activities, ActivitiesPlugin.Instance.Application.DisplayOptions.SelectedCategoryFilter, true);
-            string s1 = null;
-            using (IEnumerator<IActivity> ienumerator = ilist.GetEnumerator())
-            {
-                while (ienumerator.MoveNext())
-                {
-                    IActivity iactivity = ienumerator.get_Current();
-                    string s2 = iactivity.Name.Trim();
-                    if (s2.Length > 0)
-                    {
-                        string s3 = s2.ToLower();
-                        if (!sortedList.ContainsKey(s3))
-                            sortedList.Add(s3, s2);
-                        else
-                            s2 = sortedList.get_Item(s3);
-                        if (activity == iactivity)
-                            s1 = s2;
-                    }
-                }
-            }			
-            //ControlUtils.OpenListPopup<string>(theme, sortedList.get_Values(), txtName, s1, new ControlUtils.ItemSelectHandler<string>(<txtName_ButtonClick>b__0));
-*/
-//        public static void OpenListPopup<T>(ITheme theme, IList<T> items, Control control, T selected, ControlUtils.ItemSelectHandler<T> selectHandler)
-//        {
-//            ControlUtils.<>c__DisplayClass4<T> <>c__DisplayClass4 = new ControlUtils.<>c__DisplayClass4<T>();
-//            <>c__DisplayClass4.selectHandler = selectHandler;
-			/*            if (selected != null)
-						{
-							object[] objArr = new object[] { selected };
-							treeListPopup.Tree.Selected = objArr;
-						}
-			//            treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(<>c__DisplayClass4.<OpenListPopup>b__3);
-			*/
+		private void TrailName_ButtonClick(object sender, EventArgs e) {
+			if (m_activity == null) {
+				return;
+			}
+
 			TreeListPopup treeListPopup = new TreeListPopup();
-            treeListPopup.ThemeChanged(m_visualTheme);
-            treeListPopup.Tree.Columns.Add(new TreeList.Column());
-			treeListPopup.Tree.RowData = TrailSettings.Instance.AllTrails.Keys;
+			treeListPopup.ThemeChanged(m_visualTheme);
+			treeListPopup.Tree.Columns.Add(new TreeList.Column());
+
+			treeListPopup.Tree.RowData = m_trailNames;
+
 			if (m_currentTrail != null) {
 				treeListPopup.Tree.Selected = new object[] { m_currentTrail.name };
 			}
+			treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
 			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
-        }
+		}
+		private void TrailName_ItemSelected(object sender, EventArgs e) {
+			this.m_currentTrail = TrailSettings.Instance.AllTrails[((TreeListPopup.ItemSelectedEventArgs)e).Item.ToString()];
+			RefreshData();
+		}
 	}
+
 }

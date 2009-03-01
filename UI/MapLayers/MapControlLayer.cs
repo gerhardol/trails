@@ -9,11 +9,11 @@ using Microsoft.Win32;
 namespace TrailsPlugin.UI.MapLayers {
 	class MapControlLayer : IMapControlLayer {
 
-		public event System.EventHandler SelectedGPSPointsChanged;
+		public event System.EventHandler SelectedGPSLocationsChanged;
 
-		private bool m_CaptureSelectedGPSPoints;
-		private IList<IGPSLocation> m_SelectedGPSPoints = new List<IGPSLocation>();
-		private IGPSLocation m_HighlightGPSLocation;
+		private bool m_CaptureSelectedGPSLocations;
+		private IList<IGPSLocation> m_SelectedGPSLocations = new List<IGPSLocation>();
+		private IList<IGPSLocation> m_HighlightedGPSLocations = new List<IGPSLocation>();
 		private bool m_ShowHighlight = false;
 
 		private static MapControlLayer m_instance = null;
@@ -39,7 +39,7 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-		private IList<IGPSLocation> getSelectedGPSPoints(IMapDrawContext drawContext) {
+		private IList<IGPSLocation> getSelectedGPSLocations(IMapDrawContext drawContext) {
 			IList<IGPSLocation> list = new List<IGPSLocation>() { };
 			IMapControl mapControl = UI.MapLayers.MapControlLayer.Instance.MapControl;
 			if (mapControl.Selected.Count > 0) {
@@ -59,27 +59,31 @@ namespace TrailsPlugin.UI.MapLayers {
 			return list;
 		}
 
-		public void CaptureSelectedGPSPoints() {
-			m_SelectedGPSPoints.Clear();
-			m_CaptureSelectedGPSPoints = true;
+		public void CaptureSelectedGPSLocations() {
+			m_SelectedGPSLocations.Clear();
+			m_CaptureSelectedGPSLocations = true;
 			m_mapControl.Refresh();
 		}
 
-		public IList<IGPSLocation> SelectedGPSPoints {
+		public IList<IGPSLocation> SelectedGPSLocations {
 			get {
-				return m_SelectedGPSPoints;
+				return m_SelectedGPSLocations;
 			}
 		}
 
-		public IGPSLocation HighlightGPSLocation {
+		public IList<IGPSLocation> HighlightedGPSLocations {
 			set {
-				m_HighlightGPSLocation = value;
+				m_HighlightedGPSLocations = value;
+			}
+			get {
+				return m_HighlightedGPSLocations;
 			}
 		}
 
 		public bool ShowHighlight {
 			set {
 				m_ShowHighlight = value;
+				m_mapControl.Refresh();
 			}
 		}
 
@@ -87,22 +91,25 @@ namespace TrailsPlugin.UI.MapLayers {
 		#region IMapControlLayer Members
 
 		public void Draw(IMapDrawContext drawContext) {
-			if (m_CaptureSelectedGPSPoints) {
-				m_CaptureSelectedGPSPoints = false;
-				if (m_SelectedGPSPoints.Count != MapControl.Selected.Count) {
-					m_SelectedGPSPoints = getSelectedGPSPoints(drawContext);
-					SelectedGPSPointsChanged(this, new System.EventArgs());
+			if (m_CaptureSelectedGPSLocations) {
+				m_CaptureSelectedGPSLocations = false;
+				if (m_SelectedGPSLocations.Count != MapControl.Selected.Count) {
+					m_SelectedGPSLocations = getSelectedGPSLocations(drawContext);
+					SelectedGPSLocationsChanged(this, new System.EventArgs());
 				}
 			}
 
 			if (m_ShowHighlight) {
-				//drawContext.Center				
-				Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, m_HighlightGPSLocation);
-				Pen pen = new Pen(Color.Red, 10.0F);
-				int X = point.X + (drawContext.DrawRectangle.Width / 2) - 4;
-				int Y = point.Y + (drawContext.DrawRectangle.Height / 2) - 4;
-				drawContext.Graphics.DrawEllipse(pen, X, Y, 10, 10);
-				drawContext.Graphics.DrawEllipse(pen, 10, 10, 10, 10);
+				//drawContext.Center	
+				
+				foreach (IGPSLocation gpsLocation in m_HighlightedGPSLocations) {
+					Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, gpsLocation );
+					Pen pen = new Pen(Color.Red, 5.0F);
+					drawContext.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+					int X = point.X + (drawContext.DrawRectangle.Width / 2) - 1;
+					int Y = point.Y + (drawContext.DrawRectangle.Height / 2) - 1;
+					drawContext.Graphics.DrawEllipse(pen, X, Y, 1, 1);					
+				}
 			}
 		}
 

@@ -36,7 +36,6 @@ namespace TrailsPlugin {
 
 			
 			TrailSettings.Instance.AllTrails.Clear();
-			nsmgr.AddNamespace(string.Empty, "urn:uuid:D0EB2ED5-49B6-44e3-B13C-CF15BE7DD7DD");
 			foreach (XmlNode node in pluginNode.FirstChild.ChildNodes) {
 				Data.Trail trail = Data.Trail.FromXml(node);
 				TrailSettings.Instance.AllTrails.Add(trail.name, trail);

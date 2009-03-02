@@ -23,11 +23,11 @@ namespace TrailsPlugin.UI.Activity {
 			}
 
 			List.Columns.Clear();
-			List.Columns.Add(new TreeList.Column("Longitude", "Longitude", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column("Latitude", "Latitude", 100, StringAlignment.Near));
-			List.RowData = m_TrailToEdit.points;
+			List.Columns.Add(new TreeList.Column("LongitudeDegrees", "Longitude", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column("LatitudeDegrees", "Latitude", 100, StringAlignment.Near));
+			List.RowData = m_TrailToEdit.TrailLocations;
 
-			TrailName.Text = m_TrailToEdit.name;
+			TrailName.Text = m_TrailToEdit.Name;
 		}
 
 		public virtual void ThemeChanged(ITheme visualTheme) {
@@ -62,7 +62,7 @@ namespace TrailsPlugin.UI.Activity {
 				}
 			}
 
-			m_TrailToEdit.name = TrailName.Text;
+			m_TrailToEdit.Name = TrailName.Text;
 			if (this.m_addMode) {
 				TrailSettings.Instance.InsertTrail(m_TrailToEdit);
 			} else {
@@ -72,7 +72,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void TrailName_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
-			m_TrailToEdit.name = TrailName.Text;
+			m_TrailToEdit.Name = TrailName.Text;
 		}
 
 		private void EditTrail_Activated(object sender, System.EventArgs e) {

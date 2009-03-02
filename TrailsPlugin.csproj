@@ -72,9 +72,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\TrailResult.cs" />
     <Compile Include="Data\TrailSettings.cs" />
     <Compile Include="Data\Trail.cs" />
-    <Compile Include="Data\TrailPoint.cs" />
+    <Compile Include="Data\TrailGPSLocation.cs" />
     <Compile Include="GUIDS.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -38,7 +38,7 @@ namespace TrailsPlugin {
 			TrailSettings.Instance.AllTrails.Clear();
 			foreach (XmlNode node in pluginNode.FirstChild.ChildNodes) {
 				Data.Trail trail = Data.Trail.FromXml(node);
-				TrailSettings.Instance.AllTrails.Add(trail.name, trail);
+				TrailSettings.Instance.AllTrails.Add(trail.Name, trail);
 			}
 		}
 

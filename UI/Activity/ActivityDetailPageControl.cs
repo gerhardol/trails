@@ -18,13 +18,12 @@ namespace TrailsPlugin.UI.Activity {
 		private ITheme m_visualTheme;
 		private IActivity m_activity;
 		private Data.Trail m_currentTrail;
-		private IList<string> m_trailNames;
 
 		public ActivityDetailPageControl(IActivity activity) {
 			InitializeComponent();
-			m_activity = activity;
-
 			InitControls();
+
+			Activity = activity;
 			RefreshControlState();
 			RefreshData();			
 		}
@@ -42,6 +41,15 @@ namespace TrailsPlugin.UI.Activity {
 			toolTip.SetToolTip(btnAdd, "Add new trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnEdit, "Edit this trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
+
+			List.Columns.Clear();
+			List.Columns.Add(new TreeList.Column("Order", "#", 20, StringAlignment.Near));			
+			List.Columns.Add(new TreeList.Column("StartTime", "Start", 75, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column("EndTime", "Start", 75, StringAlignment.Near));			
+			List.Columns.Add(new TreeList.Column("Duration", "Duration", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column("Distance", "Distance", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column("AvgCadence", "AvgCadence", 100, StringAlignment.Near));
+			
 		}
 
 		private void RefreshControlState() {
@@ -51,6 +59,7 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.Enabled = enabled;
 
 			enabled = (TrailName.Text.Length != 0);
+			TrailName.Enabled = enabled;
 			btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
 			
@@ -59,16 +68,27 @@ namespace TrailsPlugin.UI.Activity {
 		private void RefreshData() {
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			layer.HighlightedGPSLocations.Clear();
-			TrailName.Text = "";
 			layer.ShowHighlight = false;
+			List.RowData = null;
+
+			if (m_activity != null) {
+				IList<string> names = this.TrailNames;
+				if (this.TrailName.Text != "" && names.Contains(this.TrailName.Text)) {
+					m_currentTrail = TrailSettings.Instance.AllTrails[this.TrailName.Text];
+				} else if (names.Count > 0) {
+					m_currentTrail = TrailSettings.Instance.AllTrails[names[0]];
+				}
+			}
 
 			if (m_currentTrail != null) {
-				TrailName.Text = m_currentTrail.name;
-				foreach (Data.TrailPoint point in m_currentTrail.points) {
-					layer.HighlightedGPSLocations.Add(point.GPSLocation);
+				TrailName.Text = m_currentTrail.Name;
+				foreach (Data.TrailGPSLocation point in m_currentTrail.TrailLocations) {
+					layer.HighlightedGPSLocations.Add(point);
 				}
 				layer.ShowHighlight = true;
-				m_currentTrail.Results(m_activity);
+				List.RowData = m_currentTrail.Results(m_activity);
+			} else {
+				TrailName.Text = "";
 			}
 		}
 
@@ -79,23 +99,23 @@ namespace TrailsPlugin.UI.Activity {
 			List.ThemeChanged(visualTheme);
 		}
 
+		public IList<string> TrailNames {
+			get {
+				List<string> names = new List<string>();
+				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
+				foreach (Data.Trail trail in TrailSettings.Instance.AllTrails.Values) {
+					if (trail.IsInBounds(gpsBounds)) {
+						names.Add(trail.Name);
+					}
+				}
+				return names;
+			}
+		}
+
 		public IActivity Activity {
 			set {
 				m_activity = value;
 				m_currentTrail = null;				
-				if (m_activity != null) {
-					List<string> m_trailNames = new List<string>();
-					IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
-					foreach (Data.Trail trail in TrailSettings.Instance.AllTrails.Values) {
-						if (trail.IsInBounds(gpsBounds)) {
-							m_trailNames.Add(trail.name);
-							if (m_currentTrail == null) {
-								m_currentTrail = trail;
-							}
-						}
-					}
-			
-				}
 				RefreshData();
 				RefreshControlState();
 			}
@@ -125,7 +145,11 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void btnDelete_Click(object sender, EventArgs e) {
-
+			if (MessageBox.Show("Are you sure you want to delete this trail?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				TrailSettings.Instance.DeleteTrail(m_currentTrail);
+				RefreshData();
+				RefreshControlState();
+			}
 		}
 
 		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e) {
@@ -135,7 +159,12 @@ namespace TrailsPlugin.UI.Activity {
 
 			m_currentTrail = new Data.Trail();
 			for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
-				m_currentTrail.points.Add(new Data.TrailPoint(layer.SelectedGPSLocations[i]));
+				m_currentTrail.TrailLocations.Add(
+					new Data.TrailGPSLocation(
+						layer.SelectedGPSLocations[i].LatitudeDegrees,
+						layer.SelectedGPSLocations[i].LongitudeDegrees
+					)
+				);
 			}
 		}
 
@@ -148,16 +177,17 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.ThemeChanged(m_visualTheme);
 			treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-			treeListPopup.Tree.RowData = m_trailNames;
+			treeListPopup.Tree.RowData = this.TrailNames;
 
 			if (m_currentTrail != null) {
-				treeListPopup.Tree.Selected = new object[] { m_currentTrail.name };
+				treeListPopup.Tree.Selected = new object[] { m_currentTrail.Name };
 			}
 			treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
 			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
 		}
+
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
-			this.m_currentTrail = TrailSettings.Instance.AllTrails[((TreeListPopup.ItemSelectedEventArgs)e).Item.ToString()];
+			this.TrailName.Text = ((TreeListPopup.ItemSelectedEventArgs)e).Item.ToString();
 			RefreshData();
 		}
 	}

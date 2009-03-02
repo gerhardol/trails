@@ -40,24 +40,24 @@ namespace TrailsPlugin {
 		}
 
 		public bool InsertTrail(Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(trail.name)) {
+			if (m_AllTrails.ContainsKey(trail.Name)) {
 				return false;
 			} else {
-				m_AllTrails.Add(trail.name, trail);
+				m_AllTrails.Add(trail.Name, trail);
 				return true;
 			}
 		}
 		public bool UpdateTrail(Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(trail.name)) {
-				m_AllTrails[trail.name] = trail;
+			if (m_AllTrails.ContainsKey(trail.Name)) {
+				m_AllTrails[trail.Name] = trail;
 				return true;
 			} else {				
 				return false;
 			}
 		}
 		public bool DeleteTrail(Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(trail.name)) {
-				m_AllTrails.Remove(trail.name);
+			if (m_AllTrails.ContainsKey(trail.Name)) {
+				m_AllTrails.Remove(trail.Name);
 				return true;
 			} else {
 				return false;

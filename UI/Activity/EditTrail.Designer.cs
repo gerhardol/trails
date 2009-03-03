@@ -27,7 +27,6 @@
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.btnOk = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
-			this.actionBanner1 = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
 			this.Panel = new System.Windows.Forms.TableLayoutPanel();
 			this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.lblTrail = new System.Windows.Forms.Label();
@@ -36,7 +35,6 @@
 			this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
-			this.actionBanner1.SuspendLayout();
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -49,7 +47,7 @@
 			this.btnOk.HyperlinkStyle = false;
 			this.btnOk.ImageMargin = 2;
 			this.btnOk.LeftImage = null;
-			this.btnOk.Location = new System.Drawing.Point(190, 3);
+			this.btnOk.Location = new System.Drawing.Point(215, 303);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.PushStyle = true;
 			this.btnOk.RightImage = null;
@@ -70,7 +68,7 @@
 			this.btnCancel.HyperlinkStyle = false;
 			this.btnCancel.ImageMargin = 2;
 			this.btnCancel.LeftImage = null;
-			this.btnCancel.Location = new System.Drawing.Point(279, 3);
+			this.btnCancel.Location = new System.Drawing.Point(296, 303);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.PushStyle = true;
 			this.btnCancel.RightImage = null;
@@ -81,23 +79,6 @@
 			this.btnCancel.TextLeftMargin = 2;
 			this.btnCancel.TextRightMargin = 2;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-			// 
-			// actionBanner1
-			// 
-			this.actionBanner1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.actionBanner1.BackColor = System.Drawing.Color.White;
-			this.actionBanner1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.actionBanner1.Controls.Add(this.btnCancel);
-			this.actionBanner1.Controls.Add(this.btnOk);
-			this.actionBanner1.HasMenuButton = false;
-			this.actionBanner1.Location = new System.Drawing.Point(0, 299);
-			this.actionBanner1.Name = "actionBanner1";
-			this.actionBanner1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.actionBanner1.Size = new System.Drawing.Size(387, 30);
-			this.actionBanner1.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
-			this.actionBanner1.TabIndex = 1;
-			this.actionBanner1.UseStyleFont = true;
 			// 
 			// Panel
 			// 
@@ -292,16 +273,15 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(381, 328);
-			this.ControlBox = false;
+			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.Panel);
-			this.Controls.Add(this.actionBanner1);
+			this.Controls.Add(this.btnOk);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "EditTrail";
 			this.Text = "EditTrail";
 			this.Activated += new System.EventHandler(this.EditTrail_Activated);
-			this.actionBanner1.ResumeLayout(false);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();
 			this.ResumeLayout(false);
@@ -313,7 +293,6 @@
 		private System.Windows.Forms.ToolTip toolTip;
 		private ZoneFiveSoftware.Common.Visuals.Button btnOk;
 		private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
-		private ZoneFiveSoftware.Common.Visuals.ActionBanner actionBanner1;
 		private System.Windows.Forms.TableLayoutPanel Panel;
 		private ZoneFiveSoftware.Common.Visuals.Button btnSave;
 		private System.Windows.Forms.Label lblTrail;

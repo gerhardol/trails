@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -56,14 +56,17 @@
     <Reference Include="Common.Data, Version=2.1.3326.18908, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Zone Five Software\SportTracks 2.1\Common.Data.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Common.Visuals, Version=2.1.3326.18913, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Zone Five Software\SportTracks 2.1\Common.Visuals.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SportTracks, Version=2.1.3326.25291, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Zone Five Software\SportTracks 2.1\SportTracks.exe</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -96,6 +99,13 @@
     <Compile Include="UI\Activity\EditTrail.Designer.cs">
       <DependentUpon>EditTrail.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Activity\ListSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Activity\ListSettings.Designer.cs">
+      <DependentUpon>ListSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Activity\TrailResultLabelProvider.cs" />
     <Compile Include="UI\CommonIcons.cs" />
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />
     <Compile Include="UI\Activity\ExtendActivityDetailPages.cs" />
@@ -116,6 +126,9 @@
     <Compile Include="UI\Activity\ActivityDetailPageControl.Designer.cs">
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Activity\TrailResultColumnIds.cs" />
+    <Compile Include="Utils\Dialog.cs" />
+    <Compile Include="Utils\Text.cs" />
     <Compile Include="View\PluginView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
@@ -276,12 +289,17 @@
   -->
   <PropertyGroup>
     <PostBuildEvent>set INSTALLPATH=C:\Documents and Settings\All Users\Application Data\ZoneFiveSoftware\SportTracks\2.0\Plugins\Installed\d75393a2-4a95-4fe7-ace2-375ff7338b2c
-REM set INSTALLPATH=C:\Users\Brendan\AppData\Local\ZoneFiveSoftware\SportTracks\2.0\Plugins\Installed\d75393a2-4a95-4fe7-ace2-375ff7338b2c
+set ZIPPATH=C:\Program Files\7-Zip
 
 REM Copy to install folder
 IF NOT EXIST "%25INSTALLPATH%25\$(ProjectName)" mkdir "%25INSTALLPATH%25\$(ProjectName)"
 xcopy "$(TargetDir)$(ProjectName)*.dll" "%25INSTALLPATH%25\$(ProjectName)\" /S /Y
 xcopy "$(ProjectDir)plugin.xml" "%25INSTALLPATH%25\$(ProjectName)\" /S /Y
-</PostBuildEvent>
+
+REM Create installer
+IF EXIST "$(SolutionDir)$(ProjectName).st2plugin" del "$(SolutionDir)*.st2plugin" /Q
+IF $(ConfigurationName)==Debug GOTO end
+"%25ZIPPATH%25\7z.exe" a -r -tzip "$(SolutionDir)$(ProjectName).st2plugin" "%25INSTALLPATH%25\*.*"
+:end</PostBuildEvent>
   </PropertyGroup>
 </Project>

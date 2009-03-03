@@ -34,11 +34,12 @@ namespace TrailsPlugin {
 
 		public void ReadOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {
 
-			
 			TrailSettings.Instance.AllTrails.Clear();
-			foreach (XmlNode node in pluginNode.FirstChild.ChildNodes) {
-				Data.Trail trail = Data.Trail.FromXml(node);
-				TrailSettings.Instance.AllTrails.Add(trail.Name, trail);
+			if (pluginNode.ChildNodes.Count > 0) {
+				foreach (XmlNode node in pluginNode.FirstChild.ChildNodes) {
+					Data.Trail trail = Data.Trail.FromXml(node);
+					TrailSettings.Instance.AllTrails.Add(trail.Name, trail);
+				}
 			}
 		}
 

@@ -35,7 +35,6 @@ namespace TrailsPlugin.UI.Activity {
 			BackColor = visualTheme.Control;
 			List.ThemeChanged(visualTheme);
 			TrailName.ThemeChanged(visualTheme);
-			actionBanner1.ThemeChanged(visualTheme);
 		}
 
 		private void btnCancel_Click(object sender, System.EventArgs e) {
@@ -78,6 +77,17 @@ namespace TrailsPlugin.UI.Activity {
 		private void EditTrail_Activated(object sender, System.EventArgs e) {
 			TrailName.Focus();
 
+		}
+
+		public Data.Trail Trail {
+			get {
+				return m_TrailToEdit;
+			}
+		}
+
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
+			base.OnPaint(e);
+			Utils.Dialog.DrawButtonRowBackground(e.Graphics, ClientRectangle, m_visualTheme);
 		}
 	}
 }

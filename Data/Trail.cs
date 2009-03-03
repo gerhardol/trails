@@ -49,12 +49,11 @@ namespace TrailsPlugin.Data {
 			IList<TrailResult> resultsList = new List<TrailResult>();
 			if (activity.GPSRoute == null || activity.GPSRoute.Count == 0) {
 				return resultsList ;
-			}
-
-			TrailResult result = null;
+			}			
 
 			float radius = 45;
 			int trailIndex = 0;
+			int startIndex = -1, endIndex = -1;
 			
 			for (int routeIndex = 0; routeIndex < activity.GPSRoute.Count; routeIndex++) {
 				IGPSPoint routePoint = activity.GPSRoute[routeIndex].Value;
@@ -77,14 +76,14 @@ namespace TrailsPlugin.Data {
 						}
 					}
 					if (trailIndex == 0) {
-						// found the start
-						result = new TrailResult(activity, resultsList.Count + 1);
-						result.startIndex = routeIndex;
+						// found the start						
+						startIndex = routeIndex;
 						trailIndex++;
 
 					} else if (trailIndex == this.TrailLocations.Count - 1) {
 						// found the end
-						result.endIndex = routeIndex;
+						endIndex = routeIndex;
+						TrailResult result = new TrailResult(activity, resultsList.Count + 1, startIndex, endIndex);
 						resultsList.Add(result);
 						result = null;
 						trailIndex = 0;

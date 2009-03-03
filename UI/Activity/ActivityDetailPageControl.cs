@@ -43,12 +43,15 @@ namespace TrailsPlugin.UI.Activity {
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
 
 			List.Columns.Clear();
-			List.Columns.Add(new TreeList.Column("Order", "#", 20, StringAlignment.Near));			
-			List.Columns.Add(new TreeList.Column("StartTime", "Start", 75, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column("EndTime", "Start", 75, StringAlignment.Near));			
-			List.Columns.Add(new TreeList.Column("Duration", "Duration", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column("Distance", "Distance", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column("AvgCadence", "AvgCadence", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Order, "#", 20, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.StartTime, "Start", 75, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.EndTime, "Start", 75, StringAlignment.Near));			
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Duration, "Duration", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Distance, "Distance", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgCadence, "Avg\nCadence", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgHR, "Avg\nHR", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.MaxHR, "Max\nHR", 100, StringAlignment.Near));
+			List.LabelProvider = new TrailResultLabelProvider();			 
 			
 		}
 
@@ -131,6 +134,7 @@ namespace TrailsPlugin.UI.Activity {
 				layer.CaptureSelectedGPSLocations();
 				EditTrail dialog = new EditTrail(m_currentTrail, m_visualTheme, true);
 				dialog.ShowDialog();
+				this.TrailName.Text = dialog.Trail.Name;
 				RefreshData();
 
 			} else {
@@ -190,6 +194,10 @@ namespace TrailsPlugin.UI.Activity {
 			this.TrailName.Text = ((TreeListPopup.ItemSelectedEventArgs)e).Item.ToString();
 			RefreshData();
 		}
-	}
 
+
+
+
+
+	}
 }

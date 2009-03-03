@@ -33,6 +33,9 @@ namespace TrailsPlugin.UI.Activity {
 					return row.AvgHR.ToString("0");
 				case TrailResultColumnIds.MaxHR:
 					return row.MaxHR.ToString("0");
+				case TrailResultColumnIds.ElevChg:
+					int change = (int)row.ElevChg;
+					return (change > 0 ? "+" : "") + change.ToString();
 				default:
 					return "error";
 			}			

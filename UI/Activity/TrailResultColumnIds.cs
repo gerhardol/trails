@@ -9,5 +9,6 @@ namespace TrailsPlugin.UI {
 		public const string AvgCadence = "AvgCadence";
 		public const string AvgHR = "AvgHR";
 		public const string MaxHR = "MaxHR";
+		public const string ElevChg = "ElevChg";
 	}
 }

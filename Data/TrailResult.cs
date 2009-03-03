@@ -70,12 +70,12 @@ namespace TrailsPlugin.Data {
 
 		public TimeSpan StartTime {
 			get {
-				return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]).TimeOfDay;
+				return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]).ToLocalTime().TimeOfDay;
 			}
 		}
 		public TimeSpan EndTime {
 			get {
-				return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]).TimeOfDay;
+				return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]).ToLocalTime().TimeOfDay;
 			}
 		}
 		public TimeSpan Duration {
@@ -111,6 +111,11 @@ namespace TrailsPlugin.Data {
 		public float MaxHR {
 			get {
 				return m_heartRatePerMinuteTrack.Max;
+			}
+		}
+		public float ElevChg {
+			get {
+				return m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
 			}
 		}
 	}

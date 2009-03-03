@@ -43,14 +43,16 @@ namespace TrailsPlugin.UI.Activity {
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
 
 			List.Columns.Clear();
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Order, "#", 20, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.StartTime, "Start", 75, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.EndTime, "Start", 75, StringAlignment.Near));			
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Duration, "Duration", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Distance, "Distance", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgCadence, "Avg\nCadence", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgHR, "Avg\nHR", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.MaxHR, "Max\nHR", 100, StringAlignment.Near));
+			List.NumHeaderRows = TreeList.HeaderRows.Two;
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Order, "#", 30, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.StartTime, "Start", 70, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.EndTime, "End", 70, StringAlignment.Near));			
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Duration, "Duration", 60, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Distance, "Distance", 60, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgCadence, "Avg\nCadence", 60, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgHR, "Avg\nHR", 50, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.MaxHR, "Max\nHR", 50, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.ElevChg, "Elev.\nChg", 50, StringAlignment.Near));
 			List.LabelProvider = new TrailResultLabelProvider();			 
 			
 		}

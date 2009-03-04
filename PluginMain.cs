@@ -32,14 +32,16 @@ namespace TrailsPlugin {
 			}
 		}
 
-		public void ReadOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {
+		public void ReadOptions(System.Xml.XmlDocument xmlDoc, XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {
+
+			nsmgr.AddNamespace("trail", "urn:uuid:D0EB2ED5-49B6-44e3-B13C-CF15BE7DD7DD");
+
 
 			TrailSettings.Instance.AllTrails.Clear();
-			if (pluginNode.ChildNodes.Count > 0) {
-				foreach (XmlNode node in pluginNode.FirstChild.ChildNodes) {
-					Data.Trail trail = Data.Trail.FromXml(node);
+
+			foreach (XmlNode node in pluginNode.SelectNodes("trail:Trails/trail:Trail", nsmgr)) {
+				Data.Trail trail = Data.Trail.FromXml(node, nsmgr);
 					TrailSettings.Instance.AllTrails.Add(trail.Name, trail);
-				}
 			}
 		}
 

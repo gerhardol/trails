@@ -15,12 +15,12 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		static public Trail FromXml(XmlNode node) {
+		static public Trail FromXml(XmlNode node, XmlNamespaceManager nsmgr) {
 			Trail trail = new Trail();
 			trail.Name = node.Attributes["name"].Value;
 			trail.TrailLocations.Clear();
-			foreach (XmlNode TrailGPSLocationNode in node.ChildNodes) {
-				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
+			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("ns:TrailGPSLocation", nsmgr)) {
+				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode, nsmgr));
 			}
 			return trail;
 		}

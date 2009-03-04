@@ -99,12 +99,6 @@
     <Compile Include="UI\Activity\EditTrail.Designer.cs">
       <DependentUpon>EditTrail.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Activity\ListSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Activity\ListSettings.Designer.cs">
-      <DependentUpon>ListSettings.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\Activity\TrailResultLabelProvider.cs" />
     <Compile Include="UI\CommonIcons.cs" />
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />

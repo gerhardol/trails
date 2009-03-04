@@ -11,6 +11,9 @@ using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 using ZoneFiveSoftware.SportTracks.Util;
+using ZoneFiveSoftware.SportTracks.UI;
+using ZoneFiveSoftware.SportTracks.UI.Forms;
+using ZoneFiveSoftware.SportTracks.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class ActivityDetailPageControl : UserControl {
@@ -30,6 +33,8 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		void InitControls() {
+
+			
 
 			TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
 
@@ -210,9 +215,44 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshData();
 		}
 
-		private void List_SelectedChanged(object sender, EventArgs e) {
-			//this.lineChart1.DataBindings.Add(
-			//this.lineChart1.Refresh();
+		private void ListContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+
 		}
+
+		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
+			ListSettings dialog = new ListSettings();
+			dialog.ThemeChanged(m_visualTheme);
+			dialog.ColumnsAvailable = this.AllColumns().Values;
+			dialog.AllowFixedColumnSelect = true;
+			// dialog.SelectedColumns = ZoneFiveSoftware.SportTracks.Data.ListItemOptions.ItemIds(ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns);
+			// dialog.NumFixedColumns = ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.NumLockedColumns;
+			
+			if (dialog.ShowDialog() == DialogResult.OK) {
+				//ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns = ZoneFiveSoftware.SportTracks.Data.ListItemOptions.NewItems(ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns, listSettings.SelectedColumns, idictionary.get_Values());
+				//ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.NumLockedColumns = listSettings.NumFixedColumns;
+				//ConfigureTreeColumns(ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns, ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.NumLockedColumns);
+		}
+
+		}
+
+		public IDictionary<string, IListItem> AllColumns() {
+			IDictionary<string, IListItem> dictionary = new Dictionary<string, IListItem>();
+			dictionary.Add(TrailResultColumnIds.Order, new ListItemInfo(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.StartTime, new ListItemInfo(TrailResultColumnIds.StartTime, "Start","", 70, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.EndTime, new ListItemInfo(TrailResultColumnIds.EndTime, "End", "", 70, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.Duration, new ListItemInfo(TrailResultColumnIds.Duration, "Duration", "", 60, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.Distance, new ListItemInfo(TrailResultColumnIds.Distance, "Distance", "", 60, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.AvgCadence, new ListItemInfo(TrailResultColumnIds.AvgCadence, "Avg\nCadence", "", 60, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.AvgHR, new ListItemInfo(TrailResultColumnIds.AvgHR, "Avg\nHR", "", 50, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.MaxHR, new ListItemInfo(TrailResultColumnIds.MaxHR, "Max\nHR", "", 50, StringAlignment.Near));
+			dictionary.Add(TrailResultColumnIds.ElevChg, new ListItemInfo(TrailResultColumnIds.ElevChg, "Elev.\nChg", "", 50, StringAlignment.Near));
+
+			return dictionary;
+		}
+
+		private void List_SelectedChanged(object sender, EventArgs e) {
+
+		}
+
 	}
 }

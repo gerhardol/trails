@@ -41,5 +41,10 @@ namespace TrailsPlugin {
 			}
 		}
 
+		static public Image ListSettings {
+			get {
+				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
+			}
+		}
 	}
 }

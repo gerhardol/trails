@@ -5,7 +5,7 @@ namespace TrailsPlugin.Data {
 	public class TrailGPSLocation : GPSLocation {
 		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees) : base(latitudeDegrees, longitudeDegrees) { }
 	
-		static public TrailGPSLocation FromXml(XmlNode node) {
+		static public TrailGPSLocation FromXml(XmlNode node, XmlNamespaceManager nsmgr) {
 
 			return new TrailGPSLocation(
 				float.Parse(node.Attributes["latitude"].Value), 

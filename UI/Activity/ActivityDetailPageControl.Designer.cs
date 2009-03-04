@@ -26,13 +26,21 @@
 			this.components = new System.ComponentModel.Container();
 			this.Panel = new System.Windows.Forms.TableLayoutPanel();
 			this.lblTrail = new System.Windows.Forms.Label();
-			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
 			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.SplitContainer = new System.Windows.Forms.SplitContainer();
+			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
+			this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
+			this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
+			this.lineChart1 = new ZoneFiveSoftware.Common.Visuals.Chart.LineChart();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.Panel.SuspendLayout();
+			this.SplitContainer.Panel1.SuspendLayout();
+			this.SplitContainer.Panel2.SuspendLayout();
+			this.SplitContainer.SuspendLayout();
+			this.ChartPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// Panel
@@ -48,18 +56,20 @@
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.Panel.Controls.Add(this.lblTrail, 0, 0);
-			this.Panel.Controls.Add(this.List, 0, 2);
 			this.Panel.Controls.Add(this.btnAdd, 3, 0);
 			this.Panel.Controls.Add(this.TrailName, 1, 0);
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
+			this.Panel.Controls.Add(this.SplitContainer, 0, 2);
 			this.Panel.Location = new System.Drawing.Point(0, 0);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
 			this.Panel.RowCount = 3;
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.Panel.Size = new System.Drawing.Size(350, 302);
 			this.Panel.TabIndex = 8;
 			// 
@@ -73,36 +83,6 @@
 			this.lblTrail.TabIndex = 0;
 			this.lblTrail.Text = "Trail:";
 			this.lblTrail.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// List
-			// 
-			this.List.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.List.AutoScroll = true;
-			this.List.BackColor = System.Drawing.Color.Transparent;
-			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
-			this.List.CheckBoxes = false;
-			this.Panel.SetColumnSpan(this.List, 6);
-			this.List.DefaultIndent = 15;
-			this.List.DefaultRowHeight = -1;
-			this.List.HeaderRowHeight = 21;
-			this.List.Location = new System.Drawing.Point(3, 38);
-			this.List.MultiSelect = false;
-			this.List.Name = "List";
-			this.List.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
-			this.List.NumLockedColumns = 0;
-			this.List.RowAlternatingColors = true;
-			this.List.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
-			this.List.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
-			this.List.RowHotlightMouse = true;
-			this.List.RowSelectedColor = System.Drawing.SystemColors.Highlight;
-			this.List.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
-			this.List.RowSeparatorLines = true;
-			this.List.ShowLines = false;
-			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(347, 262);
-			this.List.TabIndex = 11;
 			// 
 			// btnAdd
 			// 
@@ -196,6 +176,109 @@
 			this.btnEdit.TextRightMargin = 2;
 			this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
 			// 
+			// SplitContainer
+			// 
+			this.Panel.SetColumnSpan(this.SplitContainer, 6);
+			this.SplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.SplitContainer.Location = new System.Drawing.Point(0, 35);
+			this.SplitContainer.Margin = new System.Windows.Forms.Padding(0);
+			this.SplitContainer.Name = "SplitContainer";
+			this.SplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// SplitContainer.Panel1
+			// 
+			this.SplitContainer.Panel1.Controls.Add(this.List);
+			this.SplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
+			this.SplitContainer.Panel1MinSize = 100;
+			// 
+			// SplitContainer.Panel2
+			// 
+			this.SplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
+			this.SplitContainer.Panel2.Controls.Add(this.ChartPanel);
+			this.SplitContainer.Panel2MinSize = 100;
+			this.SplitContainer.Size = new System.Drawing.Size(350, 267);
+			this.SplitContainer.SplitterDistance = 150;
+			this.SplitContainer.TabIndex = 18;
+			// 
+			// List
+			// 
+			this.List.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.List.AutoScroll = true;
+			this.List.BackColor = System.Drawing.Color.Transparent;
+			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
+			this.List.CheckBoxes = false;
+			this.List.DefaultIndent = 15;
+			this.List.DefaultRowHeight = -1;
+			this.List.HeaderRowHeight = 21;
+			this.List.Location = new System.Drawing.Point(0, 0);
+			this.List.Margin = new System.Windows.Forms.Padding(0);
+			this.List.MultiSelect = false;
+			this.List.Name = "List";
+			this.List.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
+			this.List.NumLockedColumns = 0;
+			this.List.RowAlternatingColors = true;
+			this.List.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
+			this.List.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
+			this.List.RowHotlightMouse = true;
+			this.List.RowSelectedColor = System.Drawing.SystemColors.Highlight;
+			this.List.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
+			this.List.RowSeparatorLines = true;
+			this.List.ShowLines = false;
+			this.List.ShowPlusMinus = false;
+			this.List.Size = new System.Drawing.Size(350, 150);
+			this.List.TabIndex = 11;
+			this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
+			// 
+			// ChartPanel
+			// 
+			this.ChartPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.ChartPanel.ColumnCount = 1;
+			this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
+			this.ChartPanel.Controls.Add(this.lineChart1, 0, 1);
+			this.ChartPanel.Location = new System.Drawing.Point(0, 0);
+			this.ChartPanel.Margin = new System.Windows.Forms.Padding(0);
+			this.ChartPanel.Name = "ChartPanel";
+			this.ChartPanel.RowCount = 2;
+			this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.ChartPanel.Size = new System.Drawing.Size(347, 113);
+			this.ChartPanel.TabIndex = 0;
+			// 
+			// ChartBanner
+			// 
+			this.ChartBanner.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.ChartBanner.BackColor = System.Drawing.SystemColors.Control;
+			this.ChartBanner.HasMenuButton = true;
+			this.ChartBanner.Location = new System.Drawing.Point(0, 0);
+			this.ChartBanner.Margin = new System.Windows.Forms.Padding(0);
+			this.ChartBanner.Name = "ChartBanner";
+			this.ChartBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.ChartBanner.Size = new System.Drawing.Size(347, 20);
+			this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
+			this.ChartBanner.TabIndex = 0;
+			this.ChartBanner.Text = "Chart Name";
+			this.ChartBanner.UseStyleFont = true;
+			// 
+			// lineChart1
+			// 
+			this.lineChart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.lineChart1.BackColor = System.Drawing.Color.White;
+			this.lineChart1.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.None;
+			this.lineChart1.Location = new System.Drawing.Point(3, 23);
+			this.lineChart1.Name = "lineChart1";
+			this.lineChart1.Size = new System.Drawing.Size(341, 117);
+			this.lineChart1.TabIndex = 1;
+			// 
 			// ActivityDetailPageControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -205,6 +288,10 @@
 			this.Size = new System.Drawing.Size(350, 302);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();
+			this.SplitContainer.Panel1.ResumeLayout(false);
+			this.SplitContainer.Panel2.ResumeLayout(false);
+			this.SplitContainer.ResumeLayout(false);
+			this.ChartPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -219,6 +306,10 @@
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
 		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
 		private System.Windows.Forms.ToolTip toolTip;
+		private System.Windows.Forms.SplitContainer SplitContainer;
+		private System.Windows.Forms.TableLayoutPanel ChartPanel;
+		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
+		private ZoneFiveSoftware.Common.Visuals.Chart.LineChart lineChart1;
 
 	}
 }

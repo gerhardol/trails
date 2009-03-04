@@ -19,10 +19,6 @@ namespace TrailsPlugin {
 		}
 
 		private TrailSettings() {
-			loadSettings();
-		}
-
-		~TrailSettings() {			
 		}
 
 		private void loadSettings() {
@@ -32,11 +28,6 @@ namespace TrailsPlugin {
 			get {
 				return m_AllTrails;
 			}
-		}
-
-		public IList<Data.Trail> TravelledTrails(IActivity activity) {
-			// todo
-			return new List<Data.Trail>();
 		}
 
 		public bool InsertTrail(Data.Trail trail) {

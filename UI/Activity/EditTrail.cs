@@ -38,6 +38,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void btnCancel_Click(object sender, System.EventArgs e) {
+			this.DialogResult = DialogResult.Cancel;
 			Close();
 		}
 
@@ -67,6 +68,7 @@ namespace TrailsPlugin.UI.Activity {
 			} else {
 				TrailSettings.Instance.UpdateTrail(m_TrailToEdit);
 			}
+			this.DialogResult = DialogResult.OK;
 			Close();
 		}
 

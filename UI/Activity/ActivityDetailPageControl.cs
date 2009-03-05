@@ -34,7 +34,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		void InitControls() {
 
-			
+
 
 			TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
 
@@ -48,18 +48,30 @@ namespace TrailsPlugin.UI.Activity {
 			toolTip.SetToolTip(btnEdit, "Edit this trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
 
-			List.Columns.Clear();
+
 			List.NumHeaderRows = TreeList.HeaderRows.Two;
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Order, "#", 30, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.StartTime, "Start", 70, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.EndTime, "End", 70, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Duration, "Duration", 60, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.Distance, "Distance", 60, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgCadence, "Avg\nCadence", 60, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.AvgHR, "Avg\nHR", 50, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.MaxHR, "Max\nHR", 50, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column(TrailResultColumnIds.ElevChg, "Elev.\nChg", 50, StringAlignment.Near));
 			List.LabelProvider = new TrailResultLabelProvider();
+
+			this.RefreshColumns();
+		}
+
+		private void RefreshColumns() {
+
+			List.Columns.Clear();
+			foreach (string id in PluginMain.Settings.ActivityPageColumns) {
+				foreach (ListItemInfo columnDef in TrailResultColumnIds.ColumnDefs()) {
+					if (columnDef.Id == id) {
+						TreeList.Column column = new TreeList.Column(
+							columnDef.Id,
+							columnDef.ToString(),
+							columnDef.Width,
+							columnDef.Align
+						);
+						List.Columns.Add(column);
+						break;
+					}
+				}
+			}
 		}
 
 		private void RefreshControlState() {
@@ -84,11 +96,11 @@ namespace TrailsPlugin.UI.Activity {
 			if (m_activity != null) {
 				IList<string> names = this.TrailNames;
 				if (this.TrailName.Text != "" && names.Contains(this.TrailName.Text)) {
-					m_currentTrail = TrailSettings.Instance.AllTrails[this.TrailName.Text];
+					m_currentTrail = PluginMain.Data.AllTrails[this.TrailName.Text];
 				} else if (this.m_lastTrail != "" && names.Contains(this.m_lastTrail)) {
-					m_currentTrail = TrailSettings.Instance.AllTrails[this.m_lastTrail];
+					m_currentTrail = PluginMain.Data.AllTrails[this.m_lastTrail];
 				} else if (names.Count > 0) {
-					m_currentTrail = TrailSettings.Instance.AllTrails[names[0]];
+					m_currentTrail = PluginMain.Data.AllTrails[names[0]];
 				}
 			}
 			if (m_currentTrail != null) {
@@ -116,7 +128,7 @@ namespace TrailsPlugin.UI.Activity {
 			get {
 				SortedDictionary<long, string> sortedNames = new SortedDictionary<long, string>();
 				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
-				foreach (Data.Trail trail in TrailSettings.Instance.AllTrails.Values) {
+				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
 					if (trail.IsInBounds(gpsBounds)) {
 						IList<Data.TrailResult> results = trail.Results(m_activity);
 						if (results.Count > 0) {
@@ -170,7 +182,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void btnDelete_Click(object sender, EventArgs e) {
 			if (MessageBox.Show("Are you sure you want to delete this trail?", m_currentTrail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-				TrailSettings.Instance.DeleteTrail(m_currentTrail);
+				PluginMain.Data.DeleteTrail(m_currentTrail);
 				RefreshData();
 				RefreshControlState();
 			}
@@ -215,39 +227,19 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshData();
 		}
 
-		private void ListContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
-
-		}
-
 		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
 			ListSettings dialog = new ListSettings();
 			dialog.ThemeChanged(m_visualTheme);
-			dialog.ColumnsAvailable = this.AllColumns().Values;
+			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs();
 			dialog.AllowFixedColumnSelect = true;
-			// dialog.SelectedColumns = ZoneFiveSoftware.SportTracks.Data.ListItemOptions.ItemIds(ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns);
-			// dialog.NumFixedColumns = ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.NumLockedColumns;
-			
+			dialog.SelectedColumns = PluginMain.Settings.ActivityPageColumns;
+			dialog.NumFixedColumns = PluginMain.Settings.ActivityPageNumFixedColumns;
+
 			if (dialog.ShowDialog() == DialogResult.OK) {
-				//ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns = ZoneFiveSoftware.SportTracks.Data.ListItemOptions.NewItems(ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns, listSettings.SelectedColumns, idictionary.get_Values());
-				//ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.NumLockedColumns = listSettings.NumFixedColumns;
-				//ConfigureTreeColumns(ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.Columns, ZoneFiveSoftware.SportTracks.Plugin.Activities.ActivitiesPlugin.Instance.ElevationPageOptions.NumLockedColumns);
-		}
-
-		}
-
-		public IDictionary<string, IListItem> AllColumns() {
-			IDictionary<string, IListItem> dictionary = new Dictionary<string, IListItem>();
-			dictionary.Add(TrailResultColumnIds.Order, new ListItemInfo(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.StartTime, new ListItemInfo(TrailResultColumnIds.StartTime, "Start","", 70, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.EndTime, new ListItemInfo(TrailResultColumnIds.EndTime, "End", "", 70, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.Duration, new ListItemInfo(TrailResultColumnIds.Duration, "Duration", "", 60, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.Distance, new ListItemInfo(TrailResultColumnIds.Distance, "Distance", "", 60, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.AvgCadence, new ListItemInfo(TrailResultColumnIds.AvgCadence, "Avg\nCadence", "", 60, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.AvgHR, new ListItemInfo(TrailResultColumnIds.AvgHR, "Avg\nHR", "", 50, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.MaxHR, new ListItemInfo(TrailResultColumnIds.MaxHR, "Max\nHR", "", 50, StringAlignment.Near));
-			dictionary.Add(TrailResultColumnIds.ElevChg, new ListItemInfo(TrailResultColumnIds.ElevChg, "Elev.\nChg", "", 50, StringAlignment.Near));
-
-			return dictionary;
+				PluginMain.Settings.ActivityPageNumFixedColumns = dialog.NumFixedColumns;
+				PluginMain.Settings.ActivityPageColumns = dialog.SelectedColumns;
+				RefreshColumns();
+			}
 		}
 
 		private void List_SelectedChanged(object sender, EventArgs e) {

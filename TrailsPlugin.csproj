@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -75,8 +75,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Settings.cs" />
     <Compile Include="Data\TrailResult.cs" />
-    <Compile Include="Data\TrailSettings.cs" />
+    <Compile Include="Data\TrailData.cs" />
     <Compile Include="Data\Trail.cs" />
     <Compile Include="Data\TrailGPSLocation.cs" />
     <Compile Include="GUIDS.cs">

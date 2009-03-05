@@ -28,6 +28,7 @@ namespace TrailsPlugin.UI.Activity {
 			List.RowData = m_TrailToEdit.TrailLocations;
 
 			TrailName.Text = m_TrailToEdit.Name;
+			Radius.Text = m_TrailToEdit.Radius.ToString();
 		}
 
 		public virtual void ThemeChanged(ITheme visualTheme) {
@@ -49,24 +50,30 @@ namespace TrailsPlugin.UI.Activity {
 			}
 			Data.Trail trail = null;
 			if (m_addMode) {
-				if (TrailSettings.Instance.AllTrails.ContainsKey(TrailName.Text)) {
+				if (PluginMain.Data.AllTrails.ContainsKey(TrailName.Text)) {
 					MessageBox.Show("Unique trail name is required.");
 					return;
 				}
 			} else {
-				if (TrailSettings.Instance.AllTrails.TryGetValue(TrailName.Text, out trail)) {
-					if (trail == m_TrailToEdit) {
+				if (PluginMain.Data.AllTrails.TryGetValue(TrailName.Text, out trail)) {
+					if (trail != m_TrailToEdit) {
 						MessageBox.Show("Unique trail name is required.");
 						return;
 					}
 				}
 			}
+			int value;
+			if (int.TryParse(this.Radius.Text, out value) == false) {
+				MessageBox.Show("Radius must be numeric.");
+				return;
+			}
 
 			m_TrailToEdit.Name = TrailName.Text;
+			m_TrailToEdit.Radius = float.Parse(Radius.Text);
 			if (this.m_addMode) {
-				TrailSettings.Instance.InsertTrail(m_TrailToEdit);
+				PluginMain.Data.InsertTrail(m_TrailToEdit);
 			} else {
-				TrailSettings.Instance.UpdateTrail(m_TrailToEdit);
+				PluginMain.Data.UpdateTrail(m_TrailToEdit);
 			}
 			this.DialogResult = DialogResult.OK;
 			Close();
@@ -91,5 +98,6 @@ namespace TrailsPlugin.UI.Activity {
 			base.OnPaint(e);
 			Utils.Dialog.DrawButtonRowBackground(e.Graphics, ClientRectangle, m_visualTheme);
 		}
+
 	}
 }

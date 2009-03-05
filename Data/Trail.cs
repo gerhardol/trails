@@ -8,10 +8,20 @@ namespace TrailsPlugin.Data {
 	public class Trail {
 		public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
+		private float m_radius = 5;
 
 		public IList<TrailGPSLocation> TrailLocations {
 			get {
 				return m_trailLocations;
+			}
+		}
+
+		public float Radius {
+			get {
+				return m_radius;
+			}
+			set {
+				m_radius = value;
 			}
 		}
 
@@ -51,7 +61,6 @@ namespace TrailsPlugin.Data {
 				return resultsList ;
 			}			
 
-			float radius = 45;
 			int trailIndex = 0;
 			int startIndex = -1, endIndex = -1;
 			
@@ -59,12 +68,12 @@ namespace TrailsPlugin.Data {
 				IGPSPoint routePoint = activity.GPSRoute[routeIndex].Value;
 				if (trailIndex != 0) {
 					float distFromStartToPoint = this.TrailLocations[0].DistanceMetersToPoint(routePoint);
-					if (distFromStartToPoint < radius) {
+					if (distFromStartToPoint < m_radius) {
 						trailIndex = 0;
 					}
 				}
 				float distToPoint = this.TrailLocations[trailIndex].DistanceMetersToPoint(routePoint);
-				if (distToPoint < radius) {
+				if (distToPoint < m_radius) {
 					for (int routeIndex2 = routeIndex+1; routeIndex2 < activity.GPSRoute.Count; routeIndex2++) {
 						IGPSPoint routePoint2 = activity.GPSRoute[routeIndex2].Value;
 						float distToPoint2 = this.TrailLocations[0].DistanceMetersToPoint(routePoint2);

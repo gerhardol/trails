@@ -30,11 +30,13 @@
 			this.Panel = new System.Windows.Forms.TableLayoutPanel();
 			this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.lblTrail = new System.Windows.Forms.Label();
-			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
 			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
+			this.label1 = new System.Windows.Forms.Label();
+			this.Radius = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -92,21 +94,22 @@
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.Panel.Controls.Add(this.Radius, 1, 1);
 			this.Panel.Controls.Add(this.btnSave, 2, 0);
 			this.Panel.Controls.Add(this.lblTrail, 0, 0);
-			this.Panel.Controls.Add(this.List, 0, 2);
 			this.Panel.Controls.Add(this.btnAdd, 3, 0);
 			this.Panel.Controls.Add(this.TrailName, 1, 0);
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
+			this.Panel.Controls.Add(this.List, 0, 2);
+			this.Panel.Controls.Add(this.label1, 0, 1);
 			this.Panel.Location = new System.Drawing.Point(15, 13);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
-			this.Panel.RowCount = 4;
+			this.Panel.RowCount = 3;
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
 			this.Panel.Size = new System.Drawing.Size(350, 271);
 			this.Panel.TabIndex = 9;
 			// 
@@ -143,36 +146,6 @@
 			this.lblTrail.TabIndex = 0;
 			this.lblTrail.Text = "Trail:";
 			this.lblTrail.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// List
-			// 
-			this.List.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.List.AutoScroll = true;
-			this.List.BackColor = System.Drawing.Color.Transparent;
-			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
-			this.List.CheckBoxes = false;
-			this.Panel.SetColumnSpan(this.List, 6);
-			this.List.DefaultIndent = 15;
-			this.List.DefaultRowHeight = -1;
-			this.List.HeaderRowHeight = 21;
-			this.List.Location = new System.Drawing.Point(3, 38);
-			this.List.MultiSelect = false;
-			this.List.Name = "List";
-			this.List.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
-			this.List.NumLockedColumns = 0;
-			this.List.RowAlternatingColors = true;
-			this.List.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
-			this.List.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
-			this.List.RowHotlightMouse = true;
-			this.List.RowSelectedColor = System.Drawing.SystemColors.Highlight;
-			this.List.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
-			this.List.RowSeparatorLines = true;
-			this.List.ShowLines = false;
-			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(347, 230);
-			this.List.TabIndex = 11;
 			// 
 			// btnAdd
 			// 
@@ -266,6 +239,69 @@
 			this.btnEdit.TextRightMargin = 2;
 			this.btnEdit.Visible = false;
 			// 
+			// List
+			// 
+			this.List.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.List.AutoScroll = true;
+			this.List.BackColor = System.Drawing.Color.Transparent;
+			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
+			this.List.CheckBoxes = false;
+			this.Panel.SetColumnSpan(this.List, 6);
+			this.List.DefaultIndent = 15;
+			this.List.DefaultRowHeight = -1;
+			this.List.HeaderRowHeight = 21;
+			this.List.Location = new System.Drawing.Point(3, 53);
+			this.List.MultiSelect = false;
+			this.List.Name = "List";
+			this.List.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
+			this.List.NumLockedColumns = 0;
+			this.List.RowAlternatingColors = true;
+			this.List.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
+			this.List.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
+			this.List.RowHotlightMouse = true;
+			this.List.RowSelectedColor = System.Drawing.SystemColors.Highlight;
+			this.List.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
+			this.List.RowSeparatorLines = true;
+			this.List.ShowLines = false;
+			this.List.ShowPlusMinus = false;
+			this.List.Size = new System.Drawing.Size(344, 218);
+			this.List.TabIndex = 11;
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(0, 25);
+			this.label1.Margin = new System.Windows.Forms.Padding(0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(43, 13);
+			this.label1.TabIndex = 19;
+			this.label1.Text = "Radius:";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// Radius
+			// 
+			this.Radius.AcceptsReturn = false;
+			this.Radius.AcceptsTab = false;
+			this.Radius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.Radius.BackColor = System.Drawing.Color.White;
+			this.Radius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+			this.Radius.ButtonImage = null;
+			this.Radius.Location = new System.Drawing.Point(91, 25);
+			this.Radius.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
+			this.Radius.MaxLength = 32767;
+			this.Radius.Multiline = false;
+			this.Radius.Name = "Radius";
+			this.Radius.ReadOnly = false;
+			this.Radius.ReadOnlyColor = System.Drawing.SystemColors.Control;
+			this.Radius.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+			this.Radius.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.Radius.Size = new System.Drawing.Size(149, 19);
+			this.Radius.TabIndex = 20;
+			this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+			// 
 			// EditTrail
 			// 
 			this.AcceptButton = this.btnOk;
@@ -274,8 +310,8 @@
 			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(381, 328);
 			this.Controls.Add(this.btnCancel);
-			this.Controls.Add(this.Panel);
 			this.Controls.Add(this.btnOk);
+			this.Controls.Add(this.Panel);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -296,11 +332,13 @@
 		private System.Windows.Forms.TableLayoutPanel Panel;
 		private ZoneFiveSoftware.Common.Visuals.Button btnSave;
 		private System.Windows.Forms.Label lblTrail;
-		private ZoneFiveSoftware.Common.Visuals.TreeList List;
 		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
 		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
+		private ZoneFiveSoftware.Common.Visuals.TreeList List;
+		private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
+		private System.Windows.Forms.Label label1;
 
 	}
 }

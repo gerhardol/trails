@@ -35,28 +35,17 @@ namespace TrailsPlugin {
 		public void ReadOptions(System.Xml.XmlDocument xmlDoc, XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {
 
 			nsmgr.AddNamespace("trail", "urn:uuid:D0EB2ED5-49B6-44e3-B13C-CF15BE7DD7DD");
-
-
-			TrailSettings.Instance.AllTrails.Clear();
-
-			foreach (XmlNode node in pluginNode.SelectNodes("trail:Trails/trail:Trail", nsmgr)) {
-				Data.Trail trail = Data.Trail.FromXml(node, nsmgr);
-					TrailSettings.Instance.AllTrails.Add(trail.Name, trail);
-			}
+			m_data.FromXml(pluginNode, nsmgr);
+			m_settings.FromXml(pluginNode, nsmgr);
 		}
 
 		public string Version {
 			get { return GetType().Assembly.GetName().Version.ToString(4); }
 		}
 
-		public void WriteOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement pluginNode) {
-
-			XmlNode trails = xmlDoc.CreateElement("Trails");
-			pluginNode.AppendChild(trails);
-			foreach (Data.Trail trail in TrailSettings.Instance.AllTrails.Values) {
-				trails.AppendChild(trail.ToXml(xmlDoc));
-			}
-			pluginNode.AppendChild(trails);
+		public void WriteOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement pluginNode) {	
+			pluginNode.AppendChild(m_data.ToXml(xmlDoc));
+			pluginNode.AppendChild(m_settings.ToXml(xmlDoc));
 		}
 
 		#endregion
@@ -69,5 +58,18 @@ namespace TrailsPlugin {
 		}
 
 		private static IApplication m_App = null;
+		private static Data.TrailData m_data = new Data.TrailData();
+		private static Data.Settings m_settings = new Data.Settings();
+		public static Data.TrailData Data {
+			get {
+				return m_data;
+			}
+		}
+
+		public static Data.Settings Settings {
+			get {
+				return m_settings;
+			}
+		}
 	}
 }

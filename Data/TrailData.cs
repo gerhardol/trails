@@ -22,9 +22,10 @@ namespace TrailsPlugin.Data {
 				return true;
 			}
 		}
-		public bool UpdateTrail(Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(trail.Name)) {
-				m_AllTrails[trail.Name] = trail;
+		public bool UpdateTrail(string oldKey, Data.Trail trail) {
+			if (m_AllTrails.ContainsKey(oldKey)) {
+				m_AllTrails.Remove(oldKey);
+				m_AllTrails.Add(trail.Name, trail);
 				return true;
 			} else {				
 				return false;

@@ -108,6 +108,7 @@ namespace TrailsPlugin.UI.Activity {
 				foreach (Data.TrailGPSLocation point in m_currentTrail.TrailLocations) {
 					layer.HighlightedGPSLocations.Add(point);
 				}
+				layer.HighlightRadius = m_currentTrail.Radius;
 				layer.ShowHighlight = true;
 				List.RowData = m_currentTrail.Results(m_activity);
 			} else {

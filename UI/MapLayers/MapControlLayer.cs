@@ -15,6 +15,7 @@ namespace TrailsPlugin.UI.MapLayers {
 		private IList<IGPSLocation> m_SelectedGPSLocations = new List<IGPSLocation>();
 		private IList<IGPSLocation> m_HighlightedGPSLocations = new List<IGPSLocation>();
 		private bool m_ShowHighlight = false;
+		private float m_highlightRadius;
 
 		private static MapControlLayer m_instance = null;
 		public static MapControlLayer Instance {
@@ -52,8 +53,6 @@ namespace TrailsPlugin.UI.MapLayers {
 					int X = rec.X + (rec.Width / 2) - (drawContext.DrawRectangle.Width / 2);
 					int Y = rec.Y + (rec.Height / 2) - (drawContext.DrawRectangle.Height / 2);
 					IGPSLocation loc = drawContext.Projection.PixelToGPS(drawContext.Center, drawContext.ZoomLevel, new Point(X, Y));
-
-					list.Add(loc);
 				}
 			}
 			return list;
@@ -80,6 +79,12 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
+		public float HighlightRadius {
+			set {
+				m_highlightRadius = value;
+			}
+		}
+
 		public bool ShowHighlight {
 			set {
 				m_ShowHighlight = value;
@@ -100,15 +105,23 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 
 			if (m_ShowHighlight) {
-				//drawContext.Center	
-				
+				//drawContext.Center
+	
+				IGPSLocation loc1 = drawContext.Projection.PixelToGPS(drawContext.Center, drawContext.ZoomLevel, new Point(0,0));
+				IGPSLocation loc2 = drawContext.Projection.PixelToGPS(drawContext.Center, drawContext.ZoomLevel, new Point(0,100));
+				IGPSPoint point1 = Utils.GPS.LocationToPoint(loc1);
+				IGPSPoint point2 = Utils.GPS.LocationToPoint(loc2);
+				float meters = point1.DistanceMetersToPoint(point2) / 100;
+				float radiusInPixels = m_highlightRadius / meters;
+								
 				foreach (IGPSLocation gpsLocation in m_HighlightedGPSLocations) {
 					Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, gpsLocation );
 					Pen pen = new Pen(Color.Red, 5.0F);
+					
 					drawContext.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-					int X = point.X + (drawContext.DrawRectangle.Width / 2) - 1;
-					int Y = point.Y + (drawContext.DrawRectangle.Height / 2) - 1;
-					drawContext.Graphics.DrawEllipse(pen, X, Y, 1, 1);					
+					float X = point.X + (drawContext.DrawRectangle.Width / 2) - radiusInPixels;
+					float Y = point.Y + (drawContext.DrawRectangle.Height / 2) - radiusInPixels;
+					drawContext.Graphics.DrawEllipse(pen, X, Y, radiusInPixels * 2, radiusInPixels * 2);					
 				}
 			}
 		}

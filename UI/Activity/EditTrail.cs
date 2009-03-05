@@ -68,19 +68,22 @@ namespace TrailsPlugin.UI.Activity {
 				return;
 			}
 
+			string oldTrailName = m_TrailToEdit.Name;
 			m_TrailToEdit.Name = TrailName.Text;
 			m_TrailToEdit.Radius = float.Parse(Radius.Text);
 			if (this.m_addMode) {
-				PluginMain.Data.InsertTrail(m_TrailToEdit);
+				if (!PluginMain.Data.InsertTrail(m_TrailToEdit)) {
+					MessageBox.Show("Insert failed");
+					return;
+				}
 			} else {
-				PluginMain.Data.UpdateTrail(m_TrailToEdit);
+				if (!PluginMain.Data.UpdateTrail(oldTrailName, m_TrailToEdit)) {
+					MessageBox.Show("Update failed");
+					return;
+				}
 			}
 			this.DialogResult = DialogResult.OK;
 			Close();
-		}
-
-		private void TrailName_Validating(object sender, System.ComponentModel.CancelEventArgs e) {
-			m_TrailToEdit.Name = TrailName.Text;
 		}
 
 		private void EditTrail_Activated(object sender, System.EventArgs e) {

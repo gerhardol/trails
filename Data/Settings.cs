@@ -30,7 +30,10 @@ namespace TrailsPlugin.Data {
 			m_activityPageNumFixedColumns = 1;
 
 			XmlNode settingsNode = pluginNode.SelectSingleNode("trail:Settings", nsmgr);
-			XmlNode activityPageNode = settingsNode.SelectSingleNode("trail:ActivityPage", nsmgr);
+			XmlNode activityPageNode = null;
+			if (settingsNode != null) {
+				settingsNode.SelectSingleNode("trail:ActivityPage", nsmgr);
+			}
 
 			if (activityPageNode != null) {
 				if (activityPageNode.SelectSingleNode("@numFixedColumns") != null) {

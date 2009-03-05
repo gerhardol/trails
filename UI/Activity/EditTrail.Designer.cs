@@ -191,7 +191,6 @@
 			this.TrailName.Size = new System.Drawing.Size(149, 19);
 			this.TrailName.TabIndex = 1;
 			this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-			this.TrailName.Validating += new System.ComponentModel.CancelEventHandler(this.TrailName_Validating);
 			// 
 			// btnDelete
 			// 

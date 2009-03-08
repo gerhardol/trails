@@ -53,6 +53,7 @@ namespace TrailsPlugin.UI.MapLayers {
 					int X = rec.X + (rec.Width / 2) - (drawContext.DrawRectangle.Width / 2);
 					int Y = rec.Y + (rec.Height / 2) - (drawContext.DrawRectangle.Height / 2);
 					IGPSLocation loc = drawContext.Projection.PixelToGPS(drawContext.Center, drawContext.ZoomLevel, new Point(X, Y));
+					list.Add(loc);
 				}
 			}
 			return list;

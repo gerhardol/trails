@@ -30,37 +30,37 @@ namespace TrailsPlugin.Data {
 			}
 		}
 		*/
-		public IList<Data.Trail> AllTrails {
+		public SortedList<string, Data.Trail> AllTrails {
 			get {
-				return m_AllTrails.Values;
+				return m_AllTrails;
 			}
 		}
 
-		public IList<Data.Trail> ActivityTrails(IActivity activity) {
-			SortedList<long, Data.Trail> usedTrails = new SortedList<long, Data.Trail>();
-			IList<Data.Trail> unusedTrails = new List<Data.Trail>();
-			IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
-			foreach (Data.Trail trail in PluginMain.Data.AllTrails) {
-				if (trail.IsInBounds(gpsBounds)) {
-					IList<Data.TrailResult> results = trail.Results(activity);
-					if (results.Count > 0) {
-						usedTrails.Add(results[0].StartTime.Ticks, trail);
-					} else {
-						unusedTrails.Add(trail);
-					}
-				}
-			}
+		public IList<Data.Trail> TrailsInBounds(IActivity activity) {
 			IList<Data.Trail> trails = new List<Data.Trail>();
-			foreach (Data.Trail trail in usedTrails) {
-				trails.Add(trail);
-			}
-			foreach (Data.Trail trail in unusedTrails) {
-				trails.Add(trail);
+
+			IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
+			foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
+				if (trail.IsInBounds(gpsBounds)) {
+					trails.Add(trail);
+				}
 			}
 
 			return trails;
 		}
 
+
+		public SortedList<long, Data.Trail> TrailsWithResults(IActivity activity) {
+			SortedList<long, Data.Trail> trails = new SortedList<long, Data.Trail>();
+			foreach (Data.Trail trail in TrailsInBounds(activity)) {
+				IList<Data.TrailResult> results = trail.Results(activity);
+				if (results.Count > 0) {
+					trails.Add(results[0].StartTime.Ticks, trail);
+				}
+			}
+			return trails;
+
+		}
 		public bool InsertTrail(Data.Trail trail) {
 			if (m_AllTrails.ContainsKey(trail.Name)) {
 				return false;

@@ -34,8 +34,10 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {
-			m_control.ThemeChanged(visualTheme);
-			RefreshPage();
+			if (m_control != null) {
+				m_control.ThemeChanged(visualTheme);
+				RefreshPage();
+			}
 		}
 
 		public void UICultureChanged(CultureInfo culture) {

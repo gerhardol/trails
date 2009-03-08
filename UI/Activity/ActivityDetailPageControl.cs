@@ -125,26 +125,6 @@ namespace TrailsPlugin.UI.Activity {
 			lineChart1.ThemeChanged(visualTheme);
 		}
 
-		public IList<string> TrailNames {
-			get {
-				SortedDictionary<long, string> sortedNames = new SortedDictionary<long, string>();
-				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
-				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
-					if (trail.IsInBounds(gpsBounds)) {
-						IList<Data.TrailResult> results = trail.Results(m_activity);
-						if (results.Count > 0) {
-							sortedNames.Add(results[0].StartTime.Ticks, trail.Name);
-						}
-					}
-				}
-				IList<string> names = new List<string>();
-				foreach (string name in sortedNames.Values) {
-					names.Add(name);
-				}
-				return names;
-			}
-		}
-
 		public IActivity Activity {
 			set {
 				m_activity = value;

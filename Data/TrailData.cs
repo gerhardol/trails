@@ -2,16 +2,63 @@
 using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
 using System.Xml.Serialization;
+using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Data {
 	public class TrailData {
 
-		private SortedDictionary<string, Data.Trail> m_AllTrails = new SortedDictionary<string, Data.Trail>();
+		private SortedList<string, Data.Trail> m_AllTrails = new SortedList<string, Data.Trail>();
 
-		public SortedDictionary<string, Data.Trail> AllTrails {
+		/*
+		public IList<string> TrailNames {
 			get {
-				return m_AllTrails;
+				SortedList<long, string> sortedNames = new SortedList<long, string>();
+				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
+				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
+					if (trail.IsInBounds(gpsBounds)) {
+						IList<Data.TrailResult> results = trail.Results(m_activity);
+						if (results.Count > 0) {
+							sortedNames.Add(results[0].StartTime.Ticks, trail.Name);
+						} else
+					}
+				}
+				IList<string> names = new List<string>();
+				foreach (string name in sortedNames.Values) {
+					names.Add(name);
+				}
+				return names;
 			}
+		}
+		*/
+		public IList<Data.Trail> AllTrails {
+			get {
+				return m_AllTrails.Values;
+			}
+		}
+
+		public IList<Data.Trail> ActivityTrails(IActivity activity) {
+			SortedList<long, Data.Trail> usedTrails = new SortedList<long, Data.Trail>();
+			IList<Data.Trail> unusedTrails = new List<Data.Trail>();
+			IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
+			foreach (Data.Trail trail in PluginMain.Data.AllTrails) {
+				if (trail.IsInBounds(gpsBounds)) {
+					IList<Data.TrailResult> results = trail.Results(activity);
+					if (results.Count > 0) {
+						usedTrails.Add(results[0].StartTime.Ticks, trail);
+					} else {
+						unusedTrails.Add(trail);
+					}
+				}
+			}
+			IList<Data.Trail> trails = new List<Data.Trail>();
+			foreach (Data.Trail trail in usedTrails) {
+				trails.Add(trail);
+			}
+			foreach (Data.Trail trail in unusedTrails) {
+				trails.Add(trail);
+			}
+
+			return trails;
 		}
 
 		public bool InsertTrail(Data.Trail trail) {
@@ -27,7 +74,7 @@ namespace TrailsPlugin.Data {
 				m_AllTrails.Remove(oldKey);
 				m_AllTrails.Add(trail.Name, trail);
 				return true;
-			} else {				
+			} else {
 				return false;
 			}
 		}
@@ -50,7 +97,7 @@ namespace TrailsPlugin.Data {
 		}
 
 		public XmlNode ToXml(XmlDocument doc) {
-			XmlNode trails = doc.CreateElement("Trails");			
+			XmlNode trails = doc.CreateElement("Trails");
 			foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
 				trails.AppendChild(trail.ToXml(doc));
 			}

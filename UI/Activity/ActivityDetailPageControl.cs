@@ -14,6 +14,7 @@ using ZoneFiveSoftware.SportTracks.Util;
 using ZoneFiveSoftware.SportTracks.UI;
 using ZoneFiveSoftware.SportTracks.UI.Forms;
 using ZoneFiveSoftware.SportTracks.Data;
+using ZoneFiveSoftware.Common.Visuals.Chart;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class ActivityDetailPageControl : UserControl {
@@ -33,8 +34,6 @@ namespace TrailsPlugin.UI.Activity {
 
 		void InitControls() {
 
-
-
 			TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
 
 			btnAdd.BackgroundImage = CommonIcons.Add;
@@ -47,6 +46,7 @@ namespace TrailsPlugin.UI.Activity {
 			toolTip.SetToolTip(btnEdit, "Edit this trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
 
+			listSettingsMenuItem.Image= CommonIcons.ListSettings;
 
 			List.NumHeaderRows = TreeList.HeaderRows.Two;
 			List.LabelProvider = new TrailResultLabelProvider();
@@ -100,6 +100,7 @@ namespace TrailsPlugin.UI.Activity {
 				layer.HighlightRadius = m_currentTrail.Radius;
 				layer.ShowHighlight = true;
 				List.RowData = m_currentTrail.Results(m_activity);
+
 			} else {
 				TrailName.Text = "";
 			}
@@ -111,7 +112,7 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.ThemeChanged(visualTheme);
 			List.ThemeChanged(visualTheme);
 			ChartBanner.ThemeChanged(visualTheme);
-			lineChart1.ThemeChanged(visualTheme);
+			//lineChart1.ThemeChanged(visualTheme);
 		}
 
 		public IActivity Activity {
@@ -231,6 +232,25 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void List_SelectedChanged(object sender, EventArgs e) {
 
+		}
+
+		private void ChartBanner_MenuClicked(object sender, EventArgs e) {
+			ChartBanner.ContextMenuStrip.Width = 100;
+			ChartBanner.ContextMenuStrip.Show(ChartBanner.Parent.PointToScreen(new System.Drawing.Point(ChartBanner.Right - ChartBanner.ContextMenuStrip.Width - 2, ChartBanner.Bottom + 1)));
+
+		}
+
+		private void SampleMenuItem_Click(object sender, EventArgs e) {
+			//lineChart1.BackColor = Color.Pink;
+			///lineChart1.XAxis.Label = "XAxis";
+			//lineChart1.YAxis.Label = "YAxis";
+			//ChartDataSeries cds = new ChartDataSeries(lineChart1, lineChart1.XAxis);
+			//cds.Data = new List<int>(){1,2,3,4};
+			//lineChart1.DataSeries.Add(cds);
+			//lineChart1.Refresh();
+			this.activityDetailChart.SetActivity(m_activity, null);
+			this.activityDetailChart.Type = ZoneFiveSoftware.SportTracks.UI.Controls.ActivityChartBase.ChartType.SpeedDistance;
+			this.activityDetailChart.RefreshData();
 		}
 
 	}

@@ -32,18 +32,22 @@
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.SplitContainer = new System.Windows.Forms.SplitContainer();
 			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
+			this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
 			this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
-			this.lineChart1 = new ZoneFiveSoftware.Common.Visuals.Chart.LineChart();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this.listContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.listSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.SampleMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.activityDetailChart = new ZoneFiveSoftware.SportTracks.UI.Controls.ActivityDetailChart();
 			this.Panel.SuspendLayout();
 			this.SplitContainer.Panel1.SuspendLayout();
 			this.SplitContainer.Panel2.SuspendLayout();
 			this.SplitContainer.SuspendLayout();
+			this.listMenu.SuspendLayout();
 			this.ChartPanel.SuspendLayout();
-			this.listContextMenuStrip.SuspendLayout();
+			this.ChartBanner.SuspendLayout();
+			this.detailMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// Panel
@@ -212,7 +216,7 @@
 			this.List.BackColor = System.Drawing.Color.Transparent;
 			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
 			this.List.CheckBoxes = false;
-			this.List.ContextMenuStrip = this.listContextMenuStrip;
+			this.List.ContextMenuStrip = this.listMenu;
 			this.List.DefaultIndent = 15;
 			this.List.DefaultRowHeight = -1;
 			this.List.HeaderRowHeight = 21;
@@ -235,6 +239,20 @@
 			this.List.TabIndex = 11;
 			this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
 			// 
+			// listMenu
+			// 
+			this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.listSettingsMenuItem});
+			this.listMenu.Name = "listContextMenuStrip";
+			this.listMenu.Size = new System.Drawing.Size(147, 26);
+			// 
+			// listSettingsMenuItem
+			// 
+			this.listSettingsMenuItem.Name = "listSettingsMenuItem";
+			this.listSettingsMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.listSettingsMenuItem.Text = "List Settings...";
+			this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
+			// 
 			// ChartPanel
 			// 
 			this.ChartPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -244,7 +262,6 @@
 			this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
-			this.ChartPanel.Controls.Add(this.lineChart1, 0, 1);
 			this.ChartPanel.Location = new System.Drawing.Point(0, 0);
 			this.ChartPanel.Margin = new System.Windows.Forms.Padding(0);
 			this.ChartPanel.Name = "ChartPanel";
@@ -260,7 +277,8 @@
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.ChartBanner.BackColor = System.Drawing.SystemColors.Control;
-			this.ChartBanner.ContextMenuStrip = this.listContextMenuStrip;
+			this.ChartBanner.ContextMenuStrip = this.detailMenu;
+			this.ChartBanner.Controls.Add(this.activityDetailChart);
 			this.ChartBanner.HasMenuButton = true;
 			this.ChartBanner.Location = new System.Drawing.Point(0, 0);
 			this.ChartBanner.Margin = new System.Windows.Forms.Padding(0);
@@ -271,32 +289,34 @@
 			this.ChartBanner.TabIndex = 0;
 			this.ChartBanner.Text = "Chart Name";
 			this.ChartBanner.UseStyleFont = true;
+			this.ChartBanner.MenuClicked += new System.EventHandler(this.ChartBanner_MenuClicked);
 			// 
-			// lineChart1
+			// detailMenu
 			// 
-			this.lineChart1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.detailMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SampleMenuItem});
+			this.detailMenu.Name = "detailMenu";
+			this.detailMenu.Size = new System.Drawing.Size(114, 26);
+			// 
+			// SampleMenuItem
+			// 
+			this.SampleMenuItem.Name = "SampleMenuItem";
+			this.SampleMenuItem.Size = new System.Drawing.Size(113, 22);
+			this.SampleMenuItem.Text = "Sample";
+			this.SampleMenuItem.Click += new System.EventHandler(this.SampleMenuItem_Click);
+			// 
+			// activityDetailChart
+			// 
+			this.activityDetailChart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.lineChart1.BackColor = System.Drawing.Color.White;
-			this.lineChart1.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.None;
-			this.lineChart1.Location = new System.Drawing.Point(3, 23);
-			this.lineChart1.Name = "lineChart1";
-			this.lineChart1.Size = new System.Drawing.Size(341, 117);
-			this.lineChart1.TabIndex = 1;
-			// 
-			// listContextMenuStrip
-			// 
-			this.listContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.listSettingsToolStripMenuItem});
-			this.listContextMenuStrip.Name = "listContextMenuStrip";
-			this.listContextMenuStrip.Size = new System.Drawing.Size(147, 26);
-			// 
-			// listSettingsToolStripMenuItem
-			// 
-			this.listSettingsToolStripMenuItem.Name = "listSettingsToolStripMenuItem";
-			this.listSettingsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-			this.listSettingsToolStripMenuItem.Text = "List Settings...";
-			this.listSettingsToolStripMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
+			this.activityDetailChart.CanSelectMoreCharts = true;
+			this.activityDetailChart.Location = new System.Drawing.Point(3, 23);
+			this.activityDetailChart.Name = "activityDetailChart";
+			this.activityDetailChart.ReadOnly = true;
+			this.activityDetailChart.Size = new System.Drawing.Size(344, 90);
+			this.activityDetailChart.TabIndex = 2;
+			this.activityDetailChart.ZoneCategory = null;
 			// 
 			// ActivityDetailPageControl
 			// 
@@ -310,8 +330,10 @@
 			this.SplitContainer.Panel1.ResumeLayout(false);
 			this.SplitContainer.Panel2.ResumeLayout(false);
 			this.SplitContainer.ResumeLayout(false);
+			this.listMenu.ResumeLayout(false);
 			this.ChartPanel.ResumeLayout(false);
-			this.listContextMenuStrip.ResumeLayout(false);
+			this.ChartBanner.ResumeLayout(false);
+			this.detailMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -329,9 +351,11 @@
 		private System.Windows.Forms.SplitContainer SplitContainer;
 		private System.Windows.Forms.TableLayoutPanel ChartPanel;
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
-		private ZoneFiveSoftware.Common.Visuals.Chart.LineChart lineChart1;
-		private System.Windows.Forms.ContextMenuStrip listContextMenuStrip;
-		private System.Windows.Forms.ToolStripMenuItem listSettingsToolStripMenuItem;
+		private System.Windows.Forms.ContextMenuStrip listMenu;
+		private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
+		private System.Windows.Forms.ContextMenuStrip detailMenu;
+		private System.Windows.Forms.ToolStripMenuItem SampleMenuItem;
+		private ZoneFiveSoftware.SportTracks.UI.Controls.ActivityDetailChart activityDetailChart;
 
 	}
 }

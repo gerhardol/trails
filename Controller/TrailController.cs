@@ -10,13 +10,16 @@ namespace TrailsPlugin.Controller {
 		static private TrailController m_instance;
 		static public TrailController Instance {
 			get {
+				if (m_instance == null) {
+					m_instance = new TrailController();
+				}
 				return m_instance;
 			}
 		}
 
 		private IActivity m_currentActivity = null;
 		private Data.ActivityTrail m_currentTrail = null;
-		private string m_previousTrailId;
+		private string m_lastTrailId = null;
 		private IList<Data.ActivityTrail> m_activityTrails = null;
 
 		public IActivity CurrentActivity {
@@ -27,17 +30,37 @@ namespace TrailsPlugin.Controller {
 				if (m_currentActivity != value) {
 					m_currentActivity = value;
 					if (m_currentTrail != null) {
-						m_previousTrailId = m_currentTrail.Id;
+						m_lastTrailId = m_currentTrail.Trail.Id;
 					}
 					m_currentTrail = null;
 				}
 			}
 		}
 
-		public Data.ActivityTrail CurrentTrail {
-			get {
-				if (m_currentTrail == null) {
+		public string CurrentTrailName {
+			set {
+				foreach (Data.ActivityTrail t in this.TrailsInBounds) {
+					if (t.Trail.Name == value) {
+						m_currentTrail = t;
+						return;
+					}
+				}
+				throw new Exception("Invalid trail name");
+			}
+		}
 
+		public Data.ActivityTrail CurrentActivityTrail {
+			get {
+				if (m_currentTrail == null && m_currentActivity != null) {
+					foreach (Data.ActivityTrail t in this.TrailsInBounds) {
+						if (t.Trail.Id == m_lastTrailId) {
+							m_currentTrail = t;
+							break;
+						}
+					}
+					if (m_currentTrail == null && this.TrailsInBounds.Count > 0) {
+						m_currentTrail = TrailsInBounds[0];
+					}
 				}
 				return m_currentTrail;
 			}
@@ -46,16 +69,18 @@ namespace TrailsPlugin.Controller {
 
 		public IList<Data.ActivityTrail> TrailsInBounds {
 			get {
-				IList<Data.ActivityTrail> trails = new List<Data.ActivityTrail>();
-				if (m_currentActivity != null) {
-					IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_currentActivity.GPSRoute);
-					foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
-						if (trail.IsInBounds(gpsBounds)) {
-							trails.Add(new Data.ActivityTrail(m_currentActivity, trail));
+				if(m_activityTrails == null) {					
+					if (m_currentActivity != null) {
+						m_activityTrails = new List<Data.ActivityTrail>();
+						IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_currentActivity.GPSRoute);
+						foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
+							if (trail.IsInBounds(gpsBounds)) {
+								m_activityTrails.Add(new Data.ActivityTrail(m_currentActivity, trail));
+							}
 						}
 					}
 				}
-				return trails;
+				return m_activityTrails;
 			}
 		}
 
@@ -72,6 +97,32 @@ namespace TrailsPlugin.Controller {
 				}
 				return trails.Values;
 			}
-		}		
+		}
+
+		public bool AddTrail(Data.Trail trail) {
+			bool retval = PluginMain.Data.InsertTrail(trail);
+			m_activityTrails = null;
+			m_currentTrail = new TrailsPlugin.Data.ActivityTrail(m_currentActivity, trail);
+			m_lastTrailId = trail.Id;
+			return retval;
+		}
+
+
+		public bool UpdateTrail(Data.Trail trail) {
+			bool retval = PluginMain.Data.UpdateTrail(trail);
+			m_lastTrailId = trail.Id;
+			m_activityTrails = null;
+			return retval;
+		}
+
+		public bool DeleteCurrentTrail() {
+			bool retval = PluginMain.Data.DeleteTrail(m_currentTrail.Trail);
+			m_activityTrails = null;
+			m_currentTrail = null;
+			m_lastTrailId = null;
+			return retval;
+
+		}
+
 	}
 }

@@ -27,7 +27,7 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		internal IList<TrailResult> Results {
+		public IList<TrailResult> Results {
 			get {
 				if (m_resultsList == null) {
 					m_resultsList = new List<TrailResult>();
@@ -80,6 +80,5 @@ namespace TrailsPlugin.Data {
 				return m_resultsList;
 			}
 		}
-
 	}
 }

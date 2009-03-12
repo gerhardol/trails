@@ -28,17 +28,17 @@ namespace TrailsPlugin.UI.Activity {
 		protected bool m_addMode;
 		protected Data.Trail m_TrailToEdit;
 
-		public EditTrail(Data.Trail trailToEdit, ITheme visualTheme, bool addMode) {
-			m_TrailToEdit = trailToEdit;
+		public EditTrail(ITheme visualTheme, bool addMode) {
+			if (addMode) {
+				m_TrailToEdit = new TrailsPlugin.Data.Trail();
+				this.Name = "Add Trail";
+			} else {
+				m_TrailToEdit = Controller.TrailController.Instance.CurrentActivityTrail.Trail;
+				this.Name = "Edit Trail";
+			}
 			m_addMode = addMode;
 			InitializeComponent();
 			ThemeChanged(visualTheme);
-
-			if (m_addMode) {
-				this.Name = "Add Trail";
-			} else {
-				this.Name = "Edit Trail";
-			}
 
 			List.Columns.Clear();
 			List.Columns.Add(new TreeList.Column("LongitudeDegrees", "Longitude", 100, StringAlignment.Near));
@@ -90,12 +90,12 @@ namespace TrailsPlugin.UI.Activity {
 			m_TrailToEdit.Name = TrailName.Text;
 			m_TrailToEdit.Radius = float.Parse(Radius.Text);
 			if (this.m_addMode) {
-				if (!PluginMain.Data.InsertTrail(m_TrailToEdit)) {
+				if (!Controller.TrailController.Instance.AddTrail(m_TrailToEdit)) {
 					MessageBox.Show("Insert failed");
 					return;
 				}
 			} else {
-				if (!PluginMain.Data.UpdateTrail(oldTrailName, m_TrailToEdit)) {
+				if (!Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit)) {
 					MessageBox.Show("Update failed");
 					return;
 				}

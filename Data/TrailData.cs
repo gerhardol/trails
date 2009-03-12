@@ -34,25 +34,34 @@ namespace TrailsPlugin.Data {
 		}
 
 		public bool InsertTrail(Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(trail.Name)) {
-				return false;
-			} else {
-				m_AllTrails.Add(trail.Name, trail);
-				return true;
+			foreach (Trail t in m_AllTrails.Values) {
+				if (t.Name == trail.Name) {
+					return false;
+				}
 			}
+			trail.Id = System.Guid.NewGuid().ToString();
+			m_AllTrails.Add(trail.Name, trail);
+			return true;
 		}
-		public bool UpdateTrail(string oldKey, Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(oldKey)) {
-				m_AllTrails.Remove(oldKey);
-				m_AllTrails.Add(trail.Name, trail);
+
+		public bool UpdateTrail(Data.Trail trail) {
+			foreach (Trail t in m_AllTrails.Values) {
+				if (t.Name == trail.Name && t.Id != trail.Id) {
+					return false;
+				}
+			}
+
+			if (m_AllTrails.ContainsKey(trail.Id)) {
+				m_AllTrails.Remove(trail.Id);
+				m_AllTrails.Add(trail.Id, trail);
 				return true;
 			} else {
 				return false;
 			}
 		}
 		public bool DeleteTrail(Data.Trail trail) {
-			if (m_AllTrails.ContainsKey(trail.Name)) {
-				m_AllTrails.Remove(trail.Name);
+			if (m_AllTrails.ContainsKey(trail.Id)) {
+				m_AllTrails.Remove(trail.Id);
 				return true;
 			} else {
 				return false;

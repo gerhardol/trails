@@ -47,6 +47,7 @@
 			this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.button1 = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.Panel.SuspendLayout();
 			this.SplitContainer.Panel1.SuspendLayout();
 			this.SplitContainer.Panel2.SuspendLayout();
@@ -74,6 +75,7 @@
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
 			this.Panel.Controls.Add(this.SplitContainer, 0, 2);
+			this.Panel.Controls.Add(this.button1, 2, 0);
 			this.Panel.Location = new System.Drawing.Point(0, 0);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
@@ -110,7 +112,7 @@
 			this.btnAdd.Location = new System.Drawing.Point(268, 3);
 			this.btnAdd.Name = "btnAdd";
 			this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
-			this.btnAdd.PushStyle = true;
+			this.btnAdd.PushStyle = false;
 			this.btnAdd.RightImage = null;
 			this.btnAdd.Size = new System.Drawing.Size(19, 19);
 			this.btnAdd.TabIndex = 10;
@@ -241,7 +243,7 @@
 			this.List.RowSeparatorLines = true;
 			this.List.ShowLines = false;
 			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(400, 148);
+			this.List.Size = new System.Drawing.Size(400, 172);
 			this.List.TabIndex = 11;
 			this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
 			// 
@@ -275,7 +277,7 @@
 			this.ChartPanel.RowCount = 2;
 			this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.ChartPanel.Size = new System.Drawing.Size(397, 113);
+			this.ChartPanel.Size = new System.Drawing.Size(397, 129);
 			this.ChartPanel.TabIndex = 0;
 			// 
 			// ChartBanner
@@ -309,59 +311,59 @@
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem});
 			this.detailMenu.Name = "detailMenu";
-			this.detailMenu.Size = new System.Drawing.Size(153, 186);			
+			this.detailMenu.Size = new System.Drawing.Size(130, 164);
 			// 
 			// speedToolStripMenuItem
 			// 
 			this.speedToolStripMenuItem.Name = "speedToolStripMenuItem";
-			this.speedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.speedToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.speedToolStripMenuItem.Text = "Speed";
 			this.speedToolStripMenuItem.Click += new System.EventHandler(this.speedToolStripMenuItem_Click);
 			// 
 			// elevationToolStripMenuItem
 			// 
 			this.elevationToolStripMenuItem.Name = "elevationToolStripMenuItem";
-			this.elevationToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.elevationToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.elevationToolStripMenuItem.Text = "Elevation";
 			this.elevationToolStripMenuItem.Click += new System.EventHandler(this.elevationToolStripMenuItem_Click);
 			// 
 			// heartRateToolStripMenuItem
 			// 
 			this.heartRateToolStripMenuItem.Name = "heartRateToolStripMenuItem";
-			this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.heartRateToolStripMenuItem.Text = "Heart Rate";
 			this.heartRateToolStripMenuItem.Click += new System.EventHandler(this.heartRateToolStripMenuItem_Click);
 			// 
 			// cadenceToolStripMenuItem
 			// 
 			this.cadenceToolStripMenuItem.Name = "cadenceToolStripMenuItem";
-			this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.cadenceToolStripMenuItem.Text = "Cadence";
 			this.cadenceToolStripMenuItem.Click += new System.EventHandler(this.cadenceToolStripMenuItem_Click);
 			// 
 			// powerToolStripMenuItem
 			// 
 			this.powerToolStripMenuItem.Name = "powerToolStripMenuItem";
-			this.powerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.powerToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.powerToolStripMenuItem.Text = "Power";
 			this.powerToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(126, 6);
 			// 
 			// distanceToolStripMenuItem
 			// 
 			this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
-			this.distanceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.distanceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.distanceToolStripMenuItem.Text = "Distance";
 			this.distanceToolStripMenuItem.Click += new System.EventHandler(this.distanceToolStripMenuItem_Click);
 			// 
 			// timeToolStripMenuItem
 			// 
 			this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
-			this.timeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.timeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.timeToolStripMenuItem.Text = "Time";
 			this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
 			// 
@@ -376,11 +378,31 @@
 			this.LineChart.Location = new System.Drawing.Point(0, 20);
 			this.LineChart.Margin = new System.Windows.Forms.Padding(0);
 			this.LineChart.Name = "LineChart";
-			this.LineChart.Size = new System.Drawing.Size(400, 93);
+			this.LineChart.Size = new System.Drawing.Size(400, 109);
 			this.LineChart.TabIndex = 1;
 			this.LineChart.TrailResult = null;
 			this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
 			this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
+			// 
+			// button1
+			// 
+			this.button1.BackColor = System.Drawing.Color.Transparent;
+			this.button1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.button1.CenterImage = null;
+			this.button1.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.button1.HyperlinkStyle = false;
+			this.button1.ImageMargin = 2;
+			this.button1.LeftImage = null;
+			this.button1.Location = new System.Drawing.Point(243, 3);
+			this.button1.Name = "button1";
+			this.button1.PushStyle = false;
+			this.button1.RightImage = null;
+			this.button1.Size = new System.Drawing.Size(19, 19);
+			this.button1.TabIndex = 19;
+			this.button1.Text = "x";
+			this.button1.TextAlign = System.Drawing.StringAlignment.Center;
+			this.button1.TextLeftMargin = 2;
+			this.button1.TextRightMargin = 2;
 			// 
 			// ActivityDetailPageControl
 			// 
@@ -426,6 +448,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
+		private ZoneFiveSoftware.Common.Visuals.Button button1;
 
 	}
 }

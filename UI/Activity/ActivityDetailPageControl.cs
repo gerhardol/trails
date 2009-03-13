@@ -42,7 +42,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		public ActivityDetailPageControl(IActivity activity) {
 
-			m_controller = new Controller.TrailController();
+			m_controller = Controller.TrailController.Instance;
 
 			InitializeComponent();
 			InitControls();
@@ -237,6 +237,7 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
 			treeListPopup.Tree.RowData = this.OrderedTrailNames;
+			treeListPopup.Tree.LabelProvider = new 
 
 			if (m_controller.CurrentActivityTrail != null) {
 				treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail.Trail.Name };
@@ -244,6 +245,14 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
 			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
 		}
+
+		class MyLabelProvider : TreeList.ILabelProvider {
+
+		}
+
+		class MyRowRenderer : TreeList.IRowDataRenderer {
+
+
 
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
 			string trailName = (((TreeListPopup.ItemSelectedEventArgs)e).Item).ToString();

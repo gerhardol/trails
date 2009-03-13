@@ -17,6 +17,9 @@ namespace TrailsPlugin.Controller {
 			}
 		}
 
+		private TrailController() {
+		}
+			 
 		private IActivity m_currentActivity = null;
 		private Data.ActivityTrail m_currentTrail = null;
 		private string m_lastTrailId = null;
@@ -33,6 +36,7 @@ namespace TrailsPlugin.Controller {
 						m_lastTrailId = m_currentTrail.Trail.Id;
 					}
 					m_currentTrail = null;
+					m_activityTrails = null;
 				}
 			}
 		}
@@ -100,28 +104,37 @@ namespace TrailsPlugin.Controller {
 		}
 
 		public bool AddTrail(Data.Trail trail) {
-			bool retval = PluginMain.Data.InsertTrail(trail);
-			m_activityTrails = null;
-			m_currentTrail = new TrailsPlugin.Data.ActivityTrail(m_currentActivity, trail);
-			m_lastTrailId = trail.Id;
-			return retval;
+			if (PluginMain.Data.InsertTrail(trail)) {
+				m_activityTrails = null;
+				m_currentTrail = new TrailsPlugin.Data.ActivityTrail(m_currentActivity, trail);
+				m_lastTrailId = trail.Id;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 
 		public bool UpdateTrail(Data.Trail trail) {
-			bool retval = PluginMain.Data.UpdateTrail(trail);
-			m_lastTrailId = trail.Id;
-			m_activityTrails = null;
-			return retval;
+			if (PluginMain.Data.UpdateTrail(trail)) {
+				m_lastTrailId = trail.Id;
+				m_currentTrail = null;
+				m_activityTrails = null;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public bool DeleteCurrentTrail() {
-			bool retval = PluginMain.Data.DeleteTrail(m_currentTrail.Trail);
-			m_activityTrails = null;
-			m_currentTrail = null;
-			m_lastTrailId = null;
-			return retval;
-
+			if (PluginMain.Data.DeleteTrail(m_currentTrail.Trail)) {
+				m_activityTrails = null;
+				m_currentTrail = null;
+				m_lastTrailId = null;
+				return true;
+			} else {
+				return false;
+			}			
 		}
 
 	}

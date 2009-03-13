@@ -40,7 +40,7 @@ namespace TrailsPlugin.Data {
 				}
 			}
 			trail.Id = System.Guid.NewGuid().ToString();
-			m_AllTrails.Add(trail.Name, trail);
+			m_AllTrails.Add(trail.Id, trail);
 			return true;
 		}
 
@@ -72,7 +72,7 @@ namespace TrailsPlugin.Data {
 			m_AllTrails.Clear();
 			foreach (XmlNode node in pluginNode.SelectNodes("trail:Trails/trail:Trail", nsmgr)) {
 				Data.Trail trail = Data.Trail.FromXml(node, nsmgr);
-				m_AllTrails.Add(trail.Name, trail);
+				m_AllTrails.Add(trail.Id, trail);
 			}
 
 		}

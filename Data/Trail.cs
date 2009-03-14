@@ -45,14 +45,18 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		static public Trail FromXml(XmlNode node, XmlNamespaceManager nsmgr) {
+		static public Trail FromXml(XmlNode node) {
 			Trail trail = new Trail();
-			trail.Id = node.Attributes["id"].Value;
+			if (node.Attributes["id"] == null) {
+				trail.Id = System.Guid.NewGuid().ToString();
+			} else {
+				trail.Id = node.Attributes["id"].Value;
+			}
 			trail.Name = node.Attributes["name"].Value;
 			trail.Radius = float.Parse(node.Attributes["radius"].Value);
 			trail.TrailLocations.Clear();
-			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("ns:TrailGPSLocation", nsmgr)) {
-				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode, nsmgr));
+			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("TrailGPSLocation")) {
+				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
 			}
 			return trail;
 		}

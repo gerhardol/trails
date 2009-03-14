@@ -52,7 +52,7 @@ namespace TrailsPlugin.UI.Activity {
 		private Color m_ChartFillColor = Color.WhiteSmoke;
 		private Color m_ChartLineColor = Color.LightSkyBlue;
 		private Color m_ChartSelectedColor = Color.AliceBlue;
-		private IActivityCategory m_category = null;
+		private IActivity m_activity = null;
 
 		public TrailLineChart() {
 			InitializeComponent();
@@ -60,7 +60,6 @@ namespace TrailsPlugin.UI.Activity {
 			MainChart.YAxis.SmartZoom = true;
 
 			SaveImageButton.CenterImage = CommonResources.Images.Save16;
-			///ZoomToContentButton.CenterImage = Resources.Resources.ZoomToContent;
 			ZoomInButton.CenterImage = CommonResources.Images.ZoomIn16;
 			ZoomOutButton.CenterImage = CommonResources.Images.ZoomOut16;
 		}
@@ -164,7 +163,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void SetupDataSeries() {
 			MainChart.DataSeries.Clear();
-			
+
 
 			// Add main data.  We must use 2 seperate data series to overcome the display
 			//  bug in fill mode.  The main data series is normally rendered but the copy
@@ -223,8 +222,8 @@ namespace TrailsPlugin.UI.Activity {
 						if (PluginMain.GetApplication() != null) {
 							Length.Units distanceUnit = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
 
-							if (m_category != null) {
-								distanceUnit = m_category.DistanceUnits;
+							if (m_activity.Category != null) {
+								distanceUnit = m_activity.Category.DistanceUnits;
 							}
 
 							MainChart.XAxis.Formatter = new Formatter.General();
@@ -257,8 +256,8 @@ namespace TrailsPlugin.UI.Activity {
 						if (PluginMain.GetApplication() != null) {
 							Length.Units elevationUnit = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
 
-							if (m_category != null) {
-								elevationUnit = m_category.ElevationUnits;
+							if (m_activity != null) {
+								elevationUnit = m_activity.Category.ElevationUnits;
 							}
 
 							MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
@@ -282,13 +281,12 @@ namespace TrailsPlugin.UI.Activity {
 						break;
 					}
 				case LineChartTypes.Speed: {
-						if (m_category != null && m_category.SpeedUnits == Speed.Units.Pace) {
+						if (m_activity != null && m_activity.Category.SpeedUnits == Speed.Units.Pace) {
 							MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
 						}
 
-						MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" /*+
-                                                Utils.GetSpeedUnitLabelForActivity(Activity)*/
-																							   + ")";
+						MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" +
+												Utils.Units.GetSpeedUnitLabelForActivity(m_activity) + ")";
 						break;
 					}
 				default: {
@@ -313,7 +311,7 @@ namespace TrailsPlugin.UI.Activity {
 						// Value is in meters so convert to the right unit
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-							double temp = Length.Convert(entry.Value, Length.Units.Meter, m_category.ElevationUnits);
+							double temp = Length.Convert(entry.Value, Length.Units.Meter, m_activity.Category.ElevationUnits);
 
 							track.Add(tempResult.EntryDateTime(entry), (float)temp);
 						}
@@ -346,28 +344,26 @@ namespace TrailsPlugin.UI.Activity {
 						track = result.PowerWattsTrack;
 						break;
 					}
-				/*
-								case LineChartTypes.Speed: {
-										INumericTimeDataSeries tempResult = result.SpeedTrack;
 
-										// Value is in m/sec so convert to the right unit and to
-										//  pace if necessary
-										track = new NumericTimeDataSeries();
-										foreach (ITimeValueEntry<float> entry in tempResult) {
-											///double temp = Length.Convert(entry.Value, Length.Units.Meter, 1/*/
-				//Utils.MajorLengthUnit(Activity.Category.DistanceUnits)*/) * Constants.SecondsPerHour;
-				/*							double temp = 1;
+				case LineChartTypes.Speed: {
+						INumericTimeDataSeries tempResult = result.SpeedTrack;
 
-											if (m_category.SpeedUnits == Speed.Units.Pace) {
-												// Convert to pace and then in second
-												///temp = Utils.SpeedToPace(temp) * Constants.SecondsPerMinute;
-											}
+						// Value is in m/sec so convert to the right unit and to
+						//  pace if necessary
+						track = new NumericTimeDataSeries();
+						foreach (ITimeValueEntry<float> entry in tempResult) {
+							double temp = Length.Convert(entry.Value, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits)) * Utils.Constants.SecondsPerHour;
 
-											track.Add(tempResult.EntryDateTime(entry), (float)temp);
-										}
-										break;
-									}
-				*/
+							if (m_activity.Category.SpeedUnits == Speed.Units.Pace) {
+								// Convert to pace and then in second
+								temp = Utils.Units.SpeedToPace(temp) * Utils.Constants.SecondsPerMinute;
+							}
+
+							track.Add(tempResult.EntryDateTime(entry), (float)temp);
+						}
+						break;
+					}
+
 				default: {
 						Debug.Assert(false);
 						break;
@@ -453,10 +449,11 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		public IActivityCategory Category {
+		public IActivity Activity {
 			set {
-				m_category = value;
+				m_activity = value;
 			}
 		}
+
 	}
 }

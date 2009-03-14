@@ -33,6 +33,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_chartType = value;
+				PluginMain.WriteExtensionData();
 			}
 		}
 
@@ -42,6 +43,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_xAxisValue = value;
+				PluginMain.WriteExtensionData();
 			}
 		}
 
@@ -51,6 +53,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_activityPageColumns = value;
+				PluginMain.WriteExtensionData();
 			}
 		}
 
@@ -60,17 +63,18 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_activityPageNumFixedColumns = value;
+				PluginMain.WriteExtensionData();
 			}
 		}
 
-		public void FromXml(XmlNode pluginNode, XmlNamespaceManager nsmgr) {
+		public void FromXml(XmlNode pluginNode) {
 			m_activityPageColumns.Clear();
 			m_activityPageNumFixedColumns = 1;
 
-			XmlNode settingsNode = pluginNode.SelectSingleNode("trail:Settings", nsmgr);
+			XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
 			XmlNode activityPageNode = null;
 			if (settingsNode != null) {
-				settingsNode.SelectSingleNode("trail:ActivityPage", nsmgr);
+				activityPageNode = settingsNode.SelectSingleNode("ActivityPage");
 			}
 
 			if (activityPageNode != null) {
@@ -83,7 +87,7 @@ namespace TrailsPlugin.Data {
 				if (activityPageNode.SelectSingleNode("@chartType") != null) {
 					m_chartType = (UI.Activity.TrailLineChart.LineChartTypes)int.Parse(activityPageNode.SelectSingleNode("@chartType").Value);
 				}
-				foreach (XmlNode node in activityPageNode.SelectNodes("trail:Column", nsmgr)) {
+				foreach (XmlNode node in activityPageNode.SelectNodes("Column")) {
 					m_activityPageColumns.Add(node.InnerText);
 				}
 			} else {

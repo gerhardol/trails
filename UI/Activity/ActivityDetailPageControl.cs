@@ -124,6 +124,8 @@ namespace TrailsPlugin.UI.Activity {
 
 				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 				List.RowData = results;
+				List.SelectedItems.Add(results[0]);
+				
 
 				RefreshChart();
 
@@ -189,8 +191,8 @@ namespace TrailsPlugin.UI.Activity {
 
 			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-			
-			EditTrail dialog = new EditTrail(m_visualTheme, true);		
+
+			EditTrail dialog = new EditTrail(m_visualTheme, true);
 			for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
 				dialog.Trail.TrailLocations.Add(
 					new Data.TrailGPSLocation(
@@ -212,15 +214,35 @@ namespace TrailsPlugin.UI.Activity {
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 
 			EditTrail dialog = new EditTrail(m_visualTheme, false);
-			dialog.Trail.TrailLocations.Clear();
-			for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
-				dialog.Trail.TrailLocations.Add(
-					new Data.TrailGPSLocation(
-						layer.SelectedGPSLocations[i].LatitudeDegrees,
-						layer.SelectedGPSLocations[i].LongitudeDegrees
-					)
-				);
+			bool selectionIsDifferent = layer.SelectedGPSLocations.Count == dialog.Trail.TrailLocations.Count;
+			if (!selectionIsDifferent) {
+				for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
+					IGPSLocation loc1 = layer.SelectedGPSLocations[i];
+					IGPSLocation loc2 = dialog.Trail.TrailLocations[i];
+					if (loc1.LatitudeDegrees != loc2.LatitudeDegrees) {
+						selectionIsDifferent = true;
+						break;
+					}
+					if (loc1.LongitudeDegrees != loc2.LongitudeDegrees) {
+						selectionIsDifferent = true;
+						break;
+					}
+				}
 			}
+			if(selectionIsDifferent) {
+				if (MessageBox.Show("Do you want to update the trail GPS locations\n to currently selected points?", "", MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes) {
+					dialog.Trail.TrailLocations.Clear();
+					for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
+						dialog.Trail.TrailLocations.Add(
+							new Data.TrailGPSLocation(
+								layer.SelectedGPSLocations[i].LatitudeDegrees,
+								layer.SelectedGPSLocations[i].LongitudeDegrees
+							)
+						);
+					}
+				}
+			}
+
 			if (dialog.ShowDialog() == DialogResult.OK) {
 				RefreshControlState();
 				RefreshData();
@@ -236,11 +258,11 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.ThemeChanged(m_visualTheme);
 			treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-			treeListPopup.Tree.RowData = this.OrderedTrailNames;
-			treeListPopup.Tree.LabelProvider = new 
+			treeListPopup.Tree.RowData = this.OrderedTrails;
+			treeListPopup.Tree.LabelProvider = new MyLabelProvider();
 
 			if (m_controller.CurrentActivityTrail != null) {
-				treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail.Trail.Name };
+				treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
 			}
 			treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
 			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
@@ -248,15 +270,24 @@ namespace TrailsPlugin.UI.Activity {
 
 		class MyLabelProvider : TreeList.ILabelProvider {
 
+			public Image GetImage(object element, TreeList.Column column) {
+				Data.ActivityTrail t = (Data.ActivityTrail)element;				
+				if (t.Results.Count > 0) {
+					return CommonIcons.GreenSquare;
+				} else {
+					return CommonIcons.RedSquare;
+				}
+			}
+
+			public string GetText(object element, TreeList.Column column) {
+				Data.ActivityTrail t = (Data.ActivityTrail)element;
+				return t.Trail.Name;
+			}
 		}
 
-		class MyRowRenderer : TreeList.IRowDataRenderer {
-
-
-
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
-			string trailName = (((TreeListPopup.ItemSelectedEventArgs)e).Item).ToString();
-			m_controller.CurrentTrailName = trailName;
+			Data.ActivityTrail t = (Data.ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item;
+			m_controller.CurrentTrailName = t.Trail.Name;
 			RefreshData();
 		}
 
@@ -288,7 +319,8 @@ namespace TrailsPlugin.UI.Activity {
 		void RefreshChart() {
 			if (m_controller.CurrentActivityTrail != null) {
 				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-				this.LineChart.Category = m_controller.CurrentActivityTrail.Activity.Category;
+				this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
+				this.ChartBanner.Text = PluginMain.Settings.ChartType.ToString() + " / " + PluginMain.Settings.XAxisValue.ToString();
 				this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
 				this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
 				this.LineChart.TrailResult = null;
@@ -351,27 +383,39 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshChart();
 		}
 
-		private IList<string> OrderedTrailNames {
+		private IList<Data.ActivityTrail> OrderedTrails {
 			get {
-				SortedList<double, string> trailNamesUsed = new SortedList<double, string>();
-				SortedList<string, string> trailNamesUnused = new SortedList<string, string>();
+				SortedList<double, Data.ActivityTrail> trailsUsed = new SortedList<double, Data.ActivityTrail>();
+				SortedList<string, Data.ActivityTrail> trailsUnused = new SortedList<string, Data.ActivityTrail>();
 				foreach (Data.ActivityTrail t in m_controller.TrailsInBounds) {
 					if (t.Results.Count > 0) {
-						trailNamesUsed.Add(t.Results[0].StartTime.TotalSeconds, t.Trail.Name);
+						trailsUsed.Add(t.Results[0].StartTime.TotalSeconds, t);
 					} else {
-						trailNamesUnused.Add(t.Trail.Name, t.Trail.Name);
+						trailsUnused.Add(t.Trail.Name, t);
 					}
 				}
 
-				IList<string> names = new List<string>();
-				foreach (string name in trailNamesUsed.Values) {
-					names.Add(name);
+				IList<Data.ActivityTrail> trails = new List<Data.ActivityTrail>();
+				foreach (Data.ActivityTrail t in trailsUsed.Values) {
+					trails.Add(t);
 				}
-				foreach (string name in trailNamesUnused.Values) {
-					names.Add(name);
+				foreach (Data.ActivityTrail t in trailsUnused.Values) {
+					trails.Add(t);
 				}
-				return names;
+				return trails;
 			}
+		}
+
+		private void ActivityDetailPageControl_SizeChanged(object sender, EventArgs e) {
+			// autosize column doesn't seem to be working. 
+			float width = 0;
+			for(int i = 0; i < Panel.ColumnStyles.Count; i++) {
+				if(i != 1) {
+					width += this.Panel.ColumnStyles[i].Width;
+				}
+			}
+			this.Panel.ColumnStyles[1].SizeType = SizeType.Absolute;
+			this.Panel.ColumnStyles[1].Width = this.Width - width;
 		}
 	}
 }

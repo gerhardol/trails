@@ -45,9 +45,8 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this.button1 = new ZoneFiveSoftware.Common.Visuals.Button();
+			this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
 			this.Panel.SuspendLayout();
 			this.SplitContainer.Panel1.SuspendLayout();
 			this.SplitContainer.Panel2.SuspendLayout();
@@ -64,26 +63,23 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.Panel.ColumnCount = 6;
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
-			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.Controls.Add(this.lblTrail, 0, 0);
 			this.Panel.Controls.Add(this.btnAdd, 3, 0);
 			this.Panel.Controls.Add(this.TrailName, 1, 0);
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
 			this.Panel.Controls.Add(this.SplitContainer, 0, 2);
-			this.Panel.Controls.Add(this.button1, 2, 0);
 			this.Panel.Location = new System.Drawing.Point(0, 0);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
 			this.Panel.RowCount = 3;
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.Panel.Size = new System.Drawing.Size(400, 300);
 			this.Panel.TabIndex = 8;
@@ -109,7 +105,7 @@
 			this.btnAdd.HyperlinkStyle = false;
 			this.btnAdd.ImageMargin = 2;
 			this.btnAdd.LeftImage = null;
-			this.btnAdd.Location = new System.Drawing.Point(268, 3);
+			this.btnAdd.Location = new System.Drawing.Point(328, 3);
 			this.btnAdd.Name = "btnAdd";
 			this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
 			this.btnAdd.PushStyle = false;
@@ -140,7 +136,7 @@
 			this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
 			this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
 			this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.TrailName.Size = new System.Drawing.Size(149, 19);
+			this.TrailName.Size = new System.Drawing.Size(209, 19);
 			this.TrailName.TabIndex = 15;
 			this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 			this.TrailName.ButtonClick += new System.EventHandler(this.TrailName_ButtonClick);
@@ -155,12 +151,12 @@
 			this.btnDelete.HyperlinkStyle = false;
 			this.btnDelete.ImageMargin = 2;
 			this.btnDelete.LeftImage = null;
-			this.btnDelete.Location = new System.Drawing.Point(318, 3);
+			this.btnDelete.Location = new System.Drawing.Point(378, 3);
 			this.btnDelete.Name = "btnDelete";
 			this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
 			this.btnDelete.PushStyle = true;
 			this.btnDelete.RightImage = null;
-			this.btnDelete.Size = new System.Drawing.Size(20, 19);
+			this.btnDelete.Size = new System.Drawing.Size(19, 19);
 			this.btnDelete.TabIndex = 13;
 			this.btnDelete.Text = "D";
 			this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
@@ -178,7 +174,7 @@
 			this.btnEdit.HyperlinkStyle = false;
 			this.btnEdit.ImageMargin = 2;
 			this.btnEdit.LeftImage = null;
-			this.btnEdit.Location = new System.Drawing.Point(293, 3);
+			this.btnEdit.Location = new System.Drawing.Point(353, 3);
 			this.btnEdit.Name = "btnEdit";
 			this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
 			this.btnEdit.PushStyle = true;
@@ -212,7 +208,7 @@
 			this.SplitContainer.Panel2.Controls.Add(this.ChartPanel);
 			this.SplitContainer.Panel2MinSize = 100;
 			this.SplitContainer.Size = new System.Drawing.Size(400, 265);
-			this.SplitContainer.SplitterDistance = 148;
+			this.SplitContainer.SplitterDistance = 100;
 			this.SplitContainer.TabIndex = 18;
 			// 
 			// List
@@ -243,7 +239,7 @@
 			this.List.RowSeparatorLines = true;
 			this.List.ShowLines = false;
 			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(400, 172);
+			this.List.Size = new System.Drawing.Size(400, 124);
 			this.List.TabIndex = 11;
 			this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
 			// 
@@ -272,12 +268,12 @@
 			this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
 			this.ChartPanel.Controls.Add(this.LineChart, 0, 1);
 			this.ChartPanel.Location = new System.Drawing.Point(0, 0);
-			this.ChartPanel.Margin = new System.Windows.Forms.Padding(0);
+			this.ChartPanel.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
 			this.ChartPanel.Name = "ChartPanel";
 			this.ChartPanel.RowCount = 2;
 			this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.ChartPanel.Size = new System.Drawing.Size(397, 129);
+			this.ChartPanel.Size = new System.Drawing.Size(400, 161);
 			this.ChartPanel.TabIndex = 0;
 			// 
 			// ChartBanner
@@ -291,6 +287,7 @@
 			this.ChartBanner.Location = new System.Drawing.Point(0, 0);
 			this.ChartBanner.Margin = new System.Windows.Forms.Padding(0);
 			this.ChartBanner.Name = "ChartBanner";
+			this.ChartBanner.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
 			this.ChartBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.ChartBanner.Size = new System.Drawing.Size(400, 20);
 			this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
@@ -378,31 +375,11 @@
 			this.LineChart.Location = new System.Drawing.Point(0, 20);
 			this.LineChart.Margin = new System.Windows.Forms.Padding(0);
 			this.LineChart.Name = "LineChart";
-			this.LineChart.Size = new System.Drawing.Size(400, 109);
+			this.LineChart.Size = new System.Drawing.Size(400, 141);
 			this.LineChart.TabIndex = 1;
 			this.LineChart.TrailResult = null;
 			this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
 			this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
-			// 
-			// button1
-			// 
-			this.button1.BackColor = System.Drawing.Color.Transparent;
-			this.button1.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-			this.button1.CenterImage = null;
-			this.button1.DialogResult = System.Windows.Forms.DialogResult.None;
-			this.button1.HyperlinkStyle = false;
-			this.button1.ImageMargin = 2;
-			this.button1.LeftImage = null;
-			this.button1.Location = new System.Drawing.Point(243, 3);
-			this.button1.Name = "button1";
-			this.button1.PushStyle = false;
-			this.button1.RightImage = null;
-			this.button1.Size = new System.Drawing.Size(19, 19);
-			this.button1.TabIndex = 19;
-			this.button1.Text = "x";
-			this.button1.TextAlign = System.Drawing.StringAlignment.Center;
-			this.button1.TextLeftMargin = 2;
-			this.button1.TextRightMargin = 2;
 			// 
 			// ActivityDetailPageControl
 			// 
@@ -411,6 +388,7 @@
 			this.Controls.Add(this.Panel);
 			this.Name = "ActivityDetailPageControl";
 			this.Size = new System.Drawing.Size(400, 300);
+			this.SizeChanged += new System.EventHandler(this.ActivityDetailPageControl_SizeChanged);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();
 			this.SplitContainer.Panel1.ResumeLayout(false);
@@ -448,7 +426,6 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
-		private ZoneFiveSoftware.Common.Visuals.Button button1;
 
 	}
 }

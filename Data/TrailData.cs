@@ -41,6 +41,7 @@ namespace TrailsPlugin.Data {
 			}
 			trail.Id = System.Guid.NewGuid().ToString();
 			m_AllTrails.Add(trail.Id, trail);
+			PluginMain.WriteExtensionData();
 			return true;
 		}
 
@@ -54,6 +55,7 @@ namespace TrailsPlugin.Data {
 			if (m_AllTrails.ContainsKey(trail.Id)) {
 				m_AllTrails.Remove(trail.Id);
 				m_AllTrails.Add(trail.Id, trail);
+				PluginMain.WriteExtensionData();
 				return true;
 			} else {
 				return false;
@@ -62,16 +64,17 @@ namespace TrailsPlugin.Data {
 		public bool DeleteTrail(Data.Trail trail) {
 			if (m_AllTrails.ContainsKey(trail.Id)) {
 				m_AllTrails.Remove(trail.Id);
+				PluginMain.WriteExtensionData();
 				return true;
 			} else {
 				return false;
 			}
 		}
 
-		public void FromXml(XmlNode pluginNode, XmlNamespaceManager nsmgr) {
+		public void FromXml(XmlNode pluginNode) {
 			m_AllTrails.Clear();
-			foreach (XmlNode node in pluginNode.SelectNodes("trail:Trails/trail:Trail", nsmgr)) {
-				Data.Trail trail = Data.Trail.FromXml(node, nsmgr);
+			foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail")) {
+				Data.Trail trail = Data.Trail.FromXml(node);
 				m_AllTrails.Add(trail.Id, trail);
 			}
 

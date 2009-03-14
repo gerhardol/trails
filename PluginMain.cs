@@ -50,23 +50,36 @@ namespace TrailsPlugin {
 			}
 		}
 
-		public void ReadOptions(System.Xml.XmlDocument xmlDoc, XmlNamespaceManager nsmgr, System.Xml.XmlElement pluginNode) {
-
-			nsmgr.AddNamespace("trail", "urn:uuid:D0EB2ED5-49B6-44e3-B13C-CF15BE7DD7DD");
-			m_data.FromXml(pluginNode, nsmgr);
-			m_settings.FromXml(pluginNode, nsmgr);
-		}
-
 		public string Version {
 			get { return GetType().Assembly.GetName().Version.ToString(4); }
 		}
 
-		public void WriteOptions(System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement pluginNode) {	
-			pluginNode.AppendChild(m_data.ToXml(xmlDoc));
-			pluginNode.AppendChild(m_settings.ToXml(xmlDoc));
+		public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode) {			
+		}
+
+		public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode) {
+			
 		}
 
 		#endregion
+
+		public static void ReadExtensionData() {
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain));
+			m_data = new TrailsPlugin.Data.TrailData();
+			m_data.FromXml(doc.DocumentElement);
+			m_settings = new TrailsPlugin.Data.Settings();
+			m_settings.FromXml(doc.DocumentElement);			
+		}
+
+		public static void WriteExtensionData() {
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml("<TrailsPlugin/>");
+			doc.DocumentElement.AppendChild(m_data.ToXml(doc));
+			doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
+			PluginMain.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
+			PluginMain.GetApplication().Logbook.Modified = true;
+		}
 
 		public static IApplication GetApplication() {
 			return m_App;
@@ -76,16 +89,22 @@ namespace TrailsPlugin {
 		}
 
 		private static IApplication m_App = null;
-		private static Data.TrailData m_data = new Data.TrailData();
-		private static Data.Settings m_settings = new Data.Settings();
+		private static Data.TrailData m_data = null;
+		private static Data.Settings m_settings = null;
 		public static Data.TrailData Data {
 			get {
+				if (m_data == null) {
+					PluginMain.ReadExtensionData();
+				}
 				return m_data;
 			}
 		}
 
 		public static Data.Settings Settings {
 			get {
+				if (m_settings == null) {
+					PluginMain.ReadExtensionData();
+				}
 				return m_settings;
 			}
 		}

@@ -185,27 +185,11 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries SpeedTrack {
 			get {
 				if (m_speedTrack == null) {
-					/*
+					
+					m_speedTrack  = new NumericTimeDataSeries();
 					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
-					INumericTimeDataSeries m_speedTrack  = new NumericTimeDataSeries();
-				
-				DateTime startTime =  activityInfo.
-					source.StartTime;
-				for (int i = m_startIndex; i <= m_endIndex; i++) {
-					ITimeValueEntry<float> value = source[i];
-					track.Add(
-						startTime.AddSeconds(value.ElapsedSeconds),
-						value.Value
-					);
-				}
-			}
-			return track;
-					m_speedTrack = this.initTrack(m_a
-					m_powerWattsTrack.Add(
-						time,
-						activityInfo.SmoothedSpeedTrack.GetInterpolatedValue(time).Value
-					);
-					*/
+
+					m_speedTrack = this.initTrack(activityInfo.SmoothedSpeedTrack);
 				}
 				return m_speedTrack;
 			}

@@ -65,7 +65,11 @@ namespace TrailsPlugin {
 
 		public static void ReadExtensionData() {
 			XmlDocument doc = new XmlDocument();
-			doc.LoadXml(PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain));
+			string xml = PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
+			if (xml == "") {
+				xml = "<TrailsPlugin/>";
+			}
+			doc.LoadXml(xml);
 			m_data = new TrailsPlugin.Data.TrailData();
 			m_data.FromXml(doc.DocumentElement);
 			m_settings = new TrailsPlugin.Data.Settings();

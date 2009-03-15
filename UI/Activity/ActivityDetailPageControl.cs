@@ -116,16 +116,15 @@ namespace TrailsPlugin.UI.Activity {
 
 			if (m_controller.CurrentActivityTrail != null) {
 				TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
+				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+				List.RowData = results;
+				List.Selected = new object[] { results[0] };
+
 				foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations) {
 					layer.HighlightedGPSLocations.Add(point);
 				}
 				layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 				layer.ShowHighlight = true;
-
-				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-				List.RowData = results;
-				List.SelectedItems.Add(results[0]);
-				
 
 				RefreshChart();
 

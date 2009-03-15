@@ -35,6 +35,9 @@ namespace TrailsPlugin.UI.Settings {
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {
+			PluginInfoBanner.ThemeChanged(visualTheme);
+			PluginInfoPanel.ThemeChanged(visualTheme);
 		}
+
 	}
 }

@@ -158,7 +158,15 @@ namespace TrailsPlugin.UI.Activity {
 				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 				layer.CaptureSelectedGPSLocations();
 			} else {
-				MessageBox.Show("You must select at least two activities on the map", "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				string message = "You must select at least two points on the map.\n\n";
+				message += "You currently ";
+				message += mapControl.Selected.Count == 1 ? "only have one point selected" : "have not selected any points";
+				message += " on the map.\n\n";
+				message += "To select a point, just click on a track that you have ridden.\n";
+				message += "To select a second point, hold down CTRL, and click another part of the track.\n";
+				message += "Select as many points required to make this trail unique from other trails.\n";
+				
+				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
 

@@ -118,7 +118,9 @@ namespace TrailsPlugin.UI.Activity {
 				TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
 				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 				List.RowData = results;
-				List.Selected = new object[] { results[0] };
+				if (results.Count > 0) {
+					List.Selected = new object[] { results[0] };
+				}
 
 				foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations) {
 					layer.HighlightedGPSLocations.Add(point);
@@ -139,7 +141,7 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.ThemeChanged(visualTheme);
 			List.ThemeChanged(visualTheme);
 			ChartBanner.ThemeChanged(visualTheme);
-			//lineChart1.ThemeChanged(visualTheme);
+			LineChart.ThemeChanged(visualTheme);
 		}
 
 		public IActivity Activity {

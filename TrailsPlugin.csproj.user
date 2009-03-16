@@ -22,6 +22,6 @@
     </StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <StartWorkingDirectory>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\Plugins\Trails Plugin\</StartWorkingDirectory>
+    <StartWorkingDirectory>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\</StartWorkingDirectory>
   </PropertyGroup>
 </Project>

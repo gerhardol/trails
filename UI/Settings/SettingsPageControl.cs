@@ -39,5 +39,9 @@ namespace TrailsPlugin.UI.Settings {
 			PluginInfoPanel.ThemeChanged(visualTheme);
 		}
 
+		private void textBox1_TextChanged(object sender, EventArgs e) {
+
+		}
+
 	}
 }

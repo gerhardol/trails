@@ -90,6 +90,11 @@ namespace TrailsPlugin {
 		}
 
 		void AppPropertyChanged(object sender, PropertyChangedEventArgs e) {
+			if (e != null && e.PropertyName == "Logbook") {
+				m_settings = null;
+				m_data = null;
+			}
+
 		}
 
 		private static IApplication m_App = null;

@@ -28,6 +28,7 @@
 			this.btnOk = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.Panel = new System.Windows.Forms.TableLayoutPanel();
+			this.Radius = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.lblTrail = new System.Windows.Forms.Label();
 			this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
@@ -36,7 +37,6 @@
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
 			this.label1 = new System.Windows.Forms.Label();
-			this.Radius = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -112,6 +112,28 @@
 			this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.Panel.Size = new System.Drawing.Size(350, 271);
 			this.Panel.TabIndex = 9;
+			// 
+			// Radius
+			// 
+			this.Radius.AcceptsReturn = false;
+			this.Radius.AcceptsTab = false;
+			this.Radius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.Radius.BackColor = System.Drawing.Color.White;
+			this.Radius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+			this.Radius.ButtonImage = null;
+			this.Radius.Location = new System.Drawing.Point(91, 25);
+			this.Radius.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
+			this.Radius.MaxLength = 32767;
+			this.Radius.Multiline = false;
+			this.Radius.Name = "Radius";
+			this.Radius.ReadOnly = false;
+			this.Radius.ReadOnlyColor = System.Drawing.SystemColors.Control;
+			this.Radius.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+			this.Radius.RightToLeft = System.Windows.Forms.RightToLeft.No;
+			this.Radius.Size = new System.Drawing.Size(149, 19);
+			this.Radius.TabIndex = 20;
+			this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 			// 
 			// btnSave
 			// 
@@ -279,28 +301,6 @@
 			this.label1.Text = "Radius:";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// Radius
-			// 
-			this.Radius.AcceptsReturn = false;
-			this.Radius.AcceptsTab = false;
-			this.Radius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.Radius.BackColor = System.Drawing.Color.White;
-			this.Radius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
-			this.Radius.ButtonImage = null;
-			this.Radius.Location = new System.Drawing.Point(91, 25);
-			this.Radius.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
-			this.Radius.MaxLength = 32767;
-			this.Radius.Multiline = false;
-			this.Radius.Name = "Radius";
-			this.Radius.ReadOnly = false;
-			this.Radius.ReadOnlyColor = System.Drawing.SystemColors.Control;
-			this.Radius.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
-			this.Radius.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.Radius.Size = new System.Drawing.Size(149, 19);
-			this.Radius.TabIndex = 20;
-			this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-			// 
 			// EditTrail
 			// 
 			this.AcceptButton = this.btnOk;
@@ -316,6 +316,7 @@
 			this.MinimizeBox = false;
 			this.Name = "EditTrail";
 			this.Text = "EditTrail";
+			this.Shown += new System.EventHandler(this.EditTrail_Shown);
 			this.Activated += new System.EventHandler(this.EditTrail_Activated);
 			this.Panel.ResumeLayout(false);
 			this.Panel.PerformLayout();

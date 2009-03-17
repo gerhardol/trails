@@ -39,14 +39,6 @@ namespace TrailsPlugin.UI.Activity {
 			m_addMode = addMode;
 			InitializeComponent();
 			ThemeChanged(visualTheme);
-
-			List.Columns.Clear();
-			List.Columns.Add(new TreeList.Column("LongitudeDegrees", "Longitude", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column("LatitudeDegrees", "Latitude", 100, StringAlignment.Near));
-			List.RowData = m_TrailToEdit.TrailLocations;
-
-			TrailName.Text = m_TrailToEdit.Name;
-			Radius.Text = m_TrailToEdit.Radius.ToString();
 		}
 
 		public virtual void ThemeChanged(ITheme visualTheme) {
@@ -118,6 +110,16 @@ namespace TrailsPlugin.UI.Activity {
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
 			base.OnPaint(e);
 			Utils.Dialog.DrawButtonRowBackground(e.Graphics, ClientRectangle, m_visualTheme);
+		}
+
+		private void EditTrail_Shown(object sender, System.EventArgs e) {
+			List.Columns.Clear();
+			List.Columns.Add(new TreeList.Column("LongitudeDegrees", "Longitude", 100, StringAlignment.Near));
+			List.Columns.Add(new TreeList.Column("LatitudeDegrees", "Latitude", 100, StringAlignment.Near));
+			List.RowData = m_TrailToEdit.TrailLocations;
+
+			TrailName.Text = m_TrailToEdit.Name;
+			Radius.Text = m_TrailToEdit.Radius.ToString();
 		}
 
 	}

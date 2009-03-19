@@ -31,6 +31,7 @@ namespace TrailsPlugin.Data {
 		private INumericTimeDataSeries m_elevationMetersTrack;
 		private INumericTimeDataSeries m_powerWattsTrack;
 		private INumericTimeDataSeries m_speedTrack;
+		private INumericTimeDataSeries m_gradeTrack;
 		private int m_startIndex;
 		private int m_endIndex;
 		private DateTime m_startTime;
@@ -45,6 +46,18 @@ namespace TrailsPlugin.Data {
 			m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[startIndex].ElapsedSeconds);
 			m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[startIndex].Value;
 
+			m_distanceMetersTrack = new DistanceDataTrack();
+			IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
+			float startDistance = track[m_startIndex].Value;
+			if (track != null) {
+				for (int i = m_startIndex; i <= m_endIndex; i++) {
+					ITimeValueEntry<float> value = track[i];
+					m_distanceMetersTrack.Add(
+						m_startTime.AddSeconds(value.ElapsedSeconds),
+						value.Value - startDistance
+					);
+				}
+			}
 		}
 		public int Order {
 			get {
@@ -104,34 +117,14 @@ namespace TrailsPlugin.Data {
 		}
 		public IDistanceDataTrack DistanceMetersTrack {
 			get {
-				if (m_distanceMetersTrack == null) {
-					m_distanceMetersTrack = new DistanceDataTrack();
-					IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
-					float startDistance = track[m_startIndex].Value;
-					if (track != null) {
-						for (int i = m_startIndex; i <= m_endIndex; i++) {
-							ITimeValueEntry<float> value = track[i];
-							m_distanceMetersTrack.Add(
-								m_startTime.AddSeconds(value.ElapsedSeconds),
-								value.Value - startDistance
-							);
-						}
-					}
-				}
 				return m_distanceMetersTrack;
 			}
 		}
 		public INumericTimeDataSeries ElevationMetersTrack {
 			get {
 				if (m_elevationMetersTrack == null) {
-					m_elevationMetersTrack = new NumericTimeDataSeries();
-					for (int i = m_startIndex; i <= m_endIndex; i++) {
-						ITimeValueEntry<IGPSPoint> value = m_activity.GPSRoute[i];
-						m_elevationMetersTrack.Add(
-							m_startTime.AddSeconds(value.ElapsedSeconds),
-							value.Value.ElevationMeters
-						);
-					}
+					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+					m_elevationMetersTrack = this.copyTrailTrack(activityInfo.SmoothedElevationTrack);
 				}
 				return m_elevationMetersTrack;
 			}
@@ -144,15 +137,18 @@ namespace TrailsPlugin.Data {
 		}
 
 
-		public INumericTimeDataSeries initTrack(INumericTimeDataSeries source) {
+		public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source) {
 			INumericTimeDataSeries track = new NumericTimeDataSeries();
 			if (source != null) {
-				for (int i = m_startIndex; i <= m_endIndex; i++) {
-					ITimeValueEntry<float> value = source[i];
-					track.Add(
-						m_startTime.AddSeconds(value.ElapsedSeconds),
-						value.Value
-					);
+				for(int i = 0; i < m_distanceMetersTrack.Count; i++) {
+					DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
+					ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
+					if (value != null) {
+						track.Add(
+							time,
+							value.Value
+						);
+					}
 				}
 			}
 			return track;
@@ -161,7 +157,8 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries CadencePerMinuteTrack {
 			get {
 				if (m_cadencePerMinuteTrack == null) {
-					m_cadencePerMinuteTrack = this.initTrack(m_activity.CadencePerMinuteTrack);
+					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+					m_cadencePerMinuteTrack = this.copyTrailTrack(activityInfo.SmoothedCadenceTrack);
 				}
 				return m_cadencePerMinuteTrack;
 			}
@@ -169,7 +166,8 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries HeartRatePerMinuteTrack {
 			get {
 				if (m_heartRatePerMinuteTrack == null) {
-					m_heartRatePerMinuteTrack = this.initTrack(m_activity.HeartRatePerMinuteTrack);
+					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+					m_heartRatePerMinuteTrack = this.copyTrailTrack(activityInfo.SmoothedHeartRateTrack);
 				}
 				return m_heartRatePerMinuteTrack;
 			}
@@ -177,21 +175,29 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries PowerWattsTrack {
 			get {
 				if (m_powerWattsTrack == null) {
-					m_powerWattsTrack = this.initTrack(m_activity.PowerWattsTrack);
+					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+					m_powerWattsTrack = this.copyTrailTrack(activityInfo.SmoothedPowerTrack);
 				}
 				return m_powerWattsTrack;
 			}
 		}
 		public INumericTimeDataSeries SpeedTrack {
 			get {
-				if (m_speedTrack == null) {
-					
-					m_speedTrack  = new NumericTimeDataSeries();
+				if (m_speedTrack == null) {				
 					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
-
-					m_speedTrack = this.initTrack(activityInfo.SmoothedSpeedTrack);
+					m_speedTrack = this.copyTrailTrack(activityInfo.SmoothedSpeedTrack);
 				}
 				return m_speedTrack;
+			}
+		}
+
+		public INumericTimeDataSeries GradeTrack {
+			get {
+				if (m_gradeTrack == null) {
+					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+					m_gradeTrack = this.copyTrailTrack(activityInfo.SmoothedGradeTrack);
+				}
+				return m_gradeTrack;
 			}
 		}
 	}

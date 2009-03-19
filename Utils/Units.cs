@@ -9,21 +9,22 @@ namespace TrailsPlugin.Utils {
 			string speedUnitLabel = CommonResources.Text.LabelKmPerHour;
 
 			if (activity != null) {
-				if (activity.Category.SpeedUnits == Speed.Units.Speed) {
-					if (IsMetric(activity.Category.DistanceUnits)) {
-						speedUnitLabel = CommonResources.Text.LabelKmPerHour;
-					} else {
-						speedUnitLabel = CommonResources.Text.LabelMilePerHour;
-					}
-				} else {
-					if (IsMetric(activity.Category.DistanceUnits)) {
-						speedUnitLabel = CommonResources.Text.LabelMinPerKm;
-					} else {
-						speedUnitLabel = CommonResources.Text.LabelMinPerMile;
-					}
+				if (!IsMetric(activity.Category.DistanceUnits)) {
+					speedUnitLabel = CommonResources.Text.LabelMilePerHour;
 				}
+
 			}
 			return speedUnitLabel;
+		}
+
+		public static string GetPaceUnitLabelForActivity(IActivity activity) {
+			string paceUnitLabel = CommonResources.Text.LabelMinPerKm;
+			if (activity != null) {
+				if (!IsMetric(activity.Category.DistanceUnits)) {
+					paceUnitLabel = CommonResources.Text.LabelMinPerMile;
+				}
+			}
+			return paceUnitLabel;
 		}
 
 		public static bool IsMetric(Length.Units unit) {

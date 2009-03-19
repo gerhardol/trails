@@ -56,14 +56,26 @@ namespace TrailsPlugin.Controller {
 		public Data.ActivityTrail CurrentActivityTrail {
 			get {
 				if (m_currentTrail == null && m_currentActivity != null) {
-					foreach (Data.ActivityTrail t in this.TrailsInBounds) {
+					IList<Data.ActivityTrail> trails = this.TrailsInBounds;
+					foreach (Data.ActivityTrail t in trails) {
 						if (t.Trail.Id == m_lastTrailId) {
-							m_currentTrail = t;
+							if (t.Results.Count > 0) {
+								m_currentTrail = t;
+							}							
 							break;
 						}
 					}
-					if (m_currentTrail == null && this.TrailsInBounds.Count > 0) {
-						m_currentTrail = TrailsInBounds[0];
+					if (m_currentTrail == null) {
+						foreach (Data.ActivityTrail t in trails) {
+							if (t.Results.Count > 0) {
+								m_currentTrail = t;
+								break;
+							}
+						}
+
+					}
+					if (m_currentTrail == null && trails.Count > 0) {
+						m_currentTrail = trails[0];
 					}
 				}
 				return m_currentTrail;

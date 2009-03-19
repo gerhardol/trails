@@ -128,11 +128,10 @@ namespace TrailsPlugin.UI.Activity {
 				layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 				layer.ShowHighlight = true;
 
-				RefreshChart();
-
 			} else {
 				TrailName.Text = "";
 			}
+			RefreshChart();
 		}
 
 
@@ -223,7 +222,7 @@ namespace TrailsPlugin.UI.Activity {
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 
 			EditTrail dialog = new EditTrail(m_visualTheme, false);
-			bool selectionIsDifferent = layer.SelectedGPSLocations.Count == dialog.Trail.TrailLocations.Count;
+			bool selectionIsDifferent = layer.SelectedGPSLocations.Count != dialog.Trail.TrailLocations.Count;
 			if (!selectionIsDifferent) {
 				for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
 					IGPSLocation loc1 = layer.SelectedGPSLocations[i];
@@ -326,6 +325,9 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		void RefreshChart() {
+			this.LineChart.BeginUpdate();
+			this.LineChart.Activity = null;
+			this.LineChart.TrailResult = null;
 			if (m_controller.CurrentActivityTrail != null) {
 				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 				this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
@@ -337,13 +339,16 @@ namespace TrailsPlugin.UI.Activity {
 					this.LineChart.TrailResult = (Data.TrailResult)this.List.SelectedItems[0];
 				}
 			}
+			this.LineChart.EndUpdate();
 		}
 
 		void RefreshChartMenu() {
 			speedToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Speed;
+			paceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Pace;
 			elevationToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Elevation;
 			cadenceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Cadence;
 			heartRateToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.HeartRateBPM;
+			gradeStripMenuItem1.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Grade;
 			powerToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Power;
 
 			timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
@@ -352,6 +357,12 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void speedToolStripMenuItem_Click(object sender, EventArgs e) {
 			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Speed;
+			RefreshChartMenu();
+			RefreshChart();
+		}
+
+		private void paceToolStripMenuItem_Click(object sender, EventArgs e) {
+			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Pace;
 			RefreshChartMenu();
 			RefreshChart();
 		}
@@ -374,6 +385,11 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshChart();
 		}
 
+		private void gradeToolStripMenuItem_Click(object sender, EventArgs e) {
+			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Grade;
+			RefreshChartMenu();
+			RefreshChart();
+		}
 		private void powerToolStripMenuItem_Click(object sender, EventArgs e) {
 			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Power;
 			RefreshChartMenu();

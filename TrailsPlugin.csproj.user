@@ -24,4 +24,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <StartWorkingDirectory>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\</StartWorkingDirectory>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <StartProgram>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\SportTracks.exe</StartProgram>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <StartProgram>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\SportTracks.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files (x86)\Zone Five Software\SportTracks 2.1\</StartWorkingDirectory>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>

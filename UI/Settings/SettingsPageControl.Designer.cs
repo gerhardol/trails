@@ -25,11 +25,11 @@
 		private void InitializeComponent() {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsPageControl));
 			this.PluginInfoPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
+			this.label3 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
-			this.textBox1 = new System.Windows.Forms.TextBox();
-			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
 			this.PluginInfoPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -55,6 +55,38 @@
 			this.PluginInfoPanel.Size = new System.Drawing.Size(461, 457);
 			this.PluginInfoPanel.TabIndex = 0;
 			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(3, 62);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(35, 13);
+			this.label3.TabIndex = 4;
+			this.label3.Text = "label3";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(3, 256);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(313, 13);
+			this.label2.TabIndex = 3;
+			this.label2.Text = "Trails Plugin is distributed under the GNU General Public Licence";
+			// 
+			// textBox1
+			// 
+			this.textBox1.AcceptsReturn = true;
+			this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox1.Location = new System.Drawing.Point(3, 272);
+			this.textBox1.Multiline = true;
+			this.textBox1.Name = "textBox1";
+			this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textBox1.Size = new System.Drawing.Size(452, 182);
+			this.textBox1.TabIndex = 2;
+			this.textBox1.Text = resources.GetString("textBox1.Text");
+			this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
@@ -79,37 +111,6 @@
 			this.PluginInfoBanner.TabIndex = 0;
 			this.PluginInfoBanner.Text = "Plugin Information";
 			this.PluginInfoBanner.UseStyleFont = true;
-			// 
-			// textBox1
-			// 
-			this.textBox1.AcceptsReturn = true;
-			this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox1.Location = new System.Drawing.Point(3, 272);
-			this.textBox1.Multiline = true;
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(452, 182);
-			this.textBox1.TabIndex = 2;
-			this.textBox1.Text = resources.GetString("textBox1.Text");
-			this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(3, 256);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(313, 13);
-			this.label2.TabIndex = 3;
-			this.label2.Text = "Trails Plugin is distributed under the GNU General Public Licence";
-			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(3, 62);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(35, 13);
-			this.label3.TabIndex = 4;
-			this.label3.Text = "label3";
 			// 
 			// SettingsPageControl
 			// 

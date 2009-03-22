@@ -24,6 +24,7 @@ namespace TrailsPlugin.Data {
 
 		private IList<string> m_activityPageColumns = new List<string>();
 		private int m_activityPageNumFixedColumns;
+		private int m_defaultRadius;
 		private UI.Activity.TrailLineChart.XAxisValue m_xAxisValue = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Distance;
 		private UI.Activity.TrailLineChart.LineChartTypes m_chartType = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Cadence;
 
@@ -67,11 +68,26 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+		public int DefaultRadius {
+			get {
+				return m_defaultRadius;
+			}
+			set {
+				m_defaultRadius = value;
+				PluginMain.WriteExtensionData();
+			}
+		}
+
 		public void FromXml(XmlNode pluginNode) {
 			m_activityPageColumns.Clear();
 			m_activityPageNumFixedColumns = 1;
+			m_defaultRadius = 20;
 
 			XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
+			if (settingsNode.SelectSingleNode("@defaultRadius") != null) {
+				m_defaultRadius = int.Parse(settingsNode.SelectSingleNode("@defaultRadius").Value);
+			}
+
 			XmlNode activityPageNode = null;
 			if (settingsNode != null) {
 				activityPageNode = settingsNode.SelectSingleNode("ActivityPage");
@@ -101,6 +117,11 @@ namespace TrailsPlugin.Data {
 
 		public XmlNode ToXml(XmlDocument doc) {
 			XmlNode settingsNode = doc.CreateElement("Settings");
+			if (settingsNode.Attributes["defaultRadius"] == null) {
+				settingsNode.Attributes.Append(doc.CreateAttribute("defaultRadius"));
+			}
+			settingsNode.Attributes["defaultRadius"].Value = m_defaultRadius.ToString();			
+
 			XmlNode activityPageNode = doc.CreateElement("ActivityPage");
 			settingsNode.AppendChild(activityPageNode);
 			if(activityPageNode.Attributes["numFixedColumns"] == null) {

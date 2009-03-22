@@ -161,8 +161,8 @@
 			// lblTrail
 			// 
 			this.lblTrail.AutoSize = true;
-			this.lblTrail.Location = new System.Drawing.Point(0, 0);
-			this.lblTrail.Margin = new System.Windows.Forms.Padding(0);
+			this.lblTrail.Location = new System.Drawing.Point(0, 3);
+			this.lblTrail.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
 			this.lblTrail.Name = "lblTrail";
 			this.lblTrail.Size = new System.Drawing.Size(30, 13);
 			this.lblTrail.TabIndex = 0;
@@ -293,8 +293,8 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(0, 25);
-			this.label1.Margin = new System.Windows.Forms.Padding(0);
+			this.label1.Location = new System.Drawing.Point(0, 28);
+			this.label1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(43, 13);
 			this.label1.TabIndex = 19;

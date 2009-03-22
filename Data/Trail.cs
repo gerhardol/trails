@@ -28,7 +28,11 @@ namespace TrailsPlugin.Data {
 		public string Id = Guid.NewGuid().ToString();
 		public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
-		private float m_radius = 5;
+		private float m_radius;
+
+		public Trail() {
+			m_radius = PluginMain.Settings.DefaultRadius;
+		}
 
 		public IList<TrailGPSLocation> TrailLocations {
 			get {

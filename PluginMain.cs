@@ -64,15 +64,16 @@ namespace TrailsPlugin {
 		#endregion
 
 		public static void ReadExtensionData() {
+			m_data = new TrailsPlugin.Data.TrailData();
+			m_settings = new TrailsPlugin.Data.Settings();
+
 			XmlDocument doc = new XmlDocument();
 			string xml = PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
 			if (xml == "") {
 				xml = "<TrailsPlugin/>";
 			}
 			doc.LoadXml(xml);
-			m_data = new TrailsPlugin.Data.TrailData();
 			m_data.FromXml(doc.DocumentElement);
-			m_settings = new TrailsPlugin.Data.Settings();
 			m_settings.FromXml(doc.DocumentElement);			
 		}
 

@@ -32,6 +32,8 @@ namespace TrailsPlugin.UI.Settings {
 	public partial class SettingsPageControl : UserControl {
 		public SettingsPageControl() {
 			InitializeComponent();
+			txtDefaultRadius.Text = PluginMain.Settings.DefaultRadius.ToString();
+			toolTip.SetToolTip(txtDefaultRadius, "Default radius for trail points when adding new trails.");
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {
@@ -39,8 +41,13 @@ namespace TrailsPlugin.UI.Settings {
 			PluginInfoPanel.ThemeChanged(visualTheme);
 		}
 
-		private void textBox1_TextChanged(object sender, EventArgs e) {
-
+		private void txtDefaultRadius_Validating(object sender, CancelEventArgs e) {
+			int result;
+			if (int.TryParse(txtDefaultRadius.Text, out result)) {
+				PluginMain.Settings.DefaultRadius = result;
+			} else {
+				e.Cancel = true;
+			}
 		}
 
 	}

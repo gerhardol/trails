@@ -38,9 +38,10 @@
 			this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
 			this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.speedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.elevationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.paceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.heartRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.cadenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.elevationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.gradeStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -48,7 +49,6 @@
 			this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this.paceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.Panel.SuspendLayout();
 			this.SplitContainer.Panel1.SuspendLayout();
 			this.SplitContainer.Panel2.SuspendLayout();
@@ -89,8 +89,8 @@
 			// lblTrail
 			// 
 			this.lblTrail.AutoSize = true;
-			this.lblTrail.Location = new System.Drawing.Point(0, 0);
-			this.lblTrail.Margin = new System.Windows.Forms.Padding(0);
+			this.lblTrail.Location = new System.Drawing.Point(0, 3);
+			this.lblTrail.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
 			this.lblTrail.Name = "lblTrail";
 			this.lblTrail.Size = new System.Drawing.Size(30, 13);
 			this.lblTrail.TabIndex = 0;
@@ -311,66 +311,73 @@
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem});
 			this.detailMenu.Name = "detailMenu";
-			this.detailMenu.Size = new System.Drawing.Size(153, 230);
+			this.detailMenu.Size = new System.Drawing.Size(130, 208);
 			// 
 			// speedToolStripMenuItem
 			// 
 			this.speedToolStripMenuItem.Name = "speedToolStripMenuItem";
-			this.speedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.speedToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.speedToolStripMenuItem.Text = "Speed";
 			this.speedToolStripMenuItem.Click += new System.EventHandler(this.speedToolStripMenuItem_Click);
 			// 
-			// elevationToolStripMenuItem
+			// paceToolStripMenuItem
 			// 
-			this.elevationToolStripMenuItem.Name = "elevationToolStripMenuItem";
-			this.elevationToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.elevationToolStripMenuItem.Text = "Elevation";
-			this.elevationToolStripMenuItem.Click += new System.EventHandler(this.elevationToolStripMenuItem_Click);
+			this.paceToolStripMenuItem.Name = "paceToolStripMenuItem";
+			this.paceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+			this.paceToolStripMenuItem.Text = "Pace";
+			this.paceToolStripMenuItem.Click += new System.EventHandler(this.paceToolStripMenuItem_Click);
 			// 
 			// heartRateToolStripMenuItem
 			// 
 			this.heartRateToolStripMenuItem.Name = "heartRateToolStripMenuItem";
-			this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.heartRateToolStripMenuItem.Text = "Heart Rate";
 			this.heartRateToolStripMenuItem.Click += new System.EventHandler(this.heartRateToolStripMenuItem_Click);
 			// 
 			// cadenceToolStripMenuItem
 			// 
 			this.cadenceToolStripMenuItem.Name = "cadenceToolStripMenuItem";
-			this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.cadenceToolStripMenuItem.Text = "Cadence";
 			this.cadenceToolStripMenuItem.Click += new System.EventHandler(this.cadenceToolStripMenuItem_Click);
+			// 
+			// elevationToolStripMenuItem
+			// 
+			this.elevationToolStripMenuItem.Name = "elevationToolStripMenuItem";
+			this.elevationToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+			this.elevationToolStripMenuItem.Text = "Elevation";
+			this.elevationToolStripMenuItem.Click += new System.EventHandler(this.elevationToolStripMenuItem_Click);
 			// 
 			// gradeStripMenuItem1
 			// 
 			this.gradeStripMenuItem1.Name = "gradeStripMenuItem1";
-			this.gradeStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+			this.gradeStripMenuItem1.Size = new System.Drawing.Size(129, 22);
 			this.gradeStripMenuItem1.Text = "Grade";
 			this.gradeStripMenuItem1.Click += new System.EventHandler(this.gradeToolStripMenuItem_Click);
 			// 
 			// powerToolStripMenuItem
 			// 
 			this.powerToolStripMenuItem.Name = "powerToolStripMenuItem";
-			this.powerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.powerToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.powerToolStripMenuItem.Text = "Power";
 			this.powerToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(126, 6);
 			// 
 			// distanceToolStripMenuItem
 			// 
 			this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
-			this.distanceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.distanceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.distanceToolStripMenuItem.Text = "Distance";
 			this.distanceToolStripMenuItem.Click += new System.EventHandler(this.distanceToolStripMenuItem_Click);
 			// 
 			// timeToolStripMenuItem
 			// 
 			this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
-			this.timeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.timeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.timeToolStripMenuItem.Text = "Time";
 			this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
 			// 
@@ -390,13 +397,6 @@
 			this.LineChart.TrailResult = null;
 			this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
 			this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
-			// 
-			// paceToolStripMenuItem
-			// 
-			this.paceToolStripMenuItem.Name = "paceToolStripMenuItem";
-			this.paceToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.paceToolStripMenuItem.Text = "Pace";
-			this.paceToolStripMenuItem.Click += new System.EventHandler(this.paceToolStripMenuItem_Click);
 			// 
 			// ActivityDetailPageControl
 			// 

@@ -24,7 +24,7 @@ namespace TrailsPlugin.Data {
 
 		private IList<string> m_activityPageColumns = new List<string>();
 		private int m_activityPageNumFixedColumns;
-		private int m_defaultRadius;
+		private float m_defaultRadius;
 		private UI.Activity.TrailLineChart.XAxisValue m_xAxisValue = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Distance;
 		private UI.Activity.TrailLineChart.LineChartTypes m_chartType = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Cadence;
 
@@ -68,7 +68,7 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		public int DefaultRadius {
+		public float DefaultRadius {
 			get {
 				return m_defaultRadius;
 			}

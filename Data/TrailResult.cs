@@ -93,7 +93,7 @@ namespace TrailsPlugin.Data {
 						m_activity.GPSRoute[i + 1].Value
 					);
 				}
-				return distance / 1000;
+				return (float)Length.Convert(distance, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits));
 			}
 		}
 
@@ -144,7 +144,10 @@ namespace TrailsPlugin.Data {
 		}
 		public float ElevChg {
 			get {
-				return m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
+				return (float)Length.Convert(m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters,
+					Length.Units.Meter,
+					m_activity.Category.ElevationUnits
+				);
 			}
 		}
 		public IDistanceDataTrack DistanceMetersTrack {

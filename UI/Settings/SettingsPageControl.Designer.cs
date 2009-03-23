@@ -28,7 +28,7 @@
 			this.PluginInfoPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
-			this.label3 = new System.Windows.Forms.Label();
+			this.lblDefaultRadius = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.txtGPL = new System.Windows.Forms.TextBox();
 			this.label1 = new System.Windows.Forms.Label();
@@ -68,7 +68,7 @@
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.Controls.Add(this.txtDefaultRadius, 1, 1);
-			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.lblDefaultRadius, 0, 1);
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(2, 24);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 4;
@@ -100,15 +100,15 @@
 			this.txtDefaultRadius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
 			this.txtDefaultRadius.Validating += new System.ComponentModel.CancelEventHandler(this.txtDefaultRadius_Validating);
 			// 
-			// label3
+			// lblDefaultRadius
 			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(3, 13);
-			this.label3.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(80, 13);
-			this.label3.TabIndex = 0;
-			this.label3.Text = "Default Radius:";
+			this.lblDefaultRadius.AutoSize = true;
+			this.lblDefaultRadius.Location = new System.Drawing.Point(3, 13);
+			this.lblDefaultRadius.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+			this.lblDefaultRadius.Name = "lblDefaultRadius";
+			this.lblDefaultRadius.Size = new System.Drawing.Size(80, 13);
+			this.lblDefaultRadius.TabIndex = 0;
+			this.lblDefaultRadius.Text = "Default Radius:";
 			// 
 			// label2
 			// 
@@ -180,7 +180,7 @@
 		private System.Windows.Forms.TextBox txtGPL;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label lblDefaultRadius;
 		private ZoneFiveSoftware.Common.Visuals.TextBox txtDefaultRadius;
 		private System.Windows.Forms.ToolTip toolTip;
 

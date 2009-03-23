@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using ZoneFiveSoftware.Common.Visuals;
+using ZoneFiveSoftware.Common.Data.Measurement;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class EditTrail : Form {
@@ -80,7 +81,10 @@ namespace TrailsPlugin.UI.Activity {
 
 			string oldTrailName = m_TrailToEdit.Name;
 			m_TrailToEdit.Name = TrailName.Text;
-			m_TrailToEdit.Radius = float.Parse(Radius.Text);
+			m_TrailToEdit.Radius = (float)Length.Convert(float.Parse(Radius.Text),
+				PluginMain.GetApplication().SystemPreferences.ElevationUnits,
+				Length.Units.Meter
+			);
 			if (this.m_addMode) {
 				if (!Controller.TrailController.Instance.AddTrail(m_TrailToEdit)) {
 					MessageBox.Show("Insert failed");
@@ -119,7 +123,12 @@ namespace TrailsPlugin.UI.Activity {
 			List.RowData = m_TrailToEdit.TrailLocations;
 
 			TrailName.Text = m_TrailToEdit.Name;
-			Radius.Text = m_TrailToEdit.Radius.ToString();
+			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+			lblRadius.Text = "Radius (" + Length.LabelAbbr(eu) + "):";
+			Radius.Text = Length.Convert(m_TrailToEdit.Radius,
+				Length.Units.Meter,
+				eu
+			).ToString();
 		}
 
 	}

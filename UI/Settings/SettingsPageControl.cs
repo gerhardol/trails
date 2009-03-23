@@ -26,25 +26,35 @@ using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
-
+using ZoneFiveSoftware.Common.Data.Measurement;
 
 namespace TrailsPlugin.UI.Settings {
 	public partial class SettingsPageControl : UserControl {
 		public SettingsPageControl() {
 			InitializeComponent();
-			txtDefaultRadius.Text = PluginMain.Settings.DefaultRadius.ToString();
+			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+			lblDefaultRadius.Text = "Default Radius (" + Length.LabelAbbr(eu) + "):";
+			txtDefaultRadius.Text = Length.Convert(PluginMain.Settings.DefaultRadius,
+				Length.Units.Meter,
+				eu
+			).ToString();
+
 			toolTip.SetToolTip(txtDefaultRadius, "Default radius for trail points when adding new trails.");
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {
 			PluginInfoBanner.ThemeChanged(visualTheme);
 			PluginInfoPanel.ThemeChanged(visualTheme);
+			txtDefaultRadius.ThemeChanged(visualTheme);
 		}
 
 		private void txtDefaultRadius_Validating(object sender, CancelEventArgs e) {
 			int result;
 			if (int.TryParse(txtDefaultRadius.Text, out result)) {
-				PluginMain.Settings.DefaultRadius = result;
+				PluginMain.Settings.DefaultRadius = (float)Length.Convert(result,
+					PluginMain.GetApplication().SystemPreferences.ElevationUnits,
+					Length.Units.Meter
+				);
 			} else {
 				e.Cancel = true;
 			}

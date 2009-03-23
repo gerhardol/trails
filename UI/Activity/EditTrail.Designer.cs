@@ -36,7 +36,7 @@
 			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
-			this.label1 = new System.Windows.Forms.Label();
+			this.lblRadius = new System.Windows.Forms.Label();
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -102,7 +102,7 @@
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
 			this.Panel.Controls.Add(this.List, 0, 2);
-			this.Panel.Controls.Add(this.label1, 0, 1);
+			this.Panel.Controls.Add(this.lblRadius, 0, 1);
 			this.Panel.Location = new System.Drawing.Point(15, 13);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
 			this.Panel.Name = "Panel";
@@ -290,16 +290,16 @@
 			this.List.Size = new System.Drawing.Size(344, 218);
 			this.List.TabIndex = 11;
 			// 
-			// label1
+			// lblRadius
 			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(0, 28);
-			this.label1.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(43, 13);
-			this.label1.TabIndex = 19;
-			this.label1.Text = "Radius:";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblRadius.AutoSize = true;
+			this.lblRadius.Location = new System.Drawing.Point(0, 28);
+			this.lblRadius.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
+			this.lblRadius.Name = "lblRadius";
+			this.lblRadius.Size = new System.Drawing.Size(43, 13);
+			this.lblRadius.TabIndex = 19;
+			this.lblRadius.Text = "Radius:";
+			this.lblRadius.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// EditTrail
 			// 
@@ -338,7 +338,7 @@
 		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
 		private ZoneFiveSoftware.Common.Visuals.TreeList List;
 		private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label lblRadius;
 
 	}
 }

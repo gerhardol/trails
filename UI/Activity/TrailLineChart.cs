@@ -374,23 +374,19 @@ namespace TrailsPlugin.UI.Activity {
 						// Value is in m/sec so convert to the right unit 
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-							double temp = Length.Convert(entry.Value, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits)) * Utils.Constants.SecondsPerHour;
-							track.Add(tempResult.EntryDateTime(entry), (float)temp);
+							track.Add(tempResult.EntryDateTime(entry), entry.Value);
 						}
 						break;
 					}
 
 				case LineChartTypes.Pace: {
-						INumericTimeDataSeries tempResult = result.SpeedTrack;
+						INumericTimeDataSeries tempResult = result.PaceTrack;
 
 						// Value is in m/sec so convert to the right unit and to pace
 
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-							double temp = Length.Convert(entry.Value, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits)) * Utils.Constants.SecondsPerHour;
-							// Convert to pace and then in second
-							temp = Utils.Units.SpeedToPace(temp) * Utils.Constants.SecondsPerMinute;
-							track.Add(tempResult.EntryDateTime(entry), (float)temp);
+							track.Add(tempResult.EntryDateTime(entry), entry.Value);
 						}
 						break;
 					}

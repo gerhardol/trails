@@ -20,6 +20,7 @@ using System;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using ZoneFiveSoftware.Common.Data.Measurement;
 
 namespace TrailsPlugin.Data {
 	public class TrailResult {
@@ -32,6 +33,7 @@ namespace TrailsPlugin.Data {
 		private INumericTimeDataSeries m_powerWattsTrack;
 		private INumericTimeDataSeries m_speedTrack;
 		private INumericTimeDataSeries m_gradeTrack;
+		private INumericTimeDataSeries m_paceTrack;
 		private int m_startIndex;
 		private int m_endIndex;
 		private DateTime m_startTime;
@@ -110,6 +112,36 @@ namespace TrailsPlugin.Data {
 				return HeartRatePerMinuteTrack.Max;
 			}
 		}
+		public float AvgPower {
+			get {
+				return PowerWattsTrack.Avg;
+			}
+		}
+		public float AvgGrade {
+			get {
+				return GradeTrack.Avg;
+			}
+		}
+		public float AvgSpeed {
+			get {
+				return this.SpeedTrack.Avg;
+			}
+		}
+		public float MaxSpeed {
+			get {
+				return this.SpeedTrack.Max;
+			}
+		}
+		public double AvgPace {
+			get {
+				return this.PaceTrack.Avg;
+			}
+		}
+		public double MaxPace {
+			get {
+				return this.PaceTrack.Max;
+			}
+		}
 		public float ElevChg {
 			get {
 				return m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
@@ -183,14 +215,48 @@ namespace TrailsPlugin.Data {
 		}
 		public INumericTimeDataSeries SpeedTrack {
 			get {
-				if (m_speedTrack == null) {				
+				if (m_speedTrack == null) {
+					m_speedTrack = new NumericTimeDataSeries();
 					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
-					m_speedTrack = this.copyTrailTrack(activityInfo.SmoothedSpeedTrack);
+					for (int i = 0; i < m_distanceMetersTrack.Count; i++) {
+						DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
+
+						ITimeValueEntry<float> value = activityInfo.SmoothedSpeedTrack.GetInterpolatedValue(time);
+						if (value != null) {
+							m_speedTrack.Add(
+								time,
+								(float)Length.Convert(value.Value, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits)) * Utils.Constants.SecondsPerHour
+							);
+						}
+					}					
 				}
 				return m_speedTrack;
 			}
 		}
+		public INumericTimeDataSeries PaceTrack {
+			get {
+				if (m_paceTrack == null) {
 
+					m_paceTrack = new NumericTimeDataSeries();
+					if (SpeedTrack != null) {
+						for (int i = 0; i < m_distanceMetersTrack.Count; i++) {
+							DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
+							ITimeValueEntry<float> value = SpeedTrack.GetInterpolatedValue(time);
+							if (value != null) {
+								float pace = (float)Utils.Units.SpeedToPace(value.Value) * Utils.Constants.SecondsPerMinute;
+								if (pace != float.NaN) {
+									m_paceTrack.Add(
+										time,
+										pace
+									);
+								}
+							}
+						}
+					}
+				}
+				return m_paceTrack;
+			}
+		}
 		public INumericTimeDataSeries GradeTrack {
 			get {
 				if (m_gradeTrack == null) {

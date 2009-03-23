@@ -21,6 +21,8 @@ using ZoneFiveSoftware.SportTracks.UI;
 using System.Collections.Generic;
 using System.Drawing;
 using ZoneFiveSoftware.SportTracks.Data;
+using ZoneFiveSoftware.Common.Data.Measurement;
+using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.UI {
 	public class TrailResultColumnIds {
@@ -33,22 +35,39 @@ namespace TrailsPlugin.UI {
 		public const string AvgHR = "AvgHR";
 		public const string MaxHR = "MaxHR";
 		public const string ElevChg = "ElevChg";
+		public const string AvgPower = "AvgPower";
+		public const string AvgGrade = "AvgGrade";
+		public const string AvgSpeed = "AvgSpeed";
+		public const string MaxSpeed = "MaxSpeed";
+		public const string AvgPace = "AvgPace";
+		public const string MaxPace = "MaxPace";
 
-		private static IList<IListItem> m_columnDefs = null;
-		public static IList<IListItem> ColumnDefs() {
-			if (m_columnDefs == null) {
-				m_columnDefs = new List<IListItem>();
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.StartTime, "Start", "", 70, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.EndTime, "End", "", 70, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Duration, "Duration", "", 60, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Distance, "Distance", "", 60, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgCadence, "Avg Cadence", "", 60, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgHR, "Avg HR", "", 50, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxHR, "Max HR", "", 50, StringAlignment.Near));
-				m_columnDefs.Add(new ListItemInfo(TrailResultColumnIds.ElevChg, "Elev. Chg", "", 50, StringAlignment.Near));
+		public static IList<IListItem> ColumnDefs(IActivity activity) {
+			Length.Units elevationUnit = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+			Length.Units distanceUnit = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
+			if (activity != null) {	
+				distanceUnit = activity.Category.DistanceUnits;
+				elevationUnit = activity.Category.ElevationUnits;
 			}
-			return m_columnDefs;
+
+			IList<IListItem> columnDefs = new List<IListItem>();
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, "", 60, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Distance, CommonResources.Text.LabelDistance + " (" + Length.LabelAbbr(distanceUnit) + ")", "", 60, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgCadence, CommonResources.Text.LabelAvgCadence, "", 60, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgHR, CommonResources.Text.LabelAvgHR, "", 50, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxHR, CommonResources.Text.LabelMaxHR, "", 50, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + Length.LabelAbbr(elevationUnit) + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgGrade, CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + Utils.Units.GetSpeedUnitLabelForActivity(activity) + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxSpeed, "Max Speed (" + Utils.Units.GetSpeedUnitLabelForActivity(activity) + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + Utils.Units.GetPaceUnitLabelForActivity(activity) + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxPace, "Max Pace (" + Utils.Units.GetPaceUnitLabelForActivity(activity) + ")", "", 70, StringAlignment.Near));
+
+			return columnDefs;
 		}
 	}
 }

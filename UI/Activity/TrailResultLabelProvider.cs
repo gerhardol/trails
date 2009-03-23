@@ -54,8 +54,20 @@ namespace TrailsPlugin.UI.Activity {
 				case TrailResultColumnIds.ElevChg:
 					int change = (int)row.ElevChg;
 					return (change > 0 ? "+" : "") + change.ToString();
+				case TrailResultColumnIds.AvgPower:
+					return row.AvgPower.ToString("0.0");
+				case TrailResultColumnIds.AvgGrade:
+					return (row.AvgGrade).ToString("0.0%");
+				case TrailResultColumnIds.AvgSpeed:
+					return row.AvgSpeed.ToString("0.0");
+				case TrailResultColumnIds.MaxSpeed:
+					return row.MaxSpeed.ToString("0.0");
+				case TrailResultColumnIds.AvgPace: 
+					return row.AvgPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.AvgPace));					
+				case TrailResultColumnIds.MaxPace:
+					return row.MaxPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.MaxPace));					
 				default:
-					return "error";
+					return "error:" + column.Id;
 			}			
 		}
 

@@ -80,7 +80,7 @@ namespace TrailsPlugin.UI.Activity {
 
 			List.Columns.Clear();
 			foreach (string id in PluginMain.Settings.ActivityPageColumns) {
-				foreach (ListItemInfo columnDef in TrailResultColumnIds.ColumnDefs()) {
+				foreach (ListItemInfo columnDef in TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity)) {
 					if (columnDef.Id == id) {
 						TreeList.Column column = new TreeList.Column(
 							columnDef.Id,
@@ -146,6 +146,7 @@ namespace TrailsPlugin.UI.Activity {
 		public IActivity Activity {
 			set {
 				m_controller.CurrentActivity = value;
+				RefreshColumns();
 				RefreshData();
 				RefreshControlState();
 			}
@@ -166,7 +167,7 @@ namespace TrailsPlugin.UI.Activity {
 				message += "To select a point, just click on a track that you have ridden.\n";
 				message += "To select a second point, hold down CTRL, and click another part of the track.\n";
 				message += "Select as many points required to make this trail unique from other trails.\n";
-				
+
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
@@ -237,8 +238,8 @@ namespace TrailsPlugin.UI.Activity {
 					}
 				}
 			}
-			if(selectionIsDifferent) {
-				if (MessageBox.Show("Do you want to update the trail GPS locations\n to currently selected points?", "", MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes) {
+			if (selectionIsDifferent) {
+				if (MessageBox.Show("Do you want to update the trail GPS locations\n to currently selected points?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 					dialog.Trail.TrailLocations.Clear();
 					for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
 						dialog.Trail.TrailLocations.Add(
@@ -279,7 +280,7 @@ namespace TrailsPlugin.UI.Activity {
 		class MyLabelProvider : TreeList.ILabelProvider {
 
 			public Image GetImage(object element, TreeList.Column column) {
-				Data.ActivityTrail t = (Data.ActivityTrail)element;				
+				Data.ActivityTrail t = (Data.ActivityTrail)element;
 				if (t.Results.Count > 0) {
 					return CommonIcons.GreenSquare;
 				} else {
@@ -302,7 +303,7 @@ namespace TrailsPlugin.UI.Activity {
 		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
 			ListSettings dialog = new ListSettings();
 			dialog.ThemeChanged(m_visualTheme);
-			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs();
+			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity);
 			dialog.AllowFixedColumnSelect = true;
 			dialog.SelectedColumns = PluginMain.Settings.ActivityPageColumns;
 			dialog.NumFixedColumns = PluginMain.Settings.ActivityPageNumFixedColumns;
@@ -434,8 +435,8 @@ namespace TrailsPlugin.UI.Activity {
 		private void ActivityDetailPageControl_SizeChanged(object sender, EventArgs e) {
 			// autosize column doesn't seem to be working. 
 			float width = 0;
-			for(int i = 0; i < Panel.ColumnStyles.Count; i++) {
-				if(i != 1) {
+			for (int i = 0; i < Panel.ColumnStyles.Count; i++) {
+				if (i != 1) {
 					width += this.Panel.ColumnStyles[i].Width;
 				}
 			}

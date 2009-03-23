@@ -6,23 +6,27 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 namespace TrailsPlugin.Utils {
 	class Units {
 		public static string GetSpeedUnitLabelForActivity(IActivity activity) {
-			string speedUnitLabel = CommonResources.Text.LabelKmPerHour;
-
+			Length.Units du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
 			if (activity != null) {
-				if (!IsMetric(activity.Category.DistanceUnits)) {
-					speedUnitLabel = CommonResources.Text.LabelMilePerHour;
-				}
+				du = activity.Category.DistanceUnits;
+			}
 
+			string speedUnitLabel = CommonResources.Text.LabelKmPerHour;
+			if (!IsMetric(du)) {
+				speedUnitLabel = CommonResources.Text.LabelMilePerHour;
 			}
 			return speedUnitLabel;
 		}
 
 		public static string GetPaceUnitLabelForActivity(IActivity activity) {
-			string paceUnitLabel = CommonResources.Text.LabelMinPerKm;
+			Length.Units du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
 			if (activity != null) {
-				if (!IsMetric(activity.Category.DistanceUnits)) {
-					paceUnitLabel = CommonResources.Text.LabelMinPerMile;
-				}
+				du = activity.Category.DistanceUnits;
+			}
+
+			string paceUnitLabel = CommonResources.Text.LabelMinPerKm;
+			if (!IsMetric(du)) {
+				paceUnitLabel = CommonResources.Text.LabelMinPerMile;
 			}
 			return paceUnitLabel;
 		}
@@ -36,7 +40,11 @@ namespace TrailsPlugin.Utils {
 		}
 
 		public static double SpeedToPace(double speed) {
-			return Constants.MinutesPerHour / speed;
+			if (speed == 0) {
+				return double.NaN;
+			} else {
+				return Constants.MinutesPerHour / speed;
+			}
 		}
 
 		public static double PaceToSpeed(double pace) {

@@ -35,10 +35,18 @@ namespace TrailsPlugin.Data {
 
 						int trailIndex = 0;
 						int startIndex = -1, endIndex = -1;
-
+						bool stillInStartRadius = false;
 						for (int routeIndex = 0; routeIndex < m_activity.GPSRoute.Count; routeIndex++) {
 							IGPSPoint routePoint = m_activity.GPSRoute[routeIndex].Value;
-							if (trailIndex != 0) {
+
+							if (stillInStartRadius) {
+								float distToStart = this.m_trail.TrailLocations[0].DistanceMetersToPoint(routePoint);
+								if (distToStart > this.Trail.Radius) {
+									stillInStartRadius = false;
+								}
+							}
+
+							if (!stillInStartRadius && trailIndex != 0) {
 								float distFromStartToPoint = this.m_trail.TrailLocations[0].DistanceMetersToPoint(routePoint);
 								if (distFromStartToPoint < this.m_trail.Radius) {
 									trailIndex = 0;
@@ -49,8 +57,8 @@ namespace TrailsPlugin.Data {
 							if (distToPoint < this.Trail.Radius) {
 								for (int routeIndex2 = routeIndex + 1; routeIndex2 < m_activity.GPSRoute.Count; routeIndex2++) {
 									IGPSPoint routePoint2 = m_activity.GPSRoute[routeIndex2].Value;
-									float distToPoint2 = this.m_trail.TrailLocations[0].DistanceMetersToPoint(routePoint2);
-									if (distToPoint2 > distToPoint) {
+									float distToPoint2 = this.m_trail.TrailLocations[trailIndex].DistanceMetersToPoint(routePoint2);
+									if ((int)distToPoint2 > (int)distToPoint) {
 										break;
 									} else {
 										distToPoint = distToPoint2;
@@ -61,6 +69,7 @@ namespace TrailsPlugin.Data {
 									// found the start						
 									startIndex = routeIndex;
 									trailIndex++;
+									stillInStartRadius = true;
 
 								} else if (trailIndex == this.m_trail.TrailLocations.Count - 1) {
 									// found the end

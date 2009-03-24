@@ -234,7 +234,7 @@ namespace TrailsPlugin.UI.Activity {
 						if (PluginMain.GetApplication() != null) {
 							Length.Units distanceUnit = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
 
-							if (m_activity.Category != null) {
+							if (m_activity!=null && m_activity.Category != null) {
 								distanceUnit = m_activity.Category.DistanceUnits;
 							}
 
@@ -408,11 +408,11 @@ namespace TrailsPlugin.UI.Activity {
 			set {
 				if (m_trailResult != value) {
 					m_trailResult = value;
-					if (m_trailResult != null) {
+					//if (m_trailResult != null) {
 						SetupAxes();
 						SetupDataSeries();
 						ZoomToData();
-					}
+					//}
 				}
 			}
 		}

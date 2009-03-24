@@ -335,7 +335,6 @@ namespace TrailsPlugin.UI.Activity {
 				this.ChartBanner.Text = PluginMain.Settings.ChartType.ToString() + " / " + PluginMain.Settings.XAxisValue.ToString();
 				this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
 				this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-				this.LineChart.TrailResult = null;
 				if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
 					this.LineChart.TrailResult = (Data.TrailResult)this.List.SelectedItems[0];
 				}

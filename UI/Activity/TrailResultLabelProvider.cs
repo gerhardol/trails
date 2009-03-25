@@ -44,7 +44,7 @@ namespace TrailsPlugin.UI.Activity {
 				case TrailResultColumnIds.Duration:
 					return Utils.Text.ToString(row.Duration);
 				case TrailResultColumnIds.Distance:
-					return row.Distance.ToString("0.00");
+					return row.Distance;
 				case TrailResultColumnIds.AvgCadence:
 					return row.AvgCadence.ToString("0.0");
 				case TrailResultColumnIds.AvgHR:
@@ -52,8 +52,7 @@ namespace TrailsPlugin.UI.Activity {
 				case TrailResultColumnIds.MaxHR:
 					return row.MaxHR.ToString("0");
 				case TrailResultColumnIds.ElevChg:
-					int change = (int)row.ElevChg;
-					return (change > 0 ? "+" : "") + change.ToString();
+					return row.ElevChg;
 				case TrailResultColumnIds.AvgPower:
 					return row.AvgPower.ToString("0.0");
 				case TrailResultColumnIds.AvgGrade:

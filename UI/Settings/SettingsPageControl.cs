@@ -34,10 +34,7 @@ namespace TrailsPlugin.UI.Settings {
 			InitializeComponent();
 			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
 			lblDefaultRadius.Text = "Default Radius (" + Length.LabelAbbr(eu) + "):";
-			txtDefaultRadius.Text = Length.Convert(PluginMain.Settings.DefaultRadius,
-				Length.Units.Meter,
-				eu
-			).ToString();
+			txtDefaultRadius.Text = Utils.Units.ToString(PluginMain.Settings.DefaultRadius, eu);
 
 			toolTip.SetToolTip(txtDefaultRadius, "Default radius for trail points when adding new trails.");
 		}

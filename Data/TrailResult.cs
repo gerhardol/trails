@@ -85,7 +85,7 @@ namespace TrailsPlugin.Data {
 				);
 			}
 		}
-		public float Distance {
+		public string Distance {
 			get {
 				float distance = 0;
 				for (int i = m_startIndex; i < m_endIndex; i++) {
@@ -93,7 +93,8 @@ namespace TrailsPlugin.Data {
 						m_activity.GPSRoute[i + 1].Value
 					);
 				}
-				return (float)Length.Convert(distance, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits));
+				Length.Units units = Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits);
+				return Utils.Units.ToString(distance, units);
 			}
 		}
 
@@ -142,12 +143,11 @@ namespace TrailsPlugin.Data {
 				return this.PaceTrack.Max;
 			}
 		}
-		public float ElevChg {
+		public string ElevChg {
 			get {
-				return (float)Length.Convert(m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters,
-					Length.Units.Meter,
-					m_activity.Category.ElevationUnits
-				);
+				Length.Units units = m_activity.Category.ElevationUnits;
+				float value = m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
+				return (value > 0 ? "+" : "") + Utils.Units.ToString(value, units);
 			}
 		}
 		public IDistanceDataTrack DistanceMetersTrack {
@@ -175,7 +175,7 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source) {
 			INumericTimeDataSeries track = new NumericTimeDataSeries();
 			if (source != null) {
-				for(int i = 0; i < m_distanceMetersTrack.Count; i++) {
+				for (int i = 0; i < m_distanceMetersTrack.Count; i++) {
 					DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
 					ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
 					if (value != null) {
@@ -231,7 +231,7 @@ namespace TrailsPlugin.Data {
 								(float)Length.Convert(value.Value, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits)) * Utils.Constants.SecondsPerHour
 							);
 						}
-					}					
+					}
 				}
 				return m_speedTrack;
 			}

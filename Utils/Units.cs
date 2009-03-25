@@ -5,6 +5,13 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 
 namespace TrailsPlugin.Utils {
 	class Units {
+		public static string ToString(double value, Length.Units units) {
+			return Length.ToString(Length.Convert(
+					value,
+					Length.Units.Meter,
+					units), units, "N" + Length.DefaultDecimalPrecision(units));
+		}
+
 		public static string GetSpeedUnitLabelForActivity(IActivity activity) {
 			Length.Units du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
 			if (activity != null) {

@@ -125,10 +125,7 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.Text = m_TrailToEdit.Name;
 			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
 			lblRadius.Text = "Radius (" + Length.LabelAbbr(eu) + "):";
-			Radius.Text = Length.Convert(m_TrailToEdit.Radius,
-				Length.Units.Meter,
-				eu
-			).ToString();
+			Radius.Text = Utils.Units.ToString(m_TrailToEdit.Radius, eu);
 		}
 
 	}

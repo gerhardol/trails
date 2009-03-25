@@ -27,6 +27,13 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+		public bool IsInBounds {
+			get {
+				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_activity.GPSRoute);
+				return m_trail.IsInBounds(gpsBounds);
+			}
+		}
+
 		public IList<TrailResult> Results {
 			get {
 				if (m_resultsList == null) {

@@ -55,6 +55,13 @@ namespace TrailsPlugin {
 			}
 		}
 
+		static public Image BlueSquare {
+			get {
+				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+				return (Bitmap)ResourceManager.GetObject("Image_16_Marker_BlueSquare");
+			}
+		}
+
 		static public Image Add {
 			get {
 				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;

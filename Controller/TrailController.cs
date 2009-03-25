@@ -41,19 +41,10 @@ namespace TrailsPlugin.Controller {
 			}
 		}
 
-		public string CurrentTrailName {
-			set {
-				foreach (Data.ActivityTrail t in this.TrailsInBounds) {
-					if (t.Trail.Name == value) {
-						m_currentTrail = t;
-						return;
-					}
-				}
-				throw new Exception("Invalid trail name");
-			}
-		}
-
 		public Data.ActivityTrail CurrentActivityTrail {
+			set {
+				m_currentTrail = value;
+			}
 			get {
 				if (m_currentTrail == null && m_currentActivity != null) {
 					IList<Data.ActivityTrail> trails = this.TrailsInBounds;

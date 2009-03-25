@@ -268,7 +268,7 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
 			treeListPopup.Tree.RowData = this.OrderedTrails;
-			treeListPopup.Tree.LabelProvider = new MyLabelProvider();
+			treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
 
 			if (m_controller.CurrentActivityTrail != null) {
 				treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
@@ -277,11 +277,13 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
 		}
 
-		class MyLabelProvider : TreeList.ILabelProvider {
+		class TrailDropdownLabelProvider : TreeList.ILabelProvider {
 
 			public Image GetImage(object element, TreeList.Column column) {
 				Data.ActivityTrail t = (Data.ActivityTrail)element;
-				if (t.Results.Count > 0) {
+				if (!t.IsInBounds) {
+					return CommonIcons.BlueSquare;
+				} else if (t.Results.Count > 0) {
 					return CommonIcons.GreenSquare;
 				} else {
 					return CommonIcons.RedSquare;
@@ -296,7 +298,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
 			Data.ActivityTrail t = (Data.ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item;
-			m_controller.CurrentTrailName = t.Trail.Name;
+			m_controller.CurrentActivityTrail = t;
 			RefreshData();
 		}
 
@@ -411,12 +413,24 @@ namespace TrailsPlugin.UI.Activity {
 		private IList<Data.ActivityTrail> OrderedTrails {
 			get {
 				SortedList<double, Data.ActivityTrail> trailsUsed = new SortedList<double, Data.ActivityTrail>();
-				SortedList<string, Data.ActivityTrail> trailsUnused = new SortedList<string, Data.ActivityTrail>();
-				foreach (Data.ActivityTrail t in m_controller.TrailsInBounds) {
-					if (t.Results.Count > 0) {
-						trailsUsed.Add(t.Results[0].StartTime.TotalSeconds, t);
+				SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
+				SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
+
+				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_controller.CurrentActivity.GPSRoute);				
+				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
+					Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(m_controller.CurrentActivity, trail);
+					if (trail.IsInBounds(gpsBounds)) {
+						if (at.Results.Count > 0) {
+							double key = at.Results[0].StartTime.TotalSeconds;
+							while(trailsUsed.ContainsKey(key)) {
+								key++;
+							}
+							trailsUsed.Add(key, at);
+						} else {
+							trailsInBounds.Add(at.Trail.Name, at);
+						}
 					} else {
-						trailsUnused.Add(t.Trail.Name, t);
+						trailsNotInBound.Add(at.Trail.Name, at);
 					}
 				}
 
@@ -424,7 +438,10 @@ namespace TrailsPlugin.UI.Activity {
 				foreach (Data.ActivityTrail t in trailsUsed.Values) {
 					trails.Add(t);
 				}
-				foreach (Data.ActivityTrail t in trailsUnused.Values) {
+				foreach (Data.ActivityTrail t in trailsInBounds.Values) {
+					trails.Add(t);
+				}
+				foreach (Data.ActivityTrail t in trailsNotInBound.Values) {
 					trails.Add(t);
 				}
 				return trails;

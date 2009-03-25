@@ -102,7 +102,6 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.Enabled = enabled;
 
 			enabled = (m_controller.CurrentActivityTrail != null);
-			TrailName.Enabled = enabled;
 			btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
 
@@ -300,6 +299,7 @@ namespace TrailsPlugin.UI.Activity {
 			Data.ActivityTrail t = (Data.ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item;
 			m_controller.CurrentActivityTrail = t;
 			RefreshData();
+			RefreshControlState();
 		}
 
 		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {

@@ -36,7 +36,7 @@ namespace TrailsPlugin.UI.Settings {
 			lblDefaultRadius.Text = "Default Radius (" + Length.LabelAbbr(eu) + "):";
 			txtDefaultRadius.Text = Utils.Units.ToString(PluginMain.Settings.DefaultRadius, eu);
 
-			toolTip.SetToolTip(txtDefaultRadius, "Default radius for trail points when adding new trails.");
+			toolTip.SetToolTip(txtDefaultRadius, "Default radius for trail points when adding new trails.\nChanging this value will not effect existing trails.");
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {

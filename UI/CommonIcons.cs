@@ -62,6 +62,20 @@ namespace TrailsPlugin {
 			}
 		}
 
+		static public Image LowerHalf {
+			get {
+				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+				return (Bitmap)ResourceManager.GetObject("Image_16_View_2Pane_LowerHalf");
+			}
+		}
+
+		static public Image LowerLeft {
+			get {
+				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+				return (Bitmap)ResourceManager.GetObject("Image_16_View_3Pane_LowerLeft");
+			}
+		}
+
 		static public Image Add {
 			get {
 				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;

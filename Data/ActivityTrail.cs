@@ -65,7 +65,7 @@ namespace TrailsPlugin.Data {
 								for (int routeIndex2 = routeIndex + 1; routeIndex2 < m_activity.GPSRoute.Count; routeIndex2++) {
 									IGPSPoint routePoint2 = m_activity.GPSRoute[routeIndex2].Value;
 									float distToPoint2 = this.m_trail.TrailLocations[trailIndex].DistanceMetersToPoint(routePoint2);
-									if ((int)distToPoint2 > (int)distToPoint) {
+									if (distToPoint2+0.5 > distToPoint) {
 										break;
 									} else {
 										distToPoint = distToPoint2;

@@ -39,6 +39,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		private ITheme m_visualTheme;
 		private Controller.TrailController m_controller;
+		private ChartsControl m_chartsControl = null;
 
 		public ActivityDetailPageControl(IActivity activity) {
 
@@ -63,6 +64,8 @@ namespace TrailsPlugin.UI.Activity {
 			btnEdit.Text = "";
 			btnDelete.BackgroundImage = CommonIcons.Delete;
 			btnDelete.Text = "";
+			btnExpand.BackgroundImage = CommonIcons.LowerHalf;
+			btnExpand.Text = "";
 			toolTip.SetToolTip(btnAdd, "Add new trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnEdit, "Edit this trail. (Select the trail points on the map before pushing this button)");
 			toolTip.SetToolTip(btnDelete, "Delete this trail.");
@@ -140,6 +143,9 @@ namespace TrailsPlugin.UI.Activity {
 			List.ThemeChanged(visualTheme);
 			ChartBanner.ThemeChanged(visualTheme);
 			LineChart.ThemeChanged(visualTheme);
+			if (m_chartsControl != null) {
+				m_chartsControl.ThemeChanged(visualTheme);
+			}
 		}
 
 		public IActivity Activity {
@@ -416,13 +422,13 @@ namespace TrailsPlugin.UI.Activity {
 				SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
 				SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
 
-				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_controller.CurrentActivity.GPSRoute);				
+				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_controller.CurrentActivity.GPSRoute);
 				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
 					Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(m_controller.CurrentActivity, trail);
 					if (trail.IsInBounds(gpsBounds)) {
 						if (at.Results.Count > 0) {
 							double key = at.Results[0].StartTime.TotalSeconds;
-							while(trailsUsed.ContainsKey(key)) {
+							while (trailsUsed.ContainsKey(key)) {
 								key++;
 							}
 							trailsUsed.Add(key, at);
@@ -458,6 +464,44 @@ namespace TrailsPlugin.UI.Activity {
 			}
 			this.Panel.ColumnStyles[1].SizeType = SizeType.Absolute;
 			this.Panel.ColumnStyles[1].Width = this.Width - width;
+		}
+
+		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
+			get {
+				Control c = this.Parent;
+				while (c != null) {
+					if (c is ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel) {
+						return (System.Windows.Forms.SplitContainer)((ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel)c).Controls[0];
+					}
+					c = c.Parent;
+				}
+				throw new Exception("Daily Activity Splitter not found");
+			}
+		}
+
+		private void btnExpand_Click(object sender, EventArgs e) {
+			SplitterPanel p2 = DailyActivitySplitter.Panel2;
+			p2.Controls[0].Visible = false;
+			if (m_chartsControl == null) {
+				m_chartsControl = new ChartsControl();
+				DailyActivitySplitter.Panel2.Controls.Add(m_chartsControl);
+				m_chartsControl.ThemeChanged(m_visualTheme);
+				m_chartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+				m_chartsControl.Top = 0;
+				m_chartsControl.Left = 0;
+				m_chartsControl.Width = p2.Width;
+				m_chartsControl.Height = p2.Height;
+				m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
+			}
+			m_chartsControl.Visible = true;
+			SplitContainer.Panel2Collapsed = true;
+		}
+
+		private void m_chartsControl_Collapse(object sender, EventArgs e) {
+			SplitterPanel p2 = DailyActivitySplitter.Panel2;
+			p2.Controls[0].Visible = true;
+			m_chartsControl.Visible = false;
+			SplitContainer.Panel2Collapsed = false;
 		}
 	}
 }

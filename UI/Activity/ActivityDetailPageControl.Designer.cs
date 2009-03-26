@@ -47,6 +47,7 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.Panel.SuspendLayout();
@@ -55,6 +56,7 @@
 			this.SplitContainer.SuspendLayout();
 			this.listMenu.SuspendLayout();
 			this.ChartPanel.SuspendLayout();
+			this.ChartBanner.SuspendLayout();
 			this.detailMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -241,7 +243,7 @@
 			this.List.RowSeparatorLines = true;
 			this.List.ShowLines = false;
 			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(400, 124);
+			this.List.Size = new System.Drawing.Size(400, 100);
 			this.List.TabIndex = 11;
 			this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
 			// 
@@ -285,6 +287,7 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.ChartBanner.BackColor = System.Drawing.SystemColors.Control;
 			this.ChartBanner.ContextMenuStrip = this.detailMenu;
+			this.ChartBanner.Controls.Add(this.btnExpand);
 			this.ChartBanner.HasMenuButton = true;
 			this.ChartBanner.Location = new System.Drawing.Point(0, 0);
 			this.ChartBanner.Margin = new System.Windows.Forms.Padding(0);
@@ -381,6 +384,30 @@
 			this.timeToolStripMenuItem.Text = "Time";
 			this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
 			// 
+			// btnExpand
+			// 
+			this.btnExpand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnExpand.BackColor = System.Drawing.Color.Transparent;
+			this.btnExpand.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.btnExpand.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+			this.btnExpand.CenterImage = null;
+			this.btnExpand.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.btnExpand.HyperlinkStyle = false;
+			this.btnExpand.ImageMargin = 2;
+			this.btnExpand.LeftImage = null;
+			this.btnExpand.Location = new System.Drawing.Point(353, 1);
+			this.btnExpand.Name = "btnExpand";
+			this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
+			this.btnExpand.PushStyle = false;
+			this.btnExpand.RightImage = null;
+			this.btnExpand.Size = new System.Drawing.Size(19, 19);
+			this.btnExpand.TabIndex = 11;
+			this.btnExpand.Text = "X";
+			this.btnExpand.TextAlign = System.Drawing.StringAlignment.Center;
+			this.btnExpand.TextLeftMargin = 2;
+			this.btnExpand.TextRightMargin = 2;
+			this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+			// 
 			// LineChart
 			// 
 			this.LineChart.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -413,6 +440,7 @@
 			this.SplitContainer.ResumeLayout(false);
 			this.listMenu.ResumeLayout(false);
 			this.ChartPanel.ResumeLayout(false);
+			this.ChartBanner.ResumeLayout(false);
 			this.detailMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -445,6 +473,7 @@
 		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
+		private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
 
 	}
 }

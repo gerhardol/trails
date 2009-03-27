@@ -234,7 +234,7 @@ namespace TrailsPlugin.UI.Activity {
 						if (PluginMain.GetApplication() != null) {
 							Length.Units distanceUnit = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
 
-							if (m_activity!=null && m_activity.Category != null) {
+							if (m_activity != null && m_activity.Category != null) {
 								distanceUnit = m_activity.Category.DistanceUnits;
 							}
 
@@ -400,30 +400,11 @@ namespace TrailsPlugin.UI.Activity {
 			return track;
 		}
 
-		[Browsable(false)]
-		public Data.TrailResult TrailResult {
-			get {
-				return m_trailResult;
-			}
-			set {
-				if (m_trailResult != value) {
-					m_trailResult = value;
-					//if (m_trailResult != null) {
-						SetupAxes();
-						SetupDataSeries();
-						ZoomToData();
-					//}
-				}
-			}
-		}
-
 		[DisplayName("X Axis value")]
 		public XAxisValue XAxisReferential {
 			get { return m_XAxisReferential; }
 			set {
 				m_XAxisReferential = value;
-				SetupAxes();
-				SetupDataSeries();
 			}
 		}
 
@@ -432,8 +413,6 @@ namespace TrailsPlugin.UI.Activity {
 			get { return m_YAxisReferential; }
 			set {
 				m_YAxisReferential = value;
-				SetupAxes();
-				SetupDataSeries();
 			}
 		}
 
@@ -472,6 +451,21 @@ namespace TrailsPlugin.UI.Activity {
 					foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
 						dataSerie.SelectedColor = ChartSelectedColor;
 					}
+				}
+			}
+		}
+
+		[Browsable(false)]
+		public Data.TrailResult TrailResult {
+			get {
+				return m_trailResult;
+			}
+			set {
+				if (m_trailResult != value) {
+					m_trailResult = value;
+					SetupAxes();
+					SetupDataSeries();
+					ZoomToData();
 				}
 			}
 		}

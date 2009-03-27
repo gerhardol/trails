@@ -40,6 +40,7 @@ namespace TrailsPlugin.UI.Activity {
 		private ITheme m_visualTheme;
 		private Controller.TrailController m_controller;
 		private ChartsControl m_chartsControl = null;
+		private bool m_isExpanded = false;
 
 		public ActivityDetailPageControl(IActivity activity) {
 
@@ -334,20 +335,33 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		void RefreshChart() {
-			this.LineChart.BeginUpdate();
-			this.LineChart.Activity = null;
-			this.LineChart.TrailResult = null;
-			if (m_controller.CurrentActivityTrail != null) {
-				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-				this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
-				this.ChartBanner.Text = PluginMain.Settings.ChartType.ToString() + " / " + PluginMain.Settings.XAxisValue.ToString();
-				this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
-				this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-				if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
-					this.LineChart.TrailResult = (Data.TrailResult)this.List.SelectedItems[0];
+			if(m_isExpanded) {				
+				IActivity activity = null;
+				Data.TrailResult result = null;
+				if (m_controller.CurrentActivityTrail != null) {								
+					activity = m_controller.CurrentActivityTrail.Activity;
+					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+					if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
+						result = (Data.TrailResult)this.List.SelectedItems[0];
+					}
 				}
+				m_chartsControl.RefreshCharts(activity, result);
+			} else {
+				this.LineChart.BeginUpdate();
+				this.LineChart.Activity = null;
+				this.LineChart.TrailResult = null;
+				if (m_controller.CurrentActivityTrail != null) {
+					this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
+					this.ChartBanner.Text = PluginMain.Settings.ChartType.ToString() + " / " + PluginMain.Settings.XAxisValue.ToString();
+					this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
+					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
+					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+					if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
+						this.LineChart.TrailResult = (Data.TrailResult)this.List.SelectedItems[0];
+					}
+				}
+				this.LineChart.EndUpdate();
 			}
-			this.LineChart.EndUpdate();
 		}
 
 		void RefreshChartMenu() {
@@ -495,6 +509,8 @@ namespace TrailsPlugin.UI.Activity {
 			}
 			m_chartsControl.Visible = true;
 			SplitContainer.Panel2Collapsed = true;
+			m_isExpanded = true;
+			RefreshChart();
 		}
 
 		private void m_chartsControl_Collapse(object sender, EventArgs e) {
@@ -502,6 +518,8 @@ namespace TrailsPlugin.UI.Activity {
 			p2.Controls[0].Visible = true;
 			m_chartsControl.Visible = false;
 			SplitContainer.Panel2Collapsed = false;
+			m_isExpanded = false;
+			RefreshChart();
 		}
 	}
 }

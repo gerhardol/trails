@@ -84,8 +84,9 @@ namespace TrailsPlugin.Data {
 			m_defaultRadius = 20;
 
 			XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
-			if (settingsNode.SelectSingleNode("@defaultRadius") != null) {
-				m_defaultRadius = int.Parse(settingsNode.SelectSingleNode("@defaultRadius").Value);
+            if (settingsNode != null && settingsNode.SelectSingleNode("@defaultRadius") != null)
+            {
+				m_defaultRadius = float.Parse(settingsNode.SelectSingleNode("@defaultRadius").Value);
 			}
 
 			XmlNode activityPageNode = null;

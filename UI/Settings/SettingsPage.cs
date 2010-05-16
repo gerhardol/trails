@@ -73,7 +73,10 @@ namespace TrailsPlugin.UI.Settings {
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {
-			m_control.ThemeChanged(visualTheme);
+            if (m_control != null)
+            {
+                m_control.ThemeChanged(visualTheme);
+            }
 		}
 
 		public string Title {

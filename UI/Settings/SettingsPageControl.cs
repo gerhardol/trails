@@ -46,8 +46,8 @@ namespace TrailsPlugin.UI.Settings {
 		}
 
 		private void txtDefaultRadius_Validating(object sender, CancelEventArgs e) {
-			int result;
-			if (int.TryParse(txtDefaultRadius.Text, out result)) {
+			float result;
+			if (float.TryParse(txtDefaultRadius.Text, out result)) {
 				PluginMain.Settings.DefaultRadius = (float)Length.Convert(result,
 					PluginMain.GetApplication().SystemPreferences.ElevationUnits,
 					Length.Units.Meter

@@ -73,8 +73,8 @@ namespace TrailsPlugin.UI.Activity {
 					}
 				}
 			}
-			int value;
-			if (int.TryParse(this.Radius.Text, out value) == false) {
+			float value;
+			if (float.TryParse(this.Radius.Text, out value) == false) {
 				MessageBox.Show("Radius must be numeric.");
 				return;
 			}

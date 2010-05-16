@@ -31,7 +31,7 @@ namespace TrailsPlugin.UI.Settings {
 		private SettingsPageControl m_control = null;
 
 		public System.Guid Id {
-			get { throw new System.NotImplementedException(); }
+            get { return GUIDs.Settings; }
 		}
 
 		public IList<ISettingsPage> SubPages {
@@ -58,7 +58,7 @@ namespace TrailsPlugin.UI.Settings {
 
 		public string PageName {
 			get {
-				return PluginView.GetLocalizedString("TrailsPluginName");
+				return Properties.Resources.TrailsPluginName;
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace TrailsPlugin.UI.Settings {
 
 		public string Title {
 			get {
-				return "My Title";
+				return Properties.Resources.TrailsName;
 			}
 		}
 

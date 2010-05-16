@@ -49,7 +49,7 @@ namespace TrailsPlugin.UI.Activity {
             Activity = CollectionUtils.GetSingleItemOfType<IActivity>(view.SelectionProvider.SelectedItems);
             RefreshPage();
         }
-        public System.Guid Id { get { return new Guid("{0af379d0-5ebe-11df-a08a-0800200c9a66}"); } }
+        public System.Guid Id { get { return GUIDs.Activity; } }
 #endif
 		private IActivity m_activity = null;
 		private ActivityDetailPageControl m_control = null;
@@ -133,7 +133,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		public string Title {
 			get {
-				return PluginView.GetLocalizedString("TrailsName");
+				return Properties.Resources.TrailsName;
 			}
 		}
 

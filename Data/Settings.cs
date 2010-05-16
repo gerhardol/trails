@@ -16,19 +16,31 @@
     along with TrailsPlugin.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+using System;
 using System.Xml;
 using System.Collections.Generic;
+using TrailsPlugin.UI.Activity;
 
 namespace TrailsPlugin.Data {
 	class Settings {
 
-		private IList<string> m_activityPageColumns = new List<string>();
+        public Settings()
+        {
+            m_activityPageNumFixedColumns = 1;
+            m_defaultRadius = 20;
+            m_activityPageColumns = new List<string>();
+            m_xAxisValue = TrailLineChart.XAxisValue.Distance;
+            m_chartType = TrailLineChart.LineChartTypes.Speed;
+        }
+        private IList<string> m_activityPageColumns = new List<string>();
 		private int m_activityPageNumFixedColumns;
 		private float m_defaultRadius;
-		private UI.Activity.TrailLineChart.XAxisValue m_xAxisValue = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Distance;
-		private UI.Activity.TrailLineChart.LineChartTypes m_chartType = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Cadence;
+		private TrailLineChart.XAxisValue m_xAxisValue;
+        private TrailLineChart.LineChartTypes m_chartType;
 
-		public UI.Activity.TrailLineChart.LineChartTypes ChartType {
+        //Note: The data structures need restructuring...
+        //Temporary hack
+		public TrailLineChart.LineChartTypes ChartType {
 			get {
 				return m_chartType;
 			}
@@ -37,8 +49,12 @@ namespace TrailsPlugin.Data {
 				PluginMain.WriteExtensionData();
 			}
 		}
+        public string ChartTypeString(TrailLineChart.LineChartTypes x)
+        {
+            return TrailLineChart.LineChartTypesString((TrailLineChart.LineChartTypes)x);
+        }
 
-		public UI.Activity.TrailLineChart.XAxisValue XAxisValue {
+		public TrailLineChart.XAxisValue XAxisValue {
 			get {
 				return m_xAxisValue;
 			}
@@ -47,7 +63,10 @@ namespace TrailsPlugin.Data {
 				PluginMain.WriteExtensionData();
 			}
 		}
-
+        public string XAxisValueString(TrailLineChart.XAxisValue x)
+        {
+            return TrailLineChart.XAxisValueString((TrailLineChart.XAxisValue)x);
+        }
 		public IList<string> ActivityPageColumns {
 			get {
 				return m_activityPageColumns;
@@ -78,10 +97,8 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		public void FromXml(XmlNode pluginNode) {
+        public void FromXml(XmlNode pluginNode) {
 			m_activityPageColumns.Clear();
-			m_activityPageNumFixedColumns = 1;
-			m_defaultRadius = 20;
 
 			XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
             if (settingsNode != null && settingsNode.SelectSingleNode("@defaultRadius") != null)
@@ -99,10 +116,10 @@ namespace TrailsPlugin.Data {
 					m_activityPageNumFixedColumns = int.Parse(activityPageNode.SelectSingleNode("@numFixedColumns").Value);
 				}
 				if (activityPageNode.SelectSingleNode("@xAxis") != null) {
-					m_xAxisValue = (UI.Activity.TrailLineChart.XAxisValue)int.Parse(activityPageNode.SelectSingleNode("@xAxis").Value);
+					m_xAxisValue = (TrailLineChart.XAxisValue)Enum.Parse(typeof(TrailLineChart.XAxisValue),activityPageNode.SelectSingleNode("@xAxis").Value);
 				}
 				if (activityPageNode.SelectSingleNode("@chartType") != null) {
-					m_chartType = (UI.Activity.TrailLineChart.LineChartTypes)int.Parse(activityPageNode.SelectSingleNode("@chartType").Value);
+					m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes),activityPageNode.SelectSingleNode("@chartType").Value);
 				}
 				foreach (XmlNode node in activityPageNode.SelectNodes("Column")) {
 					m_activityPageColumns.Add(node.InnerText);
@@ -125,11 +142,23 @@ namespace TrailsPlugin.Data {
 
 			XmlNode activityPageNode = doc.CreateElement("ActivityPage");
 			settingsNode.AppendChild(activityPageNode);
-			if(activityPageNode.Attributes["numFixedColumns"] == null) {
-				activityPageNode.Attributes.Append(doc.CreateAttribute("numFixedColumns"));
-			}
-			activityPageNode.Attributes["numFixedColumns"].Value = m_activityPageNumFixedColumns.ToString();
-			foreach (string columnName in m_activityPageColumns) {
+            if (activityPageNode.Attributes["numFixedColumns"] == null)
+            {
+                activityPageNode.Attributes.Append(doc.CreateAttribute("numFixedColumns"));
+            }
+            activityPageNode.Attributes["numFixedColumns"].Value = m_activityPageNumFixedColumns.ToString();
+            if (activityPageNode.Attributes["xAxis"] == null)
+            {
+                activityPageNode.Attributes.Append(doc.CreateAttribute("xAxis"));
+            }
+            activityPageNode.Attributes["xAxis"].Value = m_xAxisValue.ToString();
+            if (activityPageNode.Attributes["chartType"] == null)
+            {
+                activityPageNode.Attributes.Append(doc.CreateAttribute("chartType"));
+            }
+            activityPageNode.Attributes["chartType"].Value = m_chartType.ToString();
+            foreach (string columnName in m_activityPageColumns)
+            {
 				XmlNode column = doc.CreateElement("Column");
 				column.AppendChild(doc.CreateTextNode(columnName));
 				activityPageNode.AppendChild(column);

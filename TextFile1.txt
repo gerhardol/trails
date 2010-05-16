@@ -1,7 +1,0 @@
-﻿set ZIPPATH=C:\Program Files\7-Zip
-
-REM Create installer
-IF EXIST "$(SolutionDir)$(ProjectName).st2plugin" del "$(SolutionDir)*.st2plugin" /Q
-IF $(ConfigurationName)==Debug GOTO end
-"%ZIPPATH%\7z.exe" a -r -tzip "$(SolutionDir)$(ProjectName).st2plugin" "%INSTALLPATH%\*.*"
-:end

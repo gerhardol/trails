@@ -36,8 +36,32 @@ namespace TrailsPlugin.UI.Activity {
 			Time,
 			Distance
 		}
-
-		public enum LineChartTypes {
+        //No simple way to dynamically translate enum
+        //The integer (raw) value is stored as defaults too
+        public static string XAxisValueString(XAxisValue XAxisReferential)
+        {
+            string xAxisLabel="";
+            switch (XAxisReferential)
+            {
+                case XAxisValue.Distance:
+                    {
+                        xAxisLabel = CommonResources.Text.LabelDistance;
+                        break;
+                    }
+                case XAxisValue.Time:
+                    {
+                        xAxisLabel = CommonResources.Text.LabelTime;
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Assert(false);
+                        break;
+                    }
+            }
+            return xAxisLabel;
+        }
+        public enum LineChartTypes {
 			Cadence,
 			Elevation,
 			HeartRateBPM,
@@ -47,7 +71,50 @@ namespace TrailsPlugin.UI.Activity {
 			Speed,
 			Pace
 		}
-
+        public static string LineChartTypesString(LineChartTypes YAxisReferential)
+        {
+            string yAxisLabel="";
+			switch (YAxisReferential) {
+				case LineChartTypes.Cadence: {
+						yAxisLabel = CommonResources.Text.LabelCadence;
+						break;
+					}
+				case LineChartTypes.Elevation: {
+						yAxisLabel = CommonResources.Text.LabelElevation;
+						break;
+					}
+				case LineChartTypes.HeartRateBPM: {
+						yAxisLabel = CommonResources.Text.LabelHeartRate;
+						break;
+					}
+				case LineChartTypes.HeartRatePercentMax: {
+						yAxisLabel = CommonResources.Text.LabelHeartRate;
+						break;
+					}
+				case LineChartTypes.Power: {
+						yAxisLabel = CommonResources.Text.LabelPower;
+						break;
+					}
+				case LineChartTypes.Speed: {
+						yAxisLabel = CommonResources.Text.LabelSpeed;
+						break;
+					}
+				case LineChartTypes.Pace: {
+						yAxisLabel = CommonResources.Text.LabelPace;
+						break;
+					}
+				case LineChartTypes.Grade: {
+						yAxisLabel = CommonResources.Text.LabelGrade;
+						break;
+					}
+				default: {
+						Debug.Assert(false);
+						break;
+					}
+            }
+            return yAxisLabel;
+        }
+         
 		private Data.TrailResult m_trailResult = null;
 		private XAxisValue m_XAxisReferential = XAxisValue.Time;
 		private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
@@ -107,75 +174,11 @@ namespace TrailsPlugin.UI.Activity {
 			MainChart.Refresh();
 		}
 
-		public string GetViewLabel() {
-			string xAxisLabel = string.Empty;
-			string yAxisLabel = string.Empty;
-
-			// X axis
-			switch (XAxisReferential) {
-				case XAxisValue.Distance: {
-						xAxisLabel = CommonResources.Text.LabelDistance;
-						break;
-					}
-				case XAxisValue.Time: {
-						xAxisLabel = CommonResources.Text.LabelTime;
-						break;
-					}
-				default: {
-						Debug.Assert(false);
-						break;
-					}
-			}
-
-			// Y axis
-			MainChart.YAxis.Formatter = new Formatter.General();
-			switch (YAxisReferential) {
-				case LineChartTypes.Cadence: {
-						yAxisLabel = CommonResources.Text.LabelCadence;
-						break;
-					}
-				case LineChartTypes.Elevation: {
-						yAxisLabel = CommonResources.Text.LabelElevation;
-						break;
-					}
-				case LineChartTypes.HeartRateBPM: {
-						yAxisLabel = CommonResources.Text.LabelHeartRate;
-						break;
-					}
-				case LineChartTypes.HeartRatePercentMax: {
-						yAxisLabel = CommonResources.Text.LabelHeartRate;
-						break;
-					}
-				case LineChartTypes.Power: {
-						yAxisLabel = CommonResources.Text.LabelPower;
-						break;
-					}
-				case LineChartTypes.Speed: {
-						yAxisLabel = CommonResources.Text.LabelSpeed;
-						break;
-					}
-				case LineChartTypes.Pace: {
-						yAxisLabel = CommonResources.Text.LabelPace;
-						break;
-					}
-				case LineChartTypes.Grade: {
-						yAxisLabel = CommonResources.Text.LabelGrade;
-						break;
-					}
-				default: {
-						Debug.Assert(false);
-						break;
-					}
-			}
-
-			return yAxisLabel + " / " + xAxisLabel;
-		}
-
 		private void SetupDataSeries() {
 			MainChart.DataSeries.Clear();
 
 
-			// Add main data.  We must use 2 seperate data series to overcome the display
+			// Add main data.  We must use 2 separate data series to overcome the display
 			//  bug in fill mode.  The main data series is normally rendered but the copy
 			//  is set in Line mode to be displayed over the fill
 

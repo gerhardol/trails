@@ -32,10 +32,10 @@ namespace TrailsPlugin.UI.Activity {
 		public EditTrail(ITheme visualTheme, bool addMode) {
 			if (addMode) {
 				m_TrailToEdit = new TrailsPlugin.Data.Trail();
-				this.Name = "Add Trail";
+				this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
 			} else {
 				m_TrailToEdit = Controller.TrailController.Instance.CurrentActivityTrail.Trail;
-				this.Name = "Edit Trail";
+				this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
 			}
 			m_addMode = addMode;
 			InitializeComponent();
@@ -56,26 +56,26 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void btnOk_Click(object sender, System.EventArgs e) {
 			if (TrailName.Text.Length == 0) {
-				MessageBox.Show("Trail name is required.");
+				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
 				return;
 			}
 			Data.Trail trail = null;
 			if (m_addMode) {
 				if (PluginMain.Data.AllTrails.ContainsKey(TrailName.Text)) {
-					MessageBox.Show("Unique trail name is required.");
+					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
 					return;
 				}
 			} else {
 				if (PluginMain.Data.AllTrails.TryGetValue(TrailName.Text, out trail)) {
 					if (trail != m_TrailToEdit) {
-						MessageBox.Show("Unique trail name is required.");
+						MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
 						return;
 					}
 				}
 			}
 			float value;
 			if (float.TryParse(this.Radius.Text, out value) == false) {
-				MessageBox.Show("Radius must be numeric.");
+				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
 				return;
 			}
 
@@ -87,12 +87,12 @@ namespace TrailsPlugin.UI.Activity {
 			);
 			if (this.m_addMode) {
 				if (!Controller.TrailController.Instance.AddTrail(m_TrailToEdit)) {
-					MessageBox.Show("Insert failed");
+					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_InsertFailed);
 					return;
 				}
 			} else {
 				if (!Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit)) {
-					MessageBox.Show("Update failed");
+					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UpdateFailed);
 					return;
 				}
 			}
@@ -118,13 +118,13 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void EditTrail_Shown(object sender, System.EventArgs e) {
 			List.Columns.Clear();
-			List.Columns.Add(new TreeList.Column("LongitudeDegrees", "Longitude", 100, StringAlignment.Near));
-			List.Columns.Add(new TreeList.Column("LatitudeDegrees", "Latitude", 100, StringAlignment.Near));
+            List.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 100, StringAlignment.Near));
+            List.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 100, StringAlignment.Near));
 			List.RowData = m_TrailToEdit.TrailLocations;
 
 			TrailName.Text = m_TrailToEdit.Name;
 			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
-			lblRadius.Text = "Radius (" + Length.LabelAbbr(eu) + "):";
+			lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius+" (" + Length.LabelAbbr(eu) + "):";
 			Radius.Text = Utils.Units.ToString(m_TrailToEdit.Radius, eu);
 		}
 

@@ -117,4 +117,77 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="TrailsName" xml:space="preserve">
+    <value>Trails</value>
+  </data>
+  <data name="TrailsPluginName" xml:space="preserve">
+    <value>Trails Plugin</value>
+  </data>
+  <data name="UI_Action_Title" xml:space="preserve">
+    <value>Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
+    <value>Add Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_EditTrail" xml:space="preserve">
+    <value>Edit Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_InsertFailed" xml:space="preserve">
+    <value>Insert failed</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
+    <value>LatitudeDegrees</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Longitude" xml:space="preserve">
+    <value>LongitudeDegrees</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Radius" xml:space="preserve">
+    <value>Radius</value>
+  </data>
+  <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
+    <value>Radius must be numeric.</value>
+  </data>
+  <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
+    <value>Trail name is required.</value>
+  </data>
+  <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
+    <value>Unique trail name is required.</value>
+  </data>
+  <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
+    <value>Update failed</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
+    <value>Add new trail. (Select the trail points on the map before pushing this button).</value>
+  </data>
+  <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete this trail?</value>
+  </data>
+  <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
+    <value>Delete this trail.</value>
+  </data>
+  <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
+    <value>Edit this trail. (Select the trail points on the map before pushing this button).</value>
+  </data>
+  <data name="UI_Activity_Page_ListSettings" xml:space="preserve">
+    <value>List Settings...</value>
+  </data>
+  <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
+    <value>You must select at least two points on the map ({0} now selected).
+
+To select a point, just click on a track that you have ridden.
+To select a second point, hold down CTRL, and click another part of the track.
+Select as many points required to make this trail unique from other trails.
+</value>
+  </data>
+  <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
+    <value>Do you want to update the trail GPS locations
+to currently selected points?</value>
+  </data>
+  <data name="UI_Settings_DefaultRadius" xml:space="preserve">
+    <value>Default Radius</value>
+  </data>
+  <data name="UI_Settings_DefaultRadius_ToolTip" xml:space="preserve">
+    <value>Default radius for trail points when adding new trails.
+Changing this value will not effect existing trails.</value>
+  </data>
 </root>

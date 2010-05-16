@@ -46,7 +46,7 @@ namespace TrailsPlugin {
 
 		public string Name {
 			get {
-				return PluginView.GetLocalizedString("TrailsPluginName");
+				return Properties.Resources.TrailsPluginName;
 			}
 		}
 

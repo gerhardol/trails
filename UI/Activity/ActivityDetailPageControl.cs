@@ -71,10 +71,11 @@ namespace TrailsPlugin.UI.Activity {
 			btnDelete.Text = "";
 			btnExpand.BackgroundImage = CommonIcons.LowerHalf;
 			btnExpand.Text = "";
-			toolTip.SetToolTip(btnAdd, "Add new trail. (Select the trail points on the map before pushing this button)");
-			toolTip.SetToolTip(btnEdit, "Edit this trail. (Select the trail points on the map before pushing this button)");
-			toolTip.SetToolTip(btnDelete, "Delete this trail.");
+			toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
+			toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
+            toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
 
+            this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
 			listSettingsMenuItem.Image = CommonIcons.ListSettings;
 
 			List.NumHeaderRows = TreeList.HeaderRows.Two;
@@ -170,14 +171,7 @@ namespace TrailsPlugin.UI.Activity {
 				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 				layer.CaptureSelectedGPSLocations();
 			} else {
-				string message = "You must select at least two points on the map.\n\n";
-				message += "You currently ";
-				message += mapControl.Selected.Count == 1 ? "only have one point selected" : "have not selected any points";
-				message += " on the map.\n\n";
-				message += "To select a point, just click on a track that you have ridden.\n";
-				message += "To select a second point, hold down CTRL, and click another part of the track.\n";
-				message += "Select as many points required to make this trail unique from other trails.\n";
-
+                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, mapControl.Selected.Count);
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
@@ -199,7 +193,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void btnDelete_Click(object sender, EventArgs e) {
-			if (MessageBox.Show("Are you sure you want to delete this trail?", m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+			if (MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 				m_controller.DeleteCurrentTrail();
 				RefreshControlState();
 				RefreshData();
@@ -249,7 +243,7 @@ namespace TrailsPlugin.UI.Activity {
 				}
 			}
 			if (selectionIsDifferent) {
-				if (MessageBox.Show("Do you want to update the trail GPS locations\n to currently selected points?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+				if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 					dialog.Trail.TrailLocations.Clear();
 					for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
 						dialog.Trail.TrailLocations.Add(
@@ -356,8 +350,9 @@ namespace TrailsPlugin.UI.Activity {
 				this.LineChart.TrailResult = null;
 				if (m_controller.CurrentActivityTrail != null) {
 					this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
-					this.ChartBanner.Text = PluginMain.Settings.ChartType.ToString() + " / " + PluginMain.Settings.XAxisValue.ToString();
-					this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
+                    this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(PluginMain.Settings.ChartType) + " / " +
+                        PluginMain.Settings.XAxisValueString(PluginMain.Settings.XAxisValue);
+                    this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
 					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
 					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 					if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
@@ -370,16 +365,25 @@ namespace TrailsPlugin.UI.Activity {
 
 		void RefreshChartMenu() {
 			speedToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Speed;
+            this.speedToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Speed);
 			paceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Pace;
-			elevationToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Elevation;
-			cadenceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Cadence;
-			heartRateToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.HeartRateBPM;
-			gradeStripMenuItem1.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Grade;
-			powerToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Power;
+            this.paceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Pace);
+            elevationToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Elevation;
+            this.elevationToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Elevation);
+            cadenceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Cadence;
+            this.cadenceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Cadence);
+            heartRateToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.HeartRateBPM;
+            this.heartRateToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.HeartRateBPM);
+            gradeStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Grade;
+            this.gradeStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Grade);
+            powerToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Power;
+            this.powerToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Power);
 
 			timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
-			distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
-		}
+            this.timeToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Time);
+            distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
+            this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
+        }
 
 		private void speedToolStripMenuItem_Click(object sender, EventArgs e) {
 			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Speed;

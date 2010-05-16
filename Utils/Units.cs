@@ -1,4 +1,22 @@
-﻿using System;
+﻿/******************************************************************************
+
+    This file is part of TrailsPlugin.
+
+    TrailsPlugin is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TrailsPlugin is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TrailsPlugin.  If not, see <http://www.gnu.org/licenses/>.
+******************************************************************************/
+
+using System;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
@@ -13,28 +31,77 @@ namespace TrailsPlugin.Utils {
 		}
 
 		public static string GetSpeedUnitLabelForActivity(IActivity activity) {
-			Length.Units du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
-			if (activity != null) {
-				du = activity.Category.DistanceUnits;
-			}
-
-			string speedUnitLabel = CommonResources.Text.LabelKmPerHour;
-			if (!IsMetric(du)) {
-				speedUnitLabel = CommonResources.Text.LabelMilePerHour;
-			}
-			return speedUnitLabel;
+			Length.Units du;
+            if (activity != null)
+            {
+                du = activity.Category.DistanceUnits;
+            }
+            else
+            {
+                du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
+            }
+            string speedUnitLabel;
+#if ST_2_1
+            if (IsMetric(du))
+            {
+                speedUnitLabel = CommonResources.Text.LabelKmPerHour;
+            }
+            else
+            {
+                speedUnitLabel = CommonResources.Text.LabelMilePerHour;
+            }
+#else
+            if (activity != null)
+            {
+                speedUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
+                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed,
+                    activity.Category.SpeedDistance);
+            }
+            else
+            {
+                speedUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
+                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed,
+                    new Length(1, du));
+            }
+#endif
+            return speedUnitLabel;
 		}
 
 		public static string GetPaceUnitLabelForActivity(IActivity activity) {
-			Length.Units du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
-			if (activity != null) {
-				du = activity.Category.DistanceUnits;
-			}
+            Length.Units du;
+            if (activity != null)
+            {
+                du = activity.Category.DistanceUnits;
+            }
+            else
+            {
+                du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
+            }
 
-			string paceUnitLabel = CommonResources.Text.LabelMinPerKm;
-			if (!IsMetric(du)) {
-				paceUnitLabel = CommonResources.Text.LabelMinPerMile;
-			}
+			string paceUnitLabel;
+#if ST_2_1
+            if (IsMetric(du))
+            {
+                paceUnitLabel = CommonResources.Text.LabelMinPerKm;
+            }
+            else
+            {
+                paceUnitLabel = CommonResources.Text.LabelMinPerMile;
+            }
+#else
+            if (activity != null)
+            {
+                paceUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
+                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Pace,
+                    activity.Category.PaceDistance);
+            }
+            else
+            {
+                paceUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
+                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Pace,
+                    new Length(1, du));
+            }
+#endif
 			return paceUnitLabel;
 		}
 

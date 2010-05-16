@@ -42,7 +42,7 @@
 			this.heartRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.cadenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.elevationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.gradeStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -308,7 +308,7 @@
             this.heartRateToolStripMenuItem,
             this.cadenceToolStripMenuItem,
             this.elevationToolStripMenuItem,
-            this.gradeStripMenuItem1,
+            this.gradeStripMenuItem,
             this.powerToolStripMenuItem,
             this.toolStripSeparator1,
             this.distanceToolStripMenuItem,
@@ -353,10 +353,10 @@
 			// 
 			// gradeStripMenuItem1
 			// 
-			this.gradeStripMenuItem1.Name = "gradeStripMenuItem1";
-			this.gradeStripMenuItem1.Size = new System.Drawing.Size(129, 22);
-			this.gradeStripMenuItem1.Text = "Grade";
-			this.gradeStripMenuItem1.Click += new System.EventHandler(this.gradeToolStripMenuItem_Click);
+			this.gradeStripMenuItem.Name = "gradeStripMenuItem1";
+			this.gradeStripMenuItem.Size = new System.Drawing.Size(129, 22);
+			this.gradeStripMenuItem.Text = "Grade";
+			this.gradeStripMenuItem.Click += new System.EventHandler(this.gradeToolStripMenuItem_Click);
 			// 
 			// powerToolStripMenuItem
 			// 
@@ -471,7 +471,7 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
 		private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
 

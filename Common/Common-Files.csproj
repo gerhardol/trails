@@ -3,10 +3,10 @@
 <!-- This file will have more files common for all plugins, when that is restructured -->
 
   <ItemGroup>
-    <None Include="..\COPYING">
+    <None Include=".\COPYING">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\COPYING.LESSER">
+    <None Include=".\COPYING.LESSER">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

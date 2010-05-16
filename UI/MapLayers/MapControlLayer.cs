@@ -20,7 +20,11 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.GPS;
+#if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
+#else
+using ZoneFiveSoftware.Common.Visuals.Mapping;
+#endif
 using System.Collections.Generic;
 using Microsoft.Win32;
 

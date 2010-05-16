@@ -18,7 +18,11 @@
 
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+#if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
+#else
+using ZoneFiveSoftware.Common.Visuals.Mapping;
+#endif
 
 namespace TrailsPlugin.UI.MapLayers {
 	class ExtendMapControlLayers : IExtendMapControlLayers {

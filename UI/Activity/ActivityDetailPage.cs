@@ -16,6 +16,7 @@
     along with TrailsPlugin.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -23,9 +24,33 @@ using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+#if !ST_2_1
+using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Visuals.Util;
+#endif
 
 namespace TrailsPlugin.UI.Activity {
-	internal class ActivityDetailPage : IActivityDetailPage, IDialogPage, INotifyPropertyChanged {
+	internal class ActivityDetailPage :
+#if ST_2_1
+     IActivityDetailPage
+#else
+     IDetailPage
+#endif
+    {
+#if !ST_2_1
+        public ActivityDetailPage(IDailyActivityView view)
+        {
+            this.view = view;
+            view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
+        }
+
+        private void OnViewSelectedItemsChanged(object sender, EventArgs e)
+        {
+            Activity = CollectionUtils.GetSingleItemOfType<IActivity>(view.SelectionProvider.SelectedItems);
+            RefreshPage();
+        }
+        public System.Guid Id { get { return new Guid("{0af379d0-5ebe-11df-a08a-0800200c9a66}"); } }
+#endif
 		private IActivity m_activity = null;
 		private ActivityDetailPageControl m_control = null;
 
@@ -41,7 +66,31 @@ namespace TrailsPlugin.UI.Activity {
 			return true;
 		}
 
-		public void RefreshPage() {
+        public IList<string> MenuPath
+        {
+            get { return menuPath; }
+            set { menuPath = value; OnPropertyChanged("MenuPath"); }
+        }
+
+        public bool MenuEnabled
+        {
+            get { return menuEnabled; }
+            set { menuEnabled = value; OnPropertyChanged("MenuEnabled"); }
+        }
+
+        public bool MenuVisible
+        {
+            get { return menuVisible; }
+            set { menuVisible = value; OnPropertyChanged("MenuVisible"); }
+        }
+
+        public bool PageMaximized
+        {
+            get { return pageMaximized; }
+            set { pageMaximized = value; OnPropertyChanged("PageMaximized"); }
+        }
+        public void RefreshPage()
+        {
 			if (m_control != null) {
 				m_control.Refresh();
 			}
@@ -94,5 +143,20 @@ namespace TrailsPlugin.UI.Activity {
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
-	}
+#if !ST_2_1
+        private IDailyActivityView view = null;
+#endif
+        private IList<string> menuPath = null;
+        private bool menuEnabled = true;
+        private bool menuVisible = true;
+        private bool pageMaximized = false;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
 }

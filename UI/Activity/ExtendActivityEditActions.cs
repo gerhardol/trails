@@ -23,7 +23,16 @@ using System.Collections.Generic;
 
 
 namespace TrailsPlugin.UI.Activity {
-	internal class ExtendActivityEditActions : IExtendActivityEditActions {
+	internal class ExtendActivityEditActions :
+#if ST_2_1
+    IExtendActivityEditActions
+#else
+     IExtendDailyActivityViewActions, IExtendActivityReportsViewActions
+#endif
+    {
+
+#if ST_2_1
+        #region IExtendActivityEditActions Members
 		public IList<IAction> GetActions(IList<IActivity> activities) {
 			return new IAction[] { /*new UI.Actions.Action(activities)*/ };
 		}
@@ -31,5 +40,31 @@ namespace TrailsPlugin.UI.Activity {
 		public IList<IAction> GetActions(IActivity activity) {
 			return new IAction[] { /*new UI.Actions.Action(new IActivity[] { activity })*/ };
 		}
-	}
+        #endregion
+#else
+        #region IExtendDailyActivityViewActions Members
+        public IList<IAction> GetActions(IDailyActivityView view,
+                                                 ExtendViewActions.Location location)
+        {
+            //if (location == ExtendViewActions.Location.AnalyzeMenu)
+            //{
+            //    return new IAction[] { new UI.Actions.Action(view) };
+            //}
+            //else
+            return new IAction[0];
+        }
+        public IList<IAction> GetActions(IActivityReportsView view,
+                                         ExtendViewActions.Location location)
+        {
+            //ST3fix
+            //if (location == ExtendViewActions.Location.EditMenu)
+            //{
+            //    return new IAction[] { new UI.Actions.Action(view) };
+            //}
+            //else 
+            return new IAction[0];
+        }
+        #endregion
+#endif
+    }
 }

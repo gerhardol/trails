@@ -98,7 +98,7 @@
 			this.txtDefaultRadius.Size = new System.Drawing.Size(100, 19);
 			this.txtDefaultRadius.TabIndex = 1;
 			this.txtDefaultRadius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-			this.txtDefaultRadius.Validating += new System.ComponentModel.CancelEventHandler(this.txtDefaultRadius_Validating);
+			this.txtDefaultRadius.LostFocus += new System.EventHandler(this.txtDefaultRadius_LostFocus);
 			// 
 			// lblDefaultRadius
 			// 

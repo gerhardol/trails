@@ -134,6 +134,7 @@
 			this.Radius.Size = new System.Drawing.Size(149, 19);
 			this.Radius.TabIndex = 20;
 			this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.Radius.LostFocus += new System.EventHandler(this.Radius_LostFocus);
 			// 
 			// btnSave
 			// 

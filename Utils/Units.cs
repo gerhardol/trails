@@ -23,12 +23,26 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 
 namespace TrailsPlugin.Utils {
 	class Units {
-		public static string ToString(double value, Length.Units units) {
-			return Length.ToString(Length.Convert(
-					value,
-					Length.Units.Meter,
-					units), units, "N" + Length.DefaultDecimalPrecision(units));
-		}
+        public static float ParseElevation(string p)
+        {
+            Length.Units unit = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+            return (float)Length.ParseDistanceMeters(p, ref unit);
+        }
+        public static string ElevationToString(double value, string fmt)
+        {
+            Length.Units units = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+            return Length.ToString(Length.Convert(
+                    value,
+                    Length.Units.Meter,
+                    units), units, "N" + Length.DefaultDecimalPrecision(units)+fmt);
+        }
+        public static string ToString(double value, Length.Units units)
+        {
+            return Length.ToString(Length.Convert(
+                    value,
+                    Length.Units.Meter,
+                    units), units, "N" + Length.DefaultDecimalPrecision(units));
+        }
 
 		public static string GetSpeedUnitLabelForActivity(IActivity activity) {
 			Length.Units du;

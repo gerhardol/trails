@@ -21,25 +21,39 @@ using System.Xml;
 
 namespace TrailsPlugin.Data {
 	public class TrailGPSLocation : GPSLocation {
-		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees) : base(latitudeDegrees, longitudeDegrees) { }
+		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name) : base(latitudeDegrees, longitudeDegrees)
+        {
+            this.Name = name;
+        }
 	
 		static public TrailGPSLocation FromXml(XmlNode node) {
 
+            string name = "";
+            if (null != node.Attributes["name"] &&
+                null != node.Attributes["name"].Value)
+            {
+                name = node.Attributes["name"].Value;
+            }
 			return new TrailGPSLocation(
 				float.Parse(node.Attributes["latitude"].Value), 
-				float.Parse(node.Attributes["longitude"].Value)
+				float.Parse(node.Attributes["longitude"].Value),
+                name
 			);
 		}
+        public string Name;
 
 		public XmlNode ToXml(XmlDocument doc) {
 			XmlNode TrailGPSLocationNode = doc.CreateElement("TrailGPSLocation");
 			XmlAttribute a = doc.CreateAttribute("latitude");
 			a.Value = this.LatitudeDegrees.ToString();
 			TrailGPSLocationNode.Attributes.Append(a);
-			a = doc.CreateAttribute("longitude");
-			a.Value = this.LongitudeDegrees.ToString();
-			TrailGPSLocationNode.Attributes.Append(a);
-			return TrailGPSLocationNode;
+            a = doc.CreateAttribute("longitude");
+            a.Value = this.LongitudeDegrees.ToString();
+            TrailGPSLocationNode.Attributes.Append(a);
+            a = doc.CreateAttribute("name");
+            a.Value = this.Name.ToString();
+            TrailGPSLocationNode.Attributes.Append(a);
+            return TrailGPSLocationNode;
 		}
 
 		public float DistanceMetersToPoint(IGPSPoint point) {

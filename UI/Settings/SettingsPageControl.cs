@@ -32,30 +32,36 @@ namespace TrailsPlugin.UI.Settings {
 	public partial class SettingsPageControl : UserControl {
 		public SettingsPageControl() {
 			InitializeComponent();
-			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
-			lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + " (" + Length.LabelAbbr(eu) + "):";
-			txtDefaultRadius.Text = Utils.Units.ToString(PluginMain.Settings.DefaultRadius, eu);
-
-            toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
+            presentSettings();
 		}
 
-		public void ThemeChanged(ITheme visualTheme) {
+        private void presentSettings()
+        {
+            lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + " :";
+            txtDefaultRadius.Text = Utils.Units.ElevationToString(PluginMain.Settings.DefaultRadius, "u");
+
+            toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
+        }
+        public void ThemeChanged(ITheme visualTheme)
+        {
 			PluginInfoBanner.ThemeChanged(visualTheme);
 			PluginInfoPanel.ThemeChanged(visualTheme);
 			txtDefaultRadius.ThemeChanged(visualTheme);
 		}
 
-		private void txtDefaultRadius_Validating(object sender, CancelEventArgs e) {
+		private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {
 			float result;
-			if (float.TryParse(txtDefaultRadius.Text, out result)) {
-				PluginMain.Settings.DefaultRadius = (float)Length.Convert(result,
-					PluginMain.GetApplication().SystemPreferences.ElevationUnits,
-					Length.Units.Meter
-				);
-			} else {
-				e.Cancel = true;
-			}
-		}
+            result = Utils.Units.ParseElevation(txtDefaultRadius.Text);
+            if (result > 0)
+            {
+				PluginMain.Settings.DefaultRadius = result;
+            }
+            else
+            {
+                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
+            }
+            presentSettings();
+        }
 
 	}
 }

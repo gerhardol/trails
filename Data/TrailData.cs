@@ -16,6 +16,7 @@
     along with TrailsPlugin.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
@@ -24,8 +25,15 @@ using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Data {
 	public class TrailData {
-
-		private SortedList<string, Data.Trail> m_AllTrails = new SortedList<string, Data.Trail>();
+        public TrailData()
+        {
+            defaults();
+        }
+        private static void defaults()
+        {
+            m_AllTrails = new SortedList<string, Data.Trail>();
+        }
+		private static SortedList<string, Data.Trail> m_AllTrails;
 
 		public SortedList<string, Data.Trail> AllTrails {
 			get {
@@ -71,8 +79,46 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		public void FromXml(XmlNode pluginNode) {
-			m_AllTrails.Clear();
+        private class xmlTags
+        {
+            public const string tTrails = "tTrails";
+        }
+        public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
+        {
+            String attr;
+            //m_AllTrails.Clear();
+            attr = pluginNode.GetAttribute(xmlTags.tTrails);
+            //if (attr.Length > 0) { m_defaultRadius = float.Parse(attr, NumberFormatInfo.InvariantInfo); }
+            //FromXml(pluginNode);
+            defaults();
+            XmlDocument doc = new XmlDocument();
+            if (attr == "")
+            {
+                attr = "<Trails/>";
+            }
+            doc.LoadXml(attr);
+
+            foreach (XmlNode node in doc.DocumentElement.SelectNodes("Trail"))
+            {
+                Data.Trail trail = Data.Trail.FromXml(node);
+                m_AllTrails.Add(trail.Id, trail);
+            }
+        }
+
+        public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
+        {
+            //ToXml(xmlDoc);
+            XmlNode trails = doc.CreateElement("Trails");
+            foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
+            {
+                trails.AppendChild(trail.ToXml(doc));
+            }
+            pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
+
+        }
+        public void FromXml(XmlNode pluginNode)
+        {
+            defaults();
 			foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail")) {
 				Data.Trail trail = Data.Trail.FromXml(node);
 				m_AllTrails.Add(trail.Id, trail);

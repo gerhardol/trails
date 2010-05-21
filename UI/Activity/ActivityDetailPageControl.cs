@@ -210,7 +210,8 @@ namespace TrailsPlugin.UI.Activity {
 				dialog.Trail.TrailLocations.Add(
 					new Data.TrailGPSLocation(
 						layer.SelectedGPSLocations[i].LatitudeDegrees,
-						layer.SelectedGPSLocations[i].LongitudeDegrees
+						layer.SelectedGPSLocations[i].LongitudeDegrees,
+                        ""
 					)
 				);
 			}
@@ -249,7 +250,8 @@ namespace TrailsPlugin.UI.Activity {
 						dialog.Trail.TrailLocations.Add(
 							new Data.TrailGPSLocation(
 								layer.SelectedGPSLocations[i].LatitudeDegrees,
-								layer.SelectedGPSLocations[i].LongitudeDegrees
+								layer.SelectedGPSLocations[i].LongitudeDegrees,
+                                ""
 							)
 						);
 					}

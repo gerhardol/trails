@@ -61,6 +61,13 @@ namespace TrailsPlugin.Data {
 			trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("TrailGPSLocation")) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
+                if (null == trail.TrailLocations[trail.TrailLocations.Count-1].Name
+                    || trail.TrailLocations[trail.TrailLocations.Count-1].Name.Equals(""))
+                {
+                    //Name the trail points
+                    trail.TrailLocations[trail.TrailLocations.Count-1].Name =
+                        "#" + trail.TrailLocations.Count;
+                }
 			}
 			return trail;
 		}
@@ -82,9 +89,18 @@ namespace TrailsPlugin.Data {
 			return trailNode;
 		}
 
-		public bool IsInBounds(IGPSBounds gpsBounds) {
-			foreach (TrailGPSLocation trailGPSLocation in this.TrailLocations) {
-				if (!gpsBounds.Contains(trailGPSLocation)) {
+		public bool IsInBounds(IGPSBounds activityBounds) {
+            //increase bounds to include radius in the bounds checking
+            //Use a magic aproximate formula, about twice the radius
+            float latOffset = m_radius * 2 * 18 / 195/10000;
+            float longOffset = latOffset * (1 - Math.Abs(activityBounds.NorthLatitudeDegrees) / 90);
+            IGPSBounds gpsBounds = new GPSBounds(
+                new GPSLocation(activityBounds.NorthLatitudeDegrees + latOffset, activityBounds.WestLongitudeDegrees - longOffset),
+                new GPSLocation(activityBounds.SouthLatitudeDegrees - latOffset, activityBounds.EastLongitudeDegrees + longOffset));
+            foreach (TrailGPSLocation trailGPSLocation in this.TrailLocations)
+            {
+				if (!gpsBounds.Contains(trailGPSLocation)
+                    ) {
 					return false;
 				}
 			}

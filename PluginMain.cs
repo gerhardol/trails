@@ -16,6 +16,7 @@
     along with TrailsPlugin.  If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
 
+using System;
 using System.ComponentModel;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using System.Xml;
@@ -54,12 +55,34 @@ namespace TrailsPlugin {
 			get { return GetType().Assembly.GetName().Version.ToString(4); }
 		}
 
-		public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode) {			
-		}
+		public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode) {
+            String attr;
+            attr = pluginNode.GetAttribute(xmlTags.Verbose);
+            if (attr.Length > 0) { Verbose = XmlConvert.ToInt16(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.settingsVersion);
+            if (attr.Length > 0) { settingsVersion = (Int16)XmlConvert.ToInt16(attr); }
+            //If not found (or version lower), settings will be loaded dynamically (from logbook)
+            if (settingsVersionCurrent <= settingsVersion)
+            {
+                settingsVersion = settingsVersionCurrent;
+                m_settings = new TrailsPlugin.Data.Settings();
+                m_data = new TrailsPlugin.Data.TrailData();
+                TrailsPlugin.Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
+                TrailsPlugin.Data.TrailData.ReadOptions(xmlDoc, nsmgr, pluginNode);
+            }
+            //Set version so Preferences are loaded next time
+            if (0 == settingsVersion)
+            {
+                settingsVersion = settingsVersionCurrent;
+            }
+        }
 
 		public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode) {
-			
-		}
+            pluginNode.SetAttribute(xmlTags.Verbose, XmlConvert.ToString(Verbose));
+            pluginNode.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(settingsVersion));
+            TrailsPlugin.Data.Settings.WriteOptions(xmlDoc, pluginNode);
+            TrailsPlugin.Data.TrailData.WriteOptions(xmlDoc, pluginNode);
+        }
 
 		#endregion
 
@@ -77,13 +100,18 @@ namespace TrailsPlugin {
 			m_settings.FromXml(doc.DocumentElement);			
 		}
 
-		public static void WriteExtensionData() {
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml("<TrailsPlugin/>");
-			doc.DocumentElement.AppendChild(m_data.ToXml(doc));
-			doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
-			PluginMain.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
-			PluginMain.GetApplication().Logbook.Modified = true;
+		public static void WriteExtensionData() 
+        {
+            //Write logbook if configured to do so
+            if (settingsVersionCurrent > settingsVersion)
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml("<TrailsPlugin/>");
+                doc.DocumentElement.AppendChild(m_data.ToXml(doc));
+                doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
+                PluginMain.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
+                PluginMain.GetApplication().Logbook.Modified = true;
+            }
 		}
 
 		public static IApplication GetApplication() {
@@ -91,11 +119,14 @@ namespace TrailsPlugin {
 		}
 
 		void AppPropertyChanged(object sender, PropertyChangedEventArgs e) {
-			if (e != null && e.PropertyName == "Logbook") {
-				m_settings = null;
-				m_data = null;
-			}
-
+            if (settingsVersionCurrent > settingsVersion)
+            {
+                if (e != null && e.PropertyName == "Logbook")
+                {
+                    m_settings = null;
+                    m_data = null;
+                }
+            }
 		}
 
 		private static IApplication m_App = null;
@@ -118,5 +149,13 @@ namespace TrailsPlugin {
 				return m_settings;
 			}
 		}
+        private class xmlTags
+        {
+            public const string settingsVersion = "settingsVersion";
+            public const string Verbose = "Verbose";
+        }
+        private static int settingsVersion = 0; //default when not existing
+        private const int settingsVersionCurrent = 2;
+        public static int Verbose = 0;  //Only changed in xml file
 	}
 }

@@ -19,6 +19,7 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.Globalization;
 using TrailsPlugin.UI.Activity;
 
 namespace TrailsPlugin.Data {
@@ -26,20 +27,31 @@ namespace TrailsPlugin.Data {
 
         public Settings()
         {
+            defaults();
+        }
+        private static void defaults()
+        {
             m_activityPageNumFixedColumns = 1;
             m_defaultRadius = 20;
             m_activityPageColumns = new List<string>();
             m_xAxisValue = TrailLineChart.XAxisValue.Distance;
             m_chartType = TrailLineChart.LineChartTypes.Speed;
+
+            m_activityPageColumns = new List<string>();
+            m_activityPageColumns.Add(UI.TrailResultColumnIds.Order);
+            m_activityPageColumns.Add(UI.TrailResultColumnIds.StartTime);
+            m_activityPageColumns.Add(UI.TrailResultColumnIds.Duration);
+            m_activityPageColumns.Add(UI.TrailResultColumnIds.AvgHR);
+            m_activityPageColumns.Add(UI.TrailResultColumnIds.AvgCadence);
         }
-        private IList<string> m_activityPageColumns = new List<string>();
-		private int m_activityPageNumFixedColumns;
-		private float m_defaultRadius;
-		private TrailLineChart.XAxisValue m_xAxisValue;
-        private TrailLineChart.LineChartTypes m_chartType;
+        private static IList<string> m_activityPageColumns;
+        private static int m_activityPageNumFixedColumns;
+        private static float m_defaultRadius;
+        private static TrailLineChart.XAxisValue m_xAxisValue;
+        private static TrailLineChart.LineChartTypes m_chartType;
 
         //Note: The data structures need restructuring...
-        //Temporary hack
+        //Temporary hack to translate to strings
 		public TrailLineChart.LineChartTypes ChartType {
 			get {
 				return m_chartType;
@@ -97,8 +109,60 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-        public void FromXml(XmlNode pluginNode) {
-			m_activityPageColumns.Clear();
+        private class xmlTags
+        {
+            public const string sDefaultRadius = "sDefaultRadius";
+            public const string sNumFixedColumns = "sNumFixedColumns";
+            public const string sXAxis = "sXAxis";
+            public const string sChartType = "sChartType";
+            public const string sColumns = "sColumns";
+        }
+
+        public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
+        {
+            String attr;
+            defaults();
+
+            attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
+            if (attr.Length > 0) { m_defaultRadius = float.Parse(attr, NumberFormatInfo.InvariantInfo); }
+            attr = pluginNode.GetAttribute(xmlTags.sNumFixedColumns);
+            if (attr.Length > 0) { m_activityPageNumFixedColumns = (Int16)XmlConvert.ToInt16(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.sXAxis);
+            if (attr.Length > 0) { m_xAxisValue = (TrailLineChart.XAxisValue)Enum.Parse(typeof(TrailLineChart.XAxisValue), attr, true); }
+            attr = pluginNode.GetAttribute(xmlTags.sChartType);
+            if (attr.Length > 0) { m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes), attr, true); }
+            attr = pluginNode.GetAttribute(xmlTags.sColumns);
+            if (attr.Length > 0)
+            {
+                m_activityPageColumns.Clear();
+                String[] values = attr.Split(';');
+                foreach (String column in values)
+                {
+                    m_activityPageColumns.Add(column);
+                }
+            }
+        }
+
+        public static void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
+        {
+            pluginNode.SetAttribute(xmlTags.sDefaultRadius, XmlConvert.ToString(m_defaultRadius));
+            pluginNode.SetAttribute(xmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
+            pluginNode.SetAttribute(xmlTags.sXAxis, m_xAxisValue.ToString());
+            pluginNode.SetAttribute(xmlTags.sChartType, m_chartType.ToString());
+
+            String colText = null;
+            foreach (String column in m_activityPageColumns)
+            {
+                if (colText == null) { colText = column; }
+                else { colText += ";" + column; }
+            }
+            pluginNode.SetAttribute(xmlTags.sColumns, colText);
+        }
+
+        //Old version, read from logbook
+        public void FromXml(XmlNode pluginNode)
+        {
+			defaults();
 
 			XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
             if (settingsNode != null && settingsNode.SelectSingleNode("@defaultRadius") != null)
@@ -121,15 +185,11 @@ namespace TrailsPlugin.Data {
 				if (activityPageNode.SelectSingleNode("@chartType") != null) {
 					m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes),activityPageNode.SelectSingleNode("@chartType").Value);
 				}
-				foreach (XmlNode node in activityPageNode.SelectNodes("Column")) {
+                m_activityPageColumns.Clear();
+                foreach (XmlNode node in activityPageNode.SelectNodes("Column"))
+                {
 					m_activityPageColumns.Add(node.InnerText);
 				}
-			} else {
-				m_activityPageColumns.Add(UI.TrailResultColumnIds.Order);
-				m_activityPageColumns.Add(UI.TrailResultColumnIds.StartTime);
-				m_activityPageColumns.Add(UI.TrailResultColumnIds.Duration);
-				m_activityPageColumns.Add(UI.TrailResultColumnIds.AvgHR);
-				m_activityPageColumns.Add(UI.TrailResultColumnIds.AvgCadence);
 			}
 		}
 

@@ -43,6 +43,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		public virtual void ThemeChanged(ITheme visualTheme) {
+            presentRadius();
 			m_visualTheme = visualTheme;
 			BackColor = visualTheme.Control;
 			List.ThemeChanged(visualTheme);
@@ -73,19 +74,11 @@ namespace TrailsPlugin.UI.Activity {
 					}
 				}
 			}
-			float value;
-			if (float.TryParse(this.Radius.Text, out value) == false) {
-				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
-				return;
-			}
-
 			string oldTrailName = m_TrailToEdit.Name;
 			m_TrailToEdit.Name = TrailName.Text;
-			m_TrailToEdit.Radius = (float)Length.Convert(float.Parse(Radius.Text),
-				PluginMain.GetApplication().SystemPreferences.ElevationUnits,
-				Length.Units.Meter
-			);
-			if (this.m_addMode) {
+            //Radius handled on LostFocus
+            if (this.m_addMode)
+            {
 				if (!Controller.TrailController.Instance.AddTrail(m_TrailToEdit)) {
 					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_InsertFailed);
 					return;
@@ -120,13 +113,31 @@ namespace TrailsPlugin.UI.Activity {
 			List.Columns.Clear();
             List.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 100, StringAlignment.Near));
             List.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 100, StringAlignment.Near));
-			List.RowData = m_TrailToEdit.TrailLocations;
-
+            //Add when list is editable
+            //List.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 100, StringAlignment.Near));
+            List.RowData = m_TrailToEdit.TrailLocations;
+            
 			TrailName.Text = m_TrailToEdit.Name;
-			Length.Units eu = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
-			lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius+" (" + Length.LabelAbbr(eu) + "):";
-			Radius.Text = Utils.Units.ToString(m_TrailToEdit.Radius, eu);
+			lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius+" :";
+            presentRadius();
 		}
-
+        private void presentRadius()
+        {
+            Radius.Text = Utils.Units.ElevationToString(m_TrailToEdit.Radius, "u");
+        }
+        private void Radius_LostFocus(object sender, System.EventArgs e)
+        {
+            float result;
+            result = Utils.Units.ParseElevation(Radius.Text);
+            if (result > 0)
+            {
+                m_TrailToEdit.Radius = result;
+            }
+            else
+            {
+                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
+            }
+            presentRadius();
+        }
 	}
 }

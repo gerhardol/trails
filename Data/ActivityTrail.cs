@@ -33,16 +33,55 @@ namespace TrailsPlugin.Data {
 				return m_trail.IsInBounds(gpsBounds);
 			}
 		}
+        private float checkPass(IGPSPoint r1, float d1, IGPSPoint r2, float d2, TrailGPSLocation trailp, float radius)
+        {
+            float factor = 0;
+            if (r1 == null || r2 == null || trailp == null) return factor;
 
+            //Check if the line goes via the "circle" if the sign changes
+            //Also need to check close points that fit in a 45 deg tilted "square" where sign may not change
+            if (r1.LatitudeDegrees > trailp.LatitudeDegrees
+                                && r2.LatitudeDegrees < trailp.LatitudeDegrees
+                || r1.LatitudeDegrees < trailp.LatitudeDegrees
+                                && r2.LatitudeDegrees > trailp.LatitudeDegrees
+                || r1.LongitudeDegrees > trailp.LongitudeDegrees
+                                && r2.LongitudeDegrees < trailp.LongitudeDegrees
+                || r1.LongitudeDegrees < trailp.LongitudeDegrees
+                                && r2.LongitudeDegrees > trailp.LongitudeDegrees
+                || d1 < radius * Math.Sqrt(2)
+                || d2 < radius * Math.Sqrt(2))
+            {
+                //Law of cosines - get angle at r1
+                double d3 = r1.DistanceMetersToPoint(r2);
+                double a1 = Math.Acos((d1 * d1 + d3 * d3 - d2 * d2) / (2 * d1 * d3));
+                //Dist from r1 to closest point
+                double d = d1*Math.Cos(a1);
+                //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
+                if (d < d3 && d1*Math.Sin(a1) < radius)
+                {
+                    factor = 1 - (float)(d / d3);
+                    //Return factor, to return best aproximation something like below could be used
+                    //The time should also be estimated 
+                    //Lineary extend - not exact but works on shorter distances
+                    //resultPoint = new GPSPoint(
+                    //    r1.LatitudeDegrees + factor*(r2.LatitudeDegrees - r1.LatitudeDegrees),
+                    //    r1.LongitudeDegrees + factor*(r2.LongitudeDegrees - r1.LongitudeDegrees),
+                    //    r1.ElevationMeters + factor*(r2.ElevationMeters - r1.ElevationMeters));
+                }
+            }
+            return factor;
+        }
 		public IList<TrailResult> Results {
 			get {
 				if (m_resultsList == null) {
 					m_resultsList = new List<TrailResult>();
-					if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0) {
+					if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 1) {
 
 						int trailIndex = 0;
 						int startIndex = -1, endIndex = -1;
 						bool stillInStartRadius = false;
+                        IGPSPoint prevRoutePoint = null;
+                        float prevDistToPoint = 0;
 						for (int routeIndex = 0; routeIndex < m_activity.GPSRoute.Count; routeIndex++) {
 							IGPSPoint routePoint = m_activity.GPSRoute[routeIndex].Value;
 
@@ -60,36 +99,68 @@ namespace TrailsPlugin.Data {
 								}
 							}
 
+                            int matchIndex = -1;
 							float distToPoint = this.m_trail.TrailLocations[trailIndex].DistanceMetersToPoint(routePoint);
-							if (distToPoint < this.Trail.Radius) {
-								for (int routeIndex2 = routeIndex + 1; routeIndex2 < m_activity.GPSRoute.Count; routeIndex2++) {
-									IGPSPoint routePoint2 = m_activity.GPSRoute[routeIndex2].Value;
-									float distToPoint2 = this.m_trail.TrailLocations[trailIndex].DistanceMetersToPoint(routePoint2);
-									if (distToPoint2+0.5 > distToPoint) {
-										break;
-									} else {
-										distToPoint = distToPoint2;
-										routeIndex = routeIndex2;
-									}
-								}
-								if (trailIndex == 0) {
-									// found the start						
-									startIndex = routeIndex;
-									trailIndex++;
-									stillInStartRadius = true;
+                            if (distToPoint < this.Trail.Radius)
+                            {
+                                matchIndex = routeIndex;
+                                for (int routeIndex2 = routeIndex + 1; routeIndex2 < m_activity.GPSRoute.Count; routeIndex2++)
+                                {
+                                    //Get closest point, abort when track is moving away from middle
+                                    IGPSPoint routePoint2 = m_activity.GPSRoute[routeIndex2].Value;
+                                    float distToPoint2 = this.m_trail.TrailLocations[trailIndex].DistanceMetersToPoint(routePoint2);
+                                    if (distToPoint2 + 0.5 > distToPoint)
+                                    {
+                                        matchIndex = routeIndex;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        distToPoint = distToPoint2;
+                                        routeIndex = routeIndex2;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                float factor = checkPass(prevRoutePoint, prevDistToPoint, routePoint, distToPoint, this.m_trail.TrailLocations[trailIndex], this.Trail.Radius);
+                                if (0 < factor)
+                                {
+                                    //An estimated point (including time) could be inserted in the track
+                                    matchIndex = prevDistToPoint > distToPoint ? routeIndex : routeIndex-1;
+                                }
+                            }
 
-								} else if (trailIndex == this.m_trail.TrailLocations.Count - 1) {
-									// found the end
-									endIndex = routeIndex;
-									TrailResult result = new TrailResult(m_activity, m_resultsList.Count + 1, startIndex, endIndex);
-									m_resultsList.Add(result);
-									result = null;
-									trailIndex = 0;
-								} else {
-									// found a mid point
-									trailIndex++;
-								}
-							}
+                            prevRoutePoint = routePoint;
+                            prevDistToPoint = distToPoint;
+                            if (matchIndex >= 0)
+                            {
+                                //This is a match, should not check following points for "passing by"
+                                prevRoutePoint = null;
+
+                                if (trailIndex == 0)
+                                {
+                                    // found the start						
+                                    startIndex = matchIndex;
+                                    trailIndex++;
+                                    stillInStartRadius = true;
+
+                                }
+                                else if (trailIndex == this.m_trail.TrailLocations.Count - 1)
+                                {
+                                    // found the end
+                                    endIndex = matchIndex;
+                                    TrailResult result = new TrailResult(m_activity, m_resultsList.Count + 1, startIndex, endIndex);
+                                    m_resultsList.Add(result);
+                                    result = null;
+                                    trailIndex = 0;
+                                }
+                                else
+                                {
+                                    // found a mid point
+                                    trailIndex++;
+                                }
+                            }
 						}
 					}
 				}

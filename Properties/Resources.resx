@@ -136,10 +136,10 @@
     <value>Insert failed</value>
   </data>
   <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
-    <value>LatitudeDegrees</value>
+    <value>Latitude</value>
   </data>
   <data name="UI_Activity_EditTrail_Longitude" xml:space="preserve">
-    <value>LongitudeDegrees</value>
+    <value>Longitude</value>
   </data>
   <data name="UI_Activity_EditTrail_Radius" xml:space="preserve">
     <value>Radius</value>

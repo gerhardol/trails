@@ -115,7 +115,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LatitudeDegrees.
+        ///   Looks up a localized string similar to Latitude.
         /// </summary>
         internal static string UI_Activity_EditTrail_Latitude {
             get {
@@ -124,7 +124,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to LongitudeDegrees.
+        ///   Looks up a localized string similar to Longitude.
         /// </summary>
         internal static string UI_Activity_EditTrail_Longitude {
             get {

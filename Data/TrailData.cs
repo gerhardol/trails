@@ -79,20 +79,13 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-        private class xmlTags
-        {
-            public const string tTrails = "tTrails";
-        }
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            String attr;
-            //m_AllTrails.Clear();
-            attr = pluginNode.GetAttribute(xmlTags.tTrails);
-            //if (attr.Length > 0) { m_defaultRadius = float.Parse(attr, NumberFormatInfo.InvariantInfo); }
-            //FromXml(pluginNode);
             defaults();
+            String attr;
+            attr = pluginNode.GetAttribute(xmlTags.tTrails);
             XmlDocument doc = new XmlDocument();
-            if (attr == "")
+            if (null == attr || 0 == attr.Length)
             {
                 attr = "<Trails/>";
             }
@@ -107,7 +100,6 @@ namespace TrailsPlugin.Data {
 
         public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
         {
-            //ToXml(xmlDoc);
             XmlNode trails = doc.CreateElement("Trails");
             foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
             {
@@ -116,6 +108,12 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
 
         }
+        private class xmlTags
+        {
+            public const string tTrails = "tTrails";
+        }
+
+        //Old version, read from logbook
         public void FromXml(XmlNode pluginNode)
         {
             defaults();
@@ -126,6 +124,7 @@ namespace TrailsPlugin.Data {
 
 		}
 
+        //This is not called by default
 		public XmlNode ToXml(XmlDocument doc) {
 			XmlNode trails = doc.CreateElement("Trails");
 			foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {

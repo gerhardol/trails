@@ -33,7 +33,6 @@ namespace TrailsPlugin.Data {
         {
             m_activityPageNumFixedColumns = 1;
             m_defaultRadius = 20;
-            m_activityPageColumns = new List<string>();
             m_xAxisValue = TrailLineChart.XAxisValue.Distance;
             m_chartType = TrailLineChart.LineChartTypes.Speed;
 
@@ -109,20 +108,11 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-        private class xmlTags
-        {
-            public const string sDefaultRadius = "sDefaultRadius";
-            public const string sNumFixedColumns = "sNumFixedColumns";
-            public const string sXAxis = "sXAxis";
-            public const string sChartType = "sChartType";
-            public const string sColumns = "sColumns";
-        }
-
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            String attr;
             defaults();
 
+            String attr;
             attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
             if (attr.Length > 0) { m_defaultRadius = float.Parse(attr, NumberFormatInfo.InvariantInfo); }
             attr = pluginNode.GetAttribute(xmlTags.sNumFixedColumns);
@@ -145,6 +135,11 @@ namespace TrailsPlugin.Data {
 
         public static void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
         {
+            if (null == m_activityPageColumns)
+            {
+                //This can occur if the logbook was not loaded when exiting
+                defaults();
+            }
             pluginNode.SetAttribute(xmlTags.sDefaultRadius, XmlConvert.ToString(m_defaultRadius));
             pluginNode.SetAttribute(xmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
             pluginNode.SetAttribute(xmlTags.sXAxis, m_xAxisValue.ToString());
@@ -157,6 +152,15 @@ namespace TrailsPlugin.Data {
                 else { colText += ";" + column; }
             }
             pluginNode.SetAttribute(xmlTags.sColumns, colText);
+        }
+
+        private class xmlTags
+        {
+            public const string sDefaultRadius = "sDefaultRadius";
+            public const string sNumFixedColumns = "sNumFixedColumns";
+            public const string sXAxis = "sXAxis";
+            public const string sChartType = "sChartType";
+            public const string sColumns = "sColumns";
         }
 
         //Old version, read from logbook
@@ -193,6 +197,7 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+        //This is not called by default
 		public XmlNode ToXml(XmlDocument doc) {
 			XmlNode settingsNode = doc.CreateElement("Settings");
 			if (settingsNode.Attributes["defaultRadius"] == null) {

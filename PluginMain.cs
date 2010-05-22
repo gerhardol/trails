@@ -86,19 +86,21 @@ namespace TrailsPlugin {
 
 		#endregion
 
-		public static void ReadExtensionData() {
-			m_data = new TrailsPlugin.Data.TrailData();
-			m_settings = new TrailsPlugin.Data.Settings();
+        public static void ReadExtensionData()
+        {
+            m_data = new TrailsPlugin.Data.TrailData();
+            m_settings = new TrailsPlugin.Data.Settings();
 
-			XmlDocument doc = new XmlDocument();
-			string xml = PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
-			if (xml == "") {
-				xml = "<TrailsPlugin/>";
-			}
-			doc.LoadXml(xml);
-			m_data.FromXml(doc.DocumentElement);
-			m_settings.FromXml(doc.DocumentElement);			
-		}
+            XmlDocument doc = new XmlDocument();
+            string xml = PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
+            if (xml == "")
+            {
+                xml = "<TrailsPlugin/>";
+            }
+            doc.LoadXml(xml);
+            m_data.FromXml(doc.DocumentElement);
+            m_settings.FromXml(doc.DocumentElement);
+        }
 
 		public static void WriteExtensionData() 
         {
@@ -135,7 +137,17 @@ namespace TrailsPlugin {
 		public static Data.TrailData Data {
 			get {
 				if (m_data == null) {
-					PluginMain.ReadExtensionData();
+                    if (null == PluginMain.GetApplication().Logbook)
+                    {
+                        //logbook is null if it could not be loaded, an exception occurs at exit
+                        settingsVersion = settingsVersionCurrent;
+                        m_settings = new TrailsPlugin.Data.Settings();
+                        m_data = new TrailsPlugin.Data.TrailData();
+                    }
+                    else
+                    {
+                        PluginMain.ReadExtensionData();
+                    }
 				}
 				return m_data;
 			}

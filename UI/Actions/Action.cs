@@ -72,7 +72,7 @@ namespace TrailsPlugin.UI.Actions {
         {
             get
             {
-                //ST3fix if (activities.Count == 0) return false;
+                if (null == m_activities || m_activities.Count == 0) return false;
                 return true;
             }
         }

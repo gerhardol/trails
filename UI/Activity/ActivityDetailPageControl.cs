@@ -31,6 +31,7 @@ using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 #else
 using ZoneFiveSoftware.Common.Visuals.Mapping;
 #endif
+//IListItem, ListSettings
 using ZoneFiveSoftware.SportTracks.Util;
 using ZoneFiveSoftware.SportTracks.UI;
 using ZoneFiveSoftware.SportTracks.UI.Forms;
@@ -79,6 +80,7 @@ namespace TrailsPlugin.UI.Activity {
 
 			List.NumHeaderRows = TreeList.HeaderRows.Two;
 			List.LabelProvider = new TrailResultLabelProvider();
+            btnExpand.Left = this.Right - 46;
 
 			this.RefreshColumns();
 			this.RefreshChartMenu();
@@ -166,11 +168,24 @@ namespace TrailsPlugin.UI.Activity {
 
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
-			if (mapControl.Selected.Count > 1) {
-				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
+            if (
+#if ST_2_1
+			mapControl.Selected.Count
+#else
+            layer.SelectedGPSLocations.Count
+#endif
+               > 1)
+            {
+                layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 				layer.CaptureSelectedGPSLocations();
 			} else {
-                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, mapControl.Selected.Count);
+                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,
+#if ST_2_1
+			mapControl.Selected.Count
+#else
+            layer.SelectedGPSLocations.Count
+#endif
+                    );
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
@@ -178,8 +193,14 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnEdit_Click(object sender, EventArgs e) {
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
-			if (mapControl.Selected.Count > 1) {
-
+            if (
+#if ST_2_1
+			   mapControl.Selected.Count
+#else
+               layer.SelectedGPSLocations.Count
+#endif
+                > 1)
+            {
 				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 				layer.CaptureSelectedGPSLocations();
 			} else {
@@ -344,8 +365,11 @@ namespace TrailsPlugin.UI.Activity {
 						result = (Data.TrailResult)this.List.SelectedItems[0];
 					}
 				}
-				m_chartsControl.RefreshCharts(activity, result);
-			} else {
+                m_chartsControl.RefreshCharts(activity, result);
+                m_chartsControl.RefreshRows();
+            }
+            else
+            {
 				this.LineChart.BeginUpdate();
 				this.LineChart.Activity = null;
 				this.LineChart.TrailResult = null;
@@ -490,15 +514,19 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
-			get {
+			get
+            {
+#if ST_2_1
+//ST3fix
 				Control c = this.Parent;
 				while (c != null) {
-					if (c is ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel) {
+                    if (c is ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel) {
 						return (System.Windows.Forms.SplitContainer)((ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel)c).Controls[0];
-					}
+                }
 					c = c.Parent;
 				}
-				throw new Exception("Daily Activity Splitter not found");
+#endif
+                throw new Exception("Daily Activity Splitter not found");
 			}
 		}
 
@@ -507,13 +535,14 @@ namespace TrailsPlugin.UI.Activity {
 			p2.Controls[0].Visible = false;
 			if (m_chartsControl == null) {
 				m_chartsControl = new ChartsControl();
-				DailyActivitySplitter.Panel2.Controls.Add(m_chartsControl);
+                m_chartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                m_chartsControl.Dock = DockStyle.Fill;
+                m_chartsControl.Top = 0;
+                m_chartsControl.Left = 0;
+                m_chartsControl.Width = p2.Width;
+                m_chartsControl.Height = p2.Height;
+                DailyActivitySplitter.Panel2.Controls.Add(m_chartsControl);
 				m_chartsControl.ThemeChanged(m_visualTheme);
-				m_chartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-				m_chartsControl.Top = 0;
-				m_chartsControl.Left = 0;
-				m_chartsControl.Width = p2.Width;
-				m_chartsControl.Height = p2.Height;
 				m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
 			}
 			m_chartsControl.Visible = true;

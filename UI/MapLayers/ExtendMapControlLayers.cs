@@ -24,17 +24,32 @@ using ZoneFiveSoftware.Common.Visuals.Mapping;
 #endif
 
 namespace TrailsPlugin.UI.MapLayers {
-	class ExtendMapControlLayers : IExtendMapControlLayers {
+	class ExtendMapControlLayers : 
+#if ST_2_1
+        IExtendMapControlLayers
+#else
+        IExtendMapControlProviders
+#endif
+    {
 
+#if ST_2_1
 		#region IExtendMapControlLayers Members
 
 		public IList<IMapControlLayer> MapLayers(IMapControl mapControl) {
 			MapControlLayer layer = MapControlLayer.Instance;
 			layer.MapControl = mapControl;
 			return new IMapControlLayer[] { layer };
-		}
+        }
 
 		#endregion
+#else
+            //ST3fix
+        public IList<IMapControlProvider> MapControlProviders
+        {
+            get
+            { return null; }
+        }
+#endif
 	}
 }
 

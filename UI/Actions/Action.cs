@@ -23,9 +23,10 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace TrailsPlugin.UI.Actions {
-	internal class Action : IAction, INotifyPropertyChanged {
+	internal class Action : IAction {
 		private IList<IActivity> m_activities;
-		public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
 
 		public Action(IList<IActivity> activities) {
 			this.m_activities = activities;
@@ -54,11 +55,27 @@ namespace TrailsPlugin.UI.Actions {
 			}
 		}
 
-		public string Title {
+        public IList<string> MenuPath
+        {
+            get
+            {
+                return new List<string>();
+            }
+        }
+        public string Title
+        {
 			get {
 				return Properties.Resources.UI_Action_Title;
 			}
 		}
-	}
+        public bool Visible
+        {
+            get
+            {
+                //ST3fix if (activities.Count == 0) return false;
+                return true;
+            }
+        }
+    }
 }
 

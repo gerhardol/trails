@@ -103,7 +103,7 @@ namespace TrailsPlugin {
 
 		public static void WriteExtensionData() 
         {
-            //Write logbook if configured to do so
+            //Normally not used
             if (settingsVersionCurrent > settingsVersion)
             {
                 XmlDocument doc = new XmlDocument();
@@ -138,8 +138,7 @@ namespace TrailsPlugin {
 				if (m_data == null) {
                     if (null == PluginMain.GetApplication().Logbook)
                     {
-                        //logbook is null if it could not be loaded, an exception occurs at exit
-                        settingsVersion = settingsVersionCurrent;
+                        //logbook is null if it could not be loaded, to avoid an exception that occurs at exit
                         m_settings = new TrailsPlugin.Data.Settings();
                         m_data = new TrailsPlugin.Data.TrailData();
                     }

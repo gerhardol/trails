@@ -31,9 +31,12 @@ namespace TrailsPlugin.UI.Activity {
 		public event System.EventHandler Collapse;
 
 		public ChartsControl() {
-			InitializeComponent();
-
-			btnCollapse.CenterImage = CommonIcons.LowerLeft;
+            InitializeComponent();
+            RefreshPage();
+        }
+        public void RefreshPage()
+        {
+            btnCollapse.CenterImage = CommonIcons.LowerLeft;
 			btnCollapse.Text = "";
 			btnCollapse.Left = this.Right - 46;
 			btnCollapse.Top = 2;
@@ -43,9 +46,7 @@ namespace TrailsPlugin.UI.Activity {
 			gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
 			elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
 			cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
-			RefreshRows();
 		}
-
 		public void ThemeChanged(ITheme visualTheme) {
 			this.ChartBanner.ThemeChanged(visualTheme);
 		}
@@ -53,18 +54,38 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnCollapse_Click(object sender, EventArgs e) {
 			Collapse(sender, e);
 		}
+        public void RefreshRows()
+        {
+            int noOfGraphs = 0;
+            for (int i = 1; i < tableLayoutPanel1.RowCount; i++)
+            {
+                if (true == tableLayoutPanel1.Controls[i].Visible)
+                {
+                    noOfGraphs++;
+                }
+            }
+            //tableLayoutPanel1.Width = tableLayoutPanel1.Parent.Width;
+            //tableLayoutPanel1.Height = tableLayoutPanel1.Parent.Height;
+            int height = (tableLayoutPanel1.Height-(int)tableLayoutPanel1.RowStyles[0].Height) / noOfGraphs;
+            //tableLayoutPanel1.Width = tableLayoutPanel1.Parent.Width;
+            for (int i = 1; i < tableLayoutPanel1.RowCount; i++)
+            {
+                if (true == tableLayoutPanel1.Controls[i].Visible)
+                {
+                    //AutoSize will give strange sizes, use manual sizing
+                    tableLayoutPanel1.RowStyles[i].SizeType = SizeType.Absolute;
+                    tableLayoutPanel1.RowStyles[i].Height = height;
+                }
+                else
+                {
+                    tableLayoutPanel1.RowStyles[i].SizeType = SizeType.Absolute;
+                    tableLayoutPanel1.RowStyles[i].Height = 0;
+                }
+            }
+        }
 
-		public void RefreshRows() {
-			tableLayoutPanel1.RowStyles[0].SizeType = SizeType.AutoSize;
-			tableLayoutPanel1.RowStyles[1].SizeType = SizeType.AutoSize;
-			tableLayoutPanel1.RowStyles[2].SizeType = SizeType.AutoSize;
-			tableLayoutPanel1.RowStyles[3].SizeType = SizeType.AutoSize;
-			tableLayoutPanel1.RowStyles[4].SizeType = SizeType.AutoSize;
-
-		}
-
-		public void RefreshCharts(IActivity activity, Data.TrailResult result) {
-
+        public void RefreshCharts(IActivity activity, Data.TrailResult result)
+        {
 			speedChart.BeginUpdate();
 			speedChart.Activity = activity;
 			speedChart.XAxisReferential = PluginMain.Settings.XAxisValue;
@@ -94,9 +115,6 @@ namespace TrailsPlugin.UI.Activity {
 			cadenceChart.XAxisReferential = PluginMain.Settings.XAxisValue;
 			cadenceChart.TrailResult = result;
 			cadenceChart.EndUpdate();			
-			
 		}
-
-
 	}
 }

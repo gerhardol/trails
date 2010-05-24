@@ -92,7 +92,8 @@ namespace TrailsPlugin.UI.Settings {
 
 		#region INotifyPropertyChanged Members
 
-		public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion
 

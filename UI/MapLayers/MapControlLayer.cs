@@ -28,8 +28,13 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 
 namespace TrailsPlugin.UI.MapLayers {
-	class MapControlLayer : IMapControlLayer {
-
+	class MapControlLayer
+#if ST_2_1
+        : 
+        IMapControlLayer
+        //ST3fix This file is patched to compile in ST3 only, not working
+#endif
+    {
 		public event System.EventHandler SelectedGPSLocationsChanged;
 
 		private bool m_CaptureSelectedGPSLocations;
@@ -59,16 +64,23 @@ namespace TrailsPlugin.UI.MapLayers {
 			get {
 				return m_mapControl;
 			}
-		}
+        }
 
+#if ST_2_1
 		private IList<IGPSLocation> getSelectedGPSLocations(IMapDrawContext drawContext) {
 			IList<IGPSLocation> list = new List<IGPSLocation>() { };
 			IMapControl mapControl = UI.MapLayers.MapControlLayer.Instance.MapControl;
-			if (mapControl.Selected.Count > 0) {
-				IMapControlObject[] selectedMapControlObjects = new IMapControlObject[mapControl.Selected.Count];
-				mapControl.Selected.CopyTo(selectedMapControlObjects, 0);
-
-				for (int i = 0; i < mapControl.Selected.Count; i++) {
+             
+#if ST_2_1
+			ICollection<IMapControlObject> selectedGPS = mapControl.Selected;
+#else
+            IList<IGPSLocation> selectedGPS = UI.MapLayers.MapControlLayer.Instance.SelectedGPSLocations;
+#endif
+			if (selectedGPS.Count > 0) {
+#if ST_2_1
+            IMapControlObject[] selectedMapControlObjects = new IMapControlObject[selectedGPS.Count];
+				selectedGPS.CopyTo(selectedMapControlObjects, 0);
+				for (int i = 0; i < selectedGPS.Count; i++) {
 					Rectangle rec = selectedMapControlObjects[i].PixelBounds(drawContext);
 
 					int X = rec.X + (rec.Width / 2) - (drawContext.DrawRectangle.Width / 2);
@@ -76,14 +88,22 @@ namespace TrailsPlugin.UI.MapLayers {
 					IGPSLocation loc = drawContext.Projection.PixelToGPS(drawContext.Center, drawContext.ZoomLevel, new Point(X, Y));
 					list.Add(loc);
 				}
-			}
+#else
+                //ST3fix
+#endif
+            }
 			return list;
 		}
+#endif
 
 		public void CaptureSelectedGPSLocations() {
 			m_SelectedGPSLocations.Clear();
 			m_CaptureSelectedGPSLocations = true;
+#if ST_2_1
 			m_mapControl.Refresh();
+#else
+            //ST3fix
+#endif
 		}
 
 		public IList<IGPSLocation> SelectedGPSLocations {
@@ -110,21 +130,30 @@ namespace TrailsPlugin.UI.MapLayers {
 		public bool ShowHighlight {
 			set {
 				m_ShowHighlight = value;
-				m_mapControl.Refresh();
+#if ST_2_1
+			m_mapControl.Refresh();
+#else
+            //ST3fix
+#endif
 			}
 		}
 
 
-		#region IMapControlLayer Members
+#if ST_2_1
+        #region IMapControlLayer Members
 
 		public void Draw(IMapDrawContext drawContext) {
 			if (m_CaptureSelectedGPSLocations) {
 				m_CaptureSelectedGPSLocations = false;
+#if ST_2_1
 				if (m_SelectedGPSLocations.Count != MapControl.Selected.Count) {
 					m_SelectedGPSLocations = getSelectedGPSLocations(drawContext);
 					SelectedGPSLocationsChanged(this, new System.EventArgs());
 				}
-			}
+#else
+                //ST3fix
+#endif
+            }
 
 			if (m_ShowHighlight) {
 				//drawContext.Center
@@ -148,7 +177,7 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-		public ICollection<IMapControlObject> HitTest(Rectangle rectClient, IMapDrawContext drawContext) {
+        public ICollection<IMapControlObject> HitTest(Rectangle rectClient, IMapDrawContext drawContext) {
 			throw new NotImplementedException();
 		}
 
@@ -159,7 +188,7 @@ namespace TrailsPlugin.UI.MapLayers {
 
 		public System.Guid Id {
 			get {
-				return GUIDs.MapControLayer;
+				return GUIDs.MapControlLayer;
 			}
 		}
 
@@ -175,27 +204,33 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-		#endregion
+        #endregion
 
-		private class MapControlObject : IMapControlObject {
+        private class MapControlObject : IMapControlObject
+        {
 
-			#region IMapControlObject Members
+            #region IMapControlObject Members
 
-			public void DrawHighlight(IMapDrawContext drawContext) { }
+            public void DrawHighlight(IMapDrawContext drawContext) { }
 
-			public void DrawInfo(IMapDrawContext drawContext, System.Drawing.Rectangle infoRect, bool bSelected) { }
+            public void DrawInfo(IMapDrawContext drawContext, System.Drawing.Rectangle infoRect, bool bSelected) { }
 
-			public void DrawSelected(IMapDrawContext drawContext) { }
+            public void DrawSelected(IMapDrawContext drawContext) { }
 
-			public Size InfoSize(IMapDrawContext drawContext, bool bSelected) {
-				return new Size();
-			}
+            public Size InfoSize(IMapDrawContext drawContext, bool bSelected)
+            {
+                return new Size();
+            }
 
-			public Rectangle PixelBounds(IMapDrawContext drawContext) {
-				return new Rectangle();
-			}
+            public Rectangle PixelBounds(IMapDrawContext drawContext)
+            {
+                return new Rectangle();
+            }
 
-			#endregion
-		}
-	}
+            #endregion
+        }
+#endif
+		
+    }
 }
+

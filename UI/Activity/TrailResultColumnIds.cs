@@ -16,12 +16,13 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using ZoneFiveSoftware.Common.Visuals;
-using ZoneFiveSoftware.SportTracks.UI;
 using System.Collections.Generic;
 using System.Drawing;
-using ZoneFiveSoftware.SportTracks.Data;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.Fitness;
+//IListItem
+using ZoneFiveSoftware.SportTracks.UI;
+using ZoneFiveSoftware.SportTracks.Data;
 
 namespace TrailsPlugin.UI {
 	public class TrailResultColumnIds {

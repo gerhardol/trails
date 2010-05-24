@@ -27,7 +27,12 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Chart;
 using ZoneFiveSoftware.Common.Data.Measurement;
+#if ST_2_1
+//SaveImage
 using ZoneFiveSoftware.SportTracks.UI.Forms;
+#else
+using ZoneFiveSoftware.Common.Visuals.Forms;
+#endif
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class TrailLineChart : UserControl {
@@ -126,11 +131,7 @@ namespace TrailsPlugin.UI.Activity {
 			InitializeComponent();
 
 			MainChart.YAxis.SmartZoom = true;
-
-			SaveImageButton.CenterImage = CommonResources.Images.Save16;
-			ZoomInButton.CenterImage = CommonResources.Images.ZoomIn16;
-			ZoomOutButton.CenterImage = CommonResources.Images.ZoomOut16;
-		}
+        }
 
 		private void SaveImageButton_Click(object sender, EventArgs e) {
 			SaveImage dlg = new SaveImage();
@@ -148,14 +149,20 @@ namespace TrailsPlugin.UI.Activity {
 			MainChart.Focus();
 		}
 
-		private void ZoomOutButton_Click(object sender, EventArgs e) {
-			MainChart.ZoomOut();
-			MainChart.Focus();
-		}
+        private void ZoomOutButton_Click(object sender, EventArgs e)
+        {
+            MainChart.ZoomOut();
+            MainChart.Focus();
+        }
+        private void ZoomInButton_Click(object sender, EventArgs e)
+        {
+            MainChart.ZoomIn();
+            MainChart.Focus();
+        }
 
-		private void ZoomInButton_Click(object sender, EventArgs e) {
-			MainChart.ZoomIn();
-			MainChart.Focus();
+        private void ZoomToContentButton_Click(object sender, EventArgs e)
+        {
+			this.ZoomToData();
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {
@@ -182,7 +189,16 @@ namespace TrailsPlugin.UI.Activity {
 			//  is set in Line mode to be displayed over the fill
 
 			if (m_trailResult != null) {
-				ChartDataSeries mainData = new ChartDataSeries(MainChart, MainChart.YAxis);
+                INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(m_trailResult);
+
+                if (graphPoints.Count == 0)
+                {
+                    MainChart.Parent.Hide();
+                }
+                else
+                {
+                    MainChart.Parent.Parent.Show();
+                    ChartDataSeries mainData = new ChartDataSeries(MainChart, MainChart.YAxis);
 				ChartDataSeries mainDataCopy = new ChartDataSeries(MainChart, MainChart.YAxis);
 
 				MainChart.DataSeries.Add(mainData);
@@ -198,10 +214,8 @@ namespace TrailsPlugin.UI.Activity {
 				mainDataCopy.LineColor = ChartLineColor;
 				mainDataCopy.SelectedColor = ChartSelectedColor;
 
-				INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(m_trailResult);
-
-				if (graphPoints.Count > 0) {
-					if (XAxisReferential == XAxisValue.Time) {
+                    if (XAxisReferential == XAxisValue.Time)
+                    {
 						foreach (ITimeValueEntry<float> entry in graphPoints) {
 							mainData.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
 							mainDataCopy.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));

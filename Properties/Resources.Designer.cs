@@ -264,5 +264,12 @@ namespace TrailsPlugin.Properties {
                 return ResourceManager.GetString("UI_Settings_DefaultRadius_ToolTip", resourceCulture);
             }
         }
+        
+        internal static System.Drawing.Bitmap ZoomToContent {
+            get {
+                object obj = ResourceManager.GetObject("ZoomToContent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

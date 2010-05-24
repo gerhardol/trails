@@ -36,7 +36,7 @@
     <Compile Include="UI\Activity\TrailLineChart.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Activity\TrailLineChart.designer.cs">
+    <Compile Include="UI\Activity\TrailLineChart.Designer.cs">
       <DependentUpon>TrailLineChart.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Activity\EditTrail.cs">
@@ -134,4 +134,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <Import Project=".\Common\Common-Files.csproj" />
+  <ItemGroup>
+    <None Include="Resources\ZoomToContent.png" />
+  </ItemGroup>
 </Project>

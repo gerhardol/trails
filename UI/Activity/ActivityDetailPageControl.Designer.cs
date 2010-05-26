@@ -244,7 +244,6 @@
             this.List.ShowPlusMinus = false;
             this.List.Size = new System.Drawing.Size(400, 100);
             this.List.TabIndex = 11;
-            this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
             // 
             // listMenu
             // 

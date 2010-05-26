@@ -31,11 +31,15 @@ using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 #else
 using ZoneFiveSoftware.Common.Visuals.Mapping;
 #endif
+#if ST_2_1
 //IListItem, ListSettings
 using ZoneFiveSoftware.SportTracks.Util;
 using ZoneFiveSoftware.SportTracks.UI;
 using ZoneFiveSoftware.SportTracks.UI.Forms;
 using ZoneFiveSoftware.SportTracks.Data;
+#else
+using ZoneFiveSoftware.Common.Visuals.Forms;
+#endif
 using ZoneFiveSoftware.Common.Visuals.Chart;
 
 namespace TrailsPlugin.UI.Activity {
@@ -52,7 +56,11 @@ namespace TrailsPlugin.UI.Activity {
 
 			InitializeComponent();
 			InitControls();
-
+#if ST_2_1
+            this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
+#else
+            this.List.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+#endif
 			m_controller.CurrentActivity = activity;
 
 			RefreshControlState();
@@ -90,11 +98,17 @@ namespace TrailsPlugin.UI.Activity {
 
 			List.Columns.Clear();
 			foreach (string id in PluginMain.Settings.ActivityPageColumns) {
-				foreach (ListItemInfo columnDef in TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity)) {
+				foreach (
+#if ST_2_1
+                    ListItemInfo
+#else
+                    IListColumnDefinition
+#endif
+                    columnDef in TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity)) {
 					if (columnDef.Id == id) {
 						TreeList.Column column = new TreeList.Column(
 							columnDef.Id,
-							columnDef.ToString(),
+                            columnDef.Text(columnDef.Id),
 							columnDef.Width,
 							columnDef.Align
 						);
@@ -168,24 +182,17 @@ namespace TrailsPlugin.UI.Activity {
 
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
-            if (
 #if ST_2_1
-			mapControl.Selected.Count
+			ICollection<IMapControlObject> selectedGPS = mapControl.Selected;
 #else
-            layer.SelectedGPSLocations.Count
+            IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif
-               > 1)
+            if (selectedGPS.Count > 1)
             {
                 layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 				layer.CaptureSelectedGPSLocations();
 			} else {
-                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,
-#if ST_2_1
-			mapControl.Selected.Count
-#else
-            layer.SelectedGPSLocations.Count
-#endif
-                    );
+                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,selectedGPS.Count);
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
@@ -193,13 +200,12 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnEdit_Click(object sender, EventArgs e) {
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
-            if (
 #if ST_2_1
-			   mapControl.Selected.Count
+			ICollection<IMapControlObject> selectedGPS = mapControl.Selected;
 #else
-               layer.SelectedGPSLocations.Count
+            IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif
-                > 1)
+            if (selectedGPS.Count > 1)
             {
 				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 				layer.CaptureSelectedGPSLocations();
@@ -330,19 +336,24 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
-			ListSettings dialog = new ListSettings();
-			dialog.ThemeChanged(m_visualTheme);
+#if ST_2_1
+            ListSettings dialog = new ListSettings();
 			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity);
+#else
+            ListSettingsDialog dialog = new ListSettingsDialog();
+            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity);
+#endif
+            dialog.ThemeChanged(m_visualTheme);
 			dialog.AllowFixedColumnSelect = true;
 			dialog.SelectedColumns = PluginMain.Settings.ActivityPageColumns;
 			dialog.NumFixedColumns = PluginMain.Settings.ActivityPageNumFixedColumns;
 
-			if (dialog.ShowDialog() == DialogResult.OK) {
+            if (dialog.ShowDialog() == DialogResult.OK) {
 				PluginMain.Settings.ActivityPageNumFixedColumns = dialog.NumFixedColumns;
 				PluginMain.Settings.ActivityPageColumns = dialog.SelectedColumns;
 				RefreshColumns();
 			}
-		}
+        }
 
 		private void List_SelectedChanged(object sender, EventArgs e) {
 			RefreshChart();

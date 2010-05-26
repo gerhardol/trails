@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Column_MaxPace" xml:space="preserve">
+    <value>Max Pace</value>
+  </data>
+  <data name="Column_MaxSpeed" xml:space="preserve">
+    <value>Max Speed</value>
+  </data>
   <data name="TrailsName" xml:space="preserve">
     <value>Trails</value>
   </data>

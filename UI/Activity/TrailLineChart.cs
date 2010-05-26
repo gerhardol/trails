@@ -22,6 +22,8 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
+
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
@@ -134,12 +136,22 @@ namespace TrailsPlugin.UI.Activity {
         }
 
 		private void SaveImageButton_Click(object sender, EventArgs e) {
-			SaveImage dlg = new SaveImage();
-
+#if ST_2_1
+            SaveImage dlg = new SaveImage();
+#else
+            SaveImageDialog dlg = new SaveImageDialog();
+#endif
+            dlg.FileName = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar + "Trails";
+            dlg.ImageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
 			if (dlg.ShowDialog() == DialogResult.OK) {
 				Size imgSize = dlg.CustomImageSize;
 
-				if (dlg.ImageSize != SaveImage.ImageSizeType.Custom) {
+#if ST_2_1
+                if (dlg.ImageSize != SaveImage.ImageSizeType.Custom)
+#else
+                if (dlg.ImageSize != SaveImageDialog.ImageSizeType.Custom)
+#endif
+                {
 					imgSize = dlg.ImageSizes[dlg.ImageSize];
 				}
 

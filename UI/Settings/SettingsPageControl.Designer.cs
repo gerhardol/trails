@@ -110,16 +110,18 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 256);
+            this.label2.Location = new System.Drawing.Point(3, 224);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(347, 13);
+            this.label2.Size = new System.Drawing.Size(353, 39);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence";
+            this.label2.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence. \r\nThe L" +
+                "icense is included in the plugin installation directory and at:\r\n http://www.gnu" +
+                ".org/licenses/lgpl.html.";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 240);
+            this.label1.Location = new System.Drawing.Point(3, 211);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(161, 13);
             this.label1.TabIndex = 1;

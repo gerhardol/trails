@@ -211,7 +211,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (graphPoints.Count == 0)
                 {
-                    MainChart.Parent.Hide();
+                    MainChart.Parent.Parent.Hide();
                 }
                 else
                 {

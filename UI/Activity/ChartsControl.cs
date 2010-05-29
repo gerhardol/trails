@@ -33,6 +33,7 @@ namespace TrailsPlugin.UI.Activity {
 		public ChartsControl() {
             InitializeComponent();
             RefreshPage();
+            this.Resize += new System.EventHandler(TrailLineChart_Resize);
         }
         public void RefreshPage()
         {
@@ -54,6 +55,10 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnCollapse_Click(object sender, EventArgs e) {
 			Collapse(sender, e);
 		}
+        void TrailLineChart_Resize(object sender, System.EventArgs e)
+        {
+            this.RefreshRows();
+        }
         public void RefreshRows()
         {
             int noOfGraphs = 0;
@@ -64,15 +69,11 @@ namespace TrailsPlugin.UI.Activity {
                     noOfGraphs++;
                 }
             }
-            //tableLayoutPanel1.Width = tableLayoutPanel1.Parent.Width;
-            //tableLayoutPanel1.Height = tableLayoutPanel1.Parent.Height;
             int height = (tableLayoutPanel1.Height-(int)tableLayoutPanel1.RowStyles[0].Height) / noOfGraphs;
-            //tableLayoutPanel1.Width = tableLayoutPanel1.Parent.Width;
             for (int i = 1; i < tableLayoutPanel1.RowCount; i++)
             {
                 if (true == tableLayoutPanel1.Controls[i].Visible)
                 {
-                    //AutoSize will give strange sizes, use manual sizing
                     tableLayoutPanel1.RowStyles[i].SizeType = SizeType.Absolute;
                     tableLayoutPanel1.RowStyles[i].Height = height;
                 }

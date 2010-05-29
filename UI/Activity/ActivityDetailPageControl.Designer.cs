@@ -37,6 +37,7 @@
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.speedPaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.paceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.heartRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -300,6 +301,7 @@
             // detailMenu
             // 
             this.detailMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.speedPaceToolStripMenuItem,
             this.speedToolStripMenuItem,
             this.paceToolStripMenuItem,
             this.heartRateToolStripMenuItem,
@@ -312,6 +314,13 @@
             this.timeToolStripMenuItem});
             this.detailMenu.Name = "detailMenu";
             this.detailMenu.Size = new System.Drawing.Size(130, 208);
+            // 
+            // speedPaceToolStripMenuItem
+            // 
+            this.speedPaceToolStripMenuItem.Name = "speedPaceToolStripMenuItem";
+            this.speedPaceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.speedPaceToolStripMenuItem.Text = "Speed";
+            this.speedPaceToolStripMenuItem.Click += new System.EventHandler(this.speedPaceToolStripMenuItem_Click);
             // 
             // speedToolStripMenuItem
             // 
@@ -472,8 +481,9 @@
 		private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
-		private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
+        private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem speedPaceToolStripMenuItem;
+        private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
 
 	}
 }

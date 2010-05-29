@@ -75,7 +75,8 @@ namespace TrailsPlugin.UI.Activity {
 			Power,
 			Grade,
 			Speed,
-			Pace
+			Pace,
+            SpeedPace
 		}
         public static string LineChartTypesString(LineChartTypes YAxisReferential)
         {
@@ -109,7 +110,13 @@ namespace TrailsPlugin.UI.Activity {
 						yAxisLabel = CommonResources.Text.LabelPace;
 						break;
 					}
-				case LineChartTypes.Grade: {
+                case LineChartTypes.SpeedPace:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelSpeed + CommonResources.Text.LabelPace;
+                        break;
+                    }
+                case LineChartTypes.Grade:
+                    {
 						yAxisLabel = CommonResources.Text.LabelGrade;
 						break;
 					}
@@ -129,10 +136,10 @@ namespace TrailsPlugin.UI.Activity {
 		private Color m_ChartSelectedColor = Color.AliceBlue;
 		private IActivity m_activity = null;
 
-		public TrailLineChart() {
-			InitializeComponent();
+        public TrailLineChart() {
+            InitializeComponent();
 
-			MainChart.YAxis.SmartZoom = true;
+            MainChart.YAxis.SmartZoom = true;
         }
 
 		private void SaveImageButton_Click(object sender, EventArgs e) {
@@ -154,7 +161,6 @@ namespace TrailsPlugin.UI.Activity {
                 {
 					imgSize = dlg.ImageSizes[dlg.ImageSize];
 				}
-
 				MainChart.SaveImage(imgSize, dlg.FileName, dlg.ImageFormat);
 			}
 
@@ -238,7 +244,7 @@ namespace TrailsPlugin.UI.Activity {
 						//Debug.Assert(distanceTrack.Count == graphPoints.Count);
 
 						for (int i = 0; i < distanceTrack.Count; ++i) {
-							float distanceValue = (float)Length.Convert(distanceTrack[i].Value, Length.Units.Meter, m_trailResult.Category.DistanceUnits);
+							float distanceValue = Utils.Units.GetLength(distanceTrack[i].Value, m_trailResult.Category.DistanceUnits);
 							if (i < graphPoints.Count) {
 								ITimeValueEntry<float> entry = graphPoints[i];
 
@@ -259,17 +265,9 @@ namespace TrailsPlugin.UI.Activity {
 			// X axis
 			switch (XAxisReferential) {
 				case XAxisValue.Distance: {
-						if (PluginMain.GetApplication() != null) {
-							Length.Units distanceUnit = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
-
-							if (m_activity != null && m_activity.Category != null) {
-								distanceUnit = m_activity.Category.DistanceUnits;
-							}
-
-							MainChart.XAxis.Formatter = new Formatter.General();
-							MainChart.XAxis.Label = CommonResources.Text.LabelDistance + " (" +
-													Length.Label(distanceUnit) + ")";
-						}
+						MainChart.XAxis.Formatter = new Formatter.General();
+						MainChart.XAxis.Label = CommonResources.Text.LabelDistance + " (" +
+                                                Utils.Units.GetDistanceLabel(m_activity) + ")";
 						break;
 					}
 				case XAxisValue.Time: {
@@ -298,16 +296,8 @@ namespace TrailsPlugin.UI.Activity {
 						break;
 					}
 				case LineChartTypes.Elevation: {
-						if (PluginMain.GetApplication() != null) {
-							Length.Units elevationUnit = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
-
-							if (m_activity != null) {
-								elevationUnit = m_activity.Category.ElevationUnits;
-							}
-
-							MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
-													Length.Label(elevationUnit) + ")";
-						}
+						MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
+                                                   Utils.Units.GetElevationLabel(m_activity) + ")";
 						break;
 					}
 				case LineChartTypes.HeartRateBPM: {
@@ -327,16 +317,17 @@ namespace TrailsPlugin.UI.Activity {
 					}
 				case LineChartTypes.Speed: {
 						MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" +
-												Utils.Units.GetSpeedUnitLabelForActivity(m_activity) + ")";
+												Utils.Units.GetSpeedLabel(m_activity) + ")";
 						break;
 					}
 				case LineChartTypes.Pace: {
 						MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
 						MainChart.YAxis.Label = CommonResources.Text.LabelPace + " (" +
-												Utils.Units.GetPaceUnitLabelForActivity(m_activity) + ")";
+												Utils.Units.GetPaceLabel(m_activity) + ")";
 						break;
 					}
-				default: {
+                default:
+                    {
 						Debug.Assert(false);
 						break;
 					}
@@ -358,7 +349,7 @@ namespace TrailsPlugin.UI.Activity {
 						// Value is in meters so convert to the right unit
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-							double temp = Length.Convert(entry.Value, Length.Units.Meter, m_activity.Category.ElevationUnits);
+                            float temp = Utils.Units.GetElevation(entry.Value, m_activity); 
 
 							track.Add(tempResult.EntryDateTime(entry), (float)temp);
 						}
@@ -399,7 +390,6 @@ namespace TrailsPlugin.UI.Activity {
 				case LineChartTypes.Speed: {
 						INumericTimeDataSeries tempResult = result.SpeedTrack;
 
-						// Value is in m/sec so convert to the right unit 
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
 							track.Add(tempResult.EntryDateTime(entry), entry.Value);
@@ -410,15 +400,14 @@ namespace TrailsPlugin.UI.Activity {
 				case LineChartTypes.Pace: {
 						INumericTimeDataSeries tempResult = result.PaceTrack;
 
-						// Value is in m/sec so convert to the right unit and to pace
-
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
 							track.Add(tempResult.EntryDateTime(entry), entry.Value);
 						}
 						break;
 					}
-				default: {
+                default:
+                    {
 						Debug.Assert(false);
 						break;
 					}

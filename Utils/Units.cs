@@ -30,57 +30,75 @@ namespace TrailsPlugin.Utils {
         public static string ElevationToString(double value, string fmt)
         {
             Length.Units units = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+            return LengthToString(value, units, fmt);
+        }
+        public static string DistanceToString(double value, string fmt)
+        {
+            Length.Units units = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
+            return LengthToString(value, units, fmt);
+        }
+        public static string LengthToString(double value, Length.Units units, string fmt)
+        {
             return Length.ToString(Length.Convert(
                     value,
                     Length.Units.Meter,
                     units), units, "N" + Length.DefaultDecimalPrecision(units)+fmt);
         }
-        public static string ToString(double value, Length.Units units)
-        {
-            return Length.ToString(Length.Convert(
-                    value,
-                    Length.Units.Meter,
-                    units), units, "N" + Length.DefaultDecimalPrecision(units));
-        }
 
-		public static string GetSpeedUnitLabelForActivity(IActivity activity) {
-			Length.Units du;
+        public static float GetSpeed(double value, IActivity activity, Speed.Units kind)
+        {
+            //speed is in m/s
+            double speed = value;
+            Length.Units du;
             if (activity != null)
             {
+#if ST_2_1
                 du = activity.Category.DistanceUnits;
+#else
+                du = (kind == Speed.Units.Pace) ? activity.Category.PaceDistance.ValueUnits : activity.Category.SpeedDistance.ValueUnits;
+                //scale, custom unit may be other than one
+                speed = speed /
+                    (float)((kind == Speed.Units.Pace) ? activity.Category.PaceDistance.Value : activity.Category.SpeedDistance.Value);
+#endif
             }
             else
             {
                 du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
             }
-            string speedUnitLabel;
-#if ST_2_1
-            if (IsMetric(du))
+            //convert from (x*)m/s to (x*)<unit>/s
+            speed = GetLength(speed, du);
+            
+            if (kind == Speed.Units.Speed)
             {
-                speedUnitLabel = CommonResources.Text.LabelKmPerHour;
+                //speed is <unit>/h
+                speed = speed * Utils.Constants.SecondsPerHour;
             }
             else
             {
-                speedUnitLabel = CommonResources.Text.LabelMilePerHour;
+                //pace is <time (s)>/<unit>
+                speed = 1/speed;
             }
-#else
+            return (float)speed;
+        }
+        public static float GetElevation(double value, IActivity activity)
+        {
+            Length.Units du;
             if (activity != null)
             {
-                speedUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
-                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed,
-                    activity.Category.SpeedDistance);
+                du = activity.Category.ElevationUnits;
             }
             else
             {
-                speedUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
-                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed,
-                    new Length(1, du));
+                du = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
             }
-#endif
-            return speedUnitLabel;
-		}
-
-		public static string GetPaceUnitLabelForActivity(IActivity activity) {
+            return GetLength(value, du);
+        }
+        public static float GetLength(double value, Length.Units du)
+        {
+            return (float)Length.Convert(value, Length.Units.Meter, du);
+        }
+        public static float GetDistance(double value, IActivity activity)
+        {
             Length.Units du;
             if (activity != null)
             {
@@ -90,60 +108,101 @@ namespace TrailsPlugin.Utils {
             {
                 du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
             }
+            return GetLength(value,du);
+        }
 
-			string paceUnitLabel;
+        public static string GetSpeedLabel(IActivity activity, Speed.Units kind)
+        {
+            string speedUnitLabel;
 #if ST_2_1
-            if (IsMetric(du))
-            {
-                paceUnitLabel = CommonResources.Text.LabelMinPerKm;
-            }
-            else
-            {
-                paceUnitLabel = CommonResources.Text.LabelMinPerMile;
-            }
-#else
+            Length.Units du;
             if (activity != null)
             {
-                paceUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
-                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Pace,
-                    activity.Category.PaceDistance);
+                du = activity.Category.DistanceUnits;
             }
             else
             {
-                paceUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
-                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Pace,
-                    new Length(1, du));
+                du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
             }
+            if (kind == Speed.Units.Speed)
+            {
+                if (IsMetric(du))
+                {
+                    speedUnitLabel = CommonResources.Text.LabelKmPerHour;
+                }
+                else
+                {
+                    speedUnitLabel = CommonResources.Text.LabelMilePerHour;
+                }
+            }
+            else
+            {
+                if (IsMetric(du))
+                {
+                    speedUnitLabel = CommonResources.Text.LabelMinPerKm;
+                }
+                else
+                {
+                    speedUnitLabel = CommonResources.Text.LabelMinPerMile;
+                }
+            }
+#else
+            Length du;
+            if (activity != null)
+            {
+               du = activity.Category.SpeedDistance;
+            }
+            else
+            {
+                du = new Length(1, PluginMain.GetApplication().SystemPreferences.DistanceUnits);
+            }
+            speedUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(kind, du);
 #endif
-			return paceUnitLabel;
+            return speedUnitLabel;
 		}
+        public static string GetSpeedLabel(IActivity activity)
+        {
+            return GetSpeedLabel(activity, Speed.Units.Speed);
+        }
+        public static string GetPaceLabel(IActivity activity)
+        {
+            return GetSpeedLabel(activity, Speed.Units.Pace);
+        }
 
-		public static bool IsMetric(Length.Units unit) {
+        public static string GetElevationLabel(IActivity activity)
+        {
+            Length.Units du;
+            if (activity != null)
+            {
+                du = activity.Category.ElevationUnits;
+            }
+            else
+            {
+                du = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
+            }
+
+            return Length.LabelAbbr(du);
+        }
+
+        public static string GetDistanceLabel(IActivity activity)
+        {
+            Length.Units du;
+            if (activity != null)
+            {
+                du = activity.Category.DistanceUnits;
+            }
+            else
+            {
+                du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
+            }
+            return Length.LabelAbbr(du);
+        }
+
+#if ST_2_1
+        public static bool IsMetric(Length.Units unit)
+        {
 			return (int)unit <= (int)Length.Units.Kilometer;
 		}
-
-		public static bool IsStatute(Length.Units unit) {
-			return !IsMetric(unit);
-		}
-
-		public static double SpeedToPace(double speed) {
-			if (speed == 0) {
-				return double.NaN;
-			} else {
-				return Constants.MinutesPerHour / speed;
-			}
-		}
-
-		public static double PaceToSpeed(double pace) {
-			return Constants.MinutesPerHour / pace;
-		}
-
-		public static Length.Units MajorLengthUnit(Length.Units unit) {
-			if (IsMetric(unit)) {
-				return Length.Units.Kilometer;
-			} else {
-				return Length.Units.Mile;
-			}
-		}
+#endif
 	}
 }

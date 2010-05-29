@@ -24,6 +24,7 @@ using System.Text;
 using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
+using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 #if ST_2_1
@@ -386,11 +387,26 @@ namespace TrailsPlugin.UI.Activity {
 				this.LineChart.TrailResult = null;
 				if (m_controller.CurrentActivityTrail != null) {
 					this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
-                    this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(PluginMain.Settings.ChartType) + " / " +
-                        PluginMain.Settings.XAxisValueString(PluginMain.Settings.XAxisValue);
-                    this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
+                    if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
+                    {
+                        if (m_controller.CurrentActivity != null && 
+                            m_controller.CurrentActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
+                        {
+                            this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
+                        }
+                        else
+                        {
+                            this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Pace;
+                        }
+                    }
+                    else
+                    {
+                        this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
+                    }
 					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+                    this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
+                        PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
+                    IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 					if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
 						this.LineChart.TrailResult = (Data.TrailResult)this.List.SelectedItems[0];
 					}
@@ -404,6 +420,8 @@ namespace TrailsPlugin.UI.Activity {
             this.speedToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Speed);
 			paceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Pace;
             this.paceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Pace);
+            speedPaceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.SpeedPace;
+            this.speedPaceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.SpeedPace);
             elevationToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Elevation;
             this.elevationToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Elevation);
             cadenceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Cadence;
@@ -432,6 +450,12 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshChartMenu();
 			RefreshChart();
 		}
+        private void speedPaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.SpeedPace;
+            RefreshChartMenu();
+            RefreshChart();
+        }
 
 		private void elevationToolStripMenuItem_Click(object sender, EventArgs e) {
 			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Elevation;

@@ -68,7 +68,6 @@
     </Compile>
     <Compile Include="UI\Activity\TrailResultColumnIds.cs" />
     <Compile Include="Utils\Constants.cs" />
-    <Compile Include="Utils\Convert.cs" />
     <Compile Include="Utils\Dialog.cs" />
     <Compile Include="Utils\GPS.cs" />
     <Compile Include="Utils\Text.cs" />

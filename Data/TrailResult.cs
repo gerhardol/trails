@@ -30,8 +30,8 @@ namespace TrailsPlugin.Data {
 		private IDistanceDataTrack m_distanceMetersTrack;
 		private INumericTimeDataSeries m_elevationMetersTrack;
 		private INumericTimeDataSeries m_powerWattsTrack;
-		private INumericTimeDataSeries m_speedTrack;
-		private INumericTimeDataSeries m_gradeTrack;
+        private INumericTimeDataSeries m_speedTrack;
+        private INumericTimeDataSeries m_gradeTrack;
 		private INumericTimeDataSeries m_paceTrack;
 		private int m_startIndex;
 		private int m_endIndex;
@@ -92,8 +92,7 @@ namespace TrailsPlugin.Data {
 						m_activity.GPSRoute[i + 1].Value
 					);
 				}
-				Length.Units units = Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits);
-				return Utils.Units.ToString(distance, units);
+                return Utils.Units.DistanceToString(distance, "");
 			}
 		}
 
@@ -139,14 +138,14 @@ namespace TrailsPlugin.Data {
 		}
 		public double MaxPace {
 			get {
-				return this.PaceTrack.Max;
+				return this.PaceTrack.Min;
 			}
 		}
-		public string ElevChg {
+        public string ElevChg
+        {
 			get {
-				Length.Units units = m_activity.Category.ElevationUnits;
 				float value = m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
-				return (value > 0 ? "+" : "") + Utils.Units.ToString(value, units);
+				return (value > 0 ? "+" : "") + Utils.Units.ElevationToString(value, "");
 			}
 		}
 		public IDistanceDataTrack DistanceMetersTrack {
@@ -178,10 +177,7 @@ namespace TrailsPlugin.Data {
 					DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
 					ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
 					if (value != null) {
-						track.Add(
-							time,
-							value.Value
-						);
+						track.Add(time,value.Value);
 					}
 				}
 			}
@@ -222,13 +218,10 @@ namespace TrailsPlugin.Data {
 					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
 					for (int i = 0; i < m_distanceMetersTrack.Count; i++) {
 						DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
-
 						ITimeValueEntry<float> value = activityInfo.SmoothedSpeedTrack.GetInterpolatedValue(time);
 						if (value != null) {
-							m_speedTrack.Add(
-								time,
-								(float)Length.Convert(value.Value, Length.Units.Meter, Utils.Units.MajorLengthUnit(m_activity.Category.DistanceUnits)) * Utils.Constants.SecondsPerHour
-							);
+                            float speed = Utils.Units.GetSpeed(value.Value, m_activity, Speed.Units.Speed);
+                            m_speedTrack.Add(time, speed);
 						}
 					}
 				}
@@ -238,28 +231,29 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries PaceTrack {
 			get {
 				if (m_paceTrack == null) {
-
-					m_paceTrack = new NumericTimeDataSeries();
-					if (SpeedTrack != null) {
-						for (int i = 0; i < m_distanceMetersTrack.Count; i++) {
-							DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
-							ITimeValueEntry<float> value = SpeedTrack.GetInterpolatedValue(time);
-							if (value != null) {
-								float pace = (float)Utils.Units.SpeedToPace(value.Value) * Utils.Constants.SecondsPerMinute;
-								if (pace != float.NaN) {
-									m_paceTrack.Add(
-										time,
-										pace
-									);
-								}
-							}
-						}
-					}
+                    //PaceTrack could share a common base track (in m/s) with SpeedTrack,
+                    //and be converted to pace/speed units when referenced
+                    m_paceTrack = new NumericTimeDataSeries();
+                    ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+                    for (int i = 0; i < m_distanceMetersTrack.Count; i++)
+                    {
+                        DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
+                        ITimeValueEntry<float> value = activityInfo.SmoothedSpeedTrack.GetInterpolatedValue(time);
+                        if (value != null)
+                        {
+                            float pace = Utils.Units.GetSpeed(value.Value, m_activity, Speed.Units.Pace);
+                            if (pace != float.NaN)
+                            {
+                                m_paceTrack.Add(time, pace);
+                            }
+                        }
+                    }
 				}
 				return m_paceTrack;
 			}
 		}
-		public INumericTimeDataSeries GradeTrack {
+        public INumericTimeDataSeries GradeTrack
+        {
 			get {
 				if (m_gradeTrack == null) {
 					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);

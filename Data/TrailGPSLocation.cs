@@ -17,14 +17,14 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using ZoneFiveSoftware.Common.Data.GPS;
 using System.Xml;
+using System;
 
 namespace TrailsPlugin.Data {
 	public class TrailGPSLocation : GPSLocation {
 		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name) : base(latitudeDegrees, longitudeDegrees)
         {
-            this.Name = name;
+            this.name = name;
         }
-	
 		static public TrailGPSLocation FromXml(XmlNode node) {
 
             string name = "";
@@ -38,8 +38,19 @@ namespace TrailsPlugin.Data {
 				float.Parse(node.Attributes["longitude"].Value),
                 name
 			);
-		}
-        public string Name;
+        }
+        private string name;
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                this.name = value;
+            }
+        }
 
 		public XmlNode ToXml(XmlDocument doc) {
 			XmlNode TrailGPSLocationNode = doc.CreateElement("TrailGPSLocation");
@@ -62,6 +73,69 @@ namespace TrailsPlugin.Data {
 				0);
 			return point.DistanceMetersToPoint(thisPoint);
 		}
+        // Some temporary handling, no bother proper
+        public string getField(int subItemSelected)
+        {
+            string subItemText;
+            switch (subItemSelected)
+            {
+                case 0:
+                    subItemText = this.LongitudeDegrees.ToString();
+                    break;
+                case 1:
+                    subItemText = this.LatitudeDegrees.ToString();
+                    break;
+                default:
+                    subItemText = this.Name;
+                    break;
+            }
+            return subItemText;
+        }
+        public TrailGPSLocation setField(int subItemSelected, string s)
+        {
+            float pos = float.NaN;
+            int valid = 1;
+            TrailGPSLocation result = this;
+            if (subItemSelected < 2)
+            {
+                //check valid numbers
+                try
+                {
+                    if (!float.TryParse(s, out pos))
+                    {
+                        pos = float.NaN;
+                    }
+                }
+                catch
+                {
+                    pos = float.NaN;
+                }
+                if (float.NaN == pos
+                    || subItemSelected == 0 && 180 < Math.Abs(pos)
+                    || subItemSelected == 1 && 90 < Math.Abs(pos)
+                    )
+                {
+                    valid = 0;
+                }
+            }
 
+            if (valid > 0)
+            {
+                switch (subItemSelected)
+                {
+                    case 0:
+                        result = new TrailGPSLocation(pos, this.LatitudeDegrees, this.name);
+                        break;
+                    case 1:
+                        result = new TrailGPSLocation(this.LongitudeDegrees, pos, this.name);
+                        break;
+                    default:
+                        this.Name = s;
+                        break;
+                }
+            }
+            return result;
+
+        }
 	}
 }

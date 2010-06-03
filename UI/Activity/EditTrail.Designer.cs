@@ -35,8 +35,8 @@
 			this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
 			this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
 			this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
-			this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
-			this.lblRadius = new System.Windows.Forms.Label();
+            this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
+            this.lblRadius = new System.Windows.Forms.Label();
 			this.Panel.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -101,7 +101,7 @@
 			this.Panel.Controls.Add(this.TrailName, 1, 0);
 			this.Panel.Controls.Add(this.btnDelete, 5, 0);
 			this.Panel.Controls.Add(this.btnEdit, 4, 0);
-			this.Panel.Controls.Add(this.List, 0, 2);
+			this.Panel.Controls.Add(this.EList, 0, 2);
 			this.Panel.Controls.Add(this.lblRadius, 0, 1);
 			this.Panel.Location = new System.Drawing.Point(15, 13);
 			this.Panel.Margin = new System.Windows.Forms.Padding(0);
@@ -263,33 +263,33 @@
 			// 
 			// List
 			// 
-			this.List.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.EList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.List.AutoScroll = true;
-			this.List.BackColor = System.Drawing.Color.Transparent;
-			this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
-			this.List.CheckBoxes = false;
-			this.Panel.SetColumnSpan(this.List, 6);
-			this.List.DefaultIndent = 15;
-			this.List.DefaultRowHeight = -1;
-			this.List.HeaderRowHeight = 21;
-			this.List.Location = new System.Drawing.Point(3, 53);
-			this.List.MultiSelect = false;
-			this.List.Name = "List";
-			this.List.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
-			this.List.NumLockedColumns = 0;
-			this.List.RowAlternatingColors = true;
-			this.List.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
-			this.List.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
-			this.List.RowHotlightMouse = true;
-			this.List.RowSelectedColor = System.Drawing.SystemColors.Highlight;
-			this.List.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
-			this.List.RowSeparatorLines = true;
-			this.List.ShowLines = false;
-			this.List.ShowPlusMinus = false;
-			this.List.Size = new System.Drawing.Size(344, 218);
-			this.List.TabIndex = 11;
+            this.EList.AutoScroll = true;
+            this.EList.BackColor = System.Drawing.Color.Transparent;
+            this.EList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
+			this.EList.CheckBoxes = false;
+			this.Panel.SetColumnSpan(this.EList, 6);
+            this.EList.DefaultIndent = 15;
+            this.EList.DefaultRowHeight = -1;
+            this.EList.HeaderRowHeight = 21;
+			this.EList.Location = new System.Drawing.Point(3, 53);
+			this.EList.MultiSelect = false;
+			this.EList.Name = "List";
+            this.EList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
+            this.EList.NumLockedColumns = 0;
+            this.EList.RowAlternatingColors = true;
+            this.EList.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
+            this.EList.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
+            this.EList.RowHotlightMouse = true;
+            this.EList.RowSelectedColor = System.Drawing.SystemColors.Highlight;
+            this.EList.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
+            this.EList.RowSeparatorLines = true;
+            this.EList.ShowLines = false;
+            this.EList.ShowPlusMinus = false;
+			this.EList.Size = new System.Drawing.Size(344, 218);
+			this.EList.TabIndex = 11;
 			// 
 			// lblRadius
 			// 
@@ -337,8 +337,8 @@
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
 		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
-		private ZoneFiveSoftware.Common.Visuals.TreeList List;
-		private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
+        private ZoneFiveSoftware.Common.Visuals.TreeList EList;
+        private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
 		private System.Windows.Forms.Label lblRadius;
 
 	}

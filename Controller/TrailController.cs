@@ -156,6 +156,5 @@ namespace TrailsPlugin.Controller {
 				return false;
 			}			
 		}
-
 	}
 }

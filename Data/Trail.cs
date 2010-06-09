@@ -98,7 +98,7 @@ namespace TrailsPlugin.Data {
                 new GPSLocation(activityBounds.SouthLatitudeDegrees - latOffset, activityBounds.EastLongitudeDegrees + longOffset));
             foreach (TrailGPSLocation trailGPSLocation in this.TrailLocations)
             {
-				if (!gpsBounds.Contains(trailGPSLocation)
+                if (!gpsBounds.Contains(trailGPSLocation.GpsLocation)
                     ) {
 					return false;
 				}

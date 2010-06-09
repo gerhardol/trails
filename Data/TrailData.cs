@@ -77,7 +77,6 @@ namespace TrailsPlugin.Data {
 				return false;
 			}
 		}
-
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
             defaults();
@@ -131,5 +130,27 @@ namespace TrailsPlugin.Data {
 			}
 			return trails;
 		}
+
+        //Matrix integration
+        //Should use common library and data structures
+        public static IList<IList<string[]>> ListTrails()
+        {
+            IList<IList<string[]>> result = new List<IList<string[]>>();
+            foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
+            {
+                IList<string[]> tl = new List<string[]>();
+                foreach (Data.TrailGPSLocation trailpoint in trail.TrailLocations)
+                {
+                    string[] t = {trail.Name, 
+                                   trail.Radius.ToString(),
+                                   trailpoint.LatitudeDegrees.ToString(),
+                                   trailpoint.LongitudeDegrees.ToString(),
+                                   trailpoint.Name};
+                    tl.Add(t);
+                }
+                result.Add(tl);
+            }
+            return result;
+        }
 	}
 }

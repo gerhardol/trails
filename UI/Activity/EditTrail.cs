@@ -98,7 +98,6 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void EditTrail_Activated(object sender, System.EventArgs e) {
 			TrailName.Focus();
-
 		}
 
 		public Data.Trail Trail {
@@ -122,34 +121,26 @@ namespace TrailsPlugin.UI.Activity {
             TrailName.Text = m_TrailToEdit.Name;
             lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + " :";
             presentRadius();
-            
+
             EList.Columns.Clear();
             EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 100, StringAlignment.Near));
             EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 100, StringAlignment.Near));
-            if (PluginMain.Verbose > 0)
-            {
-                //Only meaningful to show column when editing works correctly
-                EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 100, StringAlignment.Near));
-            }
+            EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 100, StringAlignment.Near));
             EList.RowData = m_TrailToEdit.TrailLocations;
 
-            if (PluginMain.Verbose > 0)
-            {
-                //Editing the list is not appearing correctly, hide by default
-                EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
-                EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
-                //Overlay editable box
-                editBox.Size = new System.Drawing.Size(0, 0);
-                editBox.Location = new System.Drawing.Point(0, 0);
-                EList.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
-                editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
-                editBox.LostFocus += new System.EventHandler(this.FocusOver);
-                editBox.BackColor = Color.LightYellow;
-                editBox.BorderStyle = BorderStyle.Fixed3D;
-                editBox.Hide();
-                editBox.Text = "";
-            }
-		}
+            EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
+            EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
+            //Overlay editable box
+            editBox.Size = new System.Drawing.Size(0, 0);
+            editBox.Location = new System.Drawing.Point(0, 0);
+            EList.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
+            editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
+            editBox.LostFocus += new System.EventHandler(this.FocusOver);
+            editBox.BackColor = Color.LightYellow;
+            editBox.BorderStyle = BorderStyle.Fixed3D;
+            editBox.Hide();
+            editBox.Text = "";
+        }
 
         private void presentRadius()
         {
@@ -172,7 +163,6 @@ namespace TrailsPlugin.UI.Activity {
 
         private void ValidateEdit()
         {
-            //Updating list must be changed, TrailGPSLocation needs setter for all fields
             IList<TrailGPSLocation> t = (IList<TrailGPSLocation>)EList.RowData;
             t[rowSelected]=
                 ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].setField(subItemSelected, editBox.Text);
@@ -213,27 +203,24 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 // Check the subitem clicked .
-            int nStart = lastMouseArg.X;
-                //Only Name can be edited now - list is not updated correctly
-            subItemSelected = 2;
-            int spos = EList.Columns[0].Width + EList.Columns[1].Width;
-            int epos = spos+EList.Columns[2].Width;
-            //int spos = 0;
-            //int epos = EList.Columns[0].Width;
-            //for (int i = 0; i < EList.Columns.Count; i++)
-            //{
-            //    if (nStart > spos && nStart < epos)
-            //    {
-            //        subItemSelected = i;
-            //        break;
-            //    }
+                int nStart = lastMouseArg.X;
+                int spos = EList.Location.X + EList.Parent.Location.X;
+                int epos = EList.Columns[0].Width;
+                for (int i = 0; i < EList.Columns.Count; i++)
+                {
+                    if (nStart > spos && nStart < epos)
+                    {
+                        subItemSelected = i;
+                        break;
+                    }
 
-            //    spos = epos;
-            //    epos += EList.Columns[i].Width;
-            //}
-             subItemText = ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].getField(subItemSelected);
-             int rowHeight = (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
-             int yTop = EList.HeaderRowHeight + rowSelected * rowHeight;
+                    spos = epos;
+                    epos += EList.Columns[i].Width;
+                }
+                subItemText = ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].getField(subItemSelected);
+                ///The positioning is incorrect, set at header
+                int rowHeight = EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
+                int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
                 editBox.Size = new System.Drawing.Size(epos - spos, rowHeight);
                 editBox.Location = new System.Drawing.Point(spos, yTop);
                 editBox.Show();
@@ -241,7 +228,7 @@ namespace TrailsPlugin.UI.Activity {
                 editBox.SelectAll();
                 editBox.Focus();
             }
-            
+
         }
         
         public void SMKMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)

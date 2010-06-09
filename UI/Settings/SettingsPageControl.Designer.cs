@@ -114,9 +114,9 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(353, 39);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence. \r\nThe L" +
-                "icense is included in the plugin installation directory and at:\r\n http://www.gnu" +
-                ".org/licenses/lgpl.html.";
+            this.label2.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence."+ System.Environment.NewLine +
+            "The License is included in the plugin installation directory and at:" + System.Environment.NewLine +
+            "http://www.gnu.org/licenses/lgpl.html.";
             // 
             // label1
             // 

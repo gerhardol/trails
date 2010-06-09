@@ -147,7 +147,7 @@ namespace TrailsPlugin.UI.Activity {
 				}
 
 				foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations) {
-					layer.HighlightedGPSLocations.Add(point);
+                    layer.HighlightedGPSLocations.Add(point.GpsLocation);
 				}
 				layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 				layer.ShowHighlight = true;
@@ -259,7 +259,7 @@ namespace TrailsPlugin.UI.Activity {
 			if (!selectionIsDifferent) {
 				for (int i = 0; i < layer.SelectedGPSLocations.Count; i++) {
 					IGPSLocation loc1 = layer.SelectedGPSLocations[i];
-					IGPSLocation loc2 = dialog.Trail.TrailLocations[i];
+                    IGPSLocation loc2 = dialog.Trail.TrailLocations[i].GpsLocation;
 					if (loc1.LatitudeDegrees != loc2.LatitudeDegrees) {
 						selectionIsDifferent = true;
 						break;

@@ -30,6 +30,8 @@ namespace TrailsPlugin.UI.Activity {
 #endif
     {
 
+        //Note: Unused right now
+
 #if ST_2_1
         #region IExtendActivityEditActions Members
 		public IList<IAction> GetActions(IList<IActivity> activities) {

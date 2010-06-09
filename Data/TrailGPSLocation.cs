@@ -20,10 +20,11 @@ using System.Xml;
 using System;
 
 namespace TrailsPlugin.Data {
-	public class TrailGPSLocation : GPSLocation {
-		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name) : base(latitudeDegrees, longitudeDegrees)
+	public class TrailGPSLocation {
+		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name)
         {
-            this.name = name;
+            this._gpsLocation = new GPSLocation(latitudeDegrees, longitudeDegrees);
+            this._name = name;
         }
 		static public TrailGPSLocation FromXml(XmlNode node) {
 
@@ -39,16 +40,38 @@ namespace TrailsPlugin.Data {
                 name
 			);
         }
-        private string name;
+        private GPSLocation _gpsLocation;
+        public GPSLocation GpsLocation
+        {
+            get
+            {
+                return _gpsLocation;
+            }
+        }
+        public float LatitudeDegrees
+        {
+            get
+            {
+                return _gpsLocation.LatitudeDegrees;
+            }
+        }
+        public float LongitudeDegrees
+        {
+            get
+            {
+                return _gpsLocation.LongitudeDegrees;
+            }
+        }
+        private string _name;
         public string Name
         {
             get
             {
-                return name;
+                return _name;
             }
             set
             {
-                this.name = value;
+                this._name = value;
             }
         }
 
@@ -124,10 +147,10 @@ namespace TrailsPlugin.Data {
                 switch (subItemSelected)
                 {
                     case 0:
-                        result = new TrailGPSLocation(pos, this.LatitudeDegrees, this.name);
+                        _gpsLocation = new GPSLocation(this.LatitudeDegrees, pos);
                         break;
                     case 1:
-                        result = new TrailGPSLocation(this.LongitudeDegrees, pos, this.name);
+                        _gpsLocation = new GPSLocation(pos, this.LongitudeDegrees);
                         break;
                     default:
                         this.Name = s;

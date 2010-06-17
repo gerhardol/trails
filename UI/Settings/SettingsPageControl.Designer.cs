@@ -28,8 +28,8 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblDefaultRadius = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblLicense = new System.Windows.Forms.Label();
+            this.lblCopyright = new System.Windows.Forms.Label();
             this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.PluginInfoPanel.SuspendLayout();
@@ -38,14 +38,15 @@
             // 
             // PluginInfoPanel
             // 
-            this.PluginInfoPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PluginInfoPanel.AutoSize = true;
+            this.PluginInfoPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.PluginInfoPanel.BackColor = System.Drawing.Color.Transparent;
             this.PluginInfoPanel.BorderColor = System.Drawing.Color.Gray;
             this.PluginInfoPanel.Controls.Add(this.tableLayoutPanel1);
-            this.PluginInfoPanel.Controls.Add(this.label2);
-            this.PluginInfoPanel.Controls.Add(this.label1);
+            this.PluginInfoPanel.Controls.Add(this.lblLicense);
+            this.PluginInfoPanel.Controls.Add(this.lblCopyright);
             this.PluginInfoPanel.Controls.Add(this.PluginInfoBanner);
+            this.PluginInfoPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PluginInfoPanel.HeadingBackColor = System.Drawing.Color.LightBlue;
             this.PluginInfoPanel.HeadingFont = null;
             this.PluginInfoPanel.HeadingLeftMargin = 0;
@@ -54,7 +55,7 @@
             this.PluginInfoPanel.HeadingTopMargin = 3;
             this.PluginInfoPanel.Location = new System.Drawing.Point(0, 0);
             this.PluginInfoPanel.Name = "PluginInfoPanel";
-            this.PluginInfoPanel.Size = new System.Drawing.Size(461, 275);
+            this.PluginInfoPanel.Size = new System.Drawing.Size(409, 129);
             this.PluginInfoPanel.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -66,14 +67,14 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.txtDefaultRadius, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.lblDefaultRadius, 0, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(2, 24);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 26);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(458, 122);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(406, 48);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // txtDefaultRadius
@@ -107,25 +108,25 @@
             this.lblDefaultRadius.TabIndex = 0;
             this.lblDefaultRadius.Text = "Default Radius:";
             // 
-            // label2
+            // lblLicense
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 224);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(353, 39);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence."+ System.Environment.NewLine +
-            "The License is included in the plugin installation directory and at:" + System.Environment.NewLine +
-            "http://www.gnu.org/licenses/lgpl.html.";
+            this.lblLicense.AutoSize = true;
+            this.lblLicense.Location = new System.Drawing.Point(3, 90);
+            this.lblLicense.Name = "lblLicense";
+            this.lblLicense.Size = new System.Drawing.Size(350, 39);
+            this.lblLicense.TabIndex = 3;
+            this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
+                "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
+                "rg/licenses/lgpl.html.";
             // 
-            // label1
+            // lblCopyright
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 211);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(161, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Copyright Brendan Doherty 2009";
+            this.lblCopyright.AutoSize = true;
+            this.lblCopyright.Location = new System.Drawing.Point(3, 77);
+            this.lblCopyright.Name = "lblCopyright";
+            this.lblCopyright.Size = new System.Drawing.Size(161, 13);
+            this.lblCopyright.TabIndex = 1;
+            this.lblCopyright.Text = "Copyright Brendan Doherty 2009";
             // 
             // PluginInfoBanner
             // 
@@ -137,7 +138,7 @@
             this.PluginInfoBanner.Margin = new System.Windows.Forms.Padding(0);
             this.PluginInfoBanner.Name = "PluginInfoBanner";
             this.PluginInfoBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.PluginInfoBanner.Size = new System.Drawing.Size(461, 23);
+            this.PluginInfoBanner.Size = new System.Drawing.Size(409, 23);
             this.PluginInfoBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
             this.PluginInfoBanner.TabIndex = 0;
             this.PluginInfoBanner.Text = "Plugin Information";
@@ -147,14 +148,17 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.PluginInfoPanel);
             this.Name = "SettingsPageControl";
-            this.Size = new System.Drawing.Size(461, 275);
+            this.Size = new System.Drawing.Size(409, 129);
             this.PluginInfoPanel.ResumeLayout(false);
             this.PluginInfoPanel.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 
@@ -162,8 +166,8 @@
 
 		private ZoneFiveSoftware.Common.Visuals.Panel PluginInfoPanel;
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner PluginInfoBanner;
-        private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblCopyright;
+		private System.Windows.Forms.Label lblLicense;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.Label lblDefaultRadius;
 		private ZoneFiveSoftware.Common.Visuals.TextBox txtDefaultRadius;

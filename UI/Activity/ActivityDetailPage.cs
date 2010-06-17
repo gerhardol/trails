@@ -96,7 +96,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		public void ShowPage(string bookmark) {
-			//control.ShowPage = true;
+            //if (m_control != null) m_control.ShowPage = true;
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {

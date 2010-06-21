@@ -95,7 +95,21 @@ namespace TrailsPlugin.UI.Activity {
 			this.RefreshChartMenu();
 		}
 
-		private void RefreshColumns() {
+        public bool ShowPage
+        {
+            //get { return _showPage; }
+            set
+            {
+                //_showPage = value;
+                if (value)
+                {
+                    //Not needed now
+                    //RefreshData();
+                }
+            }
+        }
+        private void RefreshColumns()
+        {
 
 			List.Columns.Clear();
 			foreach (string id in PluginMain.Settings.ActivityPageColumns) {

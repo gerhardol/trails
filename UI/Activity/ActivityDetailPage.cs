@@ -61,7 +61,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		public bool HidePage() {
-			//control.ShowPage = false;
+			if (null != m_control) m_control.ShowPage = false;
 			return true;
 		}
 
@@ -96,7 +96,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		public void ShowPage(string bookmark) {
-            //if (m_control != null) m_control.ShowPage = true;
+            if (m_control != null) m_control.ShowPage = true;
 		}
 
 		public void ThemeChanged(ITheme visualTheme) {

@@ -27,11 +27,17 @@ using System.Runtime.CompilerServices;
 namespace TrailsPlugin {
 	class CommonIcons {
 
-		static public Bitmap MenuCascadeArrowDown {
-			get {
+		static public Image MenuCascadeArrowDown {
+			get
+            {
+#if ST_2_1
 				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
 				return (Bitmap)ResourceManager.GetObject("Image_12_MenuCascadeArrowDown");
-			}
+#else
+                //Not ideal icon....
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveDown16;
+#endif
+            }
 		}
 
 		static public Image Edit {
@@ -42,37 +48,57 @@ namespace TrailsPlugin {
 
 		static public Image RedSquare {
 			get {
-				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
-				return (Bitmap)ResourceManager.GetObject("Image_16_Marker_RedSquare");
-			}
+//#if ST_2_1
+//                ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+//                return (Bitmap)ResourceManager.GetObject("Image_16_Marker_RedSquare");
+//#else
+                return Properties.Resources.square_red;
+//#endif
+            }
 		}
 
 		static public Image GreenSquare {
 			get {
-				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
-				return (Bitmap)ResourceManager.GetObject("Image_16_Marker_GreenSquare");
+//#if ST_2_1
+//                ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+//                return (Bitmap)ResourceManager.GetObject("Image_16_Marker_GreenSquare");
+//#else
+                return Properties.Resources.square_green;
+//#endif
 			}
 		}
 
 		static public Image BlueSquare {
 			get {
-				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
-				return (Bitmap)ResourceManager.GetObject("Image_16_Marker_BlueSquare");
-			}
+//#if ST_2_1
+//                ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+//                return (Bitmap)ResourceManager.GetObject("Image_16_Marker_BlueSquare");
+//#else
+                return Properties.Resources.square_blue;
+//#endif
+            }
 		}
 
 		static public Image LowerHalf {
 			get {
+#if ST_2_1
 				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
 				return (Bitmap)ResourceManager.GetObject("Image_16_View_2Pane_LowerHalf");
+#else
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.View2PaneLowerHalf16;
+#endif
 			}
 		}
 
 		static public Image LowerLeft {
 			get {
+#if ST_2_1
 				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
 				return (Bitmap)ResourceManager.GetObject("Image_16_View_3Pane_LowerLeft");
-			}
+#else
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.View3PaneLowerLeft16;
+#endif
+            }
 		}
 
 		static public Image Add {

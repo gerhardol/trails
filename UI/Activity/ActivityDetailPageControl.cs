@@ -197,17 +197,20 @@ namespace TrailsPlugin.UI.Activity {
 
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
+            int countGPS = 0;
 #if ST_2_1
-			ICollection<IMapControlObject> selectedGPS = mapControl.Selected;
+			ICollection<IMapControlObject> selectedGPS = null;
+            if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
             IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif
-            if (selectedGPS.Count > 1)
+            if (null != mapControl) { countGPS = selectedGPS.Count; }
+            if (countGPS > 1)
             {
                 layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 				layer.CaptureSelectedGPSLocations();
 			} else {
-                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,selectedGPS.Count);
+                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 		}
@@ -215,12 +218,15 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnEdit_Click(object sender, EventArgs e) {
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
+            int countGPS = 0;
 #if ST_2_1
-			ICollection<IMapControlObject> selectedGPS = mapControl.Selected;
+            ICollection<IMapControlObject> selectedGPS = null;
+            if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
             IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif
-            if (selectedGPS.Count > 1)
+            if (null != mapControl) { countGPS = selectedGPS.Count; }
+            if (countGPS > 1)
             {
 				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 				layer.CaptureSelectedGPSLocations();
@@ -590,7 +596,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_chartsControl.Left = 0;
                 m_chartsControl.Width = p2.Width;
                 m_chartsControl.Height = p2.Height;
-                DailyActivitySplitter.Panel2.Controls.Add(m_chartsControl);
+                p2.Controls.Add(m_chartsControl);
 				m_chartsControl.ThemeChanged(m_visualTheme);
 				m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
 			}

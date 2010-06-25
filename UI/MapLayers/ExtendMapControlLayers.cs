@@ -52,4 +52,3 @@ namespace TrailsPlugin.UI.MapLayers {
 #endif
 	}
 }
-

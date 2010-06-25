@@ -81,7 +81,7 @@
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\Common.Visuals.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SportTracks, Version=2.1.3478.21513, Culture=neutral, processorArchitecture=MSIL">
+	<Reference Include="SportTracks, Version=2.1.3478.21513, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\SportTracks.exe</HintPath>
       <Private>False</Private>
@@ -100,11 +100,13 @@
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SportTracks, Version=3.0.3769.30929, Culture=neutral, processorArchitecture=x86">
+    <!--
+	<Reference Include="SportTracks, Version=3.0.3769.30929, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</HintPath>
       <Private>False</Private>
     </Reference>
+	-->
   </ItemGroup>
 
 

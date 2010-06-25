@@ -78,6 +78,27 @@ namespace TrailsPlugin.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap square_blue {
+            get {
+                object obj = ResourceManager.GetObject("square_blue", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap square_green {
+            get {
+                object obj = ResourceManager.GetObject("square_green", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap square_red {
+            get {
+                object obj = ResourceManager.GetObject("square_red", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Trails.
         /// </summary>

@@ -100,7 +100,7 @@ namespace TrailsPlugin.UI.MapLayers {
 			m_SelectedGPSLocations.Clear();
 			m_CaptureSelectedGPSLocations = true;
 #if ST_2_1
-			m_mapControl.Refresh();
+			if (null!=m_mapControl) m_mapControl.Refresh();
 #else
             //ST3fix
 #endif
@@ -131,7 +131,7 @@ namespace TrailsPlugin.UI.MapLayers {
 			set {
 				m_ShowHighlight = value;
 #if ST_2_1
-			m_mapControl.Refresh();
+                if (null != m_mapControl) m_mapControl.Refresh();
 #else
             //ST3fix
 #endif

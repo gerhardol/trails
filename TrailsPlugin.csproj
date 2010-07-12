@@ -130,9 +130,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
   <Import Project=".\Common\Common-Files.csproj" />
   <ItemGroup>
     <None Include="Resources\ZoomToContent.png" />

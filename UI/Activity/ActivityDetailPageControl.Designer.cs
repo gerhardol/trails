@@ -31,7 +31,7 @@
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
             this.SplitContainer = new System.Windows.Forms.SplitContainer();
-            this.List = new ZoneFiveSoftware.Common.Visuals.TreeList();
+            this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -202,7 +202,7 @@
             // 
             // SplitContainer.Panel1
             // 
-            this.SplitContainer.Panel1.Controls.Add(this.List);
+            this.SplitContainer.Panel1.Controls.Add(this.summaryList);
             this.SplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
             this.SplitContainer.Panel1MinSize = 100;
             // 
@@ -217,34 +217,34 @@
             // 
             // List
             // 
-            this.List.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.summaryList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.List.AutoScroll = true;
-            this.List.BackColor = System.Drawing.Color.Transparent;
-            this.List.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
-            this.List.CheckBoxes = false;
-            this.List.ContextMenuStrip = this.listMenu;
-            this.List.DefaultIndent = 15;
-            this.List.DefaultRowHeight = -1;
-            this.List.HeaderRowHeight = 21;
-            this.List.Location = new System.Drawing.Point(0, 0);
-            this.List.Margin = new System.Windows.Forms.Padding(0);
-            this.List.MultiSelect = false;
-            this.List.Name = "List";
-            this.List.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
-            this.List.NumLockedColumns = 0;
-            this.List.RowAlternatingColors = true;
-            this.List.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
-            this.List.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
-            this.List.RowHotlightMouse = true;
-            this.List.RowSelectedColor = System.Drawing.SystemColors.Highlight;
-            this.List.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
-            this.List.RowSeparatorLines = true;
-            this.List.ShowLines = false;
-            this.List.ShowPlusMinus = false;
-            this.List.Size = new System.Drawing.Size(400, 100);
-            this.List.TabIndex = 11;
+            this.summaryList.AutoScroll = true;
+            this.summaryList.BackColor = System.Drawing.Color.Transparent;
+            this.summaryList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
+            this.summaryList.CheckBoxes = false;
+            this.summaryList.ContextMenuStrip = this.listMenu;
+            this.summaryList.DefaultIndent = 15;
+            this.summaryList.DefaultRowHeight = -1;
+            this.summaryList.HeaderRowHeight = 21;
+            this.summaryList.Location = new System.Drawing.Point(0, 0);
+            this.summaryList.Margin = new System.Windows.Forms.Padding(0);
+            this.summaryList.MultiSelect = false;
+            this.summaryList.Name = "List";
+            this.summaryList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
+            this.summaryList.NumLockedColumns = 0;
+            this.summaryList.RowAlternatingColors = true;
+            this.summaryList.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
+            this.summaryList.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
+            this.summaryList.RowHotlightMouse = true;
+            this.summaryList.RowSelectedColor = System.Drawing.SystemColors.Highlight;
+            this.summaryList.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
+            this.summaryList.RowSeparatorLines = true;
+            this.summaryList.ShowLines = false;
+            this.summaryList.ShowPlusMinus = false;
+            this.summaryList.Size = new System.Drawing.Size(400, 100);
+            this.summaryList.TabIndex = 11;
             // 
             // listMenu
             // 
@@ -459,7 +459,7 @@
 
 		private System.Windows.Forms.TableLayoutPanel Panel;
 		private System.Windows.Forms.Label lblTrail;
-		private ZoneFiveSoftware.Common.Visuals.TreeList List;
+		private ZoneFiveSoftware.Common.Visuals.TreeList summaryList;
 		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;

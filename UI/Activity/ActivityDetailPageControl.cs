@@ -58,9 +58,9 @@ namespace TrailsPlugin.UI.Activity {
 			InitializeComponent();
 			InitControls();
 #if ST_2_1
-            this.List.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
+            this.summaryList.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
 #else
-            this.List.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+            this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
 #endif
 			m_controller.CurrentActivity = activity;
 
@@ -87,8 +87,8 @@ namespace TrailsPlugin.UI.Activity {
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
 			listSettingsMenuItem.Image = CommonIcons.ListSettings;
 
-			List.NumHeaderRows = TreeList.HeaderRows.Two;
-			List.LabelProvider = new TrailResultLabelProvider();
+			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
+			summaryList.LabelProvider = new TrailResultLabelProvider();
             btnExpand.Left = this.Right - 46;
 
 			this.RefreshColumns();
@@ -111,7 +111,7 @@ namespace TrailsPlugin.UI.Activity {
         private void RefreshColumns()
         {
 
-			List.Columns.Clear();
+			summaryList.Columns.Clear();
 			foreach (string id in PluginMain.Settings.ActivityPageColumns) {
 				foreach (
 #if ST_2_1
@@ -127,7 +127,7 @@ namespace TrailsPlugin.UI.Activity {
 							columnDef.Width,
 							columnDef.Align
 						);
-						List.Columns.Add(column);
+						summaryList.Columns.Add(column);
 						break;
 					}
 				}
@@ -150,6 +150,7 @@ namespace TrailsPlugin.UI.Activity {
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			layer.HighlightedGPSLocations.Clear();
 			layer.ShowHighlight = false;
+
 			List.RowData = null;
 
 			if (m_controller.CurrentActivityTrail != null) {
@@ -170,13 +171,13 @@ namespace TrailsPlugin.UI.Activity {
 				TrailName.Text = "";
 			}
 			RefreshChart();
-		}
+        }
 
 
 		public void ThemeChanged(ITheme visualTheme) {
 			m_visualTheme = visualTheme;
 			TrailName.ThemeChanged(visualTheme);
-			List.ThemeChanged(visualTheme);
+			summaryList.ThemeChanged(visualTheme);
 			ChartBanner.ThemeChanged(visualTheme);
 			LineChart.ThemeChanged(visualTheme);
 			if (m_chartsControl != null) {
@@ -195,7 +196,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void btnAdd_Click(object sender, EventArgs e) {
 
-			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+            UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
             int countGPS = 0;
 #if ST_2_1
@@ -213,7 +214,7 @@ namespace TrailsPlugin.UI.Activity {
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
-		}
+ 		}
 
 		private void btnEdit_Click(object sender, EventArgs e) {
 			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
@@ -248,7 +249,6 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e) {
-
 			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 
@@ -267,7 +267,6 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshControlState();
 				RefreshData();
 			}
-
 		}
 
 		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e) {
@@ -289,7 +288,7 @@ namespace TrailsPlugin.UI.Activity {
 						break;
 					}
 				}
-			}
+        }
 			if (selectionIsDifferent) {
 				if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 					dialog.Trail.TrailLocations.Clear();
@@ -309,7 +308,7 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshControlState();
 				RefreshData();
 			}
-		}
+        }
 
 		private void TrailName_ButtonClick(object sender, EventArgs e) {
 			if (m_controller.CurrentActivity == null) {
@@ -393,8 +392,8 @@ namespace TrailsPlugin.UI.Activity {
 				if (m_controller.CurrentActivityTrail != null) {								
 					activity = m_controller.CurrentActivityTrail.Activity;
 					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-					if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
-						result = (Data.TrailResult)this.List.SelectedItems[0];
+					if (((IList<Data.TrailResult>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0) {
+						result = (Data.TrailResult)this.summaryList.SelectedItems[0];
 					}
 				}
                 m_chartsControl.RefreshCharts(activity, result);
@@ -427,8 +426,8 @@ namespace TrailsPlugin.UI.Activity {
                     this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
                         PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
                     IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-					if (((IList<Data.TrailResult>)this.List.RowData).Count > 0 && this.List.Selected.Count > 0) {
-						this.LineChart.TrailResult = (Data.TrailResult)this.List.SelectedItems[0];
+					if (((IList<Data.TrailResult>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0) {
+						this.LineChart.TrailResult = (Data.TrailResult)this.summaryList.SelectedItems[0];
 					}
 				}
 				this.LineChart.EndUpdate();

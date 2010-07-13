@@ -126,7 +126,7 @@ namespace TrailsPlugin.Data {
 				return this.SpeedTrack.Avg;
 			}
 		}
-		public float MaxSpeed {
+		public float FastestSpeed {
 			get {
 				return this.SpeedTrack.Max;
 			}
@@ -136,7 +136,7 @@ namespace TrailsPlugin.Data {
 				return this.PaceTrack.Avg;
 			}
 		}
-		public double MaxPace {
+		public double FastestPace {
 			get {
 				return this.PaceTrack.Min;
 			}

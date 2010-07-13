@@ -58,12 +58,12 @@ namespace TrailsPlugin.UI.Activity {
 					return (row.AvgGrade).ToString("0.0%");
 				case TrailResultColumnIds.AvgSpeed:
 					return row.AvgSpeed.ToString("0.0");
-				case TrailResultColumnIds.MaxSpeed:
-					return row.MaxSpeed.ToString("0.0");
+				case TrailResultColumnIds.FastestSpeed:
+					return row.FastestSpeed.ToString("0.0");
 				case TrailResultColumnIds.AvgPace: 
 					return row.AvgPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.AvgPace));					
-				case TrailResultColumnIds.MaxPace:
-					return row.MaxPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.MaxPace));					
+				case TrailResultColumnIds.FastestPace:
+					return row.FastestPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.FastestPace));					
 				default:
 					return "error:" + column.Id;
 			}			

@@ -151,14 +151,14 @@ namespace TrailsPlugin.UI.Activity {
 			layer.HighlightedGPSLocations.Clear();
 			layer.ShowHighlight = false;
 
-			List.RowData = null;
+            summaryList.RowData = null;
 
 			if (m_controller.CurrentActivityTrail != null) {
 				TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
 				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-				List.RowData = results;
+                summaryList.RowData = results;
 				if (results.Count > 0) {
-					List.Selected = new object[] { results[0] };
+                    summaryList.Selected = new object[] { results[0] };
 				}
 
 				foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations) {

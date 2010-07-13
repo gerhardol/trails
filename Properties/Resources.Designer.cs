@@ -60,24 +60,6 @@ namespace TrailsPlugin.Properties {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Max Pace.
-        /// </summary>
-        internal static string Column_MaxPace {
-            get {
-                return ResourceManager.GetString("Column_MaxPace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Max Speed.
-        /// </summary>
-        internal static string Column_MaxSpeed {
-            get {
-                return ResourceManager.GetString("Column_MaxSpeed", resourceCulture);
-            }
-        }
-        
         internal static System.Drawing.Bitmap square_blue {
             get {
                 object obj = ResourceManager.GetObject("square_blue", resourceCulture);

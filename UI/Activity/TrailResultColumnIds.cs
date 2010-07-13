@@ -95,9 +95,9 @@ namespace TrailsPlugin.UI {
 		public const string AvgPower = "AvgPower";
 		public const string AvgGrade = "AvgGrade";
         public const string AvgSpeed = "AvgSpeed";
-        public const string MaxSpeed = "MaxSpeed";
+        public const string FastestSpeed = "FastestSpeed";
         public const string AvgPace = "AvgPace";
-		public const string MaxPace = "MaxPace";
+        public const string FastestPace = "FastestPace";
 
 #if ST_2_1
 		public static IList<IListItem> ColumnDefs(IActivity activity)
@@ -115,9 +115,9 @@ namespace TrailsPlugin.UI {
 			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgGrade, CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxSpeed, "Max Speed (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.FastestSpeed, CommonResources.Text.LabelFastestSpeed+" (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxPace, "Max Pace (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListItemInfo(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
 
 			return columnDefs;
 		}
@@ -137,11 +137,11 @@ namespace TrailsPlugin.UI {
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgGrade, CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.MaxSpeed, Properties.Resources.Column_MaxSpeed+" (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
+			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeed, CommonResources.Text.LabelFastestSpeed+" (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.MaxPace, Properties.Resources.Column_MaxPace+" (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace+" (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
             return columnDefs;
 		}
 #endif
-	}
+    }
 }

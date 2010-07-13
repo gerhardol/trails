@@ -135,9 +135,6 @@
     <None Include="Resources\ZoomToContent.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\blue.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\square-blue.png" />
   </ItemGroup>
   <ItemGroup>

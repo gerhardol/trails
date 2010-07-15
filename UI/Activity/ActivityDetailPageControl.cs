@@ -100,7 +100,9 @@ namespace TrailsPlugin.UI.Activity {
             //get { return _showPage; }
             set
             {
-                //_showPage = value;
+                UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+                layer.ShowPage = value;
+
                 if (value)
                 {
                     //Not needed now
@@ -146,33 +148,38 @@ namespace TrailsPlugin.UI.Activity {
 
 		}
 
-		private void RefreshData() {
-			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-			layer.HighlightedGPSLocations.Clear();
-			layer.ShowHighlight = false;
+        private void RefreshData()
+        {
+            UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+            layer.HighlightedGPSLocations.Clear();
+            layer.ShowHighlight = false;
 
             summaryList.RowData = null;
 
-			if (m_controller.CurrentActivityTrail != null) {
-				TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
-				IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+            if (m_controller.CurrentActivityTrail != null)
+            {
+                TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
+                IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
                 summaryList.RowData = results;
-				if (results.Count > 0) {
+                if (results.Count > 0)
+                {
                     summaryList.Selected = new object[] { results[0] };
-				}
+                }
 
-				foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations) {
+                foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
+                {
                     layer.HighlightedGPSLocations.Add(point.GpsLocation);
-				}
-				layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
-				layer.ShowHighlight = true;
+                }
+                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                layer.ShowHighlight = true;
 
-			} else {
-				TrailName.Text = "";
-			}
-			RefreshChart();
+            }
+            else
+            {
+                TrailName.Text = "";
+            }
+            RefreshChart();
         }
-
 
 		public void ThemeChanged(ITheme visualTheme) {
 			m_visualTheme = visualTheme;
@@ -194,6 +201,7 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
+        /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e) {
 
             UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
@@ -328,6 +336,9 @@ namespace TrailsPlugin.UI.Activity {
 			treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
 			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
 		}
+
+
+        /*******************************************************/
 
 		class TrailDropdownLabelProvider : TreeList.ILabelProvider {
 

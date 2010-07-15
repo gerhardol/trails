@@ -11,10 +11,6 @@ Global
 		ST3.0Release|Any CPU = ST3.0Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.Debug|Any CPU.ActiveCfg = ST3.0Debug|Any CPU
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.Debug|Any CPU.Build.0 = ST3.0Debug|Any CPU
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.Release|Any CPU.ActiveCfg = ST3.0Release|Any CPU
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.Release|Any CPU.Build.0 = ST3.0Release|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST2.1Debug|Any CPU.ActiveCfg = ST2.1Debug|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST2.1Debug|Any CPU.Build.0 = ST2.1Debug|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST2.1Release|Any CPU.ActiveCfg = ST2.1Release|Any CPU

@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Measurement;
@@ -50,8 +51,20 @@ namespace TrailsPlugin.UI.Activity {
 		private Controller.TrailController m_controller;
 		private ChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
+#if !ST_2_1
+        IDailyActivityView m_view = null;
+        UI.MapLayers.TrailPointsLayer layer = null;
+#endif
 
-		public ActivityDetailPageControl(IActivity activity) {
+#if !ST_2_1
+        public ActivityDetailPageControl(IActivity activity, IDailyActivityView view) : this(activity)
+        {
+            m_view = view;
+            layer = new MapLayers.TrailPointsLayer();//m_view..RouteSelectionProvider.Equals, 
+        }
+#endif
+        public ActivityDetailPageControl(IActivity activity)
+        {
 
 			m_controller = Controller.TrailController.Instance;
 
@@ -100,8 +113,12 @@ namespace TrailsPlugin.UI.Activity {
             //get { return _showPage; }
             set
             {
+#if ST_2_1
                 UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
                 layer.ShowPage = value;
+#else
+//xxx
+#endif
 
                 if (value)
                 {
@@ -150,9 +167,13 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshData()
         {
+#if ST_2_1
             UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-            layer.HighlightedGPSLocations.Clear();
-            layer.ShowHighlight = false;
+#else
+           //xxx m_view.RouteSelectionProvider
+#endif
+//xxx            layer.HighlightedGPSLocations.Clear();
+//            layer.ShowHighlight = false;
 
             summaryList.RowData = null;
 
@@ -168,10 +189,10 @@ namespace TrailsPlugin.UI.Activity {
 
                 foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
                 {
-                    layer.HighlightedGPSLocations.Add(point.GpsLocation);
+//                    layer.HighlightedGPSLocations.Add(point.GpsLocation);
                 }
-                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
-                layer.ShowHighlight = true;
+//                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+//                layer.ShowHighlight = true;
 
             }
             else
@@ -204,42 +225,65 @@ namespace TrailsPlugin.UI.Activity {
         /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e) {
 
-            UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-			IMapControl mapControl = layer.MapControl;
             int countGPS = 0;
 #if ST_2_1
+            UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+			IMapControl mapControl = layer.MapControl;
 			ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
+            countGPS = selectedGPS.Count;
 #else
-            IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
+            //IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
+            IList<IItemTrackSelectionInfo> selectedGPS = m_view.RouteSelectionProvider.SelectedItems;
+            countGPS = selectedGPS.Count;
 #endif
-            if (null != mapControl) { countGPS = selectedGPS.Count; }
+#if ST_2_1
+//Temporary difference?
             if (countGPS > 1)
             {
+#else
+            if (countGPS > 0)
+            {
+#endif
+#if ST_2_1
                 layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
 				layer.CaptureSelectedGPSLocations();
-			} else {
+#else
+                selectedGPSLocationsChanged_AddTrail(selectedGPS);
+#endif
+            } else {
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
 				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
  		}
 
 		private void btnEdit_Click(object sender, EventArgs e) {
-			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-			IMapControl mapControl = layer.MapControl;
             int countGPS = 0;
 #if ST_2_1
+			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+			IMapControl mapControl = layer.MapControl;
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
+            countGPS = selectedGPS.Count;
 #else
-            IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
+            IList<IItemTrackSelectionInfo> selectedGPS = m_view.RouteSelectionProvider.SelectedItems;
+            countGPS = selectedGPS.Count;
 #endif
-            if (null != mapControl) { countGPS = selectedGPS.Count; }
+#if ST_2_1
+//Temporary difference?
             if (countGPS > 1)
             {
+#else
+            if (countGPS > 0)
+            {
+#endif
+#if ST_2_1
 				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 				layer.CaptureSelectedGPSLocations();
-			} else {
+#else
+                selectedGPSLocationsChanged_EditTrail(selectedGPS);
+#endif
+            } else {
 				EditTrail dialog = new EditTrail(m_visualTheme, false);
 				if (dialog.ShowDialog() == DialogResult.OK) {
 					RefreshControlState();
@@ -256,6 +300,50 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
+#if !ST_2_1
+        IGPSPoint getGPS(IItemTrackSelectionInfo selectGPS)
+        {
+            IValueRange<DateTime> ti = selectGPS.SelectedTime;
+            ITimeValueEntry<IGPSPoint> p = null;
+            if (null != ti)
+            {
+                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(ti.Lower);
+            }
+            else
+            {
+                //This part should not be needed
+                IValueRange<double> di = selectGPS.SelectedDistance;
+                IDistanceDataTrack dt = m_controller.CurrentActivity.GPSRoute.GetDistanceMetersTrack();
+                dt.GetTimeAtDistanceMeters(di.Lower);
+                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
+            }
+            if (null == p) { return null; }
+            return p.Value;
+        }
+
+        private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
+        {
+			EditTrail dialog = new EditTrail(m_visualTheme, true);
+			for (int i = 0; i < selectedGPS.Count; i++) {
+                IGPSPoint p = getGPS(selectedGPS[i]);
+                if (null != p)
+                {
+                    dialog.Trail.TrailLocations.Add(
+                        new Data.TrailGPSLocation(
+                            p.LatitudeDegrees,
+                            p.LongitudeDegrees,
+                            ""
+                        )
+                    );
+                }
+			}
+
+			if (dialog.ShowDialog() == DialogResult.OK) {
+				RefreshControlState();
+				RefreshData();
+			}
+		}
+#else
 		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e) {
 			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
@@ -276,8 +364,67 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshData();
 			}
 		}
+#endif
 
-		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e) {
+#if !ST_2_1
+        private void selectedGPSLocationsChanged_EditTrail(IList<IItemTrackSelectionInfo> selectedGPS)
+        {
+            EditTrail dialog = new EditTrail(m_visualTheme, false);
+            bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
+            if (!selectionIsDifferent)
+            {
+                for (int i = 0; i < selectedGPS.Count; i++)
+                {
+                    IGPSPoint p = getGPS(selectedGPS[i]);
+                    if (null != p)
+                    {
+                        IGPSLocation loc1 = new GPSLocation(p.LatitudeDegrees, p.LongitudeDegrees);
+                        IGPSLocation loc2 = dialog.Trail.TrailLocations[i].GpsLocation;
+                        if (loc1.LatitudeDegrees != loc2.LatitudeDegrees)
+                        {
+                            selectionIsDifferent = true;
+                            break;
+                        }
+                        if (loc1.LongitudeDegrees != loc2.LongitudeDegrees)
+                        {
+                            selectionIsDifferent = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            selectionIsDifferent = true;
+            if (selectionIsDifferent)
+            {
+                //Add all points for now - they can be deleted
+                //if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    //dialog.Trail.TrailLocations.Clear();
+                    for (int i = 0; i < selectedGPS.Count; i++)
+                    {
+                        IGPSPoint p = getGPS(selectedGPS[i]);
+                        if (null != p)
+                        {
+                            dialog.Trail.TrailLocations.Add(
+                                new Data.TrailGPSLocation(
+                                     p.LatitudeDegrees,
+                                     p.LongitudeDegrees,
+                                     ""
+                                )
+                            );
+                        }
+                    }
+                }
+            }
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                RefreshControlState();
+                RefreshData();
+            }
+        }
+#else
+ 		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e) {
 			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
 
@@ -317,8 +464,9 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshData();
 			}
         }
+#endif
 
-		private void TrailName_ButtonClick(object sender, EventArgs e) {
+        private void TrailName_ButtonClick(object sender, EventArgs e) {
 			if (m_controller.CurrentActivity == null) {
 				return;
 			}

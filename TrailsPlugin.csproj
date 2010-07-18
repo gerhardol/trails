@@ -52,7 +52,15 @@
     <Compile Include="UI\Activity\ExtendActivityDetailPages.cs" />
     <Compile Include="UI\Activity\ExtendActivityEditActions.cs" />
     <Compile Include="UI\MapLayers\ExtendMapControlLayers.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
     <Compile Include="UI\MapLayers\MapControlLayer.cs" />
+  </ItemGroup>
+  <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
+    <Compile Include="UI\MapLayers\RouteControlLayerBase.cs" />
+    <Compile Include="UI\MapLayers\TrailPointsLayer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="UI\Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -74,9 +82,6 @@
     <Compile Include="Utils\Text.cs" />
     <Compile Include="Utils\Units.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
-    <Compile Include="UI\MapLayers\RouteControlLayerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -133,7 +138,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project=".\Common\Common-Files.csproj" />
   <ItemGroup>
     <None Include="Resources\ZoomToContent.png" />
   </ItemGroup>
@@ -146,4 +150,5 @@
   <ItemGroup>
     <None Include="Resources\square-red.png" />
   </ItemGroup>
+  <Import Project=".\Common\Common-Files.csproj" />
 </Project>

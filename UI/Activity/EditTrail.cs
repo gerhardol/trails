@@ -130,6 +130,7 @@ namespace TrailsPlugin.UI.Activity {
 
             EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
             EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
+            EList.KeyDown += new KeyEventHandler(EList_KeyDown);
             //Overlay editable box
             editBox.Size = new System.Drawing.Size(0, 0);
             editBox.Location = new System.Drawing.Point(0, 0);
@@ -140,6 +141,32 @@ namespace TrailsPlugin.UI.Activity {
             editBox.BorderStyle = BorderStyle.Fixed3D;
             editBox.Hide();
             editBox.Text = "";
+        }
+
+        void EList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 46 && EList.Selected.Count > 0)
+            {
+                IList t = EList.Selected;
+                IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
+                if (t != null && t.Count > 0)
+                {
+                    for (int j = 0; j < t.Count; j++)
+                    {
+                        for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
+                        {
+                            //Only first selected removed now
+                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                            if (t[j].Equals(r))
+                            {
+                                result.RemoveAt(i);
+                                break;
+                            }
+                        }
+                    }
+                    EList.RowData = result;
+                }
+            }
         }
 
         private void presentRadius()

@@ -155,22 +155,29 @@ namespace TrailsPlugin.Data {
                                 //This is a match, should not check following points for "passing by"
                                 prevRoutePoint = null;
 
-                                if (trailIndex == 0)
+                                if (trailIndex == this.m_trail.TrailLocations.Count - 1)
+                                {
+                                    if (trailIndex > 0)
+                                    {
+                                        // found the end
+                                        endIndex = matchIndex;
+                                        TrailResult result = new TrailResult(m_activity, m_resultsList.Count + 1, startIndex, endIndex);
+                                        m_resultsList.Add(result);
+                                        result = null;
+                                    }
+                                    else
+                                    {
+                                        //May occur on Trails with only one point, no exception now
+                                    }
+                                    trailIndex = 0;
+                                }
+                                else if (trailIndex == 0)
                                 {
                                     // found the start						
                                     startIndex = matchIndex;
                                     trailIndex++;
                                     stillInStartRadius = true;
 
-                                }
-                                else if (trailIndex == this.m_trail.TrailLocations.Count - 1)
-                                {
-                                    // found the end
-                                    endIndex = matchIndex;
-                                    TrailResult result = new TrailResult(m_activity, m_resultsList.Count + 1, startIndex, endIndex);
-                                    m_resultsList.Add(result);
-                                    result = null;
-                                    trailIndex = 0;
                                 }
                                 else
                                 {

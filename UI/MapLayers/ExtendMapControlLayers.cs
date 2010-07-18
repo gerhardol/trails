@@ -23,7 +23,8 @@ using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 using ZoneFiveSoftware.Common.Visuals.Mapping;
 #endif
 
-namespace TrailsPlugin.UI.MapLayers {
+namespace TrailsPlugin.UI.MapLayers 
+{
 	class ExtendMapControlLayers : 
 #if ST_2_1
         IExtendMapControlLayers

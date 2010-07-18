@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2009 Brendan Doherty
+Copyright (C) 2010 Aaron Averil
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -15,7 +15,8 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !ST_2_1
+//ST_3_0: Display trail points, not included for ST_2_1 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -28,6 +29,7 @@ namespace TrailsPlugin.UI.MapLayers
 {
     class RouteControlLayerBase
     {
+        public RouteControlLayerBase() { }//xxx
         public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder)
         {
             this.provider = provider;
@@ -165,4 +167,3 @@ namespace TrailsPlugin.UI.MapLayers
     }
 
 }
-#endif

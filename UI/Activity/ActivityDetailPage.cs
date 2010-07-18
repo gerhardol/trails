@@ -39,24 +39,28 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
         public ActivityDetailPage(IDailyActivityView view)
         {
-            this.view = view;
-            view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
+            this.m_view = view;
+            this.m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
         }
 
         private void OnViewSelectedItemsChanged(object sender, EventArgs e)
         {
-            Activity = CollectionUtils.GetSingleItemOfType<IActivity>(view.SelectionProvider.SelectedItems);
+            Activity = CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
             RefreshPage();
         }
         public System.Guid Id { get { return GUIDs.Activity; } }
 #endif
-		private IActivity m_activity = null;
+        private IActivity m_activity = null;
 		private ActivityDetailPageControl m_control = null;
 
 		public Control CreatePageControl() {
 			if (m_control == null) {				
+#if ST_2_1
 				m_control = new ActivityDetailPageControl(m_activity);
-			}
+#else
+                m_control = new ActivityDetailPageControl(m_activity, m_view);
+#endif
+            }
 			return m_control;
 		}
 
@@ -143,7 +147,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		#endregion
 #if !ST_2_1
-        private IDailyActivityView view = null;
+        private IDailyActivityView m_view = null;
 #endif
         private IList<string> menuPath = null;
         private bool menuEnabled = true;

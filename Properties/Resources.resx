@@ -134,7 +134,7 @@
     <value>Trails Plugin</value>
   </data>
   <data name="UI_Action_Title" xml:space="preserve">
-    <value>Trail</value>
+    <value>Trails</value>
   </data>
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
     <value>Add Trail</value>
@@ -167,7 +167,7 @@
     <value>Update failed</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Add new trail. (Select the trail points on the map before pushing this button).</value>
+    <value>Add new trail or selected points to current trail. (Select trail points on the map before pushing this button).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
     <value>Are you sure you want to delete this trail?</value>
@@ -182,10 +182,12 @@
     <value>List Settings...</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
-    <value>You must select at least two points on the map ({0} now selected).
+    <value>You must select a point on the map.
 
-To select a point, just click on a track that you have ridden.
-To select a second point, hold down CTRL, and click another part of the track.
+To select a point, just click on the track.
+Add new points by pressing the Add button.
+
+In ST2: To select a second point, hold down CTRL, and click another part of the track.
 Select as many points required to make this trail unique from other trails.
 </value>
   </data>
@@ -202,5 +204,8 @@ Changing this value will not effect existing trails.</value>
   </data>
   <data name="ZoomToContent" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ZoomToContent.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
+    <value>Press {0} to add the selected points to current trail, {1} to add a new trail.</value>
   </data>
 </root>

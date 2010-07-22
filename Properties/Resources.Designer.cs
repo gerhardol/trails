@@ -100,7 +100,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trail.
+        ///   Looks up a localized string similar to Trails.
         /// </summary>
         internal static string UI_Action_Title {
             get {
@@ -199,7 +199,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add new trail. (Select the trail points on the map before pushing this button)..
+        ///   Looks up a localized string similar to Press {0} to add the selected points to current trail, {1} to add a new trail..
+        /// </summary>
+        internal static string UI_Activity_Page_AddTrail_Replace {
+            get {
+                return ResourceManager.GetString("UI_Activity_Page_AddTrail_Replace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add new trail or selected points to current trail. (Select trail points on the map before pushing this button)..
         /// </summary>
         internal static string UI_Activity_Page_AddTrail_TT {
             get {
@@ -244,10 +253,12 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You must select at least two points on the map ({0} now selected).
+        ///   Looks up a localized string similar to You must select a point on the map.
         ///
-        ///To select a point, just click on a track that you have ridden.
-        ///To select a second point, hold down CTRL, and click another part of the track.
+        ///To select a point, just click on the track.
+        ///Add new points by pressing the Add button.
+        ///
+        ///In ST2: To select a second point, hold down CTRL, and click another part of the track.
         ///Select as many points required to make this trail unique from other trails.
         ///.
         /// </summary>

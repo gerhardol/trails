@@ -51,9 +51,9 @@
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />
     <Compile Include="UI\Activity\ExtendActivityDetailPages.cs" />
     <Compile Include="UI\Activity\ExtendActivityEditActions.cs" />
-    <Compile Include="UI\MapLayers\ExtendMapControlLayers.cs" />
   </ItemGroup>
   <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
+    <Compile Include="UI\MapLayers\ExtendMapControlLayers.cs" />
     <Compile Include="UI\MapLayers\MapControlLayer.cs" />
   </ItemGroup>
   <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">

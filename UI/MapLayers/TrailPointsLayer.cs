@@ -32,6 +32,20 @@ namespace TrailsPlugin.UI.MapLayers
 {
     class TrailPointsProvider : IRouteControlLayerProvider
     {
+        public IRouteControlLayer CreateControlLayer(IRouteControl control)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid Id
+        {
+            get { return GUIDs.TrailPointsControlLayerProvider; }
+        }
+
+        public string Name
+        {
+            get { return Properties.Resources.TrailPointsControlLayer; }
+        }
     }
     class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {

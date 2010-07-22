@@ -208,4 +208,7 @@ Changing this value will not effect existing trails.</value>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
     <value>Press {0} to add the selected points to current trail, {1} to add a new trail.</value>
   </data>
+  <data name="TrailPointsControlLayer" xml:space="preserve">
+    <value>Trail Points</value>
+  </data>
 </root>

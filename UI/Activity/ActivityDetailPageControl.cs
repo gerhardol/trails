@@ -310,7 +310,7 @@ namespace TrailsPlugin.UI.Activity {
                 p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
             }
             if (null == p) { return null; }
-            return new Data.TrailGPSLocation(p.LatitudeDegrees, p.LongitudeDegrees, "");
+            return new Data.TrailGPSLocation(p.Value.LatitudeDegrees, p.Value.LongitudeDegrees, "");
         }
 #else
         Data.TrailGPSLocation getGPS(IGPSLocation selectGPS)
@@ -389,7 +389,7 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
                 for (int i = 0; i < selectedGPS.Count; i++)
                 {
-                    Data.TrailGPSLocation p = getGPS(selectedGPS[i]);
+                    Data.TrailGPSLocation loc1 = getGPS(selectedGPS[i]);
 #else
                 for (int i = 0; i < layer.SelectedGPSLocations.Count; i++)
                 {
@@ -416,7 +416,7 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
                 for (int i = 0; i < selectedGPS.Count; i++)
                 {
-                    IGPSPoint Data.TrailGPSLocation = getGPS(selectedGPS[i]);
+                    Data.TrailGPSLocation p = getGPS(selectedGPS[i]);
 #else
                     for (int i = 0; i < layer.SelectedGPSLocations.Count; i++)
                     {

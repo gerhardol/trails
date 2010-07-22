@@ -19,39 +19,18 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
-#if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
-#else
-using ZoneFiveSoftware.Common.Visuals.Mapping;
-#endif
 
 namespace TrailsPlugin.UI.MapLayers 
 {
-	class ExtendMapControlLayers : 
-#if ST_2_1
-        IExtendMapControlLayers
-#else
-        IExtendMapControlProviders
-#endif
+	class ExtendMapControlLayers : IExtendMapControlLayers
     {
-
-#if ST_2_1
 		#region IExtendMapControlLayers Members
-
 		public IList<IMapControlLayer> MapLayers(IMapControl mapControl) {
 			MapControlLayer layer = MapControlLayer.Instance;
 			layer.MapControl = mapControl;
 			return new IMapControlLayer[] { layer };
         }
-
 		#endregion
-#else
-            //ST3fix
-        public IList<IMapControlProvider> MapControlProviders
-        {
-            get
-            { return null; }
-        }
-#endif
 	}
 }

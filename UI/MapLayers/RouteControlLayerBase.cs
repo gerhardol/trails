@@ -29,7 +29,6 @@ namespace TrailsPlugin.UI.MapLayers
 {
     class RouteControlLayerBase
     {
-        public RouteControlLayerBase() { }//xxx
         public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder)
         {
             this.provider = provider;

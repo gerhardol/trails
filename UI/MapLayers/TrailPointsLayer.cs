@@ -32,9 +32,14 @@ namespace TrailsPlugin.UI.MapLayers
 {
     class TrailPointsProvider : IRouteControlLayerProvider
     {
+        private IRouteControlLayer m_layer = null;
         public IRouteControlLayer CreateControlLayer(IRouteControl control)
         {
-            throw new NotImplementedException();
+            if (m_layer == null)
+            {
+                m_layer = new TrailPointsLayer(this,control);
+            }
+            return m_layer;
         }
 
         public Guid Id
@@ -47,14 +52,14 @@ namespace TrailsPlugin.UI.MapLayers
             get { return Properties.Resources.TrailPointsControlLayer; }
         }
     }
+
     class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
-        public TrailPointsLayer() { } //xxx - temporary
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 2)
         {
             PluginMain.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
-           // listener = new RouteItemsDataChangeListener(control);
+            //listener = new RouteItemsDataChangeListener(control);
            // listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
         }
 
@@ -125,7 +130,7 @@ namespace TrailsPlugin.UI.MapLayers
 
         private void SystemPreferences_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == null/* ||
+            if (e.PropertyName == null /*||
                e.PropertyName == PluginMain.GetApplication().SystemPreferences.RouteSettings_ShowGPSPoints ||
                 e.PropertyName == PluginMain.GetApplication().SystemPreferences.RouteSettings.MarkerShape ||
                 e.PropertyName == PluginMain.GetApplication().SystemPreferences.RouteSettings.MarkerSize ||

@@ -42,6 +42,9 @@ using ZoneFiveSoftware.SportTracks.Data;
 #else
 using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
+#if !ST_2_1
+using TrailsPlugin.UI.MapLayers;
+#endif
 using ZoneFiveSoftware.Common.Visuals.Chart;
 
 namespace TrailsPlugin.UI.Activity {
@@ -52,15 +55,21 @@ namespace TrailsPlugin.UI.Activity {
 		private ChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
 #if !ST_2_1
-        IDailyActivityView m_view = null;
-        UI.MapLayers.TrailPointsLayer layer = null;
+        private IDailyActivityView m_view = null;
+        private TrailPointsLayer layer = null;
+        private TrailPointsProvider m_TrailPointsProvider = null;
 #endif
 
 #if !ST_2_1
         public ActivityDetailPageControl(IActivity activity, IDailyActivityView view) : this(activity)
         {
             m_view = view;
-            layer = new MapLayers.TrailPointsLayer();//m_view..RouteSelectionProvider.Equals, 
+            if (null == m_TrailPointsProvider){
+                m_TrailPointsProvider = new TrailPointsProvider();
+            }
+            if (null == layer){
+                //layer = m_TrailPointsProvider.CreateControlLayer();
+            }
         }
 #endif
         public ActivityDetailPageControl(IActivity activity)

@@ -211,4 +211,10 @@ Changing this value will not effect existing trails.</value>
   <data name="TrailPointsControlLayer" xml:space="preserve">
     <value>Trail Points</value>
   </data>
+  <data name="TrailChartsName" xml:space="preserve">
+    <value>Trail Charts</value>
+  </data>
+  <data name="TrailName" xml:space="preserve">
+    <value>Trail</value>
+  </data>
 </root>

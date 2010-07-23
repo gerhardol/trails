@@ -176,10 +176,9 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.BackColor = System.Drawing.Color.Transparent;
             this.MainChart.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.None;
             this.MainChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainChart.Location = new System.Drawing.Point(3, 28);
+            this.MainChart.Location = new System.Drawing.Point(0, 25);
             this.MainChart.Name = "MainChart";
-            this.MainChart.Padding = new System.Windows.Forms.Padding(5);
-            this.MainChart.Size = new System.Drawing.Size(394, 69);
+            this.MainChart.Size = new System.Drawing.Size(400, 75);
             this.MainChart.TabIndex = 0;
             // 
             // TrailLineChart

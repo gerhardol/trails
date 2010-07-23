@@ -22,6 +22,8 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
+
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
@@ -105,11 +107,6 @@ namespace TrailsPlugin.UI.Activity {
 			btnDelete.Text = "";
             btnExpand.BackgroundImage = CommonIcons.LowerHalf;
             btnExpand.Text = "";
-            toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
-			toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
-            toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
-
-            this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
 			listSettingsMenuItem.Image = CommonIcons.ListSettings;
 
 			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
@@ -221,7 +218,22 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChart();
         }
 
-		public void ThemeChanged(ITheme visualTheme) {
+        public void UICultureChanged(CultureInfo culture)
+        {
+            toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
+            toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
+            toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
+            this.ChartBanner.Text = Properties.Resources.TrailChartsName;
+            this.lblTrail.Text = Properties.Resources.TrailName+":";
+
+            this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
+            if (m_chartsControl != null)
+            {
+                m_chartsControl.UICultureChanged(culture);
+            }
+        }
+        public void ThemeChanged(ITheme visualTheme)
+        {
 			m_visualTheme = visualTheme;
 			TrailName.ThemeChanged(visualTheme);
 			summaryList.ThemeChanged(visualTheme);
@@ -678,7 +690,7 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		private void ActivityDetailPageControl_SizeChanged(object sender, EventArgs e) {
+		private void ActPagePanel_SizeChanged(object sender, EventArgs e) {
 			// autosize column doesn't seem to be working.
             //Sizing is flaky in general
 			float width = 0;
@@ -688,7 +700,7 @@ namespace TrailsPlugin.UI.Activity {
 				}
 			}
 			this.ActPagePanel.ColumnStyles[1].SizeType = SizeType.Absolute;
-			this.ActPagePanel.ColumnStyles[1].Width = this.Width - width;
+            this.ActPagePanel.ColumnStyles[1].Width = this.ActPagePanel.Width - width;
 		}
 
 #if ST_2_1
@@ -710,6 +722,8 @@ namespace TrailsPlugin.UI.Activity {
         private void btnExpand_Click(object sender, EventArgs e) {
 #if ST_2_1
 			SplitterPanel p2 = DailyActivitySplitter.Panel2;
+#else
+            int width = this.ActPagePanel.Width;
 #endif
             if (m_chartsControl == null) {
 				m_chartsControl = new ChartsControl();
@@ -732,17 +746,16 @@ namespace TrailsPlugin.UI.Activity {
             m_chartsControl.Width = p2.Width;
             m_chartsControl.Height = p2.Height;
 #else
-            int width = this.Width;
-            this.ExpandSplitContainer.Panel2Collapsed = false;
             m_DetailPage.PageMaximized = true;
+            this.ExpandSplitContainer.Panel2Collapsed = false;
             this.ExpandSplitContainer.SplitterDistance = width;
 #endif
             m_isExpanded = true;
-			RefreshChart();
+            RefreshChart();
 		}
 
 		private void m_chartsControl_Collapse(object sender, EventArgs e) {
-			m_chartsControl.Visible = false;
+            m_chartsControl.Visible = false;
 			ActPageSplitContainer.Panel2Collapsed = false;
 #if ST_2_1
             SplitterPanel p2 = DailyActivitySplitter.Panel2;
@@ -752,7 +765,7 @@ namespace TrailsPlugin.UI.Activity {
             m_DetailPage.PageMaximized = false;
 #endif
             m_isExpanded = false;
-			RefreshChart();
+            RefreshChart();
 		}
 	}
 }

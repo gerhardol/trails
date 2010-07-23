@@ -20,8 +20,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
+
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.Fitness;
 
@@ -48,17 +50,25 @@ namespace TrailsPlugin.UI.Activity {
 			elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
 			cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
 		}
-		public void ThemeChanged(ITheme visualTheme) {
-			this.ChartBanner.ThemeChanged(visualTheme);
+        public void UICultureChanged(CultureInfo culture)
+        {
+            this.ChartBanner.Text = Properties.Resources.TrailChartsName;
+        }
+        public void ThemeChanged(ITheme visualTheme)
+        {
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is ActionBanner)
+                {
+                    ((ActionBanner)t).ThemeChanged(visualTheme);
+                }
+                else if (t is TrailLineChart)
+                {
+                    ((TrailLineChart)t).ThemeChanged(visualTheme);
+                }
+            }
 		}
 
-		private void btnCollapse_Click(object sender, EventArgs e) {
-			Collapse(sender, e);
-		}
-        void TrailLineChart_Resize(object sender, System.EventArgs e)
-        {
-            this.RefreshRows();
-        }
         public void RefreshRows()
         {
             int noOfGraphs = 0;
@@ -117,5 +127,15 @@ namespace TrailsPlugin.UI.Activity {
 			cadenceChart.TrailResult = result;
 			cadenceChart.EndUpdate();			
 		}
+
+        /***************************************/
+        private void btnCollapse_Click(object sender, EventArgs e)
+        {
+            Collapse(sender, e);
+        }
+        void TrailLineChart_Resize(object sender, System.EventArgs e)
+        {
+            this.RefreshRows();
+        }
 	}
 }

@@ -38,7 +38,32 @@ using ZoneFiveSoftware.Common.Visuals.Forms;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class TrailLineChart : UserControl {
-		public enum XAxisValue {
+        private Data.TrailResult m_trailResult = null;
+        private XAxisValue m_XAxisReferential = XAxisValue.Time;
+        private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
+        private Color m_ChartFillColor = Color.WhiteSmoke;
+        private Color m_ChartLineColor = Color.LightSkyBlue;
+        private Color m_ChartSelectedColor = Color.AliceBlue;
+        private IActivity m_activity = null;
+
+        public TrailLineChart()
+        {
+            InitializeComponent();
+            InitControls();
+        }
+
+        void InitControls()
+        {
+#if ST_2_1
+            this.MainChart.Margin = 0;
+#else
+            this.MainChart.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
+#endif
+            MainChart.YAxis.SmartZoom = true;
+        }
+
+        public enum XAxisValue
+        {
 			Time,
 			Distance
 		}
@@ -128,20 +153,6 @@ namespace TrailsPlugin.UI.Activity {
             return yAxisLabel;
         }
          
-		private Data.TrailResult m_trailResult = null;
-		private XAxisValue m_XAxisReferential = XAxisValue.Time;
-		private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
-		private Color m_ChartFillColor = Color.WhiteSmoke;
-		private Color m_ChartLineColor = Color.LightSkyBlue;
-		private Color m_ChartSelectedColor = Color.AliceBlue;
-		private IActivity m_activity = null;
-
-        public TrailLineChart() {
-            InitializeComponent();
-
-            MainChart.YAxis.SmartZoom = true;
-        }
-
 		private void SaveImageButton_Click(object sender, EventArgs e) {
 #if ST_2_1
             SaveImage dlg = new SaveImage();

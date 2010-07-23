@@ -49,9 +49,9 @@
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.ExpandSplitContainer = new System.Windows.Forms.SplitContainer();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.ActPagePanel.SuspendLayout();
             this.ActPageSplitContainer.Panel1.SuspendLayout();
             this.ActPageSplitContainer.Panel2.SuspendLayout();
@@ -410,7 +410,7 @@
             this.btnExpand.HyperlinkStyle = false;
             this.btnExpand.ImageMargin = 2;
             this.btnExpand.LeftImage = null;
-            this.btnExpand.Location = new System.Drawing.Point(353, 2);
+            this.btnExpand.Location = new System.Drawing.Point(353, 1);
             this.btnExpand.Name = "btnExpand";
             this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
             this.btnExpand.PushStyle = false;
@@ -422,6 +422,25 @@
             this.btnExpand.TextLeftMargin = 2;
             this.btnExpand.TextRightMargin = 2;
             this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            // 
+            // LineChart
+            // 
+            this.LineChart.AutoScroll = true;
+            this.LineChart.AutoSize = true;
+            this.LineChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LineChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.LineChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.LineChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.LineChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LineChart.Location = new System.Drawing.Point(0, 20);
+            this.LineChart.Margin = new System.Windows.Forms.Padding(0);
+            this.LineChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.LineChart.Name = "LineChart";
+            this.LineChart.Size = new System.Drawing.Size(400, 189);
+            this.LineChart.TabIndex = 1;
+            this.LineChart.TrailResult = null;
+            this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
             // ExpandSplitContainer
             // 
@@ -446,25 +465,6 @@
             this.ExpandSplitContainer.SplitterWidth = 1;
             this.ExpandSplitContainer.TabIndex = 18;
             // 
-            // LineChart
-            // 
-            this.LineChart.AutoScroll = true;
-            this.LineChart.AutoSize = true;
-            this.LineChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.LineChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.LineChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.LineChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
-            this.LineChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LineChart.Location = new System.Drawing.Point(0, 20);
-            this.LineChart.Margin = new System.Windows.Forms.Padding(0);
-            this.LineChart.MinimumSize = new System.Drawing.Size(250, 100);
-            this.LineChart.Name = "LineChart";
-            this.LineChart.Size = new System.Drawing.Size(400, 189);
-            this.LineChart.TabIndex = 1;
-            this.LineChart.TrailResult = null;
-            this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
-            // 
             // ActivityDetailPageControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -473,7 +473,7 @@
             this.Controls.Add(this.ExpandSplitContainer);
             this.Name = "ActivityDetailPageControl";
             this.Size = new System.Drawing.Size(400, 300);
-            this.SizeChanged += new System.EventHandler(this.ActivityDetailPageControl_SizeChanged);
+            this.ActPagePanel.SizeChanged += new System.EventHandler(this.ActPagePanel_SizeChanged);
             this.ActPagePanel.ResumeLayout(false);
             this.ActPagePanel.PerformLayout();
             this.ActPageSplitContainer.Panel1.ResumeLayout(false);

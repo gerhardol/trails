@@ -82,6 +82,24 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trail Charts.
+        /// </summary>
+        internal static string TrailChartsName {
+            get {
+                return ResourceManager.GetString("TrailChartsName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trail.
+        /// </summary>
+        internal static string TrailName {
+            get {
+                return ResourceManager.GetString("TrailName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trail Points.
         /// </summary>
         internal static string TrailPointsControlLayer {

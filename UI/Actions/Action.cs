@@ -68,11 +68,15 @@ namespace TrailsPlugin.UI.Actions {
 				return Properties.Resources.UI_Action_Title;
 			}
 		}
+        private bool firstRun = true; 
         public bool Visible
         {
             get
             {
-                if (null == m_activities || m_activities.Count == 0) return false;
+                //Analyze menu must be Visible at first call, otherwise it is hidden
+                //Could be done with listeners too
+                if (true == firstRun) {firstRun=false; return true;}
+                if (m_activities.Count == 0) return false;
                 return true;
             }
         }

@@ -58,7 +58,7 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
 				m_control = new ActivityDetailPageControl(m_activity);
 #else
-                m_control = new ActivityDetailPageControl(m_activity, m_view);
+                m_control = new ActivityDetailPageControl(this, m_activity, m_view);
 #endif
             }
 			return m_control;

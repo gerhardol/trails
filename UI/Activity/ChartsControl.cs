@@ -69,17 +69,17 @@ namespace TrailsPlugin.UI.Activity {
                     noOfGraphs++;
                 }
             }
-            int height = (tableLayoutPanel1.Height-(int)tableLayoutPanel1.RowStyles[0].Height) / noOfGraphs;
+            int height = (tableLayoutPanel1.Height-(int)tableLayoutPanel1.RowStyles[0].Height);
+            if (noOfGraphs > 0) { height = height / noOfGraphs; }
             for (int i = 1; i < tableLayoutPanel1.RowCount; i++)
             {
+                tableLayoutPanel1.RowStyles[i].SizeType = SizeType.Absolute;
                 if (true == tableLayoutPanel1.Controls[i].Visible)
                 {
-                    tableLayoutPanel1.RowStyles[i].SizeType = SizeType.Absolute;
                     tableLayoutPanel1.RowStyles[i].Height = height;
                 }
                 else
                 {
-                    tableLayoutPanel1.RowStyles[i].SizeType = SizeType.Absolute;
                     tableLayoutPanel1.RowStyles[i].Height = 0;
                 }
             }

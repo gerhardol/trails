@@ -45,7 +45,7 @@ namespace TrailsPlugin.UI.Activity
             this.chartTablePanel.AutoSize = true;
             this.chartTablePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.chartTablePanel.ColumnCount = 1;
-            this.chartTablePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.chartTablePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.chartTablePanel.Controls.Add(this.ButtonPanel, 0, 0);
             this.chartTablePanel.Controls.Add(this.MainChart, 0, 1);
             this.chartTablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -55,7 +55,7 @@ namespace TrailsPlugin.UI.Activity
             this.chartTablePanel.RowCount = 2;
             this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.chartTablePanel.Size = new System.Drawing.Size(400, 327);
+            this.chartTablePanel.Size = new System.Drawing.Size(400, 100);
             this.chartTablePanel.TabIndex = 0;
             // 
             // ButtonPanel
@@ -178,17 +178,21 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainChart.Location = new System.Drawing.Point(3, 28);
             this.MainChart.Name = "MainChart";
-            this.MainChart.Size = new System.Drawing.Size(394, 296);
+            this.MainChart.Padding = new System.Windows.Forms.Padding(5);
+            this.MainChart.Size = new System.Drawing.Size(394, 69);
             this.MainChart.TabIndex = 0;
             // 
             // TrailLineChart
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.chartTablePanel);
             this.Margin = new System.Windows.Forms.Padding(0);
+            this.MinimumSize = new System.Drawing.Size(250, 100);
             this.Name = "TrailLineChart";
-            this.Size = new System.Drawing.Size(400, 327);
+            this.Size = new System.Drawing.Size(400, 100);
             this.chartTablePanel.ResumeLayout(false);
             this.chartTablePanel.PerformLayout();
             this.ButtonPanel.ResumeLayout(false);

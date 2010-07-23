@@ -40,11 +40,10 @@
             this.ChartBanner.BackColor = System.Drawing.SystemColors.Control;
             this.ChartBanner.Controls.Add(this.btnCollapse);
             this.ChartBanner.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ChartBanner.HasMenuButton = true;
+            this.ChartBanner.HasMenuButton = false;
             this.ChartBanner.Location = new System.Drawing.Point(0, 0);
             this.ChartBanner.Margin = new System.Windows.Forms.Padding(0);
             this.ChartBanner.Name = "ChartBanner";
-            this.ChartBanner.Padding = new System.Windows.Forms.Padding(0, 0, 0, 0);
             this.ChartBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ChartBanner.Size = new System.Drawing.Size(500, 20);
             this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
@@ -63,13 +62,13 @@
             this.btnCollapse.HyperlinkStyle = false;
             this.btnCollapse.ImageMargin = 2;
             this.btnCollapse.LeftImage = null;
-            this.btnCollapse.Location = new System.Drawing.Point(471, 3);
+            this.btnCollapse.Location = new System.Drawing.Point(684, 0);
             this.btnCollapse.Name = "btnCollapse";
             this.btnCollapse.PushStyle = false;
             this.btnCollapse.RightImage = null;
             this.btnCollapse.Size = new System.Drawing.Size(20, 20);
             this.btnCollapse.TabIndex = 12;
-            this.btnCollapse.Text = "X";
+            this.btnCollapse.Text = "C";
             this.btnCollapse.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnCollapse.TextLeftMargin = 2;
             this.btnCollapse.TextRightMargin = 2;
@@ -110,6 +109,7 @@
             this.speedChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.speedChart.Location = new System.Drawing.Point(0, 20);
             this.speedChart.Margin = new System.Windows.Forms.Padding(0);
+            this.speedChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.speedChart.Name = "speedChart";
             this.speedChart.Size = new System.Drawing.Size(500, 100);
             this.speedChart.TabIndex = 2;
@@ -127,6 +127,7 @@
             this.heartrateChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.heartrateChart.Location = new System.Drawing.Point(0, 120);
             this.heartrateChart.Margin = new System.Windows.Forms.Padding(0);
+            this.heartrateChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.heartrateChart.Name = "heartrateChart";
             this.heartrateChart.Size = new System.Drawing.Size(500, 100);
             this.heartrateChart.TabIndex = 3;
@@ -144,6 +145,7 @@
             this.cadenceChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cadenceChart.Location = new System.Drawing.Point(0, 220);
             this.cadenceChart.Margin = new System.Windows.Forms.Padding(0);
+            this.cadenceChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.cadenceChart.Name = "cadenceChart";
             this.cadenceChart.Size = new System.Drawing.Size(500, 100);
             this.cadenceChart.TabIndex = 6;
@@ -161,6 +163,7 @@
             this.elevationChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.elevationChart.Location = new System.Drawing.Point(0, 320);
             this.elevationChart.Margin = new System.Windows.Forms.Padding(0);
+            this.elevationChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.elevationChart.Name = "elevationChart";
             this.elevationChart.Size = new System.Drawing.Size(500, 100);
             this.elevationChart.TabIndex = 3;
@@ -178,6 +181,7 @@
             this.gradeChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gradeChart.Location = new System.Drawing.Point(0, 420);
             this.gradeChart.Margin = new System.Windows.Forms.Padding(0);
+            this.gradeChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.gradeChart.Name = "gradeChart";
             this.gradeChart.Size = new System.Drawing.Size(500, 100);
             this.gradeChart.TabIndex = 7;

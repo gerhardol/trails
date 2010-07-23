@@ -55,14 +55,16 @@ namespace TrailsPlugin.UI.Activity {
 		private ChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
 #if !ST_2_1
+        private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
         private TrailPointsLayer layer = null;
         private TrailPointsProvider m_TrailPointsProvider = null;
 #endif
 
 #if !ST_2_1
-        public ActivityDetailPageControl(IActivity activity, IDailyActivityView view) : this(activity)
+        public ActivityDetailPageControl(IDetailPage detailPage, IActivity activity, IDailyActivityView view) : this(activity)
         {
+            m_DetailPage = detailPage;
             m_view = view;
             if (null == m_TrailPointsProvider){
                 m_TrailPointsProvider = new TrailPointsProvider();
@@ -83,6 +85,7 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryList.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
 #else
             this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+            this.ExpandSplitContainer.Panel2Collapsed = true;
 #endif
 			m_controller.CurrentActivity = activity;
 
@@ -100,9 +103,9 @@ namespace TrailsPlugin.UI.Activity {
 			btnEdit.Text = "";
 			btnDelete.BackgroundImage = CommonIcons.Delete;
 			btnDelete.Text = "";
-			btnExpand.BackgroundImage = CommonIcons.LowerHalf;
-			btnExpand.Text = "";
-			toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
+            btnExpand.BackgroundImage = CommonIcons.LowerHalf;
+            btnExpand.Text = "";
+            toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
 			toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
             toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
 
@@ -111,7 +114,7 @@ namespace TrailsPlugin.UI.Activity {
 
 			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
 			summaryList.LabelProvider = new TrailResultLabelProvider();
-            btnExpand.Left = this.Right - 46;
+            this.ExpandSplitContainer.Panel2Collapsed = true;
 
 			this.RefreshColumns();
 			this.RefreshChartMenu();
@@ -197,6 +200,10 @@ namespace TrailsPlugin.UI.Activity {
                     summaryList.Selected = new object[] { results[0] };
                 }
 
+                //Set size, to not waste chart
+                int resRows = Math.Min(5, ((IList<Data.TrailResult>)(this.summaryList.RowData)).Count);
+                this.summaryList.Height = this.summaryList.HeaderRowHeight +
+                    this.summaryList.DefaultRowHeight * resRows;
 #if ST_2_1
                 foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
                 {
@@ -672,22 +679,22 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void ActivityDetailPageControl_SizeChanged(object sender, EventArgs e) {
-			// autosize column doesn't seem to be working. 
+			// autosize column doesn't seem to be working.
+            //Sizing is flaky in general
 			float width = 0;
-			for (int i = 0; i < Panel.ColumnStyles.Count; i++) {
+			for (int i = 0; i < ActPagePanel.ColumnStyles.Count; i++) {
 				if (i != 1) {
-					width += this.Panel.ColumnStyles[i].Width;
+					width += this.ActPagePanel.ColumnStyles[i].Width;
 				}
 			}
-			this.Panel.ColumnStyles[1].SizeType = SizeType.Absolute;
-			this.Panel.ColumnStyles[1].Width = this.Width - width;
+			this.ActPagePanel.ColumnStyles[1].SizeType = SizeType.Absolute;
+			this.ActPagePanel.ColumnStyles[1].Width = this.Width - width;
 		}
 
+#if ST_2_1
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
 			get
             {
-#if ST_2_1
-//ST3fix
 				Control c = this.Parent;
 				while (c != null) {
                     if (c is ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel) {
@@ -695,38 +702,56 @@ namespace TrailsPlugin.UI.Activity {
                 }
 					c = c.Parent;
 				}
-#endif
                 throw new Exception("Daily Activity Splitter not found");
 			}
 		}
+#endif
 
-		private void btnExpand_Click(object sender, EventArgs e) {
+        private void btnExpand_Click(object sender, EventArgs e) {
+#if ST_2_1
 			SplitterPanel p2 = DailyActivitySplitter.Panel2;
-			p2.Controls[0].Visible = false;
-			if (m_chartsControl == null) {
+#endif
+            if (m_chartsControl == null) {
 				m_chartsControl = new ChartsControl();
                 m_chartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
                 m_chartsControl.Dock = DockStyle.Fill;
                 m_chartsControl.Top = 0;
                 m_chartsControl.Left = 0;
-                m_chartsControl.Width = p2.Width;
-                m_chartsControl.Height = p2.Height;
+#if ST_2_1
                 p2.Controls.Add(m_chartsControl);
-				m_chartsControl.ThemeChanged(m_visualTheme);
+#else
+                this.ExpandSplitContainer.Panel2.Controls.Add(m_chartsControl);
+#endif
+                m_chartsControl.ThemeChanged(m_visualTheme);
 				m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
 			}
 			m_chartsControl.Visible = true;
-			SplitContainer.Panel2Collapsed = true;
-			m_isExpanded = true;
+			ActPageSplitContainer.Panel2Collapsed = true;
+#if ST_2_1
+			p2.Controls[0].Visible = false;
+            m_chartsControl.Width = p2.Width;
+            m_chartsControl.Height = p2.Height;
+#else
+            int width = this.Width;
+            this.ExpandSplitContainer.Panel2Collapsed = false;
+            m_DetailPage.PageMaximized = true;
+            this.ExpandSplitContainer.SplitterDistance = width;
+#endif
+            m_isExpanded = true;
 			RefreshChart();
 		}
 
 		private void m_chartsControl_Collapse(object sender, EventArgs e) {
-			SplitterPanel p2 = DailyActivitySplitter.Panel2;
-			p2.Controls[0].Visible = true;
 			m_chartsControl.Visible = false;
-			SplitContainer.Panel2Collapsed = false;
-			m_isExpanded = false;
+			ActPageSplitContainer.Panel2Collapsed = false;
+#if ST_2_1
+            SplitterPanel p2 = DailyActivitySplitter.Panel2;
+            p2.Controls[0].Visible = true;
+#else
+            this.ExpandSplitContainer.Panel2Collapsed = true;
+            m_DetailPage.PageMaximized = false;
+#endif
+            m_isExpanded = false;
 			RefreshChart();
 		}
 	}

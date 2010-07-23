@@ -150,6 +150,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(TargetPath)"*".locked" del "$(TargetPath)"*".locked"
+if exist "$(TargetPath)" move "$(TargetPath)" "$(TargetPath)."%25date:~4,2%25%25date:~7,2%25%25date:~10,4%25_@_%25time:~0,2%25h%25time:~3,2%25m%25time:~6,2%25s%25.locked</PreBuildEvent>
+  </PropertyGroup>
  <PropertyGroup>
     <PostBuildEvent>:: This part is in the Common part of the properties
 :: Avoid editing from VSE

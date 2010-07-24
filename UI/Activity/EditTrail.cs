@@ -32,7 +32,7 @@ namespace TrailsPlugin.UI.Activity {
 		protected bool m_addMode;
 		protected Data.Trail m_TrailToEdit;
 
-		public EditTrail(ITheme visualTheme, bool addMode) {
+		public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, bool addMode) {
 			if (addMode) {
 				m_TrailToEdit = new TrailsPlugin.Data.Trail();
 				this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
@@ -43,16 +43,25 @@ namespace TrailsPlugin.UI.Activity {
 			m_addMode = addMode;
 			InitializeComponent();
 			ThemeChanged(visualTheme);
+            UICultureChanged(culture);
 		}
 
 		public virtual void ThemeChanged(ITheme visualTheme) {
-            presentRadius();
 			m_visualTheme = visualTheme;
-			BackColor = visualTheme.Control;
+			this.BackColor = visualTheme.Control;
 			EList.ThemeChanged(visualTheme);
-			TrailName.ThemeChanged(visualTheme);
-		}
+            TrailName.ThemeChanged(visualTheme);
+            Radius.ThemeChanged(visualTheme);
+        }
 
+        public void UICultureChanged(System.Globalization.CultureInfo culture)
+        {
+            this.lblTrail.Text = Properties.Resources.TrailName;
+            lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + " :";
+            this.btnOk.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+            this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+            presentRadius();
+        }
 		private void btnCancel_Click(object sender, System.EventArgs e) {
 			this.DialogResult = DialogResult.Cancel;
 			Close();
@@ -119,7 +128,6 @@ namespace TrailsPlugin.UI.Activity {
         private void EditTrail_Shown(object sender, System.EventArgs e)
         {
             TrailName.Text = m_TrailToEdit.Name;
-            lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + " :";
             presentRadius();
 
             EList.Columns.Clear();

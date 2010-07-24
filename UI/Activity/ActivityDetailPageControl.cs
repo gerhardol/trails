@@ -52,7 +52,19 @@ using ZoneFiveSoftware.Common.Visuals.Chart;
 namespace TrailsPlugin.UI.Activity {
 	public partial class ActivityDetailPageControl : UserControl {
 
-		private ITheme m_visualTheme;
+        private ITheme m_visualTheme =
+#if ST_2_1
+                PluginMain.GetApplication().VisualTheme;
+#else
+                PluginMain.GetApplication().SystemPreferences.VisualTheme;
+#endif
+        private CultureInfo m_culture =
+#if ST_2_1
+                new System.Globalization.CultureInfo("en");
+#else
+                PluginMain.GetApplication().SystemPreferences.UICulture;
+#endif
+
 		private Controller.TrailController m_controller;
 		private ChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
@@ -217,9 +229,9 @@ namespace TrailsPlugin.UI.Activity {
             }
             RefreshChart();
         }
-
         public void UICultureChanged(CultureInfo culture)
         {
+            m_culture = culture;
             toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
             toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
             toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
@@ -300,7 +312,7 @@ namespace TrailsPlugin.UI.Activity {
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
             } else {
-				EditTrail dialog = new EditTrail(m_visualTheme, false);
+				EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
 				if (dialog.ShowDialog() == DialogResult.OK) {
 					RefreshControlState();
 					RefreshData();
@@ -361,7 +373,7 @@ namespace TrailsPlugin.UI.Activity {
                     addCurrent = true;
                 }
             }
-            EditTrail dialog = new EditTrail(m_visualTheme, !addCurrent);
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, !addCurrent);
             if (m_controller.CurrentActivityTrail != null)
             {
                 if (addCurrent)
@@ -398,7 +410,7 @@ namespace TrailsPlugin.UI.Activity {
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
             IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif
-            EditTrail dialog = new EditTrail(m_visualTheme, false);
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {
@@ -737,7 +749,8 @@ namespace TrailsPlugin.UI.Activity {
                 this.ExpandSplitContainer.Panel2.Controls.Add(m_chartsControl);
 #endif
                 m_chartsControl.ThemeChanged(m_visualTheme);
-				m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
+                m_chartsControl.UICultureChanged(m_culture);
+                m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
 			}
 			m_chartsControl.Visible = true;
 			ActPageSplitContainer.Panel2Collapsed = true;

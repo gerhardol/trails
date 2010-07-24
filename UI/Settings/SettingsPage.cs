@@ -57,7 +57,7 @@ namespace TrailsPlugin.UI.Settings {
 
 		public string PageName {
 			get {
-				return Properties.Resources.TrailsPluginName;
+				return Properties.Resources.ApplicationName;
 			}
 		}
 

@@ -60,6 +60,15 @@ namespace TrailsPlugin.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Trails Plugin.
+        /// </summary>
+        internal static string ApplicationName {
+            get {
+                return ResourceManager.GetString("ApplicationName", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap square_blue {
             get {
                 object obj = ResourceManager.GetObject("square_blue", resourceCulture);
@@ -114,15 +123,6 @@ namespace TrailsPlugin.Properties {
         internal static string TrailsName {
             get {
                 return ResourceManager.GetString("TrailsName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Trails Plugin.
-        /// </summary>
-        internal static string TrailsPluginName {
-            get {
-                return ResourceManager.GetString("TrailsPluginName", resourceCulture);
             }
         }
         

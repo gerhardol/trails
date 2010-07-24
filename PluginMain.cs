@@ -46,7 +46,7 @@ namespace TrailsPlugin {
 
 		public string Name {
 			get {
-				return Properties.Resources.TrailsPluginName;
+				return Properties.Resources.ApplicationName;
 			}
 		}
 

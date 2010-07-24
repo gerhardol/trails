@@ -130,9 +130,6 @@
   <data name="TrailsName" xml:space="preserve">
     <value>Trails</value>
   </data>
-  <data name="TrailsPluginName" xml:space="preserve">
-    <value>Trails Plugin</value>
-  </data>
   <data name="UI_Action_Title" xml:space="preserve">
     <value>Trails</value>
   </data>
@@ -216,5 +213,9 @@ Changing this value will not effect existing trails.</value>
   </data>
   <data name="TrailName" xml:space="preserve">
     <value>Trail</value>
+  </data>
+  <data name="ApplicationName" xml:space="preserve">
+    <value>Trails Plugin</value>
+    <comment>Name of application, displayed in GUI</comment>
   </data>
 </root>

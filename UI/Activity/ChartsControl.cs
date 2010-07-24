@@ -50,10 +50,6 @@ namespace TrailsPlugin.UI.Activity {
 			elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
 			cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
 		}
-        public void UICultureChanged(CultureInfo culture)
-        {
-            this.ChartBanner.Text = Properties.Resources.TrailChartsName;
-        }
         public void ThemeChanged(ITheme visualTheme)
         {
             foreach (Control t in this.tableLayoutPanel1.Controls)
@@ -68,6 +64,10 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 		}
+        public void UICultureChanged(CultureInfo culture)
+        {
+            this.ChartBanner.Text = Properties.Resources.TrailChartsName;
+        }
 
         public void RefreshRows()
         {

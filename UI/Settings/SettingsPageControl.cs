@@ -36,10 +36,7 @@ namespace TrailsPlugin.UI.Settings {
 
         private void presentSettings()
         {
-            lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + " :";
             txtDefaultRadius.Text = Utils.Units.ElevationToString(PluginMain.Settings.DefaultRadius, "u");
-
-            toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
         }
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -47,6 +44,19 @@ namespace TrailsPlugin.UI.Settings {
 			PluginInfoPanel.ThemeChanged(visualTheme);
 			txtDefaultRadius.ThemeChanged(visualTheme);
 		}
+        public void UICultureChanged(System.Globalization.CultureInfo culture)
+        {
+            lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
+            toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
+            presentSettings();
+
+            //Some untranslated strings....
+            this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
+                "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
+                "rg/licenses/lgpl.html.";
+            this.lblCopyright.Text = "Copyright Brendan Doherty 2009";
+            this.PluginInfoBanner.Text = "Plugin Information";
+        }
 
 		private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {
 			float result;

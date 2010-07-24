@@ -197,7 +197,7 @@ namespace TrailsPlugin.UI.Activity {
 		public void ThemeChanged(ITheme visualTheme) {
 			MainChart.ThemeChanged(visualTheme);
 			ButtonPanel.ThemeChanged(visualTheme);
-			ButtonPanel.BackColor = visualTheme.Window;
+			//ButtonPanel.BackColor = visualTheme.Window;
 		}
 
 		public void UICultureChanged(CultureInfo culture) {

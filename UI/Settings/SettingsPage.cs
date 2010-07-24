@@ -85,7 +85,11 @@ namespace TrailsPlugin.UI.Settings {
 		}
 
 		public void UICultureChanged(CultureInfo culture) {
-			RefreshPage();
+            if (m_control != null)
+            {
+                m_control.UICultureChanged(culture);
+            }
+            RefreshPage();
 		}
 
 		#endregion

@@ -68,11 +68,14 @@ namespace TrailsPlugin.UI.Activity {
 		private Controller.TrailController m_controller;
 		private ChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
-#if !ST_2_1
+
+#if ST_2_1
+        private UI.MapLayers.MapControlLayer layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
+#else
         private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
-        private TrailPointsLayer layer = null;
-        private TrailPointsProvider m_TrailPointsProvider = null;
+        private TrailPointsProvider m_TrailPointsProvider = TrailPointsProvider.Instance;
+        private TrailPointsLayer layer { get { return (TrailPointsLayer)m_TrailPointsProvider.RouteControlLayer; } }
 #endif
 
 #if !ST_2_1
@@ -80,12 +83,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_DetailPage = detailPage;
             m_view = view;
-            if (null == m_TrailPointsProvider){
-                m_TrailPointsProvider = new TrailPointsProvider();
-            }
-            if (null == layer){
-                //layer = m_TrailPointsProvider.CreateControlLayer();
-            }
         }
 #endif
         public ActivityDetailPageControl(IActivity activity)
@@ -129,17 +126,14 @@ namespace TrailsPlugin.UI.Activity {
 			this.RefreshChartMenu();
 		}
 
+        private bool _showPage = false;
         public bool ShowPage
         {
-            //get { return _showPage; }
+            get { return _showPage; }
             set
             {
-#if ST_2_1
-                UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
+                _showPage = value;
                 layer.ShowPage = value;
-#else
-//TODO ST3fix
-#endif
 
                 if (value)
                 {
@@ -188,15 +182,8 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshData()
         {
-#if ST_2_1
-            UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
-#else
-//TODO ST3fix
-#endif
-#if ST_2_1
+            layer.ShowPage = false; //defer updates
             layer.HighlightedGPSLocations.Clear();
-            layer.ShowHighlight = false;
-#endif
             summaryList.RowData = null;
 
             if (m_controller.CurrentActivityTrail != null)
@@ -213,15 +200,13 @@ namespace TrailsPlugin.UI.Activity {
                 int resRows = Math.Min(5, ((IList<Data.TrailResult>)(this.summaryList.RowData)).Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
                     this.summaryList.DefaultRowHeight * resRows;
-#if ST_2_1
+
                 foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
                 {
-                    layer.HighlightedGPSLocations.Add(point.GpsLocation);
+                    layer.HighlightedGPSLocations.Add(point);
                 }
                 layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
-                layer.ShowHighlight = true;
-#endif
-
+                layer.ShowPage = _showPage;//Refresh
             }
             else
             {
@@ -270,7 +255,6 @@ namespace TrailsPlugin.UI.Activity {
 
             int countGPS = 0;
 #if ST_2_1
-            UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
 			ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
@@ -295,7 +279,6 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;
 #if ST_2_1
-			UI.MapLayers.MapControlLayer layer = UI.MapLayers.MapControlLayer.Instance;
 			IMapControl mapControl = layer.MapControl;
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
@@ -359,8 +342,9 @@ namespace TrailsPlugin.UI.Activity {
         private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
         {
 #else
-		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e) {
-			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
+		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
+        {
+			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
             IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif
@@ -405,8 +389,9 @@ namespace TrailsPlugin.UI.Activity {
         private void selectedGPSLocationsChanged_EditTrail(IList<IItemTrackSelectionInfo> selectedGPS)
         {
 #else
- 		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e) {
-			UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
+ 		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e)
+        {
+			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
 			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
             IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
 #endif

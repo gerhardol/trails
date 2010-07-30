@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2010 Aaron Averil
+Copyright (C) 2010 Aaron Averill
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -131,20 +131,20 @@ namespace TrailsPlugin.UI.MapLayers
         {
         }
 
-        protected void UpdateMapInfoBox(ref MapInfoBox infoBox, IGPSPoint location, string caption, string[] infoLines, string imageUrl)
-        {
-            if (infoBox == null)
-            {
-                infoBox = new MapInfoBox(location, caption, infoLines, imageUrl);
-                mapControl.AddOverlay(infoBox);
-            }
-            else
-            {
-                infoBox.Location = location;
-                infoBox.SetContent(caption, infoLines, imageUrl);
-                infoBox.Visible = true;
-            }
-        }
+        //protected void UpdateMapInfoBox(ref MapInfoBox infoBox, IGPSPoint location, string caption, string[] infoLines, string imageUrl)
+        //{
+        //    if (infoBox == null)
+        //    {
+        //        infoBox = new MapInfoBox(location, caption, infoLines, imageUrl);
+        //        mapControl.AddOverlay(infoBox);
+        //    }
+        //    else
+        //    {
+        //        infoBox.Location = location;
+        //        infoBox.SetContent(caption, infoLines, imageUrl);
+        //        infoBox.Visible = true;
+        //    }
+        //}
 
         protected virtual void AddMapControlEventHandlers()
         {
@@ -162,7 +162,5 @@ namespace TrailsPlugin.UI.MapLayers
         private IRouteControl control;
         private int zOrder = 0;
         private IMapControl mapControl;
-
     }
-
 }

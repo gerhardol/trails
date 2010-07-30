@@ -20,9 +20,11 @@ using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.Resources;
 using System.Runtime.CompilerServices;
+using System.IO;
 
 namespace TrailsPlugin {
 	class CommonIcons {
@@ -124,5 +126,42 @@ namespace TrailsPlugin {
 				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
 			}
 		}
+
+#if !ST_2_1
+        const int brushPixelSize = 6; //Approx size
+        //The radius is currently defined by the outer radius
+        static public string Circle(int sizeX, int sizeY, out Size iconSize)
+        {
+            string basePath = PluginMain.GetApplication().Configuration.CommonWebFilesFolder +
+                                  System.IO.Path.DirectorySeparatorChar +
+                                  TrailsPlugin.GUIDs.PluginMain.ToString() + System.IO.Path.DirectorySeparatorChar;
+            if (!Directory.Exists(basePath))
+            {
+
+                DirectoryInfo di = Directory.CreateDirectory(basePath);
+            }
+
+            sizeX = Math.Max(sizeX, brushPixelSize * 2);
+            sizeY = Math.Max(sizeY, brushPixelSize * 2);
+            int brushSize = brushPixelSize;
+            iconSize = new Size(sizeX, sizeY);
+            string filePath = basePath + "image-" + sizeX+"_"+sizeY + ".png";
+            if (!File.Exists(filePath))
+            {
+                //No version handling other than filename
+                Bitmap myBitmap = new Bitmap(sizeX, sizeY);//circlePixelSize, circlePixelSize);
+                Graphics myGraphics = Graphics.FromImage(myBitmap);
+                myGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                myGraphics.DrawEllipse(new Pen(Color.Red, brushSize), new Rectangle(brushSize / 2, brushSize / 2, 
+                    myBitmap.Width - brushSize, myBitmap.Height - brushSize));
+                myGraphics.DrawEllipse(new Pen(Color.Black, 1), new Rectangle(1, 1, 
+                    myBitmap.Width - 2, myBitmap.Height - 2));
+                FileStream myFileOut = new FileStream(filePath, FileMode.Create);
+                myBitmap.Save(myFileOut, ImageFormat.Png);
+                myFileOut.Close();
+            }
+            return "file://" + filePath;
+        }
+#endif
 	}
 }

@@ -24,6 +24,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 using System.Collections.Generic;
 using Microsoft.Win32;
+using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.MapLayers {
 	class MapControlLayer : IMapControlLayer
@@ -32,8 +33,7 @@ namespace TrailsPlugin.UI.MapLayers {
 
 		private bool m_CaptureSelectedGPSLocations;
 		private IList<IGPSLocation> m_SelectedGPSLocations = new List<IGPSLocation>();
-		private IList<IGPSLocation> m_HighlightedGPSLocations = new List<IGPSLocation>();
-		private bool m_ShowHighlight = false;
+        private IList<TrailGPSLocation> m_HighlightedGPSLocations = new List<TrailGPSLocation>();
 		private float m_highlightRadius;
         private static bool _showPage;
 
@@ -42,10 +42,15 @@ namespace TrailsPlugin.UI.MapLayers {
             //get { return _showPage; }
             set
             {
+                bool changed = (value != _showPage);
                 _showPage = value;
                 if (!value)
                 {
                     m_CaptureSelectedGPSLocations = false;
+                }
+                if (changed)
+                {
+                    Refresh();
                 }
             }
         }
@@ -105,7 +110,8 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-		public IList<IGPSLocation> HighlightedGPSLocations {
+        public IList<TrailGPSLocation> HighlightedGPSLocations
+        {
 			set {
 				m_HighlightedGPSLocations = value;
 			}
@@ -120,12 +126,10 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-		public bool ShowHighlight {
-			set {
-				m_ShowHighlight = value;
-                if (null != m_mapControl) m_mapControl.Refresh();
-			}
-		}
+        public void Refresh()
+        {
+            if (null != m_mapControl) m_mapControl.Refresh();
+        }
 
 
 #region IMapControlLayer Members
@@ -139,7 +143,7 @@ namespace TrailsPlugin.UI.MapLayers {
 				}
             }
 
-			if (m_ShowHighlight) {
+			if (_showPage) {
 				//drawContext.Center
 	
 				IGPSLocation loc1 = drawContext.Projection.PixelToGPS(drawContext.Center, drawContext.ZoomLevel, new Point(0,0));
@@ -148,9 +152,10 @@ namespace TrailsPlugin.UI.MapLayers {
 				IGPSPoint point2 = Utils.GPS.LocationToPoint(loc2);
 				float meters = point1.DistanceMetersToPoint(point2) / 100;
 				float radiusInPixels = m_highlightRadius / meters;
-								
-				foreach (IGPSLocation gpsLocation in m_HighlightedGPSLocations) {
-					Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, gpsLocation );
+
+                foreach (TrailGPSLocation gpsLocation in m_HighlightedGPSLocations)
+                {
+					Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, gpsLocation.GpsLocation);
 					Pen pen = new Pen(Color.Red, 5.0F);
 					
 					drawContext.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;

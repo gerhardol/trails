@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCollapse = new ZoneFiveSoftware.Common.Visuals.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.speedChart = new TrailsPlugin.UI.Activity.TrailLineChart();
@@ -33,7 +34,6 @@
             this.cadenceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.elevationChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.gradeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
-            this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChartBanner.SuspendLayout();
             this.detailMenu.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -82,7 +82,7 @@
             this.btnCollapse.HyperlinkStyle = false;
             this.btnCollapse.ImageMargin = 2;
             this.btnCollapse.LeftImage = null;
-            this.btnCollapse.Location = new System.Drawing.Point(684, 0);
+            this.btnCollapse.Location = new System.Drawing.Point(914, 0);
             this.btnCollapse.Name = "btnCollapse";
             this.btnCollapse.PushStyle = false;
             this.btnCollapse.RightImage = null;
@@ -123,6 +123,7 @@
             // 
             this.speedChart.AutoSize = true;
             this.speedChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.speedChart.BackColor = System.Drawing.SystemColors.Control;
             this.speedChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
             this.speedChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.speedChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;

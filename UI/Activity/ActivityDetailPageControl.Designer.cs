@@ -33,8 +33,8 @@
             this.ActPageSplitContainer = new System.Windows.Forms.SplitContainer();
             this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -47,9 +47,9 @@
             this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
             this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
@@ -95,6 +95,7 @@
             this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ActPagePanel.Size = new System.Drawing.Size(400, 300);
             this.ActPagePanel.TabIndex = 8;
+            this.ActPagePanel.SizeChanged += new System.EventHandler(this.ActPagePanel_SizeChanged);
             // 
             // lblTrail
             // 
@@ -267,9 +268,9 @@
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(147, 26);
             // 
-            // copyTable
+            // copyTableMenuItem
             // 
-            this.copyTableMenuItem.Name = "copyTable";
+            this.copyTableMenuItem.Name = "copyTableMenuItem";
             this.copyTableMenuItem.Size = new System.Drawing.Size(198, 22);
             this.copyTableMenuItem.Text = "Copy table to clipboard";
             this.copyTableMenuItem.Click += new System.EventHandler(this.copyTableMenu_Click);
@@ -397,11 +398,6 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(126, 6);
-            //
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(126, 6);
             // 
             // distanceToolStripMenuItem
             // 
@@ -416,6 +412,11 @@
             this.timeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.timeToolStripMenuItem.Text = "Time";
             this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(126, 6);
             // 
             // showToolBarMenuItem
             // 
@@ -435,7 +436,7 @@
             this.btnExpand.HyperlinkStyle = false;
             this.btnExpand.ImageMargin = 2;
             this.btnExpand.LeftImage = null;
-            this.btnExpand.Location = new System.Drawing.Point(353, 1);
+            this.btnExpand.Location = new System.Drawing.Point(483, 1);
             this.btnExpand.Name = "btnExpand";
             this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
             this.btnExpand.PushStyle = false;
@@ -453,6 +454,7 @@
             this.LineChart.AutoScroll = true;
             this.LineChart.AutoSize = true;
             this.LineChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LineChart.BackColor = System.Drawing.SystemColors.Control;
             this.LineChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
             this.LineChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.LineChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
@@ -498,7 +500,6 @@
             this.Controls.Add(this.ExpandSplitContainer);
             this.Name = "ActivityDetailPageControl";
             this.Size = new System.Drawing.Size(400, 300);
-            this.ActPagePanel.SizeChanged += new System.EventHandler(this.ActPagePanel_SizeChanged);
             this.ActPagePanel.ResumeLayout(false);
             this.ActPagePanel.PerformLayout();
             this.ActPageSplitContainer.Panel1.ResumeLayout(false);

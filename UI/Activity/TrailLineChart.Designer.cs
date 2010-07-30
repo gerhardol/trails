@@ -28,22 +28,23 @@ namespace TrailsPlugin.UI.Activity
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TrailLineChart));
             this.chartTablePanel = new System.Windows.Forms.TableLayoutPanel();
             this.ButtonPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
-            this.chartContextMenu = new System.Windows.Forms.ContextMenuStrip();
-            this.copyChartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectChartsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fitToWindowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ZoomInButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.ZoomToContentButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.ZoomOutButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.SaveImageButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.MainChart = new ZoneFiveSoftware.Common.Visuals.Chart.LineChart();
-            //this.chartContextMenu.SuspendLayout();
+            this.chartContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyChartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectChartsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fitToWindowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chartTablePanel.SuspendLayout();
             this.ButtonPanel.SuspendLayout();
+            this.chartContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // chartTablePanel
@@ -83,48 +84,10 @@ namespace TrailsPlugin.UI.Activity
             this.ButtonPanel.HeadingTextColor = System.Drawing.Color.Black;
             this.ButtonPanel.HeadingTopMargin = 0;
             this.ButtonPanel.Location = new System.Drawing.Point(0, 0);
-            this.ButtonPanel.Margin = new System.Windows.Forms.Padding(0,0,0,1);
+            this.ButtonPanel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 1);
             this.ButtonPanel.Name = "ButtonPanel";
-            this.ButtonPanel.Size = new System.Drawing.Size(400, 25);
+            this.ButtonPanel.Size = new System.Drawing.Size(400, 24);
             this.ButtonPanel.TabIndex = 1;
-            // 
-            // chartContextMenu
-            // 
-            this.chartContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyChartMenuItem,
-            this.selectChartsMenuItem,
-            this.fitToWindowMenuItem,
-            this.saveImageMenuItem});
-            this.chartContextMenu.Name = "chartContextMenu";
-            //this.chartContextMenu.Size = new System.Drawing.Size(199, 92);
-            // 
-            // copyChartMenuItem
-            // 
-            this.copyChartMenuItem.Name = "copyTable";
-            this.copyChartMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.copyChartMenuItem.Text = "<Copy";
-            this.copyChartMenuItem.Click += new System.EventHandler(this.copyChartMenuItem_Click);
-            // 
-            // selectChartsMenuItem
-            // 
-            this.selectChartsMenuItem.Name = "listSettingsMenuItem";
-            this.selectChartsMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.selectChartsMenuItem.Text = "<List Settings...";
-            this.selectChartsMenuItem.Visible = false;
-            // 
-            // fitToWindowMenuItem
-            // 
-            this.fitToWindowMenuItem.Name = "activeMenuItem";
-            this.fitToWindowMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.fitToWindowMenuItem.Text = "<Fit to window>";
-            this.fitToWindowMenuItem.Click += new System.EventHandler(this.ZoomToContentButton_Click);
-            // 
-            // saveImageMenuItem
-            // 
-            this.saveImageMenuItem.Name = "sendToMenuItem";
-            this.saveImageMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.saveImageMenuItem.Text = "<Save";
-            this.saveImageMenuItem.Click += new System.EventHandler(this.SaveImageButton_Click);
             // 
             // ZoomInButton
             // 
@@ -219,12 +182,51 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.MainChart.BackColor = System.Drawing.Color.Transparent;
             this.MainChart.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.None;
-            this.MainChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainChart.Location = new System.Drawing.Point(0, 25);
-            this.MainChart.Name = "MainChart";
-            this.MainChart.Size = new System.Drawing.Size(400, 75);
-            this.MainChart.TabIndex = 0;
             this.MainChart.ContextMenuStrip = this.chartContextMenu;
+            this.MainChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainChart.Location = new System.Drawing.Point(3, 28);
+            this.MainChart.Name = "MainChart";
+            this.MainChart.Padding = new System.Windows.Forms.Padding(0);
+            this.MainChart.Size = new System.Drawing.Size(394, 69);
+            this.MainChart.TabIndex = 0;
+            // 
+            // chartContextMenu
+            // 
+            this.chartContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyChartMenuItem,
+            this.selectChartsMenuItem,
+            this.fitToWindowMenuItem,
+            this.saveImageMenuItem});
+            this.chartContextMenu.Name = "chartContextMenu";
+            this.chartContextMenu.Size = new System.Drawing.Size(163, 92);
+            // 
+            // copyChartMenuItem
+            // 
+            this.copyChartMenuItem.Name = "copyChartMenuItem";
+            this.copyChartMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.copyChartMenuItem.Text = "<Copy";
+            this.copyChartMenuItem.Click += new System.EventHandler(this.copyChartMenuItem_Click);
+            // 
+            // selectChartsMenuItem
+            // 
+            this.selectChartsMenuItem.Name = "selectChartsMenuItem";
+            this.selectChartsMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.selectChartsMenuItem.Text = "<List Settings...";
+            this.selectChartsMenuItem.Visible = false;
+            // 
+            // fitToWindowMenuItem
+            // 
+            this.fitToWindowMenuItem.Name = "fitToWindowMenuItem";
+            this.fitToWindowMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.fitToWindowMenuItem.Text = "<Fit to window>";
+            this.fitToWindowMenuItem.Click += new System.EventHandler(this.ZoomToContentButton_Click);
+            // 
+            // saveImageMenuItem
+            // 
+            this.saveImageMenuItem.Name = "saveImageMenuItem";
+            this.saveImageMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveImageMenuItem.Text = "<Save";
+            this.saveImageMenuItem.Click += new System.EventHandler(this.SaveImageButton_Click);
             // 
             // TrailLineChart
             // 
@@ -237,10 +239,10 @@ namespace TrailsPlugin.UI.Activity
             this.MinimumSize = new System.Drawing.Size(250, 100);
             this.Name = "TrailLineChart";
             this.Size = new System.Drawing.Size(400, 100);
-            this.chartContextMenu.ResumeLayout(false);
             this.chartTablePanel.ResumeLayout(false);
             this.chartTablePanel.PerformLayout();
             this.ButtonPanel.ResumeLayout(false);
+            this.chartContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

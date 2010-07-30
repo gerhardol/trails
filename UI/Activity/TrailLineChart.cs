@@ -44,6 +44,7 @@ namespace TrailsPlugin.UI.Activity {
         private Color m_ChartFillColor = Color.WhiteSmoke;
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
+        private ITheme m_visualTheme;
         private IActivity m_activity = null;
 
         public TrailLineChart()
@@ -60,6 +61,43 @@ namespace TrailsPlugin.UI.Activity {
             this.MainChart.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
 #endif
             MainChart.YAxis.SmartZoom = true;
+            copyChartMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
+            copyChartMenuItem.Visible = false;
+#if !ST_2_1
+            saveImageMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Save16;
+#endif
+            //selectChartsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
+            selectChartsMenuItem.Visible = false;
+#if !ST_2_1
+//            this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
+#else
+//            //No listSetting dialog in ST2
+//            if (this.contextMenu.Items.Contains(this.listSettingsMenuItem))
+//            {
+//                this.contextMenu.Items.Remove(this.listSettingsMenuItem);
+//            }
+#endif
+            fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
+        }
+
+        public void ThemeChanged(ITheme visualTheme)
+        {
+            m_visualTheme = visualTheme;
+            MainChart.ThemeChanged(visualTheme);
+            ButtonPanel.ThemeChanged(visualTheme);
+            ButtonPanel.BackColor = visualTheme.Window;
+        }
+
+        public void UICultureChanged(CultureInfo culture)
+        {
+            copyChartMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
+#if ST_2_1
+            saveImageMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSave;
+#else
+            saveImageMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSaveImage;
+#endif
+            fitToWindowMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRefresh;
+            SetupAxes();
         }
 
         public enum XAxisValue
@@ -159,6 +197,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             SaveImageDialog dlg = new SaveImageDialog();
 #endif
+            dlg.ThemeChanged(m_visualTheme);
             dlg.FileName = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar + "Trails";
             dlg.ImageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
 			if (dlg.ShowDialog() == DialogResult.OK) {
@@ -194,22 +233,18 @@ namespace TrailsPlugin.UI.Activity {
 			this.ZoomToData();
 		}
 
-		public void ThemeChanged(ITheme visualTheme) {
-			MainChart.ThemeChanged(visualTheme);
-			ButtonPanel.ThemeChanged(visualTheme);
-			ButtonPanel.BackColor = visualTheme.Window;
-		}
-
-		public void UICultureChanged(CultureInfo culture) {
-			SetupAxes();
-		}
-
-		public void ZoomToData() {
+ 		public void ZoomToData() {
 			MainChart.AutozoomToData(true);
 			MainChart.Refresh();
 		}
 
-		private void SetupDataSeries() {
+        void copyChartMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO: summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+        }
+        
+        private void SetupDataSeries()
+        {
 			MainChart.DataSeries.Clear();
 
 
@@ -504,6 +539,14 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
+        public bool ShowChartToolBar
+        {
+            set
+            {
+                   this.chartTablePanel.RowStyles[0].Height = value ? 25 : 0;
+            }
+        }
+
 		public bool BeginUpdate() {
 			return MainChart.BeginUpdate();
 		}
@@ -511,6 +554,5 @@ namespace TrailsPlugin.UI.Activity {
 		public void EndUpdate() {
 			MainChart.EndUpdate();
 		}
-
 	}
 }

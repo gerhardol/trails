@@ -34,6 +34,7 @@
             this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -46,8 +47,10 @@
             this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
             this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.ExpandSplitContainer = new System.Windows.Forms.SplitContainer();
@@ -259,9 +262,17 @@
             // listMenu
             // 
             this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyTableMenuItem,
             this.listSettingsMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(147, 26);
+            // 
+            // copyTable
+            // 
+            this.copyTableMenuItem.Name = "copyTable";
+            this.copyTableMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.copyTableMenuItem.Text = "Copy table to clipboard";
+            this.copyTableMenuItem.Click += new System.EventHandler(this.copyTableMenu_Click);
             // 
             // listSettingsMenuItem
             // 
@@ -320,7 +331,9 @@
             this.powerToolStripMenuItem,
             this.toolStripSeparator1,
             this.distanceToolStripMenuItem,
-            this.timeToolStripMenuItem});
+            this.timeToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
             this.detailMenu.Size = new System.Drawing.Size(130, 230);
             // 
@@ -384,6 +397,11 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(126, 6);
+            //
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(126, 6);
             // 
             // distanceToolStripMenuItem
             // 
@@ -398,6 +416,13 @@
             this.timeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.timeToolStripMenuItem.Text = "Time";
             this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
+            // 
+            // showToolBarMenuItem
+            // 
+            this.showToolBarMenuItem.Name = "showToolBarMenuItem";
+            this.showToolBarMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.showToolBarMenuItem.Text = "showToolBarMenuItem";
+            this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
             // btnExpand
             // 
@@ -507,7 +532,8 @@
         private System.Windows.Forms.TableLayoutPanel ChartPanel;
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
 		private System.Windows.Forms.ContextMenuStrip listMenu;
-		private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
 		private System.Windows.Forms.ContextMenuStrip detailMenu;
         private TrailsPlugin.UI.Activity.TrailLineChart LineChart;
 		private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;
@@ -515,12 +541,14 @@
 		private System.Windows.Forms.ToolStripMenuItem heartRateToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem cadenceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem speedPaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
         private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
 	}
 }

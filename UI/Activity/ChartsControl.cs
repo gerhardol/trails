@@ -31,6 +31,7 @@ namespace TrailsPlugin.UI.Activity {
 	public partial class ChartsControl : UserControl {
 
 		public event System.EventHandler Collapse;
+        private bool m_showChartToolBar = true;
 
 		public ChartsControl() {
             InitializeComponent();
@@ -67,6 +68,7 @@ namespace TrailsPlugin.UI.Activity {
         public void UICultureChanged(CultureInfo culture)
         {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;
+            RefreshChartMenu();
         }
 
         public void RefreshRows()
@@ -97,36 +99,41 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshCharts(IActivity activity, Data.TrailResult result)
         {
-			speedChart.BeginUpdate();
-			speedChart.Activity = activity;
-			speedChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-			speedChart.TrailResult = result;
-			speedChart.EndUpdate();
-
-			heartrateChart.BeginUpdate();
-			heartrateChart.Activity = activity;
-			heartrateChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-			heartrateChart.TrailResult = result;
-			heartrateChart.EndUpdate();
-
-			elevationChart.BeginUpdate();
-			elevationChart.Activity = activity;
-			elevationChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-			elevationChart.TrailResult = result;
-			elevationChart.EndUpdate();
-
-			gradeChart.BeginUpdate();
-			gradeChart.Activity = activity;
-			gradeChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-			gradeChart.TrailResult = result;
-			gradeChart.EndUpdate();
-
-			cadenceChart.BeginUpdate();
-			cadenceChart.Activity = activity;
-			cadenceChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-			cadenceChart.TrailResult = result;
-			cadenceChart.EndUpdate();			
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is TrailLineChart)
+                {
+                    TrailLineChart chart = ((TrailLineChart)t);
+                    chart.BeginUpdate();
+                    chart.Activity = activity;
+                    chart.XAxisReferential = PluginMain.Settings.XAxisValue;
+                    chart.TrailResult = result;
+                    chart.EndUpdate();
+                }
+            }
 		}
+
+        void RefreshChartMenu()
+        {
+            this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
+               : Properties.Resources.UI_Activity_Menu_ShowToolBar;
+        }
+
+        public bool ShowChartToolBar
+        {
+            set
+            {
+                m_showChartToolBar = value;
+                foreach (Control t in this.tableLayoutPanel1.Controls)
+                {
+                    if (t is TrailLineChart)
+                    {
+                        ((TrailLineChart)t).ShowChartToolBar = value;
+                    }
+                }
+                RefreshChartMenu();
+            }
+        }
 
         /***************************************/
         private void btnCollapse_Click(object sender, EventArgs e)
@@ -137,5 +144,15 @@ namespace TrailsPlugin.UI.Activity {
         {
             this.RefreshRows();
         }
-	}
+        private void ChartBanner_MenuClicked(object sender, EventArgs e)
+        {
+            ChartBanner.ContextMenuStrip.Width = 100;
+            ChartBanner.ContextMenuStrip.Show(ChartBanner.Parent.PointToScreen(new System.Drawing.Point(ChartBanner.Right - ChartBanner.ContextMenuStrip.Width - 2,
+                ChartBanner.Bottom + 1)));
+        }
+        private void showToolBarMenuItem_Click(object sender, EventArgs e)
+        {
+            ((ActivityDetailPageControl)this.Parent.Parent.Parent).ShowChartToolBar = !m_showChartToolBar;
+        }
+    }
 }

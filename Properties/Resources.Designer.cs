@@ -226,6 +226,24 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hide Chart Tools.
+        /// </summary>
+        internal static string UI_Activity_Menu_HideToolBar {
+            get {
+                return ResourceManager.GetString("UI_Activity_Menu_HideToolBar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Chart Tools.
+        /// </summary>
+        internal static string UI_Activity_Menu_ShowToolBar {
+            get {
+                return ResourceManager.GetString("UI_Activity_Menu_ShowToolBar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Press {0} to add the selected points to current trail, {1} to add a new trail..
         /// </summary>
         internal static string UI_Activity_Page_AddTrail_Replace {

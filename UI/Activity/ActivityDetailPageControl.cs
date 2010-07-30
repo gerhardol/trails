@@ -68,6 +68,7 @@ namespace TrailsPlugin.UI.Activity {
 		private Controller.TrailController m_controller;
 		private ChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
+        private bool m_showChartToolBar = true;
 
 #if ST_2_1
         private UI.MapLayers.MapControlLayer layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
@@ -104,9 +105,21 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshData();
 		}
 
-		void InitControls() {
-
-			TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
+		void InitControls()
+        {
+            TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
+            copyTableMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
+            //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Yeild16;
+            this.speedPaceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.speedToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.paceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.heartRateToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackHeartRate16;
+            this.cadenceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackCadence16;
+            this.elevationToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
+            this.gradeStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
+            this.powerToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
+            this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
 
 			btnAdd.BackgroundImage = CommonIcons.Add;
 			btnAdd.Text = "";
@@ -121,9 +134,10 @@ namespace TrailsPlugin.UI.Activity {
 			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
 			summaryList.LabelProvider = new TrailResultLabelProvider();
             this.ExpandSplitContainer.Panel2Collapsed = true;
+            LineChart.ShowChartToolBar = m_showChartToolBar;
+            if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
 
 			this.RefreshColumns();
-			this.RefreshChartMenu();
 		}
 
         private bool _showPage = false;
@@ -223,7 +237,13 @@ namespace TrailsPlugin.UI.Activity {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;
             this.lblTrail.Text = Properties.Resources.TrailName+":";
 
+            copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
+
+            this.RefreshChartMenu();
+            this.RefreshColumns();
+
+            LineChart.UICultureChanged(culture);
             if (m_chartsControl != null)
             {
                 m_chartsControl.UICultureChanged(culture);
@@ -235,6 +255,7 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.ThemeChanged(visualTheme);
 			summaryList.ThemeChanged(visualTheme);
 			ChartBanner.ThemeChanged(visualTheme);
+
 			LineChart.ThemeChanged(visualTheme);
 			if (m_chartsControl != null) {
 				m_chartsControl.ThemeChanged(visualTheme);
@@ -310,6 +331,11 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshData();
 			}
 		}
+
+        void copyTableMenu_Click(object sender, EventArgs e)
+        {
+            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+        }
 
 #if !ST_2_1
         Data.TrailGPSLocation getGPS(IItemTrackSelectionInfo selectGPS)
@@ -513,8 +539,8 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void ChartBanner_MenuClicked(object sender, EventArgs e) {
 			ChartBanner.ContextMenuStrip.Width = 100;
-			ChartBanner.ContextMenuStrip.Show(ChartBanner.Parent.PointToScreen(new System.Drawing.Point(ChartBanner.Right - ChartBanner.ContextMenuStrip.Width - 2, ChartBanner.Bottom + 1)));
-
+			ChartBanner.ContextMenuStrip.Show(ChartBanner.Parent.PointToScreen(new System.Drawing.Point(ChartBanner.Right - ChartBanner.ContextMenuStrip.Width - 2, 
+                ChartBanner.Bottom + 1)));
 		}
 
 		void RefreshChart() {
@@ -588,6 +614,8 @@ namespace TrailsPlugin.UI.Activity {
             this.timeToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Time);
             distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
             this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
+            this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
+               : Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
 
 		private void speedToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -648,6 +676,21 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshChartMenu();
 			RefreshChart();
 		}
+
+        public bool ShowChartToolBar
+        {
+            set
+            {
+                m_showChartToolBar = value;
+                RefreshChartMenu();
+                LineChart.ShowChartToolBar = m_showChartToolBar;
+                if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
+            }
+        }
+        private void showToolBarMenuItem_Click(object sender, EventArgs e)
+        {
+            this.ShowChartToolBar = !m_showChartToolBar;
+        }
 
 		private IList<Data.ActivityTrail> OrderedTrails {
 			get {
@@ -738,7 +781,8 @@ namespace TrailsPlugin.UI.Activity {
                 m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
 			}
 			m_chartsControl.Visible = true;
-			ActPageSplitContainer.Panel2Collapsed = true;
+            m_chartsControl.ShowChartToolBar = m_showChartToolBar; 
+            ActPageSplitContainer.Panel2Collapsed = true;
 #if ST_2_1
 			p2.Controls[0].Visible = false;
             m_chartsControl.Width = p2.Width;

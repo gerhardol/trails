@@ -23,7 +23,9 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
+            this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnCollapse = new ZoneFiveSoftware.Common.Visuals.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.speedChart = new TrailsPlugin.UI.Activity.TrailLineChart();
@@ -31,16 +33,19 @@
             this.cadenceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.elevationChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.gradeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChartBanner.SuspendLayout();
+            this.detailMenu.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // ChartBanner
             // 
             this.ChartBanner.BackColor = System.Drawing.SystemColors.Control;
+            this.ChartBanner.ContextMenuStrip = this.detailMenu;
             this.ChartBanner.Controls.Add(this.btnCollapse);
             this.ChartBanner.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ChartBanner.HasMenuButton = false;
+            this.ChartBanner.HasMenuButton = true;
             this.ChartBanner.Location = new System.Drawing.Point(0, 0);
             this.ChartBanner.Margin = new System.Windows.Forms.Padding(0);
             this.ChartBanner.Name = "ChartBanner";
@@ -50,6 +55,21 @@
             this.ChartBanner.TabIndex = 1;
             this.ChartBanner.Text = "Trail Charts";
             this.ChartBanner.UseStyleFont = true;
+            this.ChartBanner.MenuClicked += new System.EventHandler(this.ChartBanner_MenuClicked);
+            // 
+            // detailMenu
+            // 
+            this.detailMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showToolBarMenuItem});
+            this.detailMenu.Name = "detailMenu";
+            this.detailMenu.Size = new System.Drawing.Size(130, 230);
+            // 
+            // showToolBarMenuItem
+            // 
+            this.showToolBarMenuItem.Name = "showToolBarMenuItem";
+            this.showToolBarMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.showToolBarMenuItem.Text = "showToolBarMenuItem";
+            this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
             // btnCollapse
             // 
@@ -197,6 +217,7 @@
             this.Name = "ChartsControl";
             this.Size = new System.Drawing.Size(500, 520);
             this.ChartBanner.ResumeLayout(false);
+            this.detailMenu.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -207,7 +228,9 @@
 		#endregion
 
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
-		private ZoneFiveSoftware.Common.Visuals.Button btnCollapse;
+        private System.Windows.Forms.ContextMenuStrip detailMenu;
+        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
+        private ZoneFiveSoftware.Common.Visuals.Button btnCollapse;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private TrailLineChart cadenceChart;
 		private TrailLineChart heartrateChart;

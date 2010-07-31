@@ -436,7 +436,7 @@
             this.btnExpand.HyperlinkStyle = false;
             this.btnExpand.ImageMargin = 2;
             this.btnExpand.LeftImage = null;
-            this.btnExpand.Location = new System.Drawing.Point(483, 1);
+            this.btnExpand.Location = new System.Drawing.Point(353, 1);
             this.btnExpand.Name = "btnExpand";
             this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
             this.btnExpand.PushStyle = false;

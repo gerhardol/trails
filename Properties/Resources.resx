@@ -226,4 +226,8 @@ Changing this value will not effect existing trails.</value>
     <value>Show Chart Tools</value>
     <comment>STcore</comment>
   </data>
+  <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
+    <value>Double click the table to edit values.</value>
+    <comment>new</comment>
+  </data>
 </root>

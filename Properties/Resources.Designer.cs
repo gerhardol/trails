@@ -145,6 +145,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Double click the table to edit values..
+        /// </summary>
+        internal static string UI_Activity_EditTrail_EditRow {
+            get {
+                return ResourceManager.GetString("UI_Activity_EditTrail_EditRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Trail.
         /// </summary>
         internal static string UI_Activity_EditTrail_EditTrail {

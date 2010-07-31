@@ -90,18 +90,32 @@ namespace TrailsPlugin.UI.MapLayers
             //listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
         }
 
-        public IList<TrailGPSLocation> HighlightedGPSLocations
+        public IList<TrailGPSLocation> TrailPoints
         {
             get
             {
-                return m_HighlightedGPSLocations;
+                return m_TrailPoints;
             }
             set
             {
                 bool changed = false;
-                if (!value.Equals(m_HighlightedGPSLocations)) { changed = true; }
-                m_HighlightedGPSLocations = value;
+                if (!value.Equals(m_TrailPoints)) { changed = true; }
+                m_TrailPoints = value;
                 if (changed) { RefreshOverlays(); }
+            }
+        }
+        public IList<TrailGPSLocation> SelectedTrailPoints
+        {
+            get
+            {
+                return m_SelectedTrailPoints;
+            }
+            set
+            {
+                //Currently just zoom to selection
+                this.MapControl.SetLocation(value[0].GpsLocation,
+                this.MapControl.ComputeZoomToFit(new GPSBounds(value[0].GpsLocation, value[0].GpsLocation)));
+                m_SelectedTrailPoints = value;
             }
         }
 
@@ -234,7 +248,7 @@ namespace TrailsPlugin.UI.MapLayers
             IGPSBounds windowBounds = MapControlBounds;
 
             IList<IGPSPoint> visibleLocations = new List<IGPSPoint>();
-            foreach (TrailGPSLocation point in m_HighlightedGPSLocations)
+            foreach (TrailGPSLocation point in m_TrailPoints)
             {
                 if (windowBounds.Contains(point.GpsLocation))
                 {
@@ -285,7 +299,8 @@ namespace TrailsPlugin.UI.MapLayers
 
         //private RouteItemsDataChangeListener listener;
 
-        private IList<TrailGPSLocation> m_HighlightedGPSLocations = new List<TrailGPSLocation>();
+        private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();
+        private IList<TrailGPSLocation> m_SelectedTrailPoints = new List<TrailGPSLocation>();
         private float m_highlightRadius;
         private static bool _showPage;
     }

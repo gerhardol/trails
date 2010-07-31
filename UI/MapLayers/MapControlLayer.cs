@@ -33,7 +33,7 @@ namespace TrailsPlugin.UI.MapLayers {
 
 		private bool m_CaptureSelectedGPSLocations;
 		private IList<IGPSLocation> m_SelectedGPSLocations = new List<IGPSLocation>();
-        private IList<TrailGPSLocation> m_HighlightedGPSLocations = new List<TrailGPSLocation>();
+        private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();
 		private float m_highlightRadius;
         private static bool _showPage;
 
@@ -110,15 +110,27 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-        public IList<TrailGPSLocation> HighlightedGPSLocations
+        public IList<TrailGPSLocation> TrailPoints
         {
 			set {
-				m_HighlightedGPSLocations = value;
+				m_TrailPoints = value;
 			}
 			get {
-				return m_HighlightedGPSLocations;
+				return m_TrailPoints;
 			}
 		}
+
+        //Not in ST2
+        public IList<TrailGPSLocation> SelectedTrailPoints
+        {
+            get
+            {
+                return new List<TrailGPSLocation>();
+            }
+            set
+            {
+            }
+        }
 
 		public float HighlightRadius {
 			set {
@@ -153,7 +165,7 @@ namespace TrailsPlugin.UI.MapLayers {
 				float meters = point1.DistanceMetersToPoint(point2) / 100;
 				float radiusInPixels = m_highlightRadius / meters;
 
-                foreach (TrailGPSLocation gpsLocation in m_HighlightedGPSLocations)
+                foreach (TrailGPSLocation gpsLocation in m_TrailPoints)
                 {
 					Point point = drawContext.Projection.GPSToPixel(drawContext.Center, drawContext.ZoomLevel, gpsLocation.GpsLocation);
 					Pen pen = new Pen(Color.Red, 5.0F);

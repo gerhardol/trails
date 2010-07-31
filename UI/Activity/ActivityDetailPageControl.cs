@@ -129,6 +129,8 @@ namespace TrailsPlugin.UI.Activity {
 			btnDelete.Text = "";
             btnExpand.BackgroundImage = CommonIcons.LowerHalf;
             btnExpand.Text = "";
+            //For some reason, the Designer moves this button out of the panel
+            this.btnExpand.Location = new System.Drawing.Point(353, 1);
 			listSettingsMenuItem.Image = CommonIcons.ListSettings;
 
 			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
@@ -197,7 +199,7 @@ namespace TrailsPlugin.UI.Activity {
         private void RefreshData()
         {
             layer.ShowPage = false; //defer updates
-            layer.HighlightedGPSLocations.Clear();
+            layer.TrailPoints.Clear();
             summaryList.RowData = null;
 
             if (m_controller.CurrentActivityTrail != null)
@@ -217,7 +219,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
                 {
-                    layer.HighlightedGPSLocations.Add(point);
+                    layer.TrailPoints.Add(point);
                 }
                 layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
                 layer.ShowPage = _showPage;//Refresh

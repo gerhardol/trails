@@ -24,6 +24,7 @@ using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.GPS;
 using TrailsPlugin.Data;
+using TrailsPlugin.UI.MapLayers;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class EditTrail : Form {
@@ -31,27 +32,58 @@ namespace TrailsPlugin.UI.Activity {
 		protected ITheme m_visualTheme;
 		protected bool m_addMode;
 		protected Data.Trail m_TrailToEdit;
+#if ST_2_1
+        private UI.MapLayers.MapControlLayer layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
+#else
+        private TrailPointsProvider m_TrailPointsProvider = TrailPointsProvider.Instance;
+        private TrailPointsLayer layer { get { return (TrailPointsLayer)m_TrailPointsProvider.RouteControlLayer; } }
+#endif
 
-		public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, bool addMode) {
-			if (addMode) {
-				m_TrailToEdit = new TrailsPlugin.Data.Trail();
-				this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
-			} else {
-				m_TrailToEdit = Controller.TrailController.Instance.CurrentActivityTrail.Trail;
-				this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
-			}
-			m_addMode = addMode;
-			InitializeComponent();
-			ThemeChanged(visualTheme);
+        public EditTrail(bool addMode)
+        {
+            if (addMode)
+            {
+                m_TrailToEdit = new TrailsPlugin.Data.Trail();
+                this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
+            }
+            else
+            {
+                m_TrailToEdit = Controller.TrailController.Instance.CurrentActivityTrail.Trail;
+                this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
+            }
+            m_addMode = addMode;
+            InitializeComponent();
+            InitControls();
+        }
+        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, bool addMode)
+            : this (addMode)
+        {
+            ThemeChanged(visualTheme);
             UICultureChanged(culture);
-		}
+        }
 
-		public virtual void ThemeChanged(ITheme visualTheme) {
+        void InitControls()
+        {
+            btnAdd.BackgroundImage = CommonIcons.Add;
+            btnAdd.Text = "";
+            btnEdit.BackgroundImage = CommonIcons.Edit;
+            btnEdit.Text = "";
+            btnDelete.BackgroundImage = CommonIcons.Delete;
+            btnDelete.Text = "";
+#if ST_2_1
+            this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
+#else
+            this.EList.SelectedItemsChanged += new System.EventHandler(EList_SelectedItemsChanged);
+#endif
+        }
+        
+        public virtual void ThemeChanged(ITheme visualTheme) {
 			m_visualTheme = visualTheme;
 			this.BackColor = visualTheme.Control;
 			EList.ThemeChanged(visualTheme);
             TrailName.ThemeChanged(visualTheme);
             Radius.ThemeChanged(visualTheme);
+            editBox.ThemeChanged(visualTheme);
         }
 
         public void UICultureChanged(System.Globalization.CultureInfo culture)
@@ -120,7 +152,6 @@ namespace TrailsPlugin.UI.Activity {
 			Utils.Dialog.DrawButtonRowBackground(e.Graphics, ClientRectangle, m_visualTheme);
 		}
 
-        private System.Windows.Forms.TextBox editBox = new System.Windows.Forms.TextBox();
         private MouseEventArgs lastMouseArg = null;
         private string subItemText;
         private int rowSelected = 0;
@@ -140,20 +171,20 @@ namespace TrailsPlugin.UI.Activity {
             EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
             EList.KeyDown += new KeyEventHandler(EList_KeyDown);
             //Overlay editable box
-            editBox.Size = new System.Drawing.Size(0, 0);
-            editBox.Location = new System.Drawing.Point(0, 0);
-            EList.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
-            editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
-            editBox.LostFocus += new System.EventHandler(this.FocusOver);
-            editBox.BackColor = Color.LightYellow;
-            editBox.BorderStyle = BorderStyle.Fixed3D;
-            editBox.Hide();
-            editBox.Text = "";
+            //editBox.Size = new System.Drawing.Size(0, 0);
+            //editBox.Location = new System.Drawing.Point(0, 0);
+            //EList.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
+            //editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
+            //editBox.LostFocus += new System.EventHandler(this.FocusOver);
+            //editBox.BackColor = Color.LightYellow;
+            //editBox.BorderStyle = BorderStyle.Fixed3D;
+            //editBox.Hide();
+            //editBox.Text = "";
         }
 
-        void EList_KeyDown(object sender, KeyEventArgs e)
+        private void EList_DeleteRow()
         {
-            if (e.KeyValue == 46 && EList.Selected.Count > 0)
+            if (EList.Selected.Count > 0)
             {
                 IList t = EList.Selected;
                 IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
@@ -175,6 +206,37 @@ namespace TrailsPlugin.UI.Activity {
                     EList.RowData = result;
                 }
             }
+        }
+
+        private void EList_AddRow()
+        {
+            IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
+            int selectRow = result.Count-1;
+            if (EList.Selected.Count > 0)
+            {
+                IList t = EList.Selected;
+                if (t != null && t.Count > 0)
+                {
+                    for (int j = 0; j < t.Count; j++)
+                    {
+                        for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
+                        {
+                            //Only first selected removed now
+                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                            if (t[j].Equals(r))
+                            {
+                                selectRow = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            TrailGPSLocation add = new TrailGPSLocation(result[selectRow].LatitudeDegrees + 0.01F, result[selectRow].LongitudeDegrees + 0.01F, result[selectRow].Name +
+                " " +ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew);
+            result.Insert(selectRow+1, add);
+            EList.RowData = result;
+            layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
         }
 
         private void presentRadius()
@@ -202,24 +264,25 @@ namespace TrailsPlugin.UI.Activity {
             t[rowSelected]=
                 ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].setField(subItemSelected, editBox.Text);
             EList.RowData = t;
+            layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[rowSelected]};
         }
         private void EditOver(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)
             {
                 ValidateEdit();
-                editBox.Hide();
+                editBox.Visible = false;
             }
             if (e.KeyChar == 27) //Escape
             {
-                editBox.Hide();
+                editBox.Visible = false;
             }
         }
 
         private void FocusOver(object sender, System.EventArgs e)
         {
             ValidateEdit();
-            editBox.Hide();
+            editBox.Visible = false;
         }
         public void SMKDoubleClick(object sender, System.EventArgs e)
         {
@@ -237,7 +300,7 @@ namespace TrailsPlugin.UI.Activity {
                         break;
                     }
                 }
-                // Check the subitem clicked .
+                // Check the subitem clicked
                 int nStart = lastMouseArg.X;
                 int spos = EList.Location.X + EList.Parent.Location.X;
                 int epos = EList.Columns[0].Width;
@@ -258,8 +321,8 @@ namespace TrailsPlugin.UI.Activity {
                 int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
                 editBox.Size = new System.Drawing.Size(epos - spos, rowHeight);
                 editBox.Location = new System.Drawing.Point(spos, yTop);
-                editBox.Show();
                 editBox.Text = subItemText;
+                editBox.Visible = true;
                 editBox.SelectAll();
                 editBox.Focus();
             }
@@ -270,5 +333,50 @@ namespace TrailsPlugin.UI.Activity {
         {
              lastMouseArg = e;
         }
-   	}
+
+        void EList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyValue == 46)
+            {
+                EList_DeleteRow();
+            }
+        }
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            EList_DeleteRow();
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_EditRow);
+        }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            EList_AddRow();
+        }
+        void EList_SelectedItemsChanged(object sender, System.EventArgs e)
+        {
+            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
+            if (EList.Selected.Count > 0)
+            {
+                IList t = EList.Selected;
+                if (t != null && t.Count > 0)
+                {
+                    for (int j = 0; j < t.Count; j++)
+                    {
+                        for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
+                        {
+                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                            if (t[j].Equals(r))
+                            {
+                                result.Add(r);
+                            }
+                        }
+                    }
+                }
+            }
+            layer.SelectedTrailPoints = result;
+        }
+    }
 }

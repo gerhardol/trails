@@ -128,8 +128,8 @@ namespace TrailsPlugin {
 		}
 
 #if !ST_2_1
-        const int brushPixelSize = 6; //Approx size
-        //The radius is currently defined by the outer radius
+        const int brushSize = 6; //Even
+        //The outer radius defines the included area
         static public string Circle(int sizeX, int sizeY, out Size iconSize)
         {
             string basePath = PluginMain.GetApplication().Configuration.CommonWebFilesFolder +
@@ -141,15 +141,18 @@ namespace TrailsPlugin {
                 DirectoryInfo di = Directory.CreateDirectory(basePath);
             }
 
-            sizeX = Math.Max(sizeX, brushPixelSize * 2);
-            sizeY = Math.Max(sizeY, brushPixelSize * 2);
-            int brushSize = brushPixelSize;
+            sizeX = Math.Max(sizeX, brushSize * 2 - 1);
+            sizeY = Math.Max(sizeY, brushSize * 2 - 1);
+            //As the image is anchored in the middle, make size odd so (size/2) give center point
+            if (1 != sizeX % 2) { sizeX++; }
+            if (1 != sizeY % 2) { sizeY++; }
+
             iconSize = new Size(sizeX, sizeY);
-            string filePath = basePath + "image-" + sizeX+"_"+sizeY + ".png";
+            string filePath = basePath + "circle-" + sizeX+"_"+sizeY + ".png";
             if (!File.Exists(filePath))
             {
                 //No version handling other than filename
-                Bitmap myBitmap = new Bitmap(sizeX, sizeY);//circlePixelSize, circlePixelSize);
+                Bitmap myBitmap = new Bitmap(sizeX, sizeY);
                 Graphics myGraphics = Graphics.FromImage(myBitmap);
                 myGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                 myGraphics.DrawEllipse(new Pen(Color.Red, brushSize), new Rectangle(brushSize / 2, brushSize / 2, 

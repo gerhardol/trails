@@ -350,10 +350,9 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                //This part should not be needed
+                //Normally, selecting by time is null, fall back to select by distance
                 IValueRange<double> di = selectGPS.SelectedDistance;
                 IDistanceDataTrack dt = m_controller.CurrentActivity.GPSRoute.GetDistanceMetersTrack();
-                dt.GetTimeAtDistanceMeters(di.Lower);
                 p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
             }
             if (null == p) { return null; }

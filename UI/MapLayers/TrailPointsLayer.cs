@@ -83,7 +83,7 @@ namespace TrailsPlugin.UI.MapLayers
     class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)
-            : base(provider, control, 5)
+            : base(provider, control, 1)
         {
             //PluginMain.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
             //listener = new RouteItemsDataChangeListener(control);

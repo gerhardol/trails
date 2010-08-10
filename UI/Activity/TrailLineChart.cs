@@ -41,6 +41,7 @@ namespace TrailsPlugin.UI.Activity {
         private Data.TrailResult m_trailResult = null;
         private XAxisValue m_XAxisReferential = XAxisValue.Time;
         private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
+        private IList<LineChartTypes> m_YAxisReferential_right = null;//temp
         private Color m_ChartFillColor = Color.WhiteSmoke;
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
@@ -471,15 +472,28 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		[DisplayName("Y Axis value")]
-		public LineChartTypes YAxisReferential {
-			get { return m_YAxisReferential; }
-			set {
-				m_YAxisReferential = value;
-			}
-		}
+        [DisplayName("Y Axis value")]
+        public LineChartTypes YAxisReferential
+        {
+            get { return m_YAxisReferential; }
+            set
+            {
+                m_YAxisReferential = value;
+            }
+        }
 
-		public Color ChartFillColor {
+        [DisplayName("Y Axis value, right")]
+        public IList<LineChartTypes> YAxisReferential_right
+        {
+            get { return m_YAxisReferential_right; }
+            set
+            {
+                m_YAxisReferential_right = value;
+            }
+        }
+
+        public Color ChartFillColor
+        {
 			get { return m_ChartFillColor; }
 			set {
 				if (m_ChartFillColor != value) {

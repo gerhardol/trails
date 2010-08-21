@@ -277,7 +277,7 @@
             this.EList.DefaultRowHeight = -1;
             this.EList.HeaderRowHeight = 21;
             this.EList.Location = new System.Drawing.Point(3, 53);
-            this.EList.MultiSelect = false;
+            this.EList.MultiSelect = true;
             this.EList.Name = "EList";
             this.EList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
             this.EList.NumLockedColumns = 0;

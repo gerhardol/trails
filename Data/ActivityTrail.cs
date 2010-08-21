@@ -72,7 +72,7 @@ namespace TrailsPlugin.Data {
                 double d3 = r1.DistanceMetersToPoint(r2);
                 double a1 = Math.Acos((d1 * d1 + d3 * d3 - d2 * d2) / (2 * d1 * d3));
                 //Dist from r1 to closest point
-                double d = d1*Math.Cos(a1);
+                double d = Math.Abs(d1*Math.Cos(a1));
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
                 if (d < d3 && d1*Math.Sin(a1) < radius)
                 {
@@ -92,7 +92,9 @@ namespace TrailsPlugin.Data {
 			get {
 				if (m_resultsList == null) {
 					m_resultsList = new List<TrailResult>();
-					if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 1) {
+					if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 1 &&
+                        this.m_trail.TrailLocations.Count > 1)
+                    {
 
 						int trailIndex = 0;
 						int startIndex = -1, endIndex = -1;

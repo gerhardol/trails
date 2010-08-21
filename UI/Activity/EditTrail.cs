@@ -186,17 +186,17 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (EList.Selected.Count > 0)
             {
-                IList t = EList.Selected;
+                IList selected = EList.Selected;
                 IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
-                if (t != null && t.Count > 0)
+                if (selected != null && selected.Count > 0)
                 {
-                    for (int j = 0; j < t.Count; j++)
+                    for (int j = selected.Count - 1; j >= 0 ; j--)
                     {
                         for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
                         {
                             //Only first selected removed now
                             TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
-                            if (t[j].Equals(r))
+                            if (selected[j].Equals(r))
                             {
                                 result.RemoveAt(i);
                                 break;
@@ -360,15 +360,15 @@ namespace TrailsPlugin.UI.Activity {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             if (EList.Selected.Count > 0)
             {
-                IList t = EList.Selected;
-                if (t != null && t.Count > 0)
+                IList selected = EList.Selected;
+                if (selected != null && selected.Count > 0)
                 {
-                    for (int j = 0; j < t.Count; j++)
+                    for (int j = 0; j < selected.Count; j++)
                     {
                         for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
                         {
                             TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
-                            if (t[j].Equals(r))
+                            if (selected[j].Equals(r))
                             {
                                 result.Add(r);
                             }

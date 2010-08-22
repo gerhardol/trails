@@ -151,5 +151,8 @@
   <ItemGroup>
     <None Include="Resources\square-red.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DropDown.png" />
+  </ItemGroup>
   <Import Project=".\Common\Common-Files.csproj" />
 </Project>

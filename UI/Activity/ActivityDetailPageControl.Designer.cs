@@ -90,7 +90,7 @@
             this.ActPagePanel.Margin = new System.Windows.Forms.Padding(0);
             this.ActPagePanel.Name = "ActPagePanel";
             this.ActPagePanel.RowCount = 3;
-            this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
             this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.ActPagePanel.Size = new System.Drawing.Size(400, 300);
@@ -119,8 +119,9 @@
             this.TrailName.BackColor = System.Drawing.Color.White;
             this.TrailName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.TrailName.ButtonImage = null;
-            this.TrailName.Location = new System.Drawing.Point(91, 0);
-            this.TrailName.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.TrailName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TrailName.Location = new System.Drawing.Point(91, 1);
+            this.TrailName.Margin = new System.Windows.Forms.Padding(1);
             this.TrailName.MaxLength = 32767;
             this.TrailName.Multiline = false;
             this.TrailName.Name = "TrailName";
@@ -128,7 +129,7 @@
             this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TrailName.Size = new System.Drawing.Size(209, 19);
+            this.TrailName.Size = new System.Drawing.Size(208, 18);
             this.TrailName.TabIndex = 15;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TrailName.ButtonClick += new System.EventHandler(this.TrailName_ButtonClick);
@@ -149,7 +150,7 @@
             this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
             this.btnAdd.PushStyle = false;
             this.btnAdd.RightImage = null;
-            this.btnAdd.Size = new System.Drawing.Size(19, 19);
+            this.btnAdd.Size = new System.Drawing.Size(19, 16);
             this.btnAdd.TabIndex = 10;
             this.btnAdd.Text = "A";
             this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
@@ -173,7 +174,7 @@
             this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
             this.btnEdit.PushStyle = true;
             this.btnEdit.RightImage = null;
-            this.btnEdit.Size = new System.Drawing.Size(19, 19);
+            this.btnEdit.Size = new System.Drawing.Size(19, 16);
             this.btnEdit.TabIndex = 17;
             this.btnEdit.Text = "E";
             this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
@@ -197,7 +198,7 @@
             this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
             this.btnDelete.PushStyle = true;
             this.btnDelete.RightImage = null;
-            this.btnDelete.Size = new System.Drawing.Size(19, 19);
+            this.btnDelete.Size = new System.Drawing.Size(19, 16);
             this.btnDelete.TabIndex = 13;
             this.btnDelete.Text = "D";
             this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
@@ -209,7 +210,7 @@
             // 
             this.ActPagePanel.SetColumnSpan(this.ActPageSplitContainer, 6);
             this.ActPageSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ActPageSplitContainer.Location = new System.Drawing.Point(0, 30);
+            this.ActPageSplitContainer.Location = new System.Drawing.Point(0, 27);
             this.ActPageSplitContainer.Margin = new System.Windows.Forms.Padding(0);
             this.ActPageSplitContainer.Name = "ActPageSplitContainer";
             this.ActPageSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -225,7 +226,7 @@
             this.ActPageSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.ActPageSplitContainer.Panel2.Controls.Add(this.ChartPanel);
             this.ActPageSplitContainer.Panel2MinSize = 100;
-            this.ActPageSplitContainer.Size = new System.Drawing.Size(400, 270);
+            this.ActPageSplitContainer.Size = new System.Drawing.Size(400, 273);
             this.ActPageSplitContainer.SplitterDistance = 60;
             this.ActPageSplitContainer.SplitterWidth = 1;
             this.ActPageSplitContainer.TabIndex = 18;
@@ -266,7 +267,7 @@
             this.copyTableMenuItem,
             this.listSettingsMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
-            this.listMenu.Size = new System.Drawing.Size(147, 26);
+            this.listMenu.Size = new System.Drawing.Size(199, 48);
             // 
             // copyTableMenuItem
             // 
@@ -278,7 +279,7 @@
             // listSettingsMenuItem
             // 
             this.listSettingsMenuItem.Name = "listSettingsMenuItem";
-            this.listSettingsMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.listSettingsMenuItem.Size = new System.Drawing.Size(198, 22);
             this.listSettingsMenuItem.Text = "List Settings...";
             this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
             // 
@@ -298,7 +299,7 @@
             this.ChartPanel.RowCount = 2;
             this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.ChartPanel.Size = new System.Drawing.Size(400, 209);
+            this.ChartPanel.Size = new System.Drawing.Size(400, 212);
             this.ChartPanel.TabIndex = 0;
             // 
             // ChartBanner
@@ -336,92 +337,92 @@
             this.toolStripSeparator2,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
-            this.detailMenu.Size = new System.Drawing.Size(130, 230);
+            this.detailMenu.Size = new System.Drawing.Size(199, 258);
             // 
             // speedPaceToolStripMenuItem
             // 
             this.speedPaceToolStripMenuItem.Name = "speedPaceToolStripMenuItem";
-            this.speedPaceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.speedPaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.speedPaceToolStripMenuItem.Text = "Speed";
             this.speedPaceToolStripMenuItem.Click += new System.EventHandler(this.speedPaceToolStripMenuItem_Click);
             // 
             // speedToolStripMenuItem
             // 
             this.speedToolStripMenuItem.Name = "speedToolStripMenuItem";
-            this.speedToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.speedToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.speedToolStripMenuItem.Text = "Speed";
             this.speedToolStripMenuItem.Click += new System.EventHandler(this.speedToolStripMenuItem_Click);
             // 
             // paceToolStripMenuItem
             // 
             this.paceToolStripMenuItem.Name = "paceToolStripMenuItem";
-            this.paceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.paceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.paceToolStripMenuItem.Text = "Pace";
             this.paceToolStripMenuItem.Click += new System.EventHandler(this.paceToolStripMenuItem_Click);
             // 
             // heartRateToolStripMenuItem
             // 
             this.heartRateToolStripMenuItem.Name = "heartRateToolStripMenuItem";
-            this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.heartRateToolStripMenuItem.Text = "Heart Rate";
             this.heartRateToolStripMenuItem.Click += new System.EventHandler(this.heartRateToolStripMenuItem_Click);
             // 
             // cadenceToolStripMenuItem
             // 
             this.cadenceToolStripMenuItem.Name = "cadenceToolStripMenuItem";
-            this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.cadenceToolStripMenuItem.Text = "Cadence";
             this.cadenceToolStripMenuItem.Click += new System.EventHandler(this.cadenceToolStripMenuItem_Click);
             // 
             // elevationToolStripMenuItem
             // 
             this.elevationToolStripMenuItem.Name = "elevationToolStripMenuItem";
-            this.elevationToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.elevationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.elevationToolStripMenuItem.Text = "Elevation";
             this.elevationToolStripMenuItem.Click += new System.EventHandler(this.elevationToolStripMenuItem_Click);
             // 
             // gradeStripMenuItem
             // 
             this.gradeStripMenuItem.Name = "gradeStripMenuItem";
-            this.gradeStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.gradeStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.gradeStripMenuItem.Text = "Grade";
             this.gradeStripMenuItem.Click += new System.EventHandler(this.gradeToolStripMenuItem_Click);
             // 
             // powerToolStripMenuItem
             // 
             this.powerToolStripMenuItem.Name = "powerToolStripMenuItem";
-            this.powerToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.powerToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.powerToolStripMenuItem.Text = "Power";
             this.powerToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(126, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
             // 
             // distanceToolStripMenuItem
             // 
             this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
-            this.distanceToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.distanceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.distanceToolStripMenuItem.Text = "Distance";
             this.distanceToolStripMenuItem.Click += new System.EventHandler(this.distanceToolStripMenuItem_Click);
             // 
             // timeToolStripMenuItem
             // 
             this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
-            this.timeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.timeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.timeToolStripMenuItem.Text = "Time";
             this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(126, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
             // 
             // showToolBarMenuItem
             // 
             this.showToolBarMenuItem.Name = "showToolBarMenuItem";
-            this.showToolBarMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.showToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showToolBarMenuItem.Text = "showToolBarMenuItem";
             this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
@@ -436,7 +437,7 @@
             this.btnExpand.HyperlinkStyle = false;
             this.btnExpand.ImageMargin = 2;
             this.btnExpand.LeftImage = null;
-            this.btnExpand.Location = new System.Drawing.Point(483, 1);
+            this.btnExpand.Location = new System.Drawing.Point(353, 1);
             this.btnExpand.Name = "btnExpand";
             this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
             this.btnExpand.PushStyle = false;
@@ -463,7 +464,7 @@
             this.LineChart.Margin = new System.Windows.Forms.Padding(0);
             this.LineChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.LineChart.Name = "LineChart";
-            this.LineChart.Size = new System.Drawing.Size(400, 189);
+            this.LineChart.Size = new System.Drawing.Size(400, 192);
             this.LineChart.TabIndex = 1;
             this.LineChart.TrailResult = null;
             this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;

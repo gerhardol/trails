@@ -150,11 +150,20 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+<!--
+  <PropertyGroup>
+    <PreBuildEvent>rem adapt date format to local, to avoid errors (compiling with Design open in VSE 2010?)
+if exist "$(TargetPath)"*".locked" del "$(TargetPath)"*".locked"
+if exist "$(TargetPath)" move "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25date:~8,2%25%25date:~10,4%25_@_%25time:~1,1%25h%25time:~3,2%25m%25time:~6,2%25s.locked</PreBuildEvent>
+  </PropertyGroup>
+-->
+<!--
   <PropertyGroup>
     <PreBuildEvent>rem adapt date format to local, to avoid errors
 if exist "$(TargetPath)"*".locked" del "$(TargetPath)"*".locked"
 if exist "$(TargetPath)" move "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25date:~8,2%25%25date:~10,4%25_@_%25time:~1,1%25h%25time:~3,2%25m%25time:~6,2%25s.locked</PreBuildEvent>
   </PropertyGroup>
+  -->
  <PropertyGroup>
     <PostBuildEvent>:: This part is in the Common part of the properties
 :: Avoid editing from VSE
@@ -163,7 +172,7 @@ set guid=$(PluginId)
 IF "%25guid%25"=="" GOTO END
 
 REM ST version, for plugin.xml file
-SET StVersion=3.0.3797
+SET StVersion=3.0.3896
 IF "$(StPluginVersion)"=="2" SET StVersion=2.1.3478
 
 REM 7-zip must be configured, hardcoded path used

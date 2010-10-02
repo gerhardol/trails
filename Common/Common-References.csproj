@@ -24,13 +24,21 @@
 
   <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug')) ">
     <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\SportTracks.exe</StartProgram>
-	<StPluginPath>%25ALLUSERSPROFILE%25\ZoneFiveSoftware\SportTracks\2.0\Plugins</StPluginPath>
+	<StPluginPath>ZoneFiveSoftware\SportTracks\2.0\Plugins</StPluginPath>
 	<StPluginVersion>2</StPluginVersion>
   </PropertyGroup>
+
   <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug')) ">
     <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</StartProgram>
-	<StPluginPath>%25ALLUSERSPROFILE%25\ZoneFiveSoftware\SportTracks\3\Plugins</StPluginPath>
+	<StPluginPath>ZoneFiveSoftware\SportTracks\3\Plugins</StPluginPath>
 	<StPluginVersion>3</StPluginVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST2.1Debug')) ">
+    <ConfigurationType>Debug</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST2.1Release')) ">
+    <ConfigurationType>Release</ConfigurationType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -100,13 +108,6 @@
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <!--
-	<Reference Include="SportTracks, Version=3.0.3769.30929, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
-	-->
   </ItemGroup>
 
 
@@ -150,21 +151,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-<!--
+  <!--
   <PropertyGroup>
-    <PreBuildEvent>rem adapt date format to local, to avoid errors (compiling with Design open in VSE 2010?)
-if exist "$(TargetPath)"*".locked" del "$(TargetPath)"*".locked"
-if exist "$(TargetPath)" move "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25date:~8,2%25%25date:~10,4%25_@_%25time:~1,1%25h%25time:~3,2%25m%25time:~6,2%25s.locked</PreBuildEvent>
-  </PropertyGroup>
--->
-<!--
-  <PropertyGroup>
-    <PreBuildEvent>rem adapt date format to local, to avoid errors
-if exist "$(TargetPath)"*".locked" del "$(TargetPath)"*".locked"
-if exist "$(TargetPath)" move "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25date:~8,2%25%25date:~10,4%25_@_%25time:~1,1%25h%25time:~3,2%25m%25time:~6,2%25s.locked</PreBuildEvent>
+    <PreBuildEvent>REM VSE2010 issue w open files
+REM adapt date format to local, to avoid errors
+IF exist "$(TargetPath)"*".locked" DEL "$(TargetPath)"*".locked"
+IF exist "$(TargetPath)" MOVE "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25date:~8,2%25%25date:~10,4%25_@_%25time:~1,1%25h%25time:~3,2%25m%25time:~6,2%25s.locked</PreBuildEvent>
   </PropertyGroup>
   -->
- <PropertyGroup>
+  <PropertyGroup>
     <PostBuildEvent>:: This part is in the Common part of the properties
 :: Avoid editing from VSE
 REM Set the plugin GUID in the main PropertyGroup for the plugin
@@ -172,33 +167,37 @@ set guid=$(PluginId)
 IF "%25guid%25"=="" GOTO END
 
 REM ST version, for plugin.xml file
-SET StVersion=3.0.3896
+SET StVersion=3.0.3924
 IF "$(StPluginVersion)"=="2" SET StVersion=2.1.3478
 
 REM 7-zip must be configured, hardcoded path used
 REM "%25programfiles%25\7-zip\7z.exe"
 
 set stPlgFile=$(ProjectDir)$(ProjectName)-0.2.x.st$(StPluginVersion)plugin
-REM To move a .st2plugin to common area, create environment variable (or set it below)
+REM To move a .stplugin to common area, create environment variable (or set it below)
 REM set stPlgoutdir=g:\Users\go\dev\web
 
-set StTarget="$(StPluginPath)\Update\%25guid%25\$(ProjectName)"
+REM Vista+ / XP compatibility
+set C_APPDATA=%25PROGRAMDATA%25
+IF "%25C_APPDATA%25"=="" set C_APPDATA=%25ALLUSERSPROFILE%25\Application Data
+IF EXIST "%25C_APPDATA%25" GOTO COPY_REL
+GOTO END_COPY_REL
+:COPY_REL
+set StTarget="%25C_APPDATA%25\$(StPluginPath)\Update\%25guid%25\$(ProjectName)"
 IF NOT EXIST %25StTarget%25 mkdir %25StTarget%25
 REM XCOPY depreciated in Vista, use for XP compatibility
-XCOPY  $(TargetDir)*.* "%25StTarget%25" /I/Y/Q/E &lt;NUL:
+XCOPY  "$(TargetDir)*.*" %25StTarget%25 /I/Y/Q/E &lt;NUL:
+:END_COPY_REL
 
-set Release=No
-IF "$(ConfigurationName)"=="ST2.1Release" set Release=Yes
-IF "$(ConfigurationName)"=="ST3.0Release" set Release=Yes
-IF NOT "%25Release%25"=="Yes" GOTO END
-IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END
+IF NOT "$(ConfigurationType)"=="Release" GOTO END
 
 REM generate the plugin.xml file
 ECHO ^&lt;?xml version="1.0" encoding="utf-8" ?^&gt; &gt;  "$(TargetDir)\plugin.xml"
 ECHO ^&lt;plugin id="%25guid%25" minimumCommonVersion="%25StVersion%25" /^&gt; &gt;&gt; "$(TargetDir)\plugin.xml"
 
 DEL "%25stPlgFile%25"
-"%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25"  "$(TargetDir)*"  -x!*.st2plugin -x!*.tmp -x!*.pdb -x!$(ProjectName).xml
+IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END
+"%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25" "$(TargetDir)*" -x!*.st*plugin -x!*.tmp -x!*.pdb -x!*.locked -x!$(ProjectName).xml
 
 IF "%25stPlgoutdir%25"=="" GOTO END
 IF not EXIST "%25stPlgoutdir%25" GOTO END

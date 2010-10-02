@@ -20,9 +20,11 @@ using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
+using ITrailExport;
 
 namespace TrailsPlugin.Data {
-	public class TrailResult {
+    public class TrailResult : ITrailResult
+    {
 		private IActivity m_activity;
 		private int m_order;
 		private INumericTimeDataSeries m_cadencePerMinuteTrack;
@@ -262,5 +264,134 @@ namespace TrailsPlugin.Data {
 				return m_gradeTrack;
 			}
 		}
-	}
+
+        #region Implementation of ITrailResult
+
+        float ITrailResult.AvgCadence
+        {
+            get { return AvgCadence; }
+        }
+
+        float ITrailResult.AvgGrade
+        {
+            get { return AvgGrade; }
+        }
+
+        float ITrailResult.AvgHR
+        {
+            get { return AvgHR; }
+        }
+
+        double ITrailResult.AvgPace
+        {
+            get { return AvgPace; }
+        }
+
+        float ITrailResult.AvgPower
+        {
+            get { return AvgPower; }
+        }
+
+        float ITrailResult.AvgSpeed
+        {
+            get { return AvgSpeed; }
+        }
+
+        INumericTimeDataSeries ITrailResult.CadencePerMinuteTrack
+        {
+            get { return CadencePerMinuteTrack; }
+        }
+
+        IActivityCategory ITrailResult.Category
+        {
+            get { return Category; }
+        }
+
+        INumericTimeDataSeries ITrailResult.CopyTrailTrack(INumericTimeDataSeries source)
+        {
+            return copyTrailTrack(source);
+        }
+
+        string ITrailResult.Distance
+        {
+            get { return Distance; }
+        }
+
+        IDistanceDataTrack ITrailResult.DistanceMetersTrack
+        {
+            get { return DistanceMetersTrack; }
+        }
+
+        TimeSpan ITrailResult.Duration
+        {
+            get { return Duration; }
+        }
+
+        string ITrailResult.ElevChg
+        {
+            get { return ElevChg; }
+        }
+
+        INumericTimeDataSeries ITrailResult.ElevationMetersTrack
+        {
+            get { return ElevationMetersTrack; }
+        }
+
+        TimeSpan ITrailResult.EndTime
+        {
+            get { return EndTime; }
+        }
+
+        double ITrailResult.FastestPace
+        {
+            get { return FastestPace; }
+        }
+
+        float ITrailResult.FastestSpeed
+        {
+            get { return FastestSpeed; }
+        }
+
+        INumericTimeDataSeries ITrailResult.GradeTrack
+        {
+            get { return GradeTrack; }
+        }
+
+        INumericTimeDataSeries ITrailResult.HeartRatePerMinuteTrack
+        {
+            get { return HeartRatePerMinuteTrack; }
+        }
+
+        float ITrailResult.MaxHR
+        {
+            get { return MaxHR; }
+        }
+
+        int ITrailResult.Order
+        {
+            get { return Order; }
+        }
+
+        INumericTimeDataSeries ITrailResult.PaceTrack
+        {
+            get { return PaceTrack; }
+        }
+
+        INumericTimeDataSeries ITrailResult.PowerWattsTrack
+        {
+            get { return PowerWattsTrack; }
+        }
+
+        INumericTimeDataSeries ITrailResult.SpeedTrack
+        {
+            get { return SpeedTrack; }
+        }
+
+        TimeSpan ITrailResult.StartTime
+        {
+            get { return StartTime; }
+        }
+
+        #endregion
+    }
 }

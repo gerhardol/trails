@@ -64,7 +64,7 @@ namespace TrailsPlugin.UI.Activity {
                     ((TrailLineChart)t).ThemeChanged(visualTheme);
                 }
             }
-		}
+        }
         public void UICultureChanged(CultureInfo culture)
         {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;

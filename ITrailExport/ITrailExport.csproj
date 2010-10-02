@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ITrailExport</RootNamespace>
+    <AssemblyName>ITrailExport</AssemblyName>
+    <ProjectGuid>{7B514986-9F26-4253-B227-EBB9438F804A}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="..\Common\Common-References.csproj" />
+  <ItemGroup>
+    <Compile Include="ITrailExport.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <!--
+  <Import Project="..\Common\Common-Files.csproj" />
+  -->
+</Project>

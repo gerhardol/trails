@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITrailExport", "ITrailExport.csproj", "{7B514986-9F26-4253-B227-EBB9438F804A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ST2.1Debug|Any CPU = ST2.1Debug|Any CPU
+		ST2.1Release|Any CPU = ST2.1Release|Any CPU
+		ST3.0Debug|Any CPU = ST3.0Debug|Any CPU
+		ST3.0Release|Any CPU = ST3.0Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST2.1Debug|Any CPU.ActiveCfg = ST2.1Debug|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST2.1Debug|Any CPU.Build.0 = ST2.1Debug|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST2.1Release|Any CPU.ActiveCfg = ST2.1Release|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST2.1Release|Any CPU.Build.0 = ST2.1Release|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST3.0Debug|Any CPU.ActiveCfg = ST3.0Debug|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST3.0Debug|Any CPU.Build.0 = ST3.0Debug|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST3.0Release|Any CPU.ActiveCfg = ST3.0Release|Any CPU
+		{7B514986-9F26-4253-B227-EBB9438F804A}.ST3.0Release|Any CPU.Build.0 = ST3.0Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

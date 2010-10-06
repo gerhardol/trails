@@ -89,6 +89,10 @@ namespace TrailsPlugin.Data {
 		}
 
 		public bool IsInBounds(IGPSBounds activityBounds) {
+            if (null == activityBounds)
+            {
+                return false;
+            }
             //increase bounds to include radius in the bounds checking
             //Use a magic aproximate formula, about twice the radius
             float latOffset = m_radius * 2 * 18 / 195/10000;

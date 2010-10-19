@@ -107,7 +107,12 @@
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    <!--    <EmbeddedResource Include="Properties\Resources.da.resx">
+    <EmbeddedResource Include="Properties\Resources.es.resx">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+<!--
+    <EmbeddedResource Include="Properties\Resources.da.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
@@ -122,10 +127,6 @@
     <EmbeddedResource Include="Properties\Resources.nl.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.es.resx">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.fr.resx">
       <SubType>Designer</SubType>

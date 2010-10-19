@@ -59,79 +59,84 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="TrailsName" xml:space="preserve">
+    <value>senderos</value>
+  </data>
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
-    <value>Lägg till trail</value>
+    <value>Agregar sendero</value>
   </data>
   <data name="UI_Activity_EditTrail_EditTrail" xml:space="preserve">
-    <value>Editera trail</value>
+    <value>Editar sendero</value>
   </data>
   <data name="UI_Activity_EditTrail_InsertFailed" xml:space="preserve">
-    <value>Tillägg misslyckades</value>
+    <value>Error al insertar</value>
   </data>
   <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
-    <value>Latitude</value>
+    <value>Latitud</value>
   </data>
   <data name="UI_Activity_EditTrail_Longitude" xml:space="preserve">
-    <value>Longitude</value>
+    <value>Longitud</value>
   </data>
   <data name="UI_Activity_EditTrail_Radius" xml:space="preserve">
-    <value>Radie</value>
+    <value>Radio</value>
   </data>
   <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
-    <value>Radie måste vara numerisk.</value>
+    <value>Radio debe ser númerico</value>
   </data>
   <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
-    <value>Namn krävs på trail.</value>
+    <value>Nombre de sendero requerido</value>
   </data>
   <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
-    <value>Unikt namn krävs på trail.</value>
+    <value>Nombre único de sendero necesario</value>
   </data>
   <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
-    <value>Uppdatering misslyckades.</value>
+    <value>Error al actualizar</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Lägg till ny trail eller lägg till valda punkter till nuvarande trail. (Välj trail punkter på kartan före denna knapp aktiveras.)</value>
+    <value>Agrega nuevo sendero o puntos seleccionados a un sendero. (selecciona puntos del sendero en el mapa antes de dar click a este botón).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
-    <value>Är du säker på att du vill ta bort denna trail?</value>
+    <value>¿Está seguro de borrar este sendero?</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
-    <value>Ta bort trail.</value>
+    <value>Borra este sendero</value>
   </data>
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
-    <value>Editera denna trail. (Välj trail punkterna på kartan före denna knapp aktiveras.)</value>
+    <value>Editar este sendero. (selecciona el sendero en el mapa antes de dar click a este botón).</value>
   </data>
   <data name="UI_Activity_Page_ListSettings" xml:space="preserve">
-    <value>Inställningar för tabell...</value>
+    <value>Configuración…</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
-    <value>Du måste välja punkter på kartan.
+    <value>Debe seleccionar un punto en el mapa.
 
-För att välja en punkt, klicka bara på ett aktivitetsspår.
-ST2: För att välja ytterliggare punkter, använd CTRL och klicka på en annan punkt på spåret.
-Välj punkter så denna trail är unik jämförd med andra trail.</value>
+Para seleccionar un puento, solo de clik en el mapa.
+Agrege nuevos puntos presionando el botón agregar.
+
+En ST2: para seleccionar un segundo punto, Opirma CTRL, y de click en otra parte del sendero.
+Selecione los puntos necesario para hacer el sendero único.
+</value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
-    <value>Vill du uppdatera trail GPS punkter med de valda punkterna?</value>
+    <value>Desea actualizar la localización de los putnos GPS del sendero
+con los actualmente selecionados?</value>
   </data>
   <data name="UI_Settings_DefaultRadius" xml:space="preserve">
-    <value>Default radie</value>
+    <value>Radio por defecto</value>
   </data>
   <data name="UI_Settings_DefaultRadius_ToolTip" xml:space="preserve">
-    <value>Default radie för trail punkter då nya punkter läggs till. Ändring av denna parameter påverkar inte existerande spår.</value>
+    <value>Radio por defecto para senderos nuevos.
+Cambiar este. Valor no modifica los senderos existentes.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
-    <value>Välj {0} för att lägga till valda punkter till nuvarande trail, {1} för att lägga till ny trail.</value>
-  </data>
-  <data name="TrailChartsName" xml:space="preserve">
-    <value>Trail Grafer</value>
+    <value>Presiona {0} para agregar puntos seleccionados al sendero actual , {1} para agregar nuevo sendero.</value>
   </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <comment>STcore</comment>
-    <value>Göm kartverktyg</value>
+    <value>Ocultar Herramientas Gráficas</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <comment>STcore removed</comment>
-    <value>Visa kartverktyg</value>
+    <value>Mostrar Herramientas Gráficas</value>
   </data>
 </root>

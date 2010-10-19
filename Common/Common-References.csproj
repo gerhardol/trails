@@ -89,11 +89,6 @@
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\Common.Visuals.dll</HintPath>
       <Private>False</Private>
     </Reference>
-	<Reference Include="SportTracks, Version=2.1.3478.21513, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\SportTracks.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
 
   <!-- references to ST API 3.0 -->
@@ -173,7 +168,18 @@ IF "$(StPluginVersion)"=="2" SET StVersion=2.1.3478
 REM 7-zip must be configured, hardcoded path used
 REM "%25programfiles%25\7-zip\7z.exe"
 
-set stPlgFile=$(ProjectDir)$(ProjectName)-0.2.x.st$(StPluginVersion)plugin
+REM Plugin version
+set PluginVersion=0.1
+set perl=C:\Cygwin\bin\perl.exe
+IF NOT EXIST "%25perl%25" GOTO endversion 
+set cygwin=nodosfilewarning
+set tempfile=%25temp%25\$(ProjectName)-stpluginversion.tmp
+%25perl%25 -ne "if(/^^\[assembly: AssemblyVersion\(.([\.\d]*)(\.\*)*.\)\]/){print $1;}" $(ProjectDir)\Properties\AssemblyInfo.cs &gt; %25tempfile%25
+set /p PluginVersion= &lt; %25tempfile%25
+rem DEL %25tempfile%25
+:endversion
+
+set stPlgFile=$(ProjectDir)$(ProjectName)-%PluginVersion%.st$(StPluginVersion)plugin
 REM To move a .stplugin to common area, create environment variable (or set it below)
 REM set stPlgoutdir=g:\Users\go\dev\web
 
@@ -189,11 +195,11 @@ REM XCOPY depreciated in Vista, use for XP compatibility
 XCOPY  "$(TargetDir)*.*" %25StTarget%25 /I/Y/Q/E &lt;NUL:
 :END_COPY_REL
 
-IF NOT "$(ConfigurationType)"=="Release" GOTO END
-
 REM generate the plugin.xml file
 ECHO ^&lt;?xml version="1.0" encoding="utf-8" ?^&gt; &gt;  "$(TargetDir)\plugin.xml"
 ECHO ^&lt;plugin id="%25guid%25" minimumCommonVersion="%25StVersion%25" /^&gt; &gt;&gt; "$(TargetDir)\plugin.xml"
+
+IF NOT "$(ConfigurationType)"=="Release" GOTO END
 
 DEL "%25stPlgFile%25"
 IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END

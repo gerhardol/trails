@@ -15,8 +15,9 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//ST2 only
+//Used in both Trails and Matrix plugin
 
+#if ST_2_1
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
@@ -34,3 +35,4 @@ namespace TrailsPlugin.UI.MapLayers
 		#endregion
 	}
 }
+#endif

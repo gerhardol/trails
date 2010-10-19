@@ -15,8 +15,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//ST_3_0: Display trail points, not included for ST_2_1 
+//Used in both Trails and Matrix plugin
 
+//ST_3_0: Display trail points
+
+#if !ST_2_1
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -164,3 +167,4 @@ namespace TrailsPlugin.UI.MapLayers
         private IMapControl mapControl;
     }
 }
+#endif

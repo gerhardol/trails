@@ -26,53 +26,69 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using System.IO;
 
-namespace TrailsPlugin {
+//Used in both Trails and Matrix plugin, slightly reduced and modified in Matrix
+
+namespace TrailsPlugin
+{
 	class CommonIcons {
 
-		static public Image MenuCascadeArrowDown {
-			get
+        static public Image MenuCascadeArrowDown
+        {
+            get
             {
                 return Properties.Resources.DropDown;
             }
-		}
+        }
 
-		static public Image Edit {
-			get {
-				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Edit16;
-			}
-		}
+        static public Image Edit
+        {
+            get
+            {
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Edit16;
+            }
+        }
 
-		static public Image RedSquare {
-			get {
+        static public Image RedSquare
+        {
+            get
+            {
                 return Properties.Resources.square_red;
             }
-		}
+        }
 
-		static public Image GreenSquare {
-			get {
+        static public Image GreenSquare
+        {
+            get
+            {
                 return Properties.Resources.square_green;
-			}
-		}
+            }
+        }
 
-		static public Image BlueSquare {
-			get {
+        static public Image BlueSquare
+        {
+            get
+            {
                 return Properties.Resources.square_blue;
             }
-		}
+        }
 
-		static public Image LowerHalf {
-			get {
+        static public Image LowerHalf
+        {
+            get
+            {
 #if ST_2_1
 				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
 				return (Bitmap)ResourceManager.GetObject("Image_16_View_2Pane_LowerHalf");
 #else
                 return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.View2PaneLowerHalf16;
 #endif
-			}
-		}
+            }
+        }
 
-		static public Image LowerLeft {
-			get {
+        static public Image LowerLeft
+        {
+            get
+            {
 #if ST_2_1
 				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
 				return (Bitmap)ResourceManager.GetObject("Image_16_View_3Pane_LowerLeft");
@@ -80,31 +96,39 @@ namespace TrailsPlugin {
                 return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.View3PaneLowerLeft16;
 #endif
             }
-		}
+        }
 
-		static public Image Add {
-			get {
-				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;
-			}
-		}
+        static public Image Add
+        {
+            get
+            {
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;
+            }
+        }
 
-		static public Image Delete {
-			get {
-				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16;				
-			}
-		}
+        static public Image Delete
+        {
+            get
+            {
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16;
+            }
+        }
 
-		static public Image Save {
-			get {
-				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Save16;
-			}
-		}
+        static public Image Save
+        {
+            get
+            {
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Save16;
+            }
+        }
 
-		static public Image ListSettings {
-			get {
-				return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
-			}
-		}
+        static public Image ListSettings
+        {
+            get
+            {
+                return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
+            }
+        }
 
 #if !ST_2_1
         const int brushSize = 6; //Even

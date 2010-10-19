@@ -15,8 +15,11 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//ST_2_1: Both display/select, not included for ST_3_0 
+//Used in both Trails and Matrix plugin
 
+//ST_2_1: Both display/select
+
+#if ST_2_1
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -64,9 +67,6 @@ namespace TrailsPlugin.UI.MapLayers {
 				return MapControlLayer.m_instance;
             }
 		}
-
-		//private MapControlLayer() {
-		//}
 
 		private IMapControl m_mapControl;
 		public IMapControl MapControl {
@@ -120,7 +120,7 @@ namespace TrailsPlugin.UI.MapLayers {
 			}
 		}
 
-        //Not in ST2
+        //No effect in ST2 (zoom in ST3 only)
         public IList<TrailGPSLocation> SelectedTrailPoints
         {
             get
@@ -132,7 +132,8 @@ namespace TrailsPlugin.UI.MapLayers {
             }
         }
 
-		public float HighlightRadius {
+        public float HighlightRadius
+        {
 			set {
 				m_highlightRadius = value;
 			}
@@ -142,7 +143,6 @@ namespace TrailsPlugin.UI.MapLayers {
         {
             if (null != m_mapControl) m_mapControl.Refresh();
         }
-
 
 #region IMapControlLayer Members
 
@@ -241,4 +241,4 @@ namespace TrailsPlugin.UI.MapLayers {
 		
     }
 }
-//#endif
+#endif

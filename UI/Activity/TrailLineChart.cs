@@ -241,7 +241,8 @@ namespace TrailsPlugin.UI.Activity {
 
         void copyChartMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO: summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+            //Not visible
+            //MainChart.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
         
         private void SetupDataSeries()

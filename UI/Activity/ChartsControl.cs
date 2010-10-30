@@ -35,8 +35,13 @@ namespace TrailsPlugin.UI.Activity {
 
 		public ChartsControl() {
             InitializeComponent();
+            InitControls();
             RefreshPage();
+        }
+        void InitControls()
+        {
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
+            //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
         }
         public void RefreshPage()
         {
@@ -68,6 +73,13 @@ namespace TrailsPlugin.UI.Activity {
         public void UICultureChanged(CultureInfo culture)
         {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is TrailLineChart)
+                {
+                    ((TrailLineChart)t).UICultureChanged(culture);
+                }
+            }
             RefreshChartMenu();
         }
 
@@ -115,8 +127,8 @@ namespace TrailsPlugin.UI.Activity {
 
         void RefreshChartMenu()
         {
-            this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
-               : Properties.Resources.UI_Activity_Menu_ShowToolBar;
+            this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
+            this.showToolBarMenuItem.Checked = m_showChartToolBar;
         }
 
         public bool ShowChartToolBar

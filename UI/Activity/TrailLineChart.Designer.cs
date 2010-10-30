@@ -204,8 +204,8 @@ namespace TrailsPlugin.UI.Activity
             // 
             this.copyChartMenuItem.Name = "copyChartMenuItem";
             this.copyChartMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.copyChartMenuItem.Text = "<Copy";
-            this.copyChartMenuItem.Click += new System.EventHandler(this.copyChartMenuItem_Click);
+            this.copyChartMenuItem.Text = "<Copy>";
+            //this.copyChartMenuItem.Click += new System.EventHandler(this.copyChartMenuItem_Click);
             // 
             // selectChartsMenuItem
             // 
@@ -225,7 +225,7 @@ namespace TrailsPlugin.UI.Activity
             // 
             this.saveImageMenuItem.Name = "saveImageMenuItem";
             this.saveImageMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.saveImageMenuItem.Text = "<Save";
+            this.saveImageMenuItem.Text = "<Save>";
             this.saveImageMenuItem.Click += new System.EventHandler(this.SaveImageButton_Click);
             // 
             // TrailLineChart

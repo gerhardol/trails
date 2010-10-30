@@ -39,12 +39,19 @@ namespace TrailsPlugin.Data {
 		private int m_endIndex;
 		private DateTime m_startTime;
 		private float m_startDistance;
+        private float m_distDiff; //to give quality of results
 
-		public TrailResult(IActivity activity, int order, int startIndex, int endIndex) {
-			m_activity = activity;
+        public TrailResult(IActivity activity, int order, int startIndex, int endIndex): 
+            this(activity, order, startIndex, endIndex, -1)
+        {
+        }
+		public TrailResult(IActivity activity, int order, int startIndex, int endIndex, float distDiff) {
+
+            m_activity = activity;
 			m_order = order;
 			m_startIndex = startIndex;
 			m_endIndex = endIndex;
+            m_distDiff = distDiff;
 
 			m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[startIndex].ElapsedSeconds);
 			m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[startIndex].Value;
@@ -62,7 +69,13 @@ namespace TrailsPlugin.Data {
 				}
 			}
 		}
-		public int Order {
+        public TrailResult(IActivity activity, int matches, float distDiff) { }
+        public float DistDiff
+        {
+            get { return m_distDiff; }
+        }
+        public int Order
+        {
 			get {
 				return m_order;
 			}

@@ -74,11 +74,23 @@ namespace TrailsPlugin.Controller {
 						}
 					}
 					if (m_currentTrail == null) {
+                        float bestMatch = float.PositiveInfinity;
 						foreach (Data.ActivityTrail t in trails) {
-							if (t.Results.Count > 0) {
-								m_currentTrail = t;
-								break;
-							}
+                            if (t.Results.Count > 0)
+                            {
+                                float currMatch = 0;
+                                foreach (Data.TrailResult r in t.Results)
+                                {
+                                    currMatch += r.DistDiff;
+                                }
+                                currMatch = currMatch / t.Results.Count;
+                                if (currMatch < bestMatch)
+                                {
+                                    bestMatch = currMatch;
+                                    m_currentTrail = t;
+                                }
+                                //	break;
+                            }
 						}
 
 					}
@@ -108,20 +120,20 @@ namespace TrailsPlugin.Controller {
 			}
 		}
 
-		public IList<Data.ActivityTrail> TrailsWithResults {
-			get {
-				SortedList<long, Data.ActivityTrail> trails = new SortedList<long, Data.ActivityTrail>();
-				if (m_currentActivity != null) {
-					foreach (Data.ActivityTrail trail in this.TrailsInBounds) {
-						IList<Data.TrailResult> results = trail.Results;
-						if (results.Count > 0) {
-							trails.Add(results[0].StartTime.Ticks, trail);
-						}
-					}
-				}
-				return trails.Values;
-			}
-		}
+        //public IList<Data.ActivityTrail> TrailsWithResults {
+        //    get {
+        //        SortedList<long, Data.ActivityTrail> trails = new SortedList<long, Data.ActivityTrail>();
+        //        if (m_currentActivity != null) {
+        //            foreach (Data.ActivityTrail trail in this.TrailsInBounds) {
+        //                IList<Data.TrailResult> results = trail.Results;
+        //                if (results.Count > 0) {
+        //                    trails.Add(results[0].StartTime.Ticks, trail);
+        //                }
+        //            }
+        //        }
+        //        return trails.Values;
+        //    }
+        //}
 
 		public bool AddTrail(Data.Trail trail) {
 			if (PluginMain.Data.InsertTrail(trail)) {

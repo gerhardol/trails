@@ -58,6 +58,7 @@ namespace TrailsPlugin.Data {
                     if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 1 &&
                         this.m_trail.TrailLocations.Count > 0)
                     {
+                        int lastMatch = -1;
                         float trailDistDiff = 0;
 						int trailIndex = 0;
 						int startIndex = -1;
@@ -155,10 +156,12 @@ namespace TrailsPlugin.Data {
                                 }
                             }
 
-                            if (matchIndex >= 0)
+                            if (matchIndex >= 0 &&
+                                //Allow match with same index only if point is new (.e. not single point trails)
+                                (trailIndex > 0 || lastMatch < matchIndex))
                             {
+                                lastMatch = matchIndex;
                                 prevRouteIndex = -1;
-                                //prevRoutePoint = null;
                                 trailDistDiff += matchDist;
 
                                 if (isEndTrailPoint(startIndex, trailIndex))

@@ -274,6 +274,45 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
         /************************************************************/
+#if !ST_2_1
+        //Class to have the same interface as when selecting items on the track
+        private class trackSelected : IItemTrackSelectionInfo
+        {
+            IValueRange<DateTime> m_time;
+            public trackSelected(ILapInfo l)
+            {
+                m_time = new ValueRange<DateTime>(l.StartTime, l.StartTime);
+            }
+            public trackSelected(DateTime t)
+            {
+                m_time = new ValueRange<DateTime>(t, t);
+            }
+            public string ItemReferenceId
+            {
+                get { return ""; }
+            }
+
+            public IValueRangeSeries<double> MarkedDistances
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public IValueRangeSeries<DateTime> MarkedTimes
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public IValueRange<double> SelectedDistance
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public IValueRange<DateTime> SelectedTime
+            {
+                get { return m_time; }
+            }
+        }
+#endif
 		private void btnAdd_Click(object sender, EventArgs e) {
 
             int countGPS = 0;
@@ -294,9 +333,31 @@ namespace TrailsPlugin.UI.Activity {
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
             } else {
+#if ST_2_1
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
-				MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			}
+                MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+#else
+                if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
+                    ,"", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    if (null == m_controller.CurrentActivity.Laps || 0 == m_controller.CurrentActivity.Laps.Count)
+                    {
+                        selectedGPS.Add(new trackSelected(m_controller.CurrentActivity.StartTime));
+                    }
+                    else
+                    {
+                        foreach (ILapInfo l in m_controller.CurrentActivity.Laps)
+                        {
+                            selectedGPS.Add(new trackSelected(l));
+                        }
+                    }
+					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
+                    selectedGPS.Add(new trackSelected(activityInfo.EndTime));
+                    selectedGPSLocationsChanged_AddTrail(selectedGPS);
+                    selectedGPS.Clear();
+                }
+#endif
+            }
  		}
 
 		private void btnEdit_Click(object sender, EventArgs e) {
@@ -327,7 +388,8 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
 		private void btnDelete_Click(object sender, EventArgs e) {
-			if (MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+			if (MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
+                == DialogResult.Yes) {
 				m_controller.DeleteCurrentTrail();
 				RefreshControlState();
 				RefreshData();
@@ -378,7 +440,7 @@ namespace TrailsPlugin.UI.Activity {
             bool addCurrent = false;
             if (m_controller.CurrentActivityTrail != null)
             {
-                if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, DialogResult.Yes, DialogResult.No),
+                if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
                     "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     addCurrent = true;
@@ -615,8 +677,10 @@ namespace TrailsPlugin.UI.Activity {
             this.timeToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Time);
             distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
             this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
-            this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
-               : Properties.Resources.UI_Activity_Menu_ShowToolBar;
+            this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
+            this.showToolBarMenuItem.Checked = m_showChartToolBar;
+            //this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
+            //   : Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
 
 		private void speedToolStripMenuItem_Click(object sender, EventArgs e) {

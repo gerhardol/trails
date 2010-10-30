@@ -134,15 +134,6 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trails.
-        /// </summary>
-        internal static string UI_Action_Title {
-            get {
-                return ResourceManager.GetString("UI_Action_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add Trail.
         /// </summary>
         internal static string UI_Activity_EditTrail_AddTrail {
@@ -260,6 +251,17 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No point selected on the map.
+        ///
+        ///Press {0} to use the Lap points, {1} to abort and select points on the GPS track..
+        /// </summary>
+        internal static string UI_Activity_Page_AddTrail_NoSelected {
+            get {
+                return ResourceManager.GetString("UI_Activity_Page_AddTrail_NoSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Press {0} to add the selected points to current trail, {1} to add a new trail..
         /// </summary>
         internal static string UI_Activity_Page_AddTrail_Replace {
@@ -269,7 +271,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add new trail or selected points to current trail. (Select trail points on the map before pushing this button)..
+        ///   Looks up a localized string similar to Add new trail or selected points to current trail. (Select points on the map before pushing this button)..
         /// </summary>
         internal static string UI_Activity_Page_AddTrail_TT {
             get {
@@ -319,7 +321,7 @@ namespace TrailsPlugin.Properties {
         ///To select a point, just click on the track.
         ///Add new points by pressing the Add button.
         ///
-        ///In ST2: To select a second point, hold down CTRL, and click another part of the track.
+        ///To select a second point, hold down CTRL, and click another part of the track.
         ///Select as many points required to make this trail unique from other trails.
         ///.
         /// </summary>

@@ -65,7 +65,7 @@ namespace TrailsPlugin.UI.Actions {
         public string Title
         {
 			get {
-				return Properties.Resources.UI_Action_Title;
+				return Properties.Resources.TrailsName;
 			}
 		}
         private bool firstRun = true; 

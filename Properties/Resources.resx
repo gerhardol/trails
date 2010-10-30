@@ -129,9 +129,7 @@
   </data>
   <data name="TrailsName" xml:space="preserve">
     <value>Trails</value>
-  </data>
-  <data name="UI_Action_Title" xml:space="preserve">
-    <value>Trails</value>
+    <comment>ActivityPage title</comment>
   </data>
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
     <value>Add Trail</value>
@@ -164,7 +162,7 @@
     <value>Update failed</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Add new trail or selected points to current trail. (Select trail points on the map before pushing this button).</value>
+    <value>Add new trail or selected points to current trail. (Select points on the map before pushing this button).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
     <value>Are you sure you want to delete this trail?</value>
@@ -177,6 +175,7 @@
   </data>
   <data name="UI_Activity_Page_ListSettings" xml:space="preserve">
     <value>List Settings...</value>
+    <comment>STcore</comment>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
     <value>You must select a point on the map.
@@ -184,9 +183,10 @@
 To select a point, just click on the track.
 Add new points by pressing the Add button.
 
-In ST2: To select a second point, hold down CTRL, and click another part of the track.
+To select a second point, hold down CTRL, and click another part of the track.
 Select as many points required to make this trail unique from other trails.
 </value>
+    <comment>ST2 only</comment>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Do you want to update the trail GPS locations
@@ -220,17 +220,21 @@ Changing this value will not effect existing trails.</value>
   </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <value>Hide Chart Tools</value>
-    <comment>STcore</comment>
+    <comment>unused</comment>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Show Chart Tools</value>
-    <comment>STcore removed</comment>
+    <comment>Same as STcore </comment>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
     <value>Double click the table to edit values.</value>
-    <comment>new</comment>
   </data>
   <data name="DropDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DropDown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
+    <value>No point selected on the map.
+
+Press {0} to use the Lap points, {1} to abort and select points on the GPS track.</value>
   </data>
 </root>

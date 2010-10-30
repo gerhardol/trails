@@ -144,12 +144,19 @@ namespace TrailsPlugin
                 DirectoryInfo di = Directory.CreateDirectory(basePath);
             }
 
+            //TODO: get largest meaningful icon somehow, to avoid crashes. Use fixed size for now, using minimal marker
+            const int maxCircle = 999;
+            if (sizeX > maxCircle || sizeY > maxCircle)
+            {
+                sizeX = 1;
+                sizeY = 1;
+            }
             sizeX = Math.Max(sizeX, brushSize * 2 - 1);
             sizeY = Math.Max(sizeY, brushSize * 2 - 1);
+
             //As the image is anchored in the middle, make size odd so (size/2) give center point
             if (1 != sizeX % 2) { sizeX++; }
             if (1 != sizeY % 2) { sizeY++; }
-
             iconSize = new Size(sizeX, sizeY);
             string filePath = basePath + "circle-" + sizeX+"_"+sizeY + ".png";
             if (!File.Exists(filePath))

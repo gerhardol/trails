@@ -274,45 +274,6 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
         /************************************************************/
-#if !ST_2_1
-        //Class to have the same interface as when selecting items on the track
-        private class trackSelected : IItemTrackSelectionInfo
-        {
-            IValueRange<DateTime> m_time;
-            public trackSelected(ILapInfo l)
-            {
-                m_time = new ValueRange<DateTime>(l.StartTime, l.StartTime);
-            }
-            public trackSelected(DateTime t)
-            {
-                m_time = new ValueRange<DateTime>(t, t);
-            }
-            public string ItemReferenceId
-            {
-                get { return ""; }
-            }
-
-            public IValueRangeSeries<double> MarkedDistances
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public IValueRangeSeries<DateTime> MarkedTimes
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public IValueRange<double> SelectedDistance
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public IValueRange<DateTime> SelectedTime
-            {
-                get { return m_time; }
-            }
-        }
-#endif
 		private void btnAdd_Click(object sender, EventArgs e) {
 
             int countGPS = 0;
@@ -338,28 +299,35 @@ namespace TrailsPlugin.UI.Activity {
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #else
                 if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
-                    ,"", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    , "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
+                    //Using IItemTrackSelectionInfo to avoid duplicating code
                     if (null == m_controller.CurrentActivity.Laps || 0 == m_controller.CurrentActivity.Laps.Count)
                     {
-                        selectedGPS.Add(new trackSelected(m_controller.CurrentActivity.StartTime));
+                        selectedGPS.Add(getSel(m_controller.CurrentActivity.StartTime));
                     }
                     else
                     {
                         foreach (ILapInfo l in m_controller.CurrentActivity.Laps)
                         {
-                            selectedGPS.Add(new trackSelected(l));
+                            selectedGPS.Add(getSel(l.StartTime));
                         }
                     }
-					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
-                    selectedGPS.Add(new trackSelected(activityInfo.EndTime));
+                    ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
+                    selectedGPS.Add(getSel(activityInfo.EndTime));
                     selectedGPSLocationsChanged_AddTrail(selectedGPS);
                     selectedGPS.Clear();
                 }
 #endif
             }
  		}
-
+        private Data.TrailsItemTrackSelectionInfo getSel(DateTime t)
+        {
+            IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
+            Data.TrailsItemTrackSelectionInfo s = new Data.TrailsItemTrackSelectionInfo();
+            s.SelectedTime = v;
+            return s;
+        }
 		private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;
 #if ST_2_1
@@ -401,29 +369,79 @@ namespace TrailsPlugin.UI.Activity {
             summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
+        /*************************************************************************************************************/
 #if !ST_2_1
-        Data.TrailGPSLocation getGPS(IItemTrackSelectionInfo selectGPS)
+        IList<Data.TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di)
         {
-            IValueRange<DateTime> ti = selectGPS.SelectedTime;
+            IList<Data.TrailGPSLocation> result = new List<Data.TrailGPSLocation>();
             ITimeValueEntry<IGPSPoint> p = null;
-            if (null != ti)
+            if (null != ts)
             {
-                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(ti.Lower);
+                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(ts.Lower);
             }
             else
             {
                 //Normally, selecting by time is null, fall back to select by distance
-                IValueRange<double> di = selectGPS.SelectedDistance;
-                IDistanceDataTrack dt = m_controller.CurrentActivity.GPSRoute.GetDistanceMetersTrack();
-                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
+                if (null != di && null != m_controller.CurrentActivity && null != m_controller.CurrentActivity.GPSRoute)
+                {
+                    IDistanceDataTrack dt = m_controller.CurrentActivity.GPSRoute.GetDistanceMetersTrack();
+                    p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
+                }
             }
-            if (null == p) { return null; }
-            return new Data.TrailGPSLocation(p.Value.LatitudeDegrees, p.Value.LongitudeDegrees, "");
+            if (null != p)
+            {
+                result.Add(new Data.TrailGPSLocation(p.Value.LatitudeDegrees, p.Value.LongitudeDegrees, ""));
+            }
+            return result;
+        }
+        IList<Data.TrailGPSLocation> getGPS(IList<IItemTrackSelectionInfo> aSelectGPS)
+        {
+            IList<Data.TrailGPSLocation> result = new List<Data.TrailGPSLocation>();
+            for (int i = 0; i < aSelectGPS.Count; i++)
+            {
+                IItemTrackSelectionInfo selectGPS = aSelectGPS[i];
+                IList<Data.TrailGPSLocation> result2 = new List<Data.TrailGPSLocation>();
+
+                //Marked
+                IValueRangeSeries<DateTime> tm = selectGPS.MarkedTimes;
+                if (null != tm)
+                {
+                    foreach (IValueRange<DateTime> ts in tm)
+                    {
+                        result2 = Data.Trail.MergeTrailLocations(result2, getGPS(ts, null));
+                    }
+                }
+                if (result2.Count == 0)
+                {
+                    IValueRangeSeries<double> td = selectGPS.MarkedDistances;
+                    if (null != td)
+                    {
+
+                        foreach (IValueRange<double> td1 in td)
+                        {
+                            result2 = Data.Trail.MergeTrailLocations(result2, getGPS(null, td1));
+                        }
+                    }
+                    if (result2.Count == 0)
+                    {
+                        //Selected
+                        result2 = getGPS(selectGPS.SelectedTime, selectGPS.SelectedDistance);
+                    }
+                }
+                result = Data.Trail.MergeTrailLocations(result, result2);
+            }
+            return result;
         }
 #else
-        Data.TrailGPSLocation getGPS(IGPSLocation selectGPS)
+        IList<Data.TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
         {
-            return new Data.TrailGPSLocation(selectGPS.LatitudeDegrees, selectGPS.LongitudeDegrees, "");
+            IList<Data.TrailGPSLocation> result = new List<Data.TrailGPSLocation>();
+            for (int i = 0; i < aSelectGPS.Count; i++)
+            {
+                IGPSLocation selectGPS = aSelectGPS[i];
+            result.Add(new Data.TrailGPSLocation(selectGPS.LatitudeDegrees, selectGPS.LongitudeDegrees, ""));
+            }
+            return result;
         }
 #endif
 
@@ -458,14 +476,7 @@ namespace TrailsPlugin.UI.Activity {
                     dialog.Trail.TrailLocations.Clear();
                 }
             }
-            for (int i = 0; i < selectedGPS.Count; i++)
-            {
-                Data.TrailGPSLocation p = getGPS(selectedGPS[i]);
-                if (null != p)
-                {
-                    dialog.Trail.TrailLocations.Add(p);
-                }
-			}
+            dialog.Trail.TrailLocations = Data.Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(selectedGPS));
 
 			if (dialog.ShowDialog() == DialogResult.OK) {
 				RefreshControlState();
@@ -488,14 +499,15 @@ namespace TrailsPlugin.UI.Activity {
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {
-                for (int i = 0; i < selectedGPS.Count; i++)
+                IList<Data.TrailGPSLocation> loc = getGPS(selectedGPS);
+                if (loc.Count == selectedGPS.Count)
                 {
-                    Data.TrailGPSLocation loc1 = getGPS(selectedGPS[i]);
-                    if (null != loc1)
+                    for (int i = 0; i < loc.Count; i++)
                     {
+                        Data.TrailGPSLocation loc1 = loc[i];
                         IGPSLocation loc2 = dialog.Trail.TrailLocations[i].GpsLocation;
                         if (loc1.LatitudeDegrees != loc2.LatitudeDegrees
-                            || loc1.LongitudeDegrees != loc2.LongitudeDegrees)
+                                || loc1.LongitudeDegrees != loc2.LongitudeDegrees)
                         {
                             selectionIsDifferent = true;
                             break;
@@ -508,15 +520,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    dialog.Trail.TrailLocations.Clear();
-                for (int i = 0; i < selectedGPS.Count; i++)
-                {
-                    Data.TrailGPSLocation p = getGPS(selectedGPS[i]);
-                        if (null != p)
-                        {
-                            dialog.Trail.TrailLocations.Add(p);
-                        }
-                    }
+                    dialog.Trail.TrailLocations = getGPS(selectedGPS);
                 }
             }
 

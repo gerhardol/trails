@@ -33,11 +33,17 @@ namespace TrailsPlugin.Data {
 			m_radius = PluginMain.Settings.DefaultRadius;
 		}
 
-		public IList<TrailGPSLocation> TrailLocations {
-			get {
-				return m_trailLocations;
-			}
-		}
+        public IList<TrailGPSLocation> TrailLocations
+        {
+            get
+            {
+                return m_trailLocations;
+            }
+            set
+            {
+                m_trailLocations = value;
+            }
+        }
 
 		public float Radius {
 			get {
@@ -48,6 +54,14 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+        static public IList<Data.TrailGPSLocation> MergeTrailLocations(IList<Data.TrailGPSLocation> t1, IList<Data.TrailGPSLocation> t2)
+        {
+            foreach (Data.TrailGPSLocation t in t2)
+            {
+                t1.Add(t);
+            }
+            return t1;
+        }
 		static public Trail FromXml(XmlNode node) {
 			Trail trail = new Trail();
 			if (node.Attributes["id"] == null) {

@@ -36,6 +36,7 @@
     <Compile Include="Data\TrailData.cs" />
     <Compile Include="Data\Trail.cs" />
     <Compile Include="Data\TrailGPSLocation.cs" />
+    <Compile Include="Data\TrailsItemTrackSelectionInfo.cs" />
     <Compile Include="Export\Integration.cs" />
     <Compile Include="GUIDS.cs">
       <SubType>Code</SubType>
@@ -111,7 +112,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-<!--
+    <!--
     <EmbeddedResource Include="Properties\Resources.da.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>

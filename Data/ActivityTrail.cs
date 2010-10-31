@@ -145,7 +145,7 @@ namespace TrailsPlugin.Data {
                                 }
                             }
 
-                            if (matchIndex < 0 && trailIndex > 0)
+                            if (matchIndex < 0 && trailIndex > 0 && matchDist > 3 * this.m_trail.Radius)
                             {
                                 //Start over if we pass first point before all were found
                                 //Note: No pass by or similar. The algorithm to "restart" could be enhanced 
@@ -154,6 +154,8 @@ namespace TrailsPlugin.Data {
                                 {
                                     trailIndex = 0;
                                     startIndex = -1;
+                                    lastMatch = -1;
+                                    matchIndex = routeIndex;
                                 }
                             }
 

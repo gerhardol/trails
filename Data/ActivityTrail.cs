@@ -66,17 +66,6 @@ namespace TrailsPlugin.Data {
                         float prevDistToPoint = 0;
 						for (int routeIndex = 0; routeIndex < m_activity.GPSRoute.Count; routeIndex++)
                         {
-                            if (trailIndex > 0)
-                            {
-                                //Start over if we pass first point before all were found
-                                float distFromStartToPoint = distanceTrailToRoute(0, routeIndex);
-                                if (distFromStartToPoint < this.m_trail.Radius)
-                                {
-                                    trailIndex = 0;
-                                    startIndex = -1;
-                                }
-                            }
-
                             int matchIndex = -1;
                             float matchDist = distanceTrailToRoute(trailIndex, routeIndex);
                             if (matchDist < this.Trail.Radius)
@@ -155,6 +144,19 @@ namespace TrailsPlugin.Data {
                                     }
                                 }
                             }
+
+                            if (matchIndex < 0 && trailIndex > 0)
+                            {
+                                //Start over if we pass first point before all were found
+                                //Note: No pass by or similar. The algorithm to "restart" could be enhanced 
+                                float distFromStartToPoint = distanceTrailToRoute(0, routeIndex);
+                                if (distFromStartToPoint < this.m_trail.Radius)
+                                {
+                                    trailIndex = 0;
+                                    startIndex = -1;
+                                }
+                            }
+
 
                             if (matchIndex >= 0 &&
                                 //Allow match with same index only if point is new (.e. not single point trails)

@@ -97,6 +97,10 @@ namespace TrailsPlugin.Utils {
         {
             return (float)Length.Convert(value, Length.Units.Meter, du);
         }
+        public static double SetLength(double value, Length.Units du)
+        {
+            return (float)Length.Convert(value, du, Length.Units.Meter);
+        }
         public static float GetDistance(double value, IActivity activity)
         {
             Length.Units du;
@@ -108,7 +112,20 @@ namespace TrailsPlugin.Utils {
             {
                 du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
             }
-            return GetLength(value,du);
+            return GetLength(value, du);
+        }
+        public static double SetDistance(double value, IActivity activity)
+        {
+            Length.Units du;
+            if (activity != null)
+            {
+                du = activity.Category.DistanceUnits;
+            }
+            else
+            {
+                du = PluginMain.GetApplication().SystemPreferences.DistanceUnits;
+            }
+            return SetLength(value, du);
         }
 
         public static string GetSpeedLabel(IActivity activity, Speed.Units kind)

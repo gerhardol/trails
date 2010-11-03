@@ -47,6 +47,7 @@ namespace TrailsPlugin.UI.Activity {
         private Color m_ChartSelectedColor = Color.AliceBlue;
         private ITheme m_visualTheme;
         private IActivity m_activity = null;
+        private ActivityDetailPageControl m_DetailPage = null;
 
         public TrailLineChart()
         {
@@ -101,6 +102,10 @@ namespace TrailsPlugin.UI.Activity {
             SetupAxes();
         }
 
+        public ActivityDetailPageControl DetailPage
+        {
+            set { m_DetailPage = value; }
+        }
         public enum XAxisValue
         {
 			Time,
@@ -241,10 +246,96 @@ namespace TrailsPlugin.UI.Activity {
 
         void copyChartMenuItem_Click(object sender, EventArgs e)
         {
-            //Not visible
+            //Not visible menu item
             //MainChart.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
-        
+
+        void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
+        {
+            if (e != null && e.DataSeries != null && m_DetailPage != null)
+            {
+                if (m_trailResult != null)
+                {
+                    IList<float[]> regions;
+                    e.DataSeries.GetSelectedRegions(out regions);
+                    if (XAxisReferential == XAxisValue.Time)
+                    {
+                        IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+                        foreach (float[] at in regions)
+                        {
+                            t.Add(new ValueRange<DateTime>(
+                                m_trailResult.FirstTime.AddSeconds(at[0]), 
+                                m_trailResult.FirstTime.AddSeconds(at[1])));
+                        }
+                        m_DetailPage.SelectTrack(t);
+                    }
+                    else
+                    {
+                        IValueRangeSeries<double> t = new ValueRangeSeries<double>();
+                        foreach (float[] at in regions)
+                        {
+                            t.Add(new ValueRange<double>(
+                                m_trailResult.FirstDist + Utils.Units.SetDistance(at[0], m_trailResult.Activity), 
+                                m_trailResult.FirstDist + Utils.Units.SetDistance(at[1], m_trailResult.Activity)));
+                        }
+                        m_DetailPage.SelectTrack(t);
+                    }
+                }
+            }
+        }
+        public void SetSelected(IValueRangeSeries<DateTime> valueRange)
+        {
+            //This code is normally not used, as ST reports DistanceSelected 
+            if (MainChart != null && MainChart.DataSeries != null && 
+                valueRange != null && valueRange.Count > 0)
+            {
+                //Currently only one region can be selected
+                float x1, x2, x3;
+                //Currently only one region can be selected
+                if (XAxisReferential == XAxisValue.Time)
+                {
+                    x1 = (float)(valueRange[0].Lower.Subtract(m_trailResult.FirstTime).TotalSeconds);
+                    x2 = (float)(valueRange[valueRange.Count - 1].Upper.Subtract(m_trailResult.FirstTime).TotalSeconds);
+                    x3 = (float)(m_trailResult.LastTime.Subtract(m_trailResult.FirstTime).TotalSeconds);
+                }
+                else
+                {
+                    double t1, t2;
+                    t1 = m_trailResult.getDistAt(valueRange[0].Lower);
+                    t2 = m_trailResult.getDistAt(valueRange[valueRange.Count - 1].Upper);
+                    x1 = Utils.Units.GetDistance((t1 - m_trailResult.FirstDist), m_trailResult.Activity);
+                    x2 = Utils.Units.GetDistance((t2 - m_trailResult.FirstDist), m_trailResult.Activity);
+                    x3 = Utils.Units.GetDistance((m_trailResult.LastDist - m_trailResult.FirstDist), m_trailResult.Activity);
+                }
+                MainChart.DataSeries[0].SetSelectedRange(Math.Max(x1,0), Math.Min(x2,x3));
+            }
+        }
+        public void SetSelected(IValueRangeSeries<double> valueRange)
+        {
+            if (MainChart != null && MainChart.DataSeries != null &&
+                valueRange != null && valueRange.Count > 0)
+            {
+                double t1, t2;
+                //Currently only one region can be selected
+                t1 = valueRange[0].Lower;
+                t2 = valueRange[valueRange.Count - 1].Upper;
+                float x1, x2, x3;
+                if (XAxisReferential == XAxisValue.Time)
+                {
+                    x1 = (float)(m_trailResult.getTimeAt(t1).Subtract(m_trailResult.FirstTime).TotalSeconds);
+                    x2 = (float)(m_trailResult.getTimeAt(t2).Subtract(m_trailResult.FirstTime).TotalSeconds);
+                    x3 = (float)(m_trailResult.LastTime.     Subtract(m_trailResult.FirstTime).TotalSeconds);
+                }
+                else
+                {
+                    x1 = Utils.Units.GetDistance(t1 - m_trailResult.FirstDist, m_trailResult.Activity);
+                    x2 = Utils.Units.GetDistance(t2 - m_trailResult.FirstDist, m_trailResult.Activity);
+                    x3 = Utils.Units.GetDistance((m_trailResult.LastDist - m_trailResult.FirstDist), m_trailResult.Activity);
+                }
+                MainChart.DataSeries[0].SetSelectedRange(Math.Max(x1, 0), Math.Min(x2, x3));
+            }
+        }
+
         private void SetupDataSeries()
         {
 			MainChart.DataSeries.Clear();

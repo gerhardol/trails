@@ -25,6 +25,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Visuals;
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.UI.Activity {
@@ -32,6 +33,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		public event System.EventHandler Collapse;
         private bool m_showChartToolBar = true;
+        private ActivityDetailPageControl m_DetailPage = null;
 
 		public ChartsControl() {
             InitializeComponent();
@@ -83,6 +85,41 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChartMenu();
         }
 
+        public ActivityDetailPageControl DetailPage
+        {
+            set
+            {
+                m_DetailPage = value;
+                foreach (Control t in this.tableLayoutPanel1.Controls)
+                {
+                    if (t is TrailLineChart)
+                    {
+                        ((TrailLineChart)t).DetailPage = value;
+                    }
+                }
+            }
+        }
+        public void SetSelected(IValueRangeSeries<DateTime> valueRange)
+        {
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is TrailLineChart)
+                {
+                    ((TrailLineChart)t).SetSelected(valueRange);
+                }
+            }
+        }
+        public void SetSelected(IValueRangeSeries<double> valueRange)
+        {
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is TrailLineChart)
+                {
+                    ((TrailLineChart)t).SetSelected(valueRange);
+                }
+            }
+        }
+        /////////////////////////////////////////////////////////////////////////////
         public void RefreshRows()
         {
             int noOfGraphs = 0;

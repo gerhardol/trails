@@ -46,7 +46,8 @@ namespace TrailsPlugin.Data
 
         public IValueRangeSeries<double> MarkedDistances
         {
-            get { return null; }
+            get { return m_MarkedDistances; }
+            set { m_MarkedDistances = value; }
         }
 
         public IValueRangeSeries<DateTime> MarkedTimes
@@ -57,13 +58,14 @@ namespace TrailsPlugin.Data
 
         public IValueRange<double> SelectedDistance
         {
-            get { return null; }
+            get { return m_SelectedDistance; }
+            set { m_SelectedDistance = value; }
         }
 
         public IValueRange<DateTime> SelectedTime
         {
-            get { return m_SelectedTimes; }
-            set { m_SelectedTimes = value; }
+            get { return m_SelectedTime; }
+            set { m_SelectedTime = value; }
         }
         #endregion
 
@@ -73,9 +75,11 @@ namespace TrailsPlugin.Data
             set { m_Activity = value; }
         }
 
-        private IActivity m_Activity = null;
-        private IValueRange<DateTime> m_SelectedTimes = null;
+        private IValueRangeSeries<double> m_MarkedDistances = null;
         private IValueRangeSeries<DateTime> m_MarkedTimes = null;
+        private IValueRange<double> m_SelectedDistance = null;
+        private IValueRange<DateTime> m_SelectedTime = null;
+        private IActivity m_Activity = null;
     }
 }
 #endif

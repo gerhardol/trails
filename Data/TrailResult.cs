@@ -34,11 +34,12 @@ namespace TrailsPlugin.Data {
 		private INumericTimeDataSeries m_powerWattsTrack;
         private INumericTimeDataSeries m_speedTrack;
         private INumericTimeDataSeries m_gradeTrack;
-		private INumericTimeDataSeries m_paceTrack;
-		private int m_startIndex;
+        private IGPSRoute m_gpsTrack;
+        private INumericTimeDataSeries m_paceTrack;
+        private int m_startIndex;
 		private int m_endIndex;
-		private DateTime m_startTime;
-		private float m_startDistance;
+        private DateTime m_startTime;
+        private float m_startDistance;
         private float m_distDiff; //to give quality of results
 
         public TrailResult(IActivity activity, int order, int startIndex, int endIndex): 
@@ -54,7 +55,7 @@ namespace TrailsPlugin.Data {
             m_distDiff = distDiff;
 
 			m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[startIndex].ElapsedSeconds);
-			m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[startIndex].Value;
+            m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[startIndex].Value;
 
 			m_distanceMetersTrack = new DistanceDataTrack();
 			IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
@@ -70,6 +71,11 @@ namespace TrailsPlugin.Data {
 			}
 		}
         public TrailResult(IActivity activity, int matches, float distDiff) { }
+
+        public IActivity Activity
+        {
+            get { return m_activity; }
+        }
         public float DistDiff
         {
             get { return m_distDiff; }
@@ -81,17 +87,58 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		public TimeSpan StartTime {
-			get {
-				return m_startTime.ToLocalTime().TimeOfDay;
-			}
-		}
-		public TimeSpan EndTime {
-			get {
-				return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]).ToLocalTime().TimeOfDay;
-			}
-		}
-		public TimeSpan Duration {
+        public TimeSpan StartTime
+        {
+            get
+            {
+                return m_startTime.ToLocalTime().TimeOfDay;
+            }
+        }
+        public TimeSpan EndTime
+        {
+            get
+            {
+                return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]).ToLocalTime().TimeOfDay;
+            }
+        }
+        public DateTime FirstTime
+        {
+            get
+            {
+                return m_startTime;
+            }
+        }
+        public DateTime LastTime
+        {
+            get
+            {
+                return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+            }
+        }
+        public double FirstDist
+        {
+            get
+            {
+                return m_startDistance;
+            }
+        }
+        public double LastDist
+        {
+            get
+            {
+                return m_activity.GPSRoute.GetDistanceMetersTrack()[m_endIndex].Value;
+            }
+        }
+        public double getDistAt(DateTime t)
+        {
+            return m_activity.GPSRoute.GetDistanceMetersTrack().GetInterpolatedValue(t).Value -FirstDist;
+        }
+        public DateTime getTimeAt(double t)
+        {
+            return m_activity.GPSRoute.GetDistanceMetersTrack().GetTimeAtDistanceMeters(t);
+        }
+        public TimeSpan Duration
+        {
 			get {
 				return TimeSpan.FromSeconds(
 					m_activity.GPSRoute[m_endIndex].ElapsedSeconds
@@ -184,20 +231,23 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-
-		public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source) {
-			INumericTimeDataSeries track = new NumericTimeDataSeries();
-			if (source != null) {
-				for (int i = 0; i < m_distanceMetersTrack.Count; i++) {
-					DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
-					ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
-					if (value != null) {
-						track.Add(time,value.Value);
-					}
-				}
-			}
-			return track;
-		}
+        public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
+        {
+            INumericTimeDataSeries track = new NumericTimeDataSeries();
+            if (source != null)
+            {
+                for (int i = 0; i < m_distanceMetersTrack.Count; i++)
+                {
+                    DateTime time = m_startTime.AddSeconds(m_distanceMetersTrack[i].ElapsedSeconds);
+                    ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
+                    if (value != null)
+                    {
+                        track.Add(time, value.Value);
+                    }
+                }
+            }
+            return track;
+        }
 
 		public INumericTimeDataSeries CadencePerMinuteTrack {
 			get {
@@ -269,14 +319,31 @@ namespace TrailsPlugin.Data {
 		}
         public INumericTimeDataSeries GradeTrack
         {
-			get {
-				if (m_gradeTrack == null) {
-					ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
-					m_gradeTrack = this.copyTrailTrack(activityInfo.SmoothedGradeTrack);
-				}
-				return m_gradeTrack;
-			}
-		}
+            get
+            {
+                if (m_gradeTrack == null)
+                {
+                    ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_activity);
+                    m_gradeTrack = this.copyTrailTrack(activityInfo.SmoothedGradeTrack);
+                }
+                return m_gradeTrack;
+            }
+        }
+        public IGPSRoute GpsTrack
+        {
+            get
+            {
+                if (m_gpsTrack == null)
+                {
+                    m_gpsTrack = new GPSRoute();
+                    for (int i = m_startIndex; i < m_endIndex; i++)
+                    {
+                        m_gpsTrack.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]), m_activity.GPSRoute[i].Value);
+                    }
+                }
+                return m_gpsTrack;
+            }
+        }
 
         #region Implementation of ITrailResult
 

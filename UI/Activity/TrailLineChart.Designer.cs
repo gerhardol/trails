@@ -189,6 +189,7 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.Padding = new System.Windows.Forms.Padding(0);
             this.MainChart.Size = new System.Drawing.Size(394, 69);
             this.MainChart.TabIndex = 0;
+            this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
             // 
             // chartContextMenu
             // 

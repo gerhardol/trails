@@ -84,6 +84,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_DetailPage = detailPage;
             m_view = view;
+            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
         }
 #endif
         public ActivityDetailPageControl(IActivity activity)
@@ -137,6 +138,7 @@ namespace TrailsPlugin.UI.Activity {
 			summaryList.LabelProvider = new TrailResultLabelProvider();
             this.ExpandSplitContainer.Panel2Collapsed = true;
             LineChart.ShowChartToolBar = m_showChartToolBar;
+            LineChart.DetailPage = this;
             if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
 
 			this.RefreshColumns();
@@ -321,6 +323,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             }
  		}
+#if !ST_2_1
         private Data.TrailsItemTrackSelectionInfo getSel(DateTime t)
         {
             IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
@@ -328,7 +331,8 @@ namespace TrailsPlugin.UI.Activity {
             s.SelectedTime = v;
             return s;
         }
-		private void btnEdit_Click(object sender, EventArgs e) {
+#endif
+        private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;
 #if ST_2_1
 			IMapControl mapControl = layer.MapControl;
@@ -600,9 +604,60 @@ namespace TrailsPlugin.UI.Activity {
 			}
         }
 
-		private void List_SelectedChanged(object sender, EventArgs e) {
+        public void SelectTrack(DateTime firstTime, DateTime lastTime)
+        {
+                IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+                t.Add(new ValueRange<DateTime>(firstTime, lastTime));
+                SelectTrack(t);
+        }
+        public void SelectTrack(IValueRangeSeries<DateTime> t)
+        {
+#if !ST_2_1
+            if (m_view != null &&
+                m_view.RouteSelectionProvider != null)
+            {
+                Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
+                r.MarkedTimes = t;
+                r.Activity = m_controller.CurrentActivity;
+                m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
+            }
+#endif
+        }
+        public void SelectTrack(double firstDist, double lastDist)
+        {
+                IValueRangeSeries<double> t = new ValueRangeSeries<double>();
+                t.Add(new ValueRange<double>(firstDist, lastDist));
+                SelectTrack(t);
+        }
+        public void SelectTrack(IValueRangeSeries<double> t)
+        {
+#if !ST_2_1
+            if (m_view != null &&
+                m_view.RouteSelectionProvider != null)
+            {
+                Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
+                r.MarkedDistances = t;
+                r.Activity = m_controller.CurrentActivity;
+                m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
+            }
+#endif
+        }
+        private void List_SelectedChanged(object sender, EventArgs e)
+        {
 			RefreshChart();
-		}
+            //SelectTrack, for ST3
+            if (sender is TreeList)
+            {
+                TreeList l = sender as TreeList;
+                if (l.SelectedItems != null && l.SelectedItems.Count > 0 &&
+                    l.SelectedItems[0] is Data.TrailResult &&
+                    l.SelectedItems[0] != null)
+                {
+                    Data.TrailResult tr = l.SelectedItems[0] as Data.TrailResult;
+                    SelectTrack(tr.FirstTime, tr.LastTime);
+                }
+            }
+        }
 
 		private void ChartBanner_MenuClicked(object sender, EventArgs e) {
 			ChartBanner.ContextMenuStrip.Width = 100;
@@ -619,7 +674,7 @@ namespace TrailsPlugin.UI.Activity {
 					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 					if (((IList<Data.TrailResult>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0) {
 						result = (Data.TrailResult)this.summaryList.SelectedItems[0];
-					}
+                    }
 				}
                 m_chartsControl.RefreshCharts(activity, result);
                 m_chartsControl.RefreshRows();
@@ -847,6 +902,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 m_chartsControl.ThemeChanged(m_visualTheme);
                 m_chartsControl.UICultureChanged(m_culture);
+                m_chartsControl.DetailPage = this;
                 m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
 			}
 			m_chartsControl.Visible = true;
@@ -878,5 +934,48 @@ namespace TrailsPlugin.UI.Activity {
             m_isExpanded = false;
             RefreshChart();
 		}
-	}
+
+#if !ST_2_1
+        void RouteSelectionProvider_SelectedItemsChanged(object sender, EventArgs e)
+        {
+            if (sender is ISelectionProvider<IItemTrackSelectionInfo>)
+            {
+                //m_view.RouteSelectionProvider.SelectedItems
+                ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
+                if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
+                {
+                    //Only first set used (chart only selects one of the ranges anyway...)
+                    IItemTrackSelectionInfo selectGPS = selected.SelectedItems[0];
+
+                    if (selectGPS.MarkedTimes != null)
+                    {
+                        this.LineChart.SetSelected(selectGPS.MarkedTimes);
+                        if (null != m_chartsControl) { m_chartsControl.SetSelected(selectGPS.MarkedTimes); }
+                    }
+                    else if (selectGPS.MarkedDistances != null)
+                    {
+                        this.LineChart.SetSelected(selectGPS.MarkedDistances);
+                        if (null != m_chartsControl) { m_chartsControl.SetSelected(selectGPS.MarkedDistances); }
+                    }
+                    else if (selectGPS.SelectedTime != null)
+                    {
+                        IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+                        t.Add(selectGPS.SelectedTime);
+
+                        this.LineChart.SetSelected(t);
+                        if (null != m_chartsControl) { m_chartsControl.SetSelected(t); }
+                    }
+                    else if (selectGPS.SelectedDistance != null)
+                    {
+                        IValueRangeSeries<double> t = new ValueRangeSeries<double>();
+                        t.Add(selectGPS.SelectedDistance);
+
+                        this.LineChart.SetSelected(t);
+                        if (null != m_chartsControl) { m_chartsControl.SetSelected(t); }
+                    }
+                }
+            }
+        }
+#endif
+    }
 }

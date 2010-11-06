@@ -370,13 +370,20 @@ namespace TrailsPlugin.UI.Activity {
 				mainDataCopy.ChartType = ChartDataSeries.Type.Line;
 				mainDataCopy.LineColor = ChartLineColor;
 				mainDataCopy.SelectedColor = ChartSelectedColor;
-
+                MainChart.XAxis.Markers.Clear();
                     if (XAxisReferential == XAxisValue.Time)
                     {
 						foreach (ITimeValueEntry<float> entry in graphPoints) {
 							mainData.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
 							mainDataCopy.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
 						}
+                        foreach (DateTime t in m_trailResult.TimeTrailPoints)
+                        {
+                            AxisMarker a = new AxisMarker(t.Subtract(m_trailResult.FirstTime).TotalSeconds, CommonResources.Images.Information16);
+                            a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
+                            a.Line1Color = Color.Black;
+                            MainChart.XAxis.Markers.Add(a);
+                        }
 					} else {
 						IDistanceDataTrack distanceTrack = m_trailResult.DistanceMetersTrack;
 
@@ -393,7 +400,14 @@ namespace TrailsPlugin.UI.Activity {
 								mainDataCopy.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
 							}
 						}
-					}
+                        foreach (double t in m_trailResult.DistanceTrailPoints)
+                        {
+                            AxisMarker a = new AxisMarker(Utils.Units.GetDistance(t, m_trailResult.Activity), CommonResources.Images.Information16);
+                            a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
+                            a.Line1Color = Color.Black;
+                            MainChart.XAxis.Markers.Add(a);
+                        }
+                    }
 				}
 			}
 

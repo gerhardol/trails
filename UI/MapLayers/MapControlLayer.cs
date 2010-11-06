@@ -173,7 +173,11 @@ namespace TrailsPlugin.UI.MapLayers {
 					drawContext.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 					float X = point.X + (drawContext.DrawRectangle.Width / 2) - radiusInPixels;
 					float Y = point.Y + (drawContext.DrawRectangle.Height / 2) - radiusInPixels;
-					drawContext.Graphics.DrawEllipse(pen, X, Y, radiusInPixels * 2, radiusInPixels * 2);					
+                    if (X > 0 && X < 1000 && Y > 0 && Y < 1000)
+                    {
+                        //Prevent crashes at large elipses
+                        drawContext.Graphics.DrawEllipse(pen, X, Y, radiusInPixels * 2, radiusInPixels * 2);
+                    }
 				}
 			}
 		}

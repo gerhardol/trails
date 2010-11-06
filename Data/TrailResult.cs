@@ -16,6 +16,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
+using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
@@ -41,21 +42,28 @@ namespace TrailsPlugin.Data {
         private DateTime m_startTime;
         private float m_startDistance;
         private float m_distDiff; //to give quality of results
+        private IList<int> m_indexes = new List<int>();
 
-        public TrailResult(IActivity activity, int order, int startIndex, int endIndex): 
-            this(activity, order, startIndex, endIndex, -1)
+        //public TrailResult(IActivity activity, int order, int startIndex, int endIndex): 
+        //    this(activity, order, startIndex, endIndex, -1)
+        //{
+        //}
+        //public TrailResult(IActivity activity, int matches, float distDiff) { }
+        public TrailResult(IActivity activity, int order, IList<int> indexes, float distDiff)
         {
-        }
-		public TrailResult(IActivity activity, int order, int startIndex, int endIndex, float distDiff) {
 
             m_activity = activity;
 			m_order = order;
-			m_startIndex = startIndex;
-			m_endIndex = endIndex;
+			m_startIndex = indexes[0];
+            m_endIndex = indexes[indexes.Count-1];
+            foreach (int i in indexes)
+            {
+                m_indexes.Add(i);
+            }
             m_distDiff = distDiff;
 
-			m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[startIndex].ElapsedSeconds);
-            m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[startIndex].Value;
+            m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
+            m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[m_startIndex].Value;
 
 			m_distanceMetersTrack = new DistanceDataTrack();
 			IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
@@ -70,7 +78,6 @@ namespace TrailsPlugin.Data {
 				}
 			}
 		}
-        public TrailResult(IActivity activity, int matches, float distDiff) { }
 
         public IActivity Activity
         {
@@ -136,6 +143,30 @@ namespace TrailsPlugin.Data {
         public DateTime getTimeAt(double t)
         {
             return m_activity.GPSRoute.GetDistanceMetersTrack().GetTimeAtDistanceMeters(t);
+        }
+        public IList<DateTime> TimeTrailPoints
+        {
+            get
+            {
+                IList<DateTime> results = new List<DateTime>();
+                foreach (int i in m_indexes)
+                {
+                    results.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]));
+                }
+                return results;
+            }
+        }
+        public IList<double> DistanceTrailPoints
+        {
+            get
+            {
+                IList<double> results = new List<double>();
+                foreach (int i in m_indexes)
+                {
+                    results.Add(m_activity.GPSRoute.GetDistanceMetersTrack()[i].Value-m_startDistance);
+                }
+                return results;
+            }
         }
         public TimeSpan Duration
         {

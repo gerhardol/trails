@@ -30,6 +30,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using ZoneFiveSoftware.Common.Visuals.Chart;
 #if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 #else
@@ -47,7 +48,7 @@ using ZoneFiveSoftware.Common.Visuals.Forms;
 #if !ST_2_1
 using TrailsPlugin.UI.MapLayers;
 #endif
-using ZoneFiveSoftware.Common.Visuals.Chart;
+using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class ActivityDetailPageControl : UserControl {
@@ -323,7 +324,6 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             }
  		}
-#if !ST_2_1
         private Data.TrailsItemTrackSelectionInfo getSel(DateTime t)
         {
             IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
@@ -331,7 +331,6 @@ namespace TrailsPlugin.UI.Activity {
             s.SelectedTime = v;
             return s;
         }
-#endif
         private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;
 #if ST_2_1
@@ -374,7 +373,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*************************************************************************************************************/
-#if !ST_2_1
+//ST3
         IList<Data.TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di)
         {
             IList<Data.TrailGPSLocation> result = new List<Data.TrailGPSLocation>();
@@ -436,7 +435,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             return result;
         }
-#else
+//ST_2_1
         IList<Data.TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
         {
             IList<Data.TrailGPSLocation> result = new List<Data.TrailGPSLocation>();
@@ -447,7 +446,6 @@ namespace TrailsPlugin.UI.Activity {
             }
             return result;
         }
-#endif
 
 #if !ST_2_1
         private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
@@ -946,32 +944,35 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Only first set used (chart only selects one of the ranges anyway...)
                     IItemTrackSelectionInfo selectGPS = selected.SelectedItems[0];
+                    IValueRangeSeries<DateTime> timeSeries = new ValueRangeSeries<DateTime>();
+                    IValueRangeSeries<double> distSeries = new ValueRangeSeries<double>();
 
                     if (selectGPS.MarkedTimes != null)
                     {
-                        this.LineChart.SetSelected(selectGPS.MarkedTimes);
-                        if (null != m_chartsControl) { m_chartsControl.SetSelected(selectGPS.MarkedTimes); }
+                        timeSeries = selectGPS.MarkedTimes;
                     }
                     else if (selectGPS.MarkedDistances != null)
                     {
-                        this.LineChart.SetSelected(selectGPS.MarkedDistances);
-                        if (null != m_chartsControl) { m_chartsControl.SetSelected(selectGPS.MarkedDistances); }
+                        distSeries = selectGPS.MarkedDistances;
                     }
                     else if (selectGPS.SelectedTime != null)
                     {
-                        IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-                        t.Add(selectGPS.SelectedTime);
-
-                        this.LineChart.SetSelected(t);
-                        if (null != m_chartsControl) { m_chartsControl.SetSelected(t); }
+                        timeSeries.Add(selectGPS.SelectedTime);
                     }
                     else if (selectGPS.SelectedDistance != null)
                     {
-                        IValueRangeSeries<double> t = new ValueRangeSeries<double>();
-                        t.Add(selectGPS.SelectedDistance);
+                        distSeries.Add(selectGPS.SelectedDistance);
+                    }
 
-                        this.LineChart.SetSelected(t);
-                        if (null != m_chartsControl) { m_chartsControl.SetSelected(t); }
+                    if (timeSeries.Count > 0)
+                    {
+                        this.LineChart.SetSelected(timeSeries);
+                        if (null != m_chartsControl) { m_chartsControl.SetSelected(timeSeries); }
+                    }
+                    else if (distSeries.Count > 0)
+                    {
+                        this.LineChart.SetSelected(distSeries);
+                        if (null != m_chartsControl) { m_chartsControl.SetSelected(distSeries); }
                     }
                 }
             }

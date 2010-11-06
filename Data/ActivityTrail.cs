@@ -60,7 +60,7 @@ namespace TrailsPlugin.Data {
                         this.m_trail.TrailLocations.Count > 0)
                     {
                         IList<int> aMatch = new List<int>();
-                        int lastLeaveRadius = -1;
+                        int lastMatchInRadius = -1;
                         float trailDistDiff = 0;
                         int prevRouteIndex = -1;
                         float prevDistToPoint = 0;
@@ -72,35 +72,50 @@ namespace TrailsPlugin.Data {
                             {
                                 matchIndex = routeIndex;
                                 float prevDistToPoint2 = matchDist;
+                                float localMax = float.MaxValue;
                                 //There is a match, but following points may be better
                                 for (int routeIndex2 = routeIndex + 1; routeIndex2 < m_activity.GPSRoute.Count; routeIndex2++)
                                 {
                                     float distToPoint2 = distanceTrailToRoute(aMatch.Count, routeIndex2);
-                                    float distHysteresis = Math.Max(this.Trail.Radius/30,5);
+                                    float distHysteresis = Math.Max(this.Trail.Radius / 30, 5);
                                     if (distToPoint2 >= this.Trail.Radius)
                                     {
                                         //No longer in radius, we have the best match
                                         break;
                                     }
-                                    if (aMatch.Count > 0)
+                                    if (aMatch.Count == 0)
+                                    {
+                                        //start point
+                                        if (distToPoint2 + distHysteresis < matchDist
+                                            || distToPoint2 < matchDist && distToPoint2 < prevDistToPoint2
+                                            || distToPoint2 +distHysteresis < localMax)
+                                        {
+                                            //Closing in - this is a potential point "closest before start leaving"
+                                            matchIndex = routeIndex2;
+                                            matchDist = distToPoint2;
+                                            localMax = distToPoint2;
+                                        }
+                                    }
+                                    else
                                     {
                                         if (isEndTrailPoint(aMatch.Count+1))
                                         {
-                                            if (distToPoint2 < matchDist + distHysteresis)
+                                            if (prevDistToPoint2 < matchDist && 
+                                                prevDistToPoint2 < distToPoint2)
                                             {
-                                                //New best match, some hysteris to follow to the end
+                                                //Leaving middle and last was best
+                                                matchIndex = routeIndex2 - 1;
+                                                matchDist = prevDistToPoint2;
+                                            }
+                                            else if (distToPoint2 + distHysteresis < matchDist)
+                                            {
+                                                //Better, with some hysteresis
                                                 matchIndex = routeIndex2;
                                                 matchDist = distToPoint2;
-                                                //xxxif (distToPoint2 < matchDist)
-                                                {
-                                                    //special handling - can give overlap but less risk to loose potential trails
-                                                    //continue with next trail point search from this point
-                                                    lastLeaveRadius = matchIndex;
-                                                }
                                             }
                                             if (distToPoint2 > matchDist + distHysteresis)
                                             {
-                                                //Leaving middle for last point - abort
+                                                //Leaving middle for last point - no more checks
                                                 break;
                                             }
                                         }
@@ -110,24 +125,13 @@ namespace TrailsPlugin.Data {
                                             //New best match
                                             matchIndex = routeIndex2;
                                             matchDist = distToPoint2;
-                                            //continue with next trail point search from this point
-                                            lastLeaveRadius = matchIndex;
                                         }
                                     }
-                                    else
-                                    {
-                                        //For start point
-                                        if (distToPoint2 + distHysteresis < matchDist
-                                            || distToPoint2 < matchDist && distToPoint2 < prevDistToPoint2)
-                                        {
-                                            //Closing in - this is a potential point "closest before start leaving"
-                                            matchIndex = routeIndex2;
-                                            matchDist = distToPoint2;
-                                        }
-                                        //continue with next trail point search with next route point
-                                        lastLeaveRadius = routeIndex2;
-                                    }
+                                    //still in radius
+                                    lastMatchInRadius = routeIndex2;
+
                                     prevDistToPoint2 = distToPoint2;
+                                    localMax = Math.Max(localMax, distToPoint2);
                                 }
                             }
                             else
@@ -141,12 +145,11 @@ namespace TrailsPlugin.Data {
                                         matchIndex = prevRouteIndex;
                                         matchDist = prevDistToPoint;
                                     }
-                                    lastLeaveRadius = routeIndex;
                                 }
                             }
 
-                            if (matchIndex < 0 && routeIndex > lastLeaveRadius &&
-                                aMatch.Count > 0 && matchDist > 3 * this.m_trail.Radius)
+                            if (matchIndex < 0 && aMatch.Count > 0 && 
+                                matchDist > 3 * this.m_trail.Radius)
                             {
                                 //Start over if we pass first point before all were found
                                 //Note: No pass by or similar. The algorithm to "restart" could be enhanced...
@@ -162,23 +165,36 @@ namespace TrailsPlugin.Data {
                             prevDistToPoint = matchDist;
 
                             if (matchIndex >= 0 &&
-                                //Allow match with same index only if point is new (.e. not single point trails)
-                                (aMatch.Count==0 || aMatch[aMatch.Count-1] < matchIndex))
+                                //Allow match with same index only for first point
+                             (aMatch.Count==0 || aMatch[aMatch.Count-1] < matchIndex))
+
                             {
                                 aMatch.Add(matchIndex);
                                 trailDistDiff += matchDist;
-                                //For single point trail, we need to start after current radius
-                                if (1 == this.m_trail.TrailLocations.Count && lastLeaveRadius >= 0)
-                                {
-                                    routeIndex = lastLeaveRadius;
-                                }
 
                                 if (isEndTrailPoint(aMatch.Count))
                                 {
                                     TrailResult result = new TrailResult(m_activity, m_resultsList.Count + 1, aMatch, trailDistDiff);
                                     m_resultsList.Add(result);
+
                                     aMatch.Clear();
                                     trailDistDiff = 0;
+                                    //Try this point again as start
+                                    routeIndex=matchIndex-1;
+                                }
+                                else
+                                {
+                                    //Start search for next point after this match
+                                    routeIndex = matchIndex;
+
+                                    //For single point trail, we need to start after current radius to not get immediate match
+                                    //For two point trails the result is unexpected if the first/last points overlap
+                                    //For trails with more points, assume that all points do not overlap
+                                    if (2 >= this.m_trail.TrailLocations.Count && 
+                                        lastMatchInRadius >= routeIndex)
+                                    {
+                                        routeIndex = lastMatchInRadius;
+                                    }
                                 }
                             }
                         }

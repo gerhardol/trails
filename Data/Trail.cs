@@ -102,7 +102,22 @@ namespace TrailsPlugin.Data {
 			return trailNode;
 		}
 
-		public bool IsInBounds(IGPSBounds activityBounds) {
+        public bool IsInBounds(IList<IActivity> acts)
+        {
+            bool result = false;
+            foreach (IActivity activity in acts)
+            {
+                IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
+                result = this.IsInBounds(gpsBounds);
+                if (result)
+                {
+                    break;
+                }
+            }
+            return result;
+        }
+
+		private bool IsInBounds(IGPSBounds activityBounds) {
             if (null == activityBounds)
             {
                 return false;
@@ -116,8 +131,8 @@ namespace TrailsPlugin.Data {
                 new GPSLocation(activityBounds.SouthLatitudeDegrees - latOffset, activityBounds.EastLongitudeDegrees + longOffset));
             foreach (TrailGPSLocation trailGPSLocation in this.TrailLocations)
             {
-                if (!gpsBounds.Contains(trailGPSLocation.GpsLocation)
-                    ) {
+                if (!gpsBounds.Contains(trailGPSLocation.GpsLocation)) 
+                {
 					return false;
 				}
 			}

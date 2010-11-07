@@ -37,24 +37,50 @@ namespace TrailsPlugin.Controller {
 		private TrailController() {
 		}
 			 
-		private IActivity m_currentActivity = null;
+        private IList<IActivity> m_activities = new List<IActivity>();
 		private Data.ActivityTrail m_currentTrail = null;
 		private string m_lastTrailId = null;
 		private IList<Data.ActivityTrail> m_activityTrails = null;
 
-		public IActivity CurrentActivity {
-			get {
-				return m_currentActivity;
-			}
-			set {
-				if (m_currentActivity != value) {
-					m_currentActivity = value;
-					if (m_currentTrail != null) {
-						m_lastTrailId = m_currentTrail.Trail.Id;
-					}
-					m_currentTrail = null;
-					m_activityTrails = null;
-				}
+        public IList<IActivity> Activities
+        {
+            get
+            {
+                return m_activities;
+            }
+            set
+            {
+                if (m_activities != value)
+                {
+                    m_activities = value;
+                    if (m_currentTrail != null)
+                    {
+                        m_lastTrailId = m_currentTrail.Trail.Id;
+                    }
+                    m_currentTrail = null;
+                    m_activityTrails = null;
+                }
+            }
+        }
+        public IActivity FirstActivity
+        {
+            get
+            {
+                if (m_activities.Count > 0)
+                {
+                    return m_activities[0];
+                }
+                return null;
+            }
+        }
+        public IActivity CurrentActivity {
+            get
+            {
+                if (m_activities != null && m_activities.Count == 1)
+                {
+                    return m_activities[0];
+                }
+                return null;
 			}
 		}
 
@@ -63,7 +89,7 @@ namespace TrailsPlugin.Controller {
 				m_currentTrail = value;
 			}
 			get {
-				if (m_currentTrail == null && m_currentActivity != null) {
+				if (m_currentTrail == null && m_activities.Count>0) {
 					IList<Data.ActivityTrail> trails = this.TrailsInBounds;
 					foreach (Data.ActivityTrail t in trails) {
 						if (t.Trail.Id == m_lastTrailId) {
@@ -105,13 +131,14 @@ namespace TrailsPlugin.Controller {
 
 		public IList<Data.ActivityTrail> TrailsInBounds {
 			get {
-				if(m_activityTrails == null) {					
-					if (m_currentActivity != null) {
+				if(m_activityTrails == null) {
+                    if (m_activities.Count>0)
+                    {
 						m_activityTrails = new List<Data.ActivityTrail>();
-						IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_currentActivity.GPSRoute);
 						foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
-							if (trail.IsInBounds(gpsBounds)) {
-								m_activityTrails.Add(new Data.ActivityTrail(m_currentActivity, trail));
+                            if (trail.IsInBounds(m_activities))
+                            {
+								m_activityTrails.Add(new Data.ActivityTrail(m_activities, trail));
 							}
 						}
 					}
@@ -120,25 +147,10 @@ namespace TrailsPlugin.Controller {
 			}
 		}
 
-        //public IList<Data.ActivityTrail> TrailsWithResults {
-        //    get {
-        //        SortedList<long, Data.ActivityTrail> trails = new SortedList<long, Data.ActivityTrail>();
-        //        if (m_currentActivity != null) {
-        //            foreach (Data.ActivityTrail trail in this.TrailsInBounds) {
-        //                IList<Data.TrailResult> results = trail.Results;
-        //                if (results.Count > 0) {
-        //                    trails.Add(results[0].StartTime.Ticks, trail);
-        //                }
-        //            }
-        //        }
-        //        return trails.Values;
-        //    }
-        //}
-
 		public bool AddTrail(Data.Trail trail) {
 			if (PluginMain.Data.InsertTrail(trail)) {
 				m_activityTrails = null;
-				m_currentTrail = new TrailsPlugin.Data.ActivityTrail(m_currentActivity, trail);
+				m_currentTrail = new TrailsPlugin.Data.ActivityTrail(m_activities, trail);
 				m_lastTrailId = trail.Id;
 				return true;
 			} else {

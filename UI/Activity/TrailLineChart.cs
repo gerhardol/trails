@@ -46,7 +46,6 @@ namespace TrailsPlugin.UI.Activity {
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
         private ITheme m_visualTheme;
-        private IActivity m_activity = null;
         private ActivityDetailPageControl m_DetailPage = null;
 
         public TrailLineChart()
@@ -414,78 +413,97 @@ namespace TrailsPlugin.UI.Activity {
 			ZoomToData();
 		}
 
-		private void SetupAxes() {
-			// X axis
-			switch (XAxisReferential) {
-				case XAxisValue.Distance: {
-						MainChart.XAxis.Formatter = new Formatter.General();
-						MainChart.XAxis.Label = CommonResources.Text.LabelDistance + " (" +
-                                                Utils.Units.GetDistanceLabel(m_activity) + ")";
-						break;
-					}
-				case XAxisValue.Time: {
+        private void SetupAxes()
+        {
+            IActivity activity = null;
+            if (m_trailResult != null)
+            {
+                activity = m_trailResult.Activity;
+            }
+            // X axis
+            switch (XAxisReferential)
+            {
+                case XAxisValue.Distance:
+                    {
+                        MainChart.XAxis.Formatter = new Formatter.General();
+                        MainChart.XAxis.Label = CommonResources.Text.LabelDistance + " (" +
+                                                Utils.Units.GetDistanceLabel(activity) + ")";
+                        break;
+                    }
+                case XAxisValue.Time:
+                    {
 
-						MainChart.XAxis.Formatter = new Formatter.SecondsToTime();
-						MainChart.XAxis.Label = CommonResources.Text.LabelTime;
-						break;
-					}
-				default: {
-						Debug.Assert(false);
-						break;
-					}
-			}
-
-			// Y axis
-			MainChart.YAxis.Formatter = new Formatter.General();
-			switch (YAxisReferential) {
-				case LineChartTypes.Cadence: {
-						MainChart.YAxis.Label = CommonResources.Text.LabelCadence + " (" +
-												CommonResources.Text.LabelRPM + ")";
-						break;
-					}
-				case LineChartTypes.Grade: {
-						MainChart.YAxis.Formatter = new Percent100();
-						MainChart.YAxis.Label = CommonResources.Text.LabelGrade + " (%)";
-						break;
-					}
-				case LineChartTypes.Elevation: {
-						MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
-                                                   Utils.Units.GetElevationLabel(m_activity) + ")";
-						break;
-					}
-				case LineChartTypes.HeartRateBPM: {
-						MainChart.YAxis.Label = CommonResources.Text.LabelHeartRate + " (" +
-												CommonResources.Text.LabelBPM + ")";
-						break;
-					}
-				case LineChartTypes.HeartRatePercentMax: {
-						MainChart.YAxis.Label = CommonResources.Text.LabelHeartRate + " (" +
-												CommonResources.Text.LabelPercentOfMax + ")";
-						break;
-					}
-				case LineChartTypes.Power: {
-						MainChart.YAxis.Label = CommonResources.Text.LabelPower + " (" +
-												CommonResources.Text.LabelWatts + ")";
-						break;
-					}
-				case LineChartTypes.Speed: {
-						MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" +
-												Utils.Units.GetSpeedLabel(m_activity) + ")";
-						break;
-					}
-				case LineChartTypes.Pace: {
-						MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
-						MainChart.YAxis.Label = CommonResources.Text.LabelPace + " (" +
-												Utils.Units.GetPaceLabel(m_activity) + ")";
-						break;
-					}
+                        MainChart.XAxis.Formatter = new Formatter.SecondsToTime();
+                        MainChart.XAxis.Label = CommonResources.Text.LabelTime;
+                        break;
+                    }
                 default:
                     {
-						Debug.Assert(false);
-						break;
-					}
-			}
-		}
+                        Debug.Assert(false);
+                        break;
+                    }
+            }
+
+            // Y axis
+            MainChart.YAxis.Formatter = new Formatter.General();
+            switch (YAxisReferential)
+            {
+                case LineChartTypes.Cadence:
+                    {
+                        MainChart.YAxis.Label = CommonResources.Text.LabelCadence + " (" +
+                                                CommonResources.Text.LabelRPM + ")";
+                        break;
+                    }
+                case LineChartTypes.Grade:
+                    {
+                        MainChart.YAxis.Formatter = new Percent100();
+                        MainChart.YAxis.Label = CommonResources.Text.LabelGrade + " (%)";
+                        break;
+                    }
+                case LineChartTypes.Elevation:
+                    {
+                        MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
+                                                   Utils.Units.GetElevationLabel(activity) + ")";
+                        break;
+                    }
+                case LineChartTypes.HeartRateBPM:
+                    {
+                        MainChart.YAxis.Label = CommonResources.Text.LabelHeartRate + " (" +
+                                                CommonResources.Text.LabelBPM + ")";
+                        break;
+                    }
+                case LineChartTypes.HeartRatePercentMax:
+                    {
+                        MainChart.YAxis.Label = CommonResources.Text.LabelHeartRate + " (" +
+                                                CommonResources.Text.LabelPercentOfMax + ")";
+                        break;
+                    }
+                case LineChartTypes.Power:
+                    {
+                        MainChart.YAxis.Label = CommonResources.Text.LabelPower + " (" +
+                                                CommonResources.Text.LabelWatts + ")";
+                        break;
+                    }
+                case LineChartTypes.Speed:
+                    {
+                        MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" +
+                                                Utils.Units.GetSpeedLabel(activity) + ")";
+                        break;
+                    }
+                case LineChartTypes.Pace:
+                    {
+                        MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
+                        MainChart.YAxis.Label = CommonResources.Text.LabelPace + " (" +
+                                                Utils.Units.GetPaceLabel(activity) + ")";
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Assert(false);
+                        break;
+                    }
+            }
+        }
 
 		private INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result) {
 			// Fail safe
@@ -502,7 +520,7 @@ namespace TrailsPlugin.UI.Activity {
 						// Value is in meters so convert to the right unit
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-                            float temp = Utils.Units.GetElevation(entry.Value, m_activity); 
+                            float temp = Utils.Units.GetElevation(entry.Value, m_trailResult.Activity); 
 
 							track.Add(tempResult.EntryDateTime(entry), (float)temp);
 						}
@@ -650,12 +668,6 @@ namespace TrailsPlugin.UI.Activity {
 					SetupDataSeries();
 					ZoomToData();
 				}
-			}
-		}
-
-		public IActivity Activity {
-			set {
-				m_activity = value;
 			}
 		}
 

@@ -100,7 +100,7 @@ namespace TrailsPlugin.UI {
         public const string FastestPace = "FastestPace";
 
 #if ST_2_1
-		public static IList<IListItem> ColumnDefs(IActivity activity)
+		public static IList<IListItem> ColumnDefs(IActivity activity, bool mult)
         {
 			IList<IListItem> columnDefs = new List<IListItem>();
 			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
@@ -122,11 +122,13 @@ namespace TrailsPlugin.UI {
 			return columnDefs;
 		}
 #else
-        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity)
+        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult)
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
-			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", 70, StringAlignment.Near));
+            int w = 70;
+            if (mult) { w = 110; }
+			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, "", 60, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Distance, CommonResources.Text.LabelDistance + " (" + Utils.Units.GetDistanceLabel(activity) + ")", "", 60, StringAlignment.Near));

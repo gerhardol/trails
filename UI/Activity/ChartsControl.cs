@@ -146,7 +146,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void RefreshCharts(IActivity activity, Data.TrailResult result)
+        public void RefreshCharts(Data.TrailResult result)
         {
             foreach (Control t in this.tableLayoutPanel1.Controls)
             {
@@ -154,7 +154,6 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailLineChart chart = ((TrailLineChart)t);
                     chart.BeginUpdate();
-                    chart.Activity = activity;
                     chart.XAxisReferential = PluginMain.Settings.XAxisValue;
                     chart.TrailResult = result;
                     chart.EndUpdate();

@@ -45,21 +45,38 @@ namespace TrailsPlugin.UI.Activity {
 
         private void OnViewSelectedItemsChanged(object sender, EventArgs e)
         {
-            Activity = CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            m_activities = CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            if ((m_control != null))
+            {
+                m_control.Activities = m_activities;
+            }
             RefreshPage();
         }
         public System.Guid Id { get { return GUIDs.Activity; } }
+#else
+		public IActivity Activity {
+            set
+            {
+                if (null == value) { m_activities = null; }
+                else { m_activities = new List<IActivity> { value }; }
+                if ((m_control != null))
+                {
+                    m_control.Activities = m_activities;
+                }
+            }
+		}
 #endif
-        private IActivity m_activity = null;
+        private IList<IActivity> m_activities = new List<IActivity>();
 		private ActivityDetailPageControl m_control = null;
 
 		public Control CreatePageControl() {
 			if (m_control == null) {				
 #if ST_2_1
-				m_control = new ActivityDetailPageControl(m_activity);
+				m_control = new ActivityDetailPageControl();
 #else
-                m_control = new ActivityDetailPageControl(this, m_activity, m_view);
+                m_control = new ActivityDetailPageControl(this, m_view);
 #endif
+                m_control.Activities = m_activities;
             }
 			return m_control;
 		}
@@ -122,16 +139,6 @@ namespace TrailsPlugin.UI.Activity {
                 m_control.UICultureChanged(culture);
             }
             RefreshPage();
-		}
-
-		public IActivity Activity {
-			set {
-				m_activity = value;
-
-				if (m_control != null) {
-					m_control.Activity = value;
-				}
-			}
 		}
 
 		public string PageName {

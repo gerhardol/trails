@@ -81,14 +81,14 @@ namespace TrailsPlugin.UI.Activity {
 #endif
 
 #if !ST_2_1
-        public ActivityDetailPageControl(IDetailPage detailPage, IActivity activity, IDailyActivityView view) : this(activity)
+        public ActivityDetailPageControl(IDetailPage detailPage, IDailyActivityView view) : this()
         {
             m_DetailPage = detailPage;
             m_view = view;
             m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
         }
 #endif
-        public ActivityDetailPageControl(IActivity activity)
+        public ActivityDetailPageControl()
         {
 
 			m_controller = Controller.TrailController.Instance;
@@ -101,10 +101,6 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
             this.ExpandSplitContainer.Panel2Collapsed = true;
 #endif
-			m_controller.CurrentActivity = activity;
-
-			RefreshControlState();
-			RefreshData();
 		}
 
 		void InitControls()
@@ -161,9 +157,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
+
         private void RefreshColumns()
         {
-
 			summaryList.Columns.Clear();
 			foreach (string id in PluginMain.Settings.ActivityPageColumns) {
 				foreach (
@@ -172,7 +168,8 @@ namespace TrailsPlugin.UI.Activity {
 #else
                     IListColumnDefinition
 #endif
-                    columnDef in TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity)) {
+                columnDef in TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count>1))
+                {
 					if (columnDef.Id == id) {
 						TreeList.Column column = new TreeList.Column(
 							columnDef.Id,
@@ -187,10 +184,11 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		private void RefreshControlState() {
-
-			bool enabled = (m_controller.CurrentActivity != null);
+		private void RefreshControlState() 
+        {
+            bool enabled = (m_controller.CurrentActivity != null);
 			btnAdd.Enabled = enabled;
+            enabled = (m_controller.FirstActivity != null);
 			TrailName.Enabled = enabled;
 
 			enabled = (m_controller.CurrentActivityTrail != null);
@@ -210,6 +208,7 @@ namespace TrailsPlugin.UI.Activity {
                 TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
                 IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
                 summaryList.RowData = results;
+                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 if (results.Count > 0)
                 {
                     summaryList.Selected = new object[] { results[0] };
@@ -267,12 +266,12 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		public IActivity Activity {
+		public IList<IActivity> Activities {
 			set {
-				m_controller.CurrentActivity = value;
-				RefreshColumns();
-				RefreshData();
-				RefreshControlState();
+                    m_controller.Activities = value;
+                    RefreshColumns();
+                    RefreshData();
+                    RefreshControlState();
 			}
 		}
 
@@ -301,25 +300,30 @@ namespace TrailsPlugin.UI.Activity {
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #else
-                if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
-                    , "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                //It is currently not possible to select while in multimode
+                //The button should be disabled, error ignored for now
+                if (null != m_controller.CurrentActivity)
                 {
-                    //Using IItemTrackSelectionInfo to avoid duplicating code
-                    if (null == m_controller.CurrentActivity.Laps || 0 == m_controller.CurrentActivity.Laps.Count)
+                    if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
+                        , "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        selectedGPS.Add(getSel(m_controller.CurrentActivity.StartTime));
-                    }
-                    else
-                    {
-                        foreach (ILapInfo l in m_controller.CurrentActivity.Laps)
+                        //Using IItemTrackSelectionInfo to avoid duplicating code
+                        if (null == m_controller.CurrentActivity.Laps || 0 == m_controller.CurrentActivity.Laps.Count)
                         {
-                            selectedGPS.Add(getSel(l.StartTime));
+                            selectedGPS.Add(getSel(m_controller.CurrentActivity.StartTime));
                         }
+                        else
+                        {
+                            foreach (ILapInfo l in m_controller.CurrentActivity.Laps)
+                            {
+                                selectedGPS.Add(getSel(l.StartTime));
+                            }
+                        }
+                        ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
+                        selectedGPS.Add(getSel(activityInfo.EndTime));
+                        selectedGPSLocationsChanged_AddTrail(selectedGPS);
+                        selectedGPS.Clear();
                     }
-                    ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
-                    selectedGPS.Add(getSel(activityInfo.EndTime));
-                    selectedGPSLocationsChanged_AddTrail(selectedGPS);
-                    selectedGPS.Clear();
                 }
 #endif
             }
@@ -534,24 +538,25 @@ namespace TrailsPlugin.UI.Activity {
         }
 
 
-        private void TrailName_ButtonClick(object sender, EventArgs e) {
-			if (m_controller.CurrentActivity == null) {
-				return;
-			}
+        private void TrailName_ButtonClick(object sender, EventArgs e)
+        {
+            //xxx if (m_controller.Activities.Count > 0)
+            {
+                TreeListPopup treeListPopup = new TreeListPopup();
+                treeListPopup.ThemeChanged(m_visualTheme);
+                treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-			TreeListPopup treeListPopup = new TreeListPopup();
-			treeListPopup.ThemeChanged(m_visualTheme);
-			treeListPopup.Tree.Columns.Add(new TreeList.Column());
+                treeListPopup.Tree.RowData = this.OrderedTrails;
+                treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
 
-			treeListPopup.Tree.RowData = this.OrderedTrails;
-			treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
-
-			if (m_controller.CurrentActivityTrail != null) {
-				treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
-			}
-			treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
-			treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
-		}
+                if (m_controller.CurrentActivityTrail != null)
+                {
+                    treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
+                }
+                treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
+                treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
+            }
+        }
 
 
         /*******************************************************/
@@ -585,10 +590,10 @@ namespace TrailsPlugin.UI.Activity {
 		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
 #if ST_2_1
             ListSettings dialog = new ListSettings();
-			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity);
+			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
-            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.CurrentActivity);
+            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1);
 #endif
             dialog.ThemeChanged(m_visualTheme);
 			dialog.AllowFixedColumnSelect = true;
@@ -612,7 +617,8 @@ namespace TrailsPlugin.UI.Activity {
         {
 #if !ST_2_1
             if (m_view != null &&
-                m_view.RouteSelectionProvider != null)
+                m_view.RouteSelectionProvider != null &&
+                m_controller.CurrentActivity != null)
             {
                 Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
                 r.MarkedTimes = t;
@@ -631,7 +637,8 @@ namespace TrailsPlugin.UI.Activity {
         {
 #if !ST_2_1
             if (m_view != null &&
-                m_view.RouteSelectionProvider != null)
+                m_view.RouteSelectionProvider != null &&
+                m_controller.CurrentActivity != null)
             {
                 Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
                 r.MarkedDistances = t;
@@ -665,29 +672,25 @@ namespace TrailsPlugin.UI.Activity {
 
 		void RefreshChart() {
 			if(m_isExpanded) {				
-				IActivity activity = null;
 				Data.TrailResult result = null;
 				if (m_controller.CurrentActivityTrail != null) {								
-					activity = m_controller.CurrentActivityTrail.Activity;
 					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 					if (((IList<Data.TrailResult>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0) {
 						result = (Data.TrailResult)this.summaryList.SelectedItems[0];
                     }
 				}
-                m_chartsControl.RefreshCharts(activity, result);
+                m_chartsControl.RefreshCharts(result);
                 m_chartsControl.RefreshRows();
             }
             else
             {
 				this.LineChart.BeginUpdate();
-				this.LineChart.Activity = null;
 				this.LineChart.TrailResult = null;
 				if (m_controller.CurrentActivityTrail != null) {
-					this.LineChart.Activity = m_controller.CurrentActivityTrail.Activity;
                     if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
                     {
-                        if (m_controller.CurrentActivity != null && 
-                            m_controller.CurrentActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
+                        if (m_controller.FirstActivity != null && 
+                            m_controller.FirstActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
                         {
                             this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
                         }
@@ -820,10 +823,9 @@ namespace TrailsPlugin.UI.Activity {
 				SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
 				SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
 
-				IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(m_controller.CurrentActivity.GPSRoute);
 				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
-					Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(m_controller.CurrentActivity, trail);
-					if (trail.IsInBounds(gpsBounds)) {
+					Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(m_controller.Activities, trail);
+					if (trail.IsInBounds(m_controller.Activities)) {
 						if (at.Results.Count > 0) {
 							double key = at.Results[0].StartTime.TotalSeconds;
 							while (trailsUsed.ContainsKey(key)) {

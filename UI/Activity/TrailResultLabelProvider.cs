@@ -24,6 +24,11 @@ using System.Drawing;
 namespace TrailsPlugin.UI.Activity {
 	class TrailResultLabelProvider : TreeList.ILabelProvider {
 
+        private bool m_multiple = false;
+        public bool MultipleActivities
+        {
+            set { m_multiple = value; }
+        }
 		#region ILabelProvider Members
 
 		public Image GetImage(object element, TreeList.Column column) {
@@ -37,7 +42,12 @@ namespace TrailsPlugin.UI.Activity {
 				case TrailResultColumnIds.Order:
 					return row.Order.ToString();
 				case TrailResultColumnIds.StartTime:
-					return row.StartTime.ToString();
+                    string date = "";
+                    if (m_multiple)
+                    {
+                        date = row.FirstTime.ToLocalTime().ToShortDateString()+" ";
+                    }
+                    return date + row.StartTime.ToString();
 				case TrailResultColumnIds.EndTime:
 					return row.EndTime.ToString();
 				case TrailResultColumnIds.Duration:

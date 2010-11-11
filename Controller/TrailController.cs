@@ -128,25 +128,76 @@ namespace TrailsPlugin.Controller {
 			}
 		}
 
+        private IList<Data.ActivityTrail> m_CurrentOrderedTrails = null;
+        public IList<Data.ActivityTrail> OrderedTrails
+        {
+            get
+            {
+                if (m_CurrentOrderedTrails == null || m_activityTrails == null)
+                {
+                }
+                return m_CurrentOrderedTrails;
+            }
+        }
+
 
 		public IList<Data.ActivityTrail> TrailsInBounds {
 			get {
 				if(m_activityTrails == null) {
-                    if (m_activities.Count>0)
-                    {
-						m_activityTrails = new List<Data.ActivityTrail>();
-						foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
-                            if (trail.IsInBounds(m_activities))
-                            {
-								m_activityTrails.Add(new Data.ActivityTrail(m_activities, trail));
-							}
-						}
-					}
+                    getTrails();
 				}
 				return m_activityTrails;
 			}
 		}
 
+        //wrapper for m_activityTrails, m_CurrentOrderedTrails - previously separate
+        private void getTrails()
+        {
+            SortedList<double, Data.ActivityTrail> trailsUsed = new SortedList<double, Data.ActivityTrail>();
+            SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
+            SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
+
+            m_activityTrails = new List<Data.ActivityTrail>();
+            foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
+            {
+                Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(Activities, trail);
+                if (trail.IsInBounds(Activities))
+                {
+                    m_activityTrails.Add(at);
+                    if (at.Results.Count > 0)
+                    {
+                        double key = at.Results[0].StartTime.TotalSeconds;
+                        while (trailsUsed.ContainsKey(key))
+                        {
+                            key++;
+                        }
+                        trailsUsed.Add(key, at);
+                    }
+                    else
+                    {
+                        trailsInBounds.Add(at.Trail.Name, at);
+                    }
+                }
+                else
+                {
+                    trailsNotInBound.Add(at.Trail.Name, at);
+                }
+            }
+
+            m_CurrentOrderedTrails = new List<Data.ActivityTrail>();
+            foreach (Data.ActivityTrail t in trailsUsed.Values)
+            {
+                m_CurrentOrderedTrails.Add(t);
+            }
+            foreach (Data.ActivityTrail t in trailsInBounds.Values)
+            {
+                m_CurrentOrderedTrails.Add(t);
+            }
+            foreach (Data.ActivityTrail t in trailsNotInBound.Values)
+            {
+                m_CurrentOrderedTrails.Add(t);
+            }
+        }
 		public bool AddTrail(Data.Trail trail) {
 			if (PluginMain.Data.InsertTrail(trail)) {
 				m_activityTrails = null;

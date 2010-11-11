@@ -30,6 +30,10 @@ using Microsoft.Win32;
 using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.MapLayers {
+    class MapPolyline {
+        //Dummy for ST3 compile
+        public MapPolyline(IList<IGPSPoint> g, int w, Color c) { }
+    };
 	class MapControlLayer : IMapControlLayer
     {
 		public event System.EventHandler SelectedGPSLocationsChanged;
@@ -112,13 +116,26 @@ namespace TrailsPlugin.UI.MapLayers {
 
         public IList<TrailGPSLocation> TrailPoints
         {
-			set {
-				m_TrailPoints = value;
-			}
-			get {
-				return m_TrailPoints;
-			}
-		}
+            set
+            {
+                m_TrailPoints = value;
+            }
+            get
+            {
+                return m_TrailPoints;
+            }
+        }
+        //Dummy for ST3 compile
+        public IDictionary<string, object> TrailRoutes
+        {
+            set
+            {
+            }
+            get
+            {
+                return new Dictionary<string, object>();
+            }
+        }
 
         //No effect in ST2 (zoom in ST3 only)
         public IList<TrailGPSLocation> SelectedTrailPoints

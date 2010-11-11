@@ -134,7 +134,7 @@ namespace TrailsPlugin.UI.MapLayers
                     //latitude increases about 1% at the poles
                     //longitude is up to 40% longer than linear extension - compensate 20%
                     float lat = 2 * this.m_highlightRadius / 110574 * 1.005F;
-                    float lng = 2 * this.m_highlightRadius / 111320 * Math.Abs(south)/90*1.2F;
+                    float lng = 2 * this.m_highlightRadius / 111320 * Math.Abs(south) / 90 * 1.2F;
                     north += lat;
                     south -= lat;
                     east += lng;
@@ -144,6 +144,47 @@ namespace TrailsPlugin.UI.MapLayers
                       this.MapControl.ComputeZoomToFit(area));
                     m_SelectedTrailPoints = value;
                 }
+            }
+        }
+        public IDictionary<string, MapPolyline> TrailRoutes
+        {
+            get
+            {
+                return m_TrailRoutes;
+            }
+            set
+            {
+                bool changed = false;
+                if (!value.Equals(m_TrailRoutes)) { changed = true; }
+                m_TrailRoutes = value;
+                if (changed) { RefreshOverlays(true); }
+            }
+        }
+        public void MarkedTrailRoutesSet(string key, MapPolyline m)
+        {
+            m_MarkedTrailRoutes.Clear();
+            GPSBounds area = GPSBounds.FromGPSPoints(m.Locations);
+            if (area != null)
+            {
+                this.MapControl.SetLocation(area.Center,
+                  this.MapControl.ComputeZoomToFit(area));
+            }
+            IDictionary<string, MapPolyline> d = new Dictionary<string, MapPolyline>();
+            d.Add(key, m);
+            MarkedTrailRoutes = d;
+        }
+        private IDictionary<string, MapPolyline> MarkedTrailRoutes
+        {
+            get
+            {
+                return m_MarkedTrailRoutes;
+            }
+            set
+            {
+                bool changed = false;
+                if (!value.Equals(m_MarkedTrailRoutes)) { changed = true; }
+                m_MarkedTrailRoutes = value;
+                if (changed) { RefreshOverlays(true); }
             }
         }
 
@@ -278,7 +319,64 @@ namespace TrailsPlugin.UI.MapLayers
             if (!_showPage) return;
 
             IGPSBounds windowBounds = MapControlBounds;
+            IList<IMapOverlay> addedOverlays = new List<IMapOverlay>();
 
+            //RouteOverlay
+            IDictionary<string, MapPolyline> allRoutes = new Dictionary<string, MapPolyline>();
+            foreach (KeyValuePair<string, MapPolyline> pair in m_MarkedTrailRoutes)
+            {
+                allRoutes.Add(pair);
+            }
+            foreach (KeyValuePair<string, MapPolyline> pair in m_TrailRoutes)
+            {
+                allRoutes.Add(pair);
+            }
+            IDictionary<string, MapPolyline> visibleRoutes = new Dictionary<string, MapPolyline>();
+            foreach (KeyValuePair<string, MapPolyline> pair in allRoutes)
+            {
+                IList<IGPSPoint> r = new List<IGPSPoint>();
+                foreach (IGPSPoint point in pair.Value.Locations)
+                {
+                    if (windowBounds.Contains(point))
+                    {
+                        visibleRoutes.Add(pair);
+                        break;
+                    }
+                }
+                //check for route in bounds only - the following does not seem to speed up
+                //foreach (IGPSPoint point in pair.Value.Locations)
+                //{
+                //    if (windowBounds.Contains(point))
+                //    {
+                //        r.Add(point);
+                //    }
+                //}
+                //if (r.Count > 0)
+                //{
+                //    MapPolyline m = new MapPolyline(r, pair.Value.LineWidth, pair.Value.LineColor);
+                //    visibleRoutes.Add(pair.Key, m);
+                //}
+            }
+            //TODO: use string in newRouteOverlays, in case it is needed for callbacks
+            IDictionary<MapPolyline, IMapOverlay> newRouteOverlays = new Dictionary<MapPolyline, IMapOverlay>();
+
+            foreach (KeyValuePair<string, MapPolyline> pair in visibleRoutes)
+            {
+                MapPolyline m = pair.Value;
+                if ((!m_scalingChanged) && routeOverlays.ContainsKey(m))
+                {
+                    //No need to refresh this point
+                    newRouteOverlays.Add(m, routeOverlays[m]);
+                    routeOverlays.Remove(m);
+                }
+                else
+                {
+                    newRouteOverlays.Add(m, m);
+                    addedOverlays.Add(m);
+                }
+            }
+
+            //TrailPoints
             IList<IGPSPoint> visibleLocations = new List<IGPSPoint>();
             foreach (TrailGPSLocation point in m_TrailPoints)
             {
@@ -287,11 +385,12 @@ namespace TrailsPlugin.UI.MapLayers
                     visibleLocations.Add(Utils.GPS.LocationToPoint(point.GpsLocation));
                 }
             }
-            if (0 == visibleLocations.Count) return;
-
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
-            IList<IMapOverlay> addedOverlays = new List<IMapOverlay>();
 
+            if (m_scalingChanged || null == m_icon)
+            {        
+                m_icon = getCircle(this.MapControl, m_highlightRadius);
+            }
             foreach (IGPSPoint location in visibleLocations)
             {
                 if ((!m_scalingChanged) && pointOverlays.ContainsKey(location))
@@ -302,37 +401,41 @@ namespace TrailsPlugin.UI.MapLayers
                 }
                 else
                 {
-                    if (m_scalingChanged || null == m_icon)
-                    {
-                        m_icon = getCircle(this.MapControl, m_highlightRadius);
-                    }
                     MapMarker pointOverlay = new MapMarker(location, m_icon, false);
                     newPointOverlays.Add(location, pointOverlay);
                     addedOverlays.Add(pointOverlay);
-                    m_scalingChanged = false;
                 }
             }
 
+            // Draw overlay
+            if (0 == visibleLocations.Count && 0 == visibleRoutes.Count) return;
+
+            m_scalingChanged = false;
             ClearOverlays();
             MapControl.AddOverlays(addedOverlays);
             pointOverlays = newPointOverlays;
+            routeOverlays = newRouteOverlays;
         }
 
         private void ClearOverlays()
         {
             MapControl.RemoveOverlays(pointOverlays.Values);
             pointOverlays.Clear();
+            MapControl.RemoveOverlays(routeOverlays.Values);
+            routeOverlays.Clear();
         }
 
         private bool m_scalingChanged = false;
         MapIcon m_icon = null;
         private bool routeSettingsChanged = false;
         private IDictionary<IGPSPoint, IMapOverlay> pointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
-
+        private IDictionary<MapPolyline, IMapOverlay> routeOverlays = new Dictionary<MapPolyline, IMapOverlay>();
         //private RouteItemsDataChangeListener listener;
 
         private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();
         private IList<TrailGPSLocation> m_SelectedTrailPoints = new List<TrailGPSLocation>();
+        private IDictionary<string, MapPolyline> m_TrailRoutes = new Dictionary<string, MapPolyline>();
+        private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
         private float m_highlightRadius;
         private static bool _showPage;
     }

@@ -266,7 +266,7 @@ namespace TrailsPlugin.UI.Activity {
                                 m_trailResult.FirstTime.AddSeconds(at[0]), 
                                 m_trailResult.FirstTime.AddSeconds(at[1])));
                         }
-                        m_DetailPage.SelectTrack(t);
+                        m_DetailPage.MarkTrack(m_trailResult, t);
                     }
                     else
                     {
@@ -277,7 +277,7 @@ namespace TrailsPlugin.UI.Activity {
                                 m_trailResult.FirstDist + Utils.Units.SetDistance(at[0], m_trailResult.Activity), 
                                 m_trailResult.FirstDist + Utils.Units.SetDistance(at[1], m_trailResult.Activity)));
                         }
-                        m_DetailPage.SelectTrack(t);
+                        m_DetailPage.MarkTrack(m_trailResult, t);
                     }
                 }
             }

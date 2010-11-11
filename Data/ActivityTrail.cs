@@ -58,6 +58,17 @@ namespace TrailsPlugin.Data {
                         if (activity.GPSRoute != null && activity.GPSRoute.Count > 1 &&
                             this.m_trail.TrailLocations.Count > 0)
                         {
+                            //Show all activities on Route
+                            if (m_trail.Name.Contains("MatchAll"))
+                            {
+                                //Match all
+                                IList<int> allMatch = new List<int>();
+                                allMatch.Add(0);
+                                allMatch.Add(activity.GPSRoute.Count - 1);
+                                TrailResult result = new TrailResult(activity, m_resultsList.Count + 1, allMatch, float.MaxValue);
+                                m_resultsList.Add(result);
+                            }
+
                             IList<int> aMatch = new List<int>();
                             int lastMatchInRadius = -1;
                             float trailDistDiff = 0;

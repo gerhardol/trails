@@ -42,11 +42,13 @@ using ZoneFiveSoftware.SportTracks.Util;
 using ZoneFiveSoftware.SportTracks.UI;
 using ZoneFiveSoftware.SportTracks.UI.Forms;
 using ZoneFiveSoftware.SportTracks.Data;
+using TrailsPlugin.UI.MapLayers;
 #else
 using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
 #if !ST_2_1
 using TrailsPlugin.UI.MapLayers;
+using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
 using TrailsPlugin.Data;
 
@@ -186,9 +188,8 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void RefreshControlState() 
         {
-            bool enabled = (m_controller.CurrentActivity != null);
+            bool enabled = (m_controller.FirstActivity != null);
 			btnAdd.Enabled = enabled;
-            enabled = (m_controller.FirstActivity != null);
 			TrailName.Enabled = enabled;
 
 			enabled = (m_controller.CurrentActivityTrail != null);
@@ -199,14 +200,20 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshData()
         {
-            layer.ShowPage = false; //defer updates
-            layer.TrailPoints.Clear();
+            RefreshList();
+            RefreshRoute();
+            RefreshChart();
+        }
+        private void RefreshList()
+        {
             summaryList.RowData = null;
 
             if (m_controller.CurrentActivityTrail != null)
             {
                 TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
                 IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+
+                //summaryList
                 summaryList.RowData = results;
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 if (results.Count > 0)
@@ -218,20 +225,43 @@ namespace TrailsPlugin.UI.Activity {
                 int resRows = Math.Min(5, ((IList<Data.TrailResult>)(this.summaryList.RowData)).Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
                     this.summaryList.DefaultRowHeight * resRows;
-
-                foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
-                {
-                    layer.TrailPoints.Add(point);
-                }
-                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
-                layer.ShowPage = _showPage;//Refresh
             }
             else
             {
                 TrailName.Text = "";
             }
-            RefreshChart();
         }
+        private void RefreshRoute()
+        {
+            layer.ShowPage = false; //defer updates
+            layer.TrailPoints.Clear();
+            layer.TrailRoutes.Clear();
+
+            if(! m_isExpanded && m_controller.CurrentActivityTrail != null)
+            {
+                IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+
+                //route
+                foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
+                {
+                    layer.TrailPoints.Add(point);
+                }
+                if (!isSingleView)
+                {
+                    foreach (TrailResult tr in results)
+                    {
+                        if (!layer.TrailRoutes.ContainsKey(tr.Activity.ToString()))
+                        {
+                            MapPolyline m = new MapPolyline(tr.GpsPoints(), 2, tr.TrackColor);
+                            layer.TrailRoutes.Add(tr.Activity.ToString(), m);
+                        }
+                    }
+                }
+                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                layer.ShowPage = _showPage;//Refresh
+            }
+        }
+
         public void UICultureChanged(CultureInfo culture)
         {
             m_culture = culture;
@@ -266,15 +296,31 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		public IList<IActivity> Activities {
-			set {
-                    m_controller.Activities = value;
-                    RefreshColumns();
-                    RefreshData();
-                    RefreshControlState();
-			}
-		}
+        public IList<IActivity> Activities
+        {
+            set
+            {
+                m_controller.Activities = value;
+                RefreshColumns();
+                RefreshData();
+                RefreshControlState();
+            }
+        }
 
+        //Some views like mapping is only working in single view - there are likely better tests
+        public bool isSingleView
+        {
+            get
+            {
+#if !ST_2_1
+                if (CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems) == null)
+                {
+                    return false;
+                }
+#endif
+                return true;
+            }
+        }
         /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e) {
 
@@ -301,8 +347,8 @@ namespace TrailsPlugin.UI.Activity {
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #else
                 //It is currently not possible to select while in multimode
-                //The button should be disabled, error ignored for now
-                if (null != m_controller.CurrentActivity)
+                //The button could be disabled, error ignored for now
+                if (isSingleView && m_controller.CurrentActivity != null)
                 {
                     if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
                         , "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -324,6 +370,10 @@ namespace TrailsPlugin.UI.Activity {
                         selectedGPSLocationsChanged_AddTrail(selectedGPS);
                         selectedGPS.Clear();
                     }
+                }
+                else
+                {
+                    selectedGPSLocationsChanged_AddTrail(selectedGPS);
                 }
 #endif
             }
@@ -540,24 +590,20 @@ namespace TrailsPlugin.UI.Activity {
 
         private void TrailName_ButtonClick(object sender, EventArgs e)
         {
-            //xxx if (m_controller.Activities.Count > 0)
+            TreeListPopup treeListPopup = new TreeListPopup();
+            treeListPopup.ThemeChanged(m_visualTheme);
+            treeListPopup.Tree.Columns.Add(new TreeList.Column());
+
+            treeListPopup.Tree.RowData = m_controller.OrderedTrails;
+            treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
+
+            if (m_controller.CurrentActivityTrail != null)
             {
-                TreeListPopup treeListPopup = new TreeListPopup();
-                treeListPopup.ThemeChanged(m_visualTheme);
-                treeListPopup.Tree.Columns.Add(new TreeList.Column());
-
-                treeListPopup.Tree.RowData = this.OrderedTrails;
-                treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
-
-                if (m_controller.CurrentActivityTrail != null)
-                {
-                    treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
-                }
-                treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
-                treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
+                treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
             }
+            treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
+            treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
         }
-
 
         /*******************************************************/
 
@@ -590,7 +636,7 @@ namespace TrailsPlugin.UI.Activity {
 		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
 #if ST_2_1
             ListSettings dialog = new ListSettings();
-			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity);
+			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
             dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1);
@@ -607,43 +653,55 @@ namespace TrailsPlugin.UI.Activity {
 			}
         }
 
-        public void SelectTrack(DateTime firstTime, DateTime lastTime)
+        public void MarkTrack(TrailResult tr, DateTime firstTime, DateTime lastTime)
         {
                 IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
                 t.Add(new ValueRange<DateTime>(firstTime, lastTime));
-                SelectTrack(t);
+                MarkTrack(tr, t);
         }
-        public void SelectTrack(IValueRangeSeries<DateTime> t)
+        public void MarkTrack(TrailResult tr, IValueRangeSeries<DateTime> t)
         {
 #if !ST_2_1
             if (m_view != null &&
                 m_view.RouteSelectionProvider != null &&
-                m_controller.CurrentActivity != null)
+                isSingleView && m_controller.CurrentActivity != null)
             {
                 Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
                 r.MarkedTimes = t;
                 r.Activity = m_controller.CurrentActivity;
                 m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
             }
+            else
+            {
+                string key = tr.Activity + ":" + tr.Order;
+                MapPolyline m = new MapPolyline(tr.GpsPoints(t), 4, tr.TrackColor);
+                layer.MarkedTrailRoutesSet(key, m);
+            }
 #endif
         }
-        public void SelectTrack(double firstDist, double lastDist)
+        public void MarkTrack(TrailResult tr, double firstDist, double lastDist)
         {
                 IValueRangeSeries<double> t = new ValueRangeSeries<double>();
                 t.Add(new ValueRange<double>(firstDist, lastDist));
-                SelectTrack(t);
+                MarkTrack(tr, t);
         }
-        public void SelectTrack(IValueRangeSeries<double> t)
+        public void MarkTrack(TrailResult tr, IValueRangeSeries<double> t)
         {
 #if !ST_2_1
             if (m_view != null &&
                 m_view.RouteSelectionProvider != null &&
-                m_controller.CurrentActivity != null)
+                isSingleView && m_controller.CurrentActivity != null)
             {
                 Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
                 r.MarkedDistances = t;
                 r.Activity = m_controller.CurrentActivity;
                 m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
+            }
+            else
+            {
+                string key = tr.Activity + ":" + tr.Order;
+                MapPolyline m = new MapPolyline(tr.GpsPoints(t), 4, tr.TrailColor);
+                layer.MarkedTrailRoutesSet(key, m);
             }
 #endif
         }
@@ -659,7 +717,7 @@ namespace TrailsPlugin.UI.Activity {
                     l.SelectedItems[0] != null)
                 {
                     Data.TrailResult tr = l.SelectedItems[0] as Data.TrailResult;
-                    SelectTrack(tr.FirstTime, tr.LastTime);
+                    MarkTrack(tr, tr.FirstTime, tr.LastTime);
                 }
             }
         }
@@ -816,43 +874,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             this.ShowChartToolBar = !m_showChartToolBar;
         }
-
-		private IList<Data.ActivityTrail> OrderedTrails {
-			get {
-				SortedList<double, Data.ActivityTrail> trailsUsed = new SortedList<double, Data.ActivityTrail>();
-				SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
-				SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
-
-				foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
-					Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(m_controller.Activities, trail);
-					if (trail.IsInBounds(m_controller.Activities)) {
-						if (at.Results.Count > 0) {
-							double key = at.Results[0].StartTime.TotalSeconds;
-							while (trailsUsed.ContainsKey(key)) {
-								key++;
-							}
-							trailsUsed.Add(key, at);
-						} else {
-							trailsInBounds.Add(at.Trail.Name, at);
-						}
-					} else {
-						trailsNotInBound.Add(at.Trail.Name, at);
-					}
-				}
-
-				IList<Data.ActivityTrail> trails = new List<Data.ActivityTrail>();
-				foreach (Data.ActivityTrail t in trailsUsed.Values) {
-					trails.Add(t);
-				}
-				foreach (Data.ActivityTrail t in trailsInBounds.Values) {
-					trails.Add(t);
-				}
-				foreach (Data.ActivityTrail t in trailsNotInBound.Values) {
-					trails.Add(t);
-				}
-				return trails;
-			}
-		}
 
 		private void ActPagePanel_SizeChanged(object sender, EventArgs e) {
 			// autosize column doesn't seem to be working.

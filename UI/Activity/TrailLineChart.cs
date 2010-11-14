@@ -292,7 +292,7 @@ namespace TrailsPlugin.UI.Activity {
                     MainChart.DataSeries.Count > 0)
             {
                 Data.TrailsItemTrackSelectionInfo sel = new Data.TrailsItemTrackSelectionInfo();
-                foreach (Data.TrailsItemTrackSelectionInfo trm in asel)
+                foreach (IItemTrackSelectionInfo trm in asel)
                 {
                     sel.Union(trm);
                 }

@@ -225,7 +225,7 @@ namespace TrailsPlugin.UI.MapLayers
             set
             {
                 bool changed = (value != _showPage);
-                _showPage = true;// value;
+                _showPage = value;
                 if (changed)
                 {
                     RefreshOverlays(true);

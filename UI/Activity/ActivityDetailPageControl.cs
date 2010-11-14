@@ -88,7 +88,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_DetailPage = detailPage;
             m_view = view;
-            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
         }
 #endif
         public ActivityDetailPageControl()
@@ -157,6 +156,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Not needed now
                     //RefreshData();
+                    m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                }
+                else
+                {
+                    m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                 }
             }
         }
@@ -252,6 +256,7 @@ namespace TrailsPlugin.UI.Activity {
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
+                        //Possibly limit no of Trails shown, it slows down (but show complete Activities?)
                         TrailMapPolyline m = new TrailMapPolyline(tr);
                         m.Click += new MouseEventHandler(mapPoly_Click);
                         routes.Add(m.key, m);
@@ -669,24 +674,27 @@ namespace TrailsPlugin.UI.Activity {
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
 #if !ST_2_1
-            if (m_view != null &&
-                m_view.RouteSelectionProvider != null &&
-                isSingleView && m_controller.CurrentActivity != null)
+            if (_showPage)
             {
-                Data.TrailsItemTrackSelectionInfo r = Data.TrailResultMarked.SelInfoUnion(atr);
-                r.Activity = m_controller.CurrentActivity;
-                m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-            }
-            else
-            {
-                IDictionary<string, MapPolyline> result = new Dictionary<string, MapPolyline>();
-                foreach (TrailResultMarked trm in atr)
+                if (m_view != null &&
+                    m_view.RouteSelectionProvider != null &&
+                    isSingleView && m_controller.CurrentActivity != null)
                 {
-                    TrailMapPolyline m = new TrailMapPolyline(trm.trailResult, trm.selInfo);
-                    m.Click += new MouseEventHandler(mapPoly_Click);
-                    result.Add(m.key, m);
+                    Data.TrailsItemTrackSelectionInfo r = Data.TrailResultMarked.SelInfoUnion(atr);
+                    r.Activity = m_controller.CurrentActivity;
+                    m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
                 }
-                layer.MarkedTrailRoutes = result;
+                else
+                {
+                    IDictionary<string, MapPolyline> result = new Dictionary<string, MapPolyline>();
+                    foreach (TrailResultMarked trm in atr)
+                    {
+                        TrailMapPolyline m = new TrailMapPolyline(trm.trailResult, trm.selInfo);
+                        m.Click += new MouseEventHandler(mapPoly_Click);
+                        result.Add(m.key, m);
+                    }
+                    layer.MarkedTrailRoutes = result;
+                }
             }
 #endif
         }

@@ -103,10 +103,12 @@ namespace TrailsPlugin.Data
             }
             else if (this.SelectedTime != null)
             {
+                if (res.MarkedTimes == null) { res.m_MarkedTimes = new ValueRangeSeries<DateTime>(); }
                 res.MarkedTimes.Add(this.SelectedTime);
             }
             else if (this.SelectedDistance != null)
             {
+                if (res.MarkedDistances == null) { res.MarkedDistances = new ValueRangeSeries<double>(); }
                 res.MarkedDistances.Add(this.SelectedDistance);
             }
 
@@ -117,7 +119,7 @@ namespace TrailsPlugin.Data
             return res;
         }
 
-        public void Union(TrailsItemTrackSelectionInfo t)
+        public void Union(IItemTrackSelectionInfo t)
         {
             if (m_MarkedTimes == null)
             {

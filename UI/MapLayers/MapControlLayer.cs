@@ -30,9 +30,10 @@ using Microsoft.Win32;
 using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.MapLayers {
-    class MapPolyline {
+    public class MapPolyline {
         //Dummy for ST3 compile
         public MapPolyline(IList<IGPSPoint> g, int w, Color c) { }
+        public event MouseEventHandler Click;
     };
 	class MapControlLayer : IMapControlLayer
     {
@@ -126,14 +127,24 @@ namespace TrailsPlugin.UI.MapLayers {
             }
         }
         //Dummy for ST3 compile
-        public IDictionary<string, object> TrailRoutes
+        public IDictionary<string, MapPolyline> TrailRoutes
         {
             set
             {
             }
             get
             {
-                return new Dictionary<string, object>();
+                return new Dictionary<string, MapPolyline>();
+            }
+        }
+        public IDictionary<string, MapPolyline> MarkedTrailRoutes
+        {
+            set
+            {
+            }
+            get
+            {
+                return new Dictionary<string, MapPolyline>();
             }
         }
 

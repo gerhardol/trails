@@ -1,5 +1,6 @@
 ﻿/*
 Copyright (C) 2009 Brendan Doherty
+Copyright (C) 2010 Gerhard Olsson
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -200,9 +201,11 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshData()
         {
+            layer.ShowPage = false; //defer updates
             RefreshList();
             RefreshRoute();
             RefreshChart();
+            layer.ShowPage = _showPage;
         }
         private void RefreshList()
         {
@@ -233,32 +236,34 @@ namespace TrailsPlugin.UI.Activity {
         }
         private void RefreshRoute()
         {
-            layer.ShowPage = false; //defer updates
-            layer.TrailPoints.Clear();
-            layer.TrailRoutes.Clear();
-
             if(! m_isExpanded && m_controller.CurrentActivityTrail != null)
             {
-                IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
+                IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
                 //route
                 foreach (Data.TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
                 {
-                    layer.TrailPoints.Add(point);
+                    points.Add(point);
                 }
                 if (!isSingleView)
                 {
+                    IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
+                    IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
-                        if (!layer.TrailRoutes.ContainsKey(tr.Activity.ToString()))
-                        {
-                            MapPolyline m = new MapPolyline(tr.GpsPoints(), 2, tr.TrackColor);
-                            layer.TrailRoutes.Add(tr.Activity.ToString(), m);
-                        }
+                        TrailMapPolyline m = new TrailMapPolyline(tr);
+                        m.Click += new MouseEventHandler(mapPoly_Click);
+                        routes.Add(m.key, m);
                     }
+                    layer.TrailRoutes = routes;
                 }
-                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
-                layer.ShowPage = _showPage;//Refresh
+                else
+                {
+                    layer.TrailRoutes = new Dictionary<string, MapPolyline>();
+                }
+                layer.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                layer.TrailPoints = points;
             }
         }
 
@@ -428,6 +433,7 @@ namespace TrailsPlugin.UI.Activity {
 
         /*************************************************************************************************************/
 //ST3
+        //TODO: Rewrite, using IItemTrackSelectionInfo help functions
         IList<Data.TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di)
         {
             IList<Data.TrailGPSLocation> result = new List<Data.TrailGPSLocation>();
@@ -489,6 +495,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             return result;
         }
+#if ST_2_1
 //ST_2_1
         IList<Data.TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
         {
@@ -500,7 +507,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             return result;
         }
-
+#endif
 #if !ST_2_1
         private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
         {
@@ -653,58 +660,91 @@ namespace TrailsPlugin.UI.Activity {
 			}
         }
 
-        public void MarkTrack(TrailResult tr, DateTime firstTime, DateTime lastTime)
-        {
-                IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-                t.Add(new ValueRange<DateTime>(firstTime, lastTime));
-                MarkTrack(tr, t);
-        }
-        public void MarkTrack(TrailResult tr, IValueRangeSeries<DateTime> t)
-        {
-#if !ST_2_1
-            if (m_view != null &&
-                m_view.RouteSelectionProvider != null &&
-                isSingleView && m_controller.CurrentActivity != null)
-            {
-                Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
-                r.MarkedTimes = t;
-                r.Activity = m_controller.CurrentActivity;
-                m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-            }
-            else
-            {
-                string key = tr.Activity + ":" + tr.Order;
-                MapPolyline m = new MapPolyline(tr.GpsPoints(t), 4, tr.TrackColor);
-                layer.MarkedTrailRoutesSet(key, m);
-            }
-#endif
-        }
-        public void MarkTrack(TrailResult tr, double firstDist, double lastDist)
-        {
-                IValueRangeSeries<double> t = new ValueRangeSeries<double>();
-                t.Add(new ValueRange<double>(firstDist, lastDist));
-                MarkTrack(tr, t);
-        }
-        public void MarkTrack(TrailResult tr, IValueRangeSeries<double> t)
+        //public void MarkTrack(IList<TrailResult> tr)
+        //{
+        //        IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+        //        t.Add(new ValueRange<DateTime>(firstTime, lastTime));
+        //        MarkTrack(tr, t);
+        //}
+        public void MarkTrack(IList<TrailResultMarked> atr)
         {
 #if !ST_2_1
             if (m_view != null &&
                 m_view.RouteSelectionProvider != null &&
                 isSingleView && m_controller.CurrentActivity != null)
             {
-                Data.TrailsItemTrackSelectionInfo r = new Data.TrailsItemTrackSelectionInfo();
-                r.MarkedDistances = t;
+                Data.TrailsItemTrackSelectionInfo r = Data.TrailResultMarked.SelInfoUnion(atr);
                 r.Activity = m_controller.CurrentActivity;
                 m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
             }
             else
             {
-                string key = tr.Activity + ":" + tr.Order;
-                MapPolyline m = new MapPolyline(tr.GpsPoints(t), 4, tr.TrailColor);
-                layer.MarkedTrailRoutesSet(key, m);
+                IDictionary<string, MapPolyline> result = new Dictionary<string, MapPolyline>();
+                foreach (TrailResultMarked trm in atr)
+                {
+                    TrailMapPolyline m = new TrailMapPolyline(trm.trailResult, trm.selInfo);
+                    m.Click += new MouseEventHandler(mapPoly_Click);
+                    result.Add(m.key, m);
+                }
+                layer.MarkedTrailRoutes = result;
             }
 #endif
         }
+
+        public class TrailMapPolyline : MapPolyline
+        {
+            private TrailResult m_trailResult;
+            private string m_key;
+            public TrailMapPolyline(IList<IGPSPoint> g, int w, Color c, TrailResult tr)
+                : base(g, w, c)
+            {
+                m_trailResult = tr;
+                m_key = tr.Activity + ":" + tr.Order;
+            }
+            //Marked part of a track
+            public TrailMapPolyline(TrailResult tr, TrailsItemTrackSelectionInfo sel)
+                : this(tr.GpsPoints(sel), PluginMain.GetApplication().SystemPreferences.RouteSettings.RouteWidth*2, tr.TrailColor, tr)
+            { m_key += "m"+sel.ToString(); }
+            //Complete trail
+            public TrailMapPolyline(TrailResult tr)
+                : this(tr.GpsPoints(), PluginMain.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr)
+            { }
+
+            public TrailResult TrailRes
+            {
+                get { return m_trailResult; }
+            }
+            public string key { get { return m_key; } }
+        }
+        void mapPoly_Click(object sender, MouseEventArgs e)
+        {
+            if (sender is TrailMapPolyline)
+            {
+                TrailMapPolyline tm = sender as TrailMapPolyline;
+                if (tm.key.Contains("m"))
+                {
+#if ST_2_1
+                    summaryList.Selected = new object[] { tm.TrailRes };
+#else
+                    summaryList.SelectedItems = new object[] { tm.TrailRes };
+#endif
+                }
+                else
+                {
+                    object[] atr = new object[TrailResult.TrailResultList(tm.TrailRes.Activity).Count];
+                    for (int i = 0; i < TrailResult.TrailResultList(tm.TrailRes.Activity).Count; i++ )
+                    {
+                        atr[i] = TrailResult.TrailResultList(tm.TrailRes.Activity)[i];
+                    }
+#if ST_2_1
+                    summaryList.Selected = atr;
+#else
+                    summaryList.SelectedItems = atr;
+#endif
+                }
+            }
+        }
+
         private void List_SelectedChanged(object sender, EventArgs e)
         {
 			RefreshChart();
@@ -712,12 +752,19 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is TreeList)
             {
                 TreeList l = sender as TreeList;
-                if (l.SelectedItems != null && l.SelectedItems.Count > 0 &&
-                    l.SelectedItems[0] is Data.TrailResult &&
-                    l.SelectedItems[0] != null)
+                if (l.SelectedItems != null && l.SelectedItems.Count > 0)
                 {
-                    Data.TrailResult tr = l.SelectedItems[0] as Data.TrailResult;
-                    MarkTrack(tr, tr.FirstTime, tr.LastTime);
+                    IList<TrailResult> aTr = new List<TrailResult>();
+                    foreach (object t in l.SelectedItems)
+                    {
+                        if (t is Data.TrailResult &&
+                        t != null)
+                        {
+                            Data.TrailResult tr = t as Data.TrailResult;
+                            aTr.Add(tr);
+                        }
+                    }
+                    MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                 }
             }
         }
@@ -965,38 +1012,8 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
                 {
-                    //Only first set used (chart only selects one of the ranges anyway...)
-                    IItemTrackSelectionInfo selectGPS = selected.SelectedItems[0];
-                    IValueRangeSeries<DateTime> timeSeries = new ValueRangeSeries<DateTime>();
-                    IValueRangeSeries<double> distSeries = new ValueRangeSeries<double>();
-
-                    if (selectGPS.MarkedTimes != null)
-                    {
-                        timeSeries = selectGPS.MarkedTimes;
-                    }
-                    else if (selectGPS.MarkedDistances != null)
-                    {
-                        distSeries = selectGPS.MarkedDistances;
-                    }
-                    else if (selectGPS.SelectedTime != null)
-                    {
-                        timeSeries.Add(selectGPS.SelectedTime);
-                    }
-                    else if (selectGPS.SelectedDistance != null)
-                    {
-                        distSeries.Add(selectGPS.SelectedDistance);
-                    }
-
-                    if (timeSeries.Count > 0)
-                    {
-                        this.LineChart.SetSelected(timeSeries);
-                        if (null != m_chartsControl) { m_chartsControl.SetSelected(timeSeries); }
-                    }
-                    else if (distSeries.Count > 0)
-                    {
-                        this.LineChart.SetSelected(distSeries);
-                        if (null != m_chartsControl) { m_chartsControl.SetSelected(distSeries); }
-                    }
+                    this.LineChart.SetSelected(selected.SelectedItems);
+                    if (null != m_chartsControl) { m_chartsControl.SetSelected(selected.SelectedItems); }
                 }
             }
         }

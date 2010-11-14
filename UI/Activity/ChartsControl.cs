@@ -25,8 +25,10 @@ using System.Text;
 using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Visuals;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class ChartsControl : UserControl {
@@ -99,23 +101,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
-        public void SetSelected(IValueRangeSeries<DateTime> valueRange)
+        public void SetSelected(IList<IItemTrackSelectionInfo> asel)
         {
             foreach (Control t in this.tableLayoutPanel1.Controls)
             {
                 if (t is TrailLineChart)
                 {
-                    ((TrailLineChart)t).SetSelected(valueRange);
-                }
-            }
-        }
-        public void SetSelected(IValueRangeSeries<double> valueRange)
-        {
-            foreach (Control t in this.tableLayoutPanel1.Controls)
-            {
-                if (t is TrailLineChart)
-                {
-                    ((TrailLineChart)t).SetSelected(valueRange);
+                    ((TrailLineChart)t).SetSelected(asel);
                 }
             }
         }

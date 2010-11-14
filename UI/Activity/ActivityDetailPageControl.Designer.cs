@@ -148,7 +148,7 @@
             this.btnAdd.Location = new System.Drawing.Point(328, 3);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
-            this.btnAdd.PushStyle = false;
+            this.btnAdd.PushStyle = true;
             this.btnAdd.RightImage = null;
             this.btnAdd.Size = new System.Drawing.Size(19, 16);
             this.btnAdd.TabIndex = 10;
@@ -245,7 +245,7 @@
             this.summaryList.HeaderRowHeight = 21;
             this.summaryList.Location = new System.Drawing.Point(0, 0);
             this.summaryList.Margin = new System.Windows.Forms.Padding(0);
-            this.summaryList.MultiSelect = false;
+            this.summaryList.MultiSelect = true;
             this.summaryList.Name = "summaryList";
             this.summaryList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
             this.summaryList.NumLockedColumns = 0;

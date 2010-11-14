@@ -25,6 +25,47 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
+    public class TrailResultMarked
+    {
+        public TrailResultMarked(TrailResult tr)
+        {
+            trailResult = tr;
+            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+            t.Add(new ValueRange<DateTime>(tr.FirstTime, tr.LastTime));
+            selInfo.MarkedTimes = t;
+        }
+        public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
+        {
+            trailResult = tr;
+            selInfo.MarkedTimes = t;
+        }
+        public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)
+        {
+            trailResult = tr;
+            selInfo.MarkedDistances = t;
+        }
+        public TrailResult trailResult;
+        public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();
+
+        public static IList<TrailResultMarked> TrailResultMarkAll(IList<TrailResult> atr)
+        {
+            IList<TrailResultMarked> result = new List<TrailResultMarked>();
+            foreach (TrailResult tr in atr)
+            {
+                result.Add(new TrailResultMarked(tr));
+            }
+            return result;
+        }
+        public static Data.TrailsItemTrackSelectionInfo SelInfoUnion(IList<TrailResultMarked> atrm)
+        {
+            Data.TrailsItemTrackSelectionInfo result = new Data.TrailsItemTrackSelectionInfo();
+            foreach (TrailResultMarked trm in atrm)
+            {
+                result.Union(trm.selInfo);
+            }
+            return result;
+        }
+    }
     public class TrailResult : ITrailResult
     {
 		private IActivity m_activity;
@@ -45,7 +86,7 @@ namespace TrailsPlugin.Data {
         private float m_startDistance;
         private float m_distDiff; //to give quality of results
         private IList<int> m_indexes = new List<int>();
-        private int m_trackColor = nextTrailColor++;
+        private int m_trailColor = nextTrailColor++;
 
         public TrailResult(IActivity activity, int order, IList<int> indexes, float distDiff)
         {
@@ -61,10 +102,12 @@ namespace TrailsPlugin.Data {
 
             m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
             m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[m_startIndex].Value;
-            if (!aTrackColor.ContainsKey(m_activity))
+            if (!aActivities.ContainsKey(m_activity))
             {
-                aTrackColor.Add(m_activity, nextTrackColor++);
+                aActivities.Add(m_activity, new trActivityInfo());
+                aActivities[m_activity].activityColor = nextActivityColor++;
             }
+            aActivities[m_activity].res.Add(this);
         }
 
         public IActivity Activity
@@ -126,11 +169,24 @@ namespace TrailsPlugin.Data {
         }
         public double getDistAt(DateTime t)
         {
-            return m_activity.GPSRoute.GetDistanceMetersTrack().GetInterpolatedValue(t).Value -FirstDist;
+            //Ignore malformed activities
+            double res = 0;
+            try
+            {
+                res = m_activity.GPSRoute.GetDistanceMetersTrack().GetInterpolatedValue(t).Value - FirstDist;
+            }
+            catch { }
+            return res;
         }
         public DateTime getTimeAt(double t)
         {
-            return m_activity.GPSRoute.GetDistanceMetersTrack().GetTimeAtDistanceMeters(t);
+            DateTime res = FirstTime;
+            try 
+            {
+                res = m_activity.GPSRoute.GetDistanceMetersTrack().GetTimeAtDistanceMeters(t);
+            }
+            catch { }
+            return res;
         }
         public IList<DateTime> TimeTrailPoints
         {
@@ -233,20 +289,22 @@ namespace TrailsPlugin.Data {
         {
             get{
                 //Note: Must have the same indexes as the GPS track....
-                if (null==m_distanceMetersTrack)
+                if (null == m_distanceMetersTrack)
                 {
-			m_distanceMetersTrack = new DistanceDataTrack();
-			IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
-			float startDistance = track[m_startIndex].Value;
-			if (track != null) {
-				for (int i = m_startIndex; i <= m_endIndex; i++) {
-					ITimeValueEntry<float> value = track[i];
-					m_distanceMetersTrack.Add(
-						m_startTime.AddSeconds(value.ElapsedSeconds),
-						value.Value - startDistance
-					);
-				}
-            }
+                    m_distanceMetersTrack = new DistanceDataTrack();
+                    IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
+                    if (track != null)
+                    {
+                        float startDistance = track[m_startIndex].Value;
+                        for (int i = m_startIndex; i <= m_endIndex; i++)
+                        {
+                            ITimeValueEntry<float> value = track[i];
+                            m_distanceMetersTrack.Add(
+                                m_startTime.AddSeconds(value.ElapsedSeconds),
+                                value.Value - startDistance
+                            );
+                        }
+                    }
                 }
                 return m_distanceMetersTrack;
 			}
@@ -394,16 +452,28 @@ namespace TrailsPlugin.Data {
             }
             return m_gpsPoints;
         }
-        public IList<IGPSPoint> GpsPoints(IValueRangeSeries<DateTime> t)
+        public IList<IGPSPoint> GpsPoints(Data.TrailsItemTrackSelectionInfo t)
+        {
+            if (t.MarkedTimes != null && t.MarkedTimes.Count > 0)
+            {
+                return GpsPoints(t.MarkedTimes);
+            }
+            else if (t.MarkedDistances != null && t.MarkedDistances.Count > 0)
+            {
+                return GpsPoints(t.MarkedDistances);
+            }
+            return new List<IGPSPoint>();
+        }
+        private IList<IGPSPoint> GpsPoints(IValueRangeSeries<DateTime> t)
         {
             IGPSRoute gpsTrack = this.GpsTrack;
             IList<IGPSPoint> result = new List<IGPSPoint>();
 
-            int i = m_startIndex;
             foreach (IValueRange<DateTime> r in t)
             {
+                int i = m_startIndex;
                 while (i <= m_endIndex &&
-                    0 > r.Lower.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
+                    0 < r.Lower.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
                 {
                     i++;
                 }
@@ -417,21 +487,21 @@ namespace TrailsPlugin.Data {
 
             return result;
         }
-        public IList<IGPSPoint> GpsPoints(IValueRangeSeries<double> t)
+        private IList<IGPSPoint> GpsPoints(IValueRangeSeries<double> t)
         {
             IGPSRoute gpsTrack = this.GpsTrack;
             IList<IGPSPoint> result = new List<IGPSPoint>();
 
-            int i = m_startIndex;
             foreach (IValueRange<double> r in t)
             {
+                int i = m_startIndex;
                 while (i <= m_endIndex &&
-                    r.Lower < DistanceMetersTrack[i-m_startIndex].Value)
+                    r.Lower > DistanceMetersTrack[i - m_startIndex].Value)
                 {
                     i++;
                 }
                 while (i <= m_endIndex &&
-                    r.Upper <= DistanceMetersTrack[i - m_startIndex].Value)
+                    r.Upper >= DistanceMetersTrack[i - m_startIndex].Value)
                 {
                     result.Add(m_activity.GPSRoute[i].Value);
                     i++;
@@ -442,17 +512,17 @@ namespace TrailsPlugin.Data {
         }
 
         /*************************************************/
+        #region Color
         private static int nextTrailColor = 1;
-        private static int nextTrackColor = 1;
-        private static IDictionary<IActivity, int> aTrackColor = new Dictionary<IActivity, int>();
+        private static int nextActivityColor = 1;
 
-        public Color TrackColor
+        public Color ActivityColor
         {
             get
             {
-                int i = 0;
-                aTrackColor.TryGetValue(this.m_activity, out i);
-                return getColor(i);
+                trActivityInfo t = new trActivityInfo();
+                aActivities.TryGetValue(this.m_activity, out t);
+                return getColor(t.activityColor);
             }
         }
 
@@ -460,7 +530,7 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                return getColor(this.m_trackColor);
+                return getColor(this.m_trailColor);
             }
         }
 
@@ -488,6 +558,22 @@ namespace TrailsPlugin.Data {
         //    nextIndex = (nextIndex + 1) % 10;
         //    return getColor(color);
         //}
+        #endregion
+
+        #region Activity caches
+        private class trActivityInfo
+        {
+            public IList<TrailResult> res = new List<TrailResult>();
+            public int activityColor = 0;
+        }
+        private static IDictionary<IActivity, trActivityInfo> aActivities = new Dictionary<IActivity, trActivityInfo>();
+        public static IList<TrailResult> TrailResultList(IActivity activity)
+        {
+            trActivityInfo t = new trActivityInfo();
+            aActivities.TryGetValue(activity, out t);
+            return t.res;
+        }
+        #endregion
 
         #region Implementation of ITrailResult
 

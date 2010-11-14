@@ -62,14 +62,13 @@ namespace TrailsPlugin.UI.MapLayers
         {
             get { return m_layer; }
         }
-
         public IRouteControlLayer CreateControlLayer(IRouteControl control)
         {
             if (m_layer == null)
             {
                 m_layer = new TrailPointsLayer(this,control);
             }
-            return m_layer;
+                return m_layer;
         }
 
         public Guid Id
@@ -95,10 +94,10 @@ namespace TrailsPlugin.UI.MapLayers
 
         public IList<TrailGPSLocation> TrailPoints
         {
-            get
-            {
-                return m_TrailPoints;
-            }
+            //get
+            //{
+            //    return m_TrailPoints;
+            //}
             set
             {
                 bool changed = false;
@@ -148,10 +147,10 @@ namespace TrailsPlugin.UI.MapLayers
         }
         public IDictionary<string, MapPolyline> TrailRoutes
         {
-            get
-            {
-                return m_TrailRoutes;
-            }
+            //get
+            //{
+            //    return m_TrailRoutes;
+            //}
             set
             {
                 bool changed = false;
@@ -160,31 +159,46 @@ namespace TrailsPlugin.UI.MapLayers
                 if (changed) { RefreshOverlays(true); }
             }
         }
-        public void MarkedTrailRoutesSet(string key, MapPolyline m)
+
+        public IDictionary<string, MapPolyline> MarkedTrailRoutes
         {
-            m_MarkedTrailRoutes.Clear();
-            GPSBounds area = GPSBounds.FromGPSPoints(m.Locations);
-            if (area != null)
-            {
-                this.MapControl.SetLocation(area.Center,
-                  this.MapControl.ComputeZoomToFit(area));
-            }
-            IDictionary<string, MapPolyline> d = new Dictionary<string, MapPolyline>();
-            d.Add(key, m);
-            MarkedTrailRoutes = d;
-        }
-        private IDictionary<string, MapPolyline> MarkedTrailRoutes
-        {
-            get
-            {
-                return m_MarkedTrailRoutes;
-            }
+            //get
+            //{
+            //    return m_MarkedTrailRoutes;
+            //}
             set
             {
                 bool changed = false;
                 if (!value.Equals(m_MarkedTrailRoutes)) { changed = true; }
                 m_MarkedTrailRoutes = value;
-                if (changed) { RefreshOverlays(true); }
+                if (changed)
+                {
+                    if (value.Count > 0)
+                    {
+                        GPSBounds area = null;
+                        foreach (MapPolyline m in value.Values)
+                        {
+                            GPSBounds area2 = GPSBounds.FromGPSPoints(m.Locations);
+                            if (area2 != null)
+                            {
+                                if (area == null)
+                                {
+                                    area = area2;
+                                }
+                                else
+                                {
+                                    area = (GPSBounds)area.Union(area2);
+                                }
+                            }
+                        }
+                        if (area != null)
+                        {
+                            this.MapControl.SetLocation(area.Center,
+                             this.MapControl.ComputeZoomToFit(area));
+                        }
+                    }
+                    RefreshOverlays(true);
+                }
             }
         }
 
@@ -200,18 +214,18 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
-        public void Refresh()
-        {
-            //Should not be necessary in ST3, updated when needed
-            RefreshOverlays(); 
-        }
+        //public void Refresh()
+        //{
+        //    //Should not be necessary in ST3, updated when needed
+        //    RefreshOverlays(); 
+        //}
         public bool ShowPage
         {
             get { return _showPage; }
             set
             {
                 bool changed = (value != _showPage);
-                _showPage = value;
+                _showPage = true;// value;
                 if (changed)
                 {
                     RefreshOverlays(true);
@@ -323,11 +337,11 @@ namespace TrailsPlugin.UI.MapLayers
 
             //RouteOverlay
             IDictionary<string, MapPolyline> allRoutes = new Dictionary<string, MapPolyline>();
-            foreach (KeyValuePair<string, MapPolyline> pair in m_MarkedTrailRoutes)
+            foreach (KeyValuePair<string, MapPolyline> pair in m_TrailRoutes)
             {
                 allRoutes.Add(pair);
             }
-            foreach (KeyValuePair<string, MapPolyline> pair in m_TrailRoutes)
+            foreach (KeyValuePair<string, MapPolyline> pair in m_MarkedTrailRoutes)
             {
                 allRoutes.Add(pair);
             }
@@ -357,7 +371,6 @@ namespace TrailsPlugin.UI.MapLayers
                 //    visibleRoutes.Add(pair.Key, m);
                 //}
             }
-            //TODO: use string in newRouteOverlays, in case it is needed for callbacks
             IDictionary<MapPolyline, IMapOverlay> newRouteOverlays = new Dictionary<MapPolyline, IMapOverlay>();
 
             foreach (KeyValuePair<string, MapPolyline> pair in visibleRoutes)
@@ -388,7 +401,7 @@ namespace TrailsPlugin.UI.MapLayers
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
 
             if (m_scalingChanged || null == m_icon)
-            {        
+            {
                 m_icon = getCircle(this.MapControl, m_highlightRadius);
             }
             foreach (IGPSPoint location in visibleLocations)

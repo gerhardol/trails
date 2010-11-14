@@ -130,12 +130,21 @@ namespace TrailsPlugin
             }
         }
 
-#if !ST_2_1
         const int brushSize = 6; //Even
         //The outer radius defines the included area
+        static public string Circle(int sizeX, int sizeY)
+        {
+            Size iconSize;
+            return Circle(sizeX, sizeY, out iconSize);
+        }
         static public string Circle(int sizeX, int sizeY, out Size iconSize)
         {
-            string basePath = PluginMain.GetApplication().Configuration.CommonWebFilesFolder +
+            string basePath = PluginMain.GetApplication().
+#if ST_2_1
+                SystemPreferences.WebFilesFolder +
+#else
+                Configuration.CommonWebFilesFolder +
+#endif
                                   System.IO.Path.DirectorySeparatorChar +
                                   TrailsPlugin.GUIDs.PluginMain.ToString() + System.IO.Path.DirectorySeparatorChar;
             if (!Directory.Exists(basePath))
@@ -175,6 +184,5 @@ namespace TrailsPlugin
             }
             return "file://" + filePath;
         }
-#endif
 	}
 }

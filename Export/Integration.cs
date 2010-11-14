@@ -25,13 +25,13 @@ namespace TrailsPlugin.Export
 {
     public static class Integration
     {
-        public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivity(IActivity activity)
+        public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivity(IList<IActivity> activities)
         {
             var results = new Dictionary<string, List<ITrailResult>>();
 
             foreach (Trail trail in PluginMain.Data.AllTrails.Values)
             {
-                var activityTrail = new ActivityTrail(new List<IActivity>{activity}, trail);
+                var activityTrail = new ActivityTrail(activities, trail);
 
                 List<ITrailResult> trailResults = new List<ITrailResult>();
                 foreach (var result in activityTrail.Results)
@@ -43,6 +43,10 @@ namespace TrailsPlugin.Export
             }
 
             return results;
+        }
+        public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivity(IActivity activity)
+        {
+            return GetTrailsResultsForActivity(new List<IActivity> { activity });
         }
     }
 }

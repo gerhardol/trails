@@ -312,8 +312,8 @@ namespace TrailsPlugin.UI.Activity {
                         double t1, t2;
                         t1 = m_trailResult.getDistAt(sel.MarkedTimes[0].Lower);
                         t2 = m_trailResult.getDistAt(sel.MarkedTimes[sel.MarkedTimes.Count - 1].Upper);
-                        x1 = Utils.Units.GetDistance((t1 - m_trailResult.FirstDist), m_trailResult.Activity);
-                        x2 = Utils.Units.GetDistance((t2 - m_trailResult.FirstDist), m_trailResult.Activity);
+                        x1 = Utils.Units.GetDistance(t1, m_trailResult.Activity);
+                        x2 = Utils.Units.GetDistance(t2, m_trailResult.Activity);
                     }
                 }
                 else if (sel.MarkedDistances != null && sel.MarkedDistances.Count > 0)

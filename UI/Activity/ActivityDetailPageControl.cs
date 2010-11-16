@@ -75,25 +75,24 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_showChartToolBar = true;
 
 #if ST_2_1
-        private UI.MapLayers.MapControlLayer layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
+        private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
 #else
         private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
-        private TrailPointsProvider m_TrailPointsProvider = TrailPointsProvider.Instance;
-        private TrailPointsLayer layer { get { return (TrailPointsLayer)m_TrailPointsProvider.RouteControlLayer; } }
+        private TrailPointsLayer m_layer = null;
 #endif
 
-#if !ST_2_1
-        public ActivityDetailPageControl(IDetailPage detailPage, IDailyActivityView view) : this()
+#if ST_2_1
+        public ActivityDetailPageControl()
+        {
+#else
+        public ActivityDetailPageControl(IDetailPage detailPage, IDailyActivityView view)
         {
             m_DetailPage = detailPage;
             m_view = view;
-        }
+            m_layer = TrailPointsLayer.Instance(m_view);
 #endif
-        public ActivityDetailPageControl()
-        {
-
-			m_controller = Controller.TrailController.Instance;
+            m_controller = Controller.TrailController.Instance;
 
 			InitializeComponent();
 			InitControls();
@@ -150,8 +149,9 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 _showPage = value;
-                layer.ShowPage = value;
+                m_layer.ShowPage = value;
 
+#if !ST_2_1
                 if (value)
                 {
                     //Not needed now
@@ -162,6 +162,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                 }
+#endif
             }
         }
 
@@ -205,11 +206,12 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshData()
         {
-            layer.ShowPage = false; //defer updates
+            m_layer.ShowPage = false; //defer updates
+            //Update list first, so not refresh changes selection
             RefreshList();
-            RefreshRoute();
+            RefreshRoute(); 
             RefreshChart();
-            layer.ShowPage = _showPage;
+            m_layer.ShowPage = _showPage;
         }
         private void RefreshList()
         {
@@ -240,9 +242,10 @@ namespace TrailsPlugin.UI.Activity {
         }
         private void RefreshRoute()
         {
-            if(! m_isExpanded && m_controller.CurrentActivityTrail != null)
+            if((! m_isExpanded || isReportView)
+                && m_controller.CurrentActivityTrail != null)
             {
-                layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                m_layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
                 //route
@@ -261,14 +264,14 @@ namespace TrailsPlugin.UI.Activity {
                         m.Click += new MouseEventHandler(mapPoly_Click);
                         routes.Add(m.key, m);
                     }
-                    layer.TrailRoutes = routes;
+                    m_layer.TrailRoutes = routes;
                 }
                 else
                 {
-                    layer.TrailRoutes = new Dictionary<string, MapPolyline>();
+                    m_layer.TrailRoutes = new Dictionary<string, MapPolyline>();
                 }
-                layer.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-                layer.TrailPoints = points;
+                m_layer.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                m_layer.TrailPoints = points;
             }
         }
 
@@ -311,6 +314,9 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 m_controller.Activities = value;
+#if !ST_2_1
+                m_layer.ClearOverlays();
+#endif
                 RefreshColumns();
                 RefreshData();
                 RefreshControlState();
@@ -331,12 +337,33 @@ namespace TrailsPlugin.UI.Activity {
                 return true;
             }
         }
+        private bool isReportView
+        {
+            get
+            {
+            bool result = false;
+#if !ST_2_1
+            string viewType = m_view.GetType().FullName;
+
+            //if (viewType.EndsWith(".DailyActivityView.MainView"))
+            //{
+            //    result = false; 
+            //}
+            //else 
+            if (viewType.EndsWith(".ActivityReportDetailsPage"))
+            { 
+                result = true;
+            }
+#endif
+            return result;
+            }
+        }
         /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e) {
 
             int countGPS = 0;
 #if ST_2_1
-			IMapControl mapControl = layer.MapControl;
+			IMapControl mapControl = m_layer.MapControl;
 			ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
@@ -346,8 +373,8 @@ namespace TrailsPlugin.UI.Activity {
             if (countGPS > 0)
             {
 #if ST_2_1
-                layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-				layer.CaptureSelectedGPSLocations();
+                m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
+				m_layer.CaptureSelectedGPSLocations();
 #else
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
@@ -398,7 +425,7 @@ namespace TrailsPlugin.UI.Activity {
         private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;
 #if ST_2_1
-			IMapControl mapControl = layer.MapControl;
+			IMapControl mapControl = m_layer.MapControl;
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
@@ -408,14 +435,18 @@ namespace TrailsPlugin.UI.Activity {
             if (countGPS > 0)
             {
 #if ST_2_1
-				layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
-				layer.CaptureSelectedGPSLocations();
+				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
+				m_layer.CaptureSelectedGPSLocations();
 #else
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
             } else {
+#if ST_2_1
 				EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
-				if (dialog.ShowDialog() == DialogResult.OK) {
+#else
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
+#endif
+                if (dialog.ShowDialog() == DialogResult.OK) {
 					RefreshControlState();
 					RefreshData();
 				}
@@ -520,8 +551,8 @@ namespace TrailsPlugin.UI.Activity {
 		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
         {
 			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-            IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
+			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
+            IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             bool addCurrent = false;
             if (m_controller.CurrentActivityTrail != null)
@@ -532,7 +563,11 @@ namespace TrailsPlugin.UI.Activity {
                     addCurrent = true;
                 }
             }
+#if ST_2_1
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, !addCurrent);
+#else
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent);
+#endif
             if (m_controller.CurrentActivityTrail != null)
             {
                 if (addCurrent)
@@ -560,10 +595,14 @@ namespace TrailsPlugin.UI.Activity {
  		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e)
         {
 			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
-            IList<IGPSLocation> selectedGPS = layer.SelectedGPSLocations;
+			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
+            IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
+#if ST_2_1
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
+#else
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
+#endif
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {
@@ -665,12 +704,6 @@ namespace TrailsPlugin.UI.Activity {
 			}
         }
 
-        //public void MarkTrack(IList<TrailResult> tr)
-        //{
-        //        IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-        //        t.Add(new ValueRange<DateTime>(firstTime, lastTime));
-        //        MarkTrack(tr, t);
-        //}
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
 #if !ST_2_1
@@ -680,9 +713,11 @@ namespace TrailsPlugin.UI.Activity {
                     m_view.RouteSelectionProvider != null &&
                     isSingleView && m_controller.CurrentActivity != null)
                 {
+                    //Only one activity, OK to merge selections on one track
                     Data.TrailsItemTrackSelectionInfo r = Data.TrailResultMarked.SelInfoUnion(atr);
                     r.Activity = m_controller.CurrentActivity;
                     m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
+                    m_layer.ZoomRoute = atr[0].trailResult.GpsPoints(r);
                 }
                 else
                 {
@@ -693,7 +728,7 @@ namespace TrailsPlugin.UI.Activity {
                         m.Click += new MouseEventHandler(mapPoly_Click);
                         result.Add(m.key, m);
                     }
-                    layer.MarkedTrailRoutes = result;
+                    m_layer.MarkedTrailRoutes = result;
                 }
             }
 #endif
@@ -766,7 +801,7 @@ namespace TrailsPlugin.UI.Activity {
                     foreach (object t in l.SelectedItems)
                     {
                         if (t is Data.TrailResult &&
-                        t != null)
+                          t != null)
                         {
                             Data.TrailResult tr = t as Data.TrailResult;
                             aTr.Add(tr);

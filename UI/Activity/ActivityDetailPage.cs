@@ -57,7 +57,7 @@ namespace TrailsPlugin.UI.Activity {
 		public IActivity Activity {
             set
             {
-                if (null == value) { m_activities = null; }
+                if (null == value) { m_activities = new List<IActivity>(); }
                 else { m_activities = new List<IActivity> { value }; }
                 if ((m_control != null))
                 {

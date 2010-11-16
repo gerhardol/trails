@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System;
 using ZoneFiveSoftware.Common.Visuals;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.GPS;
 using TrailsPlugin.Data;
@@ -33,14 +34,19 @@ namespace TrailsPlugin.UI.Activity {
 		protected bool m_addMode;
 		protected Data.Trail m_TrailToEdit;
 #if ST_2_1
-        private UI.MapLayers.MapControlLayer layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
+        private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
 #else
-        private TrailPointsProvider m_TrailPointsProvider = TrailPointsProvider.Instance;
-        private TrailPointsLayer layer { get { return (TrailPointsLayer)m_TrailPointsProvider.RouteControlLayer; } }
+        private TrailPointsLayer m_layer;
 #endif
 
-        public EditTrail(bool addMode)
+#if ST_2_1
+        private EditTrail(bool addMode)
         {
+#else
+        private EditTrail(IDailyActivityView view, bool addMode)
+        {
+            m_layer = TrailPointsLayer.Instance(view);
+#endif
             if (addMode)
             {
                 m_TrailToEdit = new TrailsPlugin.Data.Trail();
@@ -55,8 +61,13 @@ namespace TrailsPlugin.UI.Activity {
             InitializeComponent();
             InitControls();
         }
+#if ST_2_1
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, bool addMode)
             : this (addMode)
+#else
+            public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, bool addMode)
+            : this (view, addMode)
+#endif
         {
             ThemeChanged(visualTheme);
             UICultureChanged(culture);
@@ -236,7 +247,7 @@ namespace TrailsPlugin.UI.Activity {
                 " " +ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew);
             result.Insert(selectRow+1, add);
             EList.RowData = result;
-            layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
+            m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
         }
 
         private void presentRadius()
@@ -264,7 +275,7 @@ namespace TrailsPlugin.UI.Activity {
             t[rowSelected]=
                 ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].setField(subItemSelected, editBox.Text);
             EList.RowData = t;
-            layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[rowSelected]};
+            m_layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[rowSelected]};
         }
         private void EditOver(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
@@ -376,7 +387,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            layer.SelectedTrailPoints = result;
+            m_layer.SelectedTrailPoints = result;
         }
     }
 }

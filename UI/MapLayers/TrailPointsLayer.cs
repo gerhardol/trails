@@ -39,36 +39,20 @@ namespace TrailsPlugin.UI.MapLayers
         {
             get
             {
-                return new IRouteControlLayerProvider[] { TrailPointsProvider.Instance };
+                return new IRouteControlLayerProvider[] { new TrailPointsProvider() };
             }
         }
     }
     class TrailPointsProvider : IRouteControlLayerProvider
     {
-        private static TrailPointsProvider m_instance = null;
-        public static TrailPointsProvider Instance
-        {
-            get
-            {
-                if (TrailPointsProvider.m_instance == null)
-                {
-                    TrailPointsProvider.m_instance = new TrailPointsProvider();
-                }
-                return TrailPointsProvider.m_instance;
-            }
-        }
         private IRouteControlLayer m_layer = null;
-        public IRouteControlLayer RouteControlLayer
-        {
-            get { return m_layer; }
-        }
         public IRouteControlLayer CreateControlLayer(IRouteControl control)
         {
             if (m_layer == null)
             {
                 m_layer = new TrailPointsLayer(this,control);
             }
-                return m_layer;
+            return m_layer;
         }
 
         public Guid Id
@@ -84,12 +68,59 @@ namespace TrailsPlugin.UI.MapLayers
 
     class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
+        private DateTime m_creationTime = DateTime.Now;
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 1)
         {
+            m_instances.Add(this);
             //PluginMain.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
             //listener = new RouteItemsDataChangeListener(control);
             //listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
+        }
+        //TODO: Hack, there is no known relation between view and route control/layer
+        //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
+        public static TrailPointsLayer Instance(IDailyActivityView view)
+        {
+            TrailPointsLayer result = m_instances[0];
+            string viewType = view.GetType().FullName;
+
+            if (m_instances == null || m_instances.Count == 0)
+            {
+                //error, will likely give exceptions later
+                return null;
+            }
+            else if (viewType.EndsWith(".DailyActivityView.MainView"))
+            {
+                result = m_instances[0]; 
+            }
+            else if (viewType.EndsWith(".ActivityReportDetailsPage")
+                && m_instances.Count > 1)
+            {
+                for (int i = 1; i < m_instances.Count - 1; i++)
+                {
+                    if (m_instances[i + 1].m_creationTime.Subtract(m_instances[i].m_creationTime).TotalSeconds < 1)
+                    {
+                        result = m_instances[i];
+                        result.m_reportMapInstance = i + 1;
+                    }
+                }
+            }
+            //    if IRouteSettings have overlays
+            //else if (viewType.EndsWith("RouteView.MainView")
+            //    && m_instances.Count > 1)
+            //{
+            //    if (m_instances.Count <= 2)
+            //    {
+            //        result = m_instances[1];
+            //    }
+            //    else if (m_instances.Count == 4)
+            //    {
+            //        result = m_instances[3];
+            //    }
+            //}
+
+            //If we get here, this is really an error. Do not throw it in the user's face right now
+            return result;
         }
 
         public IList<TrailGPSLocation> TrailPoints
@@ -195,9 +226,26 @@ namespace TrailsPlugin.UI.MapLayers
                         {
                             this.MapControl.SetLocation(area.Center,
                              this.MapControl.ComputeZoomToFit(area));
+                            if (m_reportMapInstance >= 0)
+                            {
+                                m_instances[m_reportMapInstance].MapControl.SetLocation(area.Center,
+                                 m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
+                            }
                         }
                     }
                     RefreshOverlays(true);
+                }
+            }
+        }
+        public IList<IGPSPoint> ZoomRoute
+        {
+            set
+            {
+                GPSBounds area = GPSBounds.FromGPSPoints(value);
+                if (area != null)
+                {
+                    this.MapControl.SetLocation(area.Center,
+                     this.MapControl.ComputeZoomToFit(area));
                 }
             }
         }
@@ -303,7 +351,7 @@ namespace TrailsPlugin.UI.MapLayers
         {
             //Get pixel Size for icon - can differ X and Y
             //Calculate to radius, use point at apropriate distance to get meters->pixels
-            const int circlePixelSize = 100;
+            const int circlePixelSize = 1000;
             IGPSPoint point0 = Utils.GPS.LocationToPoint(mapControl.MapProjection.PixelToGPS(mapControl.Center, mapControl.Zoom,
                 new Point(0, 0)));
             IGPSPoint pointX = Utils.GPS.LocationToPoint(mapControl.MapProjection.PixelToGPS(mapControl.Center, mapControl.Zoom,
@@ -428,14 +476,24 @@ namespace TrailsPlugin.UI.MapLayers
             MapControl.AddOverlays(addedOverlays);
             pointOverlays = newPointOverlays;
             routeOverlays = newRouteOverlays;
+            if (m_reportMapInstance >= 0)
+            {
+                m_instances[m_reportMapInstance].MapControl.AddOverlays(addedOverlays);
+                m_instances[m_reportMapInstance].pointOverlays = newPointOverlays;
+                m_instances[m_reportMapInstance].routeOverlays = newRouteOverlays;
+            }
         }
 
-        private void ClearOverlays()
+        public void ClearOverlays()
         {
             MapControl.RemoveOverlays(pointOverlays.Values);
             pointOverlays.Clear();
             MapControl.RemoveOverlays(routeOverlays.Values);
             routeOverlays.Clear();
+            if (m_reportMapInstance >= 0)
+            {
+                m_instances[m_reportMapInstance].ClearOverlays();
+            }
         }
 
         private bool m_scalingChanged = false;
@@ -450,7 +508,9 @@ namespace TrailsPlugin.UI.MapLayers
         private IDictionary<string, MapPolyline> m_TrailRoutes = new Dictionary<string, MapPolyline>();
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
         private float m_highlightRadius;
-        private static bool _showPage;
+        private bool _showPage;
+        private int m_reportMapInstance = -1;
+        private static IList<TrailPointsLayer> m_instances = new List<TrailPointsLayer>(3);
     }
 }
 #endif

@@ -66,7 +66,7 @@ namespace TrailsPlugin.Controller {
         {
             get
             {
-                if (m_activities.Count > 0)
+                if (m_activities != null && m_activities.Count > 0)
                 {
                     return m_activities[0];
                 }

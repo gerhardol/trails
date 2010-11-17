@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
+    <Compile Include="Data\TrailResultMarked.cs" />
     <Compile Include="Data\Settings.cs" />
     <Compile Include="Data\TrailResult.cs" />
     <Compile Include="Data\TrailData.cs" />
@@ -72,6 +73,8 @@
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />
     <Compile Include="UI\Activity\ExtendActivityDetailPages.cs" />
     <Compile Include="UI\Activity\ExtendActivityEditActions.cs" />
+    <Compile Include="UI\MapLayers\TrailPointsProvider.cs" />
+    <Compile Include="UI\MapLayers\TrailMapPolyline.cs" />
     <Compile Include="UI\MapLayers\ExtendMapControlLayers.cs" />
     <Compile Include="UI\MapLayers\MapControlLayer.cs" />
     <Compile Include="UI\MapLayers\RouteControlLayerBase.cs" />

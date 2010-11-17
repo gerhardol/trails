@@ -33,39 +33,6 @@ using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.MapLayers
 {
-    class ExtendRouteControlLayerProviders : IExtendRouteControlLayerProviders
-    {
-        public IList<IRouteControlLayerProvider> RouteControlLayerProviders
-        {
-            get
-            {
-                return new IRouteControlLayerProvider[] { new TrailPointsProvider() };
-            }
-        }
-    }
-    class TrailPointsProvider : IRouteControlLayerProvider
-    {
-        private IRouteControlLayer m_layer = null;
-        public IRouteControlLayer CreateControlLayer(IRouteControl control)
-        {
-            if (m_layer == null)
-            {
-                m_layer = new TrailPointsLayer(this,control);
-            }
-            return m_layer;
-        }
-
-        public Guid Id
-        {
-            get { return GUIDs.TrailPointsControlLayerProvider; }
-        }
-
-        public string Name
-        {
-            get { return Properties.Resources.TrailPointsControlLayer; }
-        }
-    }
-
     class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
         private DateTime m_creationTime = DateTime.Now;

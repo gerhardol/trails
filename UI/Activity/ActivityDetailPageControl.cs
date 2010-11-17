@@ -734,31 +734,6 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        public class TrailMapPolyline : MapPolyline
-        {
-            private TrailResult m_trailResult;
-            private string m_key;
-            public TrailMapPolyline(IList<IGPSPoint> g, int w, Color c, TrailResult tr)
-                : base(g, w, c)
-            {
-                m_trailResult = tr;
-                m_key = tr.Activity + ":" + tr.Order;
-            }
-            //Marked part of a track
-            public TrailMapPolyline(TrailResult tr, TrailsItemTrackSelectionInfo sel)
-                : this(tr.GpsPoints(sel), PluginMain.GetApplication().SystemPreferences.RouteSettings.RouteWidth*2, tr.TrailColor, tr)
-            { m_key += "m"+sel.ToString(); }
-            //Complete trail
-            public TrailMapPolyline(TrailResult tr)
-                : this(tr.GpsPoints(), PluginMain.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr)
-            { }
-
-            public TrailResult TrailRes
-            {
-                get { return m_trailResult; }
-            }
-            public string key { get { return m_key; } }
-        }
         void mapPoly_Click(object sender, MouseEventArgs e)
         {
             if (sender is TrailMapPolyline)

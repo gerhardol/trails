@@ -25,47 +25,6 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
-    public class TrailResultMarked
-    {
-        public TrailResultMarked(TrailResult tr)
-        {
-            trailResult = tr;
-            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-            t.Add(new ValueRange<DateTime>(tr.FirstTime, tr.LastTime));
-            selInfo.MarkedTimes = t;
-        }
-        public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
-        {
-            trailResult = tr;
-            selInfo.MarkedTimes = t;
-        }
-        public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)
-        {
-            trailResult = tr;
-            selInfo.MarkedDistances = t;
-        }
-        public TrailResult trailResult;
-        public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();
-
-        public static IList<TrailResultMarked> TrailResultMarkAll(IList<TrailResult> atr)
-        {
-            IList<TrailResultMarked> result = new List<TrailResultMarked>();
-            foreach (TrailResult tr in atr)
-            {
-                result.Add(new TrailResultMarked(tr));
-            }
-            return result;
-        }
-        public static Data.TrailsItemTrackSelectionInfo SelInfoUnion(IList<TrailResultMarked> atrm)
-        {
-            Data.TrailsItemTrackSelectionInfo result = new Data.TrailsItemTrackSelectionInfo();
-            foreach (TrailResultMarked trm in atrm)
-            {
-                result.Union(trm.selInfo);
-            }
-            return result;
-        }
-    }
     public class TrailResult : ITrailResult
     {
 		private IActivity m_activity;

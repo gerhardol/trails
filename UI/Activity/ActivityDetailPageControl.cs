@@ -518,6 +518,20 @@ namespace TrailsPlugin.UI.Activity {
             }
 #endif
         }
+        private void selectedRow_DoubleClick(object sender, MouseEventArgs e)
+        {
+            Guid view = GUIDs.DailyActivityView;
+
+            object row;
+            TreeList.RowHitState dummy;
+            row = summaryList.RowHitTest(e.Location, out dummy);
+            if (row != null)
+            {
+                string bookmark = "id=" + ((TrailResult)row).Activity;
+                PluginMain.GetApplication().ShowView(view, bookmark);
+            }
+        }
+
         /*************************************************************************************************************/
 //ST3
         //TODO: Rewrite, using IItemTrackSelectionInfo help functions

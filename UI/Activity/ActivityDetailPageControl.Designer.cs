@@ -248,6 +248,7 @@
             this.summaryList.Location = new System.Drawing.Point(0, 0);
             this.summaryList.Margin = new System.Windows.Forms.Padding(0);
             this.summaryList.MultiSelect = true;
+            this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(selectedRow_DoubleClick);
             this.summaryList.Name = "summaryList";
             this.summaryList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
             this.summaryList.NumLockedColumns = 0;

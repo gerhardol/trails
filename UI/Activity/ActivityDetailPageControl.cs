@@ -131,6 +131,9 @@ namespace TrailsPlugin.UI.Activity {
             //For some reason, the Designer moves this button out of the panel
             this.btnExpand.Location = new System.Drawing.Point(353, 1);
 			listSettingsMenuItem.Image = CommonIcons.ListSettings;
+#if !ST_2_1
+            selectActivityMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
+#endif
 
 			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
 			summaryList.LabelProvider = new TrailResultLabelProvider();
@@ -202,6 +205,7 @@ namespace TrailsPlugin.UI.Activity {
 			btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
 
+            selectActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
 		}
 
         private void RefreshData()
@@ -286,6 +290,7 @@ namespace TrailsPlugin.UI.Activity {
 
             copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
+            this.selectActivityMenuItem.Text = Properties.Resources.UI_Activity_Page_LimitSelection;
 
             this.RefreshChartMenu();
             this.RefreshColumns();
@@ -461,12 +466,58 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshData();
 			}
 		}
-
         void copyTableMenu_Click(object sender, EventArgs e)
         {
             summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
+        void summaryList_Click(object sender, System.EventArgs e)
+        {
+            //SelectTrack, for ST3
+            if (sender is TreeList)
+            {
+                TreeList l = sender as TreeList;
+                if (l.SelectedItems != null && l.SelectedItems.Count > 0)
+                {
+                    IList<TrailResult> aTr = new List<TrailResult>();
+                    foreach (object t in l.SelectedItems)
+                    {
+                        if (t is Data.TrailResult &&
+                          t != null)
+                        {
+                            Data.TrailResult tr = t as Data.TrailResult;
+                            aTr.Add(tr);
+                        }
+                    }
+                    MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
+                }
+            }
+        }
+
+        private void List_SelectedChanged(object sender, EventArgs e)
+        {
+            RefreshChart();
+        }
+
+        void selectActivityMenuItem_Click(object sender, System.EventArgs e)
+        {
+#if !ST_2_1
+            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0)
+            {
+                IList<IActivity> aAct = new List<IActivity>();
+                foreach (object t in summaryList.SelectedItems)
+                {
+                    if (t is Data.TrailResult &&
+                      t != null)
+                    {
+                        Data.TrailResult tr = t as Data.TrailResult;
+                        aAct.Add(tr.Activity);
+                    }
+                }
+                m_view.SelectionProvider.SelectedItems = (List<IActivity>)aAct;
+            }
+#endif
+        }
         /*************************************************************************************************************/
 //ST3
         //TODO: Rewrite, using IItemTrackSelectionInfo help functions
@@ -759,30 +810,6 @@ namespace TrailsPlugin.UI.Activity {
 #else
                     summaryList.SelectedItems = atr;
 #endif
-                }
-            }
-        }
-
-        private void List_SelectedChanged(object sender, EventArgs e)
-        {
-			RefreshChart();
-            //SelectTrack, for ST3
-            if (sender is TreeList)
-            {
-                TreeList l = sender as TreeList;
-                if (l.SelectedItems != null && l.SelectedItems.Count > 0)
-                {
-                    IList<TrailResult> aTr = new List<TrailResult>();
-                    foreach (object t in l.SelectedItems)
-                    {
-                        if (t is Data.TrailResult &&
-                          t != null)
-                        {
-                            Data.TrailResult tr = t as Data.TrailResult;
-                            aTr.Add(tr);
-                        }
-                    }
-                    MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                 }
             }
         }

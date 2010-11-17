@@ -307,6 +307,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Limit activities to list selection.
+        /// </summary>
+        internal static string UI_Activity_Page_LimitSelection {
+            get {
+                return ResourceManager.GetString("UI_Activity_Page_LimitSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List Settings....
         /// </summary>
         internal static string UI_Activity_Page_ListSettings {

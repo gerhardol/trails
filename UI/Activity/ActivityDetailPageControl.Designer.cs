@@ -35,6 +35,7 @@
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectActivityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -239,6 +240,7 @@
             this.summaryList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
             this.summaryList.CheckBoxes = false;
             this.summaryList.ContextMenuStrip = this.listMenu;
+            this.summaryList.Click += new System.EventHandler(summaryList_Click);
             this.summaryList.DefaultIndent = 15;
             this.summaryList.DefaultRowHeight = -1;
             this.summaryList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -265,7 +267,8 @@
             // 
             this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyTableMenuItem,
-            this.listSettingsMenuItem});
+            this.listSettingsMenuItem,
+            this.selectActivityMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(199, 48);
             // 
@@ -282,6 +285,13 @@
             this.listSettingsMenuItem.Size = new System.Drawing.Size(198, 22);
             this.listSettingsMenuItem.Text = "List Settings...";
             this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
+            // 
+            // listSettingsMenuItem
+            // 
+            this.selectActivityMenuItem.Name = "selectActivityMenuItem";
+            this.selectActivityMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.selectActivityMenuItem.Text = "Limit selection to current activities...";
+            this.selectActivityMenuItem.Click += new System.EventHandler(selectActivityMenuItem_Click);
             // 
             // ChartPanel
             // 
@@ -537,7 +547,8 @@
 		private System.Windows.Forms.ContextMenuStrip listMenu;
         private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;
         private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
-		private System.Windows.Forms.ContextMenuStrip detailMenu;
+        private System.Windows.Forms.ToolStripMenuItem selectActivityMenuItem;
+        private System.Windows.Forms.ContextMenuStrip detailMenu;
         private TrailsPlugin.UI.Activity.TrailLineChart LineChart;
 		private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem elevationToolStripMenuItem;

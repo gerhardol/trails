@@ -313,10 +313,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 // Check the subitem clicked
                 int nStart = lastMouseArg.X;
-                int spos = EList.Location.X + EList.Parent.Location.X;
-                int epos = EList.Columns[0].Width;
+                int spos = EList.Location.X;
+                int epos = spos;
                 for (int i = 0; i < EList.Columns.Count; i++)
                 {
+                    epos += EList.Columns[i].Width;
                     if (nStart > spos && nStart < epos)
                     {
                         subItemSelected = i;
@@ -324,14 +325,13 @@ namespace TrailsPlugin.UI.Activity {
                     }
 
                     spos = epos;
-                    epos += EList.Columns[i].Width;
                 }
                 subItemText = ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].getField(subItemSelected);
                 ///The positioning is incorrect, set at header
                 int rowHeight = EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
                 int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
                 editBox.Size = new System.Drawing.Size(epos - spos, rowHeight);
-                editBox.Location = new System.Drawing.Point(spos, yTop);
+                editBox.Location = new System.Drawing.Point(spos-1, yTop);
                 editBox.Text = subItemText;
                 editBox.Visible = true;
                 editBox.SelectAll();

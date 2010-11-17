@@ -20,8 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using System.Globalization;
 
@@ -477,19 +475,41 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is TreeList)
             {
                 TreeList l = sender as TreeList;
-                if (l.SelectedItems != null && l.SelectedItems.Count > 0)
+                //Check if header. ColumnHeaderClicked will not fire due to this
+                if (l.HeaderRowHeight >= ((MouseEventArgs)e).Y)
                 {
-                    IList<TrailResult> aTr = new List<TrailResult>();
-                    foreach (object t in l.SelectedItems)
+                    int nStart = ((MouseEventArgs)e).X;
+                    int spos = l.Location.X;// +l.Parent.Location.X;
+                    int subItemSelected = 0;
+                    for (int i = 0; i < l.Columns.Count; i++)
                     {
-                        if (t is Data.TrailResult &&
-                          t != null)
+                        int epos = spos + l.Columns[i].Width;
+                        if (nStart > spos && nStart < epos)
                         {
-                            Data.TrailResult tr = t as Data.TrailResult;
-                            aTr.Add(tr);
+                            subItemSelected = i;
+                            break;
                         }
+
+                        spos = epos;
                     }
-                    MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
+                    summaryList_ColumnHeaderMouseClick(sender, l.Columns[subItemSelected]);
+                }
+                else
+                {
+                    if (l.SelectedItems != null && l.SelectedItems.Count > 0)
+                    {
+                        IList<TrailResult> aTr = new List<TrailResult>();
+                        foreach (object t in l.SelectedItems)
+                        {
+                            if (t is Data.TrailResult &&
+                              t != null)
+                            {
+                                Data.TrailResult tr = t as Data.TrailResult;
+                                aTr.Add(tr);
+                            }
+                        }
+                        MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
+                    }
                 }
             }
         }
@@ -530,6 +550,28 @@ namespace TrailsPlugin.UI.Activity {
                 string bookmark = "id=" + ((TrailResult)row).Activity;
                 PluginMain.GetApplication().ShowView(view, bookmark);
             }
+        }
+        private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.ColumnEventArgs e)
+        {
+            summaryList_ColumnHeaderMouseClick(sender, e.Column);
+        }
+        private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
+        {
+            if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == e.Id)
+            {
+                TrailsPlugin.Data.Settings.SummaryViewSortDirection = TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ?
+                       ListSortDirection.Descending : ListSortDirection.Ascending;
+            }
+            TrailsPlugin.Data.Settings.SummaryViewSortColumn = e.Id;
+            summaryList_Sort();
+        }
+        private void summaryList_Sort()
+        {
+            summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
+                TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
+            List<TrailResult> list = (List<TrailResult>)summaryList.RowData;
+            list.Sort();
+            summaryList.RowData = list;
         }
 
         /*************************************************************************************************************/

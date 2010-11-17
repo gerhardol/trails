@@ -19,6 +19,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.Globalization;
+using System.ComponentModel;
 using TrailsPlugin.UI.Activity;
 
 namespace TrailsPlugin.Data {
@@ -36,11 +37,13 @@ namespace TrailsPlugin.Data {
             m_chartType = TrailLineChart.LineChartTypes.Speed;
 
             m_activityPageColumns = new List<string>();
-            m_activityPageColumns.Add(UI.TrailResultColumnIds.Order);
-            m_activityPageColumns.Add(UI.TrailResultColumnIds.StartTime);
-            m_activityPageColumns.Add(UI.TrailResultColumnIds.Duration);
-            m_activityPageColumns.Add(UI.TrailResultColumnIds.AvgHR);
-            m_activityPageColumns.Add(UI.TrailResultColumnIds.AvgCadence);
+            m_activityPageColumns.Add(TrailResultColumnIds.Order);
+            m_activityPageColumns.Add(TrailResultColumnIds.StartTime);
+            m_activityPageColumns.Add(TrailResultColumnIds.Duration);
+            m_activityPageColumns.Add(TrailResultColumnIds.AvgHR);
+            m_activityPageColumns.Add(TrailResultColumnIds.AvgCadence);
+            m_summaryViewSortColumn = TrailResultColumnIds.Order;
+            m_summaryViewSortDirection = ListSortDirection.Ascending;
         }
         private static IList<string> m_activityPageColumns;
         private static int m_activityPageNumFixedColumns;
@@ -106,6 +109,19 @@ namespace TrailsPlugin.Data {
 				PluginMain.WriteExtensionData();
 			}
 		}
+        private static string m_summaryViewSortColumn;
+        public static string SummaryViewSortColumn
+        {
+            get { return m_summaryViewSortColumn; }
+            set { m_summaryViewSortColumn = value; }
+        }
+
+        private static ListSortDirection m_summaryViewSortDirection;
+        public static ListSortDirection SummaryViewSortDirection
+        {
+            get { return m_summaryViewSortDirection; }
+            set { m_summaryViewSortDirection = value; }
+        }
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
@@ -120,6 +136,10 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_xAxisValue = (TrailLineChart.XAxisValue)Enum.Parse(typeof(TrailLineChart.XAxisValue), attr, true); }
             attr = pluginNode.GetAttribute(xmlTags.sChartType);
             if (attr.Length > 0) { m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes), attr, true); }
+            attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
+            if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
+            attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
+            if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
             attr = pluginNode.GetAttribute(xmlTags.sColumns);
             if (attr.Length > 0)
             {
@@ -143,6 +163,8 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
             pluginNode.SetAttribute(xmlTags.sXAxis, m_xAxisValue.ToString());
             pluginNode.SetAttribute(xmlTags.sChartType, m_chartType.ToString());
+            pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, m_summaryViewSortColumn);
+            pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
 
             String colText = null;
             foreach (String column in m_activityPageColumns)
@@ -159,6 +181,8 @@ namespace TrailsPlugin.Data {
             public const string sNumFixedColumns = "sNumFixedColumns";
             public const string sXAxis = "sXAxis";
             public const string sChartType = "sChartType";
+            public const string summaryViewSortColumn = "summaryViewSortColumn";
+            public const string summaryViewSortDirection = "summaryViewSortDirection";
             public const string sColumns = "sColumns";
         }
 

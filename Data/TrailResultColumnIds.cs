@@ -18,16 +18,16 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using ZoneFiveSoftware.Common.Visuals;
 using System.Collections.Generic;
 using System.Drawing;
-using ZoneFiveSoftware.Common.Data.Measurement;
+using System.ComponentModel;
 using ZoneFiveSoftware.Common.Data.Fitness;
-using TrailsPlugin;
+
 #if ST_2_1
 //IListItem
 using ZoneFiveSoftware.SportTracks.UI;
 using ZoneFiveSoftware.SportTracks.Data;
 #endif
 
-namespace TrailsPlugin.UI {
+namespace TrailsPlugin.Data {
 #if !ST_2_1
     public class ListColumnDefinition : IListColumnDefinition
     {
@@ -145,5 +145,56 @@ namespace TrailsPlugin.UI {
             return columnDefs;
 		}
 #endif
+        public static int Compare(TrailResult x, TrailResult y)
+        {
+            int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
+
+            result *= getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
+            
+            return result;
+        }
+        //Helper function to get numerical value used in comparison
+        private static double getCompareField(TrailResult x, string id)
+        {
+            //Should be using reflection....
+            double t;
+            switch (id)
+            {
+                case TrailResultColumnIds.Order:
+                    return x.Order;
+                case TrailResultColumnIds.StartTime:
+                    return x.FirstTime.Ticks;
+                case TrailResultColumnIds.EndTime:
+                    return x.EndTime.Ticks;
+                case TrailResultColumnIds.Duration:
+                    return x.Duration.TotalSeconds;
+                case TrailResultColumnIds.Distance:
+                    double.TryParse(x.Distance, out t);
+                    return t;
+                case TrailResultColumnIds.AvgCadence:
+                    return x.AvgCadence;
+                case TrailResultColumnIds.AvgGrade:
+                    return x.AvgGrade;
+                case TrailResultColumnIds.AvgHR:
+                    return x.AvgHR;
+                case TrailResultColumnIds.AvgPace:
+                    return -x.AvgPace;
+                case TrailResultColumnIds.AvgPower:
+                    return x.AvgPower;
+                case TrailResultColumnIds.AvgSpeed:
+                    return x.AvgSpeed;
+                case TrailResultColumnIds.ElevChg:
+                    double.TryParse(x.ElevChg, out t);
+                    return t;
+                case TrailResultColumnIds.FastestPace:
+                    return -x.FastestPace;
+                case TrailResultColumnIds.FastestSpeed:
+                    return x.FastestSpeed;
+                case TrailResultColumnIds.MaxHR:
+                    return x.MaxHR;
+                default:
+                    return x.Order;
+            }
+        }
     }
 }

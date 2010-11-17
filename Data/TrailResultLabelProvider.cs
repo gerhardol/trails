@@ -16,12 +16,10 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
 
-namespace TrailsPlugin.UI.Activity {
+namespace TrailsPlugin.Data {
 	class TrailResultLabelProvider : TreeList.ILabelProvider {
 
         private bool m_multiple = false;

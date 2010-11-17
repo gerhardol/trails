@@ -18,6 +18,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
@@ -25,7 +26,7 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
-    public class TrailResult : ITrailResult
+    public class TrailResult : ITrailResult, IComparable
     {
 		private IActivity m_activity;
 		private int m_order;
@@ -659,6 +660,25 @@ namespace TrailsPlugin.Data {
         TimeSpan ITrailResult.StartTime
         {
             get { return StartTime; }
+        }
+
+        #endregion
+
+        #region IComparable<Product> Members
+
+        public int CompareTo(object obj)
+        {
+            int result = 1;
+            if (obj != null && obj is TrailResult)
+            {
+                TrailResult other = obj as TrailResult;
+                result = TrailResultColumnIds.Compare(this, other);
+            }
+            return result;
+        }
+        public int CompareTo(TrailResult other)
+        {
+            return TrailResultColumnIds.Compare(this, other);
         }
 
         #endregion

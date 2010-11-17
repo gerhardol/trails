@@ -31,6 +31,8 @@
   <ItemGroup>
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
+    <Compile Include="Data\TrailResultColumnIds.cs" />
+    <Compile Include="Data\TrailResultLabelProvider.cs" />
     <Compile Include="Data\TrailResultMarked.cs" />
     <Compile Include="Data\Settings.cs" />
     <Compile Include="Data\TrailResult.cs" />
@@ -68,7 +70,6 @@
     <Compile Include="UI\Activity\EditTrail.Designer.cs">
       <DependentUpon>EditTrail.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Activity\TrailResultLabelProvider.cs" />
     <Compile Include="UI\CommonIcons.cs" />
     <Compile Include="UI\Activity\ActivityDetailPage.cs" />
     <Compile Include="UI\Activity\ExtendActivityDetailPages.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="UI\Activity\ActivityDetailPageControl.Designer.cs">
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Activity\TrailResultColumnIds.cs" />
     <Compile Include="Utils\Constants.cs" />
     <Compile Include="Utils\Dialog.cs" />
     <Compile Include="Utils\GPS.cs" />

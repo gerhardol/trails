@@ -170,7 +170,24 @@ namespace TrailsPlugin.UI.Activity {
         private void RefreshColumns()
         {
 			summaryList.Columns.Clear();
-			foreach (string id in PluginMain.Settings.ActivityPageColumns) {
+#if !ST_2_1
+            //Permanent fields
+            if (m_controller.Activities.Count > 1)
+            {
+                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
+                {
+                        TreeList.Column column = new TreeList.Column(
+                            columnDef.Id,
+                            columnDef.Text(columnDef.Id),
+                            columnDef.Width,
+                            columnDef.Align
+                        );
+                        summaryList.Columns.Add(column);
+                }
+            }
+#endif
+            foreach (string id in PluginMain.Settings.ActivityPageColumns)
+            {
 				foreach (
 #if ST_2_1
                     ListItemInfo

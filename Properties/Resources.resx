@@ -239,6 +239,5 @@ Press {0} to use the Lap points, {1} to abort and select points on the GPS track
   </data>
   <data name="UI_Activity_Page_LimitSelection" xml:space="preserve">
     <value>Limit activities to list selection</value>
-    <comment>new</comment>
   </data>
 </root>

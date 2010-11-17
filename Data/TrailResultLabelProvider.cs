@@ -20,7 +20,8 @@ using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
 
 namespace TrailsPlugin.Data {
-	class TrailResultLabelProvider : TreeList.ILabelProvider {
+    class TrailResultLabelProvider : TreeList.DefaultLabelProvider
+    {
 
         private bool m_multiple = false;
         public bool MultipleActivities
@@ -29,16 +30,36 @@ namespace TrailsPlugin.Data {
         }
 		#region ILabelProvider Members
 
-		public Image GetImage(object element, TreeList.Column column) {
-			return null;
-		}
-		
-		public string GetText(object element, TreeList.Column column) {
+        public override Image GetImage(object element, TreeList.Column column)
+        {
+            Data.TrailResult row = (Data.TrailResult)element;
 
-			Data.TrailResult row = (Data.TrailResult)element;
+            if (column.Id == "Color")
+            {
+                Bitmap image = new Bitmap(column.Width, 15);
+                for (int x = 0; x < image.Width; x++)
+                {
+                    for (int y = 0; y < image.Height; y++)
+                    {
+                        image.SetPixel(x, y, row.TrailColor);
+                    }
+                }
+                return image;
+            }
+            else
+            {
+                return base.GetImage(row.Activity, column);
+            }
+        }
+
+        public override string GetText(object element, TreeList.Column column)
+        {
+            Data.TrailResult row = (Data.TrailResult)element;
 			switch (column.Id) {
 				case TrailResultColumnIds.Order:
 					return row.Order.ToString();
+                case TrailResultColumnIds.Color:
+                    return null;
 				case TrailResultColumnIds.StartTime:
                     string date = "";
                     if (m_multiple)
@@ -71,10 +92,10 @@ namespace TrailsPlugin.Data {
 				case TrailResultColumnIds.AvgPace: 
 					return row.AvgPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.AvgPace));					
 				case TrailResultColumnIds.FastestPace:
-					return row.FastestPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.FastestPace));					
-				default:
-					return "error:" + column.Id;
-			}			
+					return row.FastestPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.FastestPace));
+                default:
+                    return base.GetText(row.Activity, column);
+            }			
 		}
 
 		#endregion

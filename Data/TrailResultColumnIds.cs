@@ -83,8 +83,9 @@ namespace TrailsPlugin.Data {
     }
 #endif
     public class TrailResultColumnIds {
-		public const string Order = "Order";
-		public const string StartTime = "StartTime";
+        public const string Order = "Order";
+        public const string Color = "Color";
+        public const string StartTime = "StartTime";
 		public const string EndTime = "EndTime";
 		public const string Duration = "Duration";
 		public const string Distance = "Distance";
@@ -127,7 +128,7 @@ namespace TrailsPlugin.Data {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
             int w = 70;
-            if (mult) { w = 110; }
+            if (mult) { w = 115;}
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, "", 60, StringAlignment.Near));
@@ -145,12 +146,25 @@ namespace TrailsPlugin.Data {
             return columnDefs;
 		}
 #endif
+        public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
+        {
+            IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Color, "", "", 15, StringAlignment.Near));
+
+            return columnDefs;
+        }
         public static int Compare(TrailResult x, TrailResult y)
         {
             int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
 
-            result *= getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
-            
+            //if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Color)
+            //{
+            //    result *= x.TrailColor.ToKnownColor().CompareTo(y.TrailColor.ToKnownColor());
+            //}
+            //else
+            {
+                result *= getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
+            }            
             return result;
         }
         //Helper function to get numerical value used in comparison
@@ -160,6 +174,8 @@ namespace TrailsPlugin.Data {
             double t;
             switch (id)
             {
+                case TrailResultColumnIds.Color:
+                    return x.TrailColor.ToArgb();
                 case TrailResultColumnIds.Order:
                     return x.Order;
                 case TrailResultColumnIds.StartTime:

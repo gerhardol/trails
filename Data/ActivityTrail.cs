@@ -62,7 +62,25 @@ namespace TrailsPlugin.Data {
                             {
                                 //Match all
                                 IList<int> allMatch = new List<int>();
-                                allMatch.Add(0);
+                                if (null == activity.Laps || 0 == activity.Laps.Count)
+                                {
+                                    allMatch.Add(0);
+                                }
+                                else
+                                {
+                                    int i = 0;
+                                    foreach (ILapInfo l in activity.Laps)
+                                    {
+                                        for (; i < activity.GPSRoute.Count; i++)
+                                        {
+                                            if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i])))
+                                            {
+                                                allMatch.Add(i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
                                 allMatch.Add(activity.GPSRoute.Count - 1);
                                 TrailResult result = new TrailResult(activity, m_resultsList.Count + 1, allMatch, float.MaxValue);
                                 m_resultsList.Add(result);

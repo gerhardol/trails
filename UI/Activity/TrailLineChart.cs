@@ -381,6 +381,12 @@ namespace TrailsPlugin.UI.Activity {
 				mainDataCopy.LineColor = ChartLineColor;
 				mainDataCopy.SelectedColor = ChartSelectedColor;
                 MainChart.XAxis.Markers.Clear();
+                    Image icon = 
+#if ST_2_1
+                        CommonResources.Images.Information16;
+#else
+                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11,11));
+#endif
                     if (XAxisReferential == XAxisValue.Time)
                     {
 						foreach (ITimeValueEntry<float> entry in graphPoints) {
@@ -389,7 +395,7 @@ namespace TrailsPlugin.UI.Activity {
 						}
                         foreach (DateTime t in m_trailResult.TimeTrailPoints)
                         {
-                            AxisMarker a = new AxisMarker(t.Subtract(m_trailResult.FirstTime).TotalSeconds, CommonResources.Images.Information16);
+                            AxisMarker a = new AxisMarker(t.Subtract(m_trailResult.FirstTime).TotalSeconds, icon);
                             a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
                             a.Line1Color = Color.Black;
                             MainChart.XAxis.Markers.Add(a);
@@ -412,7 +418,7 @@ namespace TrailsPlugin.UI.Activity {
 						}
                         foreach (double t in m_trailResult.DistanceTrailPoints)
                         {
-                            AxisMarker a = new AxisMarker(Utils.Units.GetDistance(t, m_trailResult.Activity), CommonResources.Images.Information16);
+                            AxisMarker a = new AxisMarker(Utils.Units.GetDistance(t, m_trailResult.Activity), icon);
                             a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
                             a.Line1Color = Color.Black;
                             MainChart.XAxis.Markers.Add(a);

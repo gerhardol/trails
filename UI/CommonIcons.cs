@@ -132,12 +132,12 @@ namespace TrailsPlugin
 
         const int brushSize = 6; //Even
         //The outer radius defines the included area
-        static public string Circle(int sizeX, int sizeY)
+        static public string fileCircle(int sizeX, int sizeY)
         {
             Size iconSize;
-            return Circle(sizeX, sizeY, out iconSize);
+            return fileCircle(sizeX, sizeY, out iconSize);
         }
-        static public string Circle(int sizeX, int sizeY, out Size iconSize)
+        static public string fileCircle(int sizeX, int sizeY, out Size iconSize)
         {
             string basePath = PluginMain.GetApplication().
 #if ST_2_1
@@ -182,7 +182,11 @@ namespace TrailsPlugin
                 myBitmap.Save(myFileOut, ImageFormat.Png);
                 myFileOut.Close();
             }
-            return "file://" + filePath;
+            return filePath;
+        }
+        static public string Circle(int sizeX, int sizeY, out Size iconSize)
+        {
+            return "file://" + fileCircle(sizeX, sizeY, out iconSize);
         }
 	}
 }

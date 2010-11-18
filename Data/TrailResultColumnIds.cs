@@ -127,8 +127,7 @@ namespace TrailsPlugin.Data {
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
-            int w = 70;
-            if (mult) { w = 115;}
+            int w = mult ? 115 : 70;
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, "", 60, StringAlignment.Near));

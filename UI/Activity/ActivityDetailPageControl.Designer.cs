@@ -260,7 +260,7 @@
             this.summaryList.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
             this.summaryList.RowSeparatorLines = true;
             this.summaryList.ShowLines = false;
-            this.summaryList.ShowPlusMinus = false;
+            this.summaryList.ShowPlusMinus = true;
             this.summaryList.Size = new System.Drawing.Size(400, 60);
             this.summaryList.TabIndex = 11;
             // 

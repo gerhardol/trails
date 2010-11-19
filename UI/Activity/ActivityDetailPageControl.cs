@@ -135,6 +135,7 @@ namespace TrailsPlugin.UI.Activity {
 
 			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
 			summaryList.LabelProvider = new TrailResultLabelProvider();
+            this.summaryList.ShowPlusMinus = true; 
             this.ExpandSplitContainer.Panel2Collapsed = true;
             LineChart.ShowChartToolBar = m_showChartToolBar;
             LineChart.DetailPage = this;
@@ -232,6 +233,21 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChart();
             m_layer.ShowPage = _showPage;
         }
+        private IList<TreeList.TreeListNode> getTreeListNodeSplits(IList<Data.TrailResult> results)
+        {
+            IList<TreeList.TreeListNode> res2 = new List<TreeList.TreeListNode>();
+            foreach (TrailResult tr in results)
+            {
+                TreeList.TreeListNode tn = new TreeList.TreeListNode(null, tr);
+                foreach (TrailResult tr2 in tr.getSplits())
+                {
+                    TreeList.TreeListNode tn2 = new TreeList.TreeListNode(tn, tr2);
+                    tn.Children.Add(tn2);
+                }
+                res2.Add(tn);
+            }
+            return res2;
+        }
         private void RefreshList()
         {
             summaryList.RowData = null;
@@ -242,7 +258,7 @@ namespace TrailsPlugin.UI.Activity {
                 IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
 
                 //summaryList
-                summaryList.RowData = results;
+                summaryList.RowData = getTreeListNodeSplits(results);
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 if (results.Count > 0)
                 {
@@ -250,7 +266,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Set size, to not waste chart
-                int resRows = Math.Min(5, ((IList<Data.TrailResult>)(this.summaryList.RowData)).Count);
+                int resRows = Math.Min(5, results.Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
                     this.summaryList.DefaultRowHeight * resRows;
             }
@@ -518,12 +534,17 @@ namespace TrailsPlugin.UI.Activity {
                         IList<TrailResult> aTr = new List<TrailResult>();
                         foreach (object t in l.SelectedItems)
                         {
-                            if (t is Data.TrailResult &&
-                              t != null)
+                            object t2 = t;
+                            if (t != null && t is TreeList.TreeListNode)
                             {
-                                Data.TrailResult tr = t as Data.TrailResult;
+                                t2 = (object)(t as TreeList.TreeListNode).Element;
+                            }
+                            if (t2!=null && t2 is TrailResult)
+                            {
+                                Data.TrailResult tr = t2 as Data.TrailResult;
                                 aTr.Add(tr);
                             }
+                            
                         }
                         MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                     }
@@ -586,9 +607,9 @@ namespace TrailsPlugin.UI.Activity {
         {
             summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                 TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
-            List<TrailResult> list = (List<TrailResult>)summaryList.RowData;
-            list.Sort();
-            summaryList.RowData = list;
+            IList<TrailResult> list = m_controller.CurrentActivityTrail.Results;
+            ((List<TrailResult>)list).Sort();
+            summaryList.RowData = getTreeListNodeSplits(list);
         }
 
         /*************************************************************************************************************/
@@ -837,11 +858,14 @@ namespace TrailsPlugin.UI.Activity {
                     m_view.RouteSelectionProvider != null &&
                     isSingleView && m_controller.CurrentActivity != null)
                 {
-                    //Only one activity, OK to merge selections on one track
-                    Data.TrailsItemTrackSelectionInfo r = Data.TrailResultMarked.SelInfoUnion(atr);
-                    r.Activity = m_controller.CurrentActivity;
-                    m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-                    m_layer.ZoomRoute = atr[0].trailResult.GpsPoints(r);
+                    if (atr.Count > 0)
+                    {
+                        //Only one activity, OK to merge selections on one track
+                        Data.TrailsItemTrackSelectionInfo r = Data.TrailResultMarked.SelInfoUnion(atr);
+                        r.Activity = m_controller.CurrentActivity;
+                        m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
+                        m_layer.ZoomRoute = atr[0].trailResult.GpsPoints(r);
+                    }
                 }
                 else
                 {
@@ -897,9 +921,14 @@ namespace TrailsPlugin.UI.Activity {
 			if(m_isExpanded) {				
 				Data.TrailResult result = null;
 				if (m_controller.CurrentActivityTrail != null) {								
-					IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-					if (((IList<Data.TrailResult>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0) {
-						result = (Data.TrailResult)this.summaryList.SelectedItems[0];
+                    if (this.summaryList.SelectedItems[0] is TrailResult)
+                    {
+                        //TODO: Eliminate (same below)
+                        this.LineChart.TrailResult = (Data.TrailResult)(this.summaryList.SelectedItems[0]);
+                    }
+                    else
+                    {
+                        this.LineChart.TrailResult = (Data.TrailResult)((TreeList.TreeListNode)this.summaryList.SelectedItems[0]).Element;
                     }
 				}
                 m_chartsControl.RefreshCharts(result);
@@ -929,10 +958,17 @@ namespace TrailsPlugin.UI.Activity {
 					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
                     this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
                         PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
-                    IList<Data.TrailResult> results = m_controller.CurrentActivityTrail.Results;
-					if (((IList<Data.TrailResult>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0) {
-						this.LineChart.TrailResult = (Data.TrailResult)this.summaryList.SelectedItems[0];
-					}
+                    if (((IList<TreeList.TreeListNode>)this.summaryList.RowData).Count > 0 && this.summaryList.Selected.Count > 0)
+                    {
+                        if (this.summaryList.SelectedItems[0] is TrailResult)
+                        {
+                            this.LineChart.TrailResult = (Data.TrailResult)(this.summaryList.SelectedItems[0]);
+                        }
+                        else
+                        {
+                            this.LineChart.TrailResult = (Data.TrailResult)((TreeList.TreeListNode)this.summaryList.SelectedItems[0]).Element;
+                        }
+                    }
 				}
 				this.LineChart.EndUpdate();
 			}

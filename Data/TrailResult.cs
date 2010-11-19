@@ -70,6 +70,15 @@ namespace TrailsPlugin.Data {
             aActivities[m_activity].res.Add(this);
         }
 
+        public IList<TrailResult> getSplits()
+        {
+            IList<TrailResult> splits = new List<TrailResult>();
+            for (int i = 1; i < m_indexes.Count; i++)
+            {
+                splits.Add(new TrailResult(m_activity, m_order, new List<int> { m_indexes[i - 1], m_indexes[i] }, m_distDiff));
+            }
+            return splits;
+        }
         public IActivity Activity
         {
             get { return m_activity; }

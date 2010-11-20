@@ -47,19 +47,7 @@ namespace TrailsPlugin.UI.Activity {
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
         }
-        public void RefreshPage()
-        {
-            btnCollapse.CenterImage = CommonIcons.LowerLeft;
-			btnCollapse.Text = "";
-			btnCollapse.Left = this.Right - 46;
-			btnCollapse.Top = 2;
 
-			speedChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
-			heartrateChart.YAxisReferential = TrailLineChart.LineChartTypes.HeartRateBPM;
-			gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
-			elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
-			cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
-		}
         public void ThemeChanged(ITheme visualTheme)
         {
             foreach (Control t in this.tableLayoutPanel1.Controls)
@@ -86,7 +74,29 @@ namespace TrailsPlugin.UI.Activity {
             }
             RefreshChartMenu();
         }
+        private bool _showPage;
+        public bool ShowPage
+        {
+            get { return _showPage; }
+            set
+            {
+                _showPage = value;
+            }
+        }
 
+        public void RefreshPage()
+        {
+            btnCollapse.CenterImage = CommonIcons.LowerLeft;
+            btnCollapse.Text = "";
+            btnCollapse.Left = this.Right - 46;
+            btnCollapse.Top = 2;
+
+            speedChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
+            heartrateChart.YAxisReferential = TrailLineChart.LineChartTypes.HeartRateBPM;
+            gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
+            elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
+            cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
+        }
         public ActivityDetailPageControl DetailPage
         {
             set
@@ -112,7 +122,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
         /////////////////////////////////////////////////////////////////////////////
-        public void RefreshRows()
+        private void RefreshRows()
         {
             int noOfGraphs = 0;
             for (int i = 1; i < tableLayoutPanel1.RowCount; i++)
@@ -151,6 +161,7 @@ namespace TrailsPlugin.UI.Activity {
                     chart.EndUpdate();
                 }
             }
+            RefreshRows();
 		}
 
         void RefreshChartMenu()

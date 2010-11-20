@@ -33,7 +33,7 @@ using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.MapLayers
 {
-    class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
+    public class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
         private DateTime m_creationTime = DateTime.Now;
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)

@@ -35,7 +35,7 @@ namespace TrailsPlugin.UI.MapLayers {
         public MapPolyline(IList<IGPSPoint> g, int w, Color c) { }
         public event MouseEventHandler Click;
     };
-	class MapControlLayer : IMapControlLayer
+	public class MapControlLayer : IMapControlLayer
     {
 		public event System.EventHandler SelectedGPSLocationsChanged;
 

@@ -48,7 +48,7 @@
             this.SummaryPanel.Name = "SummaryPanel";
             this.SummaryPanel.RowCount = 1;
             this.SummaryPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.SummaryPanel.Size = new System.Drawing.Size(400, 300);
+            this.SummaryPanel.Size = new System.Drawing.Size(400, 100);
             this.SummaryPanel.TabIndex = 1;
             // 
             // summaryList

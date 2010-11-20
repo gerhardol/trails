@@ -30,7 +30,7 @@ using ZoneFiveSoftware.Common.Visuals.Mapping;
 
 namespace TrailsPlugin.UI.MapLayers
 {
-    class RouteControlLayerBase
+    public class RouteControlLayerBase
     {
         public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder)
         {

@@ -72,7 +72,7 @@ namespace TrailsPlugin.UI.Activity {
         public void SetSingleChartsControl(ActivityDetailPageControl page, Controller.TrailController controller)
         {
 #else
-        public void SetSingleChartsControl(IDailyActivityView view, ActivityDetailPageControl page, Controller.TrailController controller)
+        public void SetSingleChartsControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
         {
             m_view = view;
 #endif

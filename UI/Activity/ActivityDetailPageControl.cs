@@ -16,6 +16,8 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//Note: This module has been split in several classes, but there is still some interwining...
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,9 +70,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
 
 		private Controller.TrailController m_controller;
-		private MultiChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
-        private bool m_showChartToolBar = true;
 
 #if ST_2_1
         private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
@@ -101,55 +101,47 @@ namespace TrailsPlugin.UI.Activity {
 
 		void InitControls()
         {
-            TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
-
-			btnAdd.BackgroundImage = CommonIcons.Add;
-			btnAdd.Text = "";
-			btnEdit.BackgroundImage = CommonIcons.Edit;
-			btnEdit.Text = "";
-			btnDelete.BackgroundImage = CommonIcons.Delete;
-			btnDelete.Text = "";
 
             this.ExpandSplitContainer.Panel2Collapsed = true;
-            if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
 
 #if ST_2_1
-            summaryListControl.SetResultList(this, m_controller);
-            summaryListControl.SetSingleChartsControl(this, m_controller);
+            TrailSelector.SetTrailSelectorControl(this, m_controller, m_layer);
+            ReportList.SetResultListControl(this, m_controller);
+            SingleChart.SetSingleChartsControl(this, m_controller);
 #else
-            summaryList.SetResultList(m_view, this, m_controller);
-            SingleChart.SetSingleChartsControl(m_view, this, m_controller);
+            TrailSelector.SetTrailSelectorControl(this, m_controller, m_view, m_layer);
+            ResultList.SetResultListControl(this, m_controller, m_view);
+            SingleChart.SetSingleChartsControl(this, m_controller, m_view);
 #endif
-            summaryList.RefreshColumns();
+            this.MultiCharts.DetailPage = this;
+#if ST_2_1
+			SplitContainer sc = DailyActivitySplitter;
+            if (sc != null)
+            {
+               sc.Panel2.Controls.Add(MultiCharts);
+            }
+#endif
+            MultiCharts.ShowChartToolBar = ShowChartToolBar;
+
+            //summaryList.RefreshColumns();
 		}
 
         public void UICultureChanged(CultureInfo culture)
         {
             m_culture = culture;
-            toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
-            toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
-            toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
-            this.lblTrail.Text = Properties.Resources.TrailName + ":";
 
+            this.TrailSelector.UICultureChanged(culture);
+            this.ResultList.UICultureChanged(culture);
             this.SingleChart.UICultureChanged(culture);
-            this.summaryList.UICultureChanged(culture);
-
-            if (m_chartsControl != null)
-            {
-                m_chartsControl.UICultureChanged(culture);
-            }
+            this.MultiCharts.UICultureChanged(culture);
         }
         public void ThemeChanged(ITheme visualTheme)
         {
             m_visualTheme = visualTheme;
-            TrailName.ThemeChanged(visualTheme);
-            summaryList.ThemeChanged(visualTheme);
+            TrailSelector.ThemeChanged(visualTheme);
+            ResultList.ThemeChanged(visualTheme);
             SingleChart.ThemeChanged(visualTheme);
-
-            if (m_chartsControl != null)
-            {
-                m_chartsControl.ThemeChanged(visualTheme);
-            }
+            MultiCharts.ThemeChanged(visualTheme);
         }
 
         public IList<IActivity> Activities
@@ -160,7 +152,7 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
                 m_layer.ClearOverlays();
 #endif
-                summaryList.RefreshColumns();
+                ResultList.RefreshColumns();
                 RefreshData();
                 RefreshControlState();
             }
@@ -174,12 +166,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 _showPage = value;
                 m_layer.ShowPage = value;
-                summaryList.ShowPage = value;
+                TrailSelector.ShowPage = value;
+                ResultList.ShowPage = value;
+                SingleChart.ShowPage = value;
+                MultiCharts.ShowPage = value;
 #if !ST_2_1
                 if (value)
                 {
-                    //Not needed now
-                    //RefreshData();
                     m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                 }
                 else
@@ -190,35 +183,21 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-		private void RefreshControlState() 
+		public void RefreshControlState() 
         {
-            bool enabled = (m_controller.FirstActivity != null);
-			btnAdd.Enabled = enabled;
-			TrailName.Enabled = enabled;
-
-			enabled = (m_controller.CurrentActivityTrail != null);
-			btnEdit.Enabled = enabled;
-			btnDelete.Enabled = enabled;
-
-            summaryList.RefreshControlState();
-            if (m_controller.CurrentActivityTrail != null)
-            {
-                TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
-            }
-            else
-            {
-                TrailName.Text = "";
-            }
+            ResultList.RefreshControlState();
+            TrailSelector.RefreshControlState();
         }
 
-        private void RefreshData()
+        public void RefreshData()
         {
-            m_layer.ShowPage = false; //defer updates
+            bool showPage = _showPage;
+            ShowPage = false; //defer updates
             //Update list first, so not refresh changes selection
-            summaryList.RefreshList();
+            ResultList.RefreshList();
             RefreshRoute(); 
             RefreshChart();
-            m_layer.ShowPage = _showPage;//xxx
+            ShowPage = showPage;
         }
         public void RefreshChart()
         {
@@ -226,9 +205,8 @@ namespace TrailsPlugin.UI.Activity {
                 IList<TrailResult> list = this.SelectedItems;
                 if (list.Count > 0)
                 {
-                    m_chartsControl.RefreshCharts(list[0]);
+                    MultiCharts.RefreshCharts(list[0]);
                 }
-                m_chartsControl.RefreshRows();
             }
             else
             {
@@ -239,9 +217,11 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                return this.summaryList.SelectedItems;
+                return this.ResultList.SelectedItems;
             }
+            set { this.ResultList.SelectedItems = value; }
         }
+
         private void RefreshRoute()
         {
             if((! m_isExpanded || isReportView)
@@ -321,331 +301,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        /************************************************************/
-		private void btnAdd_Click(object sender, EventArgs e) {
-
-            int countGPS = 0;
-#if ST_2_1
-			IMapControl mapControl = m_layer.MapControl;
-			ICollection<IMapControlObject> selectedGPS = null;
-            if (null != mapControl) { selectedGPS = mapControl.Selected; }
-#else
-            IList<IItemTrackSelectionInfo> selectedGPS = m_view.RouteSelectionProvider.SelectedItems;
-#endif
-            countGPS = selectedGPS.Count;
-            if (countGPS > 0)
-            {
-#if ST_2_1
-                m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-				m_layer.CaptureSelectedGPSLocations();
-#else
-                selectedGPSLocationsChanged_AddTrail(selectedGPS);
-#endif
-            } else {
-#if ST_2_1
-                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
-                MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-#else
-                //It is currently not possible to select while in multimode
-                //The button could be disabled, error ignored for now
-                if (isSingleView && m_controller.CurrentActivity != null)
-                {
-                    if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
-                        , "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        //Using IItemTrackSelectionInfo to avoid duplicating code
-                        if (null == m_controller.CurrentActivity.Laps || 0 == m_controller.CurrentActivity.Laps.Count)
-                        {
-                            selectedGPS.Add(getSel(m_controller.CurrentActivity.StartTime));
-                        }
-                        else
-                        {
-                            foreach (ILapInfo l in m_controller.CurrentActivity.Laps)
-                            {
-                                selectedGPS.Add(getSel(l.StartTime));
-                            }
-                        }
-                        ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
-                        selectedGPS.Add(getSel(activityInfo.EndTime));
-                        selectedGPSLocationsChanged_AddTrail(selectedGPS);
-                        selectedGPS.Clear();
-                    }
-                }
-                else
-                {
-                    selectedGPSLocationsChanged_AddTrail(selectedGPS);
-                }
-#endif
-            }
- 		}
-        private TrailsItemTrackSelectionInfo getSel(DateTime t)
-        {
-            IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
-            TrailsItemTrackSelectionInfo s = new TrailsItemTrackSelectionInfo();
-            s.SelectedTime = v;
-            return s;
-        }
-        private void btnEdit_Click(object sender, EventArgs e) {
-            int countGPS = 0;
-#if ST_2_1
-			IMapControl mapControl = m_layer.MapControl;
-            ICollection<IMapControlObject> selectedGPS = null;
-            if (null != mapControl) { selectedGPS = mapControl.Selected; }
-#else
-            IList<IItemTrackSelectionInfo> selectedGPS = m_view.RouteSelectionProvider.SelectedItems;
-#endif
-            countGPS = selectedGPS.Count;
-            if (countGPS > 0)
-            {
-#if ST_2_1
-				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
-				m_layer.CaptureSelectedGPSLocations();
-#else
-                selectedGPSLocationsChanged_EditTrail(selectedGPS);
-#endif
-            } else {
-#if ST_2_1
-				EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
-#else
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
-#endif
-                if (dialog.ShowDialog() == DialogResult.OK) {
-					RefreshControlState();
-					RefreshData();
-				}
-			}
-		}
-
-		private void btnDelete_Click(object sender, EventArgs e) {
-			if (MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
-                == DialogResult.Yes) {
-				m_controller.DeleteCurrentTrail();
-				RefreshControlState();
-				RefreshData();
-			}
-		}
-
         /*************************************************************************************************************/
-//ST3
-        //TODO: Rewrite, using IItemTrackSelectionInfo help functions
-        IList<TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di)
-        {
-            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
-            ITimeValueEntry<IGPSPoint> p = null;
-            if (null != ts)
-            {
-                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(ts.Lower);
-            }
-            else
-            {
-                //Normally, selecting by time is null, fall back to select by distance
-                if (null != di && null != m_controller.CurrentActivity && null != m_controller.CurrentActivity.GPSRoute)
-                {
-                    IDistanceDataTrack dt = m_controller.CurrentActivity.GPSRoute.GetDistanceMetersTrack();
-                    p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
-                }
-            }
-            if (null != p)
-            {
-                result.Add(new TrailGPSLocation(p.Value.LatitudeDegrees, p.Value.LongitudeDegrees, ""));
-            }
-            return result;
-        }
-        IList<TrailGPSLocation> getGPS(IList<IItemTrackSelectionInfo> aSelectGPS)
-        {
-            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
-            for (int i = 0; i < aSelectGPS.Count; i++)
-            {
-                IItemTrackSelectionInfo selectGPS = aSelectGPS[i];
-                IList<TrailGPSLocation> result2 = new List<TrailGPSLocation>();
-
-                //Marked
-                IValueRangeSeries<DateTime> tm = selectGPS.MarkedTimes;
-                if (null != tm)
-                {
-                    foreach (IValueRange<DateTime> ts in tm)
-                    {
-                        result2 = Trail.MergeTrailLocations(result2, getGPS(ts, null));
-                    }
-                }
-                if (result2.Count == 0)
-                {
-                    IValueRangeSeries<double> td = selectGPS.MarkedDistances;
-                    if (null != td)
-                    {
-
-                        foreach (IValueRange<double> td1 in td)
-                        {
-                            result2 = Trail.MergeTrailLocations(result2, getGPS(null, td1));
-                        }
-                    }
-                    if (result2.Count == 0)
-                    {
-                        //Selected
-                        result2 = getGPS(selectGPS.SelectedTime, selectGPS.SelectedDistance);
-                    }
-                }
-                result = Trail.MergeTrailLocations(result, result2);
-            }
-            return result;
-        }
-#if ST_2_1
-//ST_2_1
-        IList<TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
-        {
-            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
-            for (int i = 0; i < aSelectGPS.Count; i++)
-            {
-                IGPSLocation selectGPS = aSelectGPS[i];
-            result.Add(new TrailGPSLocation(selectGPS.LatitudeDegrees, selectGPS.LongitudeDegrees, ""));
-            }
-            return result;
-        }
-#endif
-#if !ST_2_1
-        private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
-        {
-#else
-		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
-        {
-			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-            IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
-#endif
-            bool addCurrent = false;
-            if (m_controller.CurrentActivityTrail != null)
-            {
-                if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
-                    "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    addCurrent = true;
-                }
-            }
-#if ST_2_1
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, !addCurrent);
-#else
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent);
-#endif
-            if (m_controller.CurrentActivityTrail != null)
-            {
-                if (addCurrent)
-                {
-                    //TODO: sort old/new points, so it is possible to add in middle?
-                }
-                else
-                {
-                    dialog.Trail.TrailLocations.Clear();
-                }
-            }
-            dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(selectedGPS));
-
-			if (dialog.ShowDialog() == DialogResult.OK) {
-				RefreshControlState();
-				RefreshData();
-			}
-		}
-
-
-#if !ST_2_1
-        private void selectedGPSLocationsChanged_EditTrail(IList<IItemTrackSelectionInfo> selectedGPS)
-        {
-#else
- 		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e)
-        {
-			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
-            IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
-#endif
-#if ST_2_1
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
-#else
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
-#endif
-            bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
-            if (!selectionIsDifferent)
-            {
-                IList<TrailGPSLocation> loc = getGPS(selectedGPS);
-                if (loc.Count == selectedGPS.Count)
-                {
-                    for (int i = 0; i < loc.Count; i++)
-                    {
-                        TrailGPSLocation loc1 = loc[i];
-                        IGPSLocation loc2 = dialog.Trail.TrailLocations[i].GpsLocation;
-                        if (loc1.LatitudeDegrees != loc2.LatitudeDegrees
-                                || loc1.LongitudeDegrees != loc2.LongitudeDegrees)
-                        {
-                            selectionIsDifferent = true;
-                            break;
-                        }
-                    }
-                }
-            }
- 
-            if (selectionIsDifferent)
-            {
-                if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    dialog.Trail.TrailLocations = getGPS(selectedGPS);
-                }
-            }
-
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                RefreshControlState();
-                RefreshData();
-            }
-        }
-
-
-        private void TrailName_ButtonClick(object sender, EventArgs e)
-        {
-            TreeListPopup treeListPopup = new TreeListPopup();
-            treeListPopup.ThemeChanged(m_visualTheme);
-            treeListPopup.Tree.Columns.Add(new TreeList.Column());
-
-            treeListPopup.Tree.RowData = m_controller.OrderedTrails;
-            treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
-
-            if (m_controller.CurrentActivityTrail != null)
-            {
-#if ST_2_1
-                treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
-#else
-                treeListPopup.Tree.SelectedItems = new object[] { m_controller.CurrentActivityTrail };
-#endif
-            }
-            treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
-            treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
-        }
-
-        /*******************************************************/
-
-		class TrailDropdownLabelProvider : TreeList.ILabelProvider {
-
-			public Image GetImage(object element, TreeList.Column column) {
-				ActivityTrail t = (ActivityTrail)element;
-				if (!t.IsInBounds) {
-					return CommonIcons.BlueSquare;
-				} else if (t.Results.Count > 0) {
-					return CommonIcons.GreenSquare;
-				} else {
-					return CommonIcons.RedSquare;
-				}
-			}
-
-			public string GetText(object element, TreeList.Column column) {
-				ActivityTrail t = (ActivityTrail)element;
-				return t.Trail.Name;
-			}
-		}
-
-		private void TrailName_ItemSelected(object sender, EventArgs e) {
-			ActivityTrail t = (ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item;
-			m_controller.CurrentActivityTrail = t;
-			RefreshData();
-			RefreshControlState();
-		}
-
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
 #if !ST_2_1
@@ -686,28 +342,14 @@ namespace TrailsPlugin.UI.Activity {
                 TrailMapPolyline tm = sender as TrailMapPolyline;
                 if (tm.key.Contains("m"))
                 {
-                    summaryList.SelectedItems = new List<TrailResult> { tm.TrailRes };
+                    ResultList.SelectedItems = new List<TrailResult> { tm.TrailRes };
                 }
                 else
                 {
-                    summaryList.SelectedItems = TrailResult.TrailResultList(tm.TrailRes.Activity);
+                    ResultList.SelectedItems = TrailResult.TrailResultList(tm.TrailRes.Activity);
                 }
             }
         }
-
-		private void ActPagePanel_SizeChanged(object sender, EventArgs e) {
-			// autosize column doesn't seem to be working.
-            //Sizing is flaky in general
-			float width = 0;
-			for (int i = 0; i < ActPagePanel.ColumnStyles.Count; i++) {
-				if (i != 1) {
-					width += this.ActPagePanel.ColumnStyles[i].Width;
-				}
-			}
-			this.ActPagePanel.ColumnStyles[1].SizeType = SizeType.Absolute;
-            this.ActPagePanel.ColumnStyles[1].Width = this.ActPagePanel.Width - width;
-		}
-
         
 #if ST_2_1
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
@@ -720,55 +362,59 @@ namespace TrailsPlugin.UI.Activity {
                 }
 					c = c.Parent;
 				}
-                throw new Exception("Daily Activity Splitter not found");
+                return null;
+                //throw new Exception("Daily Activity Splitter not found");
 			}
 		}
 #endif
 
-        private void btnExpand_Click(object sender, EventArgs e) {
+        private void btnExpand_Click(object sender, EventArgs e)
+        {
 #if ST_2_1
-			SplitterPanel p2 = DailyActivitySplitter.Panel2;
-#else
-            int width = this.ActPagePanel.Width;
+            SplitContainer sc = DailyActivitySplitter;
+            if (sc != null)
+            {
 #endif
-            if (m_chartsControl == null) {
-				m_chartsControl = new MultiChartsControl();
-                m_chartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-                m_chartsControl.Dock = DockStyle.Fill;
-                m_chartsControl.Top = 0;
-                m_chartsControl.Left = 0;
+            MultiCharts.Visible = true;
+            MultiCharts.ShowPage = _showPage;
+            SingleChart.Visible = false;
+            SingleChart.ShowPage = false;
+
+            LowerSplitContainer.Panel2Collapsed = true;
 #if ST_2_1
-                p2.Controls.Add(m_chartsControl);
-#else
-                this.ExpandSplitContainer.Panel2.Controls.Add(m_chartsControl);
-#endif
-                m_chartsControl.ThemeChanged(m_visualTheme);
-                m_chartsControl.UICultureChanged(m_culture);
-                m_chartsControl.DetailPage = this;
-                m_chartsControl.Collapse += new EventHandler(m_chartsControl_Collapse);
-			}
-			m_chartsControl.Visible = true;
-            m_chartsControl.ShowChartToolBar = m_showChartToolBar; 
-            ActPageSplitContainer.Panel2Collapsed = true;
-#if ST_2_1
-			p2.Controls[0].Visible = false;
-            m_chartsControl.Width = p2.Width;
-            m_chartsControl.Height = p2.Height;
+                if (sc.Panel2.Controls != null && sc.Panel2.Controls.Count==0)
+                {
+                    sc.Panel2.Controls.Add(MultiCharts);
+                }
+                SplitterPanel p2 = DailyActivitySplitter.Panel2;
+                sc.Panel2.Controls[0].Visible = false;
+                MultiCharts.Width = p2.Width;
+                MultiCharts.Height = p2.Height;
 #else
             m_DetailPage.PageMaximized = true;
             this.ExpandSplitContainer.Panel2Collapsed = false;
-            this.ExpandSplitContainer.SplitterDistance = width;
+            this.ExpandSplitContainer.SplitterDistance = this.Width;
 #endif
             m_isExpanded = true;
             RefreshChart();
-		}
-
-		private void m_chartsControl_Collapse(object sender, EventArgs e) {
-            m_chartsControl.Visible = false;
-			ActPageSplitContainer.Panel2Collapsed = false;
 #if ST_2_1
-            SplitterPanel p2 = DailyActivitySplitter.Panel2;
-            p2.Controls[0].Visible = true;
+ 		}
+#endif
+        }
+		private void MultiCharts_Collapse(object sender, EventArgs e)
+        {
+            MultiCharts.Visible = false;
+            MultiCharts.ShowPage = false;
+            SingleChart.Visible = true;
+            SingleChart.ShowPage = _showPage;
+            
+            LowerSplitContainer.Panel2Collapsed = false;
+#if ST_2_1
+            SplitContainer sc = DailyActivitySplitter;
+            if (sc != null)
+            {
+                sc.Panel2.Controls[0].Visible = true;
+            }
 #else
             this.ExpandSplitContainer.Panel2Collapsed = true;
             m_DetailPage.PageMaximized = false;
@@ -787,7 +433,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
                 {
                     this.SingleChart.SetSelected(selected.SelectedItems);
-                    if (null != m_chartsControl) { m_chartsControl.SetSelected(selected.SelectedItems); }
+                    MultiCharts.SetSelected(selected.SelectedItems);
                 }
             }
         }

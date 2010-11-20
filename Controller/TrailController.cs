@@ -157,6 +157,7 @@ namespace TrailsPlugin.Controller {
             SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
             SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
 
+            Data.TrailResult.Reset();
             m_activityTrails = new List<Data.ActivityTrail>();
             foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
             {

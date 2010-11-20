@@ -58,10 +58,10 @@ namespace TrailsPlugin.UI.Activity {
             InitializeComponent();
         }
 #if ST_2_1
-        public void SetResultList(ActivityDetailPageControl page, Controller.TrailController controller)
+        public void SetResultListControl(ActivityDetailPageControl page, Controller.TrailController controller)
         {
 #else
-        public void SetResultList(IDailyActivityView view, ActivityDetailPageControl page, Controller.TrailController controller)
+        public void SetResultListControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
         {
             m_view = view;
 #endif
@@ -85,7 +85,7 @@ namespace TrailsPlugin.UI.Activity {
 
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
-            this.RefreshColumns();
+            //this.RefreshColumns();
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -112,9 +112,10 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void RefreshColumns()
+        public void RefreshColumns()//xxx
         {
             summaryList.Columns.Clear();
+            int plusMinusSize = summaryList.ShowPlusMinus ? 15 : 0;
 #if !ST_2_1
             //Permanent fields
             if (m_controller.Activities.Count > 1)
@@ -124,10 +125,11 @@ namespace TrailsPlugin.UI.Activity {
                     TreeList.Column column = new TreeList.Column(
                         columnDef.Id,
                         columnDef.Text(columnDef.Id),
-                        columnDef.Width,
+                        columnDef.Width + plusMinusSize,
                         columnDef.Align
                     );
                     summaryList.Columns.Add(column);
+                    plusMinusSize = 0;
                 }
             }
 #endif
@@ -146,10 +148,11 @@ namespace TrailsPlugin.UI.Activity {
                         TreeList.Column column = new TreeList.Column(
                             columnDef.Id,
                             columnDef.Text(columnDef.Id),
-                            columnDef.Width,
+                            columnDef.Width + plusMinusSize,
                             columnDef.Align
                         );
                         summaryList.Columns.Add(column);
+                        plusMinusSize = 0;
                         break;
                     }
                 }
@@ -169,8 +172,8 @@ namespace TrailsPlugin.UI.Activity {
             if (m_controller.CurrentActivityTrail != null)
             {
                 IList<TrailResult> results = m_controller.CurrentActivityTrail.Results;
-
-                //summaryList
+                RefreshColumns();
+                
                 summaryList_Sort();
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 //TODO: Keep selection in list?

@@ -545,6 +545,12 @@ namespace TrailsPlugin.Data {
             aActivities.TryGetValue(activity, out t);
             return t.res;
         }
+        public static void Reset()
+        {
+            nextTrailColor = 1;
+            nextActivityColor = 1;
+            aActivities.Clear();
+        }
         #endregion
 
         #region Implementation of ITrailResult

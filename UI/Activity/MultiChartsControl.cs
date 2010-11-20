@@ -17,18 +17,14 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Globalization;
-using System.Text;
 using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Visuals;
-using ZoneFiveSoftware.Common.Visuals.Fitness;
-using ZoneFiveSoftware.Common.Data;
-using ZoneFiveSoftware.Common.Data.Fitness;
+
+#if ST_2_1
 using TrailsPlugin.Data;
+#endif
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class MultiChartsControl : UserControl {

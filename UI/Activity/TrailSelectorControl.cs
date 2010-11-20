@@ -18,7 +18,6 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Globalization;
@@ -26,14 +25,13 @@ using System.Globalization;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
-using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
-using ZoneFiveSoftware.Common.Visuals.Chart;
+
 #if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
 #else
-using ZoneFiveSoftware.Common.Visuals.Mapping;
+
 #endif
 #if ST_2_1
 //IListItem, ListSettings
@@ -43,11 +41,11 @@ using ZoneFiveSoftware.SportTracks.UI.Forms;
 using ZoneFiveSoftware.SportTracks.Data;
 using TrailsPlugin.UI.MapLayers;
 #else
-using ZoneFiveSoftware.Common.Visuals.Forms;
+
 #endif
 #if !ST_2_1
 using TrailsPlugin.UI.MapLayers;
-using ZoneFiveSoftware.Common.Visuals.Util;
+
 #endif
 using TrailsPlugin.Data;
 

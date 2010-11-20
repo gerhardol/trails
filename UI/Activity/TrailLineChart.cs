@@ -27,16 +27,15 @@ using System.IO;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
-using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Chart;
-using ZoneFiveSoftware.Common.Data.Measurement;
+
 #if ST_2_1
 //SaveImage
 using ZoneFiveSoftware.SportTracks.UI.Forms;
+using TrailsPlugin.Data;
 #else
 using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
-using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class TrailLineChart : UserControl {

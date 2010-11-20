@@ -32,7 +32,7 @@ namespace TrailsPlugin.Data {
 
         public override Image GetImage(object element, TreeList.Column column)
         {
-            Data.TrailResult row = (Data.TrailResult)((TreeList.TreeListNode)element).Element;
+            Data.TrailResult row = TrailsPlugin.UI.Activity.ActivityDetailPageControl.getTrailResultRow(element);
 
             if (column.Id == "Color")
             {
@@ -54,8 +54,9 @@ namespace TrailsPlugin.Data {
 
         public override string GetText(object element, TreeList.Column column)
         {
-            Data.TrailResult row = (Data.TrailResult)((TreeList.TreeListNode)element).Element;
-			switch (column.Id) {
+            Data.TrailResult row = TrailsPlugin.UI.Activity.ActivityDetailPageControl.getTrailResultRow(element);
+            switch (column.Id)
+            {
 				case TrailResultColumnIds.Order:
 					return row.Order.ToString();
                 case TrailResultColumnIds.Color:

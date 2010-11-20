@@ -144,7 +144,6 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace+" (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
             return columnDefs;
 		}
-#endif
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
@@ -152,6 +151,7 @@ namespace TrailsPlugin.Data {
 
             return columnDefs;
         }
+#endif
         public static int Compare(TrailResult x, TrailResult y)
         {
             int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);

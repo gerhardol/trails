@@ -75,7 +75,7 @@ namespace TrailsPlugin.Data {
             IList<TrailResult> splits = new List<TrailResult>();
             for (int i = 1; i < m_indexes.Count; i++)
             {
-                splits.Add(new TrailResult(m_activity, m_order, new List<int> { m_indexes[i - 1], m_indexes[i] }, m_distDiff));
+                splits.Add(new TrailResult(m_activity, i, new List<int> { m_indexes[i - 1], m_indexes[i] }, m_distDiff));
             }
             return splits;
         }

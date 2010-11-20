@@ -68,7 +68,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
 
 		private Controller.TrailController m_controller;
-		private ChartsControl m_chartsControl = null;
+		private MultiChartsControl m_chartsControl = null;
 		private bool m_isExpanded = false;
         private bool m_showChartToolBar = true;
 
@@ -892,7 +892,7 @@ namespace TrailsPlugin.UI.Activity {
             int width = this.ActPagePanel.Width;
 #endif
             if (m_chartsControl == null) {
-				m_chartsControl = new ChartsControl();
+				m_chartsControl = new MultiChartsControl();
                 m_chartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
                 m_chartsControl.Dock = DockStyle.Fill;
                 m_chartsControl.Top = 0;

@@ -1,5 +1,5 @@
 ﻿namespace TrailsPlugin.UI.Activity {
-	partial class ChartsControl {
+	partial class MultiChartsControl {
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>

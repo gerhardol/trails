@@ -31,13 +31,13 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
-	public partial class ChartsControl : UserControl {
+	public partial class MultiChartsControl : UserControl {
 
 		public event System.EventHandler Collapse;
         private bool m_showChartToolBar = true;
         private ActivityDetailPageControl m_DetailPage = null;
 
-		public ChartsControl() {
+		public MultiChartsControl() {
             InitializeComponent();
             InitControls();
             RefreshPage();

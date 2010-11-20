@@ -51,17 +51,23 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UI\Actions\Action.cs" />
+    <Compile Include="UI\Activity\SingleChartsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\Activity\SingleChartsControl.Designer.cs">
+      <DependentUpon>SingleChartsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Activity\MultiChartsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UI\Activity\MultiChartsControl.Designer.cs">
       <DependentUpon>MultiChartsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Activity\ResultList.cs">
+    <Compile Include="UI\Activity\ResultListControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Activity\ResultList.Designer.cs">
-      <DependentUpon>ResultList.cs</DependentUpon>
+    <Compile Include="UI\Activity\ResultListControl.Designer.cs">
+      <DependentUpon>ResultListControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Activity\Percent100.cs" />
     <Compile Include="UI\Activity\TrailLineChart.cs">
@@ -147,12 +153,16 @@
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\Activity\SingleChartsControl.resx">
+      <DependentUpon>SingleChartsControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\Activity\MultiChartsControl.resx">
       <DependentUpon>MultiChartsControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\Activity\ResultList.resx">
-      <DependentUpon>ResultList.cs</DependentUpon>
+    <EmbeddedResource Include="UI\Activity\ResultListControl.resx">
+      <DependentUpon>ResultListControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\Activity\TrailLineChart.resx">

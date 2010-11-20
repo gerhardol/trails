@@ -102,17 +102,6 @@ namespace TrailsPlugin.UI.Activity {
 		void InitControls()
         {
             TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
-            //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Yeild16;
-            this.speedPaceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.speedToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.paceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.heartRateToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackHeartRate16;
-            this.cadenceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackCadence16;
-            this.elevationToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
-            this.gradeStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
-            this.powerToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
-            this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
 
 			btnAdd.BackgroundImage = CommonIcons.Add;
 			btnAdd.Text = "";
@@ -120,23 +109,62 @@ namespace TrailsPlugin.UI.Activity {
 			btnEdit.Text = "";
 			btnDelete.BackgroundImage = CommonIcons.Delete;
 			btnDelete.Text = "";
-            btnExpand.BackgroundImage = CommonIcons.LowerHalf;
-            btnExpand.Text = "";
-            //For some reason, the Designer moves this button out of the panel
-            this.btnExpand.Location = new System.Drawing.Point(353, 1);
 
             this.ExpandSplitContainer.Panel2Collapsed = true;
-            LineChart.ShowChartToolBar = m_showChartToolBar;
-            LineChart.DetailPage = this;
             if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
 
 #if ST_2_1
             summaryListControl.SetResultList(this, m_controller);
+            summaryListControl.SetSingleChartsControl(this, m_controller);
 #else
-            summaryListControl.SetResultList(m_view, this, m_controller);
+            summaryList.SetResultList(m_view, this, m_controller);
+            SingleChart.SetSingleChartsControl(m_view, this, m_controller);
 #endif
-            summaryListControl.RefreshColumns();
+            summaryList.RefreshColumns();
 		}
+
+        public void UICultureChanged(CultureInfo culture)
+        {
+            m_culture = culture;
+            toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
+            toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
+            toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
+            this.lblTrail.Text = Properties.Resources.TrailName + ":";
+
+            this.SingleChart.UICultureChanged(culture);
+            this.summaryList.UICultureChanged(culture);
+
+            if (m_chartsControl != null)
+            {
+                m_chartsControl.UICultureChanged(culture);
+            }
+        }
+        public void ThemeChanged(ITheme visualTheme)
+        {
+            m_visualTheme = visualTheme;
+            TrailName.ThemeChanged(visualTheme);
+            summaryList.ThemeChanged(visualTheme);
+            SingleChart.ThemeChanged(visualTheme);
+
+            if (m_chartsControl != null)
+            {
+                m_chartsControl.ThemeChanged(visualTheme);
+            }
+        }
+
+        public IList<IActivity> Activities
+        {
+            set
+            {
+                m_controller.Activities = value;
+#if !ST_2_1
+                m_layer.ClearOverlays();
+#endif
+                summaryList.RefreshColumns();
+                RefreshData();
+                RefreshControlState();
+            }
+        }
 
         private bool _showPage = false;
         public bool ShowPage
@@ -146,7 +174,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 _showPage = value;
                 m_layer.ShowPage = value;
-                summaryListControl.ShowPage = value;
+                summaryList.ShowPage = value;
 #if !ST_2_1
                 if (value)
                 {
@@ -172,7 +200,7 @@ namespace TrailsPlugin.UI.Activity {
 			btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
 
-            summaryListControl.RefreshControlState();
+            summaryList.RefreshControlState();
             if (m_controller.CurrentActivityTrail != null)
             {
                 TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
@@ -187,12 +215,33 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_layer.ShowPage = false; //defer updates
             //Update list first, so not refresh changes selection
-            summaryListControl.RefreshList();
+            summaryList.RefreshList();
             RefreshRoute(); 
             RefreshChart();
-            m_layer.ShowPage = _showPage;
+            m_layer.ShowPage = _showPage;//xxx
         }
-
+        public void RefreshChart()
+        {
+            if(m_isExpanded) {
+                IList<TrailResult> list = this.SelectedItems;
+                if (list.Count > 0)
+                {
+                    m_chartsControl.RefreshCharts(list[0]);
+                }
+                m_chartsControl.RefreshRows();
+            }
+            else
+            {
+                SingleChart.RefreshChart();
+            }
+        }
+        public IList<TrailResult> SelectedItems
+        {
+            get
+            {
+                return this.summaryList.SelectedItems;
+            }
+        }
         private void RefreshRoute()
         {
             if((! m_isExpanded || isReportView)
@@ -228,51 +277,14 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void UICultureChanged(CultureInfo culture)
+        public bool ShowChartToolBar
         {
-            m_culture = culture;
-            toolTip.SetToolTip(btnAdd, Properties.Resources.UI_Activity_Page_AddTrail_TT);
-            toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
-            toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
-            this.ChartBanner.Text = Properties.Resources.TrailChartsName;
-            this.lblTrail.Text = Properties.Resources.TrailName+":";
-
-            this.RefreshChartMenu();
-            this.summaryListControl.RefreshColumns();
-
-            LineChart.UICultureChanged(culture);
-            if (m_chartsControl != null)
-            {
-                m_chartsControl.UICultureChanged(culture);
-            }
-        }
-        public void ThemeChanged(ITheme visualTheme)
-        {
-			m_visualTheme = visualTheme;
-			TrailName.ThemeChanged(visualTheme);
-			summaryListControl.ThemeChanged(visualTheme);
-			ChartBanner.ThemeChanged(visualTheme);
-
-			LineChart.ThemeChanged(visualTheme);
-			if (m_chartsControl != null) {
-				m_chartsControl.ThemeChanged(visualTheme);
-			}
-		}
-
-        public IList<IActivity> Activities
-        {
+            get { return SingleChart.ShowChartToolBar; }
             set
             {
-                m_controller.Activities = value;
-#if !ST_2_1
-                m_layer.ClearOverlays();
-#endif
-                summaryListControl.RefreshColumns();
-                RefreshData();
-                RefreshControlState();
+                SingleChart.ShowChartToolBar = value;
             }
         }
-
         //Some views like mapping is only working in single view - there are likely better tests
         public bool isSingleView
         {
@@ -309,28 +321,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private IList<TreeList.TreeListNode> getTreeListNodeSplits(IList<TrailResult> results)
-        {
-            ((List<TrailResult>)results).Sort();
-            IList<TreeList.TreeListNode> res2 = new List<TreeList.TreeListNode>();
-            foreach (TrailResult tr in results)
-            {
-                TreeList.TreeListNode tn = new TreeList.TreeListNode(null, tr);
-                IList<TrailResult> splits = tr.getSplits();
-                //Do not add single splits - nothing to expand
-                if (splits.Count > 1)
-                {
-                    ((List<TrailResult>)splits).Sort();
-                    foreach (TrailResult tr2 in splits)
-                    {
-                        TreeList.TreeListNode tn2 = new TreeList.TreeListNode(tn, tr2);
-                        tn.Children.Add(tn2);
-                    }
-                }
-                res2.Add(tn);
-            }
-            return res2;
-        }
         /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e) {
 
@@ -696,164 +686,13 @@ namespace TrailsPlugin.UI.Activity {
                 TrailMapPolyline tm = sender as TrailMapPolyline;
                 if (tm.key.Contains("m"))
                 {
-                    summaryListControl.SelectedItems = new List<TrailResult> { tm.TrailRes };
+                    summaryList.SelectedItems = new List<TrailResult> { tm.TrailRes };
                 }
                 else
                 {
-                    summaryListControl.SelectedItems = TrailResult.TrailResultList(tm.TrailRes.Activity);
+                    summaryList.SelectedItems = TrailResult.TrailResultList(tm.TrailRes.Activity);
                 }
             }
-        }
-
-		private void ChartBanner_MenuClicked(object sender, EventArgs e) {
-			ChartBanner.ContextMenuStrip.Width = 100;
-			ChartBanner.ContextMenuStrip.Show(ChartBanner.Parent.PointToScreen(new System.Drawing.Point(ChartBanner.Right - ChartBanner.ContextMenuStrip.Width - 2, 
-                ChartBanner.Bottom + 1)));
-		}
-
-        public void RefreshChart() {
-			if(m_isExpanded) {
-                IList<TrailResult> list = this.summaryListControl.SelectedItems;
-                if (list.Count > 0)
-                {
-                    m_chartsControl.RefreshCharts(list[0]);
-                }
-                m_chartsControl.RefreshRows();
-            }
-            else
-            {
-				this.LineChart.BeginUpdate();
-				this.LineChart.TrailResult = null;
-				if (m_controller.CurrentActivityTrail != null) {
-                    if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
-                    {
-                        if (m_controller.FirstActivity != null && 
-                            m_controller.FirstActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
-                        {
-                            this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
-                        }
-                        else
-                        {
-                            this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Pace;
-                        }
-                    }
-                    else
-                    {
-                        this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
-                    }
-					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-                    this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
-                        PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
-                    IList<TrailResult> list = this.summaryListControl.SelectedItems;
-                    if (list.Count > 0)
-                    {
-                        this.LineChart.TrailResult = list[0];
-                    }
-				}
-				this.LineChart.EndUpdate();
-			}
-		}
-
-		void RefreshChartMenu() {
-			speedToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Speed;
-            this.speedToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Speed);
-			paceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Pace;
-            this.paceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Pace);
-            speedPaceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.SpeedPace;
-            this.speedPaceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.SpeedPace);
-            elevationToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Elevation;
-            this.elevationToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Elevation);
-            cadenceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Cadence;
-            this.cadenceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Cadence);
-            heartRateToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.HeartRateBPM;
-            this.heartRateToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.HeartRateBPM);
-            gradeStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Grade;
-            this.gradeStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Grade);
-            powerToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Power;
-            this.powerToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Power);
-
-			timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
-            this.timeToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Time);
-            distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
-            this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
-            this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
-            this.showToolBarMenuItem.Checked = m_showChartToolBar;
-            //this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
-            //   : Properties.Resources.UI_Activity_Menu_ShowToolBar;
-        }
-
-		private void speedToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Speed;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-		private void paceToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Pace;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-        private void speedPaceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.SpeedPace;
-            RefreshChartMenu();
-            RefreshChart();
-        }
-
-		private void elevationToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Elevation;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-		private void heartRateToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.HeartRateBPM;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-		private void cadenceToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Cadence;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-		private void gradeToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Grade;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-		private void powerToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Power;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-		private void distanceToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.XAxisValue = TrailLineChart.XAxisValue.Distance;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-		private void timeToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.XAxisValue = TrailLineChart.XAxisValue.Time;
-			RefreshChartMenu();
-			RefreshChart();
-		}
-
-        public bool ShowChartToolBar
-        {
-            set
-            {
-                m_showChartToolBar = value;
-                RefreshChartMenu();
-                LineChart.ShowChartToolBar = m_showChartToolBar;
-                if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
-            }
-        }
-        private void showToolBarMenuItem_Click(object sender, EventArgs e)
-        {
-            this.ShowChartToolBar = !m_showChartToolBar;
         }
 
 		private void ActPagePanel_SizeChanged(object sender, EventArgs e) {
@@ -869,6 +708,7 @@ namespace TrailsPlugin.UI.Activity {
             this.ActPagePanel.ColumnStyles[1].Width = this.ActPagePanel.Width - width;
 		}
 
+        
 #if ST_2_1
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
 			get
@@ -936,7 +776,7 @@ namespace TrailsPlugin.UI.Activity {
             m_isExpanded = false;
             RefreshChart();
 		}
-
+        
 #if !ST_2_1
         void RouteSelectionProvider_SelectedItemsChanged(object sender, EventArgs e)
         {
@@ -946,7 +786,7 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
                 {
-                    this.LineChart.SetSelected(selected.SelectedItems);
+                    this.SingleChart.SetSelected(selected.SelectedItems);
                     if (null != m_chartsControl) { m_chartsControl.SetSelected(selected.SelectedItems); }
                 }
             }

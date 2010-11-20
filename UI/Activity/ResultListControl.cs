@@ -43,7 +43,7 @@ using ZoneFiveSoftware.Common.Visuals.Forms;
 using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
-    public partial class ResultList : UserControl
+    public partial class ResultListControl : UserControl
     {
         ActivityDetailPageControl m_page;
         private ITheme m_visualTheme;
@@ -53,7 +53,7 @@ namespace TrailsPlugin.UI.Activity {
         private IDailyActivityView m_view = null;
 #endif
 
-        public ResultList()
+        public ResultListControl()
         {
             InitializeComponent();
         }
@@ -174,7 +174,10 @@ namespace TrailsPlugin.UI.Activity {
                 summaryList_Sort();
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 //TODO: Keep selection in list?
-
+                if (results.Count > 0)
+                {
+                    SelectedItems = new List<TrailResult> { results[0] };
+                }
                 //Set size, to not waste chart
                 int resRows = Math.Min(5, results.Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +

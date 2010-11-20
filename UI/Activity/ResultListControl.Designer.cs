@@ -1,5 +1,5 @@
 ﻿namespace TrailsPlugin.UI.Activity {
-	partial class ResultList {
+	partial class ResultListControl {
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>

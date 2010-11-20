@@ -31,11 +31,7 @@
             this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.ActPageSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
-            this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectActivityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.summaryListControl = new ResultList();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -60,7 +56,6 @@
             this.ActPageSplitContainer.Panel1.SuspendLayout();
             this.ActPageSplitContainer.Panel2.SuspendLayout();
             this.ActPageSplitContainer.SuspendLayout();
-            this.listMenu.SuspendLayout();
             this.ChartPanel.SuspendLayout();
             this.ChartBanner.SuspendLayout();
             this.detailMenu.SuspendLayout();
@@ -207,6 +202,10 @@
             this.btnDelete.TextRightMargin = 2;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
+            // summaryListControl
+            // 
+            this.summaryListControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            // 
             // ActPageSplitContainer
             // 
             this.ActPagePanel.SetColumnSpan(this.ActPageSplitContainer, 6);
@@ -218,7 +217,7 @@
             // 
             // ActPageSplitContainer.Panel1
             // 
-            this.ActPageSplitContainer.Panel1.Controls.Add(this.summaryList);
+            this.ActPageSplitContainer.Panel1.Controls.Add(this.summaryListControl);
             this.ActPageSplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
             this.ActPageSplitContainer.Panel1MinSize = 50;
             // 
@@ -231,68 +230,6 @@
             this.ActPageSplitContainer.SplitterDistance = 60;
             this.ActPageSplitContainer.SplitterWidth = 1;
             this.ActPageSplitContainer.TabIndex = 18;
-            // 
-            // summaryList
-            // 
-            this.summaryList.AutoScroll = true;
-            this.summaryList.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.summaryList.BackColor = System.Drawing.Color.Transparent;
-            this.summaryList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
-            this.summaryList.CheckBoxes = false;
-            this.summaryList.ContextMenuStrip = this.listMenu;
-            this.summaryList.Click += new System.EventHandler(summaryList_Click);
-            this.summaryList.DefaultIndent = 15;
-            this.summaryList.DefaultRowHeight = -1;
-            this.summaryList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.summaryList.HeaderRowHeight = 21;
-            this.summaryList.Location = new System.Drawing.Point(0, 0);
-            this.summaryList.Margin = new System.Windows.Forms.Padding(0);
-            this.summaryList.MultiSelect = true;
-            this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(selectedRow_DoubleClick);
-            this.summaryList.Name = "summaryList";
-            this.summaryList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
-            this.summaryList.NumLockedColumns = 0;
-            this.summaryList.RowAlternatingColors = true;
-            this.summaryList.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
-            this.summaryList.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
-            this.summaryList.RowHotlightMouse = true;
-            this.summaryList.RowSelectedColor = System.Drawing.SystemColors.Highlight;
-            this.summaryList.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
-            this.summaryList.RowSeparatorLines = true;
-            this.summaryList.ShowLines = false;
-            this.summaryList.ShowPlusMinus = true;
-            this.summaryList.Size = new System.Drawing.Size(400, 60);
-            this.summaryList.TabIndex = 11;
-            // 
-            // listMenu
-            // 
-            this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyTableMenuItem,
-            this.listSettingsMenuItem,
-            this.selectActivityMenuItem});
-            this.listMenu.Name = "listContextMenuStrip";
-            this.listMenu.Size = new System.Drawing.Size(199, 48);
-            // 
-            // copyTableMenuItem
-            // 
-            this.copyTableMenuItem.Name = "copyTableMenuItem";
-            this.copyTableMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.copyTableMenuItem.Text = "Copy table to clipboard";
-            this.copyTableMenuItem.Click += new System.EventHandler(this.copyTableMenu_Click);
-            // 
-            // listSettingsMenuItem
-            // 
-            this.listSettingsMenuItem.Name = "listSettingsMenuItem";
-            this.listSettingsMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.listSettingsMenuItem.Text = "List Settings...";
-            this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
-            // 
-            // listSettingsMenuItem
-            // 
-            this.selectActivityMenuItem.Name = "selectActivityMenuItem";
-            this.selectActivityMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.selectActivityMenuItem.Text = "Limit selection to current activities...";
-            this.selectActivityMenuItem.Click += new System.EventHandler(selectActivityMenuItem_Click);
             // 
             // ChartPanel
             // 
@@ -519,7 +456,6 @@
             this.ActPageSplitContainer.Panel2.ResumeLayout(false);
             this.ActPageSplitContainer.Panel2.PerformLayout();
             this.ActPageSplitContainer.ResumeLayout(false);
-            this.listMenu.ResumeLayout(false);
             this.ChartPanel.ResumeLayout(false);
             this.ChartPanel.PerformLayout();
             this.ChartBanner.ResumeLayout(false);
@@ -535,7 +471,7 @@
 
 		private System.Windows.Forms.TableLayoutPanel ActPagePanel;
 		private System.Windows.Forms.Label lblTrail;
-		private ZoneFiveSoftware.Common.Visuals.TreeList summaryList;
+        private ResultList summaryListControl;
 		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
@@ -545,10 +481,6 @@
         private System.Windows.Forms.SplitContainer ActPageSplitContainer;
         private System.Windows.Forms.TableLayoutPanel ChartPanel;
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
-		private System.Windows.Forms.ContextMenuStrip listMenu;
-        private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectActivityMenuItem;
         private System.Windows.Forms.ContextMenuStrip detailMenu;
         private TrailsPlugin.UI.Activity.TrailLineChart LineChart;
 		private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;

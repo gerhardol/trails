@@ -24,7 +24,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Data {
-	class ActivityTrail {
+	public class ActivityTrail {
         private IList<IActivity> m_activities;
 		private Data.Trail m_trail;
 		private IList<Data.TrailResult> m_resultsList;

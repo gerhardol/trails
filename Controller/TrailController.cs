@@ -23,7 +23,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Controller {
-	class TrailController {
+	public class TrailController {
 		static private TrailController m_instance;
 		static public TrailController Instance {
 			get {

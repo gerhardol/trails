@@ -92,12 +92,9 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             m_controller = Controller.TrailController.Instance;
 
-			InitializeComponent();
+			this.InitializeComponent();
 			InitControls();
-#if ST_2_1
-            this.summaryList.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
-#else
-            this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+#if !ST_2_1
             this.ExpandSplitContainer.Panel2Collapsed = true;
 #endif
 		}
@@ -105,7 +102,6 @@ namespace TrailsPlugin.UI.Activity {
 		void InitControls()
         {
             TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
-            copyTableMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Yeild16;
             this.speedPaceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.speedToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
@@ -128,20 +124,18 @@ namespace TrailsPlugin.UI.Activity {
             btnExpand.Text = "";
             //For some reason, the Designer moves this button out of the panel
             this.btnExpand.Location = new System.Drawing.Point(353, 1);
-			listSettingsMenuItem.Image = CommonIcons.ListSettings;
-#if !ST_2_1
-            selectActivityMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
-#endif
 
-			summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
-			summaryList.LabelProvider = new TrailResultLabelProvider();
-            this.summaryList.ShowPlusMinus = true; 
             this.ExpandSplitContainer.Panel2Collapsed = true;
             LineChart.ShowChartToolBar = m_showChartToolBar;
             LineChart.DetailPage = this;
             if (null != m_chartsControl) { m_chartsControl.ShowChartToolBar = m_showChartToolBar; }
 
-			this.RefreshColumns();
+#if ST_2_1
+            summaryListControl.SetResultList(this, m_controller);
+#else
+            summaryListControl.SetResultList(m_view, this, m_controller);
+#endif
+            summaryListControl.RefreshColumns();
 		}
 
         private bool _showPage = false;
@@ -152,7 +146,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 _showPage = value;
                 m_layer.ShowPage = value;
-
+                summaryListControl.ShowPage = value;
 #if !ST_2_1
                 if (value)
                 {
@@ -168,49 +162,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private void RefreshColumns()
-        {
-			summaryList.Columns.Clear();
-#if !ST_2_1
-            //Permanent fields
-            if (m_controller.Activities.Count > 1)
-            {
-                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
-                {
-                        TreeList.Column column = new TreeList.Column(
-                            columnDef.Id,
-                            columnDef.Text(columnDef.Id),
-                            columnDef.Width,
-                            columnDef.Align
-                        );
-                        summaryList.Columns.Add(column);
-                }
-            }
-#endif
-            foreach (string id in PluginMain.Settings.ActivityPageColumns)
-            {
-				foreach (
-#if ST_2_1
-                    ListItemInfo
-#else
-                    IListColumnDefinition
-#endif
-                columnDef in TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count>1))
-                {
-					if (columnDef.Id == id) {
-						TreeList.Column column = new TreeList.Column(
-							columnDef.Id,
-                            columnDef.Text(columnDef.Id),
-							columnDef.Width,
-							columnDef.Align
-						);
-						summaryList.Columns.Add(column);
-						break;
-					}
-				}
-			}
-		}
-
 		private void RefreshControlState() 
         {
             bool enabled = (m_controller.FirstActivity != null);
@@ -221,46 +172,27 @@ namespace TrailsPlugin.UI.Activity {
 			btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
 
-            selectActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
-		}
-
-        private void RefreshData()
-        {
-            m_layer.ShowPage = false; //defer updates
-            //Update list first, so not refresh changes selection
-            RefreshList();
-            RefreshRoute(); 
-            RefreshChart();
-            m_layer.ShowPage = _showPage;
-        }
-
-        private void RefreshList()
-        {
-            summaryList.RowData = null;
-
+            summaryListControl.RefreshControlState();
             if (m_controller.CurrentActivityTrail != null)
             {
                 TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
-                IList<TrailResult> results = m_controller.CurrentActivityTrail.Results;
-
-                //summaryList
-                summaryList.RowData = getTreeListNodeSplits(results);
-                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
-                if (results.Count > 0)
-                {
-                    summaryList.Selected = new object[] { results[0] };
-                }
-
-                //Set size, to not waste chart
-                int resRows = Math.Min(5, results.Count);
-                this.summaryList.Height = this.summaryList.HeaderRowHeight +
-                    this.summaryList.DefaultRowHeight * resRows;
             }
             else
             {
                 TrailName.Text = "";
             }
         }
+
+        private void RefreshData()
+        {
+            m_layer.ShowPage = false; //defer updates
+            //Update list first, so not refresh changes selection
+            summaryListControl.RefreshList();
+            RefreshRoute(); 
+            RefreshChart();
+            m_layer.ShowPage = _showPage;
+        }
+
         private void RefreshRoute()
         {
             if((! m_isExpanded || isReportView)
@@ -305,12 +237,8 @@ namespace TrailsPlugin.UI.Activity {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;
             this.lblTrail.Text = Properties.Resources.TrailName+":";
 
-            copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
-            this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
-            this.selectActivityMenuItem.Text = Properties.Resources.UI_Activity_Page_LimitSelection;
-
             this.RefreshChartMenu();
-            this.RefreshColumns();
+            this.summaryListControl.RefreshColumns();
 
             LineChart.UICultureChanged(culture);
             if (m_chartsControl != null)
@@ -322,7 +250,7 @@ namespace TrailsPlugin.UI.Activity {
         {
 			m_visualTheme = visualTheme;
 			TrailName.ThemeChanged(visualTheme);
-			summaryList.ThemeChanged(visualTheme);
+			summaryListControl.ThemeChanged(visualTheme);
 			ChartBanner.ThemeChanged(visualTheme);
 
 			LineChart.ThemeChanged(visualTheme);
@@ -339,7 +267,7 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
                 m_layer.ClearOverlays();
 #endif
-                RefreshColumns();
+                summaryListControl.RefreshColumns();
                 RefreshData();
                 RefreshControlState();
             }
@@ -402,31 +330,6 @@ namespace TrailsPlugin.UI.Activity {
                 res2.Add(tn);
             }
             return res2;
-        }
-        public static TrailResult getTrailResultRow(object element)
-        {
-            return (TrailResult)((TreeList.TreeListNode)element).Element;
-        }
-        public static IList<TrailResult> getTrailResultSelection(System.Collections.IList tlist)
-        {
-            IList<TrailResult> aTr = new List<TrailResult>();
-            if (tlist != null)
-            {
-                foreach (object t in tlist)
-                {
-                    object t2 = t;
-                    if (t != null && t is TreeList.TreeListNode)
-                    {
-                        t2 = (object)(t as TreeList.TreeListNode).Element;
-                    }
-                    if (t2 != null && t2 is TrailResult)
-                    {
-                        TrailResult tr = t2 as TrailResult;
-                        aTr.Add(tr);
-                    }
-                }
-            }
-            return aTr;
         }
         /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e) {
@@ -531,98 +434,6 @@ namespace TrailsPlugin.UI.Activity {
 				RefreshData();
 			}
 		}
-        void copyTableMenu_Click(object sender, EventArgs e)
-        {
-            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-        }
-
-        void summaryList_Click(object sender, System.EventArgs e)
-        {
-            //SelectTrack, for ST3
-            if (sender is TreeList)
-            {
-                TreeList l = sender as TreeList;
-                //Check if header. ColumnHeaderClicked will not fire due to this
-                if (l.HeaderRowHeight >= ((MouseEventArgs)e).Y)
-                {
-                    int nStart = ((MouseEventArgs)e).X;
-                    int spos = l.Location.X;// +l.Parent.Location.X;
-                    int subItemSelected = 0;
-                    for (int i = 0; i < l.Columns.Count; i++)
-                    {
-                        int epos = spos + l.Columns[i].Width;
-                        if (nStart > spos && nStart < epos)
-                        {
-                            subItemSelected = i;
-                            break;
-                        }
-
-                        spos = epos;
-                    }
-                    summaryList_ColumnHeaderMouseClick(sender, l.Columns[subItemSelected]);
-                }
-                else
-                {
-                        IList<TrailResult> aTr = getTrailResultSelection(l.SelectedItems);
-                        MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
-                }
-            }
-        }
-
-        private void List_SelectedChanged(object sender, EventArgs e)
-        {
-            RefreshChart();
-        }
-
-        void selectActivityMenuItem_Click(object sender, System.EventArgs e)
-        {
-#if !ST_2_1
-            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0)
-            {
-                IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
-                IList<IActivity> aAct = new List<IActivity>();
-                foreach (TrailResult tr in atr)
-                {
-                        aAct.Add(tr.Activity);
-                }
-                m_view.SelectionProvider.SelectedItems = (List<IActivity>)aAct;
-            }
-#endif
-        }
-        private void selectedRow_DoubleClick(object sender, MouseEventArgs e)
-        {
-            Guid view = GUIDs.DailyActivityView;
-
-            object row;
-            TreeList.RowHitState dummy;
-            row = summaryList.RowHitTest(e.Location, out dummy);
-            if (row != null)
-            {
-                TrailResult tr = getTrailResultRow(row);
-                string bookmark = "id=" + tr.Activity;
-                PluginMain.GetApplication().ShowView(view, bookmark);
-            }
-        }
-        private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.ColumnEventArgs e)
-        {
-            summaryList_ColumnHeaderMouseClick(sender, e.Column);
-        }
-        private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
-        {
-            if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == e.Id)
-            {
-                TrailsPlugin.Data.Settings.SummaryViewSortDirection = TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ?
-                       ListSortDirection.Descending : ListSortDirection.Ascending;
-            }
-            TrailsPlugin.Data.Settings.SummaryViewSortColumn = e.Id;
-            summaryList_Sort();
-        }
-        private void summaryList_Sort()
-        {
-            summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
-                TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
-            summaryList.RowData = getTreeListNodeSplits(m_controller.CurrentActivityTrail.Results);
-        }
 
         /*************************************************************************************************************/
 //ST3
@@ -807,7 +618,11 @@ namespace TrailsPlugin.UI.Activity {
 
             if (m_controller.CurrentActivityTrail != null)
             {
+#if ST_2_1
                 treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
+#else
+                treeListPopup.Tree.SelectedItems = new object[] { m_controller.CurrentActivityTrail };
+#endif
             }
             treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
             treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
@@ -840,26 +655,6 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshData();
 			RefreshControlState();
 		}
-
-		private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e) {
-#if ST_2_1
-            ListSettings dialog = new ListSettings();
-			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, false);
-#else
-            ListSettingsDialog dialog = new ListSettingsDialog();
-            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1);
-#endif
-            dialog.ThemeChanged(m_visualTheme);
-			dialog.AllowFixedColumnSelect = true;
-			dialog.SelectedColumns = PluginMain.Settings.ActivityPageColumns;
-			dialog.NumFixedColumns = PluginMain.Settings.ActivityPageNumFixedColumns;
-
-            if (dialog.ShowDialog() == DialogResult.OK) {
-				PluginMain.Settings.ActivityPageNumFixedColumns = dialog.NumFixedColumns;
-				PluginMain.Settings.ActivityPageColumns = dialog.SelectedColumns;
-				RefreshColumns();
-			}
-        }
 
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
@@ -901,24 +696,11 @@ namespace TrailsPlugin.UI.Activity {
                 TrailMapPolyline tm = sender as TrailMapPolyline;
                 if (tm.key.Contains("m"))
                 {
-#if ST_2_1
-                    summaryList.Selected = new object[] { tm.TrailRes };
-#else
-                    summaryList.SelectedItems = new object[] { tm.TrailRes };
-#endif
+                    summaryListControl.SelectedItems = new List<TrailResult> { tm.TrailRes };
                 }
                 else
                 {
-                    object[] atr = new object[TrailResult.TrailResultList(tm.TrailRes.Activity).Count];
-                    for (int i = 0; i < TrailResult.TrailResultList(tm.TrailRes.Activity).Count; i++ )
-                    {
-                        atr[i] = TrailResult.TrailResultList(tm.TrailRes.Activity)[i];
-                    }
-#if ST_2_1
-                    summaryList.Selected = atr;
-#else
-                    summaryList.SelectedItems = atr;
-#endif
+                    summaryListControl.SelectedItems = TrailResult.TrailResultList(tm.TrailRes.Activity);
                 }
             }
         }
@@ -929,9 +711,9 @@ namespace TrailsPlugin.UI.Activity {
                 ChartBanner.Bottom + 1)));
 		}
 
-        void RefreshChart() {
+        public void RefreshChart() {
 			if(m_isExpanded) {
-                IList<TrailResult> list = getTrailResultSelection(this.summaryList.SelectedItems);
+                IList<TrailResult> list = this.summaryListControl.SelectedItems;
                 if (list.Count > 0)
                 {
                     m_chartsControl.RefreshCharts(list[0]);
@@ -962,7 +744,7 @@ namespace TrailsPlugin.UI.Activity {
 					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
                     this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
                         PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
-                    IList<TrailResult> list = getTrailResultSelection(this.summaryList.SelectedItems);
+                    IList<TrailResult> list = this.summaryListControl.SelectedItems;
                     if (list.Count > 0)
                     {
                         this.LineChart.TrailResult = list[0];

@@ -49,7 +49,7 @@ namespace TrailsPlugin.UI.Activity {
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
         private ITheme m_visualTheme;
-        private ActivityDetailPageControl m_DetailPage = null;
+        private ActivityDetailPageControl m_page = null;
 
         public TrailLineChart()
         {
@@ -84,6 +84,11 @@ namespace TrailsPlugin.UI.Activity {
             fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
         }
 
+        public void SetControl(ActivityDetailPageControl page)
+        {
+            m_page = page;
+		}
+
         public void ThemeChanged(ITheme visualTheme)
         {
             m_visualTheme = visualTheme;
@@ -104,10 +109,6 @@ namespace TrailsPlugin.UI.Activity {
             SetupAxes();
         }
 
-        public ActivityDetailPageControl DetailPage
-        {
-            set { m_DetailPage = value; }
-        }
         public enum XAxisValue
         {
 			Time,
@@ -267,9 +268,18 @@ namespace TrailsPlugin.UI.Activity {
 
         void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
-            if (e != null && e.DataSeries != null && m_DetailPage != null)
+            if (e != null && e.DataSeries != null && m_page != null)
             {
-                for (int i = 0; i < m_trailResults.Count; i++ )
+                int i = -1;
+                for (int j = 0; j < MainChart.DataSeries.Count; j++)
+                {
+                    if (e.DataSeries.Equals(MainChart.DataSeries[j]))
+                    {
+                        i = j;
+                        break;
+                    }
+                }
+                if(i>=0)
                 {
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
@@ -296,7 +306,21 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         results.Add(new Data.TrailResultMarked(m_trailResults[i], t));
                     }
-                    m_DetailPage.MarkTrack(results);
+                    m_page.MarkTrack(results);
+
+                    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                    for (int j = 0; j < MainChart.DataSeries.Count; j++)
+                    {
+                        if (i != j)
+                        {
+                            MainChart.DataSeries[j].ClearSelectedRegions();
+                            foreach (float[] at in regions)
+                            {
+                                //MainChart.DataSeries[j].AddSelecedRegion(at[0],at[1]);
+                            }
+                        }
+                    }
+                    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 }
             }
         }
@@ -316,6 +340,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 for (int i = 0; i < m_trailResults.Count; i++)
                 {
+                    //TODO: AddSelecedRegion
                     //Currently only one region can be selected
                     if (sel.MarkedTimes != null && sel.MarkedTimes.Count > 0)
                     {
@@ -390,27 +415,27 @@ namespace TrailsPlugin.UI.Activity {
                         chartSelectedColor = chartFillColor;
                     }
 
-                    ChartDataSeries mainData = null;
-				ChartDataSeries mainDataCopy = new ChartDataSeries(MainChart, MainChart.YAxis);
+                    ChartDataSeries dataFill = null;
+				ChartDataSeries dataLine = new ChartDataSeries(MainChart, MainChart.YAxis);
 
                 if (m_trailResults.Count==1)
                 {
-                    mainData = new ChartDataSeries(MainChart, MainChart.YAxis);
-                    MainChart.DataSeries.Add(mainData);
+                    dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
+                    MainChart.DataSeries.Add(dataFill);
 
-                    mainData.ChartType = ChartDataSeries.Type.Fill;
-                    mainData.FillColor = chartFillColor;
-                    mainData.LineColor = chartLineColor;
-                    mainData.SelectedColor = chartSelectedColor;
-                    mainData.LineWidth = 2;
+                    dataFill.ChartType = ChartDataSeries.Type.Fill;
+                    dataFill.FillColor = chartFillColor;
+                    dataFill.LineColor = chartLineColor;
+                    dataFill.SelectedColor = chartSelectedColor;
+                    dataFill.LineWidth = 2;
 
                     MainChart.XAxis.Markers.Clear();
                 }
-                MainChart.DataSeries.Add(mainDataCopy);
+                MainChart.DataSeries.Add(dataLine);
 
-				mainDataCopy.ChartType = ChartDataSeries.Type.Line;
-				mainDataCopy.LineColor = chartLineColor;
-				mainDataCopy.SelectedColor = chartSelectedColor;
+				dataLine.ChartType = ChartDataSeries.Type.Line;
+				dataLine.LineColor = chartLineColor;
+				dataLine.SelectedColor = chartSelectedColor;
 
                     Image icon = 
 #if ST_2_1
@@ -421,11 +446,11 @@ namespace TrailsPlugin.UI.Activity {
                     if (XAxisReferential == XAxisValue.Time)
                     {
 						foreach (ITimeValueEntry<float> entry in graphPoints) {
-                            if (null != mainData)
+                            if (null != dataFill)
                             {
-                                mainData.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
+                                dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
                             }
-                            mainDataCopy.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
+                            dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
 						}
                         if (m_refTrailResult != null && m_refTrailResult.Equals(m_trailResults[i]))
                         {
@@ -449,12 +474,12 @@ namespace TrailsPlugin.UI.Activity {
 
 								///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
 
-                                if (null != mainData)
+                                if (null != dataFill)
                                 {
-                                    mainData.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                    dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
 
                                 }
-                                mainDataCopy.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
 							}
 						}
                         if (m_refTrailResult != null && m_refTrailResult.Equals(m_trailResults[i]))

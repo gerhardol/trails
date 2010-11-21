@@ -108,7 +108,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void RefreshColumns()//xxx
+        private void RefreshColumns()
         {
             summaryList.Columns.Clear();
             int plusMinusSize = summaryList.ShowPlusMinus ? 15 : 0;

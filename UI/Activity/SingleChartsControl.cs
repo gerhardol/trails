@@ -58,7 +58,8 @@ namespace TrailsPlugin.UI.Activity {
             m_controller = controller;
 
             InitControls();
-		}
+            LineChart.SetControl(m_page);
+        }
 
 		void InitControls()
         {
@@ -80,7 +81,6 @@ namespace TrailsPlugin.UI.Activity {
             this.btnExpand.Location = new System.Drawing.Point(353, 1);
 
             LineChart.ShowChartToolBar = m_showChartToolBar;
-            LineChart.DetailPage = m_page;
 		}
 
         private bool _showPage = false;

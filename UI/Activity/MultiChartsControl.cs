@@ -32,13 +32,12 @@ namespace TrailsPlugin.UI.Activity {
 	public partial class MultiChartsControl : UserControl {
 
 		public event System.EventHandler Collapse;
-        ActivityDetailPageControl m_page;
+        private ActivityDetailPageControl m_page;
         private Controller.TrailController m_controller;
 
 #if !ST_2_1
         private IDailyActivityView m_view = null;
 #endif
-        private ActivityDetailPageControl m_DetailPage = null;
 
 		public MultiChartsControl() {
             InitializeComponent();
@@ -56,6 +55,13 @@ namespace TrailsPlugin.UI.Activity {
 
             InitControls();
             RefreshPage();
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is TrailLineChart)
+                {
+                    ((TrailLineChart)t).SetControl(m_page);
+                }
+            }
         }
 
         void InitControls()
@@ -112,20 +118,6 @@ namespace TrailsPlugin.UI.Activity {
             gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
             elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
             cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
-        }
-        public ActivityDetailPageControl DetailPage
-        {
-            set
-            {
-                m_DetailPage = value;
-                foreach (Control t in this.tableLayoutPanel1.Controls)
-                {
-                    if (t is TrailLineChart)
-                    {
-                        ((TrailLineChart)t).DetailPage = value;
-                    }
-                }
-            }
         }
         public void SetSelected(IList<IItemTrackSelectionInfo> asel)
         {

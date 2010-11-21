@@ -107,7 +107,6 @@ namespace TrailsPlugin.UI.Activity {
             SingleChart.SetControl(this, m_controller, m_view);
             MultiCharts.SetControl(this, m_controller, m_view);
 #endif
-            this.MultiCharts.DetailPage = this;
 #if ST_2_1
 			SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
@@ -144,7 +143,6 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
                 m_layer.ClearOverlays();
 #endif
-                ResultList.RefreshColumns();
                 RefreshData();
                 RefreshControlState();
             }

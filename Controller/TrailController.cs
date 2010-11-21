@@ -26,7 +26,7 @@ namespace TrailsPlugin.Controller
 {
     public enum TrailOrderStatus
     {
-        Used, InBound, InBoundNoCalc, NotInBound, NoInfo
+        Used, InBoundNoCalc, InBound, NotInBound, NoInfo
     }
     public class TrailOrdered : IComparable
     {

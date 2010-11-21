@@ -28,6 +28,8 @@ namespace TrailsPlugin.Data {
 		public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
 		private float m_radius;
+        private bool m_matchAll = false;
+        private bool m_generated = false;
 
 		public Trail() {
 			m_radius = PluginMain.Settings.DefaultRadius;
@@ -54,6 +56,29 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+        public bool MatchAll
+        {
+            get
+            {
+                return m_matchAll;
+            }
+            set
+            {
+                m_matchAll = value;
+            }
+        }
+        public bool Generated
+        {
+            get
+            {
+                return m_generated;
+            }
+            set
+            {
+                m_generated = value;
+            }
+        }
+
         static public IList<Data.TrailGPSLocation> MergeTrailLocations(IList<Data.TrailGPSLocation> t1, IList<Data.TrailGPSLocation> t2)
         {
             foreach (Data.TrailGPSLocation t in t2)
@@ -70,7 +95,11 @@ namespace TrailsPlugin.Data {
 				trail.Id = node.Attributes["id"].Value;
 			}
 			trail.Name = node.Attributes["name"].Value;
-			trail.Radius = float.Parse(node.Attributes["radius"].Value);
+            if (trail.Name.EndsWith("MatchAll"))
+            {
+                trail.MatchAll = true;
+            }
+            trail.Radius = float.Parse(node.Attributes["radius"].Value);
 			trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("TrailGPSLocation")) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
@@ -85,22 +114,24 @@ namespace TrailsPlugin.Data {
 			return trail;
 		}
 
-		public XmlNode ToXml(XmlDocument doc) {
-			XmlNode trailNode = doc.CreateElement("Trail");
-			XmlAttribute a = doc.CreateAttribute("id");
-			a.Value = this.Id;
-			trailNode.Attributes.Append(a);
-			a = doc.CreateAttribute("name");
-			a.Value = this.Name;
-			trailNode.Attributes.Append(a);
-			a = doc.CreateAttribute("radius");
-			a.Value = this.Radius.ToString();
-			trailNode.Attributes.Append(a);
-			foreach (TrailGPSLocation point in this.TrailLocations) {
-				trailNode.AppendChild(point.ToXml(doc));
-			}
-			return trailNode;
-		}
+        public XmlNode ToXml(XmlDocument doc)
+        {
+            XmlNode trailNode = doc.CreateElement("Trail");
+            XmlAttribute a = doc.CreateAttribute("id");
+            a.Value = this.Id;
+            trailNode.Attributes.Append(a);
+            a = doc.CreateAttribute("name");
+            a.Value = this.Name;
+            trailNode.Attributes.Append(a);
+            a = doc.CreateAttribute("radius");
+            a.Value = this.Radius.ToString();
+            trailNode.Attributes.Append(a);
+            foreach (TrailGPSLocation point in this.TrailLocations)
+            {
+                trailNode.AppendChild(point.ToXml(doc));
+            }
+            return trailNode;
+        }
 
         public bool IsInBounds(IList<IActivity> acts)
         {

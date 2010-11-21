@@ -29,7 +29,10 @@
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.referenceTrailMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectActivityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectWithURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
@@ -88,7 +91,10 @@
             this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyTableMenuItem,
             this.listSettingsMenuItem,
-            this.selectActivityMenuItem});
+            this.selectSimilarSplitsMenuItem,
+            this.referenceTrailMenuItem,
+            this.selectActivityMenuItem,
+            this.selectWithURMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(199, 48);
             // 
@@ -106,12 +112,33 @@
             this.listSettingsMenuItem.Text = "List Settings...";
             this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
             // 
+            // selectSimilarSplitsMenuItem
+            // 
+            this.selectSimilarSplitsMenuItem.Name = "selectSimilarSplitsMenuItem";
+            this.selectSimilarSplitsMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.selectSimilarSplitsMenuItem.Text = "<Select similar splits...";
+            this.selectSimilarSplitsMenuItem.Click +=new System.EventHandler(selectSimilarSplitsMenuItem_Click);
+            // 
+            // referenceTrailMenuItem
+            // 
+            this.referenceTrailMenuItem.Name = "referenceTrailMenuItem";
+            this.referenceTrailMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.referenceTrailMenuItem.Text = "<Set reference trail...";
+            this.referenceTrailMenuItem.Click += new System.EventHandler(referenceTrailMenuItem_Click);
+            // 
             // selectActivityMenuItem
             // 
             this.selectActivityMenuItem.Name = "selectActivityMenuItem";
             this.selectActivityMenuItem.Size = new System.Drawing.Size(198, 22);
             this.selectActivityMenuItem.Text = "Limit selection to current activities...";
             this.selectActivityMenuItem.Click += new System.EventHandler(this.selectActivityMenuItem_Click);
+            // 
+            // selectWithURMenuItem
+            // 
+            this.selectWithURMenuItem.Name = "selectWithURMenuItem";
+            this.selectWithURMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.selectWithURMenuItem.Text = "<Limit selection to current activities...";
+            this.selectWithURMenuItem.Click += new System.EventHandler(selectWithURMenuItem_Click);
             // 
             // ResultListControl
             // 
@@ -127,7 +154,6 @@
             this.PerformLayout();
 
 		}
-
 		#endregion
 
         private System.Windows.Forms.TableLayoutPanel SummaryPanel;
@@ -135,6 +161,9 @@
 		private System.Windows.Forms.ContextMenuStrip listMenu;
         private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;
         private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem referenceTrailMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectActivityMenuItem;
-	}
+        private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;
+    }
 }

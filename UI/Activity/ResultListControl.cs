@@ -78,6 +78,9 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             selectActivityMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
 #endif
+            selectSimilarSplitsMenuItem.Visible = false;
+            referenceTrailMenuItem.Visible = false;
+            selectWithURMenuItem.Visible = false;
 
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
@@ -112,23 +115,19 @@ namespace TrailsPlugin.UI.Activity {
         {
             summaryList.Columns.Clear();
             int plusMinusSize = summaryList.ShowPlusMinus ? 15 : 0;
-#if !ST_2_1
+
             //Permanent fields
-            if (m_controller.Activities.Count > 1)
+            foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
             {
-                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
-                {
-                    TreeList.Column column = new TreeList.Column(
-                        columnDef.Id,
-                        columnDef.Text(columnDef.Id),
-                        columnDef.Width + plusMinusSize,
-                        columnDef.Align
-                    );
-                    summaryList.Columns.Add(column);
-                    plusMinusSize = 0;
-                }
+                TreeList.Column column = new TreeList.Column(
+                    columnDef.Id,
+                    columnDef.Text(columnDef.Id),
+                    columnDef.Width + plusMinusSize,
+                    columnDef.Align
+                );
+                summaryList.Columns.Add(column);
+                plusMinusSize = 0;
             }
-#endif
             foreach (string id in PluginMain.Settings.ActivityPageColumns)
             {
                 foreach (
@@ -179,7 +178,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    m_page.RefreshChart();
+                    SelectedItems = null;
                 }
                 //Set size, to not waste chart
                 int resRows = Math.Min(5, results.Count);
@@ -280,11 +279,6 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /************************************************************/
-        void copyTableMenu_Click(object sender, EventArgs e)
-        {
-            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-        }
-
         void summaryList_Click(object sender, System.EventArgs e)
         {
             //SelectTrack, for ST3
@@ -323,21 +317,6 @@ namespace TrailsPlugin.UI.Activity {
             m_page.RefreshChart();
         }
 
-        void selectActivityMenuItem_Click(object sender, System.EventArgs e)
-        {
-#if !ST_2_1
-            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0)
-            {
-                IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
-                IList<IActivity> aAct = new List<IActivity>();
-                foreach (TrailResult tr in atr)
-                {
-                    aAct.Add(tr.Activity);
-                }
-                m_view.SelectionProvider.SelectedItems = (List<IActivity>)aAct;
-            }
-#endif
-        }
         private void selectedRow_DoubleClick(object sender, MouseEventArgs e)
         {
             Guid view = GUIDs.DailyActivityView;
@@ -370,6 +349,11 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*************************************************************************************************************/
+        void copyTableMenu_Click(object sender, EventArgs e)
+        {
+            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+        }
+
         private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 #if ST_2_1
@@ -391,5 +375,56 @@ namespace TrailsPlugin.UI.Activity {
                 RefreshColumns();
             }
         }
+        void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
+        {
+            if (summaryList.SelectedItems != null)
+            {
+                foreach (object t in summaryList.SelectedItems)
+                {
+                    object t2 = t;
+                    if (t != null && t is TreeList.TreeListNode)
+                    {
+                        t2 = (object)(t as TreeList.TreeListNode).Element;
+                    }
+                    if (t2 != null && t2 is TrailResult)
+                    {
+                        TrailResult tr = t2 as TrailResult;
+                       //xxx aTr.Add(tr);
+                    }
+                }
+            }
+        }
+
+        void selectActivityMenuItem_Click(object sender, System.EventArgs e)
+        {
+#if !ST_2_1
+            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0)
+            {
+                IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
+                IList<IActivity> aAct = new List<IActivity>();
+                foreach (TrailResult tr in atr)
+                {
+                    aAct.Add(tr.Activity);
+                }
+                m_view.SelectionProvider.SelectedItems = (List<IActivity>)aAct;
+            }
+#endif
+        }
+
+        //TODO: set text when opening
+        void referenceTrailMenuItem_Click(object sender, System.EventArgs e)
+        {
+            IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
+            if (atr != null && atr.Count > 0)
+            {
+                m_controller.ReferenceTrail = atr[0];
+            }
+        }
+
+        void selectWithURMenuItem_Click(object sender, System.EventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

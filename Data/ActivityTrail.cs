@@ -46,7 +46,7 @@ namespace TrailsPlugin.Data {
             {
                 if(m_IsInBounds==null)
                 {
-                    if (m_trail.Name.Contains("MatchAll"))
+                    if (m_trail.MatchAll)
                     {
                         m_IsInBounds = true;
                     }
@@ -70,7 +70,7 @@ namespace TrailsPlugin.Data {
                         if (activity.GPSRoute != null && activity.GPSRoute.Count > 1)
                         {
                             //Show all activities on Route
-                            if (m_trail.Name.Contains("MatchAll"))
+                            if (m_trail.MatchAll)
                             {
                                 //Match all
                                 IList<int> allMatch = new List<int>();

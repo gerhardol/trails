@@ -122,6 +122,13 @@ namespace TrailsPlugin.Data {
 
 			return columnDefs;
 		}
+        public static ICollection<IListItem> PermanentMultiColumnDefs()
+        {
+            IList<IListColumnDefinition> columnDefs = new List<IListItem>();
+            columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Color, "", "", 15, StringAlignment.Near));
+
+            return columnDefs;
+        }
 #else
         public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult)
         {
@@ -147,7 +154,7 @@ namespace TrailsPlugin.Data {
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Color, "", "", 15, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Color, "", "", 12, StringAlignment.Near));
 
             return columnDefs;
         }

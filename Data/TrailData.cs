@@ -31,6 +31,14 @@ namespace TrailsPlugin.Data {
         private static void defaults()
         {
             m_AllTrails = new SortedList<string, Data.Trail>();
+            //Automatically generated Trails
+            Data.Trail trail = new Data.Trail();
+            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
+            trail.Generated = true;
+            trail.MatchAll = true;
+            m_AllTrails.Add(trail.Id, trail);
+
         }
 		private static SortedList<string, Data.Trail> m_AllTrails;
 
@@ -101,7 +109,10 @@ namespace TrailsPlugin.Data {
             XmlNode trails = doc.CreateElement("Trails");
             foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
             {
-                trails.AppendChild(trail.ToXml(doc));
+                if (!trail.Generated)
+                {
+                    trails.AppendChild(trail.ToXml(doc));
+                }
             }
             pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
 

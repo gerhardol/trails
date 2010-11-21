@@ -178,7 +178,7 @@ namespace TrailsPlugin.UI.Activity {
             this.timeDiffToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.TimeDiff);
             distDiffToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.DistDiff;
             this.distDiffToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.DistDiff);
-            timeDiffToolStripMenuItem.Visible = false;//xxx temporary
+            timeDiffToolStripMenuItem.Visible = false;//TODO: temporary
             distDiffToolStripMenuItem.Visible = false;
 
             timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;

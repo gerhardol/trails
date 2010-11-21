@@ -119,7 +119,7 @@ namespace TrailsPlugin.UI.Activity {
 			TrailName.Enabled = enabled;
 
 			enabled = (m_controller.CurrentActivityTrail != null);
-			btnEdit.Enabled = enabled;
+            btnEdit.Enabled = enabled && !m_controller.CurrentActivityTrail.Trail.Generated;
 			btnDelete.Enabled = enabled;
 
             if (m_controller.CurrentActivityTrail != null)
@@ -415,24 +415,27 @@ namespace TrailsPlugin.UI.Activity {
             treeListPopup.ThemeChanged(m_visualTheme);
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-            treeListPopup.Tree.RowData = m_controller.OrderedTrails;
-            treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
-
+            //Note: Just checking for current trail could modify the ordered list, so do this first
+            System.Collections.IList currSel = null;
             if (m_controller.CurrentActivityTrail != null)
             {
-                foreach (TrailOrdered to in (IList<TrailOrdered>)treeListPopup.Tree.RowData)
+                foreach (TrailOrdered to in m_controller.OrderedTrails)
                 {
                     if (m_controller.CurrentActivityTrail.Equals(to.activityTrail))
                     {
-#if ST_2_1
-                        treeListPopup.Tree.Selected =
-#else
-                        treeListPopup.Tree.SelectedItems =
-#endif
-                           new object[] { to };
+                        currSel = new object[] { to };
+                        break;
                     }
                 }
             }
+            treeListPopup.Tree.RowData = m_controller.OrderedTrails;
+#if ST_2_1
+            treeListPopup.Tree.Selected = currSel;
+#else
+            treeListPopup.Tree.SelectedItems = currSel;
+#endif
+            treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
+
             treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
             treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
         }
@@ -455,7 +458,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     return Properties.Resources.square_blue;
                 }
-                else if (t.status == TrailOrderStatus.InBoundsNoCalc)
+                else if (t.status == TrailOrderStatus.InBoundNoCalc)
                 {
                     return Properties.Resources.square_green_add;
                 }

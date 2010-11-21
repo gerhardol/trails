@@ -134,7 +134,7 @@
             this.speedChart.Name = "speedChart";
             this.speedChart.Size = new System.Drawing.Size(500, 100);
             this.speedChart.TabIndex = 2;
-            this.speedChart.TrailResult = null;
+            this.speedChart.ReferenceTrailResult = null;
             this.speedChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.speedChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
@@ -152,7 +152,7 @@
             this.heartrateChart.Name = "heartrateChart";
             this.heartrateChart.Size = new System.Drawing.Size(500, 100);
             this.heartrateChart.TabIndex = 3;
-            this.heartrateChart.TrailResult = null;
+            this.heartrateChart.ReferenceTrailResult = null;
             this.heartrateChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.heartrateChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
@@ -170,7 +170,7 @@
             this.cadenceChart.Name = "cadenceChart";
             this.cadenceChart.Size = new System.Drawing.Size(500, 100);
             this.cadenceChart.TabIndex = 6;
-            this.cadenceChart.TrailResult = null;
+            this.cadenceChart.ReferenceTrailResult = null;
             this.cadenceChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.cadenceChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
@@ -188,7 +188,7 @@
             this.elevationChart.Name = "elevationChart";
             this.elevationChart.Size = new System.Drawing.Size(500, 100);
             this.elevationChart.TabIndex = 3;
-            this.elevationChart.TrailResult = null;
+            this.elevationChart.ReferenceTrailResult = null;
             this.elevationChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.elevationChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
@@ -206,7 +206,7 @@
             this.gradeChart.Name = "gradeChart";
             this.gradeChart.Size = new System.Drawing.Size(500, 100);
             this.gradeChart.TabIndex = 7;
-            this.gradeChart.TrailResult = null;
+            this.gradeChart.ReferenceTrailResult = null;
             this.gradeChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.gradeChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Grade;
             // 

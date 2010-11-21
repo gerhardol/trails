@@ -54,10 +54,10 @@ namespace TrailsPlugin.UI.Activity {
             InitializeComponent();
         }
 #if ST_2_1
-        public void SetResultListControl(ActivityDetailPageControl page, Controller.TrailController controller)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller)
         {
 #else
-        public void SetResultListControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
         {
             m_view = view;
 #endif

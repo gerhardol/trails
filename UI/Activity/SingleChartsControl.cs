@@ -25,9 +25,10 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Chart;
 
-#if ST_2_1
-using TrailsPlugin.Data;
+#if !ST_2_1
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 #endif
+using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class SingleChartsControl : UserControl {
@@ -38,7 +39,6 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_showChartToolBar = true;
 
 #if !ST_2_1
-        private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
 #endif
 
@@ -47,10 +47,10 @@ namespace TrailsPlugin.UI.Activity {
             InitializeComponent();
         }
 #if ST_2_1
-        public void SetSingleChartsControl(ActivityDetailPageControl page, Controller.TrailController controller)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller)
         {
 #else
-        public void SetSingleChartsControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
         {
             m_view = view;
 #endif
@@ -125,7 +125,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshChart() {
 				this.LineChart.BeginUpdate();
-				this.LineChart.TrailResult = null;
+				this.LineChart.ReferenceTrailResult = null;
 				if (m_controller.CurrentActivityTrail != null) {
                     if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
                     {
@@ -149,9 +149,10 @@ namespace TrailsPlugin.UI.Activity {
                     IList<TrailResult> list = this.m_page.SelectedItems;
                     if (list.Count > 0)
                     {
-                        this.LineChart.TrailResult = list[0];
+                        this.LineChart.ReferenceTrailResult = list[0];
                     }
-				}
+                    this.LineChart.TrailResults = list;
+                }
 				this.LineChart.EndUpdate();
 		}
 
@@ -173,7 +174,14 @@ namespace TrailsPlugin.UI.Activity {
             powerToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Power;
             this.powerToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Power);
 
-			timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
+            timeDiffToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.TimeDiff;
+            this.timeDiffToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.TimeDiff);
+            distDiffToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.DistDiff;
+            this.distDiffToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.DistDiff);
+            timeDiffToolStripMenuItem.Visible = false;//xxx temporary
+            distDiffToolStripMenuItem.Visible = false;
+
+            timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
             this.timeToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Time);
             distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
             this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
@@ -224,11 +232,25 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshChartMenu();
 			RefreshChart();
 		}
-		private void powerToolStripMenuItem_Click(object sender, EventArgs e) {
-			PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Power;
-			RefreshChartMenu();
-			RefreshChart();
-		}
+        private void powerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.Power;
+            RefreshChartMenu();
+            RefreshChart();
+        }
+
+        private void timeDiffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.TimeDiff;
+            RefreshChartMenu();
+            RefreshChart();
+        }
+        private void distDiffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PluginMain.Settings.ChartType = TrailLineChart.LineChartTypes.DistDiff;
+            RefreshChartMenu();
+            RefreshChart();
+        }
 
 		private void distanceToolStripMenuItem_Click(object sender, EventArgs e) {
 			PluginMain.Settings.XAxisValue = TrailLineChart.XAxisValue.Distance;

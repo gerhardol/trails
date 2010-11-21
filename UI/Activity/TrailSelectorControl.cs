@@ -68,7 +68,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             InitializeComponent();
         }
-        public void SetTrailSelectorControl(ActivityDetailPageControl page, Controller.TrailController controller,
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller,
 #if ST_2_1
           UI.MapLayers.MapControlLayer layer)
         {

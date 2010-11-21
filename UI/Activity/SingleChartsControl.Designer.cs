@@ -36,9 +36,12 @@
             this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.timeDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.distDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
             this.LineChart = new TrailsPlugin.UI.Activity.TrailLineChart();
@@ -96,9 +99,12 @@
             this.gradeStripMenuItem,
             this.powerToolStripMenuItem,
             this.toolStripSeparator1,
+            this.timeDiffToolStripMenuItem,
+            this.distDiffToolStripMenuItem,
+            this.toolStripSeparator2,
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem,
-            this.toolStripSeparator2,
+            this.toolStripSeparator3,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
             this.detailMenu.Size = new System.Drawing.Size(199, 258);
@@ -164,6 +170,25 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
             // 
+            // timeDiffToolStripMenuItem
+            // 
+            this.timeDiffToolStripMenuItem.Name = "timeDiffToolStripMenuItem";
+            this.timeDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.timeDiffToolStripMenuItem.Text = "TimeDiff";
+            this.timeDiffToolStripMenuItem.Click += new System.EventHandler(this.timeDiffToolStripMenuItem_Click);
+            // 
+            // distDiffToolStripMenuItem
+            // 
+            this.distDiffToolStripMenuItem.Name = "distDiffToolStripMenuItem";
+            this.distDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.distDiffToolStripMenuItem.Text = "DistDiff";
+            this.distDiffToolStripMenuItem.Click += new System.EventHandler(this.distDiffToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            // 
             // distanceToolStripMenuItem
             // 
             this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
@@ -178,10 +203,10 @@
             this.timeToolStripMenuItem.Text = "Time";
             this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
+            // toolStripSeparator3
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(195, 6);
             // 
             // showToolBarMenuItem
             // 
@@ -230,7 +255,7 @@
             this.LineChart.Name = "LineChart";
             this.LineChart.Size = new System.Drawing.Size(400, 192);
             this.LineChart.TabIndex = 1;
-            this.LineChart.TrailResult = null;
+            this.LineChart.ReferenceTrailResult = null;
             this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             this.LineChart.YAxisReferential_right = null;
@@ -264,9 +289,12 @@
 		private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem timeDiffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem distDiffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem speedPaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;

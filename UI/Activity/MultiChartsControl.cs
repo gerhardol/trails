@@ -24,20 +24,40 @@ using ZoneFiveSoftware.Common.Visuals;
 
 #if ST_2_1
 using TrailsPlugin.Data;
+#else
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 #endif
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class MultiChartsControl : UserControl {
 
 		public event System.EventHandler Collapse;
-        private bool m_showChartToolBar = true;
+        ActivityDetailPageControl m_page;
+        private Controller.TrailController m_controller;
+
+#if !ST_2_1
+        private IDailyActivityView m_view = null;
+#endif
         private ActivityDetailPageControl m_DetailPage = null;
 
 		public MultiChartsControl() {
             InitializeComponent();
+        }
+#if ST_2_1
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller)
+        {
+#else
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
+        {
+            m_view = view;
+#endif
+            m_page = page;
+            m_controller = controller;
+
             InitControls();
             RefreshPage();
         }
+
         void InitControls()
         {
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
@@ -153,7 +173,12 @@ namespace TrailsPlugin.UI.Activity {
                     TrailLineChart chart = ((TrailLineChart)t);
                     chart.BeginUpdate();
                     chart.XAxisReferential = PluginMain.Settings.XAxisValue;
-                    chart.TrailResult = result;
+                    IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                    if (list.Count > 0)
+                    {
+                        chart.ReferenceTrailResult = list[0];
+                    }
+                    chart.TrailResults = list;
                     chart.EndUpdate();
                 }
             }
@@ -163,14 +188,13 @@ namespace TrailsPlugin.UI.Activity {
         void RefreshChartMenu()
         {
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
-            this.showToolBarMenuItem.Checked = m_showChartToolBar;
+            this.showToolBarMenuItem.Checked = m_page.ShowChartToolBar;
         }
 
         public bool ShowChartToolBar
         {
             set
             {
-                m_showChartToolBar = value;
                 foreach (Control t in this.tableLayoutPanel1.Controls)
                 {
                     if (t is TrailLineChart)
@@ -199,7 +223,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
-            ((ActivityDetailPageControl)this.Parent.Parent.Parent).ShowChartToolBar = !m_showChartToolBar;
+            m_page.ShowChartToolBar = !m_page.ShowChartToolBar;
         }
     }
 }

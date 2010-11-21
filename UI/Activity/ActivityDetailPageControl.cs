@@ -40,9 +40,6 @@ using ZoneFiveSoftware.SportTracks.UI.Forms;
 using ZoneFiveSoftware.SportTracks.Data;
 using TrailsPlugin.UI.MapLayers;
 #else
-
-#endif
-#if !ST_2_1
 using TrailsPlugin.UI.MapLayers;
 using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
@@ -100,13 +97,15 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = true;
 
 #if ST_2_1
-            TrailSelector.SetTrailSelectorControl(this, m_controller, m_layer);
-            ResultList.SetResultListControl(this, m_controller);
-            SingleChart.SetSingleChartsControl(this, m_controller);
+            TrailSelector.SetControl(this, m_controller, m_layer);
+            ResultList.SetControl(this, m_controller);
+            SingleChart.SetControl(this, m_controller);
+            MultiCharts.SetControl(this, m_controller);
 #else
-            TrailSelector.SetTrailSelectorControl(this, m_controller, m_view, m_layer);
-            ResultList.SetResultListControl(this, m_controller, m_view);
-            SingleChart.SetSingleChartsControl(this, m_controller, m_view);
+            TrailSelector.SetControl(this, m_controller, m_view, m_layer);
+            ResultList.SetControl(this, m_controller, m_view);
+            SingleChart.SetControl(this, m_controller, m_view);
+            MultiCharts.SetControl(this, m_controller, m_view);
 #endif
             this.MultiCharts.DetailPage = this;
 #if ST_2_1
@@ -117,8 +116,6 @@ namespace TrailsPlugin.UI.Activity {
             }
 #endif
             MultiCharts.ShowChartToolBar = ShowChartToolBar;
-
-            //summaryList.RefreshColumns();
 		}
 
         public void UICultureChanged(CultureInfo culture)
@@ -257,7 +254,8 @@ namespace TrailsPlugin.UI.Activity {
             get { return SingleChart.ShowChartToolBar; }
             set
             {
-                SingleChart.ShowChartToolBar = value;
+                this.SingleChart.ShowChartToolBar = value;
+                this.MultiCharts.ShowChartToolBar = value;
             }
         }
         //Some views like mapping is only working in single view - there are likely better tests
@@ -370,6 +368,7 @@ namespace TrailsPlugin.UI.Activity {
             if (sc != null)
             {
 #endif
+            int width = this.UpperSplitContainer.Width;
             MultiCharts.Visible = true;
             MultiCharts.ShowPage = _showPage;
             SingleChart.Visible = false;
@@ -388,7 +387,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             m_DetailPage.PageMaximized = true;
             this.ExpandSplitContainer.Panel2Collapsed = false;
-            this.ExpandSplitContainer.SplitterDistance = this.Width;
+            this.ExpandSplitContainer.SplitterDistance = width;
 #endif
             m_isExpanded = true;
             RefreshChart();

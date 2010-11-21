@@ -76,8 +76,11 @@ namespace TrailsPlugin.Data {
             for (int i = 1; i < m_indexes.Count; i++)
             {
                 TrailResult tr = new TrailResult(m_activity, i, new List<int> { m_indexes[i - 1], m_indexes[i] }, m_distDiff);
-                nextTrailColor--;
-                tr.m_trailColor = this.m_trailColor;
+                if (aActivities.Count > 1)
+                {
+                    nextTrailColor--;
+                    tr.m_trailColor = this.m_trailColor;
+                }
                 splits.Add(tr);
             }
             return splits;

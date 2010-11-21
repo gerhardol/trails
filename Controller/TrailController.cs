@@ -22,8 +22,23 @@ using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 
-namespace TrailsPlugin.Controller {
-	public class TrailController {
+namespace TrailsPlugin.Controller 
+{
+    public enum TrailOrderStatus
+    {
+        Used, InBound, NotInBound, InBoundsNoCalc, NoInfo
+    }
+    public class TrailOrdered
+    {
+        public TrailOrdered(Data.ActivityTrail activityTrail, TrailOrderStatus status)
+        { this.activityTrail = activityTrail; this.status = status; }
+        public Data.ActivityTrail activityTrail;
+        public TrailOrderStatus status;
+    }
+
+    public class TrailController
+    {
+        const int MaxAutoCalcActivities = 20;
 		static private TrailController m_instance;
 		static public TrailController Instance {
 			get {
@@ -124,17 +139,43 @@ namespace TrailsPlugin.Controller {
 						m_currentTrail = trails[0];
 					}
 				}
-				return m_currentTrail;
+					if (m_currentTrail != null) {
+                foreach(TrailOrdered to in m_CurrentOrderedTrails)
+                {
+                    if(m_currentTrail.Equals(to.activityTrail))
+                    {
+                        if (to.status == TrailOrderStatus.NoInfo || 
+                            to.status == TrailOrderStatus.InBoundsNoCalc)
+                        {
+                            if (to.activityTrail.Results.Count > 0)
+                            {
+                                to.status = TrailOrderStatus.Used;
+                            }
+                            else if (to.activityTrail.IsInBounds)
+                            {
+                                to.status = TrailOrderStatus.InBound;
+                            }
+                            else
+                            {
+                                to.status = TrailOrderStatus.NotInBound;
+                            }
+                        }
+                        break;
+                    }
+                }
 			}
+				return m_currentTrail;
+            }
 		}
 
-        private IList<Data.ActivityTrail> m_CurrentOrderedTrails = null;
-        public IList<Data.ActivityTrail> OrderedTrails
+        private IList<TrailOrdered> m_CurrentOrderedTrails = null;
+        public IList<TrailOrdered> OrderedTrails
         {
             get
             {
                 if (m_CurrentOrderedTrails == null || m_activityTrails == null)
                 {
+                    getTrails();
                 }
                 return m_CurrentOrderedTrails;
             }
@@ -149,54 +190,45 @@ namespace TrailsPlugin.Controller {
 				return m_activityTrails;
 			}
 		}
-
-        //wrapper for m_activityTrails, m_CurrentOrderedTrails - previously separate
+        //wrapper for m_activityTrails, m_CurrentOrderedTrails
         private void getTrails()
         {
-            SortedList<double, Data.ActivityTrail> trailsUsed = new SortedList<double, Data.ActivityTrail>();
-            SortedList<string, Data.ActivityTrail> trailsInBounds = new SortedList<string, Data.ActivityTrail>();
-            SortedList<string, Data.ActivityTrail> trailsNotInBound = new SortedList<string, Data.ActivityTrail>();
-
             Data.TrailResult.Reset();
             m_activityTrails = new List<Data.ActivityTrail>();
+            m_CurrentOrderedTrails = new List<TrailOrdered>();
             foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
             {
                 Data.ActivityTrail at = new TrailsPlugin.Data.ActivityTrail(Activities, trail);
-                if (trail.IsInBounds(Activities))
+                if (Activities.Count <= MaxAutoCalcActivities)
                 {
-                    m_activityTrails.Add(at);
-                    if (at.Results.Count > 0)
+                    if (trail.IsInBounds(Activities))
                     {
-                        double key = at.Results[0].StartTime.TotalSeconds;
-                        while (trailsUsed.ContainsKey(key))
+                        m_activityTrails.Add(at);
+                        if (at.Results.Count > 0)
                         {
-                            key++;
+                            m_CurrentOrderedTrails.Add(new TrailOrdered(at, TrailOrderStatus.Used));
                         }
-                        trailsUsed.Add(key, at);
+                        else
+                        {
+                            m_CurrentOrderedTrails.Add(new TrailOrdered(at, TrailOrderStatus.InBound));
+                        }
                     }
                     else
                     {
-                        trailsInBounds.Add(at.Trail.Name, at);
+                        m_CurrentOrderedTrails.Add(new TrailOrdered(at, TrailOrderStatus.NotInBound));
                     }
                 }
                 else
                 {
-                    trailsNotInBound.Add(at.Trail.Name, at);
+                    if (at.IsInBounds)
+                    {
+                        m_CurrentOrderedTrails.Add(new TrailOrdered(at, TrailOrderStatus.InBoundsNoCalc));
+                    }
+                    else
+                    {
+                        m_CurrentOrderedTrails.Add(new TrailOrdered(at, TrailOrderStatus.NotInBound));
+                    }
                 }
-            }
-
-            m_CurrentOrderedTrails = new List<Data.ActivityTrail>();
-            foreach (Data.ActivityTrail t in trailsUsed.Values)
-            {
-                m_CurrentOrderedTrails.Add(t);
-            }
-            foreach (Data.ActivityTrail t in trailsInBounds.Values)
-            {
-                m_CurrentOrderedTrails.Add(t);
-            }
-            foreach (Data.ActivityTrail t in trailsNotInBound.Values)
-            {
-                m_CurrentOrderedTrails.Add(t);
             }
         }
 		public bool AddTrail(Data.Trail trail) {

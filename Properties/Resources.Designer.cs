@@ -90,6 +90,13 @@ namespace TrailsPlugin.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap square_green_add {
+            get {
+                object obj = ResourceManager.GetObject("square_green_add", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap square_red {
             get {
                 object obj = ResourceManager.GetObject("square_red", resourceCulture);

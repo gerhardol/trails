@@ -48,7 +48,7 @@
             this.SummaryPanel.Name = "SummaryPanel";
             this.SummaryPanel.RowCount = 1;
             this.SummaryPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.SummaryPanel.Size = new System.Drawing.Size(400, 100);
+            this.SummaryPanel.Size = new System.Drawing.Size(400, 300);
             this.SummaryPanel.TabIndex = 1;
             // 
             // summaryList
@@ -113,13 +113,13 @@
             this.selectActivityMenuItem.Text = "Limit selection to current activities...";
             this.selectActivityMenuItem.Click += new System.EventHandler(this.selectActivityMenuItem_Click);
             // 
-            // ResultList
+            // ResultListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.SummaryPanel);
-            this.Name = "ResultList";
+            this.Name = "ResultListControl";
             this.Size = new System.Drawing.Size(400, 300);
             this.SummaryPanel.ResumeLayout(false);
             this.listMenu.ResumeLayout(false);

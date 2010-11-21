@@ -177,6 +177,10 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     SelectedItems = new List<TrailResult> { results[0] };
                 }
+                else
+                {
+                    m_page.RefreshChart();
+                }
                 //Set size, to not waste chart
                 int resRows = Math.Min(5, results.Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +

@@ -39,12 +39,24 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+        private bool? m_IsInBounds = null;
         public bool IsInBounds
         {
             get
             {
+                if(m_IsInBounds==null)
+                {
+                    if (m_trail.Name.Contains("MatchAll"))
+                    {
+                        m_IsInBounds = true;
+                    }
+                    else
+                    {
+                        m_IsInBounds = m_trail.IsInBounds(m_activities);
+                    }
+                }
                 //Any activity in bounds?
-                return m_trail.IsInBounds(m_activities);
+                return m_IsInBounds == true?true:false ;
             }
         }
 
@@ -82,11 +94,12 @@ namespace TrailsPlugin.Data {
                                     }
                                 }
                                 allMatch.Add(activity.GPSRoute.Count - 1);
+                                m_IsInBounds = true;
                                 TrailResult result = new TrailResult(activity, m_resultsList.Count + 1, allMatch, float.MaxValue);
                                 m_resultsList.Add(result);
                             }
 
-                            if (this.m_trail.TrailLocations.Count > 0)
+                            if (m_IsInBounds!=false && this.m_trail.TrailLocations.Count > 0)
                             {
                                 IList<int> aMatch = new List<int>();
                                 int lastMatchInRadius = -1;
@@ -202,6 +215,7 @@ namespace TrailsPlugin.Data {
 
                                         if (isEndTrailPoint(aMatch.Count))
                                         {
+                                            m_IsInBounds = true;
                                             TrailResult result = new TrailResult(activity, m_resultsList.Count + 1, aMatch, trailDistDiff);
                                             m_resultsList.Add(result);
 

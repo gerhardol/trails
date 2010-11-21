@@ -30,10 +30,6 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 
 #if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
-#else
-
-#endif
-#if ST_2_1
 //IListItem, ListSettings
 using ZoneFiveSoftware.SportTracks.Util;
 using ZoneFiveSoftware.SportTracks.UI;
@@ -41,20 +37,17 @@ using ZoneFiveSoftware.SportTracks.UI.Forms;
 using ZoneFiveSoftware.SportTracks.Data;
 using TrailsPlugin.UI.MapLayers;
 #else
-
-#endif
-#if !ST_2_1
 using TrailsPlugin.UI.MapLayers;
-
 #endif
 using TrailsPlugin.Data;
+using TrailsPlugin.Controller;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class TrailSelectorControl : UserControl {
 
         private ITheme m_visualTheme;
         private CultureInfo m_culture;
-        private Controller.TrailController m_controller;
+        private TrailController m_controller;
 #if ST_2_1
         private UI.MapLayers.MapControlLayer m_layer;
 #else
@@ -427,11 +420,18 @@ namespace TrailsPlugin.UI.Activity {
 
             if (m_controller.CurrentActivityTrail != null)
             {
+                foreach (TrailOrdered to in (IList<TrailOrdered>)treeListPopup.Tree.RowData)
+                {
+                    if (m_controller.CurrentActivityTrail.Equals(to.activityTrail))
+                    {
 #if ST_2_1
-                treeListPopup.Tree.Selected = new object[] { m_controller.CurrentActivityTrail };
+                        treeListPopup.Tree.Selected =
 #else
-                treeListPopup.Tree.SelectedItems = new object[] { m_controller.CurrentActivityTrail };
+                        treeListPopup.Tree.SelectedItems =
 #endif
+                           new object[] { to };
+                    }
+                }
             }
             treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
             treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
@@ -442,24 +442,37 @@ namespace TrailsPlugin.UI.Activity {
 		class TrailDropdownLabelProvider : TreeList.ILabelProvider {
 
 			public Image GetImage(object element, TreeList.Column column) {
-				ActivityTrail t = (ActivityTrail)element;
-				if (!t.IsInBounds) {
-					return CommonIcons.BlueSquare;
-				} else if (t.Results.Count > 0) {
-					return CommonIcons.GreenSquare;
-				} else {
-					return CommonIcons.RedSquare;
-				}
+                TrailOrdered t = (TrailOrdered)element;
+				if (t.status==TrailOrderStatus.Used)
+                {
+                    return Properties.Resources.square_green;
+                }
+                else if (t.status == TrailOrderStatus.InBound)
+                {
+                    return Properties.Resources.square_red;
+                }
+                else if (t.status == TrailOrderStatus.NotInBound)
+                {
+                    return Properties.Resources.square_blue;
+                }
+                else if (t.status == TrailOrderStatus.InBoundsNoCalc)
+                {
+                    return Properties.Resources.square_green_add;
+                }
+                else
+                {
+                    return null;
+                }
 			}
 
 			public string GetText(object element, TreeList.Column column) {
-				ActivityTrail t = (ActivityTrail)element;
-				return t.Trail.Name;
+                TrailOrdered t = (TrailOrdered)element;
+                return t.activityTrail.Trail.Name;
 			}
 		}
 
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
-			ActivityTrail t = (ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item;
+			ActivityTrail t = ((TrailOrdered)((TreeListPopup.ItemSelectedEventArgs)e).Item).activityTrail;
 			m_controller.CurrentActivityTrail = t;
 			m_page.RefreshData();
 			m_page.RefreshControlState();

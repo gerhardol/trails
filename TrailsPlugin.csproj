@@ -203,5 +203,11 @@
   <ItemGroup>
     <None Include="Resources\DropDown.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\square_green_add.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\square-green-add.png" />
+  </ItemGroup>
   <Import Project=".\Common\Common-Files.csproj" />
 </Project>

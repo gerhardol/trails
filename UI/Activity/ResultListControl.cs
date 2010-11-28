@@ -92,7 +92,7 @@ namespace TrailsPlugin.UI.Activity {
             this.selectActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
-            this.selectWithURMenuItem.Text = Properties.Resources.UI_Activity_List_URLimit;
+            this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
 
             this.RefreshColumns();
         }

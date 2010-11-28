@@ -177,7 +177,7 @@
     <value>List Settings...</value>
     <comment>STcore</comment>
   </data>
-  <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
+  <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
     <value>You must select a point on the map.
 
 To select a point, just click on the track.
@@ -185,7 +185,8 @@ Add new points by pressing the Add button.
 
 To select a second point, hold down CTRL, and click another part of the track.
 Select as many points required to make this trail unique from other trails.
-</value>
+
+To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
     <comment>ST2 only</comment>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
@@ -236,6 +237,7 @@ Changing this value will not effect existing trails.</value>
     <value>No point selected on the map.
 
 Press {0} to use the Lap points, {1} to abort and select points on the GPS track.</value>
+    <comment>unused</comment>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Limit activities to selected in list</value>
@@ -260,5 +262,13 @@ Press {0} to use the Lap points, {1} to abort and select points on the GPS track
   </data>
   <data name="Trail_NoTrailSelected" xml:space="preserve">
     <value>-- Select Trail in List --</value>
+  </data>
+  <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
+    <value>You must select a point on the map.
+
+To select a point, just click on the track.
+Add new points by pressing the Add button.
+
+To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
   </data>
 </root>

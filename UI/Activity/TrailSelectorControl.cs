@@ -155,39 +155,12 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             } else {
 #if ST_2_1
-                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError, countGPS);
-                MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError_ST2, 
 #else
-                //It is currently not possible to select while in multimode
-                //The button could be disabled, error ignored for now
-                if (m_page.isSingleView && m_controller.CurrentActivity != null)
-                {
-                    if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_NoSelected, CommonResources.Text.ActionYes, CommonResources.Text.ActionNo)
-                        , "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                    {
-                        //Using IItemTrackSelectionInfo to avoid duplicating code
-                        if (null == m_controller.CurrentActivity.Laps || 0 == m_controller.CurrentActivity.Laps.Count)
-                        {
-                            selectedGPS.Add(getSel(m_controller.CurrentActivity.StartTime));
-                        }
-                        else
-                        {
-                            foreach (ILapInfo l in m_controller.CurrentActivity.Laps)
-                            {
-                                selectedGPS.Add(getSel(l.StartTime));
-                            }
-                        }
-                        ActivityInfo activityInfo = ActivityInfoCache.Instance.GetInfo(m_controller.CurrentActivity);
-                        selectedGPS.Add(getSel(activityInfo.EndTime));
-                        selectedGPSLocationsChanged_AddTrail(selectedGPS);
-                        selectedGPS.Clear();
-                    }
-                }
-                else
-                {
-                    selectedGPSLocationsChanged_AddTrail(selectedGPS);
-                }
+                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,
 #endif
+                  Properties.Resources.Trail_Reference_Name);
+                MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
  		}
         private TrailsItemTrackSelectionInfo getSel(DateTime t)
@@ -197,6 +170,7 @@ namespace TrailsPlugin.UI.Activity {
             s.SelectedTime = v;
             return s;
         }
+
         private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;
 #if ST_2_1

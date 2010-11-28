@@ -34,20 +34,29 @@ namespace TrailsPlugin.Data {
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
-		public Trail() {
+		public Trail()
+        {
 			m_radius = PluginMain.Settings.DefaultRadius;
 		}
 
-        public Trail Copy()
+        public Trail Copy(bool isEdit)
         {
             Trail result = new Trail();
-            if (this.m_isReference && m_referenceActivity != null && m_referenceActivity.Name != "")
+            if (isEdit)
             {
-                result.Name = this.m_referenceActivity.Name;
+                result.Id = this.Id;
+                result.Name = this.Name;
             }
             else
             {
-                result.Name = this.Name + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
+                if (this.m_isReference && m_referenceActivity != null && m_referenceActivity.Name != "")
+                {
+                    result.Name = this.m_referenceActivity.Name;
+                }
+                else
+                {
+                    result.Name = this.Name + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
+                }
             }
             //Do not copy "auto" attributes
             result.m_radius = this.m_radius;

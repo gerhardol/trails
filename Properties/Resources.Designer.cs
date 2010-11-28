@@ -389,13 +389,28 @@ namespace TrailsPlugin.Properties {
         ///To select a point, just click on the track.
         ///Add new points by pressing the Add button.
         ///
-        ///To select a second point, hold down CTRL, and click another part of the track.
-        ///Select as many points required to make this trail unique from other trails.
-        ///.
+        ///To make a copy of the current reference activity, select Trail {0}, then press Edit button..
         /// </summary>
         internal static string UI_Activity_Page_SelectPointsError {
             get {
                 return ResourceManager.GetString("UI_Activity_Page_SelectPointsError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must select a point on the map.
+        ///
+        ///To select a point, just click on the track.
+        ///Add new points by pressing the Add button.
+        ///
+        ///To select a second point, hold down CTRL, and click another part of the track.
+        ///Select as many points required to make this trail unique from other trails.
+        ///
+        ///To make a copy of the current reference activity, select Trail {0}, then press Edit button..
+        /// </summary>
+        internal static string UI_Activity_Page_SelectPointsError_ST2 {
+            get {
+                return ResourceManager.GetString("UI_Activity_Page_SelectPointsError_ST2", resourceCulture);
             }
         }
         

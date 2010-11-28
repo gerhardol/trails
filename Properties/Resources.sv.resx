@@ -162,15 +162,16 @@
   <data name="UI_Activity_List_ListSettings" xml:space="preserve">
     <value>Inställningar för tabell...</value>
   </data>
-  <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
+  <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
     <value>Du måste välja punkter på kartan.
+För att välja en punkt, klicka bara på ett aktivitetsspår.
 
-För att välja en punkt, klicka bara på ett aktivitetsspår.
-ST2: För att välja ytterliggare punkter, använd CTRL och klicka på en annan punkt på spåret.
-Välj punkter så denna trail är unik jämförd med andra trail.</value>
+För att välja ytterliggare punkter, använd CTRL och klicka på en annan punkt på spåret.
+Välj punkter så denna trail är unik jämförd med andra trail.
+Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
-    <value>Vill du uppdatera trail GPS punkter med de valda punkterna?</value>
+    <value>Vill du uppdatera trail med de valda GPS punkterna?</value>
   </data>
   <data name="UI_Settings_DefaultRadius" xml:space="preserve">
     <value>Default radie</value>
@@ -209,5 +210,13 @@ Välj punkter så denna trail är unik jämförd med andra trail.</value>
   </data>
   <data name="Trail_NoTrailSelected" xml:space="preserve">
     <value>-- Välj Trail i listan --</value>
+  </data>
+  <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
+    <value>Du måste välja en punkt på kartan.
+
+
+För att välja en punkt, klicka bara på ett aktivitetsspår.
+
+Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
   </data>
 </root>

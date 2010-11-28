@@ -47,7 +47,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_layer = TrailPointsLayer.Instance(view);
 #endif
-            if (addMode)
+            m_addMode = addMode;
+            if (m_addMode)
             {
                 m_TrailToEdit = new TrailsPlugin.Data.Trail();
                 this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
@@ -59,12 +60,15 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_TrailToEdit.Generated)
                 {
                     //Create copy of the trail
-                    m_TrailToEdit = m_TrailToEdit.Copy();
-                    addMode = true;
+                    m_TrailToEdit = m_TrailToEdit.Copy(false);
+                    m_addMode = true;
                     this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
                 }
+                else
+                {
+                    m_TrailToEdit = m_TrailToEdit.Copy(true);
+                }
             }
-            m_addMode = addMode;
             InitializeComponent();
             InitControls();
         }
@@ -72,7 +76,7 @@ namespace TrailsPlugin.UI.Activity {
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, bool addMode)
             : this (addMode)
 #else
-            public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, bool addMode)
+        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, bool addMode)
             : this (view, addMode)
 #endif
         {

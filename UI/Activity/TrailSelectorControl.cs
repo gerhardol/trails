@@ -455,12 +455,16 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
 			TrailOrdered t = ((TrailOrdered)((TreeListPopup.ItemSelectedEventArgs)e).Item);
+            if(sender is TreeListPopup)
+            {
+                ((TreeListPopup)sender).Hide();
+            }
 			m_controller.CurrentTrailOrdered = t;
             m_page.RefreshData();
             m_page.RefreshControlState();
 		}
 
-		private void TrailSelectorPanel_SizeChanged(object sender, EventArgs e) {
+        private void TrailSelectorPanel_SizeChanged(object sender, EventArgs e) {
 			// autosize column doesn't seem to be working.
             //Sizing is flaky in general
 			float width = 0;

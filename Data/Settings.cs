@@ -165,6 +165,8 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
             if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
+            attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
+            if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
             if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcResults);
@@ -194,6 +196,7 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.sChartType, m_chartType.ToString());
             pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, m_summaryViewSortColumn);
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
+            pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
 

@@ -53,6 +53,7 @@ namespace TrailsPlugin.UI.Activity {
             m_page = page;
             m_controller = controller;
 
+            ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
             InitControls();
             RefreshPage();
             foreach (Control t in this.tableLayoutPanel1.Controls)
@@ -216,6 +217,7 @@ namespace TrailsPlugin.UI.Activity {
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
             PluginMain.Settings.ShowChartToolBar = !PluginMain.Settings.ShowChartToolBar;
+            ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
         }
     }
 }

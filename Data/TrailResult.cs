@@ -28,6 +28,7 @@ using ITrailExport;
 namespace TrailsPlugin.Data {
     public class TrailResult : ITrailResult, IComparable
     {
+        private IList<Data.TrailGPSLocation> m_trailgps;
 		private IActivity m_activity;
 		private int m_order;
 		private INumericTimeDataSeries m_cadencePerMinuteTrack;
@@ -47,13 +48,18 @@ namespace TrailsPlugin.Data {
         private float m_distDiff; //to give quality of results
         private IList<int> m_indexes = new List<int>();
         private int m_trailColor = nextTrailColor++;
+        private TrailResult m_parentResult = null;
 
-        public TrailResult(IActivity activity, int order, IList<int> indexes, float distDiff)
+        public TrailResult(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
+            : this(trail.TrailLocations,activity, order, indexes, distDiff)
+        {}
+        public TrailResult(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
         {
+            m_trailgps = trailgps;
             m_activity = activity;
-			m_order = order;
-			m_startIndex = indexes[0];
-            m_endIndex = indexes[indexes.Count-1];
+            m_order = order;
+            m_startIndex = indexes[0];
+            m_endIndex = indexes[indexes.Count - 1];
             foreach (int i in indexes)
             {
                 m_indexes.Add(i);
@@ -70,12 +76,43 @@ namespace TrailsPlugin.Data {
             aActivities[m_activity].res.Add(this);
         }
 
+        //Create from splits
+        public TrailResult(Trail trail, IActivity activity, int order)
+        {
+            m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out m_indexes);
+            m_activity = activity;
+            m_order = order;
+
+            m_startIndex = m_indexes[0];
+            m_endIndex = m_indexes[m_indexes.Count - 1];
+            m_distDiff = float.MaxValue;
+
+            m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
+            m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[m_startIndex].Value;
+            if (!aActivities.ContainsKey(m_activity))
+            {
+                aActivities.Add(m_activity, new trActivityInfo());
+                aActivities[m_activity].activityColor = nextActivityColor++;
+            }
+            aActivities[m_activity].res.Add(this);
+        }
+
         public IList<TrailResult> getSplits()
         {
             IList<TrailResult> splits = new List<TrailResult>();
             for (int i = 1; i < m_indexes.Count; i++)
             {
-                TrailResult tr = new TrailResult(m_activity, i, new List<int> { m_indexes[i - 1], m_indexes[i] }, m_distDiff);
+                Data.TrailGPSLocation tg1 = m_trailgps[i - 1];
+                Data.TrailGPSLocation tg2=tg1;
+                if (m_trailgps.Count > i)
+                {
+                    tg2 = m_trailgps[i];
+                }
+                TrailResult tr = new TrailResult(new List<Data.TrailGPSLocation> {tg1, tg2 },
+                    m_activity, i, 
+                    new List<int> { m_indexes[i - 1], m_indexes[i] }, 
+                    m_distDiff);
+                tr.m_parentResult = this;
                 if (aActivities.Count > 1)
                 {
                     nextTrailColor--;
@@ -91,7 +128,7 @@ namespace TrailsPlugin.Data {
         }
         public float DistDiff
         {
-            get { return m_distDiff; }
+            get { return (float)(m_distDiff/Math.Pow(m_indexes.Count, 1.5)); }
         }
         public int Order
         {
@@ -163,6 +200,28 @@ namespace TrailsPlugin.Data {
             catch { }
             return res;
         }
+        public TrailResult ParentResult
+        {
+            get
+            {
+                return m_parentResult;
+            }
+        }
+        public String Name
+        {
+            get
+            {
+                if (m_parentResult==null)
+                {
+                    return m_activity.Name;
+                }
+                else
+                {
+                    return m_trailgps[0].Name;
+                }
+            }
+        }
+
         public IList<DateTime> TimeTrailPoints
         {
             get

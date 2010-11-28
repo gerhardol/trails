@@ -30,15 +30,40 @@ namespace TrailsPlugin.Data {
 		private float m_radius;
         private bool m_matchAll = false;
         private bool m_generated = false;
+        private bool m_isReference = false;
+        private IActivity m_referenceActivity = null;
+        private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
 		public Trail() {
 			m_radius = PluginMain.Settings.DefaultRadius;
 		}
 
+        public Trail Copy()
+        {
+            Trail result = new Trail();
+            if (this.m_isReference && m_referenceActivity != null && m_referenceActivity.Name != "")
+            {
+                result.Name = this.m_referenceActivity.Name;
+            }
+            else
+            {
+                result.Name = this.Name + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
+            }
+            //Do not copy "auto" attributes
+            result.m_radius = this.m_radius;
+            foreach (TrailGPSLocation t in this.TrailLocations)
+            {
+                result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name));
+            }
+            return result;
+        }
+
         public IList<TrailGPSLocation> TrailLocations
         {
             get
             {
+                //Refresh TrailPoints
+                checkReferenceChanged();
                 return m_trailLocations;
             }
             set
@@ -77,6 +102,96 @@ namespace TrailsPlugin.Data {
             {
                 m_generated = value;
             }
+        }
+        public bool IsReference
+        {
+            get
+            {
+                return m_isReference;
+            }
+            set
+            {
+                m_isReference = value;
+            }
+        }
+        public IActivity ReferenceActivity
+        {
+            get
+            {
+                checkReferenceChanged();
+                return m_referenceActivity;
+            }
+        }
+        private bool checkReferenceChanged()
+        {
+            bool result = false;
+            if (m_isReference)
+            {
+                IActivity refAct = m_controller.checkReferenceActivity(false);
+                if (refAct != m_referenceActivity && refAct != null)
+                {
+                    m_referenceActivity = refAct;
+                    m_trailLocations = TrailGpsPointsFromSplits(refAct);
+                    result = true;
+                }
+            }
+            return result;
+        }
+        public bool TrailChanged(IActivity activity)
+        {
+            return checkReferenceChanged() && activity != m_referenceActivity;
+        }
+
+        public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity)
+        {
+            IList<int> indexes;
+
+            return TrailGpsPointsFromSplits(activity, out indexes);
+        }
+        public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
+            out IList<int> indexes)
+        {
+            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
+
+            indexes = new List<int>();
+            IList<string> names = new List<string>();
+            if (null == activity.Laps || 0 == activity.Laps.Count)
+            {
+                indexes.Add(0);
+                names.Add(activity.Name);
+            }
+            else
+            {
+                int i = 0;
+                foreach (ILapInfo l in activity.Laps)
+                {
+                    names.Add(l.Notes);
+                    for (; i < activity.GPSRoute.Count; i++)
+                    {
+                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(-0.5)))
+                        {
+                            indexes.Add(i);
+                            break;
+                        }
+                    }
+                }
+            }
+            indexes.Add(activity.GPSRoute.Count - 1);
+            names.Add(activity.Name);
+
+            for (int i = 0; i < indexes.Count; i++)
+            {
+                string name = "";
+                if (i < names.Count)
+                {
+                    name = names[i];
+                }
+                results.Add(new Data.TrailGPSLocation(
+                activity.GPSRoute[indexes[i]].Value.LatitudeDegrees,
+                activity.GPSRoute[indexes[i]].Value.LongitudeDegrees,
+                name));
+            }
+            return results;
         }
 
         static public IList<Data.TrailGPSLocation> MergeTrailLocations(IList<Data.TrailGPSLocation> t1, IList<Data.TrailGPSLocation> t2)
@@ -149,7 +264,7 @@ namespace TrailsPlugin.Data {
         }
 
 		private bool IsInBounds(IGPSBounds activityBounds) {
-            if (null == activityBounds)
+            if (null == activityBounds || this.TrailLocations.Count == 0)
             {
                 return false;
             }

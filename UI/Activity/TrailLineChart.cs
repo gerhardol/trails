@@ -394,12 +394,12 @@ namespace TrailsPlugin.UI.Activity {
 			MainChart.DataSeries.Clear();
             MainChart.Parent.Parent.Hide();
 
+                // Add main data.  We must use 2 separate data series to overcome the display
+                //  bug in fill mode.  The main data series is normally rendered but the copy
+                //  is set in Line mode to be displayed over the fill
 
-			// Add main data.  We must use 2 separate data series to overcome the display
-			//  bug in fill mode.  The main data series is normally rendered but the copy
-			//  is set in Line mode to be displayed over the fill
-
-			for(int i=0; i < m_trailResults.Count; i++) {
+            for (int i = 0; i < m_trailResults.Count; i++)
+            {
                 INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(m_trailResults[i]);
 
                 if (graphPoints.Count > 1)
@@ -416,42 +416,43 @@ namespace TrailsPlugin.UI.Activity {
                     }
 
                     ChartDataSeries dataFill = null;
-				ChartDataSeries dataLine = new ChartDataSeries(MainChart, MainChart.YAxis);
+                    ChartDataSeries dataLine = new ChartDataSeries(MainChart, MainChart.YAxis);
 
-                if (m_trailResults.Count==1)
-                {
-                    dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
-                    MainChart.DataSeries.Add(dataFill);
+                    if (m_trailResults.Count == 1)
+                    {
+                        dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
+                        MainChart.DataSeries.Add(dataFill);
 
-                    dataFill.ChartType = ChartDataSeries.Type.Fill;
-                    dataFill.FillColor = chartFillColor;
-                    dataFill.LineColor = chartLineColor;
-                    dataFill.SelectedColor = chartSelectedColor;
-                    dataFill.LineWidth = 2;
+                        dataFill.ChartType = ChartDataSeries.Type.Fill;
+                        dataFill.FillColor = chartFillColor;
+                        dataFill.LineColor = chartLineColor;
+                        dataFill.SelectedColor = chartSelectedColor;
+                        dataFill.LineWidth = 2;
 
-                    MainChart.XAxis.Markers.Clear();
-                }
-                MainChart.DataSeries.Add(dataLine);
+                        MainChart.XAxis.Markers.Clear();
+                    }
+                    MainChart.DataSeries.Add(dataLine);
 
-				dataLine.ChartType = ChartDataSeries.Type.Line;
-				dataLine.LineColor = chartLineColor;
-				dataLine.SelectedColor = chartSelectedColor;
+                    dataLine.ChartType = ChartDataSeries.Type.Line;
+                    dataLine.LineColor = chartLineColor;
+                    dataLine.SelectedColor = chartSelectedColor;
 
-                    Image icon = 
+                    Image icon =
 #if ST_2_1
                         CommonResources.Images.Information16;
 #else
-                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11,11));
+ new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
 #endif
                     if (XAxisReferential == XAxisValue.Time)
                     {
-						foreach (ITimeValueEntry<float> entry in graphPoints) {
+                        foreach (ITimeValueEntry<float> entry in graphPoints)
+                        {
                             if (null != dataFill)
                             {
                                 dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
                             }
                             dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
-						}
+                        }
                         if (m_refTrailResult != null && m_refTrailResult.Equals(m_trailResults[i]))
                         {
                             foreach (DateTime t in m_trailResults[i].TimeTrailPoints)
@@ -462,17 +463,21 @@ namespace TrailsPlugin.UI.Activity {
                                 MainChart.XAxis.Markers.Add(a);
                             }
                         }
-					} else {
+                    }
+                    else
+                    {
                         IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack;
 
-						//Debug.Assert(distanceTrack.Count == graphPoints.Count);
+                        //Debug.Assert(distanceTrack.Count == graphPoints.Count);
 
-						for (int j = 0; j < distanceTrack.Count; ++j) {
+                        for (int j = 0; j < distanceTrack.Count; ++j)
+                        {
                             float distanceValue = Utils.Units.GetLength(distanceTrack[j].Value, m_trailResults[i].Category.DistanceUnits);
-							if (j < graphPoints.Count) {
-								ITimeValueEntry<float> entry = graphPoints[j];
+                            if (j < graphPoints.Count)
+                            {
+                                ITimeValueEntry<float> entry = graphPoints[j];
 
-								///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
+                                ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
 
                                 if (null != dataFill)
                                 {
@@ -480,8 +485,8 @@ namespace TrailsPlugin.UI.Activity {
 
                                 }
                                 dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
-							}
-						}
+                            }
+                        }
                         if (m_refTrailResult != null && m_refTrailResult.Equals(m_trailResults[i]))
                         {
                             foreach (double t in m_trailResults[i].DistanceTrailPoints)
@@ -493,9 +498,8 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-				}
-			}
-
+                }
+            }
 			ZoomToData();
 		}
 
@@ -796,7 +800,6 @@ namespace TrailsPlugin.UI.Activity {
                     m_refTrailResult = value;
                     SetupAxes();
                     SetupDataSeries();
-                    ZoomToData();
                 }
             }
         }
@@ -810,10 +813,16 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (m_trailResults != value)
                 {
-                    m_trailResults = value;
+                    if (value == null)
+                    {
+                        m_trailResults = new List<Data.TrailResult>();
+                    }
+                    else
+                    {
+                        m_trailResults = value;
+                    }
                     SetupAxes();
                     SetupDataSeries();
-                    ZoomToData();
                 }
             }
         }

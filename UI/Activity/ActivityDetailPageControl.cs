@@ -114,7 +114,6 @@ namespace TrailsPlugin.UI.Activity {
                sc.Panel2.Controls.Add(MultiCharts);
             }
 #endif
-            MultiCharts.ShowChartToolBar = ShowChartToolBar;
 		}
 
         public void UICultureChanged(CultureInfo culture)
@@ -225,13 +224,14 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     points.Add(point);
                 }
-                if (!isSingleView)
+                //Extra check for TrailOrdered - displayed status
+                if (!isSingleView && m_controller.CurrentTrailOrdered!=null)
                 {
-                    IList<TrailResult> results = m_controller.CurrentActivityTrail.Results;
+                    IList<TrailResult> results = m_controller.CurrentTrailOrdered.activityTrail.Results;
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
-                        //Possibly limit no of Trails shown, it slows down (but show complete Activities?)
+                        //Possibly limit no of Trails shown, it slows down (show complete Activities?)
                         TrailMapPolyline m = new TrailMapPolyline(tr);
                         m.Click += new MouseEventHandler(mapPoly_Click);
                         routes.Add(m.key, m);
@@ -247,15 +247,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public bool ShowChartToolBar
-        {
-            get { return SingleChart.ShowChartToolBar; }
-            set
-            {
-                this.SingleChart.ShowChartToolBar = value;
-                this.MultiCharts.ShowChartToolBar = value;
-            }
-        }
         //Some views like mapping is only working in single view - there are likely better tests
         public bool isSingleView
         {

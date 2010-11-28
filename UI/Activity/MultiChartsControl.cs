@@ -180,7 +180,7 @@ namespace TrailsPlugin.UI.Activity {
         void RefreshChartMenu()
         {
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
-            this.showToolBarMenuItem.Checked = m_page.ShowChartToolBar;
+            this.showToolBarMenuItem.Checked = PluginMain.Settings.ShowChartToolBar;
         }
 
         public bool ShowChartToolBar
@@ -215,7 +215,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
-            m_page.ShowChartToolBar = !m_page.ShowChartToolBar;
+            PluginMain.Settings.ShowChartToolBar = !PluginMain.Settings.ShowChartToolBar;
         }
     }
 }

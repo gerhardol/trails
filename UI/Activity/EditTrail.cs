@@ -56,6 +56,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_TrailToEdit = Controller.TrailController.Instance.CurrentActivityTrail.Trail;
                 this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
+                if (m_TrailToEdit.Generated)
+                {
+                    //Create copy of the trail
+                    m_TrailToEdit = m_TrailToEdit.Copy();
+                    addMode = true;
+                    this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
+                }
             }
             m_addMode = addMode;
             InitializeComponent();
@@ -123,7 +130,8 @@ namespace TrailsPlugin.UI.Activity {
 				}
 			} else {
 				if (PluginMain.Data.AllTrails.TryGetValue(TrailName.Text, out trail)) {
-					if (trail != m_TrailToEdit) {
+                    if (trail != m_TrailToEdit)
+                    {
 						MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
 						return;
 					}

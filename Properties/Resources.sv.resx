@@ -159,7 +159,7 @@
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
     <value>Editera denna trail. (Välj trail punkterna på kartan före denna knapp aktiveras.)</value>
   </data>
-  <data name="UI_Activity_Page_ListSettings" xml:space="preserve">
+  <data name="UI_Activity_List_ListSettings" xml:space="preserve">
     <value>Inställningar för tabell...</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
@@ -192,7 +192,22 @@ Välj punkter så denna trail är unik jämförd med andra trail.</value>
     <value>Visa kartverktyg</value>
     <comment>STcore removed</comment>
   </data>
-  <data name="UI_Activity_Page_LimitSelection" xml:space="preserve">
+  <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Begränsa aktiviteter till valda i listan</value>
+  </data>
+  <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
+    <value>Sätt referens resultat (Nuvarande: {0})</value>
+  </data>
+  <data name="UI_Activity_List_Splits" xml:space="preserve">
+    <value>Markera liknade trail eller etapper i listan</value>
+  </data>
+  <data name="UI_Activity_List_URLimit" xml:space="preserve">
+    <value>Begränsa aktiviter med Unique Routes{0}</value>
+  </data>
+  <data name="Trail_Reference_Name" xml:space="preserve">
+    <value>Referens Aktivitet</value>
+  </data>
+  <data name="Trail_NoTrailSelected" xml:space="preserve">
+    <value>-- Välj Trail i listan --</value>
   </data>
 </root>

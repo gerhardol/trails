@@ -97,6 +97,7 @@
             this.selectWithURMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(199, 48);
+            this.listMenu.Opening += new System.ComponentModel.CancelEventHandler(listMenu_Opening);
             // 
             // copyTableMenuItem
             // 
@@ -154,6 +155,7 @@
             this.PerformLayout();
 
 		}
+
 		#endregion
 
         private System.Windows.Forms.TableLayoutPanel SummaryPanel;

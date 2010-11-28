@@ -23,7 +23,11 @@ using System.Xml.Serialization;
 using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Data {
-	public class TrailData {
+	public class TrailData 
+    {
+        private static Data.Trail m_referenceTrail_Activity = null;
+        private static SortedList<string, Data.Trail> m_AllTrails;
+        
         public TrailData()
         {
             defaults();
@@ -31,7 +35,8 @@ namespace TrailsPlugin.Data {
         private static void defaults()
         {
             m_AllTrails = new SortedList<string, Data.Trail>();
-            //Automatically generated Trails
+
+            //Splits Trail
             Data.Trail trail = new Data.Trail();
             trail.Id = System.Guid.NewGuid().ToString();
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
@@ -39,14 +44,29 @@ namespace TrailsPlugin.Data {
             trail.MatchAll = true;
             m_AllTrails.Add(trail.Id, trail);
 
+            //Reference Activity Trail
+            trail = new Data.Trail();
+            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Name = Properties.Resources.Trail_Reference_Name;
+            trail.Generated = true;
+            trail.IsReference = true;
+            m_AllTrails.Add(trail.Id, trail);
+            m_referenceTrail_Activity = trail;
         }
-		private static SortedList<string, Data.Trail> m_AllTrails;
 
 		public SortedList<string, Data.Trail> AllTrails {
 			get {
 				return m_AllTrails;
 			}
 		}
+
+        public Data.Trail ReferenceTrail_Activity
+        {
+            get
+            {
+                return m_referenceTrail_Activity;
+            }
+        }
 
 		public bool InsertTrail(Data.Trail trail) {
 			foreach (Trail t in m_AllTrails.Values) {

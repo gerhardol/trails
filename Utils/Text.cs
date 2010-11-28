@@ -21,6 +21,11 @@ using System.Text;
 
 namespace TrailsPlugin.Utils {
 	class Text {
+        public static string ToString(double pace)
+        {
+            return (double.IsNaN(pace) || double.IsInfinity(pace)) ? "NaN" : ToString(TimeSpan.FromSeconds(pace));
+        }		
+
 		public static string ToString(System.TimeSpan time) {
 			if (time.TotalHours < 1.0) {
 				int i1 = time.Seconds;

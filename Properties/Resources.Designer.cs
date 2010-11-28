@@ -97,10 +97,35 @@ namespace TrailsPlugin.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap square_green_check {
+            get {
+                object obj = ResourceManager.GetObject("square_green_check", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap square_red {
             get {
                 object obj = ResourceManager.GetObject("square_red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -- Select Trail in List --.
+        /// </summary>
+        internal static string Trail_NoTrailSelected {
+            get {
+                return ResourceManager.GetString("Trail_NoTrailSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference Activity.
+        /// </summary>
+        internal static string Trail_Reference_Name {
+            get {
+                return ResourceManager.GetString("Trail_Reference_Name", resourceCulture);
             }
         }
         
@@ -240,6 +265,51 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Limit activities to selected in list.
+        /// </summary>
+        internal static string UI_Activity_List_LimitSelection {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_LimitSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List Settings....
+        /// </summary>
+        internal static string UI_Activity_List_ListSettings {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ListSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Reference result (Current: {0}).
+        /// </summary>
+        internal static string UI_Activity_List_ReferenceResult {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ReferenceResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mark other Trails or splits in list.
+        /// </summary>
+        internal static string UI_Activity_List_Splits {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_Splits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Limit activities with Unique Routes{0}.
+        /// </summary>
+        internal static string UI_Activity_List_URLimit {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_URLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide Chart Tools.
         /// </summary>
         internal static string UI_Activity_Menu_HideToolBar {
@@ -310,24 +380,6 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_Page_EditTrail_TT {
             get {
                 return ResourceManager.GetString("UI_Activity_Page_EditTrail_TT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Limit activities to list selection.
-        /// </summary>
-        internal static string UI_Activity_Page_LimitSelection {
-            get {
-                return ResourceManager.GetString("UI_Activity_Page_LimitSelection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to List Settings....
-        /// </summary>
-        internal static string UI_Activity_Page_ListSettings {
-            get {
-                return ResourceManager.GetString("UI_Activity_Page_ListSettings", resourceCulture);
             }
         }
         

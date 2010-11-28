@@ -36,7 +36,6 @@ namespace TrailsPlugin.UI.Activity {
         public event System.EventHandler Expand;
         ActivityDetailPageControl m_page;
         private Controller.TrailController m_controller;
-        private bool m_showChartToolBar = true;
 
 #if !ST_2_1
         private IDailyActivityView m_view = null;
@@ -80,7 +79,7 @@ namespace TrailsPlugin.UI.Activity {
             //For some reason, the Designer moves this button out of the panel
             this.btnExpand.Location = new System.Drawing.Point(353, 1);
 
-            LineChart.ShowChartToolBar = m_showChartToolBar;
+            LineChart.ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
 		}
 
         private bool _showPage = false;
@@ -126,10 +125,11 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshChart() {
 				this.LineChart.BeginUpdate();
 				this.LineChart.ReferenceTrailResult = null;
-				if (m_controller.CurrentActivityTrail != null) {
+                if (m_controller.CurrentTrailOrdered != null)
+                {
                     if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
                     {
-                        if (m_controller.FirstActivity != null && 
+                        if (m_controller.FirstActivity != null &&
                             m_controller.FirstActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
                         {
                             this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
@@ -143,7 +143,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
                     }
-					this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
+                    this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
                     this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
                         PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
                     IList<TrailResult> list = this.m_page.SelectedItems;
@@ -152,6 +152,10 @@ namespace TrailsPlugin.UI.Activity {
                         this.LineChart.ReferenceTrailResult = list[0];
                     }
                     this.LineChart.TrailResults = list;
+                }
+                else
+                {
+                    this.LineChart.TrailResults = null;
                 }
 				this.LineChart.EndUpdate();
 		}
@@ -186,7 +190,7 @@ namespace TrailsPlugin.UI.Activity {
             distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
             this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
-            this.showToolBarMenuItem.Checked = m_showChartToolBar;
+            this.showToolBarMenuItem.Checked = PluginMain.Settings.ShowChartToolBar;
             //this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar
             //   : Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
@@ -264,19 +268,11 @@ namespace TrailsPlugin.UI.Activity {
 			RefreshChart();
 		}
 
-        public bool ShowChartToolBar
-        {
-            get { return m_showChartToolBar; }
-            set
-            {
-                m_showChartToolBar = value;
-                RefreshChartMenu();
-                LineChart.ShowChartToolBar = m_showChartToolBar;
-            }
-        }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
-            this.ShowChartToolBar = !m_showChartToolBar;
+            PluginMain.Settings.ShowChartToolBar = !PluginMain.Settings.ShowChartToolBar;
+            RefreshChartMenu();
+            LineChart.ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
         }
 
         private void btnExpand_Click(object sender, EventArgs e) {

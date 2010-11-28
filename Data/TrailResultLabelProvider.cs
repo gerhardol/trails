@@ -90,10 +90,12 @@ namespace TrailsPlugin.Data {
 					return row.AvgSpeed.ToString("0.0");
 				case TrailResultColumnIds.FastestSpeed:
 					return row.FastestSpeed.ToString("0.0");
-				case TrailResultColumnIds.AvgPace: 
-					return row.AvgPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.AvgPace));					
+				case TrailResultColumnIds.AvgPace:
+                    return Utils.Text.ToString(row.AvgPace);					
 				case TrailResultColumnIds.FastestPace:
-					return row.FastestPace == double.NaN ? "NaN" : Utils.Text.ToString(TimeSpan.FromSeconds(row.FastestPace));
+					return Utils.Text.ToString(row.FastestPace);
+                case TrailResultColumnIds.Name:
+                    return row.Name;
                 default:
                     return base.GetText(row.Activity, column);
             }			

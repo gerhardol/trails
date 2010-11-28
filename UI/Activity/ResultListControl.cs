@@ -78,20 +78,21 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             selectActivityMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
 #endif
-            selectSimilarSplitsMenuItem.Visible = false;
-            referenceTrailMenuItem.Visible = false;
+            //TODO: 
             selectWithURMenuItem.Visible = false;
 
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
-            //this.RefreshColumns();
         }
 
         public void UICultureChanged(CultureInfo culture)
         {
             copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
-            this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_Page_ListSettings;
-            this.selectActivityMenuItem.Text = Properties.Resources.UI_Activity_Page_LimitSelection;
+            this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_List_ListSettings;
+            this.selectActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
+            this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
+            //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
+            this.selectWithURMenuItem.Text = Properties.Resources.UI_Activity_List_URLimit;
 
             this.RefreshColumns();
         }
@@ -130,13 +131,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             foreach (string id in PluginMain.Settings.ActivityPageColumns)
             {
-                foreach (
-#if ST_2_1
-                    ListItemInfo
-#else
-                    IListColumnDefinition
-#endif
-                    columnDef in TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1))
+                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1))
                 {
                     if (columnDef.Id == id)
                     {
@@ -164,9 +159,9 @@ namespace TrailsPlugin.UI.Activity {
         {
             summaryList.RowData = null;
 
-            if (m_controller.CurrentActivityTrail != null)
+            if (m_controller.CurrentTrailOrdered != null)
             {
-                IList<TrailResult> results = m_controller.CurrentActivityTrail.Results;
+                IList<TrailResult> results = m_controller.CurrentTrailOrdered.activityTrail.Results;
                 RefreshColumns();
                 
                 summaryList_Sort();
@@ -185,6 +180,10 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
                     this.summaryList.DefaultRowHeight * resRows;
             }
+            else
+            {
+                SelectedItems = null;
+            }
         }
 
         public IList<TrailResult> SelectedItems
@@ -192,13 +191,16 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 IList<TreeList.TreeListNode> results = new List<TreeList.TreeListNode>();
-                foreach (TreeList.TreeListNode tn in (IList<TreeList.TreeListNode>)summaryList.RowData)
+                if (summaryList.RowData != null && value != null)
                 {
-                    foreach (TrailResult tr in value)
+                    foreach (TreeList.TreeListNode tn in (IList<TreeList.TreeListNode>)summaryList.RowData)
                     {
-                        if (tn.Element is TrailResult && tr.Equals((TrailResult)(tn.Element)))
+                        foreach (TrailResult tr in value)
                         {
-                            results.Add(tn);
+                            if (tn.Element is TrailResult && tr.Equals((TrailResult)(tn.Element)))
+                            {
+                                results.Add(tn);
+                            }
                         }
                     }
                 }
@@ -220,14 +222,20 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*********************************************************/
-        private IList<TreeList.TreeListNode> getTreeListNodeSplits(IList<TrailResult> results)
+        private IList<TreeList.TreeListNode> getTreeListNodeSplits()
         {
             summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                 TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
-            ((List<TrailResult>)results).Sort();
-            IList<TreeList.TreeListNode> res2 = new List<TreeList.TreeListNode>();
-            foreach (TrailResult tr in results)
+            IList<TreeList.TreeListNode> results = 
+                (IList<TreeList.TreeListNode>)m_controller.CurrentTrailOrdered.activityTrail.ResultListCache;
+            if (results == null)
+            {
+                results = new List<TreeList.TreeListNode>();
+
+                IList<TrailResult> res1 = m_controller.CurrentTrailOrdered.activityTrail.Results;
+                ((List<TrailResult>)res1).Sort();
+            foreach (TrailResult tr in res1)
             {
                 TreeList.TreeListNode tn = new TreeList.TreeListNode(null, tr);
                 IList<TrailResult> splits = tr.getSplits();
@@ -241,9 +249,16 @@ namespace TrailsPlugin.UI.Activity {
                         tn.Children.Add(tn2);
                     }
                 }
-                res2.Add(tn);
+                results.Add(tn);
             }
-            return res2;
+            //xxx Will not work when sorting - the creation of treelist is slow 
+                //m_controller.CurrentTrailOrdered.activityTrail.ResultListCache = results;
+            }
+            else
+            {
+                ((List<TreeList.TreeListNode>)results).Sort();
+            }
+            return results;
         }
 
         public static TrailResult getTrailResultRow(object element)
@@ -275,7 +290,10 @@ namespace TrailsPlugin.UI.Activity {
 
         private void summaryList_Sort()
         {
-            summaryList.RowData = getTreeListNodeSplits(m_controller.CurrentActivityTrail.Results);
+            if (m_controller.CurrentTrailOrdered != null)
+            {
+                summaryList.RowData = getTreeListNodeSplits();
+            }
         }
 
         /************************************************************/
@@ -349,6 +367,20 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*************************************************************************************************************/
+        void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //TODO: set selected result when opening
+            string refRes="";
+            if (m_controller.ReferenceTrailResult != null)
+            {
+                refRes = m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortDateString() +
+                   " "+ m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortTimeString();
+            }
+            this.referenceTrailMenuItem.Text = string.Format(
+                Properties.Resources.UI_Activity_List_ReferenceResult, refRes);
+            e.Cancel = false;
+        }
+
         void copyTableMenu_Click(object sender, EventArgs e)
         {
             summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
@@ -358,7 +390,7 @@ namespace TrailsPlugin.UI.Activity {
         {
 #if ST_2_1
             ListSettings dialog = new ListSettings();
-			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, false);
+			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.FirstActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
             dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1);
@@ -375,23 +407,55 @@ namespace TrailsPlugin.UI.Activity {
                 RefreshColumns();
             }
         }
+
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
         {
             if (summaryList.SelectedItems != null)
             {
+                System.Collections.IList results = new List<TreeList.TreeListNode>();
                 foreach (object t in summaryList.SelectedItems)
                 {
                     object t2 = t;
-                    if (t != null && t is TreeList.TreeListNode)
+                    TreeList.TreeListNode tn = t as TreeList.TreeListNode;
+                    int splitIndex = -1;
+                    if (tn.Parent != null)
                     {
-                        t2 = (object)(t as TreeList.TreeListNode).Element;
+                        if (t != null && t is TreeList.TreeListNode)
+                        {
+                            t2 = (object)(t as TreeList.TreeListNode).Element;
+                        }
+                        if (t2 != null && t2 is TrailResult)
+                        {
+                            //Default select all "main" trails, here select from number
+                            splitIndex = ((TrailResult)t2).Order;
+                        }
                     }
-                    if (t2 != null && t2 is TrailResult)
+                    foreach (TreeList.TreeListNode rtn in (IList<TreeList.TreeListNode>)summaryList.RowData)
                     {
-                        TrailResult tr = t2 as TrailResult;
-                       //xxx aTr.Add(tr);
+                        if (splitIndex < 0)
+                        {
+                            results.Add(rtn);
+                        }
+                        else
+                        {
+                            foreach (TreeList.TreeListNode ctn in rtn.Children)
+                            {
+                                if (ctn.Element is TrailResult)
+                                {
+                                    if (((TrailResult)ctn.Element).Order == splitIndex)
+                                    {
+                                        results.Add(ctn);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+#if ST_2_1
+                summaryList.Selected = results;
+#else
+                summaryList.SelectedItems = results;
+#endif
             }
         }
 
@@ -411,18 +475,18 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        //TODO: set text when opening
         void referenceTrailMenuItem_Click(object sender, System.EventArgs e)
         {
             IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
             if (atr != null && atr.Count > 0)
             {
-                m_controller.ReferenceTrail = atr[0];
+                m_controller.ReferenceTrailResult = atr[0];
             }
         }
 
         void selectWithURMenuItem_Click(object sender, System.EventArgs e)
         {
+            //TODO: Also set name/time?
             throw new System.NotImplementedException();
         }
 

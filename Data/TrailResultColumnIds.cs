@@ -28,8 +28,11 @@ using ZoneFiveSoftware.SportTracks.Data;
 #endif
 
 namespace TrailsPlugin.Data {
-#if !ST_2_1
-    public class ListColumnDefinition : IListColumnDefinition
+#if ST_2_1
+    public interface IListColumnDefinition : IListItem { }
+#endif
+
+    public class ListColumnDefinition :  IListColumnDefinition
     {
         public ListColumnDefinition(string id, string text, string groupName, int width, StringAlignment align)
         {
@@ -81,7 +84,7 @@ namespace TrailsPlugin.Data {
             return text;
         }
     }
-#endif
+
     public class TrailResultColumnIds {
         public const string Order = "Order";
         public const string Color = "Color";
@@ -99,37 +102,21 @@ namespace TrailsPlugin.Data {
         public const string FastestSpeed = "FastestSpeed";
         public const string AvgPace = "AvgPace";
         public const string FastestPace = "FastestPace";
+        public const string Name = "Name";
+        public const string Location = "Location";
+        public const string Category = "Category";
 
 #if ST_2_1
-		public static IList<IListItem> ColumnDefs(IActivity activity, bool mult)
+        public static ICollection<IListItem> ColumnDefs_ST2(IActivity activity, bool mult)
         {
-			IList<IListItem> columnDefs = new List<IListItem>();
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Order, "#", "", 30, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, "", 60, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Distance, CommonResources.Text.LabelDistance + " (" + Utils.Units.GetDistanceLabel(activity) + ")", "", 60, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgCadence, CommonResources.Text.LabelAvgCadence, "", 60, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgHR, CommonResources.Text.LabelAvgHR, "", 50, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.MaxHR, CommonResources.Text.LabelMaxHR, "", 50, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + Utils.Units.GetElevationLabel(activity) + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgGrade, CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.FastestSpeed, CommonResources.Text.LabelFastestSpeed+" (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListItemInfo(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
-            columnDefs.Add(new ListItemInfo(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
-
-			return columnDefs;
-		}
-        public static ICollection<IListItem> PermanentMultiColumnDefs()
-        {
-            IList<IListColumnDefinition> columnDefs = new List<IListItem>();
-            columnDefs.Add(new ListItemInfo(TrailResultColumnIds.Color, "", "", 15, StringAlignment.Near));
-
-            return columnDefs;
+            IList<IListItem> columnDefs_ST2 = new List<IListItem>();
+            foreach (IListColumnDefinition columnDefs in ColumnDefs(activity, mult))
+            {
+                columnDefs_ST2.Add(columnDefs);
+            }
+            return columnDefs_ST2;
         }
-#else
+#endif
         public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult)
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
@@ -148,26 +135,38 @@ namespace TrailsPlugin.Data {
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeed, CommonResources.Text.LabelFastestSpeed+" (" + Utils.Units.GetSpeedLabel(activity) + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace+" (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace + " (" + Utils.Units.GetPaceLabel(activity) + ")", "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, "", 70, StringAlignment.Near));
+
             return columnDefs;
 		}
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Color, "", "", 12, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Color, "", "", 25, StringAlignment.Near));
 
             return columnDefs;
         }
-#endif
+
         public static int Compare(TrailResult x, TrailResult y)
         {
             int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
 
-            //if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Color)
-            //{
-            //    result *= x.TrailColor.ToKnownColor().CompareTo(y.TrailColor.ToKnownColor());
-            //}
-            //else
+            if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Name)
+            {
+                result *= x.Activity.Name.CompareTo(y.Activity.Name);
+            }
+            else if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Location)
+            {
+                result *= x.Activity.Location.CompareTo(y.Activity.Location);
+            }
+            else if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Category)
+            {
+                result *= x.Activity.Category.ToString().CompareTo(y.Activity.Category.ToString());
+            }
+            else
             {
                 result *= getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
             }            

@@ -44,12 +44,16 @@ namespace TrailsPlugin.Data {
             m_activityPageColumns.Add(TrailResultColumnIds.AvgCadence);
             m_summaryViewSortColumn = TrailResultColumnIds.Order;
             m_summaryViewSortDirection = ListSortDirection.Ascending;
+            m_ShowChartToolBar = true;
+            m_MaxAutoCalcActivitiesTrails = 150;
+            m_MaxAutoCalcResults = 200;
         }
         private static IList<string> m_activityPageColumns;
         private static int m_activityPageNumFixedColumns;
         private static float m_defaultRadius;
         private static TrailLineChart.XAxisValue m_xAxisValue;
         private static TrailLineChart.LineChartTypes m_chartType;
+        private static bool m_ShowChartToolBar;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -109,6 +113,15 @@ namespace TrailsPlugin.Data {
 				PluginMain.WriteExtensionData();
 			}
 		}
+        public bool ShowChartToolBar
+        {
+            get { return m_ShowChartToolBar; }
+            set
+            {
+                m_ShowChartToolBar = value;
+            }
+        }
+
         private static string m_summaryViewSortColumn;
         public static string SummaryViewSortColumn
         {
@@ -121,6 +134,18 @@ namespace TrailsPlugin.Data {
         {
             get { return m_summaryViewSortDirection; }
             set { m_summaryViewSortDirection = value; }
+        }
+        private static int m_MaxAutoCalcActivitiesTrails;
+        public static int MaxAutoCalcActivitiesTrails
+        {
+            get { return m_MaxAutoCalcActivitiesTrails; }
+            set { m_MaxAutoCalcActivitiesTrails = value; }
+        }
+        private static int m_MaxAutoCalcResults;
+        public static int MaxAutoCalcResults
+        {
+            get { return m_MaxAutoCalcResults; }
+            set { m_MaxAutoCalcResults = value; }
         }
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
@@ -140,6 +165,10 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
             if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
+            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
+            if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcResults);
+            if (attr.Length > 0) { m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.sColumns);
             if (attr.Length > 0)
             {
@@ -165,6 +194,8 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.sChartType, m_chartType.ToString());
             pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, m_summaryViewSortColumn);
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
+            pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
+            pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
 
             String colText = null;
             foreach (String column in m_activityPageColumns)
@@ -183,6 +214,9 @@ namespace TrailsPlugin.Data {
             public const string sChartType = "sChartType";
             public const string summaryViewSortColumn = "summaryViewSortColumn";
             public const string summaryViewSortDirection = "summaryViewSortDirection";
+            public const string ShowChartToolBar = "ShowChartToolBar";
+            public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
+            public const string MaxAutoCalcResults = "MaxAutoCalcResults";
             public const string sColumns = "sColumns";
         }
 

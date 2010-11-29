@@ -137,7 +137,8 @@ namespace TrailsPlugin.Data {
             if (m_isReference)
             {
                 IActivity refAct = m_controller.checkReferenceActivity(false);
-                if (refAct != m_referenceActivity && refAct != null)
+                if (refAct != m_referenceActivity && refAct != null && 
+                    refAct.GPSRoute != null && refAct.GPSRoute.Count > 0)
                 {
                     m_referenceActivity = refAct;
                     m_trailLocations = TrailGpsPointsFromSplits(refAct);

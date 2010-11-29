@@ -50,6 +50,8 @@ namespace TrailsPlugin.UI.Activity {
         private Color m_ChartSelectedColor = Color.AliceBlue;
         private ITheme m_visualTheme;
         private ActivityDetailPageControl m_page = null;
+        private MultiChartsControl m_multiple = null;
+        private SingleChartsControl m_single = null;
 
         public TrailLineChart()
         {
@@ -84,10 +86,16 @@ namespace TrailsPlugin.UI.Activity {
             fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
         }
 
-        public void SetControl(ActivityDetailPageControl page)
+        public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple)
         {
             m_page = page;
-		}
+            m_multiple = multiple;
+        }
+        public void SetControl(ActivityDetailPageControl page, SingleChartsControl single)
+        {
+            m_page = page;
+            m_single = single;
+        }
 
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -283,6 +291,15 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
+                    if (m_multiple != null)
+                    {
+                        m_multiple.SetSelectedRange(regions);
+                    }
+                    if (m_single != null)
+                    {
+                        m_single.SetSelectedRange(regions);
+                    }
+
                     IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
                     if (XAxisReferential == XAxisValue.Time)
                     {
@@ -324,6 +341,20 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
+        public void SetSelectedRange(IList<float[]> regions)
+        {
+            if (regions != null && regions.Count > 0)
+            {
+                this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                foreach (ChartDataSeries s in MainChart.DataSeries)
+                {
+                    //TODO: full select
+                    s.SetSelectedRange(regions[0][0], regions[0][1]);
+                }
+                this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+            }
+        }
+
         public void SetSelected(IList<IItemTrackSelectionInfo> asel)
         {
             if (MainChart != null && MainChart.DataSeries != null &&

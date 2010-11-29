@@ -53,20 +53,23 @@ namespace TrailsPlugin.UI.Activity {
             m_page = page;
             m_controller = controller;
 
-            ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
             InitControls();
-            RefreshPage();
             foreach (Control t in this.tableLayoutPanel1.Controls)
             {
                 if (t is TrailLineChart)
                 {
-                    ((TrailLineChart)t).SetControl(m_page);
+                    ((TrailLineChart)t).SetControl(m_page, this);
                 }
             }
         }
 
         void InitControls()
         {
+            btnCollapse.CenterImage = CommonIcons.LowerLeft;
+            btnCollapse.Text = "";
+            btnCollapse.Left = this.Right - 46;
+            btnCollapse.Top = 2;
+
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
         }
@@ -95,7 +98,6 @@ namespace TrailsPlugin.UI.Activity {
                     ((TrailLineChart)t).UICultureChanged(culture);
                 }
             }
-            RefreshChartMenu();
         }
         private bool _showPage;
         public bool ShowPage
@@ -104,16 +106,17 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 _showPage = value;
+                if (_showPage)
+                {
+                    RefreshPage();
+                    RefreshChartMenu();
+                    RefreshRows();
+                }
             }
         }
 
         public void RefreshPage()
         {
-            btnCollapse.CenterImage = CommonIcons.LowerLeft;
-            btnCollapse.Text = "";
-            btnCollapse.Left = this.Right - 46;
-            btnCollapse.Top = 2;
-
             speedChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
             heartrateChart.YAxisReferential = TrailLineChart.LineChartTypes.HeartRateBPM;
             gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
@@ -127,6 +130,16 @@ namespace TrailsPlugin.UI.Activity {
                 if (t is TrailLineChart)
                 {
                     ((TrailLineChart)t).SetSelected(asel);
+                }
+            }
+        }
+        public void SetSelectedRange(IList<float[]> regions)
+        {
+            foreach (Control t in this.tableLayoutPanel1.Controls)
+            {
+                if (t is TrailLineChart)
+                {
+                    ((TrailLineChart)t).SetSelectedRange(regions);
                 }
             }
         }
@@ -155,6 +168,7 @@ namespace TrailsPlugin.UI.Activity {
                     tableLayoutPanel1.RowStyles[i].Height = 0;
                 }
             }
+            ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
         }
 
         public void RefreshCharts(Data.TrailResult result)

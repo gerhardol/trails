@@ -57,7 +57,7 @@ namespace TrailsPlugin.UI.Activity {
             m_controller = controller;
 
             InitControls();
-            LineChart.SetControl(m_page);
+            LineChart.SetControl(m_page, this);
         }
 
 		void InitControls()
@@ -89,6 +89,11 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 _showPage = value;
+                if (_showPage)
+                {
+                    //RefreshPage();
+                    RefreshChartMenu();
+                }
             }
         }
 
@@ -99,20 +104,21 @@ namespace TrailsPlugin.UI.Activity {
         public void UICultureChanged(CultureInfo culture)
         {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;
-
-            this.RefreshChartMenu();
             LineChart.UICultureChanged(culture);
         }
         public void ThemeChanged(ITheme visualTheme)
         {
 			ChartBanner.ThemeChanged(visualTheme);
-
 			LineChart.ThemeChanged(visualTheme);
 		}
 
         public void SetSelected(IList<IItemTrackSelectionInfo> asel)
         {
             this.LineChart.SetSelected(asel);
+        }
+        public void SetSelectedRange(IList<float[]> regions)
+        {
+            this.LineChart.SetSelectedRange(regions);
         }
         /************************************************************/
 

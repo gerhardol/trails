@@ -348,8 +348,11 @@ namespace TrailsPlugin.UI.Activity {
                 this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 foreach (ChartDataSeries s in MainChart.DataSeries)
                 {
-                    //TODO: full select
-                    s.SetSelectedRange(regions[0][0], regions[0][1]);
+                    if (s.ChartType != ChartDataSeries.Type.Fill)
+                    {
+                        //TODO: full select
+                        s.SetSelectedRange(regions[0][0], regions[0][1]);
+                    }
                 }
                 this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
             }

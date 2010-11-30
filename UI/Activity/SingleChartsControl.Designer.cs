@@ -260,13 +260,13 @@
             this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             this.LineChart.YAxisReferential_right = null;
             // 
-            // ActivityDetailPageControl
+            // SingleChartsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.ChartPanel);
-            this.Name = "ActivityDetailPageControl";
+            this.Name = "SingleChartsControl";
             this.Size = new System.Drawing.Size(400, 300);
             this.ChartPanel.ResumeLayout(false);
             this.ChartPanel.PerformLayout();

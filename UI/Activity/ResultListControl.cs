@@ -131,7 +131,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             foreach (string id in PluginMain.Settings.ActivityPageColumns)
             {
-                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1))
+                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count > 1))
                 {
                     if (columnDef.Id == id)
                     {
@@ -393,7 +393,7 @@ namespace TrailsPlugin.UI.Activity {
 			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.FirstActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
-            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.FirstActivity, m_controller.Activities.Count > 1);
+            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count > 1);
 #endif
             dialog.ThemeChanged(m_visualTheme);
             dialog.AllowFixedColumnSelect = true;

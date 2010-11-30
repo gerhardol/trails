@@ -135,8 +135,8 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
                     {
-                        if (m_controller.FirstActivity != null &&
-                            m_controller.FirstActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
+                        if (m_controller.ReferenceActivity != null &&
+                            m_controller.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
                         {
                             this.LineChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
                         }

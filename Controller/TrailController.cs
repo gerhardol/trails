@@ -83,17 +83,6 @@ namespace TrailsPlugin.Controller
             }
         }
 
-        public IActivity FirstActivity
-        {
-            get
-            {
-                if (m_activities != null && m_activities.Count > 0)
-                {
-                    return m_activities[0];
-                }
-                return null;
-            }
-        }
         public IActivity CurrentActivity {
             get
             {

@@ -82,6 +82,7 @@
             this.MultiCharts.Top = 0;
             this.MultiCharts.Left = 0;
             this.MultiCharts.Collapse += new System.EventHandler(MultiCharts_Collapse);
+            this.MultiCharts.Expand += new System.EventHandler(btnExpand_Click);
             // 
             // ActPageSplitContainer
             // 

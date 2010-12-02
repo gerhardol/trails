@@ -130,7 +130,6 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshChart() {
 				this.LineChart.BeginUpdate();
-				this.LineChart.ReferenceTrailResult = null;
                 if (m_controller.CurrentTrailOrdered != null)
                 {
                     if (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType)
@@ -153,10 +152,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
                         PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
                     IList<TrailResult> list = this.m_page.SelectedItems;
-                    if (list.Count > 0)
-                    {
-                        this.LineChart.ReferenceTrailResult = list[0];
-                    }
+                    this.LineChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                     this.LineChart.TrailResults = list;
                 }
                 else

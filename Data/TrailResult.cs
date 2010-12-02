@@ -44,7 +44,8 @@ namespace TrailsPlugin.Data {
         private int m_startIndex;
 		private int m_endIndex;
         private DateTime m_startTime;
-        private float m_startDistance;
+        private float m_startDistance = float.NaN;
+        private float m_lastDistance = float.NaN;
         private float m_distDiff; //to give quality of results
         private IList<int> m_indexes = new List<int>();
         private int m_trailColor = nextTrailColor++;
@@ -67,7 +68,6 @@ namespace TrailsPlugin.Data {
             m_distDiff = distDiff;
 
             m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
-            m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[m_startIndex].Value;
             if (!aActivities.ContainsKey(m_activity))
             {
                 aActivities.Add(m_activity, new trActivityInfo());
@@ -88,7 +88,6 @@ namespace TrailsPlugin.Data {
             m_distDiff = float.MaxValue;
 
             m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
-            m_startDistance = m_activity.GPSRoute.GetDistanceMetersTrack()[m_startIndex].Value;
             if (!aActivities.ContainsKey(m_activity))
             {
                 aActivities.Add(m_activity, new trActivityInfo());
@@ -169,6 +168,10 @@ namespace TrailsPlugin.Data {
         {
             get
             {
+                if (float.IsNaN(m_startDistance))
+                {
+                    getDistanceTrack();
+                }
                 return m_startDistance;
             }
         }
@@ -176,7 +179,11 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                return m_activity.GPSRoute.GetDistanceMetersTrack()[m_endIndex].Value;
+                if (float.IsNaN(m_lastDistance))
+                {
+                    getDistanceTrack();
+                }
+                return m_lastDistance;
             }
         }
         public double getDistAt(DateTime t)
@@ -185,7 +192,7 @@ namespace TrailsPlugin.Data {
             double res = 0;
             try
             {
-                res = m_activity.GPSRoute.GetDistanceMetersTrack().GetInterpolatedValue(t).Value - FirstDist;
+                res = DistanceMetersTrack.GetInterpolatedValue(t).Value;
             }
             catch { }
             return res;
@@ -195,7 +202,7 @@ namespace TrailsPlugin.Data {
             DateTime res = FirstTime;
             try 
             {
-                res = m_activity.GPSRoute.GetDistanceMetersTrack().GetTimeAtDistanceMeters(t);
+                res = DistanceMetersTrack.GetTimeAtDistanceMeters(t);
             }
             catch { }
             return res;
@@ -241,7 +248,7 @@ namespace TrailsPlugin.Data {
                 IList<double> results = new List<double>();
                 foreach (int i in m_indexes)
                 {
-                    results.Add(m_activity.GPSRoute.GetDistanceMetersTrack()[i].Value-m_startDistance);
+                    results.Add(DistanceMetersTrack[i-m_startIndex].Value);
                 }
                 return results;
             }
@@ -319,26 +326,35 @@ namespace TrailsPlugin.Data {
 				return (value > 0 ? "+" : "") + Utils.Units.ElevationToString(value, "");
 			}
 		}
+        private void getDistanceTrack()
+        {
+            //Note: Must have the same indexes as the GPS track....
+            if (null == m_distanceMetersTrack)
+            {
+                m_distanceMetersTrack = new DistanceDataTrack();
+                IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
+                if (track != null)
+                {
+                    m_startDistance = track[m_startIndex].Value;
+                    m_lastDistance = track[m_endIndex].Value;
+                    for (int i = m_startIndex; i <= m_endIndex; i++)
+                    {
+                        ITimeValueEntry<float> value = track[i];
+                        m_distanceMetersTrack.Add(
+                            m_startTime.AddSeconds(value.ElapsedSeconds),
+                            value.Value - m_startDistance
+                        );
+                    }
+                }
+            }
+        }
 		public IDistanceDataTrack DistanceMetersTrack 
         {
             get{
                 //Note: Must have the same indexes as the GPS track....
                 if (null == m_distanceMetersTrack)
                 {
-                    m_distanceMetersTrack = new DistanceDataTrack();
-                    IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
-                    if (track != null)
-                    {
-                        float startDistance = track[m_startIndex].Value;
-                        for (int i = m_startIndex; i <= m_endIndex; i++)
-                        {
-                            ITimeValueEntry<float> value = track[i];
-                            m_distanceMetersTrack.Add(
-                                m_startTime.AddSeconds(value.ElapsedSeconds),
-                                value.Value - startDistance
-                            );
-                        }
-                    }
+                    getDistanceTrack();
                 }
                 return m_distanceMetersTrack;
 			}

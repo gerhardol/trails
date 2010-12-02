@@ -191,11 +191,7 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshChart()
         {
             if(m_isExpanded) {
-                IList<TrailResult> list = this.SelectedItems;
-                if (list.Count > 0)
-                {
-                    MultiCharts.RefreshCharts(list[0]);
-                }
+                MultiCharts.RefreshChart();
             }
             else
             {
@@ -286,6 +282,10 @@ namespace TrailsPlugin.UI.Activity {
         /*************************************************************************************************************/
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
+            MarkTrack(atr, true);
+        }
+        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart)
+        {
 #if !ST_2_1
             if (_showPage)
             {
@@ -298,7 +298,15 @@ namespace TrailsPlugin.UI.Activity {
                         //Only one activity, OK to merge selections on one track
                         TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
                         r.Activity = m_controller.CurrentActivity;
+                        if (!markChart)
+                        {
+                            m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                        }
                         m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
+                        if (!markChart)
+                        {
+                            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                        }
                         m_layer.ZoomRoute = atr[0].trailResult.GpsPoints(r);
                     }
                 }
@@ -379,6 +387,7 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.SplitterDistance = width;
 #endif
             m_isExpanded = true;
+            MultiCharts.Expanded = m_isExpanded;
             RefreshChart();
 #if ST_2_1
  		}
@@ -403,6 +412,7 @@ namespace TrailsPlugin.UI.Activity {
             m_DetailPage.PageMaximized = false;
 #endif
             m_isExpanded = false;
+            MultiCharts.Expanded = m_isExpanded;
             RefreshChart();
 		}
         
@@ -415,8 +425,14 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
                 {
-                    this.SingleChart.SetSelected(selected.SelectedItems);
-                    MultiCharts.SetSelected(selected.SelectedItems);
+                    if (m_isExpanded)
+                    {
+                        MultiCharts.SetSelected(selected.SelectedItems);
+                    }
+                    else
+                    {
+                        this.SingleChart.SetSelected(selected.SelectedItems);
+                    }
                 }
             }
         }

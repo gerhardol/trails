@@ -51,7 +51,6 @@ namespace TrailsPlugin.UI.Activity {
         private ITheme m_visualTheme;
         private ActivityDetailPageControl m_page = null;
         private MultiChartsControl m_multiple = null;
-        //private SingleChartsControl m_single = null;
         private bool m_visible = false;
 
         public TrailLineChart()
@@ -92,11 +91,6 @@ namespace TrailsPlugin.UI.Activity {
             m_page = page;
             m_multiple = multiple;
         }
-        //public void SetControl(ActivityDetailPageControl page, SingleChartsControl single)
-        //{
-        //    m_page = page;
-        //    m_single = single;
-        //}
 
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -360,37 +354,48 @@ namespace TrailsPlugin.UI.Activity {
 
                     if (markAll)
                     {
-                        //if (m_multiple != null)
-                        //{
-                            m_multiple.SetSelectedRange(regions);
-                        //}
-                        //if (m_single != null)
-                        //{
-                        //    m_single.SetSelectedRange(regions);
-                        //}
+                        m_multiple.SetSelectedRange(regions);
+                    }
+                    else
+                    {
+                        //Assumes that not single results are set
+                        m_multiple.SetSelectedRange(i, regions);
                     }
                 }
             }
         }
 
-        //Select call for charts
         public void SetSelectedRange(IList<float[]> regions)
         {
-            this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-            foreach (ChartDataSeries s in MainChart.DataSeries)
+            for (int i = 0; i < MainChart.DataSeries.Count; i++ )
             {
-                s.ClearSelectedRegions();
-                if (s.ChartType != ChartDataSeries.Type.Fill &&
-                    regions != null && regions.Count > 0)
+                MainChart.DataSeries[i].ClearSelectedRegions();
+                if (MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
+                {
+                    SetSelectedRange(i, regions);
+                }
+            }
+        }
+        public void SetSelectedRange(int i, IList<float[]> regions)
+        {
+            foreach (ChartDataSeries t in MainChart.DataSeries)
+            {
+                t.ClearSelectedRegions();
+            }
+            if (MainChart.DataSeries != null && MainChart.DataSeries.Count > i)
+            {
+                this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                MainChart.DataSeries[i].ClearSelectedRegions();
+                if (regions != null && regions.Count > 0)
                 {
                     //foreach (float[] at in regions)
                     //{
                     //    //s.AddSelecedRegion(at[0], at[1]);
                     //}
-                    s.SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
+                    MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
                 }
+                this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
             }
-            this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
         }
 
         public void SetSelected(IList<IItemTrackSelectionInfo> asel)

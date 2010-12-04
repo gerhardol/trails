@@ -99,12 +99,10 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
             TrailSelector.SetControl(this, m_controller, m_layer);
             ResultList.SetControl(this, m_controller);
-            SingleChart.SetControl(this, m_controller);
             MultiCharts.SetControl(this, m_controller);
 #else
             TrailSelector.SetControl(this, m_controller, m_view, m_layer);
             ResultList.SetControl(this, m_controller, m_view);
-            //SingleChart.SetControl(this, m_controller, m_view);
             MultiCharts.SetControl(this, m_controller, m_view);
 #endif
 #if ST_2_1
@@ -122,7 +120,6 @@ namespace TrailsPlugin.UI.Activity {
 
             this.TrailSelector.UICultureChanged(culture);
             this.ResultList.UICultureChanged(culture);
-            //this.SingleChart.UICultureChanged(culture);
             this.MultiCharts.UICultureChanged(culture);
         }
         public void ThemeChanged(ITheme visualTheme)
@@ -130,7 +127,6 @@ namespace TrailsPlugin.UI.Activity {
             m_visualTheme = visualTheme;
             TrailSelector.ThemeChanged(visualTheme);
             ResultList.ThemeChanged(visualTheme);
-            //SingleChart.ThemeChanged(visualTheme);
             MultiCharts.ThemeChanged(visualTheme);
         }
 
@@ -157,7 +153,6 @@ namespace TrailsPlugin.UI.Activity {
                 m_layer.ShowPage = value;
                 TrailSelector.ShowPage = value;
                 ResultList.ShowPage = value;
-                //SingleChart.ShowPage = value;
                 MultiCharts.ShowPage = value;
 #if !ST_2_1
                 if (value)
@@ -191,13 +186,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         public void RefreshChart()
         {
-            //if(m_isExpanded) {
-                MultiCharts.RefreshChart();
-            //}
-            //else
-            //{
-            //    SingleChart.RefreshChart();
-            //}
+            MultiCharts.RefreshChart();
         }
         public IList<TrailResult> SelectedItems
         {
@@ -361,17 +350,15 @@ namespace TrailsPlugin.UI.Activity {
 
         private void btnExpand_Click(object sender, EventArgs e)
         {
+            this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+            this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
 #if ST_2_1
             SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
             {
 #endif
             int width = this.UpperSplitContainer.Width;
-            //SingleChart.Visible = false;
-            //SingleChart.ShowPage = false;
 
-            this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
-            this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
             LowerSplitContainer.Panel2Collapsed = true;
 #if ST_2_1
                 if (sc.Panel2.Controls != null && sc.Panel2.Controls.Count==0)
@@ -397,11 +384,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             this.ExpandSplitContainer.Panel2.Controls.Remove(MultiCharts);
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
-            m_isExpanded = false;
-            //MultiCharts.Visible = false;
-            //MultiCharts.ShowPage = false;
-            //SingleChart.Visible = true;
-            //SingleChart.ShowPage = _showPage;
             
             LowerSplitContainer.Panel2Collapsed = false;
 #if ST_2_1
@@ -414,6 +396,7 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = true;
             m_DetailPage.PageMaximized = false;
 #endif
+            m_isExpanded = false;
             MultiCharts.Expanded = m_isExpanded;
         }
         
@@ -426,14 +409,7 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
                 {
-                    //if (m_isExpanded)
-                    //{
-                        MultiCharts.SetSelected(selected.SelectedItems);
-                    //}
-                    //else
-                    //{
-                    //    this.SingleChart.SetSelected(selected.SelectedItems);
-                    //}
+                    MultiCharts.SetSelected(selected.SelectedItems);
                 }
             }
         }

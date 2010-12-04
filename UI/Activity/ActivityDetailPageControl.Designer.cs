@@ -24,15 +24,12 @@
 		/// </summary>
 		private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            //this.ActPagePanel = new System.Windows.Forms.TableLayoutPanel();
             this.TrailSelector = new TrailSelectorControl();
             this.UpperSplitContainer = new System.Windows.Forms.SplitContainer();
             this.LowerSplitContainer = new System.Windows.Forms.SplitContainer();
             this.ResultList = new ResultListControl();
-            //this.SingleChart = new SingleChartsControl();
             this.MultiCharts = new MultiChartsControl();
             this.ExpandSplitContainer = new System.Windows.Forms.SplitContainer();
-            //this.ActPagePanel.SuspendLayout();
             this.UpperSplitContainer.Panel1.SuspendLayout();
             this.UpperSplitContainer.Panel2.SuspendLayout();
             this.UpperSplitContainer.SuspendLayout();
@@ -43,25 +40,6 @@
             this.ExpandSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
-            // ActPagePanel
-            // 
-            //this.ActPagePanel.AutoSize = true;
-            //this.ActPagePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            //this.ActPagePanel.ColumnCount = 6;
-            //this.ActPagePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            //this.ActPagePanel.Controls.Add(this.trailSelector, 0, 0);
-            //this.ActPagePanel.Controls.Add(this.LowerSplitContainer, 0, 1);
-            //this.ActPagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            //this.ActPagePanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
-            //this.ActPagePanel.Location = new System.Drawing.Point(0, 0);
-            //this.ActPagePanel.Margin = new System.Windows.Forms.Padding(0);
-            //this.ActPagePanel.Name = "ActPagePanel";
-            //this.ActPagePanel.RowCount = 2;
-            //this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            //this.ActPagePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            //this.ActPagePanel.Size = new System.Drawing.Size(400, 300);
-            //this.ActPagePanel.TabIndex = 8;
-            // 
             // trailSelector
             // 
             this.TrailSelector.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -70,23 +48,14 @@
             // 
             this.ResultList.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
-            // SingleChart
+            // MultiCharts
             // 
-            //this.SingleChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            //this.SingleChart.Expand += new System.EventHandler(btnExpand_Click);
-            // 
-            // SingleChart
-            // 
-            //this.MultiChartsControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             this.MultiCharts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MultiCharts.Top = 0;
-            this.MultiCharts.Left = 0;
             this.MultiCharts.Collapse += new System.EventHandler(MultiCharts_Collapse);
             this.MultiCharts.Expand += new System.EventHandler(btnExpand_Click);
             // 
             // ActPageSplitContainer
             // 
-            //this.ActPagePanel.SetColumnSpan(this.LowerSplitContainer, 6);
             this.UpperSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.UpperSplitContainer.Location = new System.Drawing.Point(0, 0);
             this.UpperSplitContainer.Margin = new System.Windows.Forms.Padding(0);
@@ -150,7 +119,7 @@
             this.ExpandSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.ExpandSplitContainer.Panel2Collapsed = true;
             this.ExpandSplitContainer.Panel2MinSize = 0;
-            //xxx this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
+            //this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
             this.ExpandSplitContainer.Size = new System.Drawing.Size(400, 300);
             this.ExpandSplitContainer.SplitterDistance = 400;
             this.ExpandSplitContainer.SplitterWidth = 1;
@@ -164,8 +133,6 @@
             this.Controls.Add(this.ExpandSplitContainer);
             this.Name = "ActivityDetailPageControl";
             this.Size = new System.Drawing.Size(400, 300);
-            //this.ActPagePanel.ResumeLayout(false);
-            //this.ActPagePanel.PerformLayout();
             this.UpperSplitContainer.Panel1.ResumeLayout(false);
             this.UpperSplitContainer.Panel2.ResumeLayout(false);
             this.UpperSplitContainer.Panel2.PerformLayout();
@@ -182,10 +149,8 @@
 
 		#endregion
 
-		//private System.Windows.Forms.TableLayoutPanel ActPagePanel;
 		private TrailSelectorControl TrailSelector;
         private ResultListControl ResultList;
-        //private SingleChartsControl SingleChart;
         private MultiChartsControl MultiCharts;
         private System.Windows.Forms.SplitContainer ExpandSplitContainer;
         private System.Windows.Forms.SplitContainer LowerSplitContainer;

@@ -233,6 +233,7 @@
             this.ChartPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ChartPanel.ColumnCount = 1;
             this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
             this.ChartPanel.Controls.Add(this.speedChart, 0, 1);
             this.ChartPanel.Controls.Add(this.paceChart, 0, 2);
             this.ChartPanel.Controls.Add(this.elevationChart, 0, 3);
@@ -241,7 +242,6 @@
             this.ChartPanel.Controls.Add(this.gradeChart, 0, 6);
             this.ChartPanel.Controls.Add(this.timeDiff, 0, 7);
             this.ChartPanel.Controls.Add(this.distDiff, 0, 8);
-            this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
             this.ChartPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ChartPanel.Location = new System.Drawing.Point(0, 0);
             this.ChartPanel.Name = "ChartPanel";
@@ -269,7 +269,7 @@
             this.speedChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.speedChart.Location = new System.Drawing.Point(0, 20);
             this.speedChart.Margin = new System.Windows.Forms.Padding(0);
-            this.speedChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.speedChart.MinimumSize = new System.Drawing.Size(25, 100);
             this.speedChart.Name = "speedChart";
             this.speedChart.ReferenceTrailResult = null;
             this.speedChart.ShowPage = false;
@@ -289,7 +289,7 @@
             this.paceChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.paceChart.Location = new System.Drawing.Point(0, 120);
             this.paceChart.Margin = new System.Windows.Forms.Padding(0);
-            this.paceChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.paceChart.MinimumSize = new System.Drawing.Size(25, 100);
             this.paceChart.Name = "paceChart";
             this.paceChart.ReferenceTrailResult = null;
             this.paceChart.ShowPage = false;
@@ -308,7 +308,7 @@
             this.elevationChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.elevationChart.Location = new System.Drawing.Point(0, 220);
             this.elevationChart.Margin = new System.Windows.Forms.Padding(0);
-            this.elevationChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.elevationChart.MinimumSize = new System.Drawing.Size(25, 100);
             this.elevationChart.Name = "elevationChart";
             this.elevationChart.ReferenceTrailResult = null;
             this.elevationChart.ShowPage = false;
@@ -327,7 +327,7 @@
             this.heartrateChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.heartrateChart.Location = new System.Drawing.Point(0, 320);
             this.heartrateChart.Margin = new System.Windows.Forms.Padding(0);
-            this.heartrateChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.heartrateChart.MinimumSize = new System.Drawing.Size(25, 100);
             this.heartrateChart.Name = "heartrateChart";
             this.heartrateChart.ReferenceTrailResult = null;
             this.heartrateChart.ShowPage = false;
@@ -346,7 +346,7 @@
             this.cadenceChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cadenceChart.Location = new System.Drawing.Point(0, 420);
             this.cadenceChart.Margin = new System.Windows.Forms.Padding(0);
-            this.cadenceChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.cadenceChart.MinimumSize = new System.Drawing.Size(25, 100);
             this.cadenceChart.Name = "cadenceChart";
             this.cadenceChart.ReferenceTrailResult = null;
             this.cadenceChart.ShowPage = false;
@@ -365,7 +365,7 @@
             this.gradeChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gradeChart.Location = new System.Drawing.Point(0, 520);
             this.gradeChart.Margin = new System.Windows.Forms.Padding(0);
-            this.gradeChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.gradeChart.MinimumSize = new System.Drawing.Size(25, 100);
             this.gradeChart.Name = "gradeChart";
             this.gradeChart.ReferenceTrailResult = null;
             this.gradeChart.ShowPage = false;
@@ -384,7 +384,7 @@
             this.timeDiff.Dock = System.Windows.Forms.DockStyle.Fill;
             this.timeDiff.Location = new System.Drawing.Point(0, 620);
             this.timeDiff.Margin = new System.Windows.Forms.Padding(0);
-            this.timeDiff.MinimumSize = new System.Drawing.Size(250, 100);
+            this.timeDiff.MinimumSize = new System.Drawing.Size(25, 100);
             this.timeDiff.Name = "timeDiff";
             this.timeDiff.ReferenceTrailResult = null;
             this.timeDiff.ShowPage = false;
@@ -403,7 +403,7 @@
             this.distDiff.Dock = System.Windows.Forms.DockStyle.Fill;
             this.distDiff.Location = new System.Drawing.Point(0, 720);
             this.distDiff.Margin = new System.Windows.Forms.Padding(0);
-            this.distDiff.MinimumSize = new System.Drawing.Size(250, 100);
+            this.distDiff.MinimumSize = new System.Drawing.Size(25, 100);
             this.distDiff.Name = "distDiff";
             this.distDiff.ReferenceTrailResult = null;
             this.distDiff.ShowPage = false;

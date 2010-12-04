@@ -68,7 +68,6 @@ namespace TrailsPlugin.UI.Activity {
 
         void InitControls()
         {
-            //Move to static init xxx
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Yeild16;
             this.speedPaceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.speedToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
@@ -84,8 +83,6 @@ namespace TrailsPlugin.UI.Activity {
             timeDiffToolStripMenuItem.Visible = false;//TODO: temporary
             distDiffToolStripMenuItem.Visible = false;
 
-            this.Expanded = m_expanded;
-            this.Resize += new System.EventHandler(TrailLineChart_Resize);
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
 
             //The panels and charts should probably be created manually instead
@@ -105,6 +102,8 @@ namespace TrailsPlugin.UI.Activity {
             //cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
             //timeDiff.YAxisReferential = TrailLineChart.LineChartTypes.TimeDiff;
             //distDiff.YAxisReferential = TrailLineChart.LineChartTypes.DistDiff;
+            this.Expanded = m_expanded;
+            this.Resize += new System.EventHandler(TrailLineChart_Resize);
         }
 
         public void ThemeChanged(ITheme visualTheme)
@@ -176,6 +175,14 @@ namespace TrailsPlugin.UI.Activity {
                     btnExpand.BackgroundImage = CommonIcons.LowerHalf;
                 }
                 ShowPage = _showPage;
+                //This could be changed to zoom to data only at changes
+                foreach (TrailLineChart t in m_lineCharts)
+                {
+                    if (t.ShowPage)
+                    {
+                        t.ZoomToData();
+                    }
+                }
             }
         }
 
@@ -325,6 +332,13 @@ namespace TrailsPlugin.UI.Activity {
             foreach (TrailLineChart chart in m_lineCharts)
             {
                 chart.SetSelectedRange(regions);
+            }
+        }
+        public void SetSelectedRange(int i, IList<float[]> regions)
+        {
+            foreach (TrailLineChart chart in m_lineCharts)
+            {
+                chart.SetSelectedRange(i, regions);
             }
         }
 

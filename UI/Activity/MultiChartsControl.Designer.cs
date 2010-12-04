@@ -24,6 +24,7 @@
 		/// </summary>
 		private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MultiChartsControl));
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.speedPaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,13 +44,12 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnCollapse = new ZoneFiveSoftware.Common.Visuals.Button();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.speedChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.paceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.elevationChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.heartrateChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.cadenceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
-            this.elevationChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.gradeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.timeDiff = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.distDiff = new TrailsPlugin.UI.Activity.TrailLineChart();
@@ -62,7 +62,7 @@
             // 
             this.ChartBanner.BackColor = System.Drawing.SystemColors.Control;
             this.ChartBanner.ContextMenuStrip = this.detailMenu;
-            this.ChartBanner.Controls.Add(this.btnCollapse);
+            this.ChartBanner.Controls.Add(this.btnExpand);
             this.ChartBanner.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ChartBanner.HasMenuButton = true;
             this.ChartBanner.Location = new System.Drawing.Point(0, 0);
@@ -70,8 +70,7 @@
             this.ChartBanner.Name = "ChartBanner";
             this.ChartBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ChartBanner.Size = new System.Drawing.Size(500, 20);
-            this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
-            //this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
+            this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
             this.ChartBanner.TabIndex = 1;
             this.ChartBanner.Text = "Trail Charts";
             this.ChartBanner.UseStyleFont = true;
@@ -205,29 +204,6 @@
             this.showToolBarMenuItem.Text = "showToolBarMenuItem";
             this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
-            // btnCollapse
-            // 
-            this.btnCollapse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCollapse.BackColor = System.Drawing.Color.Transparent;
-            this.btnCollapse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnCollapse.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnCollapse.CenterImage = null;
-            this.btnCollapse.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnCollapse.HyperlinkStyle = false;
-            this.btnCollapse.ImageMargin = 2;
-            this.btnCollapse.LeftImage = null;
-            this.btnCollapse.Location = new System.Drawing.Point(914, 0);
-            this.btnCollapse.Name = "btnCollapse";
-            this.btnCollapse.PushStyle = false;
-            this.btnCollapse.RightImage = null;
-            this.btnCollapse.Size = new System.Drawing.Size(20, 20);
-            this.btnCollapse.TabIndex = 12;
-            this.btnCollapse.Text = "C";
-            this.btnCollapse.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnCollapse.TextLeftMargin = 2;
-            this.btnCollapse.TextRightMargin = 2;
-            this.btnCollapse.Click += new System.EventHandler(this.btnCollapse_Click);
-            // 
             // btnExpand
             // 
             this.btnExpand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -239,12 +215,11 @@
             this.btnExpand.HyperlinkStyle = false;
             this.btnExpand.ImageMargin = 2;
             this.btnExpand.LeftImage = null;
-            this.btnExpand.Location = new System.Drawing.Point(353, 1);
+            this.btnExpand.Location = new System.Drawing.Point(353, 0);
             this.btnExpand.Name = "btnExpand";
-            this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
             this.btnExpand.PushStyle = false;
             this.btnExpand.RightImage = null;
-            this.btnExpand.Size = new System.Drawing.Size(19, 19);
+            this.btnExpand.Size = new System.Drawing.Size(20, 20);
             this.btnExpand.TabIndex = 11;
             this.btnExpand.Text = "X";
             this.btnExpand.TextAlign = System.Drawing.StringAlignment.Center;
@@ -258,7 +233,6 @@
             this.ChartPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ChartPanel.ColumnCount = 1;
             this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
             this.ChartPanel.Controls.Add(this.speedChart, 0, 1);
             this.ChartPanel.Controls.Add(this.paceChart, 0, 2);
             this.ChartPanel.Controls.Add(this.elevationChart, 0, 3);
@@ -267,6 +241,7 @@
             this.ChartPanel.Controls.Add(this.gradeChart, 0, 6);
             this.ChartPanel.Controls.Add(this.timeDiff, 0, 7);
             this.ChartPanel.Controls.Add(this.distDiff, 0, 8);
+            this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
             this.ChartPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ChartPanel.Location = new System.Drawing.Point(0, 0);
             this.ChartPanel.Name = "ChartPanel";
@@ -296,9 +271,10 @@
             this.speedChart.Margin = new System.Windows.Forms.Padding(0);
             this.speedChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.speedChart.Name = "speedChart";
+            this.speedChart.ReferenceTrailResult = null;
+            this.speedChart.ShowPage = false;
             this.speedChart.Size = new System.Drawing.Size(500, 100);
             this.speedChart.TabIndex = 2;
-            this.speedChart.ReferenceTrailResult = null;
             this.speedChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.speedChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
@@ -311,15 +287,35 @@
             this.paceChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.paceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.paceChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.paceChart.Location = new System.Drawing.Point(0, 20);
+            this.paceChart.Location = new System.Drawing.Point(0, 120);
             this.paceChart.Margin = new System.Windows.Forms.Padding(0);
             this.paceChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.paceChart.Name = "paceChart";
+            this.paceChart.ReferenceTrailResult = null;
+            this.paceChart.ShowPage = false;
             this.paceChart.Size = new System.Drawing.Size(500, 100);
             this.paceChart.TabIndex = 2;
-            this.paceChart.ReferenceTrailResult = null;
             this.paceChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.paceChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Pace;
+            // 
+            // elevationChart
+            // 
+            this.elevationChart.AutoSize = true;
+            this.elevationChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.elevationChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.elevationChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.elevationChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.elevationChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.elevationChart.Location = new System.Drawing.Point(0, 220);
+            this.elevationChart.Margin = new System.Windows.Forms.Padding(0);
+            this.elevationChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.elevationChart.Name = "elevationChart";
+            this.elevationChart.ReferenceTrailResult = null;
+            this.elevationChart.ShowPage = false;
+            this.elevationChart.Size = new System.Drawing.Size(500, 100);
+            this.elevationChart.TabIndex = 3;
+            this.elevationChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.elevationChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Elevation;
             // 
             // heartrateChart
             // 
@@ -329,13 +325,14 @@
             this.heartrateChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.heartrateChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.heartrateChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.heartrateChart.Location = new System.Drawing.Point(0, 120);
+            this.heartrateChart.Location = new System.Drawing.Point(0, 320);
             this.heartrateChart.Margin = new System.Windows.Forms.Padding(0);
             this.heartrateChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.heartrateChart.Name = "heartrateChart";
+            this.heartrateChart.ReferenceTrailResult = null;
+            this.heartrateChart.ShowPage = false;
             this.heartrateChart.Size = new System.Drawing.Size(500, 100);
             this.heartrateChart.TabIndex = 3;
-            this.heartrateChart.ReferenceTrailResult = null;
             this.heartrateChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.heartrateChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.HeartRateBPM;
             // 
@@ -347,33 +344,16 @@
             this.cadenceChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.cadenceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.cadenceChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cadenceChart.Location = new System.Drawing.Point(0, 220);
+            this.cadenceChart.Location = new System.Drawing.Point(0, 420);
             this.cadenceChart.Margin = new System.Windows.Forms.Padding(0);
             this.cadenceChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.cadenceChart.Name = "cadenceChart";
+            this.cadenceChart.ReferenceTrailResult = null;
+            this.cadenceChart.ShowPage = false;
             this.cadenceChart.Size = new System.Drawing.Size(500, 100);
             this.cadenceChart.TabIndex = 6;
-            this.cadenceChart.ReferenceTrailResult = null;
             this.cadenceChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.cadenceChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Cadence;
-            // 
-            // elevationChart
-            // 
-            this.elevationChart.AutoSize = true;
-            this.elevationChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.elevationChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.elevationChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.elevationChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
-            this.elevationChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.elevationChart.Location = new System.Drawing.Point(0, 320);
-            this.elevationChart.Margin = new System.Windows.Forms.Padding(0);
-            this.elevationChart.MinimumSize = new System.Drawing.Size(250, 100);
-            this.elevationChart.Name = "elevationChart";
-            this.elevationChart.Size = new System.Drawing.Size(500, 100);
-            this.elevationChart.TabIndex = 3;
-            this.elevationChart.ReferenceTrailResult = null;
-            this.elevationChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.elevationChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Elevation;
             // 
             // gradeChart
             // 
@@ -383,13 +363,14 @@
             this.gradeChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.gradeChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.gradeChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gradeChart.Location = new System.Drawing.Point(0, 420);
+            this.gradeChart.Location = new System.Drawing.Point(0, 520);
             this.gradeChart.Margin = new System.Windows.Forms.Padding(0);
             this.gradeChart.MinimumSize = new System.Drawing.Size(250, 100);
             this.gradeChart.Name = "gradeChart";
+            this.gradeChart.ReferenceTrailResult = null;
+            this.gradeChart.ShowPage = false;
             this.gradeChart.Size = new System.Drawing.Size(500, 100);
             this.gradeChart.TabIndex = 7;
-            this.gradeChart.ReferenceTrailResult = null;
             this.gradeChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.gradeChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Grade;
             // 
@@ -401,13 +382,14 @@
             this.timeDiff.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.timeDiff.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.timeDiff.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.timeDiff.Location = new System.Drawing.Point(0, 420);
+            this.timeDiff.Location = new System.Drawing.Point(0, 620);
             this.timeDiff.Margin = new System.Windows.Forms.Padding(0);
             this.timeDiff.MinimumSize = new System.Drawing.Size(250, 100);
             this.timeDiff.Name = "timeDiff";
+            this.timeDiff.ReferenceTrailResult = null;
+            this.timeDiff.ShowPage = false;
             this.timeDiff.Size = new System.Drawing.Size(500, 100);
             this.timeDiff.TabIndex = 7;
-            this.timeDiff.ReferenceTrailResult = null;
             this.timeDiff.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.timeDiff.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.TimeDiff;
             // 
@@ -419,23 +401,24 @@
             this.distDiff.ChartLineColor = System.Drawing.Color.LightSkyBlue;
             this.distDiff.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.distDiff.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.distDiff.Location = new System.Drawing.Point(0, 420);
+            this.distDiff.Location = new System.Drawing.Point(0, 720);
             this.distDiff.Margin = new System.Windows.Forms.Padding(0);
             this.distDiff.MinimumSize = new System.Drawing.Size(250, 100);
             this.distDiff.Name = "distDiff";
+            this.distDiff.ReferenceTrailResult = null;
+            this.distDiff.ShowPage = false;
             this.distDiff.Size = new System.Drawing.Size(500, 100);
             this.distDiff.TabIndex = 7;
-            this.distDiff.ReferenceTrailResult = null;
             this.distDiff.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.distDiff.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.DistDiff;
             // 
-            // ChartsControl
+            // MultiChartsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.ChartPanel);
-            this.Name = "ChartsControl";
+            this.Name = "MultiChartsControl";
             this.Size = new System.Drawing.Size(500, 520);
             this.ChartBanner.ResumeLayout(false);
             this.detailMenu.ResumeLayout(false);
@@ -450,7 +433,6 @@
 
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
         private System.Windows.Forms.ContextMenuStrip detailMenu;
-        private ZoneFiveSoftware.Common.Visuals.Button btnCollapse;
         private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
         private System.Windows.Forms.TableLayoutPanel ChartPanel;
 		private TrailLineChart cadenceChart;

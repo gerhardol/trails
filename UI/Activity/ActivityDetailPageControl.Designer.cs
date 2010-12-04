@@ -29,7 +29,7 @@
             this.UpperSplitContainer = new System.Windows.Forms.SplitContainer();
             this.LowerSplitContainer = new System.Windows.Forms.SplitContainer();
             this.ResultList = new ResultListControl();
-            this.SingleChart = new SingleChartsControl();
+            //this.SingleChart = new SingleChartsControl();
             this.MultiCharts = new MultiChartsControl();
             this.ExpandSplitContainer = new System.Windows.Forms.SplitContainer();
             //this.ActPagePanel.SuspendLayout();
@@ -72,8 +72,8 @@
             // 
             // SingleChart
             // 
-            this.SingleChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SingleChart.Expand += new System.EventHandler(btnExpand_Click);
+            //this.SingleChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            //this.SingleChart.Expand += new System.EventHandler(btnExpand_Click);
             // 
             // SingleChart
             // 
@@ -125,7 +125,7 @@
             // ActPageSplitContainer.Panel2
             // 
             this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.LowerSplitContainer.Panel2.Controls.Add(this.SingleChart);
+            this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
             this.LowerSplitContainer.Panel2MinSize = 100;
             this.LowerSplitContainer.Size = new System.Drawing.Size(400, 273);
             this.LowerSplitContainer.SplitterDistance = 60;
@@ -150,7 +150,7 @@
             this.ExpandSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.ExpandSplitContainer.Panel2Collapsed = true;
             this.ExpandSplitContainer.Panel2MinSize = 0;
-            this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
+            //xxx this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
             this.ExpandSplitContainer.Size = new System.Drawing.Size(400, 300);
             this.ExpandSplitContainer.SplitterDistance = 400;
             this.ExpandSplitContainer.SplitterWidth = 1;
@@ -178,7 +178,6 @@
             this.ExpandSplitContainer.Panel1.PerformLayout();
             this.ExpandSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
-
 		}
 
 		#endregion
@@ -186,7 +185,7 @@
 		//private System.Windows.Forms.TableLayoutPanel ActPagePanel;
 		private TrailSelectorControl TrailSelector;
         private ResultListControl ResultList;
-        private SingleChartsControl SingleChart;
+        //private SingleChartsControl SingleChart;
         private MultiChartsControl MultiCharts;
         private System.Windows.Forms.SplitContainer ExpandSplitContainer;
         private System.Windows.Forms.SplitContainer LowerSplitContainer;

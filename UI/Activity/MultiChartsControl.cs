@@ -48,6 +48,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		public MultiChartsControl() {
             InitializeComponent();
+            InitControls();
         }
 #if ST_2_1
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller)
@@ -59,8 +60,6 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             m_page = page;
             m_controller = controller;
-
-            InitControls();
             foreach (TrailLineChart t in m_lineCharts)
             {
                 t.SetControl(m_page, this);
@@ -69,6 +68,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void InitControls()
         {
+            //Move to static init xxx
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Yeild16;
             this.speedPaceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.speedToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
@@ -84,25 +84,7 @@ namespace TrailsPlugin.UI.Activity {
             timeDiffToolStripMenuItem.Visible = false;//TODO: temporary
             distDiffToolStripMenuItem.Visible = false;
 
-            if (m_expanded)
-            {
-                btnCollapse.Visible = true;
-            }
-            else
-            {
-                btnExpand.Visible = true;
-            }
-            btnCollapse.CenterImage = CommonIcons.LowerLeft;
-            btnCollapse.Text = "";
-            btnCollapse.Left = this.Right - 46;
-            btnCollapse.Top = 2;
-
-            btnExpand.BackgroundImage = CommonIcons.LowerHalf;
-            btnExpand.Text = "";
-            //For some reason, the Designer moves this button out of the panel
-            this.btnExpand.Location = new System.Drawing.Point(353, 1);
-
-
+            this.Expanded = m_expanded;
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
 
@@ -127,18 +109,13 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ThemeChanged(ITheme visualTheme)
         {
-            foreach (Control t in this.ChartPanel.Controls)
-            {
-                if (t is ActionBanner)
-                {
-                    ((ActionBanner)t).ThemeChanged(visualTheme);
-                }
-            }
+            this.ChartBanner.ThemeChanged(visualTheme);
             foreach (TrailLineChart t in m_lineCharts)
             {
                 t.ThemeChanged(visualTheme);
             }
         }
+
         public void UICultureChanged(CultureInfo culture)
         {
             this.ChartBanner.Text = Properties.Resources.TrailChartsName;
@@ -174,7 +151,6 @@ namespace TrailsPlugin.UI.Activity {
                     RefreshChartMenu();
                     RefreshChart();
                 }
-                this.Visible = _showPage;
             }
         }
 
@@ -182,17 +158,24 @@ namespace TrailsPlugin.UI.Activity {
         {
             set
             {
+                 btnExpand.Text = "";
+                //For some reason, the Designer moves this button out of the panel
+                btnExpand.Left = this.ChartBanner.Right - 46;
+
                 m_expanded = value;
                 m_multiple = value;
                 if (m_expanded)
                 {
-                    this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
+                    this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
                     this.ChartBanner.Text = Properties.Resources.TrailChartsName;
+                    btnExpand.BackgroundImage = CommonIcons.LowerLeft;
                 }
                 else
                 {
-                    this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
+                    this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
+                    btnExpand.BackgroundImage = CommonIcons.LowerHalf;
                 }
+                ShowPage = _showPage;
             }
         }
 
@@ -241,8 +224,6 @@ namespace TrailsPlugin.UI.Activity {
 
                 foreach (TrailLineChart chart in m_lineCharts)
                 {
-                    chart.BeginUpdate();
-                    chart.XAxisReferential = PluginMain.Settings.XAxisValue;
                     bool visible = false;
 
                     if (m_multiple &&
@@ -257,6 +238,7 @@ namespace TrailsPlugin.UI.Activity {
                         visible = true;
                     }
 
+                    chart.BeginUpdate();
                     if (visible)
                     {
                         if (!m_multiple)
@@ -264,6 +246,7 @@ namespace TrailsPlugin.UI.Activity {
                             this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart.YAxisReferential) + " / " +
                             TrailLineChart.XAxisValueString(chart.XAxisReferential);
                         }
+                        chart.XAxisReferential = PluginMain.Settings.XAxisValue;
                         IList<Data.TrailResult> list = this.m_page.SelectedItems;
                         chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                         chart.TrailResults = list;
@@ -421,13 +404,16 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /***************************************/
-        private void btnCollapse_Click(object sender, EventArgs e)
-        {
-            Collapse(sender, e);
-        }
         private void btnExpand_Click(object sender, EventArgs e)
         {
-            Expand(sender, e);
+            if (m_expanded)
+            {
+                Collapse(sender, e);
+            }
+            else
+            {
+                Expand(sender, e);
+            }
         }
         void TrailLineChart_Resize(object sender, System.EventArgs e)
         {

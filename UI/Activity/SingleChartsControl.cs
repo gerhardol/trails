@@ -16,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if false
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -282,3 +283,4 @@ namespace TrailsPlugin.UI.Activity {
 		}
     }
 }
+#endif

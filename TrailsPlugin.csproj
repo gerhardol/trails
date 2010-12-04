@@ -58,9 +58,7 @@
     <Compile Include="UI\Activity\TrailSelectorControl.Designer.cs">
       <DependentUpon>TrailSelectorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Activity\SingleChartsControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="UI\Activity\SingleChartsControl.cs" />
     <Compile Include="UI\Activity\SingleChartsControl.Designer.cs">
       <DependentUpon>SingleChartsControl.cs</DependentUpon>
     </Compile>

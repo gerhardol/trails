@@ -1,4 +1,5 @@
-﻿namespace TrailsPlugin.UI.Activity {
+﻿#if false
+namespace TrailsPlugin.UI.Activity {
 	partial class SingleChartsControl {
 		/// <summary> 
 		/// Required designer variable.
@@ -301,3 +302,4 @@
         private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
 	}
 }
+#endif

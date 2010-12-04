@@ -51,7 +51,7 @@ namespace TrailsPlugin.UI.Activity {
         private ITheme m_visualTheme;
         private ActivityDetailPageControl m_page = null;
         private MultiChartsControl m_multiple = null;
-        private SingleChartsControl m_single = null;
+        //private SingleChartsControl m_single = null;
         private bool m_visible = false;
 
         public TrailLineChart()
@@ -92,11 +92,11 @@ namespace TrailsPlugin.UI.Activity {
             m_page = page;
             m_multiple = multiple;
         }
-        public void SetControl(ActivityDetailPageControl page, SingleChartsControl single)
-        {
-            m_page = page;
-            m_single = single;
-        }
+        //public void SetControl(ActivityDetailPageControl page, SingleChartsControl single)
+        //{
+        //    m_page = page;
+        //    m_single = single;
+        //}
 
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -360,14 +360,14 @@ namespace TrailsPlugin.UI.Activity {
 
                     if (markAll)
                     {
-                        if (m_multiple != null)
-                        {
+                        //if (m_multiple != null)
+                        //{
                             m_multiple.SetSelectedRange(regions);
-                        }
-                        if (m_single != null)
-                        {
-                            m_single.SetSelectedRange(regions);
-                        }
+                        //}
+                        //if (m_single != null)
+                        //{
+                        //    m_single.SetSelectedRange(regions);
+                        //}
                     }
                 }
             }

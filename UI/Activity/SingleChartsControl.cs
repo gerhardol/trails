@@ -149,8 +149,8 @@ namespace TrailsPlugin.UI.Activity {
                         this.LineChart.YAxisReferential = PluginMain.Settings.ChartType;
                     }
                     this.LineChart.XAxisReferential = PluginMain.Settings.XAxisValue;
-                    this.ChartBanner.Text = PluginMain.Settings.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
-                        PluginMain.Settings.XAxisValueString(this.LineChart.XAxisReferential);
+                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(this.LineChart.YAxisReferential) + " / " +
+                        TrailLineChart.XAxisValueString(this.LineChart.XAxisReferential);
                     IList<TrailResult> list = this.m_page.SelectedItems;
                     this.LineChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                     this.LineChart.TrailResults = list;
@@ -164,33 +164,33 @@ namespace TrailsPlugin.UI.Activity {
 
 		void RefreshChartMenu() {
 			speedToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Speed;
-            this.speedToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Speed);
+            this.speedToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Speed);
 			paceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Pace;
-            this.paceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Pace);
+            this.paceToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Pace);
             speedPaceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.SpeedPace;
-            this.speedPaceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.SpeedPace);
+            this.speedPaceToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.SpeedPace);
             elevationToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Elevation;
-            this.elevationToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Elevation);
+            this.elevationToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Elevation);
             cadenceToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Cadence;
-            this.cadenceToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Cadence);
+            this.cadenceToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Cadence);
             heartRateToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.HeartRateBPM;
-            this.heartRateToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.HeartRateBPM);
+            this.heartRateToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.HeartRateBPM);
             gradeStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Grade;
-            this.gradeStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Grade);
+            this.gradeStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Grade);
             powerToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.Power;
-            this.powerToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.Power);
+            this.powerToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Power);
 
             timeDiffToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.TimeDiff;
-            this.timeDiffToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.TimeDiff);
+            this.timeDiffToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.TimeDiff);
             distDiffToolStripMenuItem.Checked = PluginMain.Settings.ChartType == TrailLineChart.LineChartTypes.DistDiff;
-            this.distDiffToolStripMenuItem.Text = PluginMain.Settings.ChartTypeString(TrailLineChart.LineChartTypes.DistDiff);
+            this.distDiffToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DistDiff);
             timeDiffToolStripMenuItem.Visible = false;//TODO: temporary
             distDiffToolStripMenuItem.Visible = false;
 
             timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
-            this.timeToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Time);
+            this.timeToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Time);
             distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
-            this.distanceToolStripMenuItem.Text = PluginMain.Settings.XAxisValueString(TrailLineChart.XAxisValue.Distance);
+            this.distanceToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Distance);
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
             this.showToolBarMenuItem.Checked = PluginMain.Settings.ShowChartToolBar;
             //this.showToolBarMenuItem.Text = m_showChartToolBar ? Properties.Resources.UI_Activity_Menu_HideToolBar

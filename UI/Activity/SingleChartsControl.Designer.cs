@@ -258,7 +258,7 @@
             this.LineChart.ReferenceTrailResult = null;
             this.LineChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.LineChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
-            this.LineChart.YAxisReferential_right = null;
+            //this.LineChart.YAxisReferential_right = null;
             // 
             // SingleChartsControl
             // 

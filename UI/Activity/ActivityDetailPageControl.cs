@@ -185,7 +185,8 @@ namespace TrailsPlugin.UI.Activity {
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
             RefreshRoute(); 
-            RefreshChart();
+            //Charts are refreshed when list is changed
+            //RefreshChart();
             ShowPage = showPage;
         }
         public void RefreshChart()
@@ -366,8 +367,6 @@ namespace TrailsPlugin.UI.Activity {
             {
 #endif
             int width = this.UpperSplitContainer.Width;
-            MultiCharts.Visible = true;
-            MultiCharts.ShowPage = _showPage;
             SingleChart.Visible = false;
             SingleChart.ShowPage = false;
 
@@ -388,15 +387,18 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             m_isExpanded = true;
             MultiCharts.Expanded = m_isExpanded;
-            RefreshChart();
+            //MultiCharts.Visible = true;
+            MultiCharts.ShowPage = _showPage;
+            //RefreshChart();
 #if ST_2_1
  		}
 #endif
         }
 		private void MultiCharts_Collapse(object sender, EventArgs e)
         {
-            MultiCharts.Visible = false;
+            //MultiCharts.Visible = false;
             MultiCharts.ShowPage = false;
+            MultiCharts.Expanded = m_isExpanded;
             SingleChart.Visible = true;
             SingleChart.ShowPage = _showPage;
             
@@ -412,7 +414,6 @@ namespace TrailsPlugin.UI.Activity {
             m_DetailPage.PageMaximized = false;
 #endif
             m_isExpanded = false;
-            MultiCharts.Expanded = m_isExpanded;
             RefreshChart();
 		}
         

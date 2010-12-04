@@ -163,8 +163,18 @@ namespace TrailsPlugin.UI.Activity {
             {
                 IList<TrailResult> results = m_controller.CurrentTrailOrdered.activityTrail.Results;
                 RefreshColumns();
-                
+
+#if ST_2_1
+                this.summaryList.SelectedChanged -= new System.EventHandler(this.List_SelectedChanged);
+#else
+                this.summaryList.SelectedItemsChanged -= new System.EventHandler(this.List_SelectedChanged);
+#endif
                 summaryList_Sort();
+#if ST_2_1
+                this.summaryList.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
+#else
+                this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+#endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 //TODO: Keep selection in list?
                 if (results.Count > 0)

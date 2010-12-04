@@ -44,7 +44,7 @@ namespace TrailsPlugin.UI.Activity {
         private IList<Data.TrailResult> m_trailResults = new List<Data.TrailResult>();
         private XAxisValue m_XAxisReferential = XAxisValue.Time;
         private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
-        private IList<LineChartTypes> m_YAxisReferential_right = null;//temp
+        //private IList<LineChartTypes> m_YAxisReferential_right = null;
         private Color m_ChartFillColor = Color.WhiteSmoke;
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
@@ -52,6 +52,7 @@ namespace TrailsPlugin.UI.Activity {
         private ActivityDetailPageControl m_page = null;
         private MultiChartsControl m_multiple = null;
         private SingleChartsControl m_single = null;
+        private bool m_visible = false;
 
         public TrailLineChart()
         {
@@ -117,6 +118,17 @@ namespace TrailsPlugin.UI.Activity {
             SetupAxes();
         }
 
+        public bool ShowPage
+        {
+            get
+            {
+                return m_visible;
+            }
+            set
+            {
+                m_visible = value;
+            }
+        }
         public enum XAxisValue
         {
 			Time,
@@ -147,7 +159,9 @@ namespace TrailsPlugin.UI.Activity {
             }
             return xAxisLabel;
         }
-        public enum LineChartTypes {
+
+        public enum LineChartTypes
+        {
 			Cadence,
 			Elevation,
 			HeartRateBPM,
@@ -160,6 +174,16 @@ namespace TrailsPlugin.UI.Activity {
             TimeDiff,
             DistDiff
 		}
+        public static IList<LineChartTypes> DefaultLineChartTypes()
+        {
+            return new List<LineChartTypes>{
+                LineChartTypes.SpeedPace, LineChartTypes.Elevation,
+                LineChartTypes.HeartRateBPM, LineChartTypes.Cadence};
+        }
+        public static string ChartTypeString(TrailLineChart.LineChartTypes x)
+        {
+            return TrailLineChart.LineChartTypesString((TrailLineChart.LineChartTypes)x);
+        }
         public static string LineChartTypesString(LineChartTypes YAxisReferential)
         {
             string yAxisLabel="";
@@ -220,7 +244,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             return yAxisLabel;
         }
-         
+
+        /********************************************/ 
 		private void SaveImageButton_Click(object sender, EventArgs e) {
 #if ST_2_1
             SaveImage dlg = new SaveImage();
@@ -440,7 +465,7 @@ namespace TrailsPlugin.UI.Activity {
         private void SetupDataSeries()
         {
 			MainChart.DataSeries.Clear();
-            MainChart.Parent.Parent.Hide();
+            m_visible = false;
 
                 // Add main data. We must use 2 separate data series to overcome the display
                 //  bug in fill mode.  The main data series is normally rendered but the copy
@@ -452,7 +477,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (graphPoints.Count > 1)
                 {
-                    MainChart.Parent.Parent.Show();
+                    m_visible = true;
                     Color chartFillColor = ChartFillColor;
                     Color chartLineColor = ChartLineColor;
                     Color chartSelectedColor = ChartSelectedColor;
@@ -788,15 +813,15 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        [DisplayName("Y Axis value, right")]
-        public IList<LineChartTypes> YAxisReferential_right
-        {
-            get { return m_YAxisReferential_right; }
-            set
-            {
-                m_YAxisReferential_right = value;
-            }
-        }
+        //[DisplayName("Y Axis value, right")]
+        //public IList<LineChartTypes> YAxisReferential_right
+        //{
+        //    get { return m_YAxisReferential_right; }
+        //    set
+        //    {
+        //        m_YAxisReferential_right = value;
+        //    }
+        //}
 
         public Color ChartFillColor
         {

@@ -106,6 +106,16 @@ namespace TrailsPlugin.Data {
         public const string Location = "Location";
         public const string Category = "Category";
 
+        public static IList<string> DefaultColumns()
+        {
+            IList<string> m_activityPageColumns = new List<string>();
+            m_activityPageColumns.Add(TrailResultColumnIds.Order);
+            m_activityPageColumns.Add(TrailResultColumnIds.StartTime);
+            m_activityPageColumns.Add(TrailResultColumnIds.Duration);
+            m_activityPageColumns.Add(TrailResultColumnIds.AvgHR);
+            m_activityPageColumns.Add(TrailResultColumnIds.AvgCadence);
+            return m_activityPageColumns;
+        }
 #if ST_2_1
         public static ICollection<IListItem> ColumnDefs_ST2(IActivity activity, bool mult)
         {

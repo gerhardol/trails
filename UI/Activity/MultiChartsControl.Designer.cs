@@ -26,17 +26,36 @@
             this.components = new System.ComponentModel.Container();
             this.ChartBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
             this.detailMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.speedPaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.speedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.paceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.heartRateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cadenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.elevationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.timeDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.distDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCollapse = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
             this.speedChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.paceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.heartrateChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.cadenceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.elevationChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.gradeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.timeDiff = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.distDiff = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.ChartBanner.SuspendLayout();
             this.detailMenu.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.ChartPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // ChartBanner
@@ -52,6 +71,7 @@
             this.ChartBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ChartBanner.Size = new System.Drawing.Size(500, 20);
             this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
+            //this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
             this.ChartBanner.TabIndex = 1;
             this.ChartBanner.Text = "Trail Charts";
             this.ChartBanner.UseStyleFont = true;
@@ -60,14 +80,128 @@
             // detailMenu
             // 
             this.detailMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.speedPaceToolStripMenuItem,
+            this.speedToolStripMenuItem,
+            this.paceToolStripMenuItem,
+            this.heartRateToolStripMenuItem,
+            this.cadenceToolStripMenuItem,
+            this.elevationToolStripMenuItem,
+            this.gradeStripMenuItem,
+            this.powerToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.timeDiffToolStripMenuItem,
+            this.distDiffToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.distanceToolStripMenuItem,
+            this.timeToolStripMenuItem,
+            this.toolStripSeparator3,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
-            this.detailMenu.Size = new System.Drawing.Size(130, 230);
+            this.detailMenu.Size = new System.Drawing.Size(199, 258);
+            // 
+            // speedPaceToolStripMenuItem
+            // 
+            this.speedPaceToolStripMenuItem.Name = "speedPaceToolStripMenuItem";
+            this.speedPaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.speedPaceToolStripMenuItem.Text = "SpeedPace";
+            this.speedPaceToolStripMenuItem.Click += new System.EventHandler(this.speedPaceToolStripMenuItem_Click);
+            // 
+            // speedToolStripMenuItem
+            // 
+            this.speedToolStripMenuItem.Name = "speedToolStripMenuItem";
+            this.speedToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.speedToolStripMenuItem.Text = "Speed";
+            this.speedToolStripMenuItem.Click += new System.EventHandler(this.speedToolStripMenuItem_Click);
+            // 
+            // paceToolStripMenuItem
+            // 
+            this.paceToolStripMenuItem.Name = "paceToolStripMenuItem";
+            this.paceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.paceToolStripMenuItem.Text = "Pace";
+            this.paceToolStripMenuItem.Click += new System.EventHandler(this.paceToolStripMenuItem_Click);
+            // 
+            // heartRateToolStripMenuItem
+            // 
+            this.heartRateToolStripMenuItem.Name = "heartRateToolStripMenuItem";
+            this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.heartRateToolStripMenuItem.Text = "Heart Rate";
+            this.heartRateToolStripMenuItem.Click += new System.EventHandler(this.heartRateToolStripMenuItem_Click);
+            // 
+            // cadenceToolStripMenuItem
+            // 
+            this.cadenceToolStripMenuItem.Name = "cadenceToolStripMenuItem";
+            this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.cadenceToolStripMenuItem.Text = "Cadence";
+            this.cadenceToolStripMenuItem.Click += new System.EventHandler(this.cadenceToolStripMenuItem_Click);
+            // 
+            // elevationToolStripMenuItem
+            // 
+            this.elevationToolStripMenuItem.Name = "elevationToolStripMenuItem";
+            this.elevationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.elevationToolStripMenuItem.Text = "Elevation";
+            this.elevationToolStripMenuItem.Click += new System.EventHandler(this.elevationToolStripMenuItem_Click);
+            // 
+            // gradeStripMenuItem
+            // 
+            this.gradeStripMenuItem.Name = "gradeStripMenuItem";
+            this.gradeStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.gradeStripMenuItem.Text = "Grade";
+            this.gradeStripMenuItem.Click += new System.EventHandler(this.gradeToolStripMenuItem_Click);
+            // 
+            // powerToolStripMenuItem
+            // 
+            this.powerToolStripMenuItem.Name = "powerToolStripMenuItem";
+            this.powerToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.powerToolStripMenuItem.Text = "Power";
+            this.powerToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
+            // 
+            // timeDiffToolStripMenuItem
+            // 
+            this.timeDiffToolStripMenuItem.Name = "timeDiffToolStripMenuItem";
+            this.timeDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.timeDiffToolStripMenuItem.Text = "TimeDiff";
+            this.timeDiffToolStripMenuItem.Click += new System.EventHandler(this.timeDiffToolStripMenuItem_Click);
+            // 
+            // distDiffToolStripMenuItem
+            // 
+            this.distDiffToolStripMenuItem.Name = "distDiffToolStripMenuItem";
+            this.distDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.distDiffToolStripMenuItem.Text = "DistDiff";
+            this.distDiffToolStripMenuItem.Click += new System.EventHandler(this.distDiffToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            // 
+            // distanceToolStripMenuItem
+            // 
+            this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
+            this.distanceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.distanceToolStripMenuItem.Text = "Distance";
+            this.distanceToolStripMenuItem.Click += new System.EventHandler(this.distanceToolStripMenuItem_Click);
+            // 
+            // timeToolStripMenuItem
+            // 
+            this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
+            this.timeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.timeToolStripMenuItem.Text = "Time";
+            this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(195, 6);
             // 
             // showToolBarMenuItem
             // 
             this.showToolBarMenuItem.Name = "showToolBarMenuItem";
-            this.showToolBarMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.showToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showToolBarMenuItem.Text = "showToolBarMenuItem";
             this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
@@ -94,30 +228,60 @@
             this.btnCollapse.TextRightMargin = 2;
             this.btnCollapse.Click += new System.EventHandler(this.btnCollapse_Click);
             // 
-            // tableLayoutPanel1
+            // btnExpand
             // 
-            this.tableLayoutPanel1.AutoSize = true;
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.ChartBanner, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.speedChart, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.heartrateChart, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.cadenceChart, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.elevationChart, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.gradeChart, 0, 5);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(500, 520);
-            this.tableLayoutPanel1.TabIndex = 2;
+            this.btnExpand.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExpand.BackColor = System.Drawing.Color.Transparent;
+            this.btnExpand.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnExpand.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnExpand.CenterImage = null;
+            this.btnExpand.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnExpand.HyperlinkStyle = false;
+            this.btnExpand.ImageMargin = 2;
+            this.btnExpand.LeftImage = null;
+            this.btnExpand.Location = new System.Drawing.Point(353, 1);
+            this.btnExpand.Name = "btnExpand";
+            this.btnExpand.Padding = new System.Windows.Forms.Padding(2);
+            this.btnExpand.PushStyle = false;
+            this.btnExpand.RightImage = null;
+            this.btnExpand.Size = new System.Drawing.Size(19, 19);
+            this.btnExpand.TabIndex = 11;
+            this.btnExpand.Text = "X";
+            this.btnExpand.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnExpand.TextLeftMargin = 2;
+            this.btnExpand.TextRightMargin = 2;
+            this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            // 
+            // ChartPanel
+            // 
+            this.ChartPanel.AutoSize = true;
+            this.ChartPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ChartPanel.ColumnCount = 1;
+            this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
+            this.ChartPanel.Controls.Add(this.speedChart, 0, 1);
+            this.ChartPanel.Controls.Add(this.paceChart, 0, 2);
+            this.ChartPanel.Controls.Add(this.elevationChart, 0, 3);
+            this.ChartPanel.Controls.Add(this.heartrateChart, 0, 4);
+            this.ChartPanel.Controls.Add(this.cadenceChart, 0, 5);
+            this.ChartPanel.Controls.Add(this.gradeChart, 0, 6);
+            this.ChartPanel.Controls.Add(this.timeDiff, 0, 7);
+            this.ChartPanel.Controls.Add(this.distDiff, 0, 8);
+            this.ChartPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ChartPanel.Location = new System.Drawing.Point(0, 0);
+            this.ChartPanel.Name = "ChartPanel";
+            this.ChartPanel.RowCount = 6;
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.ChartPanel.Size = new System.Drawing.Size(500, 520);
+            this.ChartPanel.TabIndex = 2;
             // 
             // speedChart
             // 
@@ -138,6 +302,25 @@
             this.speedChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.speedChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
             // 
+            // paceChart
+            // 
+            this.paceChart.AutoSize = true;
+            this.paceChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.paceChart.BackColor = System.Drawing.SystemColors.Control;
+            this.paceChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.paceChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.paceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.paceChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.paceChart.Location = new System.Drawing.Point(0, 20);
+            this.paceChart.Margin = new System.Windows.Forms.Padding(0);
+            this.paceChart.MinimumSize = new System.Drawing.Size(250, 100);
+            this.paceChart.Name = "paceChart";
+            this.paceChart.Size = new System.Drawing.Size(500, 100);
+            this.paceChart.TabIndex = 2;
+            this.paceChart.ReferenceTrailResult = null;
+            this.paceChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.paceChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Pace;
+            // 
             // heartrateChart
             // 
             this.heartrateChart.AutoSize = true;
@@ -154,7 +337,7 @@
             this.heartrateChart.TabIndex = 3;
             this.heartrateChart.ReferenceTrailResult = null;
             this.heartrateChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.heartrateChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
+            this.heartrateChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.HeartRateBPM;
             // 
             // cadenceChart
             // 
@@ -172,7 +355,7 @@
             this.cadenceChart.TabIndex = 6;
             this.cadenceChart.ReferenceTrailResult = null;
             this.cadenceChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.cadenceChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
+            this.cadenceChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Cadence;
             // 
             // elevationChart
             // 
@@ -190,7 +373,7 @@
             this.elevationChart.TabIndex = 3;
             this.elevationChart.ReferenceTrailResult = null;
             this.elevationChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.elevationChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Speed;
+            this.elevationChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Elevation;
             // 
             // gradeChart
             // 
@@ -210,17 +393,54 @@
             this.gradeChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.gradeChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Grade;
             // 
+            // timeDiff
+            // 
+            this.timeDiff.AutoSize = true;
+            this.timeDiff.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.timeDiff.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.timeDiff.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.timeDiff.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.timeDiff.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.timeDiff.Location = new System.Drawing.Point(0, 420);
+            this.timeDiff.Margin = new System.Windows.Forms.Padding(0);
+            this.timeDiff.MinimumSize = new System.Drawing.Size(250, 100);
+            this.timeDiff.Name = "timeDiff";
+            this.timeDiff.Size = new System.Drawing.Size(500, 100);
+            this.timeDiff.TabIndex = 7;
+            this.timeDiff.ReferenceTrailResult = null;
+            this.timeDiff.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.timeDiff.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.TimeDiff;
+            // 
+            // distDiff
+            // 
+            this.distDiff.AutoSize = true;
+            this.distDiff.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.distDiff.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.distDiff.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.distDiff.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.distDiff.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.distDiff.Location = new System.Drawing.Point(0, 420);
+            this.distDiff.Margin = new System.Windows.Forms.Padding(0);
+            this.distDiff.MinimumSize = new System.Drawing.Size(250, 100);
+            this.distDiff.Name = "distDiff";
+            this.distDiff.Size = new System.Drawing.Size(500, 100);
+            this.distDiff.TabIndex = 7;
+            this.distDiff.ReferenceTrailResult = null;
+            this.distDiff.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.distDiff.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.DistDiff;
+            // 
             // ChartsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Controls.Add(this.ChartPanel);
             this.Name = "ChartsControl";
             this.Size = new System.Drawing.Size(500, 520);
             this.ChartBanner.ResumeLayout(false);
             this.detailMenu.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
+            this.ChartPanel.ResumeLayout(false);
+            this.ChartPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -230,13 +450,33 @@
 
 		private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
         private System.Windows.Forms.ContextMenuStrip detailMenu;
-        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
         private ZoneFiveSoftware.Common.Visuals.Button btnCollapse;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
+        private System.Windows.Forms.TableLayoutPanel ChartPanel;
 		private TrailLineChart cadenceChart;
 		private TrailLineChart heartrateChart;
-		private TrailLineChart speedChart;
+        private TrailLineChart speedChart;
+        private TrailLineChart paceChart;
         private TrailLineChart elevationChart;
         private TrailLineChart gradeChart;
-	}
+        private TrailLineChart timeDiff;
+        private TrailLineChart distDiff;
+        private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem elevationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem heartRateToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cadenceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem timeDiffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem distDiffToolStripMenuItem;
+
+        private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem speedPaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+    }
 }

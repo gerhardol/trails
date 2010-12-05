@@ -22,6 +22,7 @@ using ZoneFiveSoftware.Common.Data;
 namespace TrailsPlugin.Data {
     public class TrailResultMarked
     {
+        //Mark all
         public TrailResultMarked(TrailResult tr)
         {
             trailResult = tr;

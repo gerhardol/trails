@@ -331,8 +331,8 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<DateTime>(
-                                m_trailResults[i].FirstTime.AddSeconds(at[0]),
-                                m_trailResults[i].FirstTime.AddSeconds(at[1])));
+                                m_trailResults[i].getActivityTime(at[0]),
+                                m_trailResults[i].getActivityTime(at[1])));
                         }
                         results.Add(new Data.TrailResultMarked(m_trailResults[i], t));
                     }
@@ -342,8 +342,8 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<double>(
-                                m_trailResults[i].FirstDist + Utils.Units.SetDistance(at[0], m_trailResults[i].Activity),
-                                m_trailResults[i].FirstDist + Utils.Units.SetDistance(at[1], m_trailResults[i].Activity)));
+                                m_trailResults[i].getActivityDist(Utils.Units.SetDistance(at[0], m_refTrailResult.Activity)),
+                                m_trailResults[i].getActivityDist(Utils.Units.SetDistance(at[1], m_refTrailResult.Activity))));
                         }
                         results.Add(new Data.TrailResultMarked(m_trailResults[i], t));
                     }
@@ -432,23 +432,23 @@ namespace TrailsPlugin.UI.Activity {
                     //Currently only one region can be selected
                     if (sel.MarkedTimes != null && sel.MarkedTimes.Count > 0)
                     {
-                        d1 = sel.MarkedTimes[0].Lower;
-                        d2 = sel.MarkedTimes[sel.MarkedTimes.Count - 1].Upper;
+                        d1 = m_trailResults[i].getTimeFromActivity(sel.MarkedTimes[0].Lower);
+                        d2 = m_trailResults[i].getTimeFromActivity(sel.MarkedTimes[sel.MarkedTimes.Count - 1].Upper);
                         if (XAxisReferential != XAxisValue.Time)
                         {
-                            t1 = m_trailResults[i].getDistAt(sel.MarkedTimes[0].Lower);
-                            t2 = m_trailResults[i].getDistAt(sel.MarkedTimes[sel.MarkedTimes.Count - 1].Upper);
+                            t1 = m_trailResults[i].getDistFromActivity(d1);
+                            t2 = m_trailResults[i].getDistFromActivity(d2);
                         }
                     }
                     else if (sel.MarkedDistances != null && sel.MarkedDistances.Count > 0)
                     {
                         //Distance is from start of activity
-                        t1 = sel.MarkedDistances[0].Lower - m_trailResults[i].FirstDist;
-                        t2 = sel.MarkedDistances[sel.MarkedDistances.Count - 1].Upper - m_trailResults[i].FirstDist;
+                        t1 = m_trailResults[i].getDistFromActivity(sel.MarkedDistances[0].Lower);
+                        t2 = m_trailResults[i].getDistFromActivity(sel.MarkedDistances[sel.MarkedDistances.Count - 1].Upper);
                         if (XAxisReferential == XAxisValue.Time)
                         {
-                            d1 = m_trailResults[i].getTimeAt(t1);
-                            d2 = m_trailResults[i].getTimeAt(t2);
+                            d1 = m_trailResults[i].getTimeFromActivity(t1);
+                            d2 = m_trailResults[i].getTimeFromActivity(t2);
                         }
                     }
 
@@ -456,13 +456,13 @@ namespace TrailsPlugin.UI.Activity {
                     //Convert to distance display unit, Time is always in seconds
                     if (XAxisReferential == XAxisValue.Time)
                     {
-                        x1 = (float)(d1.Subtract(m_trailResults[i].FirstTime).TotalSeconds);
-                        x2 = (float)(d2.Subtract(m_trailResults[i].FirstTime).TotalSeconds);
+                        x1 = (float)(m_trailResults[i].getSeconds(d1));
+                        x2 = (float)(m_trailResults[i].getSeconds(d2));
                    }
                     else
                     {
-                        x1 = Utils.Units.GetDistance(t1, m_trailResults[i].Activity);
-                        x2 = Utils.Units.GetDistance(t2, m_trailResults[i].Activity);
+                        x1 = Utils.Units.GetDistance(t1, m_refTrailResult.Activity);
+                        x2 = Utils.Units.GetDistance(t2, m_refTrailResult.Activity);
                     }
 
                     MainChart.DataSeries[i].ClearSelectedRegions();
@@ -558,10 +558,9 @@ namespace TrailsPlugin.UI.Activity {
                         IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack;
 
                         //Debug.Assert(distanceTrack.Count == graphPoints.Count);
-
                         for (int j = 0; j < distanceTrack.Count; ++j)
                         {
-                            float distanceValue = Utils.Units.GetLength(distanceTrack[j].Value, m_trailResults[i].Category.DistanceUnits);
+                            float distanceValue = Utils.Units.GetDistance(distanceTrack[j].Value, m_refTrailResult.Activity);
                             if (j < graphPoints.Count)
                             {
                                 ITimeValueEntry<float> entry = graphPoints[j];
@@ -579,11 +578,14 @@ namespace TrailsPlugin.UI.Activity {
             }
             Data.TrailResult trailPointResult = m_refTrailResult;
             //If only one result is used, it can be confusing if the trail points are set for ref
-            if (m_trailResults.Count == 1 || trailPointResult==null)
+            if (m_trailResults.Count == 1 || 
+                m_trailResults.Count > 0 && trailPointResult==null)
             {
                 trailPointResult = m_trailResults[0];
             }
 
+            if (trailPointResult != null)
+            {
                 Image icon =
 #if ST_2_1
                         CommonResources.Images.Information16;
@@ -594,7 +596,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     foreach (DateTime t in trailPointResult.TimeTrailPoints)
                     {
-                        AxisMarker a = new AxisMarker(t.Subtract(trailPointResult.FirstTime).TotalSeconds, icon);
+                        AxisMarker a = new AxisMarker(trailPointResult.getSeconds(t), icon);
                         a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
                         a.Line1Color = Color.Black;
                         MainChart.XAxis.Markers.Add(a);
@@ -610,7 +612,7 @@ namespace TrailsPlugin.UI.Activity {
                         MainChart.XAxis.Markers.Add(a);
                     }
                 }
-                
+            }
             ZoomToData();
 		}
 
@@ -735,7 +737,7 @@ namespace TrailsPlugin.UI.Activity {
 						// Value is in meters so convert to the right unit
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-                            float temp = Utils.Units.GetElevation(entry.Value, result.Activity); 
+                            float temp = Utils.Units.GetElevation(entry.Value, m_refTrailResult.Activity); 
 
 							track.Add(tempResult.EntryDateTime(entry), (float)temp);
 						}

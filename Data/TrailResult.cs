@@ -175,18 +175,20 @@ namespace TrailsPlugin.Data {
                 return m_startDistance;
             }
         }
-        public double LastDist
-        {
-            get
-            {
-                if (float.IsNaN(m_lastDistance))
-                {
-                    getDistanceTrack();
-                }
-                return m_lastDistance;
-            }
-        }
-        public double getDistAt(DateTime t)
+        //public double LastDist
+        //{
+        //    get
+        //    {
+        //        if (float.IsNaN(m_lastDistance))
+        //        {
+        //            getDistanceTrack();
+        //        }
+        //        return m_lastDistance;
+        //    }
+        //}
+
+        //Get result time and distance from activity references
+        public double getDistFromActivity(DateTime t)
         {
             //Ignore malformed activities
             double res = 0;
@@ -197,7 +199,15 @@ namespace TrailsPlugin.Data {
             catch { }
             return res;
         }
-        public DateTime getTimeAt(double t)
+        public double getDistFromActivity(double t)
+        {
+           return t-FirstDist;
+        }
+        public DateTime getTimeFromActivity(DateTime t)
+        {
+            return t;
+        }
+        public DateTime getTimeFromActivity(double t)
         {
             DateTime res = FirstTime;
             try 
@@ -207,6 +217,27 @@ namespace TrailsPlugin.Data {
             catch { }
             return res;
         }
+
+        //Elapsed vs DateTime for result
+        public double getSeconds(DateTime d)
+        {
+            return d.Subtract(FirstTime).TotalSeconds;
+        }
+        public DateTime getDateTime(float t)
+        {
+            return DistanceMetersTrack.StartTime.AddSeconds(t);
+        }
+
+        //Result to activity
+        public DateTime getActivityTime(float t)
+        {
+            return FirstTime.AddSeconds(t);
+        }
+        public double getActivityDist(double t)
+        {
+            return FirstDist + t;
+        }
+
         public TrailResult ParentResult
         {
             get
@@ -476,16 +507,13 @@ namespace TrailsPlugin.Data {
         public INumericTimeDataSeries DiffTimeTrack(TrailResult refRes)
         {
             INumericTimeDataSeries result = new NumericTimeDataSeries();
-            if (this != refRes)
+            foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
             {
-                foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+                if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
                 {
-                    if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
-                    {
-                        DateTime d1 = this.DistanceMetersTrack.StartTime.AddSeconds(t.ElapsedSeconds);
-                        DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
-                        result.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));
-                    }
+                    DateTime d1 = this.getDateTime(t.ElapsedSeconds);
+                    DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
+                    result.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));
                 }
             }
             return result;
@@ -493,20 +521,18 @@ namespace TrailsPlugin.Data {
         public INumericTimeDataSeries DiffDistTrack(TrailResult refRes)
         {
             INumericTimeDataSeries result = new NumericTimeDataSeries();
-            if (this != refRes)
+            foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
             {
-                foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+                if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
                 {
-                    if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
-                    {
-                        DateTime d1 = this.DistanceMetersTrack.StartTime.AddSeconds(t.ElapsedSeconds);
-                        DateTime d2 = refRes.DistanceMetersTrack.StartTime.AddSeconds(t.ElapsedSeconds);
-                        result.Add(d1, t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value);
-                    }
+                    DateTime d1 = this.getDateTime(t.ElapsedSeconds);
+                    DateTime d2 = refRes.getDateTime(t.ElapsedSeconds);
+                    result.Add(d1, t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value);
                 }
             }
             return result;
         }
+
         private void getGps()
         {
             m_gpsTrack = new GPSRoute();

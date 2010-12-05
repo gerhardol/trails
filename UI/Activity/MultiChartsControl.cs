@@ -80,8 +80,8 @@ namespace TrailsPlugin.UI.Activity {
             this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
 
-            timeDiffToolStripMenuItem.Visible = false;//TODO: temporary
-            distDiffToolStripMenuItem.Visible = false;
+            diffTimeToolStripMenuItem.Visible = true;//TODO: temporary
+            diffDistToolStripMenuItem.Visible = true;
 
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
 
@@ -100,8 +100,8 @@ namespace TrailsPlugin.UI.Activity {
             //gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
             //elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
             //cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
-            //timeDiff.YAxisReferential = TrailLineChart.LineChartTypes.TimeDiff;
-            //distDiff.YAxisReferential = TrailLineChart.LineChartTypes.DistDiff;
+            //diffTime.YAxisReferential = TrailLineChart.LineChartTypes.diffTime;
+            //diffDist.YAxisReferential = TrailLineChart.LineChartTypes.diffDist;
             this.Expanded = m_expanded;
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
         }
@@ -131,8 +131,8 @@ namespace TrailsPlugin.UI.Activity {
             this.gradeStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Grade);
             this.powerToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Power);
 
-            this.timeDiffToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.TimeDiff);
-            this.distDiffToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DistDiff);
+            this.diffTimeToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffTime);
+            this.diffDistToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffDist);
 
             this.timeToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Time);
             this.distanceToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Distance);
@@ -199,7 +199,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             int height = (ChartPanel.Height - (int)ChartPanel.RowStyles[0].Height);
             if (noOfGraphs > 0) { height = height / noOfGraphs; }
-            //The first row is the banner, the following is th charts
+            //The first row is the banner, the following is the charts
             for (int i = 0; i < m_lineCharts.Count; i++)
             {
                 ChartPanel.RowStyles[i+1].SizeType = SizeType.Absolute;
@@ -282,7 +282,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         void RefreshChartMenu()
         {
-            //TODO: set enabled if track exists
+            //TODO: disable if track exists (or ref for diff). 
             speedToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Speed);
             paceToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Pace);
             speedPaceToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.SpeedPace);
@@ -292,8 +292,8 @@ namespace TrailsPlugin.UI.Activity {
             gradeStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Grade);
             powerToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Power);
 
-            timeDiffToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.TimeDiff);
-            distDiffToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DistDiff);
+            diffTimeToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffTime);
+            diffDistToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffDist);
 
             timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
             distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
@@ -393,13 +393,13 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChart(TrailLineChart.LineChartTypes.Power);
         }
 
-        private void timeDiffToolStripMenuItem_Click(object sender, EventArgs e)
+        private void diffTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.TimeDiff);
+            RefreshChart(TrailLineChart.LineChartTypes.DiffTime);
         }
-        private void distDiffToolStripMenuItem_Click(object sender, EventArgs e)
+        private void diffDistToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.DistDiff);
+            RefreshChart(TrailLineChart.LineChartTypes.DiffDist);
         }
 
         private void distanceToolStripMenuItem_Click(object sender, EventArgs e)

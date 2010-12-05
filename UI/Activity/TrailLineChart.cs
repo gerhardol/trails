@@ -165,8 +165,8 @@ namespace TrailsPlugin.UI.Activity {
 			Speed,
 			Pace,
             SpeedPace,
-            TimeDiff,
-            DistDiff
+            DiffTime,
+            DiffDist
 		}
         public static IList<LineChartTypes> DefaultLineChartTypes()
         {
@@ -220,12 +220,12 @@ namespace TrailsPlugin.UI.Activity {
                         yAxisLabel = CommonResources.Text.LabelGrade;
                         break;
                     }
-                case LineChartTypes.TimeDiff:
+                case LineChartTypes.DiffTime:
                     {
                         yAxisLabel = CommonResources.Text.LabelTime;
                         break;
                     }
-                case LineChartTypes.DistDiff:
+                case LineChartTypes.DiffDist:
                     {
                         yAxisLabel = CommonResources.Text.LabelDistance;
                         break;
@@ -567,11 +567,9 @@ namespace TrailsPlugin.UI.Activity {
                                 ITimeValueEntry<float> entry = graphPoints[j];
 
                                 ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
-
                                 if (null != dataFill)
                                 {
                                     dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
-
                                 }
                                 dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
                             }
@@ -579,8 +577,13 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            if (m_refTrailResult != null)
+            Data.TrailResult trailPointResult = m_refTrailResult;
+            //If only one result is used, it can be confusing if the trail points are set for ref
+            if (m_trailResults.Count == 1 || trailPointResult==null)
             {
+                trailPointResult = m_trailResults[0];
+            }
+
                 Image icon =
 #if ST_2_1
                         CommonResources.Images.Information16;
@@ -589,9 +592,9 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 if (XAxisReferential == XAxisValue.Time)
                 {
-                    foreach (DateTime t in m_refTrailResult.TimeTrailPoints)
+                    foreach (DateTime t in trailPointResult.TimeTrailPoints)
                     {
-                        AxisMarker a = new AxisMarker(t.Subtract(m_refTrailResult.FirstTime).TotalSeconds, icon);
+                        AxisMarker a = new AxisMarker(t.Subtract(trailPointResult.FirstTime).TotalSeconds, icon);
                         a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
                         a.Line1Color = Color.Black;
                         MainChart.XAxis.Markers.Add(a);
@@ -599,15 +602,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    foreach (double t in m_refTrailResult.DistanceTrailPoints)
+                    foreach (double t in trailPointResult.DistanceTrailPoints)
                     {
-                        AxisMarker a = new AxisMarker(Utils.Units.GetDistance(t, m_refTrailResult.Activity), icon);
+                        AxisMarker a = new AxisMarker(Utils.Units.GetDistance(t, trailPointResult.Activity), icon);
                         a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
                         a.Line1Color = Color.Black;
                         MainChart.XAxis.Markers.Add(a);
                     }
                 }
-            }
                 
             ZoomToData();
 		}
@@ -696,13 +698,13 @@ namespace TrailsPlugin.UI.Activity {
                                                 Utils.Units.GetPaceLabel(activity) + ")";
                         break;
                     }
-                case LineChartTypes.TimeDiff:
+                case LineChartTypes.DiffTime:
                     {
                         MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
                         MainChart.YAxis.Label = CommonResources.Text.LabelTime;
                         break;
                     }
-                case LineChartTypes.DistDiff:
+                case LineChartTypes.DiffDist:
                     {
 
                         MainChart.YAxis.Formatter = new Formatter.General();
@@ -793,9 +795,9 @@ namespace TrailsPlugin.UI.Activity {
                         break;
                     }
 
-                case LineChartTypes.TimeDiff:
+                case LineChartTypes.DiffTime:
                     {
-                        INumericTimeDataSeries tempResult = result.PaceTrack;
+                        INumericTimeDataSeries tempResult = result.DiffTimeTrack(m_refTrailResult);
 
                         track = new NumericTimeDataSeries();
                         foreach (ITimeValueEntry<float> entry in tempResult)
@@ -804,14 +806,14 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         break;
                     }
-                case LineChartTypes.DistDiff:
+                case LineChartTypes.DiffDist:
                     {
-                        INumericTimeDataSeries tempResult = result.SpeedTrack;
+                        INumericTimeDataSeries tempResult = result.DiffDistTrack(m_refTrailResult);
 
                         track = new NumericTimeDataSeries();
                         foreach (ITimeValueEntry<float> entry in tempResult)
                         {
-                            track.Add(tempResult.EntryDateTime(entry), entry.Value);
+                            track.Add(tempResult.EntryDateTime(entry), Utils.Units.GetDistance(entry.Value,m_refTrailResult.Activity));
                         }
                         break;
                     }

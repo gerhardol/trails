@@ -473,6 +473,40 @@ namespace TrailsPlugin.Data {
                 return m_gradeTrack;
             }
         }
+        public INumericTimeDataSeries DiffTimeTrack(TrailResult refRes)
+        {
+            INumericTimeDataSeries result = new NumericTimeDataSeries();
+            if (this != refRes)
+            {
+                foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+                {
+                    if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                    {
+                        DateTime d1 = this.DistanceMetersTrack.StartTime.AddSeconds(t.ElapsedSeconds);
+                        DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
+                        result.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));
+                    }
+                }
+            }
+            return result;
+        }
+        public INumericTimeDataSeries DiffDistTrack(TrailResult refRes)
+        {
+            INumericTimeDataSeries result = new NumericTimeDataSeries();
+            if (this != refRes)
+            {
+                foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+                {
+                    if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                    {
+                        DateTime d1 = this.DistanceMetersTrack.StartTime.AddSeconds(t.ElapsedSeconds);
+                        DateTime d2 = refRes.DistanceMetersTrack.StartTime.AddSeconds(t.ElapsedSeconds);
+                        result.Add(d1, t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value);
+                    }
+                }
+            }
+            return result;
+        }
         private void getGps()
         {
             m_gpsTrack = new GPSRoute();
@@ -516,21 +550,20 @@ namespace TrailsPlugin.Data {
         }
         private IList<IGPSPoint> GpsPoints(IValueRangeSeries<DateTime> t)
         {
-            IGPSRoute gpsTrack = this.GpsTrack;
             IList<IGPSPoint> result = new List<IGPSPoint>();
 
             foreach (IValueRange<DateTime> r in t)
             {
-                int i = m_startIndex;
-                while (i <= m_endIndex &&
-                    0 < r.Lower.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
+                int i = 0;
+                while (i < GpsTrack.Count &&
+                    0 < r.Lower.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
                 {
                     i++;
                 }
-                while (i <= m_endIndex &&
-                    0 <= r.Upper.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
+                while (i < GpsTrack.Count &&
+                    0 <= r.Upper.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
                 {
-                    result.Add(m_activity.GPSRoute[i].Value);
+                    result.Add(GpsTrack[i].Value);
                     i++;
                 }
             }
@@ -539,21 +572,20 @@ namespace TrailsPlugin.Data {
         }
         private IList<IGPSPoint> GpsPoints(IValueRangeSeries<double> t)
         {
-            IGPSRoute gpsTrack = this.GpsTrack;
             IList<IGPSPoint> result = new List<IGPSPoint>();
 
             foreach (IValueRange<double> r in t)
             {
-                int i = m_startIndex;
-                while (i <= m_endIndex &&
-                    r.Lower > DistanceMetersTrack[i - m_startIndex].Value)
+                int i = 0;
+                while (i <= GpsTrack.Count &&
+                    r.Lower-FirstDist > DistanceMetersTrack[i].Value)
                 {
                     i++;
                 }
-                while (i <= m_endIndex &&
-                    r.Upper >= DistanceMetersTrack[i - m_startIndex].Value)
+                while (i <= GpsTrack.Count &&
+                    r.Upper-FirstDist >= DistanceMetersTrack[i].Value)
                 {
-                    result.Add(m_activity.GPSRoute[i].Value);
+                    result.Add(GpsTrack[i].Value);
                     i++;
                 }
             }

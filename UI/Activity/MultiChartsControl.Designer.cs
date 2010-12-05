@@ -36,8 +36,8 @@
             this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.timeDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.distDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diffTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diffDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,8 +51,8 @@
             this.heartrateChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.cadenceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.gradeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
-            this.timeDiff = new TrailsPlugin.UI.Activity.TrailLineChart();
-            this.distDiff = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.diffTimeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.diffDistChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.ChartBanner.SuspendLayout();
             this.detailMenu.SuspendLayout();
             this.ChartPanel.SuspendLayout();
@@ -88,8 +88,8 @@
             this.gradeStripMenuItem,
             this.powerToolStripMenuItem,
             this.toolStripSeparator1,
-            this.timeDiffToolStripMenuItem,
-            this.distDiffToolStripMenuItem,
+            this.diffTimeToolStripMenuItem,
+            this.diffDistToolStripMenuItem,
             this.toolStripSeparator2,
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem,
@@ -159,19 +159,19 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
             // 
-            // timeDiffToolStripMenuItem
+            // diffTimeToolStripMenuItem
             // 
-            this.timeDiffToolStripMenuItem.Name = "timeDiffToolStripMenuItem";
-            this.timeDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.timeDiffToolStripMenuItem.Text = "TimeDiff";
-            this.timeDiffToolStripMenuItem.Click += new System.EventHandler(this.timeDiffToolStripMenuItem_Click);
+            this.diffTimeToolStripMenuItem.Name = "diffTimeToolStripMenuItem";
+            this.diffTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.diffTimeToolStripMenuItem.Text = "diffTime";
+            this.diffTimeToolStripMenuItem.Click += new System.EventHandler(this.diffTimeToolStripMenuItem_Click);
             // 
-            // distDiffToolStripMenuItem
+            // diffDistToolStripMenuItem
             // 
-            this.distDiffToolStripMenuItem.Name = "distDiffToolStripMenuItem";
-            this.distDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.distDiffToolStripMenuItem.Text = "DistDiff";
-            this.distDiffToolStripMenuItem.Click += new System.EventHandler(this.distDiffToolStripMenuItem_Click);
+            this.diffDistToolStripMenuItem.Name = "diffDistToolStripMenuItem";
+            this.diffDistToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.diffDistToolStripMenuItem.Text = "diffDist";
+            this.diffDistToolStripMenuItem.Click += new System.EventHandler(this.diffDistToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -240,8 +240,8 @@
             this.ChartPanel.Controls.Add(this.heartrateChart, 0, 4);
             this.ChartPanel.Controls.Add(this.cadenceChart, 0, 5);
             this.ChartPanel.Controls.Add(this.gradeChart, 0, 6);
-            this.ChartPanel.Controls.Add(this.timeDiff, 0, 7);
-            this.ChartPanel.Controls.Add(this.distDiff, 0, 8);
+            this.ChartPanel.Controls.Add(this.diffTimeChart, 0, 7);
+            this.ChartPanel.Controls.Add(this.diffDistChart, 0, 8);
             this.ChartPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ChartPanel.Location = new System.Drawing.Point(0, 0);
             this.ChartPanel.Name = "ChartPanel";
@@ -374,43 +374,43 @@
             this.gradeChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.gradeChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Grade;
             // 
-            // timeDiff
+            // diffTime
             // 
-            this.timeDiff.AutoSize = true;
-            this.timeDiff.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.timeDiff.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.timeDiff.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.timeDiff.ChartSelectedColor = System.Drawing.Color.AliceBlue;
-            this.timeDiff.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.timeDiff.Location = new System.Drawing.Point(0, 620);
-            this.timeDiff.Margin = new System.Windows.Forms.Padding(0);
-            this.timeDiff.MinimumSize = new System.Drawing.Size(100, 0);
-            this.timeDiff.Name = "timeDiff";
-            this.timeDiff.ReferenceTrailResult = null;
-            this.timeDiff.ShowPage = false;
-            this.timeDiff.Size = new System.Drawing.Size(500, 100);
-            this.timeDiff.TabIndex = 7;
-            this.timeDiff.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.timeDiff.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.TimeDiff;
+            this.diffTimeChart.AutoSize = true;
+            this.diffTimeChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.diffTimeChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.diffTimeChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.diffTimeChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.diffTimeChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.diffTimeChart.Location = new System.Drawing.Point(0, 620);
+            this.diffTimeChart.Margin = new System.Windows.Forms.Padding(0);
+            this.diffTimeChart.MinimumSize = new System.Drawing.Size(100, 0);
+            this.diffTimeChart.Name = "diffTime";
+            this.diffTimeChart.ReferenceTrailResult = null;
+            this.diffTimeChart.ShowPage = false;
+            this.diffTimeChart.Size = new System.Drawing.Size(500, 100);
+            this.diffTimeChart.TabIndex = 7;
+            this.diffTimeChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.diffTimeChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.DiffTime;
             // 
-            // distDiff
+            // diffDist
             // 
-            this.distDiff.AutoSize = true;
-            this.distDiff.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.distDiff.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.distDiff.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.distDiff.ChartSelectedColor = System.Drawing.Color.AliceBlue;
-            this.distDiff.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.distDiff.Location = new System.Drawing.Point(0, 720);
-            this.distDiff.Margin = new System.Windows.Forms.Padding(0);
-            this.distDiff.MinimumSize = new System.Drawing.Size(100, 0);
-            this.distDiff.Name = "distDiff";
-            this.distDiff.ReferenceTrailResult = null;
-            this.distDiff.ShowPage = false;
-            this.distDiff.Size = new System.Drawing.Size(500, 100);
-            this.distDiff.TabIndex = 7;
-            this.distDiff.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
-            this.distDiff.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.DistDiff;
+            this.diffDistChart.AutoSize = true;
+            this.diffDistChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.diffDistChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            this.diffDistChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            this.diffDistChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.diffDistChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.diffDistChart.Location = new System.Drawing.Point(0, 720);
+            this.diffDistChart.Margin = new System.Windows.Forms.Padding(0);
+            this.diffDistChart.MinimumSize = new System.Drawing.Size(100, 0);
+            this.diffDistChart.Name = "diffDist";
+            this.diffDistChart.ReferenceTrailResult = null;
+            this.diffDistChart.ShowPage = false;
+            this.diffDistChart.Size = new System.Drawing.Size(500, 100);
+            this.diffDistChart.TabIndex = 7;
+            this.diffDistChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.diffDistChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.DiffDist;
             // 
             // MultiChartsControl
             // 
@@ -441,15 +441,15 @@
         private TrailLineChart paceChart;
         private TrailLineChart elevationChart;
         private TrailLineChart gradeChart;
-        private TrailLineChart timeDiff;
-        private TrailLineChart distDiff;
+        private TrailLineChart diffTimeChart;
+        private TrailLineChart diffDistChart;
         private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem elevationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem heartRateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cadenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem timeDiffToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem distDiffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diffTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diffDistToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;

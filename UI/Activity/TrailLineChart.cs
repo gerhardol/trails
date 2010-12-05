@@ -349,8 +349,8 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     const int MaxSelectedSeries = 5;
                     bool markAll=(MainChart.DataSeries.Count <= MaxSelectedSeries);
-                    //Mark track, but do not normally mark chart
-                    m_page.MarkTrack(results, !markAll);
+                    //Mark route track, but not chart
+                    m_page.MarkTrack(results, false);
 
                     if (markAll)
                     {
@@ -370,29 +370,42 @@ namespace TrailsPlugin.UI.Activity {
             for (int i = 0; i < MainChart.DataSeries.Count; i++ )
             {
                 MainChart.DataSeries[i].ClearSelectedRegions();
-                if (MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
+                //For "single result" only select first series
+                if (m_trailResults.Count>1 || i==0)
+                //if (MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
                 {
-                    SetSelectedRange(i, regions);
+                    SetSelectedRange(i, false, regions);
                 }
             }
         }
-        public void SetSelectedRange(int i, IList<float[]> regions)
+
+        public void SetSelectedRange(int i, bool clear, IList<float[]> regions)
         {
-            foreach (ChartDataSeries t in MainChart.DataSeries)
-            {
-                t.ClearSelectedRegions();
-            }
-            if (MainChart.DataSeries != null && MainChart.DataSeries.Count > i)
+            if (m_visible)
             {
                 this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                MainChart.DataSeries[i].ClearSelectedRegions();
-                if (regions != null && regions.Count > 0)
+                if (clear)
                 {
-                    //foreach (float[] at in regions)
-                    //{
-                    //    //s.AddSelecedRegion(at[0], at[1]);
-                    //}
-                    MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
+                    foreach (ChartDataSeries t in MainChart.DataSeries)
+                    {
+                        //Note: This is not clearing ranges
+                        t.ClearSelectedRegions();
+                    }
+                }
+                if (MainChart.DataSeries != null && MainChart.DataSeries.Count > i)
+                {
+                    if (!clear)
+                    {
+                        MainChart.DataSeries[i].ClearSelectedRegions();
+                    }
+                    if (regions != null && regions.Count > 0)
+                    {
+                        //foreach (float[] at in regions)
+                        //{
+                        //    //s.AddSelecedRegion(at[0], at[1]);
+                        //}
+                        MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
+                    }
                 }
                 this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
             }
@@ -453,6 +466,12 @@ namespace TrailsPlugin.UI.Activity {
                     }
 
                     MainChart.DataSeries[i].ClearSelectedRegions();
+                    //The "fill" chart is 0, line is 1
+                    if (i==0 && m_trailResults.Count == 1 &&
+                        MainChart.DataSeries.Count>1)
+                    {
+                        MainChart.DataSeries[1].ClearSelectedRegions();
+                    }
                     //Ignore ranges outside current range and malformed scales
                     if (x1 < MainChart.XAxis.MaxOriginFarValue &&
                         MainChart.XAxis.MinOriginValue > float.MinValue &&
@@ -480,7 +499,15 @@ namespace TrailsPlugin.UI.Activity {
             {
                 INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(m_trailResults[i]);
 
-                if (graphPoints.Count > 1)
+                if (graphPoints.Count <= 1)
+                {
+                    if (m_trailResults.Count>1)
+                    {
+                        //Dataseries index must match results 
+                        MainChart.DataSeries.Add(new ChartDataSeries(MainChart, MainChart.YAxis));
+                    }
+                }
+                else
                 {
                     m_visible = true;
                     Color chartFillColor = ChartFillColor;

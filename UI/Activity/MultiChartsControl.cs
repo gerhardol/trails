@@ -199,6 +199,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             int height = (ChartPanel.Height - (int)ChartPanel.RowStyles[0].Height);
             if (noOfGraphs > 0) { height = height / noOfGraphs; }
+            //The first row is the banner, the following is th charts
             for (int i = 0; i < m_lineCharts.Count; i++)
             {
                 ChartPanel.RowStyles[i+1].SizeType = SizeType.Absolute;
@@ -338,7 +339,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedRange(i, regions);
+                chart.SetSelectedRange(i, true, regions);
             }
         }
 

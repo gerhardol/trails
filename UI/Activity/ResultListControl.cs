@@ -400,7 +400,7 @@ namespace TrailsPlugin.UI.Activity {
         {
 #if ST_2_1
             ListSettings dialog = new ListSettings();
-			dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.FirstActivity, false);
+            dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.ReferenceActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
             dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count > 1);

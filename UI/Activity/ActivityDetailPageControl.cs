@@ -351,8 +351,9 @@ namespace TrailsPlugin.UI.Activity {
         private void btnExpand_Click(object sender, EventArgs e)
         {
             this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
-            this.ExpandSplitContainer.Panel2.Controls.Add(MultiCharts);
-#if ST_2_1
+#if !ST_2_1
+            this.ExpandSplitContainer.Panel2.Controls.Add(this.MultiCharts);
+#else
             SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
             {
@@ -361,9 +362,9 @@ namespace TrailsPlugin.UI.Activity {
 
             LowerSplitContainer.Panel2Collapsed = true;
 #if ST_2_1
-                if (sc.Panel2.Controls != null && sc.Panel2.Controls.Count==0)
+                if (sc.Panel2.Controls != null && sc.Panel2.Controls.Count<=1)
                 {
-                    sc.Panel2.Controls.Add(MultiCharts);
+                    sc.Panel2.Controls.Add(this.MultiCharts);
                 }
                 SplitterPanel p2 = DailyActivitySplitter.Panel2;
                 sc.Panel2.Controls[0].Visible = false;
@@ -377,12 +378,14 @@ namespace TrailsPlugin.UI.Activity {
             m_isExpanded = true;
             MultiCharts.Expanded = m_isExpanded;
 #if ST_2_1
- 		}
+ 		    }
 #endif
         }
 		private void MultiCharts_Collapse(object sender, EventArgs e)
         {
-            this.ExpandSplitContainer.Panel2.Controls.Remove(MultiCharts);
+#if !ST_2_1
+            this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+#endif
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
             
             LowerSplitContainer.Panel2Collapsed = false;
@@ -391,6 +394,10 @@ namespace TrailsPlugin.UI.Activity {
             if (sc != null)
             {
                 sc.Panel2.Controls[0].Visible = true;
+                if (sc.Panel2.Controls != null && sc.Panel2.Controls.Count > 0)
+                {
+                    sc.Panel2.Controls.Remove(this.MultiCharts);
+                }
             }
 #else
             this.ExpandSplitContainer.Panel2Collapsed = true;

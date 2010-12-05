@@ -175,19 +175,24 @@ namespace TrailsPlugin.Data {
                 int i = 0;
                 foreach (ILapInfo l in activity.Laps)
                 {
-                    names.Add(l.Notes);
                     for (; i < activity.GPSRoute.Count; i++)
                     {
-                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(-0.5)))
+                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(0.5))&&
+                            (indexes.Count == 0 || i>indexes[indexes.Count-1]))
                         {
                             indexes.Add(i);
+                            names.Add(l.Notes);
+                            i++;
                             break;
                         }
                     }
                 }
             }
-            indexes.Add(activity.GPSRoute.Count - 1);
-            names.Add(activity.Name);
+            if (indexes.Count == 0 || activity.GPSRoute.Count - 1 > indexes[indexes.Count - 1])
+            {
+                indexes.Add(activity.GPSRoute.Count - 1);
+                names.Add(activity.Name);
+            }
 
             for (int i = 0; i < indexes.Count; i++)
             {

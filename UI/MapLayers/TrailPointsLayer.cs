@@ -386,20 +386,20 @@ namespace TrailsPlugin.UI.MapLayers
                 //    visibleRoutes.Add(pair.Key, m);
                 //}
             }
-            IDictionary<MapPolyline, IMapOverlay> newRouteOverlays = new Dictionary<MapPolyline, IMapOverlay>();
+            IDictionary<IList<IGPSPoint>, IMapOverlay> newRouteOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();
 
             foreach (KeyValuePair<string, MapPolyline> pair in visibleRoutes)
             {
                 MapPolyline m = pair.Value;
-                if ((!m_scalingChanged) && routeOverlays.ContainsKey(m))
+                if ((!m_scalingChanged) && routeOverlays.ContainsKey(m.Locations))
                 {
                     //No need to refresh this point
-                    newRouteOverlays.Add(m, routeOverlays[m]);
-                    routeOverlays.Remove(m);
+                    newRouteOverlays.Add(m.Locations, routeOverlays[m.Locations]);
+                    routeOverlays.Remove(m.Locations);
                 }
                 else
                 {
-                    newRouteOverlays.Add(m, m);
+                    newRouteOverlays.Add(m.Locations, m);
                     addedOverlays.Add(m);
                 }
             }
@@ -467,7 +467,7 @@ namespace TrailsPlugin.UI.MapLayers
         MapIcon m_icon = null;
         private bool routeSettingsChanged = false;
         private IDictionary<IGPSPoint, IMapOverlay> pointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
-        private IDictionary<MapPolyline, IMapOverlay> routeOverlays = new Dictionary<MapPolyline, IMapOverlay>();
+        private IDictionary<IList<IGPSPoint>, IMapOverlay> routeOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();
         //private RouteItemsDataChangeListener listener;
 
         private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();

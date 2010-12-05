@@ -267,7 +267,10 @@ namespace TrailsPlugin.Data {
                 IList<DateTime> results = new List<DateTime>();
                 foreach (int i in m_indexes)
                 {
-                    results.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]));
+                    if (i < m_activity.GPSRoute.Count)
+                    {
+                        results.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]));
+                    }
                 }
                 return results;
             }
@@ -279,7 +282,14 @@ namespace TrailsPlugin.Data {
                 IList<double> results = new List<double>();
                 foreach (int i in m_indexes)
                 {
-                    results.Add(DistanceMetersTrack[i-m_startIndex].Value);
+                    if (i < DistanceMetersTrack.Count)
+                    {
+                        results.Add(DistanceMetersTrack[i - m_startIndex].Value);
+                    }
+                    else
+                    {
+                        //results.Clear();
+                    }
                 }
                 return results;
             }

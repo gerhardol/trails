@@ -230,12 +230,13 @@ namespace TrailsPlugin.Data {
                 else { colText += ";" + column; }
             }
             pluginNode.SetAttribute(xmlTags.sColumns, colText);
+            colText = null;
             foreach (TrailLineChart.LineChartTypes column in m_MultiChartTypes)
             {
                 if (colText == null) { colText = column.ToString(); }
                 else { colText += ";" + column.ToString(); }
             }
-            pluginNode.SetAttribute(xmlTags.sColumns, colText);
+            pluginNode.SetAttribute(xmlTags.sMultiChartType, colText);
         }
 
         private class xmlTags

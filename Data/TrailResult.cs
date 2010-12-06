@@ -613,12 +613,12 @@ namespace TrailsPlugin.Data {
             foreach (IValueRange<double> r in t)
             {
                 int i = 0;
-                while (i <= GpsTrack.Count &&
+                while (i < GpsTrack.Count &&
                     r.Lower-FirstDist > DistanceMetersTrack[i].Value)
                 {
                     i++;
                 }
-                while (i <= GpsTrack.Count &&
+                while (i < GpsTrack.Count &&
                     r.Upper-FirstDist >= DistanceMetersTrack[i].Value)
                 {
                     result.Add(GpsTrack[i].Value);

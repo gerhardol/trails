@@ -192,11 +192,11 @@ namespace TrailsPlugin.UI.MapLayers
                         if (area != null)
                         {
                             this.MapControl.SetLocation(area.Center,
-                             this.MapControl.ComputeZoomToFit(area));
+                            this.MapControl.ComputeZoomToFit(area));
                             if (m_reportMapInstance >= 0)
                             {
                                 m_instances[m_reportMapInstance].MapControl.SetLocation(area.Center,
-                                 m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
+                                m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
                             }
                         }
                     }
@@ -212,7 +212,7 @@ namespace TrailsPlugin.UI.MapLayers
                 if (area != null)
                 {
                     this.MapControl.SetLocation(area.Center,
-                     this.MapControl.ComputeZoomToFit(area));
+                    this.MapControl.ComputeZoomToFit(area));
                 }
             }
         }
@@ -351,17 +351,29 @@ namespace TrailsPlugin.UI.MapLayers
             IList<IMapOverlay> addedOverlays = new List<IMapOverlay>();
 
             //RouteOverlay
-            IDictionary<string, MapPolyline> allRoutes = new Dictionary<string, MapPolyline>();
-            foreach (KeyValuePair<string, MapPolyline> pair in m_TrailRoutes)
-            {
-                allRoutes.Add(pair);
-            }
+            //Only add a route exactly once, prefer marked routes
+            IDictionary<IList<IGPSPoint>, MapPolyline> allRoutes = new Dictionary<IList<IGPSPoint>, MapPolyline>();
+            IDictionary<IList<IGPSPoint>, MapPolyline> dupRoutes = new Dictionary<IList<IGPSPoint>, MapPolyline>();
             foreach (KeyValuePair<string, MapPolyline> pair in m_MarkedTrailRoutes)
             {
-                allRoutes.Add(pair);
+                if (!allRoutes.ContainsKey(pair.Value.Locations))
+                {
+                    allRoutes.Add(new KeyValuePair<IList<IGPSPoint>, MapPolyline>(pair.Value.Locations,pair.Value));
+                }
             }
-            IDictionary<string, MapPolyline> visibleRoutes = new Dictionary<string, MapPolyline>();
-            foreach (KeyValuePair<string, MapPolyline> pair in allRoutes)
+            foreach (KeyValuePair<string, MapPolyline> pair in m_TrailRoutes)
+            {
+                if (!allRoutes.ContainsKey(pair.Value.Locations))
+                {
+                    allRoutes.Add(new KeyValuePair<IList<IGPSPoint>, MapPolyline>(pair.Value.Locations,pair.Value));
+                }
+                else if (!dupRoutes.ContainsKey(pair.Value.Locations))
+                {
+                    dupRoutes.Add(new KeyValuePair<IList<IGPSPoint>, MapPolyline>(pair.Value.Locations, pair.Value));
+                }
+            }
+            IDictionary<IList<IGPSPoint>, MapPolyline> visibleRoutes = new Dictionary<IList<IGPSPoint>, MapPolyline>();
+            foreach (KeyValuePair<IList<IGPSPoint>, MapPolyline> pair in allRoutes)
             {
                 IList<IGPSPoint> r = new List<IGPSPoint>();
                 foreach (IGPSPoint point in pair.Value.Locations)
@@ -388,18 +400,19 @@ namespace TrailsPlugin.UI.MapLayers
             }
             IDictionary<IList<IGPSPoint>, IMapOverlay> newRouteOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();
 
-            foreach (KeyValuePair<string, MapPolyline> pair in visibleRoutes)
+            foreach (KeyValuePair<IList<IGPSPoint>, MapPolyline> pair in visibleRoutes)
             {
                 MapPolyline m = pair.Value;
-                if ((!m_scalingChanged) && routeOverlays.ContainsKey(m.Locations))
+                newRouteOverlays.Add(m.Locations, m);
+                if ((!m_scalingChanged) && 
+                    routeOverlays.ContainsKey(m.Locations) && 
+                    !dupRoutes.ContainsKey(m.Locations))
                 {
                     //No need to refresh this point
-                    newRouteOverlays.Add(m.Locations, routeOverlays[m.Locations]);
                     routeOverlays.Remove(m.Locations);
                 }
                 else
                 {
-                    newRouteOverlays.Add(m.Locations, m);
                     addedOverlays.Add(m);
                 }
             }
@@ -445,7 +458,11 @@ namespace TrailsPlugin.UI.MapLayers
             routeOverlays = newRouteOverlays;
             if (m_reportMapInstance >= 0)
             {
-                m_instances[m_reportMapInstance].MapControl.AddOverlays(addedOverlays);
+                try
+                {
+                    //Remove overlays are not working properly, the Map is not very usable
+                    m_instances[m_reportMapInstance].MapControl.AddOverlays(addedOverlays);
+                }catch(Exception e){}
                 m_instances[m_reportMapInstance].pointOverlays = newPointOverlays;
                 m_instances[m_reportMapInstance].routeOverlays = newRouteOverlays;
             }

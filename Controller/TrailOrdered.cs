@@ -51,10 +51,10 @@ namespace TrailsPlugin.Controller
                 {
                     return (activityTrail.Trail.MatchAll) ? 1 : -1;
                 }
-                else if (activityTrail.Results.Count != to2.activityTrail.Results.Count)
-                {
-                    return (activityTrail.Results.Count < to2.activityTrail.Results.Count) ? 1 : -1;
-                }
+                //else if (activityTrail.Results.Count != to2.activityTrail.Results.Count)
+                //{
+                //    return (activityTrail.Results.Count < to2.activityTrail.Results.Count) ? 1 : -1;
+                //}
                 else
                 {
                     float e1 = 0;
@@ -62,13 +62,13 @@ namespace TrailsPlugin.Controller
                     {
                         e1 += tr.DistDiff;
                     }
-                    e1 = e1 / activityTrail.Results.Count;
+                    e1 = e1 / (float)Math.Pow(activityTrail.Results.Count, 1.5);
                     float e2 = 0;
-                    foreach (Data.TrailResult tr in activityTrail.Results)
+                    foreach (Data.TrailResult tr in to2.activityTrail.Results)
                     {
                         e2 += tr.DistDiff;
                     }
-                    e2 = e2 / activityTrail.Results.Count;
+                    e2 = e2 / (float)Math.Pow(to2.activityTrail.Results.Count, 1.5);
                     //No check if equal here
                     return e1 < e2 ? 1 : -1;
                 }

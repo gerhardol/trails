@@ -211,9 +211,9 @@ namespace TrailsPlugin.UI.Activity {
                     points.Add(point);
                 }
                 //Extra check for TrailOrdered - displayed status
-                if (!isSingleView && m_controller.CurrentTrailOrdered!=null)
+                if (!isSingleView && m_controller.CurrentActivityTrailDisplayed!=null)
                 {
-                    IList<TrailResult> results = m_controller.CurrentTrailOrdered.activityTrail.Results;
+                    IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
@@ -281,13 +281,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (m_view != null &&
                     m_view.RouteSelectionProvider != null &&
-                    isSingleView && m_controller.CurrentActivity != null)
+                    isSingleView && m_controller.SingleActivity != null)
                 {
                     if (atr.Count > 0)
                     {
                         //Only one activity, OK to merge selections on one track
                         TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
-                        r.Activity = m_controller.CurrentActivity;
+                        r.Activity = m_controller.SingleActivity;
                         if (!markChart)
                         {
                             m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);

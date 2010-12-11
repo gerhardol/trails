@@ -159,9 +159,9 @@ namespace TrailsPlugin.UI.Activity {
         {
             summaryList.RowData = null;
 
-            if (m_controller.CurrentTrailOrdered != null)
+            if (m_controller.CurrentActivityTrailDisplayed != null)
             {
-                IList<TrailResult> results = m_controller.CurrentTrailOrdered.activityTrail.Results;
+                IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
                 RefreshColumns();
 
 #if ST_2_1
@@ -237,13 +237,9 @@ namespace TrailsPlugin.UI.Activity {
             summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                 TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
-            IList<TreeList.TreeListNode> results = 
-                (IList<TreeList.TreeListNode>)m_controller.CurrentTrailOrdered.activityTrail.ResultListCache;
-            if (results == null)
-            {
-                results = new List<TreeList.TreeListNode>();
+            IList<TreeList.TreeListNode> results = new List<TreeList.TreeListNode>();
 
-                IList<TrailResult> res1 = m_controller.CurrentTrailOrdered.activityTrail.Results;
+                IList<TrailResult> res1 = m_controller.CurrentActivityTrailDisplayed.Results;
                 ((List<TrailResult>)res1).Sort();
             foreach (TrailResult tr in res1)
             {
@@ -260,13 +256,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 results.Add(tn);
-            }
-            //xxx Will not work when sorting - the creation of treelist is slow 
-                //m_controller.CurrentTrailOrdered.activityTrail.ResultListCache = results;
-            }
-            else
-            {
-                ((List<TreeList.TreeListNode>)results).Sort();
             }
             return results;
         }
@@ -300,7 +289,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void summaryList_Sort()
         {
-            if (m_controller.CurrentTrailOrdered != null)
+            if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 summaryList.RowData = getTreeListNodeSplits();
             }

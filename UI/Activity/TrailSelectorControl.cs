@@ -118,13 +118,13 @@ namespace TrailsPlugin.UI.Activity {
 			btnAdd.Enabled = enabled;
 			TrailName.Enabled = enabled;
 
-			enabled = (m_controller.CurrentTrailOrdered != null);
+			enabled = (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
 			btnDelete.Enabled = enabled;
 
-            if (m_controller.CurrentTrailOrdered != null)
+            if (enabled)
             {
-                TrailName.Text = m_controller.CurrentTrailOrdered.activityTrail.Trail.Name;
+                TrailName.Text = m_controller.CurrentActivityTrailDisplayed.Trail.Name;
             }
             else
             {
@@ -220,15 +220,15 @@ namespace TrailsPlugin.UI.Activity {
             ITimeValueEntry<IGPSPoint> p = null;
             if (null != ts)
             {
-                p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(ts.Lower);
+                p = m_controller.SingleActivity.GPSRoute.GetInterpolatedValue(ts.Lower);
             }
             else
             {
                 //Normally, selecting by time is null, fall back to select by distance
-                if (null != di && null != m_controller.CurrentActivity && null != m_controller.CurrentActivity.GPSRoute)
+                if (null != di && null != m_controller.SingleActivity && null != m_controller.SingleActivity.GPSRoute)
                 {
-                    IDistanceDataTrack dt = m_controller.CurrentActivity.GPSRoute.GetDistanceMetersTrack();
-                    p = m_controller.CurrentActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
+                    IDistanceDataTrack dt = m_controller.SingleActivity.GPSRoute.GetDistanceMetersTrack();
+                    p = m_controller.SingleActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
                 }
             }
             if (null != p)
@@ -299,7 +299,7 @@ namespace TrailsPlugin.UI.Activity {
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             bool addCurrent = false;
-            if (m_controller.CurrentTrailOrdered != null)
+            if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
                     "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -312,7 +312,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent);
 #endif
-            if (m_controller.CurrentTrailOrdered != null)
+            if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 if (addCurrent)
                 {
@@ -392,9 +392,9 @@ namespace TrailsPlugin.UI.Activity {
             treeListPopup.Tree.RowData = m_controller.OrderedTrails;
             //Note: Just checking for current trail could modify the ordered list, so do this first
             System.Collections.IList currSel = null;
-            if (m_controller.CurrentTrailOrdered != null)
+            if (m_controller.CurrentActivityTrailDisplayed != null)
             {
-                currSel = new object[] { m_controller.CurrentTrailOrdered };
+                currSel = new object[] { m_controller.CurrentActivityTrailDisplayed };
             //    foreach (TrailOrdered to in m_controller.OrderedTrails)
             //    {
             //        if (m_controller.CurrentActivityTrail.Equals(to.activityTrail))
@@ -420,7 +420,7 @@ namespace TrailsPlugin.UI.Activity {
 		class TrailDropdownLabelProvider : TreeList.ILabelProvider {
 
 			public Image GetImage(object element, TreeList.Column column) {
-                TrailOrdered t = (TrailOrdered)element;
+                ActivityTrail t = (ActivityTrail)element;
                 if (t.status == TrailOrderStatus.Match)
                 {
                     return Properties.Resources.square_green;
@@ -448,18 +448,18 @@ namespace TrailsPlugin.UI.Activity {
 			}
 
 			public string GetText(object element, TreeList.Column column) {
-                TrailOrdered t = (TrailOrdered)element;
-                return t.activityTrail.Trail.Name;
+                ActivityTrail t = (ActivityTrail)element;
+                return t.Trail.Name;
 			}
 		}
 
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
-			TrailOrdered t = ((TrailOrdered)((TreeListPopup.ItemSelectedEventArgs)e).Item);
+            ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
             if(sender is TreeListPopup)
             {
                 ((TreeListPopup)sender).Hide();
             }
-			m_controller.CurrentTrailOrdered = t;
+			m_controller.CurrentActivityTrail = t;
             m_page.RefreshData();
             m_page.RefreshControlState();
 		}

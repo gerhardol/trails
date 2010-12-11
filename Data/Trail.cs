@@ -72,7 +72,14 @@ namespace TrailsPlugin.Data {
             get
             {
                 //Refresh TrailPoints
-                checkReferenceChanged();
+                if (m_isReference)
+                {
+                    checkReferenceChanged();
+                    if (m_trailLocations.Count == 0)
+                    {
+                        m_trailLocations = TrailGpsPointsFromSplits(m_referenceActivity);
+                    }
+                }
                 return m_trailLocations;
             }
             set
@@ -131,25 +138,41 @@ namespace TrailsPlugin.Data {
                 return m_referenceActivity;
             }
         }
+        public IActivity ReferenceActivityNoCalc
+        {
+            get
+            {
+                return m_referenceActivity;
+            }
+            set
+            {
+                if (m_referenceActivity != value)
+                {
+                    //Just reset, value is fetched when needed
+                    m_referenceActivity = null;
+                }
+            }
+        }
         private bool checkReferenceChanged()
         {
             bool result = false;
             if (m_isReference)
             {
                 IActivity refAct = m_controller.checkReferenceActivity(false);
-                if (refAct != m_referenceActivity && refAct != null && 
+                if ((m_referenceActivity == null || refAct != m_referenceActivity && refAct != null) && 
                     refAct.GPSRoute != null && refAct.GPSRoute.Count > 0)
                 {
                     m_referenceActivity = refAct;
-                    m_trailLocations = TrailGpsPointsFromSplits(refAct);
+                    m_trailLocations = new List<TrailGPSLocation>(); ;
                     result = true;
                 }
             }
             return result;
         }
+
         public bool TrailChanged(IActivity activity)
         {
-            return checkReferenceChanged() && activity != m_referenceActivity;
+            return m_isReference && activity != m_referenceActivity && checkReferenceChanged();
         }
 
         public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity)

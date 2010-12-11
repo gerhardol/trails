@@ -29,7 +29,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\TrailOrdered.cs" />
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
     <Compile Include="Data\TrailResultColumnIds.cs" />

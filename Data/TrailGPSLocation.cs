@@ -96,6 +96,10 @@ namespace TrailsPlugin.Data {
 				this.LatitudeDegrees,
 				this.LongitudeDegrees,
 				0);
+            if (point == null)
+            {
+                return float.MaxValue;
+            }
 			return point.DistanceMetersToPoint(thisPoint);
 		}
         // Some temporary handling, no bother proper

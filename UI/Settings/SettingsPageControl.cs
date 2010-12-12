@@ -50,6 +50,8 @@ namespace TrailsPlugin.UI.Settings {
             toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
             presentSettings();
 
+            Integration.UniqueRoutes uniqueRoutes = new Integration.UniqueRoutes();
+            this.lblUniqueRoutes.Text = uniqueRoutes.CompabilityText;
             //Some untranslated strings....
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +

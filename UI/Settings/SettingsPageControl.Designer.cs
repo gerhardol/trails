@@ -28,6 +28,7 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblDefaultRadius = new System.Windows.Forms.Label();
+            this.lblUniqueRoutes = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
@@ -43,6 +44,7 @@
             this.PluginInfoPanel.BackColor = System.Drawing.Color.Transparent;
             this.PluginInfoPanel.BorderColor = System.Drawing.Color.Gray;
             this.PluginInfoPanel.Controls.Add(this.tableLayoutPanel1);
+            this.PluginInfoPanel.Controls.Add(this.lblUniqueRoutes);
             this.PluginInfoPanel.Controls.Add(this.lblLicense);
             this.PluginInfoPanel.Controls.Add(this.lblCopyright);
             this.PluginInfoPanel.Controls.Add(this.PluginInfoBanner);
@@ -55,7 +57,7 @@
             this.PluginInfoPanel.HeadingTopMargin = 3;
             this.PluginInfoPanel.Location = new System.Drawing.Point(0, 0);
             this.PluginInfoPanel.Name = "PluginInfoPanel";
-            this.PluginInfoPanel.Size = new System.Drawing.Size(409, 129);
+            this.PluginInfoPanel.Size = new System.Drawing.Size(409, 181);
             this.PluginInfoPanel.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -108,10 +110,19 @@
             this.lblDefaultRadius.TabIndex = 0;
             this.lblDefaultRadius.Text = "Default Radius:";
             // 
+            // lblUniqueRoutes
+            // 
+            this.lblUniqueRoutes.AutoSize = true;
+            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 77);
+            this.lblUniqueRoutes.Name = "lblUniqueRoutes";
+            this.lblUniqueRoutes.Size = new System.Drawing.Size(93, 26);
+            this.lblUniqueRoutes.TabIndex = 1;
+            this.lblUniqueRoutes.Text = "<UR placeholder>\r\nline2";
+            // 
             // lblLicense
             // 
             this.lblLicense.AutoSize = true;
-            this.lblLicense.Location = new System.Drawing.Point(3, 90);
+            this.lblLicense.Location = new System.Drawing.Point(3, 142);
             this.lblLicense.Name = "lblLicense";
             this.lblLicense.Size = new System.Drawing.Size(350, 39);
             this.lblLicense.TabIndex = 3;
@@ -122,7 +133,7 @@
             // lblCopyright
             // 
             this.lblCopyright.AutoSize = true;
-            this.lblCopyright.Location = new System.Drawing.Point(3, 77);
+            this.lblCopyright.Location = new System.Drawing.Point(3, 112);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(161, 13);
             this.lblCopyright.TabIndex = 1;
@@ -152,7 +163,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.PluginInfoPanel);
             this.Name = "SettingsPageControl";
-            this.Size = new System.Drawing.Size(409, 129);
+            this.Size = new System.Drawing.Size(409, 181);
             this.PluginInfoPanel.ResumeLayout(false);
             this.PluginInfoPanel.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -172,8 +183,6 @@
 		private System.Windows.Forms.Label lblDefaultRadius;
 		private ZoneFiveSoftware.Common.Visuals.TextBox txtDefaultRadius;
 		private System.Windows.Forms.ToolTip toolTip;
-
-
-
+        private System.Windows.Forms.Label lblUniqueRoutes;
 	}
 }

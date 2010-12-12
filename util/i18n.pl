@@ -10,7 +10,7 @@ use XML::Simple;
 use Storable qw(dclone);
 use LWP::Simple;
 
-my$data = $ARGV[0] || "file:g:/Users/go/dev/gc/gps-running/tmp/General6.csv";
+my$data = $ARGV[0] || "file:g:/Users/go/dev/gc/trails/trunk/Resources.csv";
 #'http://spreadsheets.google.com/pub?key=rrP7dbsqMO8l4yFo9HXO1ZA&output=csv';
 my$root = $ARGV[1] || ".";
 my$db;

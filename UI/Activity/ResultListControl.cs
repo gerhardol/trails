@@ -37,6 +37,7 @@ using TrailsPlugin.UI.MapLayers;
 using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
 using TrailsPlugin.Data;
+using TrailsPlugin.Integration;
 
 namespace TrailsPlugin.UI.Activity {
     public partial class ResultListControl : UserControl
@@ -75,11 +76,12 @@ namespace TrailsPlugin.UI.Activity {
         void InitControls()
         {
             copyTableMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
-#if !ST_2_1
-            selectActivityMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
+#if ST_2_1
+            limitActivityMenuItem.Visible = false;
+            limitURMenuItem.Visible = false;
+#else
+            this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
 #endif
-            //TODO: 
-            selectWithURMenuItem.Visible = false;
 
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
@@ -89,10 +91,12 @@ namespace TrailsPlugin.UI.Activity {
         {
             copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_List_ListSettings;
-            this.selectActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
-            this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
+            this.advancedMenuItem.Text = Properties.Resources.UI_Activity_List_Advanced;
+            this.limitActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
+            this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
+            this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
 
             this.RefreshColumns();
         }
@@ -151,7 +155,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshControlState()
         {
-            selectActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
+            limitActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
         }
 
 
@@ -342,14 +346,14 @@ namespace TrailsPlugin.UI.Activity {
         /*************************************************************************************************************/
         void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //TODO: set selected result when opening
+            //TODO: write selected result when opening
             string refRes="";
             if (m_controller.ReferenceTrailResult != null)
             {
                 refRes = m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortDateString() +
                    " "+ m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortTimeString();
             }
-            this.referenceTrailMenuItem.Text = string.Format(
+            this.referenceResultMenuItem.Text = string.Format(
                 Properties.Resources.UI_Activity_List_ReferenceResult, refRes);
             e.Cancel = false;
         }
@@ -378,6 +382,15 @@ namespace TrailsPlugin.UI.Activity {
                 PluginMain.Settings.ActivityPageNumFixedColumns = dialog.NumFixedColumns;
                 PluginMain.Settings.ActivityPageColumns = dialog.SelectedColumns;
                 RefreshColumns();
+            }
+        }
+
+        void referenceResultMenuItem_Click(object sender, System.EventArgs e)
+        {
+            IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
+            if (atr != null && atr.Count > 0)
+            {
+                m_controller.ReferenceTrailResult = atr[0];
             }
         }
 
@@ -419,7 +432,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void selectActivityMenuItem_Click(object sender, System.EventArgs e)
+        void limitActivityMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
             if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0)
@@ -435,20 +448,64 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        void referenceTrailMenuItem_Click(object sender, System.EventArgs e)
+        void limitURMenuItem_Click(object sender, System.EventArgs e)
         {
-            IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
-            if (atr != null && atr.Count > 0)
+#if !ST_2_1
+            try
             {
-                m_controller.ReferenceTrailResult = atr[0];
+                UniqueRoutes uniqueRoutes = new UniqueRoutes();
+                IList<IActivity> similarActivities = uniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
+
+                if (similarActivities != null)
+                {
+                    IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
+                    foreach (IActivity activity in m_controller.Activities)
+                    {
+                        if (similarActivities.Contains(activity))
+                        {
+                            allActivities.Add(activity);
+                        }
+                    }
+                    m_controller.Activities = allActivities;
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+#endif
         }
 
         void selectWithURMenuItem_Click(object sender, System.EventArgs e)
         {
-            //TODO: Also set name/time?
-            throw new System.NotImplementedException();
+            try
+            {
+                UniqueRoutes uniqueRoutes = new UniqueRoutes();
+                IList<IActivity> similarActivities = uniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
+                if (similarActivities != null)
+                {
+                    IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
+                    foreach (IActivity activity in similarActivities)
+                    {
+                        if (!m_controller.Activities.Contains(activity))
+                        {
+                            allActivities.Add(activity);
+                        }
+                    }
+                    ActivityTrail t = m_controller.CurrentActivityTrail;
+                    m_controller.Activities = allActivities;
+                    if (m_controller.CurrentActivityTrailDisplayed == null)
+                    {
+                        m_controller.CurrentActivityTrail = t;
+                    }
+                    m_page.RefreshData();
+                    m_page.RefreshControlState();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
     }
 }

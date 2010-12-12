@@ -54,6 +54,13 @@ namespace TrailsPlugin.Data {
 				return m_trail;
 			}
 		}
+        public int ActivityCount
+        {
+            get
+            {
+                return m_activities.Count;
+            }
+        }
 
         public TrailOrderStatus status
         {
@@ -240,19 +247,25 @@ namespace TrailsPlugin.Data {
                                     }
                                 }
 
-                                if (matchIndex < 0 && aMatch.Count > 0 &&
-                                    routeDist > 3 * this.m_trail.Radius)
-                                {
-                                    //Start over if we pass first point before all were found
-                                    //Note: No pass by or similar. The algorithm to "restart" could be enhanced...
-                                    float distFromStartToPoint = distanceTrailToRoute(activity, trailgps, 0, routeIndex);
-                                    if (distFromStartToPoint < this.m_trail.Radius)
-                                    {
-                                        aMatch.Clear();
-                                        matchIndex = routeIndex;
-                                        trailDistDiff = 0;
-                                    }
-                                }
+                                //TODO: Find a way to get shorter trails
+                                //The algorithm here will reduce A'1-B'1-A'2-B'2-C to A'2-B'2-C
+                                //but will fail to match A'1-B-A'2-C
+                                //One way could be to try again if start is match
+                                //For something like: A'1-B'1-A'2-C'1-B'2-A'3-C'2
+                                //Is A'1-B'1-A'2-C'1 or A'2-C'1-B'2-A'3-C'2 or start with A'3?
+                                //Add overlapping results?
+                                //if (matchIndex < 0 && aMatch.Count > 0 &&
+                                //    routeDist > 3 * this.m_trail.Radius)
+                                //{
+                                //    //Start over if we pass first point before all were found
+                                //    float distFromStartToPoint = distanceTrailToRoute(activity, trailgps, 0, routeIndex);
+                                //    if (distFromStartToPoint < this.m_trail.Radius)
+                                //    {
+                                //        aMatch.Clear();
+                                //        matchIndex = routeIndex;
+                                //        trailDistDiff = 0;
+                                //    }
+                                //}
 
                                 if (matchIndex >= 0 &&
                                     //Allow match with same index only for first point

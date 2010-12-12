@@ -79,9 +79,6 @@ namespace TrailsPlugin.UI.Activity {
             this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
 
-            diffTimeToolStripMenuItem.Visible = true;//TODO: temporary
-            diffDistToolStripMenuItem.Visible = true;
-
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
 
             //The panels and charts should probably be created manually instead

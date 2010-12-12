@@ -240,7 +240,7 @@ Press {0} to use the Lap points, {1} to abort and select points on the GPS track
     <comment>unused</comment>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
-    <value>Limit activities to selected in list</value>
+    <value>Limit activities to activities selected in list</value>
   </data>
   <data name="square_green_add" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\square-green-add.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -249,10 +249,10 @@ Press {0} to use the Lap points, {1} to abort and select points on the GPS track
     <value>Set Reference result (Current: {0})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
-    <value>Mark other Trails or splits in list</value>
+    <value>Mark other sub Trails or splits in list</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>Limit activities with Unique Routes{0}</value>
+    <value>Limit activities with Unique Routes from reference activity{0}</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
     <value>Reference Activity</value>
@@ -270,5 +270,32 @@ To select a point, just click on the track.
 Add new points by pressing the Add button.
 
 To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
+  </data>
+  <data name="OtherPluginExceptionText" xml:space="preserve">
+    <value>Problem communicating with {0}.
+Make sure that {1} is installed.</value>
+    <comment>Matrix</comment>
+  </data>
+  <data name="OtherPluginVersion" xml:space="preserve">
+    <value>Detected version {0} of {1}.</value>
+    <comment>Matrix</comment>
+  </data>
+  <data name="UI_Activity_List_Advanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="UI_Activity_List_URSelect" xml:space="preserve">
+    <value>Add similar activities with Unique Routes from reference activity{0}</value>
+  </data>
+  <data name="UniqueRoutesCompatible" xml:space="preserve">
+    <value>Activities can be filtered using UniqueRoutes.</value>
+    <comment>Matrix</comment>
+  </data>
+  <data name="UniqueRoutesPluginName" xml:space="preserve">
+    <value>Unique Routes plugin</value>
+    <comment>Matrix</comment>
+  </data>
+  <data name="UniqueRoutesToInstall" xml:space="preserve">
+    <value>Install at least version {0} of {1} to filter activities using UniqueRoutes.</value>
+    <comment>Matrix</comment>
   </data>
 </root>

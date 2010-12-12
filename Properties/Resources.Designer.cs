@@ -76,6 +76,25 @@ namespace TrailsPlugin.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Problem communicating with {0}.
+        ///Make sure that {1} is installed..
+        /// </summary>
+        internal static string OtherPluginExceptionText {
+            get {
+                return ResourceManager.GetString("OtherPluginExceptionText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detected version {0} of {1}..
+        /// </summary>
+        internal static string OtherPluginVersion {
+            get {
+                return ResourceManager.GetString("OtherPluginVersion", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap square_blue {
             get {
                 object obj = ResourceManager.GetObject("square_blue", resourceCulture);
@@ -265,7 +284,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Limit activities to selected in list.
+        ///   Looks up a localized string similar to Advanced.
+        /// </summary>
+        internal static string UI_Activity_List_Advanced {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_Advanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Limit activities to activities selected in list.
         /// </summary>
         internal static string UI_Activity_List_LimitSelection {
             get {
@@ -292,7 +320,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mark other Trails or splits in list.
+        ///   Looks up a localized string similar to Mark other sub Trails or splits in list.
         /// </summary>
         internal static string UI_Activity_List_Splits {
             get {
@@ -301,11 +329,20 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Limit activities with Unique Routes{0}.
+        ///   Looks up a localized string similar to Limit activities with Unique Routes from reference activity{0}.
         /// </summary>
         internal static string UI_Activity_List_URLimit {
             get {
                 return ResourceManager.GetString("UI_Activity_List_URLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add similar activities with Unique Routes from reference activity{0}.
+        /// </summary>
+        internal static string UI_Activity_List_URSelect {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_URSelect", resourceCulture);
             }
         }
         
@@ -440,6 +477,33 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Settings_DefaultRadius_ToolTip {
             get {
                 return ResourceManager.GetString("UI_Settings_DefaultRadius_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activities can be filtered using UniqueRoutes..
+        /// </summary>
+        internal static string UniqueRoutesCompatible {
+            get {
+                return ResourceManager.GetString("UniqueRoutesCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unique Routes plugin.
+        /// </summary>
+        internal static string UniqueRoutesPluginName {
+            get {
+                return ResourceManager.GetString("UniqueRoutesPluginName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install at least version {0} of {1} to filter activities using UniqueRoutes..
+        /// </summary>
+        internal static string UniqueRoutesToInstall {
+            get {
+                return ResourceManager.GetString("UniqueRoutesToInstall", resourceCulture);
             }
         }
         

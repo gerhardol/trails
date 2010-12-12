@@ -449,8 +449,20 @@ namespace TrailsPlugin.UI.Activity {
 
 			public string GetText(object element, TreeList.Column column) {
                 ActivityTrail t = (ActivityTrail)element;
-                return t.Trail.Name;
-			}
+                string name = t.Trail.Name;
+                if (t.status == TrailOrderStatus.Match)
+                {
+                    name += " (" + t.Results.Count + ")";
+                }
+                else if (t.status == TrailOrderStatus.MatchNoCalc)
+                {
+                    if (t.Trail.MatchAll)
+                    {
+                        name += " (" + t.ActivityCount + ")";
+                    }
+                }
+                return name;
+            }
 		}
 
 		private void TrailName_ItemSelected(object sender, EventArgs e) {

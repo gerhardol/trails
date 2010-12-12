@@ -186,6 +186,10 @@ namespace TrailsPlugin.Data {
         {
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
 
+            //Add start indexes for active laps and for first point for rest following active
+            //A pause at the end of the lap is not considered
+            const bool onlyActiveLaps = true;
+            int lastIndex = 0;
             indexes = new List<int>();
             IList<string> names = new List<string>();
             if (null == activity.Laps || 0 == activity.Laps.Count)
@@ -195,13 +199,15 @@ namespace TrailsPlugin.Data {
             }
             else
             {
-                int i = 0;
-                foreach (ILapInfo l in activity.Laps)
+                lastIndex = activity.GPSRoute.Count - 1;
+                for (int j = 0; j < activity.Laps.Count; j++)
                 {
-                    for (; i < activity.GPSRoute.Count; i++)
+                    ILapInfo l = activity.Laps[j];
+                    for (int i = 0; i < activity.GPSRoute.Count; i++)
                     {
-                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(0.5))&&
-                            (indexes.Count == 0 || i>indexes[indexes.Count-1]))
+                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(0.5)) &&
+                            (indexes.Count == 0 || i > indexes[indexes.Count - 1]) &&
+                            (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
                         {
                             indexes.Add(i);
                             names.Add(l.Notes);
@@ -211,7 +217,9 @@ namespace TrailsPlugin.Data {
                     }
                 }
             }
-            if (indexes.Count == 0 || activity.GPSRoute.Count - 1 > indexes[indexes.Count - 1])
+            if (indexes.Count == 0 || 
+                activity.GPSRoute.Count - 1 > indexes[indexes.Count - 1] &&
+                (!onlyActiveLaps || null == activity.Laps || 0 == activity.Laps.Count || !activity.Laps[activity.Laps.Count-1].Rest))
             {
                 indexes.Add(activity.GPSRoute.Count - 1);
                 names.Add(activity.Name);

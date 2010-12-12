@@ -58,7 +58,7 @@ namespace TrailsPlugin.Data {
             : this(null, trailgps, activity, order, indexes, distDiff)
         {}
 
-        public TrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        private TrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
         {
             createTrailResult(par, trailgps, activity, order, indexes, distDiff);
         }

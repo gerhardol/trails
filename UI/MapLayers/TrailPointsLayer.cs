@@ -462,7 +462,7 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     //Remove overlays are not working properly, the Map is not very usable
                     m_instances[m_reportMapInstance].MapControl.AddOverlays(addedOverlays);
-                }catch(Exception e){}
+                }catch(Exception){}
                 m_instances[m_reportMapInstance].pointOverlays = newPointOverlays;
                 m_instances[m_reportMapInstance].routeOverlays = newRouteOverlays;
             }

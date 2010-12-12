@@ -52,7 +52,7 @@ namespace TrailsPlugin.Data {
         {
             IList<int> indexes;
             IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
-            base.Element = new TrailResult(null, m_trailgps, activity, order, indexes, float.MaxValue);
+            base.Element = new TrailResult(m_trailgps, activity, order, indexes, float.MaxValue);
             getSplits();
         }
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)

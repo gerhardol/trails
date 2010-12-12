@@ -175,7 +175,6 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
-                //TODO: Keep selection in list?
                 if (summaryList.Selected == null || summaryList.Selected.Count == 0)
                 {
                     if (((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
@@ -229,9 +228,15 @@ namespace TrailsPlugin.UI.Activity {
         }
         public void EnsureVisible(IList<TrailResult> atr)
         {
-            //TODO: not always working?
-            summaryList.EnsureVisible(TrailResultWrapper.SelectedItems
+            EnsureVisible(TrailResultWrapper.SelectedItems
                     ((IList<TrailResultWrapper>)summaryList.RowData, atr));
+        }
+        public void EnsureVisible(IList<TrailResultWrapper> atr)
+        {
+            if (atr != null && atr.Count > 0)
+            {
+                summaryList.EnsureVisible(atr[0]);
+            }
         }
         /*********************************************************/
         public static TrailResult getTrailResultRow(object element)

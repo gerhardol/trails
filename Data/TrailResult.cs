@@ -23,7 +23,6 @@ using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
-using ZoneFiveSoftware.Common.Visuals;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {

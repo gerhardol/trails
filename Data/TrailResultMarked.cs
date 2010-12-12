@@ -61,5 +61,14 @@ namespace TrailsPlugin.Data {
             }
             return result;
         }
+        public static IList<TrailResult> getTrailResult(IList<TrailResultMarked> atr)
+        {
+            IList<TrailResult> trr = new List<TrailResult>();
+            foreach (TrailResultMarked trm in atr)
+            {
+                trr.Add(trm.trailResult);
+            }
+            return trr;
+        }
     }
 }

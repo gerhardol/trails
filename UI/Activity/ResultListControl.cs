@@ -161,7 +161,6 @@ namespace TrailsPlugin.UI.Activity {
 
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
-                IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
                 RefreshColumns();
 
 #if ST_2_1
@@ -177,16 +176,24 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 //TODO: Keep selection in list?
-                if (results.Count > 0)
+                if (summaryList.Selected == null || summaryList.Selected.Count == 0)
                 {
-                    SelectedItems = new List<TrailResult> { results[0] };
-                }
-                else
-                {
-                    SelectedItems = null;
+                    if (((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
+                    {
+#if ST_2_1
+                        summaryList.Selected
+#else
+                        summaryList.SelectedItems 
+#endif
+     = new List<TrailResultWrapper> {((IList<TrailResultWrapper>)summaryList.RowData)[0]};
+                    }
+                    else
+                    {
+                        SelectedItems = null;
+                    }
                 }
                 //Set size, to not waste chart
-                int resRows = Math.Min(5, results.Count);
+                int resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
                     this.summaryList.DefaultRowHeight * resRows;
             }
@@ -200,25 +207,15 @@ namespace TrailsPlugin.UI.Activity {
         {
             set
             {
-                IList<TreeList.TreeListNode> results = new List<TreeList.TreeListNode>();
-                if (summaryList.RowData != null && value != null)
-                {
-                    foreach (TreeList.TreeListNode tn in (IList<TreeList.TreeListNode>)summaryList.RowData)
-                    {
-                        foreach (TrailResult tr in value)
-                        {
-                            if (tn.Element is TrailResult && tr.Equals((TrailResult)(tn.Element)))
-                            {
-                                results.Add(tn);
-                            }
-                        }
-                    }
-                }
+                IList<TrailResultWrapper> results = TrailResultWrapper.SelectedItems
+                    ((IList<TrailResultWrapper>)summaryList.RowData, value);
 #if ST_2_1
-                summaryList.Selected = (List<TreeList.TreeListNode>)results;
+                summaryList.Selected
 #else
-                summaryList.SelectedItems = (List<TreeList.TreeListNode>)results;
+                summaryList.SelectedItems 
 #endif
+                    = (List<TrailResultWrapper>)results;
+                summaryList.EnsureVisible(results);
             }
             get {
                 IList<TrailResult> results;
@@ -230,39 +227,16 @@ namespace TrailsPlugin.UI.Activity {
                 return results;
             }
         }
-
-        /*********************************************************/
-        private IList<TreeList.TreeListNode> getTreeListNodeSplits()
+        public void EnsureVisible(IList<TrailResult> atr)
         {
-            summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
-                TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
-
-            IList<TreeList.TreeListNode> results = new List<TreeList.TreeListNode>();
-
-                IList<TrailResult> res1 = m_controller.CurrentActivityTrailDisplayed.Results;
-                ((List<TrailResult>)res1).Sort();
-            foreach (TrailResult tr in res1)
-            {
-                TreeList.TreeListNode tn = new TreeList.TreeListNode(null, tr);
-                IList<TrailResult> splits = tr.getSplits();
-                //Do not add single splits - nothing to expand
-                if (splits.Count > 1)
-                {
-                    ((List<TrailResult>)splits).Sort();
-                    foreach (TrailResult tr2 in splits)
-                    {
-                        TreeList.TreeListNode tn2 = new TreeList.TreeListNode(tn, tr2);
-                        tn.Children.Add(tn2);
-                    }
-                }
-                results.Add(tn);
-            }
-            return results;
+            //TODO: not always working?
+            summaryList.EnsureVisible(TrailResultWrapper.SelectedItems
+                    ((IList<TrailResultWrapper>)summaryList.RowData, atr));
         }
-
+        /*********************************************************/
         public static TrailResult getTrailResultRow(object element)
         {
-            return (TrailResult)((TreeList.TreeListNode)element).Element;
+            return ((TrailResultWrapper)element).Result;
         }
 
         public static IList<TrailResult> getTrailResultSelection(System.Collections.IList tlist)
@@ -272,15 +246,9 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (object t in tlist)
                 {
-                    object t2 = t;
-                    if (t != null && t is TreeList.TreeListNode)
+                    if (t != null)
                     {
-                        t2 = (object)(t as TreeList.TreeListNode).Element;
-                    }
-                    if (t2 != null && t2 is TrailResult)
-                    {
-                        TrailResult tr = t2 as TrailResult;
-                        aTr.Add(tr);
+                        aTr.Add(((TrailResultWrapper)t).Result);
                     }
                 }
             }
@@ -291,7 +259,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
-                summaryList.RowData = getTreeListNodeSplits();
+                m_controller.CurrentActivityTrailDisplayed.Sort();
+                summaryList.RowData = m_controller.CurrentActivityTrailDisplayed.ResultTreeList;
             }
         }
 
@@ -411,25 +380,15 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (summaryList.SelectedItems != null)
             {
-                System.Collections.IList results = new List<TreeList.TreeListNode>();
+                System.Collections.IList results = new List<TrailResultWrapper>();
                 foreach (object t in summaryList.SelectedItems)
                 {
-                    object t2 = t;
-                    TreeList.TreeListNode tn = t as TreeList.TreeListNode;
                     int splitIndex = -1;
-                    if (tn.Parent != null)
+                    if (((TrailResultWrapper)t).Parent != null)
                     {
-                        if (t != null && t is TreeList.TreeListNode)
-                        {
-                            t2 = (object)(t as TreeList.TreeListNode).Element;
-                        }
-                        if (t2 != null && t2 is TrailResult)
-                        {
-                            //Default select all "main" trails, here select from number
-                            splitIndex = ((TrailResult)t2).Order;
-                        }
+                        splitIndex = ((TrailResultWrapper)t).Result.Order;
                     }
-                    foreach (TreeList.TreeListNode rtn in (IList<TreeList.TreeListNode>)summaryList.RowData)
+                    foreach (TrailResultWrapper rtn in (IList<TrailResultWrapper>)summaryList.RowData)
                     {
                         if (splitIndex < 0)
                         {
@@ -437,14 +396,11 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            foreach (TreeList.TreeListNode ctn in rtn.Children)
+                            foreach (TrailResultWrapper ctn in rtn.Children)
                             {
-                                if (ctn.Element is TrailResult)
+                                if (ctn.Result.Order == splitIndex)
                                 {
-                                    if (((TrailResult)ctn.Element).Order == splitIndex)
-                                    {
-                                        results.Add(ctn);
-                                    }
+                                    results.Add(ctn);
                                 }
                             }
                         }

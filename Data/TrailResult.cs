@@ -23,6 +23,7 @@ using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
+using ZoneFiveSoftware.Common.Visuals;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
@@ -52,10 +53,28 @@ namespace TrailsPlugin.Data {
         private TrailResult m_parentResult = null;
 
         public TrailResult(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
-            : this(trail.TrailLocations,activity, order, indexes, distDiff)
+            : this(trail.TrailLocations, activity, order, indexes, distDiff)
         {}
         public TrailResult(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+            : this(null, trailgps, activity, order, indexes, distDiff)
+        {}
+
+        public TrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
         {
+            createTrailResult(par, trailgps, activity, order, indexes, distDiff);
+        }
+
+        //Create from splits
+        public TrailResult(Trail trail, IActivity activity, int order)
+        {
+            IList<int> indexes;
+            m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
+            createTrailResult(null, m_trailgps, activity, order, indexes, float.MaxValue);
+        }
+
+        private void createTrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        {
+            m_parentResult = par;
             m_trailgps = trailgps;
             m_activity = activity;
             m_order = order;
@@ -68,32 +87,15 @@ namespace TrailsPlugin.Data {
             m_distDiff = distDiff;
 
             m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
-            if (!aActivities.ContainsKey(m_activity))
+            if (par == null)
             {
-                aActivities.Add(m_activity, new trActivityInfo());
-                aActivities[m_activity].activityColor = nextActivityColor++;
+                if (!aActivities.ContainsKey(m_activity))
+                {
+                    aActivities.Add(m_activity, new trActivityInfo());
+                    aActivities[m_activity].activityColor = nextActivityColor++;
+                }
+                aActivities[m_activity].res.Add(this);
             }
-            aActivities[m_activity].res.Add(this);
-        }
-
-        //Create from splits
-        public TrailResult(Trail trail, IActivity activity, int order)
-        {
-            m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out m_indexes);
-            m_activity = activity;
-            m_order = order;
-
-            m_startIndex = m_indexes[0];
-            m_endIndex = m_indexes[m_indexes.Count - 1];
-            m_distDiff = float.MaxValue;
-
-            m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
-            if (!aActivities.ContainsKey(m_activity))
-            {
-                aActivities.Add(m_activity, new trActivityInfo());
-                aActivities[m_activity].activityColor = nextActivityColor++;
-            }
-            aActivities[m_activity].res.Add(this);
         }
 
         public IList<TrailResult> getSplits()
@@ -107,7 +109,7 @@ namespace TrailsPlugin.Data {
                 {
                     tg2 = m_trailgps[i];
                 }
-                TrailResult tr = new TrailResult(new List<Data.TrailGPSLocation> {tg1, tg2 },
+                TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> {tg1, tg2 },
                     m_activity, i, 
                     new List<int> { m_indexes[i - 1], m_indexes[i] }, 
                     m_distDiff);
@@ -832,19 +834,20 @@ namespace TrailsPlugin.Data {
 
         public int CompareTo(object obj)
         {
-            int result = 1;
             if (obj != null && obj is TrailResult)
             {
                 TrailResult other = obj as TrailResult;
-                result = TrailResultColumnIds.Compare(this, other);
+                return TrailResultColumnIds.Compare(this, other);
             }
-            return result;
+            else
+            {
+                return this.ToString().CompareTo(obj.ToString());
+            }
         }
         public int CompareTo(TrailResult other)
         {
             return TrailResultColumnIds.Compare(this, other);
         }
-
         #endregion
     }
 }

@@ -28,7 +28,8 @@ namespace TrailsPlugin.Data {
     {
         private IList<IActivity> m_activities;
 		private Data.Trail m_trail;
-		private IList<Data.TrailResult> m_resultsList;
+        private IList<Data.TrailResultWrapper> m_resultsListWrapper;
+        private IList<Data.TrailResult> m_resultsList = null;
         private TrailOrderStatus m_status;
         private IActivity m_resultActivity = null;
 
@@ -99,18 +100,41 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                CalcResults();
+                if (m_resultsList == null)
+                {
+                    CalcResults();
+                    m_resultsList = new List<TrailResult>();
+                    foreach (TrailResultWrapper tr in m_resultsListWrapper)
+                    {
+                        m_resultsList.Add(tr.Result);
+                    }
+                }
                 return m_resultsList;
             }
         }
-
+        public IList<TrailResultWrapper> ResultTreeList
+        {
+            get
+            {
+                CalcResults();
+                return m_resultsListWrapper;
+            }
+        }
+        public void Sort()
+        {
+            ((List<TrailResultWrapper>)m_resultsListWrapper).Sort();
+            foreach (TrailResultWrapper tr in m_resultsListWrapper)
+            {
+                tr.Sort();
+            }
+        }
         public void CalcResults()
         {
-            if (m_resultsList == null || m_trail.TrailChanged(m_resultActivity))
+            if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
             {
                 m_resultActivity = m_trail.ReferenceActivity;
 
-                m_resultsList = new List<TrailResult>();
+                m_resultsListWrapper = new List<TrailResultWrapper>();
                 IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
                 foreach (IActivity activity in m_activities)
                 {
@@ -119,8 +143,8 @@ namespace TrailsPlugin.Data {
                         if (m_trail.MatchAll)
                         {
                             this.status = TrailOrderStatus.Match;
-                            TrailResult result = new TrailResult(m_trail, activity, m_resultsList.Count + 1);
-                            m_resultsList.Add(result);
+                            TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1);
+                            m_resultsListWrapper.Add(result);
                         }
 
                         if (IsInBounds && trailgps.Count > 0)
@@ -240,8 +264,8 @@ namespace TrailsPlugin.Data {
                                     if (isEndTrailPoint(trailgps, aMatch.Count))
                                     {
                                         status = TrailOrderStatus.Match;
-                                        TrailResult result = new TrailResult(m_trail, activity, m_resultsList.Count + 1, aMatch, trailDistDiff);
-                                        m_resultsList.Add(result);
+                                        TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1, aMatch, trailDistDiff);
+                                        m_resultsListWrapper.Add(result);
 
                                         aMatch.Clear();
                                         trailDistDiff = 0;
@@ -272,7 +296,7 @@ namespace TrailsPlugin.Data {
                     }
                 }
             }
-            if (m_resultsList.Count == 0 && m_status != TrailOrderStatus.Match)
+            if (m_resultsListWrapper.Count == 0 && m_status != TrailOrderStatus.Match)
             {
                 //Downgrade status
                 m_status = TrailOrderStatus.InBound;
@@ -346,6 +370,7 @@ namespace TrailsPlugin.Data {
                 noOfTrailPoints == trailgps.Count));
         }
 
+        #region Implementation of IComparable
         public int CompareTo(object obj)
         {
             if (!(obj is ActivityTrail))
@@ -388,6 +413,7 @@ namespace TrailsPlugin.Data {
             //Sort remaining by name
             return this.Trail.Name.CompareTo(to2.Trail.Name);
         }
+        #endregion
     }
     public enum TrailOrderStatus
     {

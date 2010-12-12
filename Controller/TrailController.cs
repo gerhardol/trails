@@ -340,9 +340,6 @@ namespace TrailsPlugin.Controller
                 m_CurrentOrderedTrails.Add(to);
             }
         }
-        private void setOrderedStatus(ActivityTrail to)
-        {//xxx
-        }
 
         public bool AddTrail(Data.Trail trail)
         {

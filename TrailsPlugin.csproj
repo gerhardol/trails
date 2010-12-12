@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
+    <Compile Include="Data\TrailResultWrapper.cs" />
     <Compile Include="Data\TrailResultColumnIds.cs" />
     <Compile Include="Data\TrailResultLabelProvider.cs" />
     <Compile Include="Data\TrailResultMarked.cs" />

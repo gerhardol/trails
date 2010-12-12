@@ -192,6 +192,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
+                ResultList.EnsureVisible(ResultList.SelectedItems);
                 return this.ResultList.SelectedItems;
             }
             set { this.ResultList.SelectedItems = value; }
@@ -283,21 +284,18 @@ namespace TrailsPlugin.UI.Activity {
                     m_view.RouteSelectionProvider != null &&
                     isSingleView && m_controller.SingleActivity != null)
                 {
+                    if (!markChart)
+                    {
+                        m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                    }
                     if (atr.Count > 0)
                     {
                         //Only one activity, OK to merge selections on one track
                         TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
                         r.Activity = m_controller.SingleActivity;
-                        if (!markChart)
-                        {
-                            m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                        }
                         m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-                        if (!markChart)
-                        {
-                            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                        }
                         m_layer.ZoomRoute = atr[0].trailResult.GpsPoints(r);
+
                     }
                 }
                 else
@@ -311,8 +309,13 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     m_layer.MarkedTrailRoutes = result;
                 }
+                if (!markChart)
+                {
+                    m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                }
             }
 #endif
+            ResultList.EnsureVisible(TrailResultMarked.getTrailResult(atr));
         }
 
         void mapPoly_Click(object sender, MouseEventArgs e)
@@ -320,14 +323,7 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is TrailMapPolyline)
             {
                 TrailMapPolyline tm = sender as TrailMapPolyline;
-                if (tm.key.Contains("m"))
-                {
-                    ResultList.SelectedItems = new List<TrailResult> { tm.TrailRes };
-                }
-                else
-                {
-                    ResultList.SelectedItems = TrailResult.TrailResultList(tm.TrailRes.Activity);
-                }
+                ResultList.EnsureVisible(new List<TrailResult> { tm.TrailRes });
             }
         }
         

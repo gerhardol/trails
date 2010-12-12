@@ -37,6 +37,7 @@ using TrailsPlugin.Data;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
+using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class TrailLineChart : UserControl {
@@ -481,6 +482,26 @@ namespace TrailsPlugin.UI.Activity {
                         x1 = Math.Max(x1, (float)MainChart.XAxis.MinOriginValue);
                         x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
                         MainChart.DataSeries[i].SetSelectedRange(x1, x2);
+                    }
+                }
+            }
+        }
+
+        //Could use TrailResultMarked, but a selection of the track cannot be marked in multi mode
+        public void EnsureVisible(IList<TrailResult> atr)
+        {
+            foreach (TrailResult tr in atr)
+            {
+                for (int i = 0; i < MainChart.DataSeries.Count; i++)
+                {
+                    MainChart.DataSeries[i].ClearSelectedRegions();
+                    //For "single result" only select first series
+                    if (i < m_trailResults.Count &&
+                        m_trailResults[i].Equals(tr) &&
+                        (m_trailResults.Count > 1 || i == 0))
+                    {
+                        MainChart.DataSeries[i].AddSelecedRegion(
+                            MainChart.DataSeries[i].XMin, MainChart.DataSeries[i].XMax);
                     }
                 }
             }

@@ -23,11 +23,10 @@ using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 
-#if ST_2_1
-using TrailsPlugin.Data;
-#else
+#if !ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 #endif
+using TrailsPlugin.Data;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class MultiChartsControl : UserControl {
@@ -147,7 +146,6 @@ namespace TrailsPlugin.UI.Activity {
                 _showPage = value;
                 if (_showPage)
                 {
-                    RefreshChartMenu();
                     RefreshChart();
                 }
             }
@@ -215,6 +213,16 @@ namespace TrailsPlugin.UI.Activity {
             ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
         }
 
+        private bool replaceDiffChart(TrailLineChart chart, bool isReplace)
+        {
+            //Show speedPace chart instead of flat diff chart
+            return (isReplace || 
+                    chart.YAxisReferential == TrailLineChart.LineChartTypes.DiffDist ||
+                    chart.YAxisReferential == TrailLineChart.LineChartTypes.DiffTime) &&
+                    this.m_page.SelectedItems != null &&
+                    this.m_page.SelectedItems.Count == 1 &&
+                    this.m_page.SelectedItems[0].Equals(m_controller.ReferenceTrailResult);
+        }
         public void RefreshChart()
         {
             if (_showPage)
@@ -235,13 +243,15 @@ namespace TrailsPlugin.UI.Activity {
                     bool visible = false;
 
                     if (m_multiple &&
-                        (PluginMain.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace) &&
-                            chart.YAxisReferential == speedPaceYaxis ||
-                            PluginMain.Settings.MultiChartType.Contains(chart.YAxisReferential)) ||
+                        (PluginMain.Settings.MultiChartType.Contains(chart.YAxisReferential) ||
+                        chart.YAxisReferential == speedPaceYaxis &&
+                        PluginMain.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace)) ||
                        !m_multiple &&
-                         (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType &&
-                            chart.YAxisReferential == speedPaceYaxis ||
-                            chart.YAxisReferential == PluginMain.Settings.ChartType))
+                         ((chart.YAxisReferential == PluginMain.Settings.ChartType &&
+                          !replaceDiffChart(chart, false)) ||
+                         chart.YAxisReferential == speedPaceYaxis &&
+                         (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType ||
+                           replaceDiffChart(chart, true))))
                     {
                         visible = true;
                     }
@@ -266,6 +276,7 @@ namespace TrailsPlugin.UI.Activity {
                     chart.EndUpdate();
                 }
                 RefreshRows();
+                RefreshChartMenu();
             }
 		}
 
@@ -310,14 +321,12 @@ namespace TrailsPlugin.UI.Activity {
             {
                 PluginMain.Settings.ChartType = t;
             }
-            RefreshChartMenu();
             RefreshChart();
         }
 
         void RefreshChart(TrailLineChart.XAxisValue t)
         {
             PluginMain.Settings.XAxisValue = t;
-            RefreshChartMenu();
             RefreshChart();
         }
 
@@ -340,6 +349,13 @@ namespace TrailsPlugin.UI.Activity {
             foreach (TrailLineChart chart in m_lineCharts)
             {
                 chart.SetSelectedRange(i, true, regions);
+            }
+        }
+        public void EnsureVisible(IList<TrailResult> atr)
+        {
+            foreach (TrailLineChart chart in m_lineCharts)
+            {
+                chart.EnsureVisible(atr);
             }
         }
 

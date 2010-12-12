@@ -322,8 +322,9 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (sender is TrailMapPolyline)
             {
-                TrailMapPolyline tm = sender as TrailMapPolyline;
-                ResultList.EnsureVisible(new List<TrailResult> { tm.TrailRes });
+                IList<TrailResult> result = new List<TrailResult>{(sender as TrailMapPolyline).TrailRes};
+                ResultList.EnsureVisible(result);
+                MultiCharts.EnsureVisible(result);
             }
         }
         

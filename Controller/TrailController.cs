@@ -45,6 +45,7 @@ namespace TrailsPlugin.Controller
 		private string m_lastTrailId = null;
         private Data.TrailResult m_referenceTrailResult = null;
         private IActivity m_referenceActivity = null;
+        private IActivity m_lastReferenceActivity = null;
         private IList<ActivityTrail> m_CurrentOrderedTrails = null;
 
         public IList<IActivity> Activities
@@ -64,27 +65,8 @@ namespace TrailsPlugin.Controller
                     }
                     m_CurrentOrderedTrails = null;
                     m_currentActivityTrail = null;
-                    if (m_referenceActivity != null)
-                    {
-                        bool match = false;
-                        foreach (IActivity activity in m_activities)
-                        {
-                            if (activity == m_referenceActivity)
-                            {
-                                match = true;
-                                break;
-                            }
-                        }
-                        if (!match)
-                        {
-                            m_referenceActivity = null;
-                        }
-                        if (m_referenceActivity == null &&
-                            m_activities != null && m_activities.Count == 1)
-                        {
-                            m_referenceActivity = m_activities[0];
-                        }
-                    }
+                    m_lastReferenceActivity = m_referenceActivity;
+                    m_referenceActivity = null;
                 }
             }
         }
@@ -160,6 +142,27 @@ namespace TrailsPlugin.Controller
             if (m_currentActivityTrail == null &&
                 OrderedTrails.Count > 0)
             {
+                checkReferenceActivity(false);
+                if (m_referenceActivity != null &&
+                    m_referenceActivity.Name != "")
+                {
+                    //Try matching names
+                    foreach (ActivityTrail to in OrderedTrails)
+                    {
+                        if (to.Trail.Name == m_referenceActivity.Name)
+                        {
+                            if (to.IsInBounds)
+                            {
+                                m_currentActivityTrail = to;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            if (m_currentActivityTrail == null &&
+                OrderedTrails.Count > 0)
+            {
                 //The ordered list should have the best match first
                 //(but results may not be calculated)
                 m_currentActivityTrail = OrderedTrails[0];
@@ -220,6 +223,28 @@ namespace TrailsPlugin.Controller
         public IActivity checkReferenceActivity(bool checkRef)
         {
             //The ref trail follows the activities if possible, set from other info otherwise
+            if (m_referenceActivity == null)
+            {
+                if (m_lastReferenceActivity != null)
+                {
+                    //Check if last is still valid
+                    foreach (IActivity activity in m_activities)
+                    {
+                        if (activity == m_lastReferenceActivity)
+                        {
+                            m_referenceActivity = m_lastReferenceActivity;
+                            break;
+                        }
+                    }
+                }
+            }
+            //One activity - use it
+            if (m_referenceActivity == null &&
+                    m_activities != null && m_activities.Count == 1)
+            {
+                m_referenceActivity = m_activities[0];
+            }
+
             if (m_referenceActivity == null)
             {
                 checkCurrentTrailOrdered(false);

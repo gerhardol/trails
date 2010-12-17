@@ -383,6 +383,26 @@ namespace TrailsPlugin.Data {
                 noOfTrailPoints == trailgps.Count));
         }
 
+        //Some syntethic value to sort
+        private float? sortValue;
+        private float SortValue
+        {
+            get
+            {
+                if (sortValue == null)
+                {
+                    sortValue = 0;
+                    foreach (Data.TrailResult tr in this.Results)
+                    {
+                        sortValue += tr.DistDiff;
+                    }
+                    sortValue = sortValue / (float)Math.Pow(this.Results.Count, 1.5);
+
+                }
+                return (float)sortValue;
+            }
+        }
+
         #region Implementation of IComparable
         public int CompareTo(object obj)
         {
@@ -407,20 +427,7 @@ namespace TrailsPlugin.Data {
                 //}
                 else
                 {
-                    float e1 = 0;
-                    foreach (Data.TrailResult tr in this.Results)
-                    {
-                        e1 += tr.DistDiff;
-                    }
-                    e1 = e1 / (float)Math.Pow(this.Results.Count, 1.5);
-                    float e2 = 0;
-                    foreach (Data.TrailResult tr in to2.Results)
-                    {
-                        e2 += tr.DistDiff;
-                    }
-                    e2 = e2 / (float)Math.Pow(to2.Results.Count, 1.5);
-                    //No check if equal here
-                    return e1 < e2 ? 1 : -1;
+                    return this.SortValue > to2.SortValue ? 1 : -1;
                 }
             }
             //Sort remaining by name

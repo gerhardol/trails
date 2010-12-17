@@ -142,7 +142,10 @@ namespace TrailsPlugin.Controller
             if (m_currentActivityTrail == null &&
                 OrderedTrails.Count > 0)
             {
-                checkReferenceActivity(false);
+                if (checkRef)
+                {
+                    checkReferenceActivity(false);
+                }
                 if (m_referenceActivity != null &&
                     m_referenceActivity.Name != "")
                 {
@@ -247,7 +250,10 @@ namespace TrailsPlugin.Controller
 
             if (m_referenceActivity == null)
             {
-                checkCurrentTrailOrdered(false);
+                if (checkRef)
+                {
+                    checkCurrentTrailOrdered(false);
+                }
                 if (m_currentActivityTrail != null)
                 {
                     if (!m_currentActivityTrail.Trail.IsReference)

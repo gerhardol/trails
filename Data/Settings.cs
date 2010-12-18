@@ -41,6 +41,7 @@ namespace TrailsPlugin.Data {
             m_summaryViewSortColumn = TrailResultColumnIds.Order;
             m_summaryViewSortDirection = ListSortDirection.Ascending;
             m_ShowChartToolBar = true;
+            m_SetNameAtImport = true;
             m_MaxAutoCalcActivitiesTrails = 150;
             m_MaxAutoCalcResults = 200;
         }
@@ -148,6 +149,12 @@ namespace TrailsPlugin.Data {
             get { return m_summaryViewSortDirection; }
             set { m_summaryViewSortDirection = value; }
         }
+        private static bool m_SetNameAtImport;
+        public static bool SetNameAtImport
+        {
+            get { return m_SetNameAtImport; }
+            set { m_SetNameAtImport = value; }
+        }
         private static int m_MaxAutoCalcActivitiesTrails;
         public static int MaxAutoCalcActivitiesTrails
         {
@@ -184,6 +191,8 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcResults);
             if (attr.Length > 0) { m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
+            if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.sColumns);
             if (attr.Length > 0)
             {
@@ -220,6 +229,7 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, m_summaryViewSortColumn);
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
             pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
+            pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
 
@@ -251,10 +261,11 @@ namespace TrailsPlugin.Data {
             public const string ShowChartToolBar = "ShowChartToolBar";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
             public const string MaxAutoCalcResults = "MaxAutoCalcResults";
+            public const string SetNameAtImport = "SetNameAtImport";
             public const string sColumns = "sColumns";
         }
 
-        //Old version, read from logbook
+        //Old version, read from logbook ("new" settings not implemented)
         public void FromXml(XmlNode pluginNode)
         {
 			defaults();

@@ -36,7 +36,7 @@ namespace TrailsPlugin.Data {
 
 		public Trail()
         {
-			m_radius = PluginMain.Settings.DefaultRadius;
+            m_radius = Data.Settings.DefaultRadius;
 		}
 
         public Trail Copy(bool isEdit)
@@ -75,7 +75,8 @@ namespace TrailsPlugin.Data {
                 if (m_isReference)
                 {
                     checkReferenceChanged();
-                    if (m_trailLocations.Count == 0)
+                    if (m_referenceActivity != null &&
+                        m_trailLocations.Count == 0)
                     {
                         m_trailLocations = TrailGpsPointsFromSplits(m_referenceActivity);
                     }

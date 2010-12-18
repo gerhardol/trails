@@ -298,4 +298,7 @@ Make sure that {1} is installed.</value>
     <value>Install at least version {0} of {1} to filter activities using UniqueRoutes.</value>
     <comment>Matrix</comment>
   </data>
+  <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
+    <value>Exclude result from list</value>
+  </data>
 </root>

@@ -207,7 +207,7 @@ namespace TrailsPlugin.UI.Activity {
                     ChartPanel.RowStyles[i+1].Height = 0;
                 }
             }
-            ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
+            ShowChartToolBar = Data.Settings.ShowChartToolBar;
         }
 
         private bool replaceDiffChart(TrailLineChart chart, bool isReplace)
@@ -240,14 +240,14 @@ namespace TrailsPlugin.UI.Activity {
                     bool visible = false;
 
                     if (m_multiple &&
-                        (PluginMain.Settings.MultiChartType.Contains(chart.YAxisReferential) ||
+                        (Data.Settings.MultiChartType.Contains(chart.YAxisReferential) ||
                         chart.YAxisReferential == speedPaceYaxis &&
-                        PluginMain.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace)) ||
+                        Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace)) ||
                        !m_multiple &&
-                         ((chart.YAxisReferential == PluginMain.Settings.ChartType &&
+                         ((chart.YAxisReferential == Data.Settings.ChartType &&
                           !replaceDiffChart(chart, false)) ||
                          chart.YAxisReferential == speedPaceYaxis &&
-                         (TrailLineChart.LineChartTypes.SpeedPace == PluginMain.Settings.ChartType ||
+                         (TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType ||
                            replaceDiffChart(chart, true))))
                     {
                         visible = true;
@@ -261,7 +261,7 @@ namespace TrailsPlugin.UI.Activity {
                             this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart.YAxisReferential) + " / " +
                             TrailLineChart.XAxisValueString(chart.XAxisReferential);
                         }
-                        chart.XAxisReferential = PluginMain.Settings.XAxisValue;
+                        chart.XAxisReferential = Data.Settings.XAxisValue;
                         IList<Data.TrailResult> list = this.m_page.SelectedItems;
                         chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                         chart.TrailResults = list;
@@ -281,11 +281,11 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_multiple)
             {
-                return PluginMain.Settings.MultiChartType.Contains(t);
+                return Data.Settings.MultiChartType.Contains(t);
             }
             else
             {
-                return PluginMain.Settings.ChartType == t;
+                return Data.Settings.ChartType == t;
             }
         }
         void RefreshChartMenu()
@@ -303,27 +303,27 @@ namespace TrailsPlugin.UI.Activity {
             diffTimeToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffTime);
             diffDistToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffDist);
 
-            timeToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
-            distanceToolStripMenuItem.Checked = PluginMain.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
-            this.showToolBarMenuItem.Checked = PluginMain.Settings.ShowChartToolBar;
+            timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
+            distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
+            this.showToolBarMenuItem.Checked = Data.Settings.ShowChartToolBar;
         }
 
         void RefreshChart(TrailLineChart.LineChartTypes t)
         {
             if (m_multiple)
             {
-                PluginMain.Settings.ToggleMultiChartType = t;
+                Data.Settings.ToggleMultiChartType = t;
             }
             else
             {
-                PluginMain.Settings.ChartType = t;
+                Data.Settings.ChartType = t;
             }
             RefreshChart();
         }
 
         void RefreshChart(TrailLineChart.XAxisValue t)
         {
-            PluginMain.Settings.XAxisValue = t;
+            Data.Settings.XAxisValue = t;
             RefreshChart();
         }
 
@@ -427,8 +427,8 @@ namespace TrailsPlugin.UI.Activity {
 
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
-            PluginMain.Settings.ShowChartToolBar = !PluginMain.Settings.ShowChartToolBar;
-            ShowChartToolBar = PluginMain.Settings.ShowChartToolBar;
+            Data.Settings.ShowChartToolBar = !Data.Settings.ShowChartToolBar;
+            ShowChartToolBar = Data.Settings.ShowChartToolBar;
         }
 
         /***************************************/

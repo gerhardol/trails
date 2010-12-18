@@ -64,7 +64,7 @@ namespace TrailsPlugin {
             if (settingsVersionCurrent <= settingsVersion)
             {
                 settingsVersion = settingsVersionCurrent;
-                m_settings = new TrailsPlugin.Data.Settings();
+//                m_settings = new TrailsPlugin.Data.Settings();
                 m_data = new TrailsPlugin.Data.TrailData();
                 TrailsPlugin.Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
                 TrailsPlugin.Data.TrailData.ReadOptions(xmlDoc, nsmgr, pluginNode);
@@ -88,7 +88,7 @@ namespace TrailsPlugin {
         public static void ReadExtensionData()
         {
             m_data = new TrailsPlugin.Data.TrailData();
-            m_settings = new TrailsPlugin.Data.Settings();
+            //m_settings = new TrailsPlugin.Data.Settings();
 
             XmlDocument doc = new XmlDocument();
             string xml = PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
@@ -98,7 +98,7 @@ namespace TrailsPlugin {
             }
             doc.LoadXml(xml);
             m_data.FromXml(doc.DocumentElement);
-            m_settings.FromXml(doc.DocumentElement);
+            //m_settings.FromXml(doc.DocumentElement);
         }
 
 		public static void WriteExtensionData() 
@@ -109,7 +109,7 @@ namespace TrailsPlugin {
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml("<TrailsPlugin/>");
                 doc.DocumentElement.AppendChild(m_data.ToXml(doc));
-                doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
+                //doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
                 PluginMain.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
                 PluginMain.GetApplication().Logbook.Modified = true;
             }
@@ -124,7 +124,7 @@ namespace TrailsPlugin {
             {
                 if (e != null && e.PropertyName == "Logbook")
                 {
-                    m_settings = null;
+                    //m_settings = null;
                     m_data = null;
                 }
             }
@@ -132,14 +132,14 @@ namespace TrailsPlugin {
 
 		private static IApplication m_App = null;
 		private static Data.TrailData m_data = null;
-		private static Data.Settings m_settings = null;
+//		private static Data.Settings m_settings = null;
 		public static Data.TrailData Data {
 			get {
 				if (m_data == null) {
                     if (null == PluginMain.GetApplication().Logbook)
                     {
                         //logbook is null if it could not be loaded, to avoid an exception that occurs at exit
-                        m_settings = new TrailsPlugin.Data.Settings();
+                        //m_settings = new TrailsPlugin.Data.Settings();
                         m_data = new TrailsPlugin.Data.TrailData();
                     }
                     else
@@ -151,14 +151,14 @@ namespace TrailsPlugin {
 			}
 		}
 
-		public static Data.Settings Settings {
-			get {
-				if (m_settings == null) {
-					PluginMain.ReadExtensionData();
-				}
-				return m_settings;
-			}
-		}
+        //public static Data.Settings Settings {
+        //    get {
+        //        if (m_settings == null) {
+        //            PluginMain.ReadExtensionData();
+        //        }
+        //        return m_settings;
+        //    }
+        //}
         private class xmlTags
         {
             public const string settingsVersion = "settingsVersion";

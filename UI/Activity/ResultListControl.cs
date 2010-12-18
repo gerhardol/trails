@@ -94,6 +94,7 @@ namespace TrailsPlugin.UI.Activity {
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
             this.advancedMenuItem.Text = Properties.Resources.UI_Activity_List_Advanced;
+            this.excludeResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ExcludeResult;
             this.limitActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
             this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
             this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
@@ -133,7 +134,7 @@ namespace TrailsPlugin.UI.Activity {
                 summaryList.Columns.Add(column);
                 plusMinusSize = 0;
             }
-            foreach (string id in PluginMain.Settings.ActivityPageColumns)
+            foreach (string id in Data.Settings.ActivityPageColumns)
             {
                 foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count > 1))
                 {
@@ -156,9 +157,9 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshControlState()
         {
             limitActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
+            selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
         }
-
-
+        
         public void RefreshList()
         {
             summaryList.RowData = null;
@@ -248,6 +249,21 @@ namespace TrailsPlugin.UI.Activity {
             return ((TrailResultWrapper)element).Result;
         }
 
+        public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist)
+        {
+            IList<TrailResultWrapper> aTr = new List<TrailResultWrapper>();
+            if (tlist != null)
+            {
+                foreach (object t in tlist)
+                {
+                    if (t != null)
+                    {
+                        aTr.Add(((TrailResultWrapper)t));
+                    }
+                }
+            }
+            return aTr;
+        }
         public static IList<TrailResult> getTrailResultSelection(System.Collections.IList tlist)
         {
             IList<TrailResult> aTr = new List<TrailResult>();
@@ -271,6 +287,46 @@ namespace TrailsPlugin.UI.Activity {
                 m_controller.CurrentActivityTrailDisplayed.Sort();
                 summaryList.RowData = m_controller.CurrentActivityTrailDisplayed.ResultTreeList;
             }
+        }
+
+        void selectSimilarSplits()
+        {
+            this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+            if (Data.Settings.SelectSimilarResults && summaryList.SelectedItems != null)
+            {
+                System.Collections.IList results = new List<TrailResultWrapper>();
+                foreach (object t in summaryList.SelectedItems)
+                {
+                    int splitIndex = -1;
+                    if (((TrailResultWrapper)t).Parent != null)
+                    {
+                        splitIndex = ((TrailResultWrapper)t).Result.Order;
+                    }
+                    foreach (TrailResultWrapper rtn in (IList<TrailResultWrapper>)summaryList.RowData)
+                    {
+                        if (splitIndex < 0)
+                        {
+                            results.Add(rtn);
+                        }
+                        else
+                        {
+                            foreach (TrailResultWrapper ctn in rtn.Children)
+                            {
+                                if (ctn.Result.Order == splitIndex)
+                                {
+                                    results.Add(ctn);
+                                }
+                            }
+                        }
+                    }
+                }
+#if ST_2_1
+                summaryList.Selected = results;
+#else
+                summaryList.SelectedItems = results;
+#endif
+            }
+            this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
         }
 
         /************************************************************/
@@ -343,6 +399,11 @@ namespace TrailsPlugin.UI.Activity {
             summaryList_Sort();
         }
 
+        void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
+        {
+            selectSimilarSplits();
+        }
+
         /*************************************************************************************************************/
         void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -374,13 +435,13 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             dialog.ThemeChanged(m_visualTheme);
             dialog.AllowFixedColumnSelect = true;
-            dialog.SelectedColumns = PluginMain.Settings.ActivityPageColumns;
-            dialog.NumFixedColumns = PluginMain.Settings.ActivityPageNumFixedColumns;
+            dialog.SelectedColumns = Data.Settings.ActivityPageColumns;
+            dialog.NumFixedColumns = Data.Settings.ActivityPageNumFixedColumns;
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                PluginMain.Settings.ActivityPageNumFixedColumns = dialog.NumFixedColumns;
-                PluginMain.Settings.ActivityPageColumns = dialog.SelectedColumns;
+                Data.Settings.ActivityPageNumFixedColumns = dialog.NumFixedColumns;
+                Data.Settings.ActivityPageColumns = dialog.SelectedColumns;
                 RefreshColumns();
             }
         }
@@ -396,39 +457,29 @@ namespace TrailsPlugin.UI.Activity {
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
         {
-            if (summaryList.SelectedItems != null)
+            TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
+            selectSimilarSplits();
+            RefreshControlState();
+        }
+
+        void excludeResultsMenuItem_Click(object sender, System.EventArgs e)
+        {
+            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0&&
+                m_controller.CurrentActivityTrail.ResultTreeList!= null)
             {
-                System.Collections.IList results = new List<TrailResultWrapper>();
-                foreach (object t in summaryList.SelectedItems)
+                IList<TrailResultWrapper> atr = getTrailResultWrapperSelection(summaryList.SelectedItems);
+                foreach (TrailResultWrapper tr in atr)
                 {
-                    int splitIndex = -1;
-                    if (((TrailResultWrapper)t).Parent != null)
+                    foreach (TrailResultWrapper trr in m_controller.CurrentActivityTrail.ResultTreeList)
                     {
-                        splitIndex = ((TrailResultWrapper)t).Result.Order;
-                    }
-                    foreach (TrailResultWrapper rtn in (IList<TrailResultWrapper>)summaryList.RowData)
-                    {
-                        if (splitIndex < 0)
+                        trr.RemoveChildren(atr);
+                        if (m_controller.CurrentActivityTrail.ResultTreeList.Contains(tr))
                         {
-                            results.Add(rtn);
-                        }
-                        else
-                        {
-                            foreach (TrailResultWrapper ctn in rtn.Children)
-                            {
-                                if (ctn.Result.Order == splitIndex)
-                                {
-                                    results.Add(ctn);
-                                }
-                            }
+                            m_controller.CurrentActivityTrail.ResultTreeList.Remove(tr);
                         }
                     }
                 }
-#if ST_2_1
-                summaryList.Selected = results;
-#else
-                summaryList.SelectedItems = results;
-#endif
+                RefreshList();
             }
         }
 

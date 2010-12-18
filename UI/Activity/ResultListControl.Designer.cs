@@ -32,6 +32,7 @@
             this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.referenceResultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.excludeResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.limitActivityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.limitURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectWithURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,6 +88,7 @@
             this.summaryList.TabIndex = 11;
             this.summaryList.Click += new System.EventHandler(this.summaryList_Click);
             this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.selectedRow_DoubleClick);
+            this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
             // 
             // listMenu
             // 
@@ -131,12 +133,20 @@
             // advancedMenuItem
             // 
             this.advancedMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.excludeResultsMenuItem,
             this.limitActivityMenuItem,
             this.limitURMenuItem,
             this.selectWithURMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
+            // 
+            // excludeResultsMenuItem
+            // 
+            this.excludeResultsMenuItem.Name = "excludeResultsMenuItem";
+            this.excludeResultsMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.excludeResultsMenuItem.Text = "<Exclude results from list...";
+            this.excludeResultsMenuItem.Click += new System.EventHandler(this.excludeResultsMenuItem_Click);
             // 
             // limitActivityMenuItem
             // 
@@ -184,6 +194,7 @@
         private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem referenceResultMenuItem;
         private System.Windows.Forms.ToolStripMenuItem advancedMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem excludeResultsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem limitActivityMenuItem;
         private System.Windows.Forms.ToolStripMenuItem limitURMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;

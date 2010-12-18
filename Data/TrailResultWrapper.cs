@@ -93,6 +93,22 @@ namespace TrailsPlugin.Data {
                 }
             }
         }
+        public bool RemoveChildren(IList<TrailResultWrapper> tn)
+        {
+            bool result = true;
+            foreach (TrailResultWrapper tr in tn)
+            {
+                if (m_children.Contains(tr))
+                {
+                    m_children.Remove(tr);
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            return result;
+        }
         public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> tn, IList<TrailResult> tr)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();

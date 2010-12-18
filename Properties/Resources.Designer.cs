@@ -293,6 +293,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exclude result from list.
+        /// </summary>
+        internal static string UI_Activity_List_ExcludeResult {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ExcludeResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Limit activities to activities selected in list.
         /// </summary>
         internal static string UI_Activity_List_LimitSelection {

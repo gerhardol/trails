@@ -109,9 +109,9 @@ namespace TrailsPlugin.Data {
             {
                 if (m_resultsList == null)
                 {
-                    CalcResults();
+                    //CalcResults();
                     m_resultsList = new List<TrailResult>();
-                    foreach (TrailResultWrapper tr in m_resultsListWrapper)
+                    foreach (TrailResultWrapper tr in ResultTreeList)
                     {
                         m_resultsList.Add(tr.Result);
                     }
@@ -129,8 +129,8 @@ namespace TrailsPlugin.Data {
         }
         public void Sort()
         {
-            ((List<TrailResultWrapper>)m_resultsListWrapper).Sort();
-            foreach (TrailResultWrapper tr in m_resultsListWrapper)
+            ((List<TrailResultWrapper>)ResultTreeList).Sort();
+            foreach (TrailResultWrapper tr in ResultTreeList)
             {
                 tr.Sort();
             }

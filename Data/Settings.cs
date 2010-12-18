@@ -42,6 +42,7 @@ namespace TrailsPlugin.Data {
             m_summaryViewSortDirection = ListSortDirection.Ascending;
             m_ShowChartToolBar = true;
             m_SetNameAtImport = true;
+            m_SelectSimilarResults = false;
             m_MaxAutoCalcActivitiesTrails = 150;
             m_MaxAutoCalcResults = 200;
         }
@@ -52,10 +53,16 @@ namespace TrailsPlugin.Data {
         private static TrailLineChart.LineChartTypes m_chartType;
         private static IList<TrailLineChart.LineChartTypes> m_MultiChartTypes;
         private static bool m_ShowChartToolBar;
+        private static bool m_SelectSimilarResults;
+        private static string m_summaryViewSortColumn;
+        private static ListSortDirection m_summaryViewSortDirection;
+        private static bool m_SetNameAtImport;
+        private static int m_MaxAutoCalcActivitiesTrails;
+        private static int m_MaxAutoCalcResults;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
-        public TrailLineChart.LineChartTypes ChartType
+        public static TrailLineChart.LineChartTypes ChartType
         {
             get
             {
@@ -67,14 +74,14 @@ namespace TrailsPlugin.Data {
                 PluginMain.WriteExtensionData();
             }
         }
-        public IList<TrailLineChart.LineChartTypes> MultiChartType
+        public static IList<TrailLineChart.LineChartTypes> MultiChartType
         {
             get
             {
                 return m_MultiChartTypes;
             }
         }
-        public TrailLineChart.LineChartTypes ToggleMultiChartType
+        public static TrailLineChart.LineChartTypes ToggleMultiChartType
         {
             set
             {
@@ -89,7 +96,8 @@ namespace TrailsPlugin.Data {
             }
         }
 
-		public TrailLineChart.XAxisValue XAxisValue {
+        public static TrailLineChart.XAxisValue XAxisValue
+        {
 			get {
 				return m_xAxisValue;
 			}
@@ -98,7 +106,8 @@ namespace TrailsPlugin.Data {
 				PluginMain.WriteExtensionData();
 			}
 		}
-		public IList<string> ActivityPageColumns {
+        public static IList<string> ActivityPageColumns
+        {
 			get {
 				return m_activityPageColumns;
 			}
@@ -108,7 +117,8 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		public int ActivityPageNumFixedColumns {
+        public static int ActivityPageNumFixedColumns
+        {
 			get {
 				return m_activityPageNumFixedColumns;
 			}
@@ -118,7 +128,8 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
-		public float DefaultRadius {
+        public static float DefaultRadius
+        {
 			get {
 				return m_defaultRadius;
 			}
@@ -127,7 +138,7 @@ namespace TrailsPlugin.Data {
 				PluginMain.WriteExtensionData();
 			}
 		}
-        public bool ShowChartToolBar
+        public static bool ShowChartToolBar
         {
             get { return m_ShowChartToolBar; }
             set
@@ -135,33 +146,39 @@ namespace TrailsPlugin.Data {
                 m_ShowChartToolBar = value;
             }
         }
+        public static bool SelectSimilarResults
+        {
+            get
+            {
+                return m_SelectSimilarResults;
+            }
+            set
+            {
+                m_SelectSimilarResults = value;
+            }
+        }
 
-        private static string m_summaryViewSortColumn;
         public static string SummaryViewSortColumn
         {
             get { return m_summaryViewSortColumn; }
             set { m_summaryViewSortColumn = value; }
         }
 
-        private static ListSortDirection m_summaryViewSortDirection;
         public static ListSortDirection SummaryViewSortDirection
         {
             get { return m_summaryViewSortDirection; }
             set { m_summaryViewSortDirection = value; }
         }
-        private static bool m_SetNameAtImport;
         public static bool SetNameAtImport
         {
             get { return m_SetNameAtImport; }
             set { m_SetNameAtImport = value; }
         }
-        private static int m_MaxAutoCalcActivitiesTrails;
         public static int MaxAutoCalcActivitiesTrails
         {
             get { return m_MaxAutoCalcActivitiesTrails; }
             set { m_MaxAutoCalcActivitiesTrails = value; }
         }
-        private static int m_MaxAutoCalcResults;
         public static int MaxAutoCalcResults
         {
             get { return m_MaxAutoCalcResults; }
@@ -185,6 +202,8 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
             if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
+            attr = pluginNode.GetAttribute(xmlTags.SelectSimilarResults);
+            if (attr.Length > 0) { m_SelectSimilarResults = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
             if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
@@ -229,6 +248,7 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, m_summaryViewSortColumn);
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
             pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
+            pluginNode.SetAttribute(xmlTags.SelectSimilarResults, XmlConvert.ToString(m_SelectSimilarResults));
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
@@ -259,78 +279,79 @@ namespace TrailsPlugin.Data {
             public const string summaryViewSortColumn = "summaryViewSortColumn";
             public const string summaryViewSortDirection = "summaryViewSortDirection";
             public const string ShowChartToolBar = "ShowChartToolBar";
+            public const string SelectSimilarResults = "SelectSimilarResults";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
             public const string MaxAutoCalcResults = "MaxAutoCalcResults";
             public const string SetNameAtImport = "SetNameAtImport";
             public const string sColumns = "sColumns";
         }
 
-        //Old version, read from logbook ("new" settings not implemented)
-        public void FromXml(XmlNode pluginNode)
-        {
-			defaults();
+        ////Old version, read from logbook ("new" settings not implemented)
+        //public void FromXml(XmlNode pluginNode)
+        //{
+        //    defaults();
 
-			XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
-            if (settingsNode != null && settingsNode.SelectSingleNode("@defaultRadius") != null)
-            {
-				m_defaultRadius = float.Parse(settingsNode.SelectSingleNode("@defaultRadius").Value);
-			}
+        //    XmlNode settingsNode = pluginNode.SelectSingleNode("Settings");
+        //    if (settingsNode != null && settingsNode.SelectSingleNode("@defaultRadius") != null)
+        //    {
+        //        m_defaultRadius = float.Parse(settingsNode.SelectSingleNode("@defaultRadius").Value);
+        //    }
 
-			XmlNode activityPageNode = null;
-			if (settingsNode != null) {
-				activityPageNode = settingsNode.SelectSingleNode("ActivityPage");
-			}
+        //    XmlNode activityPageNode = null;
+        //    if (settingsNode != null) {
+        //        activityPageNode = settingsNode.SelectSingleNode("ActivityPage");
+        //    }
 
-			if (activityPageNode != null) {
-				if (activityPageNode.SelectSingleNode("@numFixedColumns") != null) {
-					m_activityPageNumFixedColumns = int.Parse(activityPageNode.SelectSingleNode("@numFixedColumns").Value);
-				}
-				if (activityPageNode.SelectSingleNode("@xAxis") != null) {
-					m_xAxisValue = (TrailLineChart.XAxisValue)Enum.Parse(typeof(TrailLineChart.XAxisValue),activityPageNode.SelectSingleNode("@xAxis").Value);
-				}
-				if (activityPageNode.SelectSingleNode("@chartType") != null) {
-					m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes),activityPageNode.SelectSingleNode("@chartType").Value);
-				}
-                m_activityPageColumns.Clear();
-                foreach (XmlNode node in activityPageNode.SelectNodes("Column"))
-                {
-					m_activityPageColumns.Add(node.InnerText);
-				}
-			}
-		}
+        //    if (activityPageNode != null) {
+        //        if (activityPageNode.SelectSingleNode("@numFixedColumns") != null) {
+        //            m_activityPageNumFixedColumns = int.Parse(activityPageNode.SelectSingleNode("@numFixedColumns").Value);
+        //        }
+        //        if (activityPageNode.SelectSingleNode("@xAxis") != null) {
+        //            m_xAxisValue = (TrailLineChart.XAxisValue)Enum.Parse(typeof(TrailLineChart.XAxisValue),activityPageNode.SelectSingleNode("@xAxis").Value);
+        //        }
+        //        if (activityPageNode.SelectSingleNode("@chartType") != null) {
+        //            m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes),activityPageNode.SelectSingleNode("@chartType").Value);
+        //        }
+        //        m_activityPageColumns.Clear();
+        //        foreach (XmlNode node in activityPageNode.SelectNodes("Column"))
+        //        {
+        //            m_activityPageColumns.Add(node.InnerText);
+        //        }
+        //    }
+        //}
 
-        //This is not called by default
-		public XmlNode ToXml(XmlDocument doc) {
-			XmlNode settingsNode = doc.CreateElement("Settings");
-			if (settingsNode.Attributes["defaultRadius"] == null) {
-				settingsNode.Attributes.Append(doc.CreateAttribute("defaultRadius"));
-			}
-			settingsNode.Attributes["defaultRadius"].Value = m_defaultRadius.ToString();			
+        ////This is not called by default
+        //public XmlNode ToXml(XmlDocument doc) {
+        //    XmlNode settingsNode = doc.CreateElement("Settings");
+        //    if (settingsNode.Attributes["defaultRadius"] == null) {
+        //        settingsNode.Attributes.Append(doc.CreateAttribute("defaultRadius"));
+        //    }
+        //    settingsNode.Attributes["defaultRadius"].Value = m_defaultRadius.ToString();			
 
-			XmlNode activityPageNode = doc.CreateElement("ActivityPage");
-			settingsNode.AppendChild(activityPageNode);
-            if (activityPageNode.Attributes["numFixedColumns"] == null)
-            {
-                activityPageNode.Attributes.Append(doc.CreateAttribute("numFixedColumns"));
-            }
-            activityPageNode.Attributes["numFixedColumns"].Value = m_activityPageNumFixedColumns.ToString();
-            if (activityPageNode.Attributes["xAxis"] == null)
-            {
-                activityPageNode.Attributes.Append(doc.CreateAttribute("xAxis"));
-            }
-            activityPageNode.Attributes["xAxis"].Value = m_xAxisValue.ToString();
-            if (activityPageNode.Attributes["chartType"] == null)
-            {
-                activityPageNode.Attributes.Append(doc.CreateAttribute("chartType"));
-            }
-            activityPageNode.Attributes["chartType"].Value = m_chartType.ToString();
-            foreach (string columnName in m_activityPageColumns)
-            {
-				XmlNode column = doc.CreateElement("Column");
-				column.AppendChild(doc.CreateTextNode(columnName));
-				activityPageNode.AppendChild(column);
-			}
-			return settingsNode;
-		}
+        //    XmlNode activityPageNode = doc.CreateElement("ActivityPage");
+        //    settingsNode.AppendChild(activityPageNode);
+        //    if (activityPageNode.Attributes["numFixedColumns"] == null)
+        //    {
+        //        activityPageNode.Attributes.Append(doc.CreateAttribute("numFixedColumns"));
+        //    }
+        //    activityPageNode.Attributes["numFixedColumns"].Value = m_activityPageNumFixedColumns.ToString();
+        //    if (activityPageNode.Attributes["xAxis"] == null)
+        //    {
+        //        activityPageNode.Attributes.Append(doc.CreateAttribute("xAxis"));
+        //    }
+        //    activityPageNode.Attributes["xAxis"].Value = m_xAxisValue.ToString();
+        //    if (activityPageNode.Attributes["chartType"] == null)
+        //    {
+        //        activityPageNode.Attributes.Append(doc.CreateAttribute("chartType"));
+        //    }
+        //    activityPageNode.Attributes["chartType"].Value = m_chartType.ToString();
+        //    foreach (string columnName in m_activityPageColumns)
+        //    {
+        //        XmlNode column = doc.CreateElement("Column");
+        //        column.AppendChild(doc.CreateTextNode(columnName));
+        //        activityPageNode.AppendChild(column);
+        //    }
+        //    return settingsNode;
+        //}
 	}
 }

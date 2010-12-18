@@ -36,7 +36,7 @@ namespace TrailsPlugin.UI.Settings {
 
         private void presentSettings()
         {
-            txtDefaultRadius.Text = Utils.Units.ElevationToString(PluginMain.Settings.DefaultRadius, "u");
+            txtDefaultRadius.Text = Utils.Units.ElevationToString(Data.Settings.DefaultRadius, "u");
         }
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -65,7 +65,7 @@ namespace TrailsPlugin.UI.Settings {
             result = Utils.Units.ParseElevation(txtDefaultRadius.Text);
             if (result > 0)
             {
-				PluginMain.Settings.DefaultRadius = result;
+                Data.Settings.DefaultRadius = result;
             }
             else
             {

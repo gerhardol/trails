@@ -468,18 +468,9 @@ namespace TrailsPlugin.UI.Activity {
                 m_controller.CurrentActivityTrail.ResultTreeList!= null)
             {
                 IList<TrailResultWrapper> atr = getTrailResultWrapperSelection(summaryList.SelectedItems);
-                foreach (TrailResultWrapper tr in atr)
-                {
-                    foreach (TrailResultWrapper trr in m_controller.CurrentActivityTrail.ResultTreeList)
-                    {
-                        trr.RemoveChildren(atr);
-                        if (m_controller.CurrentActivityTrail.ResultTreeList.Contains(tr))
-                        {
-                            m_controller.CurrentActivityTrail.ResultTreeList.Remove(tr);
-                        }
-                    }
-                }
-                RefreshList();
+                m_controller.CurrentActivityTrail.Remove(atr);
+                m_page.RefreshData();
+                m_page.RefreshControlState();
             }
         }
 

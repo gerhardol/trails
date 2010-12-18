@@ -316,6 +316,29 @@ namespace TrailsPlugin.Data {
             }
         }
 
+        public void Remove(IList<TrailResultWrapper> atr)
+        {
+            //Needed?
+            //foreach (TrailResult trr in m_resultsList)
+            //{
+            //    trr.RemoveChildren(atr[0].Result);
+            //}
+            foreach (TrailResultWrapper trr in m_resultsListWrapper)
+            {
+                trr.RemoveChildren(atr);
+            }
+            foreach (TrailResultWrapper tr in atr)
+            {
+                if (Results.Contains(tr.Result))
+                {
+                    Results.Remove(tr.Result);
+                }
+                if (ResultTreeList.Contains(tr))
+                {
+                    ResultTreeList.Remove(tr);
+                }
+            }
+        }
         private static float checkPass(IGPSPoint r1, float d1, IGPSPoint r2, float d2, TrailGPSLocation trailp, float radius)
         {
             float factor = 0;

@@ -85,6 +85,11 @@ namespace TrailsPlugin.UI.Activity {
 
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
+#if ST_2_1
+            this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+#else
+            this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+#endif
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -291,7 +296,11 @@ namespace TrailsPlugin.UI.Activity {
 
         void selectSimilarSplits()
         {
+#if ST_2_1
+            this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+#else
             this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+#endif
             if (Data.Settings.SelectSimilarResults && summaryList.SelectedItems != null)
             {
                 System.Collections.IList results = new List<TrailResultWrapper>();
@@ -326,7 +335,11 @@ namespace TrailsPlugin.UI.Activity {
                 summaryList.SelectedItems = results;
 #endif
             }
+#if ST_2_1
+            this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+#else
             this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+#endif
         }
 
         /************************************************************/

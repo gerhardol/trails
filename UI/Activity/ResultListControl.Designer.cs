@@ -88,7 +88,6 @@
             this.summaryList.TabIndex = 11;
             this.summaryList.Click += new System.EventHandler(this.summaryList_Click);
             this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.selectedRow_DoubleClick);
-            this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
             // 
             // listMenu
             // 

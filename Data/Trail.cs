@@ -160,7 +160,7 @@ namespace TrailsPlugin.Data {
             if (m_isReference)
             {
                 IActivity refAct = m_controller.checkReferenceActivity(false);
-                if ((m_referenceActivity == null || refAct != m_referenceActivity && refAct != null) && 
+                if ((m_referenceActivity == null || refAct != m_referenceActivity) && refAct != null && 
                     refAct.GPSRoute != null && refAct.GPSRoute.Count > 0)
                 {
                     m_referenceActivity = refAct;

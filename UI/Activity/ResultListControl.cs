@@ -370,8 +370,26 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    IList<TrailResult> aTr = getTrailResultSelection(l.SelectedItems);
+                    IList<TrailResult> aTr = new List<TrailResult>();
+                    if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                    {
+                        //Select the single row only
+                        object row;
+                        TreeList.RowHitState dummy;
+                        row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out dummy);
+                        if (row != null)
+                        {
+                            TrailResult tr = getTrailResultRow(row);
+                            aTr.Add(tr);
+                        }
+                    }
+                    else
+                    {
+                        //The user can control what is selected - mark all
+                        aTr = getTrailResultSelection(l.SelectedItems);
+                    }
                     m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
+
                 }
             }
         }
@@ -417,18 +435,42 @@ namespace TrailsPlugin.UI.Activity {
             selectSimilarSplits();
         }
 
+        private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
+        void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            m_mouseClickArgs = e;
+        }
+        TrailResult getMouseResult()
+        {
+            TrailResult tr = null;
+            object row;
+            TreeList.RowHitState dummy;
+            row = summaryList.RowHitTest(m_mouseClickArgs.Location, out dummy);
+            if (row != null)
+            {
+                tr = getTrailResultRow(row);
+            }
+            return tr;
+        }
+
         /*************************************************************************************************************/
         void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //TODO: write selected result when opening
-            string refRes="";
+            string currRes = "";
+            TrailResult tr = getMouseResult();
+            if (tr != null)
+            {
+                currRes = tr.FirstTime.ToLocalTime().ToShortDateString() + " " + 
+                    tr.FirstTime.ToLocalTime().ToShortTimeString();
+            }
+            string refRes = "";
             if (m_controller.ReferenceTrailResult != null)
             {
-                refRes = m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortDateString() +
-                   " "+ m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortTimeString();
+                refRes = m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortDateString() + " " + 
+                    m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortTimeString();
             }
             this.referenceResultMenuItem.Text = string.Format(
-                Properties.Resources.UI_Activity_List_ReferenceResult, refRes);
+                Properties.Resources.UI_Activity_List_ReferenceResult, currRes, refRes);
             e.Cancel = false;
         }
 
@@ -461,11 +503,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void referenceResultMenuItem_Click(object sender, System.EventArgs e)
         {
-            IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
-            if (atr != null && atr.Count > 0)
-            {
-                m_controller.ReferenceTrailResult = atr[0];
-            }
+            m_controller.ReferenceTrailResult = getMouseResult();
         }
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)

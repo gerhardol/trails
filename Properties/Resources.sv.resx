@@ -1,16 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <xsd:schema id="root" xmlns="" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element msdata:IsDataSet="true" name="root">
+    <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element minOccurs="0" name="value" type="xsd:string" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" use="required" type="xsd:string" />
               <xsd:attribute name="type" type="xsd:string" />
               <xsd:attribute name="mimetype" type="xsd:string" />
               <xsd:attribute ref="xml:space" />
@@ -25,19 +84,19 @@
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element minOccurs="0" msdata:Ordinal="1" name="value" type="xsd:string" />
-                <xsd:element minOccurs="0" msdata:Ordinal="2" name="comment" type="xsd:string" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute msdata:Ordinal="1" name="name" type="xsd:string" use="required" />
-              <xsd:attribute msdata:Ordinal="3" name="type" type="xsd:string" />
-              <xsd:attribute msdata:Ordinal="4" name="mimetype" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
               <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element minOccurs="0" msdata:Ordinal="1" name="value" type="xsd:string" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
               <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
@@ -58,7 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
     <value>Lägg till trail</value>
   </data>
@@ -102,11 +160,10 @@
     <value>Editera denna trail. (Välj trail punkterna på kartan före denna knapp aktiveras.)</value>
   </data>
   <data name="UI_Activity_List_ListSettings" xml:space="preserve">
-    <comment>STcore</comment>
     <value>Inställningar för tabell...</value>
+    <comment>STcore</comment>
   </data>
   <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
-    <comment>ST2 only</comment>
     <value>Du måste välja punkter på kartan.
 
 För att välja en punkt, klicka bara på ett aktivitetsspår.
@@ -114,6 +171,7 @@ För att välja en punkt, klicka bara på ett aktivitetsspår.
 För att välja ytterliggare punkter, använd CTRL och klicka på en annan punkt på spåret.
 Välj punkter så denna trail är unik jämförd med andra trail.
 Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
+    <comment>ST2 only</comment>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Vill du uppdatera trail GPS punkter med de valda punkterna?</value>
@@ -134,27 +192,27 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <value>Trail Grafer</value>
   </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
-    <comment>unused</comment>
     <value>Göm kartverktyg</value>
+    <comment>unused</comment>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <comment>Same as STcore </comment>
     <value>Visa kartverktyg</value>
+    <comment>Same as STcore </comment>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
     <value>Dubbelklicka i tabellen för att editera.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
-    <comment>unused</comment>
     <value>Inga punkter valda på kartan.
 
 Välj {0} för att använda etapper, {1} för att avbryta och välja punkter på GPS spåret.</value>
+    <comment>unused</comment>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Begränsa aktiviteter till valda i listan</value>
   </data>
   <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
-    <value>Sätt referens resultat (Nuvarande: {0})</value>
+    <value>Sätt referens resultat ({0}, Nuvarande: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
     <value>Markera liknade trail eller etapper i listan</value>
@@ -174,12 +232,12 @@ För att välja en punkt, klicka bara på ett aktivitetsspår.
 Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
-    <comment>Matrix</comment>
     <value>Problem att kommunicera med {0}. Se till att {1} är installerad.</value>
+    <comment>Matrix</comment>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
-    <comment>Matrix</comment>
     <value>Hittade version {0} av {1}.</value>
+    <comment>Matrix</comment>
   </data>
   <data name="UI_Activity_List_Advanced" xml:space="preserve">
     <value>Avancerat</value>
@@ -188,15 +246,15 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <value>Lägg till liknande aktiviteter med Unique Routes från referens aktivitet{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
-    <comment>Matrix</comment>
     <value>Aktiviteter kan filtreras med Unique Routes</value>
+    <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">
-    <comment>Matrix</comment>
     <value>Unique Routes plugin</value>
+    <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
-    <comment>Matrix</comment>
     <value>Installera åtminstone version {0} av {1} för att filtrera aktiviteter med Unique Routes.</value>
+    <comment>Matrix</comment>
   </data>
 </root>

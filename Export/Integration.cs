@@ -25,7 +25,7 @@ namespace TrailsPlugin.Export
 {
     public static class Integration
     {
-        public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivity(IList<IActivity> activities)
+        public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivities(IList<IActivity> activities)
         {
             var results = new Dictionary<string, List<ITrailResult>>();
 
@@ -46,7 +46,7 @@ namespace TrailsPlugin.Export
         }
         public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivity(IActivity activity)
         {
-            return GetTrailsResultsForActivity(new List<IActivity> { activity });
+            return GetTrailsResultsForActivities(new List<IActivity> { activity });
         }
 
 

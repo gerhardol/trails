@@ -246,7 +246,7 @@ Press {0} to use the Lap points, {1} to abort and select points on the GPS track
     <value>..\Resources\square-green-add.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
-    <value>Set Reference result (Current: {0})</value>
+    <value>Set Reference result ({0}, Current: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
     <value>Mark other sub Trails or splits in list</value>

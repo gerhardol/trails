@@ -320,7 +320,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Set Reference result (Current: {0}).
+        ///   Looks up a localized string similar to Set Reference result ({0}, Current: {1}).
         /// </summary>
         internal static string UI_Activity_List_ReferenceResult {
             get {

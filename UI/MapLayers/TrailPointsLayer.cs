@@ -49,6 +49,11 @@ namespace TrailsPlugin.UI.MapLayers
         public static TrailPointsLayer Instance(IDailyActivityView view)
         {
             TrailPointsLayer result = m_instances[0];
+            if (view == null)
+            {
+                //No activity page, use daily view
+                return result;
+            }
             string viewType = view.GetType().FullName;
 
             if (m_instances == null || m_instances.Count == 0)

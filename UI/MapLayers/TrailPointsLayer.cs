@@ -25,6 +25,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
 using ZoneFiveSoftware.Common.Data.GPS;
+using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Mapping;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace TrailsPlugin.UI.MapLayers
         }
         //TODO: Hack, there is no known relation between view and route control/layer
         //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
-        public static TrailPointsLayer Instance(IDailyActivityView view)
+        public static TrailPointsLayer Instance(IView view)
         {
             TrailPointsLayer result = m_instances[0];
             if (view == null)
@@ -65,7 +66,8 @@ namespace TrailsPlugin.UI.MapLayers
             {
                 result = m_instances[0]; 
             }
-            else if (viewType.EndsWith(".ActivityReportDetailsPage")
+            else if ((viewType.EndsWith(".ActivityReportDetailsPage") ||
+                viewType.EndsWith(".ReportsView.MainView"))
                 && m_instances.Count > 1)
             {
                 for (int i = 1; i < m_instances.Count - 1; i++)

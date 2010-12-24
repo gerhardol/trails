@@ -249,7 +249,8 @@ namespace TrailsPlugin.Data {
             }
             return t1;
         }
-		static public Trail FromXml(XmlNode node) {
+
+        static public Trail FromXml(XmlNode node) {
 			Trail trail = new Trail();
 			if (node.Attributes["id"] == null) {
 				trail.Id = System.Guid.NewGuid().ToString();
@@ -257,11 +258,12 @@ namespace TrailsPlugin.Data {
 				trail.Id = node.Attributes["id"].Value;
 			}
 			trail.Name = node.Attributes["name"].Value;
+            //Could be a separate setting
             if (trail.Name.EndsWith("MatchAll"))
             {
                 trail.MatchAll = true;
             }
-            trail.Radius = float.Parse(node.Attributes["radius"].Value);
+            trail.Radius = Settings.parseFloat(node.Attributes["radius"].Value);
 			trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("TrailGPSLocation")) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));

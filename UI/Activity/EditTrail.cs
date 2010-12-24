@@ -127,36 +127,23 @@ namespace TrailsPlugin.UI.Activity {
 				return;
 			}
 			Data.Trail trail = null;
-			if (m_addMode) {
-				if (PluginMain.Data.AllTrails.ContainsKey(TrailName.Text)) {
-					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
-					return;
-				}
-			} else {
-				if (PluginMain.Data.AllTrails.TryGetValue(TrailName.Text, out trail)) {
-                    if (trail != m_TrailToEdit)
-                    {
-						MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
-						return;
-					}
-				}
-			}
+            if (m_addMode && PluginMain.Data.NameExists(TrailName.Text) ||
+                !m_addMode && PluginMain.Data.AllTrails.TryGetValue(TrailName.Text, out trail) &&
+                trail != m_TrailToEdit)
+            {
+                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
+                return;
+            }
 			string oldTrailName = m_TrailToEdit.Name;
 			m_TrailToEdit.Name = TrailName.Text;
             //Radius handled on LostFocus
-            if (this.m_addMode)
+            if (m_addMode && !Controller.TrailController.Instance.AddTrail(m_TrailToEdit) ||
+                !m_addMode && !Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit))
             {
-				if (!Controller.TrailController.Instance.AddTrail(m_TrailToEdit)) {
-					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_InsertFailed);
-					return;
-				}
-			} else {
-				if (!Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit)) {
-					MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UpdateFailed);
-					return;
-				}
-			}
-			this.DialogResult = DialogResult.OK;
+                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UpdateFailed);
+                return;
+            }
+            this.DialogResult = DialogResult.OK;
 			Close();
 		}
 

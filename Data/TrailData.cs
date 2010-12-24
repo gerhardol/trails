@@ -68,17 +68,32 @@ namespace TrailsPlugin.Data {
             }
         }
 
-		public bool InsertTrail(Data.Trail trail) {
-			foreach (Trail t in m_AllTrails.Values) {
-				if (t.Name == trail.Name) {
-					return false;
-				}
-			}
-			trail.Id = System.Guid.NewGuid().ToString();
-			m_AllTrails.Add(trail.Id, trail);
-			PluginMain.WriteExtensionData();
-			return true;
-		}
+        public bool NameExists(string trailName)
+        {
+            foreach (Trail t in m_AllTrails.Values)
+            {
+                if (t.Name == trailName)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool InsertTrail(Data.Trail trail)
+        {
+            foreach (Trail t in m_AllTrails.Values)
+            {
+                if (t.Name == trail.Name)
+                {
+                    return false;
+                }
+            }
+            trail.Id = System.Guid.NewGuid().ToString();
+            m_AllTrails.Add(trail.Id, trail);
+            PluginMain.WriteExtensionData();
+            return true;
+        }
 
 		public bool UpdateTrail(Data.Trail trail) {
 			foreach (Trail t in m_AllTrails.Values) {

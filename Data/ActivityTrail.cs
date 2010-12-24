@@ -166,6 +166,38 @@ namespace TrailsPlugin.Data {
                                 int matchIndex = -1;
                                 float routeDist = distanceTrailToRoute(activity, trailgps, aMatch.Count, routeIndex);
                                 float matchDist = float.MaxValue;
+
+                                //TODO: Find a way to get shorter trails
+                                //The algorithm here will reduce A'1-B'1-A'2-B'2-C to A'2-B'2-C
+                                //but will fail to match A'1-B-A'2-C
+                                //One way could be to try again if start is match
+                                //For something like: A'1-B'1-A'2-C'1-B'2-A'3-C'2
+                                //Is A'1-B'1-A'2-C'1 or A'2-C'1-B'2-A'3-C'2 or start with A'3?
+                                //Add overlapping results?
+                                //if (matchIndex < 0 && aMatch.Count > 0 &&
+                                //    routeDist > 3 * this.m_trail.Radius)
+                                //{
+                                //    //Start over if we pass first point before all were found
+                                //    float distFromStartToPoint = distanceTrailToRoute(activity, trailgps, 0, routeIndex);
+                                //    if (distFromStartToPoint < this.m_trail.Radius)
+                                //    {
+                                //        aMatch.Clear();
+                                //        matchIndex = routeIndex;
+                                //        trailDistDiff = 0;
+                                //    }
+                                //}
+
+                                //Special case of the algorithm above, restarting if the first point is seen again.
+                                if (trailgps.Count > 1 && aMatch.Count == 1 &&
+                                    routeIndex > lastMatchInRadius &&
+                                    (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||
+                                    0<checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius)))
+                                {
+                                    //Start over if we pass first point before all were found
+                                    aMatch.Clear();
+                                    trailDistDiff = 0;
+                                }
+                                
                                 if (routeDist < this.Trail.Radius)
                                 {
                                     matchIndex = routeIndex;
@@ -246,26 +278,6 @@ namespace TrailsPlugin.Data {
                                         }
                                     }
                                 }
-
-                                //TODO: Find a way to get shorter trails
-                                //The algorithm here will reduce A'1-B'1-A'2-B'2-C to A'2-B'2-C
-                                //but will fail to match A'1-B-A'2-C
-                                //One way could be to try again if start is match
-                                //For something like: A'1-B'1-A'2-C'1-B'2-A'3-C'2
-                                //Is A'1-B'1-A'2-C'1 or A'2-C'1-B'2-A'3-C'2 or start with A'3?
-                                //Add overlapping results?
-                                //if (matchIndex < 0 && aMatch.Count > 0 &&
-                                //    routeDist > 3 * this.m_trail.Radius)
-                                //{
-                                //    //Start over if we pass first point before all were found
-                                //    float distFromStartToPoint = distanceTrailToRoute(activity, trailgps, 0, routeIndex);
-                                //    if (distFromStartToPoint < this.m_trail.Radius)
-                                //    {
-                                //        aMatch.Clear();
-                                //        matchIndex = routeIndex;
-                                //        trailDistDiff = 0;
-                                //    }
-                                //}
 
                                 if (matchIndex >= 0 &&
                                     //Allow match with same index only for first point

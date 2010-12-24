@@ -191,7 +191,7 @@ namespace TrailsPlugin.Data {
 
             String attr;
             attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
-            if (attr.Length > 0) { m_defaultRadius = float.Parse(attr, NumberFormatInfo.InvariantInfo); }
+            if (attr.Length > 0) { m_defaultRadius = Settings.parseFloat(attr); }
             attr = pluginNode.GetAttribute(xmlTags.sNumFixedColumns);
             if (attr.Length > 0) { m_activityPageNumFixedColumns = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.sXAxis);
@@ -285,6 +285,19 @@ namespace TrailsPlugin.Data {
             public const string SetNameAtImport = "SetNameAtImport";
             public const string sColumns = "sColumns";
         }
+
+        //Parse dont care how the information was stored
+        public static float parseFloat(string val)
+        {
+            if (System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator !=
+                System.Globalization.CultureInfo.InvariantCulture.NumberFormat.CurrencyDecimalSeparator)
+            {
+                val=val.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator,
+                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat.CurrencyDecimalSeparator);
+            }
+            return float.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
 
         ////Old version, read from logbook ("new" settings not implemented)
         //public void FromXml(XmlNode pluginNode)

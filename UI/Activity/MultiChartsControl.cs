@@ -210,16 +210,6 @@ namespace TrailsPlugin.UI.Activity {
             ShowChartToolBar = Data.Settings.ShowChartToolBar;
         }
 
-        private bool replaceDiffChart(TrailLineChart chart, bool isReplace)
-        {
-            //Show speedPace chart instead of flat diff chart
-            return (isReplace || 
-                    chart.YAxisReferential == TrailLineChart.LineChartTypes.DiffDist ||
-                    chart.YAxisReferential == TrailLineChart.LineChartTypes.DiffTime) &&
-                    this.m_page.SelectedItems != null &&
-                    this.m_page.SelectedItems.Count == 1 &&
-                    this.m_page.SelectedItems[0].Equals(m_controller.ReferenceTrailResult);
-        }
         public void RefreshChart()
         {
             if (_showPage)
@@ -235,6 +225,29 @@ namespace TrailsPlugin.UI.Activity {
                     speedPaceYaxis = TrailLineChart.LineChartTypes.Pace;
                 }
 
+                TrailLineChart.LineChartTypes singleChart = Data.Settings.ChartType;
+                if (!m_multiple)
+                {
+                    //find if the singleview chart is empty. If so use SpeedPace
+                    foreach (TrailLineChart chart in m_lineCharts)
+                    {
+                        if (chart.YAxisReferential == speedPaceYaxis && 
+                            TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType)
+                                                    {
+                            singleChart = speedPaceYaxis;
+                        }
+                        else if (chart.YAxisReferential == Data.Settings.ChartType)
+                        {
+                            IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                            chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                            chart.TrailResults = list;
+                            if (!chart.HasValues())
+                            {
+                                singleChart = speedPaceYaxis;
+                            }
+                        }
+                    }
+                }
                 foreach (TrailLineChart chart in m_lineCharts)
                 {
                     bool visible = false;
@@ -244,11 +257,7 @@ namespace TrailsPlugin.UI.Activity {
                         chart.YAxisReferential == speedPaceYaxis &&
                         Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace)) ||
                        !m_multiple &&
-                         ((chart.YAxisReferential == Data.Settings.ChartType &&
-                          !replaceDiffChart(chart, false)) ||
-                         chart.YAxisReferential == speedPaceYaxis &&
-                         (TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType ||
-                           replaceDiffChart(chart, true))))
+                        chart.YAxisReferential == singleChart)
                     {
                         visible = true;
                     }

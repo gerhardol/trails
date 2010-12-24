@@ -507,10 +507,33 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        //Find if the chart has any data
+        private bool? hasValues=null;
+        public bool HasValues()
+        {
+            if (hasValues == null)
+            {
+                foreach (ChartDataSeries t in MainChart.DataSeries)
+                {
+                    foreach (KeyValuePair<float, PointF> v in t.Points)
+                    {
+                        if (v.Value.Y != 0)
+                        {
+                            hasValues = true;
+                            return true;
+                        }
+                    }
+                }
+                hasValues = false;
+            }
+            return (bool)hasValues;
+        }
+
         private void SetupDataSeries()
         {
 			MainChart.DataSeries.Clear();
             m_visible = false;
+            hasValues = null;
 
                 // Add main data. We must use 2 separate data series to overcome the display
                 //  bug in fill mode.  The main data series is normally rendered but the copy
@@ -524,7 +547,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (m_trailResults.Count>1)
                     {
-                        //Dataseries index must match results 
+                        //Add empty, Dataseries index must match results 
                         MainChart.DataSeries.Add(new ChartDataSeries(MainChart, MainChart.YAxis));
                     }
                 }
@@ -611,7 +634,7 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                         CommonResources.Images.Information16;
 #else
- new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
+                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
 #endif
                 if (XAxisReferential == XAxisValue.Time)
                 {

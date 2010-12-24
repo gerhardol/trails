@@ -67,9 +67,9 @@ namespace TrailsPlugin.UI.Activity {
 
             InitControls();
 #if ST_2_1
-            this.summaryList.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
+            this.summaryList.SelectedChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #else
-            this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+            this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
         }
 
@@ -82,14 +82,8 @@ namespace TrailsPlugin.UI.Activity {
 #else
             this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
 #endif
-
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
-#if ST_2_1
-            this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-#else
-            this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-#endif
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -174,15 +168,15 @@ namespace TrailsPlugin.UI.Activity {
                 RefreshColumns();
 
 #if ST_2_1
-                this.summaryList.SelectedChanged -= new System.EventHandler(this.List_SelectedChanged);
+                this.summaryList.SelectedChanged -= new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #else
-                this.summaryList.SelectedItemsChanged -= new System.EventHandler(this.List_SelectedChanged);
+                this.summaryList.SelectedItemsChanged -= new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 summaryList_Sort();
 #if ST_2_1
-                this.summaryList.SelectedChanged += new System.EventHandler(this.List_SelectedChanged);
+                this.summaryList.SelectedChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #else
-                this.summaryList.SelectedItemsChanged += new System.EventHandler(this.List_SelectedChanged);
+                this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
                 if (summaryList.Selected == null || summaryList.Selected.Count == 0)
@@ -370,33 +364,28 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    IList<TrailResult> aTr = new List<TrailResult>();
-                    if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                    object row;
+                    TreeList.RowHitState hit;
+                    row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
+                    if (row != null && hit == TreeList.RowHitState.Row)
                     {
-                        //Select the single row only
-                        object row;
-                        TreeList.RowHitState dummy;
-                        row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out dummy);
-                        if (row != null)
+                        IList<TrailResult> aTr = new List<TrailResult>();
+                        if (TrailsPlugin.Data.Settings.SelectSimilarResults)
                         {
+                            //Select the single row only
+                            //TODO: HitState is not always correct when expanding?
                             TrailResult tr = getTrailResultRow(row);
                             aTr.Add(tr);
                         }
+                        else
+                        {
+                            //The user can control what is selected - mark all
+                            aTr = getTrailResultSelection(l.SelectedItems);
+                        }
+                        m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                     }
-                    else
-                    {
-                        //The user can control what is selected - mark all
-                        aTr = getTrailResultSelection(l.SelectedItems);
-                    }
-                    m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
-
                 }
             }
-        }
-
-        private void List_SelectedChanged(object sender, EventArgs e)
-        {
-            m_page.RefreshChart();
         }
 
         private void selectedRow_DoubleClick(object sender, MouseEventArgs e)
@@ -433,6 +422,7 @@ namespace TrailsPlugin.UI.Activity {
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
             selectSimilarSplits();
+            m_page.RefreshChart();
         }
 
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;

@@ -188,6 +188,7 @@ namespace TrailsPlugin.Data {
                                 //}
 
                                 //Special case of the algorithm above, restarting if the first point is seen again.
+                                //So A1-A2-B1-C1 is reduced to A2-B1-C1
                                 if (trailgps.Count > 1 && aMatch.Count == 1 &&
                                     routeIndex > lastMatchInRadius &&
                                     (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||

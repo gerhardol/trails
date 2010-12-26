@@ -43,8 +43,8 @@ namespace TrailsPlugin.Data {
             m_ShowChartToolBar = true;
             m_SetNameAtImport = true;
             m_SelectSimilarResults = false;
-            m_MaxAutoCalcActivitiesTrails = 150;
-            m_MaxAutoCalcResults = 200;
+            m_MaxAutoCalcActivitiesTrails = 500;
+            m_MaxAutoCalcResults = 800;
         }
         private static IList<string> m_activityPageColumns;
         private static int m_activityPageNumFixedColumns;
@@ -207,9 +207,15 @@ namespace TrailsPlugin.Data {
             attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
             if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
-            if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
+            if (attr.Length > 0) { 
+                //TODO: Changed secret setting, too low default
+                if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcActivitiesTrails)
+                    m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcResults);
-            if (attr.Length > 0) { m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
+            if (attr.Length > 0) {
+                //TODO: Changed secret setting, too low default
+                if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcResults)
+                    m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
             if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.sColumns);

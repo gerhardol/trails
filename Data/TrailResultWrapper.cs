@@ -109,6 +109,26 @@ namespace TrailsPlugin.Data {
             }
             return result;
         }
+        public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn)
+        {
+            IList<TrailResult> result = new List<TrailResult>();
+            if (tn != null)
+            {
+                foreach (TrailResultWrapper tnp in tn)
+                {
+                    result.Add(tnp.Result);
+                    foreach (TrailResultWrapper tnc in tnp.Children)
+                    {
+                        if (!result.Contains(tnc.Result))
+                        {
+                            result.Add(tnc.Result);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
         public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> tn, IList<TrailResult> tr)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();

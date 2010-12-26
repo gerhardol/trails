@@ -225,29 +225,6 @@ namespace TrailsPlugin.UI.Activity {
                     speedPaceYaxis = TrailLineChart.LineChartTypes.Pace;
                 }
 
-                TrailLineChart.LineChartTypes singleChart = Data.Settings.ChartType;
-                if (!m_multiple)
-                {
-                    //find if the singleview chart is empty. If so use SpeedPace
-                    foreach (TrailLineChart chart in m_lineCharts)
-                    {
-                        if (chart.YAxisReferential == speedPaceYaxis && 
-                            TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType)
-                                                    {
-                            singleChart = speedPaceYaxis;
-                        }
-                        else if (chart.YAxisReferential == Data.Settings.ChartType)
-                        {
-                            IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                            chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                            chart.TrailResults = list;
-                            if (!chart.HasValues())
-                            {
-                                singleChart = speedPaceYaxis;
-                            }
-                        }
-                    }
-                }
                 foreach (TrailLineChart chart in m_lineCharts)
                 {
                     bool visible = false;
@@ -257,12 +234,15 @@ namespace TrailsPlugin.UI.Activity {
                         chart.YAxisReferential == speedPaceYaxis &&
                         Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace)) ||
                        !m_multiple &&
-                        chart.YAxisReferential == singleChart)
+                        (chart.YAxisReferential == Data.Settings.ChartType ||
+                        chart.YAxisReferential == speedPaceYaxis &&
+                            TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType))
                     {
                         visible = true;
                     }
 
                     chart.BeginUpdate();
+                    chart.ShowPage = false;
                     if (visible)
                     {
                         if (!m_multiple)
@@ -274,17 +254,40 @@ namespace TrailsPlugin.UI.Activity {
                         IList<Data.TrailResult> list = this.m_page.SelectedItems;
                         chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                         chart.TrailResults = list;
-                    }
-                    else
-                    {
                         chart.ShowPage = visible;
                     }
                     chart.EndUpdate();
+                    if (!m_multiple && visible &&
+                        !chart.HasValues() &&
+                        chart.YAxisReferential != speedPaceYaxis)
+                    {
+                        chart.ShowPage = false;
+                        //Replace empty chart
+                        foreach (TrailLineChart chart2 in m_lineCharts)
+                        {
+                            if (chart2.YAxisReferential == speedPaceYaxis)
+                            {
+                                chart2.BeginUpdate();
+                                chart2.ShowPage = false;
+                                if (!m_multiple)
+                                {
+                                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart2.YAxisReferential) + " / " +
+                                    TrailLineChart.XAxisValueString(chart2.XAxisReferential);
+                                }
+                                chart2.XAxisReferential = Data.Settings.XAxisValue;
+                                IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                                chart2.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                                chart2.TrailResults = list;
+                                chart2.ShowPage = visible;
+                                chart2.EndUpdate();
+                            }
+                        }
+                    }
                 }
                 RefreshRows();
                 RefreshChartMenu();
             }
-		}
+        }
 
         private bool setLineChartChecked(TrailLineChart.LineChartTypes t)
         {

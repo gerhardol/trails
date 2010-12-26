@@ -206,7 +206,10 @@ namespace TrailsPlugin.Controller
             set
             {
                 m_referenceTrailResult = value;
-                m_referenceActivity = value.Activity;
+                if (value != null)
+                {
+                    m_referenceActivity = value.Activity;
+                }
             }
             get
             {
@@ -295,17 +298,8 @@ namespace TrailsPlugin.Controller
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.status == TrailOrderStatus.Match)
             {
-                bool match = false;
-                foreach (Data.TrailResult tr in m_currentActivityTrail.Results)
-                {
-                    if (m_referenceTrailResult.Equals(tr) ||
-                        m_referenceTrailResult.Equals(tr.ParentResult))
-                    {
-                        match = true;
-                        break;
-                    }
-                }
-                if (!match)
+                if (TrailResultWrapper.SelectedItems(m_currentActivityTrail.ResultTreeList, 
+                    new List<TrailResult>{m_referenceTrailResult}).Count==0)
                 {
                     m_referenceTrailResult = null;
                 }

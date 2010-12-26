@@ -179,55 +179,79 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
-                if (summaryList.Selected == null || summaryList.Selected.Count == 0)
-                {
-                    if (((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
-                    {
-#if ST_2_1
-                        summaryList.Selected
-#else
-                        summaryList.SelectedItems 
-#endif
-     = new List<TrailResultWrapper> {((IList<TrailResultWrapper>)summaryList.RowData)[0]};
-                    }
-                    else
-                    {
-                        SelectedItems = null;
-                    }
-                }
+
                 //Set size, to not waste chart
                 int resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
                     this.summaryList.DefaultRowHeight * resRows;
             }
-            else
+            //By setting to null, the last used is selected, or some defaults
+            SelectedItemsWrapper = null;
+        }
+
+        //Wrapper for ST2
+        private System.Collections.IList SelectedItemsRaw
+        {
+            set
             {
-                SelectedItems = null;
+#if ST_2_1
+                    summaryList.Selected
+#else
+                    summaryList.SelectedItems
+#endif
+                        = value;
+                }
+            get
+            {
+                return 
+#if ST_2_1
+                  summaryList.Selected;
+#else
+                  summaryList.SelectedItems;
+#endif
+            }
+        }
+        private IList<TrailResultWrapper> m_SelectedItemsWrapper=null;
+        //Wrap the table SelectedItems, from a generic type
+        private IList<TrailResultWrapper> SelectedItemsWrapper
+        {
+            set
+            {
+                IList<TrailResultWrapper> setValue = (List<TrailResultWrapper>)value;
+                if (null == setValue || !setValue.Equals(m_SelectedItemsWrapper))
+                {
+                    if (setValue == null || setValue.Count == 0)
+                    {
+                        //Select a value
+                        setValue = TrailResultWrapper.SelectedItems
+                    ((IList<TrailResultWrapper>)summaryList.RowData, TrailResultWrapper.GetTrailResults(m_SelectedItemsWrapper));
+                        if (((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
+                        {
+                            setValue = new List<TrailResultWrapper> {
+                           ((IList<TrailResultWrapper>)summaryList.RowData)[0] };
+                        }
+                    }
+                    m_SelectedItemsWrapper = setValue;
+                    SelectedItemsRaw = (List<TrailResultWrapper>)setValue;
+                }
+            }
+            get
+            {
+                return (IList<TrailResultWrapper>)getTrailResultWrapperSelection(this.SelectedItemsRaw);
             }
         }
 
         public IList<TrailResult> SelectedItems
         {
-            set
-            {
-                IList<TrailResultWrapper> results = TrailResultWrapper.SelectedItems
-                    ((IList<TrailResultWrapper>)summaryList.RowData, value);
-#if ST_2_1
-                summaryList.Selected
-#else
-                summaryList.SelectedItems 
-#endif
-                    = (List<TrailResultWrapper>)results;
-                summaryList.EnsureVisible(results);
-            }
+//            set
+//            {
+//                IList<TrailResultWrapper> results = TrailResultWrapper.SelectedItems
+//                    ((IList<TrailResultWrapper>)summaryList.RowData, value);
+//                SelectedItemsWrapper = (List<TrailResultWrapper>)results;
+//                summaryList.EnsureVisible(results);
+//            }
             get {
-                IList<TrailResult> results;
-#if ST_2_1
-                results = getTrailResultSelection(summaryList.Selected);
-#else
-                results = getTrailResultSelection(summaryList.SelectedItems);
-#endif
-                return results;
+                return getTrailResultSelection(SelectedItemsWrapper);
             }
         }
         public void EnsureVisible(IList<TrailResult> atr)
@@ -245,7 +269,19 @@ namespace TrailsPlugin.UI.Activity {
         /*********************************************************/
         public static TrailResult getTrailResultRow(object element)
         {
-            return ((TrailResultWrapper)element).Result;
+            return getTrailResultRow(element, false);
+        }
+        public static TrailResult getTrailResultRow(object element, bool ensureParent)
+        {
+            TrailResultWrapper result = (TrailResultWrapper)element;
+            if (ensureParent)
+            {
+                if (result.Parent != null)
+                {
+                    result = (TrailResultWrapper)result.Parent;
+                }
+            }
+            return result.Result;
         }
 
         public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist)
@@ -263,17 +299,15 @@ namespace TrailsPlugin.UI.Activity {
             }
             return aTr;
         }
-        public static IList<TrailResult> getTrailResultSelection(System.Collections.IList tlist)
+
+        public static IList<TrailResult> getTrailResultSelection(IList<TrailResultWrapper> tlist)
         {
             IList<TrailResult> aTr = new List<TrailResult>();
-            if (tlist != null)
+            foreach (TrailResultWrapper t in tlist)
             {
-                foreach (object t in tlist)
+                if (t != null)
                 {
-                    if (t != null)
-                    {
-                        aTr.Add(((TrailResultWrapper)t).Result);
-                    }
+                    aTr.Add(((TrailResultWrapper)t).Result);
                 }
             }
             return aTr;
@@ -290,21 +324,27 @@ namespace TrailsPlugin.UI.Activity {
 
         void selectSimilarSplits()
         {
+            bool isChange = false;
 #if ST_2_1
             this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
             this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
-            if (Data.Settings.SelectSimilarResults && summaryList.SelectedItems != null)
+            if (Data.Settings.SelectSimilarResults && this.SelectedItemsRaw != null)
             {
-                System.Collections.IList results = new List<TrailResultWrapper>();
-                foreach (object t in summaryList.SelectedItems)
+                //Note that selecting will scroll
+                int? lastSplitIndex = null;
+                bool isSingleIndex = false;
+                IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
+                foreach (TrailResultWrapper t in this.SelectedItemsWrapper)
                 {
                     int splitIndex = -1;
                     if (((TrailResultWrapper)t).Parent != null)
                     {
                         splitIndex = ((TrailResultWrapper)t).Result.Order;
                     }
+                    isSingleIndex = (lastSplitIndex == null || lastSplitIndex == splitIndex) ? true : false;
+                    lastSplitIndex=splitIndex;
                     foreach (TrailResultWrapper rtn in (IList<TrailResultWrapper>)summaryList.RowData)
                     {
                         if (splitIndex < 0)
@@ -323,20 +363,50 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
-#if ST_2_1
-                summaryList.Selected = results;
-#else
-                summaryList.SelectedItems = results;
-#endif
+                if (results != SelectedItemsWrapper)
+                {
+                    this.SelectedItemsWrapper = results;
+                    isChange = true;
+                }
+                if (isSingleIndex)
+                {
+                    //ST scrolls before the mouse is recorded. Therefore the selected item could be one step off
+                    TrailResult currTr = getMouseResult(false);
+                    if (currTr != null && lastSplitIndex >= 0 && currTr.Order != lastSplitIndex)
+                    {
+                        IList<TrailResultWrapper> atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail.ResultTreeList, new List<TrailResult> { currTr.ParentResult });
+                        if (atrp != null && atrp.Count > 0)
+                        {
+                            foreach (TrailResultWrapper trc in atrp[0].Children)
+                            {
+                                if (trc.Result.Order == lastSplitIndex)
+                                {
+                                    currTr = trc.Result;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (currTr != this.m_controller.ReferenceTrailResult)
+                    {
+                        this.m_controller.ReferenceTrailResult = currTr;
+                        isChange = true;
+                    }
+                }
             }
 #if ST_2_1
             this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
             this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
+            if (isChange)
+            {
+                this.m_page.RefreshChart();
+            }
         }
 
         /************************************************************/
+        MouseEventArgs xxx;
         void summaryList_Click(object sender, System.EventArgs e)
         {
             //SelectTrack, for ST3
@@ -369,20 +439,31 @@ namespace TrailsPlugin.UI.Activity {
                     row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
                     if (row != null && hit == TreeList.RowHitState.Row)
                     {
-                        IList<TrailResult> aTr = new List<TrailResult>();
-                        if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                        TrailResult tr = getTrailResultRow(row);
+                        bool isMatch = false;
+                        foreach (TrailResultWrapper t in SelectedItemsWrapper)
                         {
-                            //Select the single row only
-                            //TODO: HitState is not always correct when expanding?
-                            TrailResult tr = getTrailResultRow(row);
-                            aTr.Add(tr);
+                            if (t.Result == tr)
+                            {
+                                isMatch = true;
+                                break;
+                            }
                         }
-                        else
+                        if (isMatch)
                         {
-                            //The user can control what is selected - mark all
-                            aTr = getTrailResultSelection(l.SelectedItems);
+                            IList<TrailResult> aTr = new List<TrailResult>();
+                            if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                            {
+                                //Select the single row only
+                                aTr.Add(tr);
+                            }
+                            else
+                            {
+                                //The user can control what is selected - mark all
+                                aTr = this.SelectedItems;
+                            }
+                            m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                         }
-                        m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                     }
                 }
             }
@@ -421,24 +502,32 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
-            selectSimilarSplits();
-            m_page.RefreshChart();
+            if (Data.Settings.SelectSimilarResults)
+            {
+                selectSimilarSplits();
+            }
+            else
+            {
+                m_page.RefreshChart();
+            }
         }
-
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
         void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             m_mouseClickArgs = e;
         }
-        TrailResult getMouseResult()
+        private TrailResult getMouseResult(bool ensureParent)
         {
             TrailResult tr = null;
-            object row;
-            TreeList.RowHitState dummy;
-            row = summaryList.RowHitTest(m_mouseClickArgs.Location, out dummy);
-            if (row != null)
+            if (m_mouseClickArgs != null)
             {
-                tr = getTrailResultRow(row);
+                object row = null;
+                TreeList.RowHitState dummy;
+                row = summaryList.RowHitTest(m_mouseClickArgs.Location, out dummy);
+                if (row != null)
+                {
+                    tr = getTrailResultRow(row, ensureParent);
+                }
             }
             return tr;
         }
@@ -447,7 +536,7 @@ namespace TrailsPlugin.UI.Activity {
         void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             string currRes = "";
-            TrailResult tr = getMouseResult();
+            TrailResult tr = getMouseResult(false);
             if (tr != null)
             {
                 currRes = tr.FirstTime.ToLocalTime().ToShortDateString() + " " + 
@@ -492,8 +581,13 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         void referenceResultMenuItem_Click(object sender, System.EventArgs e)
-        {
-            m_controller.ReferenceTrailResult = getMouseResult();
+        { 
+            TrailResult tr = getMouseResult(false);
+            if (tr != m_controller.ReferenceTrailResult)
+            {
+                m_controller.ReferenceTrailResult = tr;
+                m_page.RefreshChart();
+            }
         }
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
@@ -505,10 +599,10 @@ namespace TrailsPlugin.UI.Activity {
 
         void excludeResultsMenuItem_Click(object sender, System.EventArgs e)
         {
-            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0&&
+            if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0 &&
                 m_controller.CurrentActivityTrail.ResultTreeList!= null)
             {
-                IList<TrailResultWrapper> atr = getTrailResultWrapperSelection(summaryList.SelectedItems);
+                IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
                 m_controller.CurrentActivityTrail.Remove(atr);
                 m_page.RefreshData();
                 m_page.RefreshControlState();
@@ -518,9 +612,9 @@ namespace TrailsPlugin.UI.Activity {
         void limitActivityMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
-            if (summaryList.SelectedItems != null && summaryList.SelectedItems.Count > 0)
+            if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0)
             {
-                IList<TrailResult> atr = getTrailResultSelection(summaryList.SelectedItems);
+                IList<TrailResult> atr = this.SelectedItems;
                 IList<IActivity> aAct = new List<IActivity>();
                 foreach (TrailResult tr in atr)
                 {

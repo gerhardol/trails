@@ -192,10 +192,9 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                ResultList.EnsureVisible(ResultList.SelectedItems);
                 return this.ResultList.SelectedItems;
             }
-            set { this.ResultList.SelectedItems = value; }
+            //set { this.ResultList.SelectedItems = value; }
         }
 
         private void RefreshRoute()
@@ -315,7 +314,6 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 #endif
-            ResultList.EnsureVisible(TrailResultMarked.getTrailResult(atr));
         }
 
         void mapPoly_Click(object sender, MouseEventArgs e)
@@ -323,11 +321,18 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is TrailMapPolyline)
             {
                 IList<TrailResult> result = new List<TrailResult>{(sender as TrailMapPolyline).TrailRes};
-                ResultList.EnsureVisible(result);
-                MultiCharts.EnsureVisible(result);
+                this.EnsureVisible(result, true);
             }
         }
-        
+
+        public void EnsureVisible(IList<TrailResult> atr, bool chart)
+        {
+            ResultList.EnsureVisible(atr);
+            if (chart)
+            {
+                MultiCharts.EnsureVisible(atr);
+            }
+        }        
 #if ST_2_1
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
 			get

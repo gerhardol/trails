@@ -113,11 +113,11 @@ namespace TrailsPlugin.Data {
                     new List<int> { m_indexes[i - 1], m_indexes[i] }, 
                     m_distDiff);
                 tr.m_parentResult = this;
-                if (aActivities.Count > 1)
-                {
-                    nextTrailColor--;
-                    tr.m_trailColor = this.m_trailColor;
-                }
+                //if (aActivities.Count > 1)
+                //{
+                //    nextTrailColor--;
+                //    tr.m_trailColor = this.m_trailColor;
+                //}
                 splits.Add(tr);
             }
             return splits;
@@ -641,6 +641,11 @@ namespace TrailsPlugin.Data {
             {
                 trActivityInfo t = new trActivityInfo();
                 aActivities.TryGetValue(this.m_activity, out t);
+                if (t == null)
+                {
+                    //TODO:
+                    return Color.Brown;
+                }
                 return getColor(t.activityColor);
             }
         }
@@ -649,7 +654,15 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                return getColor(this.m_trailColor);
+                if (aActivities.Count > 1)
+                {
+                    //TODO: Should be using a result color
+                    return ActivityColor;
+                }
+                else
+                {
+                    return getColor(this.m_trailColor);
+                }
             }
         }
 

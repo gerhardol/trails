@@ -78,6 +78,7 @@
 
   <!-- The last conditional references are seen in VSE, the others will raise warnings -->  
   <!-- references to ST API 2.1 -->
+  <!--
   <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
     <Reference Include="Common.Data, Version=2.1.3478.21402, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -90,7 +91,7 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-
+  -->
   <!-- references to ST API 3.0 -->
   <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
     <Reference Include="Common.Data, Version=3.0.3769.30863, Culture=neutral, processorArchitecture=x86">

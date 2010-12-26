@@ -9,6 +9,7 @@
     <PluginId>d75393a2-4a95-4fe7-ace2-375ff7338b2c</PluginId>
   </PropertyGroup>
   <Import Project=".\Common\Common-References.csproj" />
+  <!--
   <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
     <Reference Include="SportTracks, Version=2.1.3478.21513, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -16,18 +17,21 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  -->
   <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
     <Reference Include="ITrailExport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ITrailExport\bin\ST3.0Release\ITrailExport.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <!--
   <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
     <Reference Include="ITrailExport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ITrailExport\bin\ST2.1Release\ITrailExport.dll</HintPath>
     </Reference>
   </ItemGroup>
+  -->
   <ItemGroup>
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="DataImport\ExtendDataImporters.cs" />

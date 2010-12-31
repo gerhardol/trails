@@ -95,6 +95,15 @@ namespace TrailsPlugin.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Set Name At Import.
+        /// </summary>
+        internal static string SetNameAtImport {
+            get {
+                return ResourceManager.GetString("SetNameAtImport", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap square_blue {
             get {
                 object obj = ResourceManager.GetObject("square_blue", resourceCulture);

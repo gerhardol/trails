@@ -293,8 +293,12 @@ namespace TrailsPlugin.UI.Activity {
                         TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
                         r.Activity = m_controller.SingleActivity;
                         m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-                        m_layer.ZoomRoute = atr[0].trailResult.GpsPoints(r);
+                        m_layer.DoZoom(TrailPointsLayer.GetBounds(atr[0].trailResult.GpsPoints(r)));
 
+                    }
+                    if (!markChart)
+                    {
+                        m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                     }
                 }
                 else
@@ -302,15 +306,13 @@ namespace TrailsPlugin.UI.Activity {
                     IDictionary<string, MapPolyline> result = new Dictionary<string, MapPolyline>();
                     foreach (TrailResultMarked trm in atr)
                     {
-                        TrailMapPolyline m = new TrailMapPolyline(trm.trailResult, trm.selInfo);
-                        m.Click += new MouseEventHandler(mapPoly_Click);
-                        result.Add(m.key, m);
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
+                        {
+                            m.Click += new MouseEventHandler(mapPoly_Click);
+                            result.Add(m.key, m);
+                        }
                     }
                     m_layer.MarkedTrailRoutes = result;
-                }
-                if (!markChart)
-                {
-                    m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                 }
             }
 #endif

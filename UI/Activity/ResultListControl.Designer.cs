@@ -106,7 +106,7 @@
             // 
             this.copyTableMenuItem.Name = "copyTableMenuItem";
             this.copyTableMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.copyTableMenuItem.Text = "Copy table to clipboard";
+            this.copyTableMenuItem.Text = "<Copy table to clipboard";
             this.copyTableMenuItem.Click += new System.EventHandler(this.copyTableMenu_Click);
             // 
             // listSettingsMenuItem
@@ -152,14 +152,14 @@
             // 
             this.limitActivityMenuItem.Name = "limitActivityMenuItem";
             this.limitActivityMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.limitActivityMenuItem.Text = "Limit selection to current activities...";
+            this.limitActivityMenuItem.Text = "<Limit selection to current activities...";
             this.limitActivityMenuItem.Click += new System.EventHandler(this.limitActivityMenuItem_Click);
             // 
             // limitURMenuItem
             // 
             this.limitURMenuItem.Name = "limitURMenuItem";
             this.limitURMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.limitURMenuItem.Text = "Limit selection with UR to current activities...";
+            this.limitURMenuItem.Text = "<Limit selection with UR to current activities...";
             this.limitURMenuItem.Click += new System.EventHandler(this.limitURMenuItem_Click);
             // 
             // selectWithURMenuItem

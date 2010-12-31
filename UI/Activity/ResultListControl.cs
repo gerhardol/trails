@@ -406,7 +406,6 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /************************************************************/
-        MouseEventArgs xxx;
         void summaryList_Click(object sender, System.EventArgs e)
         {
             //SelectTrack, for ST3

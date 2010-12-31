@@ -37,6 +37,7 @@ namespace TrailsPlugin.UI.Settings {
         private void presentSettings()
         {
             txtDefaultRadius.Text = Utils.Units.ElevationToString(Data.Settings.DefaultRadius, "u");
+            txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
         }
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -48,6 +49,7 @@ namespace TrailsPlugin.UI.Settings {
         {
             lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
             toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
+            lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
             presentSettings();
 
             Integration.UniqueRoutes uniqueRoutes = new Integration.UniqueRoutes();
@@ -56,7 +58,7 @@ namespace TrailsPlugin.UI.Settings {
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
                 "rg/licenses/lgpl.html.";
-            this.lblCopyright.Text = "Copyright Brendan Doherty 2009";
+            this.lblCopyright.Text = "Copyright Brendan Doherty 2009, Gerhard Olsson 2010";
             this.PluginInfoBanner.Text = "Plugin Information";
         }
 
@@ -73,6 +75,10 @@ namespace TrailsPlugin.UI.Settings {
             }
             presentSettings();
         }
-
+        void txtSetNameAtImport_CheckedChanged(object sender, System.EventArgs e)
+        {
+            Data.Settings.SetNameAtImport = txtSetNameAtImport.Checked;
+            presentSettings();
+        }
 	}
 }

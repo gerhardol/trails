@@ -9,6 +9,9 @@
     <PluginId>d75393a2-4a95-4fe7-ace2-375ff7338b2c</PluginId>
   </PropertyGroup>
   <Import Project=".\Common\Common-References.csproj" />
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);TRAILSPLUGIN</DefineConstants>
+  </PropertyGroup>
   <!--
   <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
     <Reference Include="SportTracks, Version=2.1.3478.21513, Culture=neutral, processorArchitecture=MSIL">
@@ -58,7 +61,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI\Actions\Action.cs" />
     <Compile Include="UI\Activity\TrailSelectorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

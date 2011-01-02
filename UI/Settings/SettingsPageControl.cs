@@ -52,8 +52,7 @@ namespace TrailsPlugin.UI.Settings {
             lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
             presentSettings();
 
-            Integration.UniqueRoutes uniqueRoutes = new Integration.UniqueRoutes();
-            this.lblUniqueRoutes.Text = uniqueRoutes.CompabilityText;
+            this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
             //Some untranslated strings....
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +

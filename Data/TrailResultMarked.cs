@@ -18,6 +18,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 
 namespace TrailsPlugin.Data {
     public class TrailResultMarked
@@ -39,6 +40,11 @@ namespace TrailsPlugin.Data {
         {
             trailResult = tr;
             selInfo.MarkedDistances = t;
+        }
+        public TrailResultMarked(TrailResult tr, IItemTrackSelectionInfo t)
+        {
+            trailResult = tr;
+            selInfo.SetFromSelection(t);
         }
         public TrailResult trailResult;
         public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();

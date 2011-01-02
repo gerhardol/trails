@@ -84,6 +84,11 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
+
+            this.selectWithURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
+            this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
+            this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
+            this.markCommonStretchesMenuItem.Visible = false; //TODO: CS update
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -97,7 +102,7 @@ namespace TrailsPlugin.UI.Activity {
             this.limitActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
             this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
             this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
-
+            this.markCommonStretchesMenuItem.Text = Properties.Resources.UI_Activity_List_URCommon;
             this.RefreshColumns();
         }
         public void ThemeChanged(ITheme visualTheme)
@@ -629,8 +634,7 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             try
             {
-                UniqueRoutes uniqueRoutes = new UniqueRoutes();
-                IList<IActivity> similarActivities = uniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
+                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
 
                 if (similarActivities != null)
                 {
@@ -656,8 +660,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             try
             {
-                UniqueRoutes uniqueRoutes = new UniqueRoutes();
-                IList<IActivity> similarActivities = uniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
+                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
                 if (similarActivities != null)
                 {
                     IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
@@ -682,6 +685,34 @@ namespace TrailsPlugin.UI.Activity {
             {
                 MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        void markCommonStretchesMenuItem_Click(object sender, System.EventArgs e)
+        {
+            IList<IActivity> activities = new List<IActivity>();
+            foreach (TrailResultWrapper t in SelectedItemsWrapper)
+            {
+                if (!activities.Contains(t.Result.Activity))
+                {
+                    activities.Add(t.Result.Activity);
+                }
+            }
+            IList<TrailResultMarked> aTrm = new List<TrailResultMarked>();
+            IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = UniqueRoutes.GetCommonStretchesForActivity(m_controller.ReferenceActivity, activities, null);
+            if (commonStretches != null && commonStretches.Count > 0)
+            {
+                foreach (TrailResult tr in this.SelectedItems)
+                {
+                    if (m_controller.ReferenceActivity != tr.Activity &&
+                        commonStretches.ContainsKey(tr.Activity) &&
+                        commonStretches[tr.Activity] != null)
+                    {
+                        aTrm.Add(new TrailResultMarked(tr, commonStretches[tr.Activity][0].MarkedTimes));
+                    }
+                }
+            }
+            m_page.MarkTrack(aTrm);
+            m_page.SetSelectedRegions(aTrm);
         }
     }
 }

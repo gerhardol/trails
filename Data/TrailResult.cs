@@ -374,18 +374,22 @@ namespace TrailsPlugin.Data {
             if (null == m_distanceMetersTrack)
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
-                IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
-                if (track != null)
+                //TODO: Non-GPS activities?
+                if (Activity.GPSRoute != null)
                 {
-                    m_startDistance = track[m_startIndex].Value;
-                    m_lastDistance = track[m_endIndex].Value;
-                    for (int i = m_startIndex; i <= m_endIndex; i++)
+                    IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
+                    if (track != null)
                     {
-                        ITimeValueEntry<float> value = track[i];
-                        m_distanceMetersTrack.Add(
-                            m_startTime.AddSeconds(value.ElapsedSeconds),
-                            value.Value - m_startDistance
-                        );
+                        m_startDistance = track[m_startIndex].Value;
+                        m_lastDistance = track[m_endIndex].Value;
+                        for (int i = m_startIndex; i <= m_endIndex; i++)
+                        {
+                            ITimeValueEntry<float> value = track[i];
+                            m_distanceMetersTrack.Add(
+                                m_startTime.AddSeconds(value.ElapsedSeconds),
+                                value.Value - m_startDistance
+                            );
+                        }
                     }
                 }
             }
@@ -548,10 +552,13 @@ namespace TrailsPlugin.Data {
         {
             m_gpsTrack = new GPSRoute();
             m_gpsPoints = new List<IGPSPoint>();
-            for (int i = m_startIndex; i <= m_endIndex; i++)
+            if (Activity.GPSRoute != null)
             {
-                m_gpsPoints.Add(m_activity.GPSRoute[i].Value);
-                m_gpsTrack.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]), m_activity.GPSRoute[i].Value);
+                for (int i = m_startIndex; i <= m_endIndex; i++)
+                {
+                    m_gpsPoints.Add(m_activity.GPSRoute[i].Value);
+                    m_gpsTrack.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]), m_activity.GPSRoute[i].Value);
+                }
             }
         }
         public IGPSRoute GpsTrack
@@ -591,23 +598,26 @@ namespace TrailsPlugin.Data {
         {
             IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
 
-            foreach (IValueRange<DateTime> r in t)
+            if (Activity.GPSRoute != null)
             {
-                IGPSRoute GpsTrack = Activity.GPSRoute;
-                IList<IGPSPoint> track = new List<IGPSPoint>();
-                int i = 0;
-                while (i < GpsTrack.Count &&
-                    0 < r.Lower.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
+                foreach (IValueRange<DateTime> r in t)
                 {
-                    i++;
+                    IGPSRoute GpsTrack = Activity.GPSRoute;
+                    IList<IGPSPoint> track = new List<IGPSPoint>();
+                    int i = 0;
+                    while (i < GpsTrack.Count &&
+                        0 < r.Lower.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
+                    {
+                        i++;
+                    }
+                    while (i < GpsTrack.Count &&
+                        0 <= r.Upper.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
+                    {
+                        track.Add(GpsTrack[i].Value);
+                        i++;
+                    }
+                    result.Add(track);
                 }
-                while (i < GpsTrack.Count &&
-                    0 <= r.Upper.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
-                {
-                    track.Add(GpsTrack[i].Value);
-                    i++;
-                }
-                result.Add(track);
             }
 
             return result;
@@ -615,28 +625,30 @@ namespace TrailsPlugin.Data {
 
         private IList<IList<IGPSPoint>> GpsPoints(IValueRangeSeries<double> t)
         {
-            IGPSRoute GpsTrack = Activity.GPSRoute;
-            IDistanceDataTrack DistanceMetersTrack = Activity.GPSRoute.GetDistanceMetersTrack();
             IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
-
-            foreach (IValueRange<double> r in t)
+            if (Activity.GPSRoute != null)
             {
-                IList<IGPSPoint> track = new List<IGPSPoint>();
-                int i = 0;
-                while (i < GpsTrack.Count &&
-                    r.Lower - FirstDist > DistanceMetersTrack[i].Value)
-                {
-                    i++;
-                }
-                while (i < GpsTrack.Count &&
-                    r.Upper - FirstDist >= DistanceMetersTrack[i].Value)
-                {
-                    track.Add(GpsTrack[i].Value);
-                    i++;
-                }
-                result.Add(track);
-            }
+                IGPSRoute GpsTrack = Activity.GPSRoute;
+                IDistanceDataTrack DistanceMetersTrack = Activity.GPSRoute.GetDistanceMetersTrack();
 
+                foreach (IValueRange<double> r in t)
+                {
+                    IList<IGPSPoint> track = new List<IGPSPoint>();
+                    int i = 0;
+                    while (i < GpsTrack.Count &&
+                        r.Lower - FirstDist > DistanceMetersTrack[i].Value)
+                    {
+                        i++;
+                    }
+                    while (i < GpsTrack.Count &&
+                        r.Upper - FirstDist >= DistanceMetersTrack[i].Value)
+                    {
+                        track.Add(GpsTrack[i].Value);
+                        i++;
+                    }
+                    result.Add(track);
+                }
+            }
             return result;
         }
 

@@ -21,124 +21,156 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 
-//Adapted from Matrix plugin
+//Similar file used in Matrix, Trails, Overlay
 namespace TrailsPlugin.Integration
 {
-    public class UniqueRoutes
+    public static class UniqueRoutes
     {
         //Note: namespace changed, compatibility namespace still used
-        private const string UniqueRoutesSettingsClr = "SportTracksUniqueRoutesPlugin.Source.Settings";
-        private const string UniqueRoutesClr = "SportTracksUniqueRoutesPlugin.Source.UniqueRoutes";
-        //private const string UniqueRouteGuid = "5c630517-46c4-478d-89d6-a8a6ca6337db";
+        private const string UniqueRoutesClr = "UniqueRoutes.Export.UniqueRoutes";
         private const string UniquePlugin = "UniqueRoutesPlugin";
-        System.Version minVersion = new System.Version(1,9,0,0);
+        private const string findSimilarRoutes = "findSimilarRoutes";
+        private const string findCommonStretches = "findCommonStretches";
 
-        private object _uniqueRoutes = null;
+        private static System.Version minVersion = new System.Version(1, 9, 203, 0);
+        private static System.Version currVersion = new System.Version(0, 0, 0, 0);
+        private static bool testedUniqueRoutes = false;
 
-        public string CompabilityText
+        private static Type _uniqueRoutes = null;
+        private static Type GetUniqueRoutes
         {
             get
             {
-                string result = string.Format(Properties.Resources.UniqueRoutesToInstall, minVersion.ToString(), UniquePlugin);
-                Type type;
-                System.Version version;
-                try
+                if (_uniqueRoutes == null && !testedUniqueRoutes)
                 {
-                    type = IntegrationUtility.GetType(UniqueRoutesClr, UniquePlugin, out version);
-                    if (type != null)
-                    {
-                        if (version.CompareTo(minVersion) >= 0)
-                        {
-                            result = string.Format(Properties.Resources.OtherPluginVersion, version.ToString(), UniquePlugin) + " " +
-                                Properties.Resources.UniqueRoutesCompatible;
-                        }
-                        else
-                        {
-                            result = string.Format(Properties.Resources.OtherPluginVersion, version.ToString(), UniquePlugin) + " " +
-                                string.Format(Properties.Resources.UniqueRoutesToInstall, minVersion.ToString(), UniquePlugin);
-                        }
-                    }
+                    testedUniqueRoutes = true;
+
+                    _uniqueRoutes = IntegrationUtility.GetType(UniqueRoutesClr, UniquePlugin, out currVersion);
                 }
-                catch (Exception)
-                {
-                }
-                return result;
+                return _uniqueRoutes;
             }
         }
 
-        public bool UniqueRouteIntegrationEnabled
+        public static string CompabilityText
         {
-            get { return _uniqueRoutes != null; }
-        }
-
-        private static bool HasDirection()
-        {
-            System.Version version;
-            Type type = IntegrationUtility.GetType(UniqueRoutesSettingsClr, UniquePlugin, out version);
-            if (type != null)
-                return (bool)type.GetMethod("get_HasDirection").Invoke(null, null);
-            else
+            get
             {
-                throw new Exception(string.Format(Properties.Resources.OtherPluginExceptionText,
-                           UniquePlugin + ".dll", Properties.Resources.UniqueRoutesPluginName) + Environment.NewLine);
+                return IntegrationUtility.CompabilityText(GetUniqueRoutes, UniqueRoutesToInstall, UniqueRoutesCompatible, UniquePlugin, currVersion, minVersion);
             }
         }
 
-        private static void SetDirection(bool hasDirection)
+        public static bool UniqueRouteIntegrationEnabled
         {
-            System.Version version;
-            Type type = IntegrationUtility.GetType(UniqueRoutesSettingsClr, UniquePlugin, out version);
-            if (type != null)
-                type.GetMethod("set_HasDirection").Invoke(hasDirection, new object[] {hasDirection});
-            else
-            {
-                throw new Exception(string.Format(Properties.Resources.OtherPluginExceptionText,
-        UniquePlugin + ".dll", Properties.Resources.UniqueRoutesPluginName) + Environment.NewLine);
-            }
+            get { return GetUniqueRoutes != null; }
         }
 
-        public IList<IActivity> GetUniqueRoutesForActivity(IActivity activity, System.Windows.Forms.ProgressBar progressBar)
+        public static IList<IActivity> GetUniqueRoutesForActivity(IActivity activity, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<IActivity> results = null;
-            Type type;
 
             try
             {
-                bool hasDirection = HasDirection();
-                if (hasDirection)
-                    SetDirection(false);
-
                 if (progressBar == null)
                     progressBar = new System.Windows.Forms.ProgressBar();
 
-                System.Version version;
-                type = IntegrationUtility.GetType(UniqueRoutesClr, UniquePlugin, out version);
-                if (type != null)
+                if (GetUniqueRoutes != null)
                 {
-                    MethodInfo methodInfo = type.GetMethod("findSimilarRoutes");
+                    MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findSimilarRoutes);
                     object resultFromURPlugIn = methodInfo.Invoke(activity, new object[] { activity, progressBar });
-                    results = (IList<IActivity>) resultFromURPlugIn;
+                    results = (IList<IActivity>)resultFromURPlugIn;
                 }
+            }
+            catch (Exception e)
+            {
+                // Log error?
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+            UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine, e);
+            }
 
-                if (hasDirection)
-                    SetDirection(true);
+            if (GetUniqueRoutes == null)
+            {
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+        UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine);
+            }
+
+            return results;
+        }
+
+        public static IDictionary<IActivity, IItemTrackSelectionInfo[]> GetCommonStretchesForActivity(IActivity activity, IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
+        {
+            IDictionary<IActivity, IItemTrackSelectionInfo[]> results = null;
+
+            try
+            {
+                if (progressBar == null)
+                    progressBar = new System.Windows.Forms.ProgressBar();
+
+                if (GetUniqueRoutes != null)
+                {
+                    MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findCommonStretches);
+                    object resultFromURPlugIn = methodInfo.Invoke(activity, new object[] { activity, activities, progressBar });
+                    results = (IDictionary<IActivity, IItemTrackSelectionInfo[]>)resultFromURPlugIn;
+                }
             }
             catch (Exception e)
             {
                 // Log error?
                 _uniqueRoutes = null;
-                throw new Exception(string.Format(Properties.Resources.OtherPluginExceptionText,
-            UniquePlugin + ".dll", Properties.Resources.UniqueRoutesPluginName) + Environment.NewLine, e);
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+            UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine, e);
             }
 
-            if (type == null)
+            if (GetUniqueRoutes == null)
             {
-                throw new Exception(string.Format(Properties.Resources.OtherPluginExceptionText,
-        UniquePlugin + ".dll", Properties.Resources.UniqueRoutesPluginName) + Environment.NewLine);
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+        UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine);
             }
 
             return results;
         }
-    }
+
+        private static string UniqueRoutesPluginName
+        {
+            get
+            {
+                return 
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+                  GpsRunningPlugin.Util.StringResources
+#else // MATRIXPLUGIN, TRAILSPLUGIN
+                  Properties.Resources
+#endif
+                  .UniqueRoutesPluginName;
+            }
+        }
+
+        private static string UniqueRoutesToInstall
+        {
+            get
+            {
+                return
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+                  GpsRunningPlugin.Util.StringResources
+#else // MATRIXPLUGIN, TRAILSPLUGIN
+                  Properties.Resources
+#endif
+                  .UniqueRoutesToInstall;
+            }
+        }
+
+        private static string UniqueRoutesCompatible
+        {
+            get
+            {
+                return
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+                  GpsRunningPlugin.Util.StringResources
+#else // MATRIXPLUGIN, TRAILSPLUGIN
+                  Properties.Resources
+#endif
+                  .UniqueRoutesCompatible;
+            }
+        }
+}
 }

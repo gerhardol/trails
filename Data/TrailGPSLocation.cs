@@ -29,6 +29,8 @@ namespace TrailsPlugin.Data {
             this._name = name;
         }
 
+        //This code is shared in other plugins
+#if TRAILSPLUGIN
 		static public TrailGPSLocation FromXml(XmlNode node)
         {
             string name = "";
@@ -43,6 +45,8 @@ namespace TrailsPlugin.Data {
                 name
 			);
         }
+#endif
+
         private GPSLocation _gpsLocation;
         public GPSLocation GpsLocation
         {

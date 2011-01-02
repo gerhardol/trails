@@ -304,4 +304,7 @@ Make sure that {1} is installed.</value>
   <data name="SetNameAtImport" xml:space="preserve">
     <value>Set Name At Import</value>
   </data>
+  <data name="UI_Activity_List_URCommon" xml:space="preserve">
+    <value>Mark Unique Routes common stretches</value>
+  </data>
 </root>

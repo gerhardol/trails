@@ -44,6 +44,7 @@ using TrailsPlugin.UI.MapLayers;
 using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
 using TrailsPlugin.Data;
+using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class ActivityDetailPageControl : UserControl {
@@ -293,7 +294,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
                         r.Activity = m_controller.SingleActivity;
                         m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-                        m_layer.DoZoom(TrailPointsLayer.GetBounds(atr[0].trailResult.GpsPoints(r)));
+                        m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(r)));
 
                     }
                     if (!markChart)
@@ -334,7 +335,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 MultiCharts.EnsureVisible(atr);
             }
-        }        
+        }
+        public void SetSelectedRegions(IList<TrailResultMarked> atr)
+        {
+            MultiCharts.SetSelectedRegions(atr);
+        }
 #if ST_2_1
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
 			get
@@ -420,7 +425,7 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
                 {
-                    MultiCharts.SetSelected(selected.SelectedItems);
+                    MultiCharts.SetSelectedRange(selected.SelectedItems);
                 }
             }
         }

@@ -347,6 +347,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mark Unique Routes common stretches.
+        /// </summary>
+        internal static string UI_Activity_List_URCommon {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_URCommon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Limit activities with Unique Routes from reference activity{0}.
         /// </summary>
         internal static string UI_Activity_List_URLimit {

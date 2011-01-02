@@ -339,11 +339,25 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChart();
         }
 
-        public void SetSelected(IList<IItemTrackSelectionInfo> asel)
+        public void SetSelectedRegions(IList<TrailResultMarked> atr)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelected(asel);
+                if (chart.ShowPage)
+                {
+                    if (chart.ShowPage)
+                    {
+                        chart.SetSelectedRegions(atr);
+                    }
+                }
+            }
+        }
+        //Used as callback when selected from chart - should be only for single activity
+        public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel)
+        {
+            foreach (TrailLineChart chart in m_lineCharts)
+            {
+                chart.SetSelectedRange(asel);
             }
         }
         public void SetSelectedRange(IList<float[]> regions)

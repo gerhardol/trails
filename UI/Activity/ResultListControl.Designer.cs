@@ -36,6 +36,7 @@
             this.limitActivityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.limitURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectWithURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.markCommonStretchesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
@@ -136,7 +137,8 @@
             this.excludeResultsMenuItem,
             this.limitActivityMenuItem,
             this.limitURMenuItem,
-            this.selectWithURMenuItem});
+            this.selectWithURMenuItem,
+            this.markCommonStretchesMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
@@ -169,6 +171,13 @@
             this.selectWithURMenuItem.Text = "<Select with UR to current activities...";
             this.selectWithURMenuItem.Click += new System.EventHandler(selectWithURMenuItem_Click);
             // 
+            // markCommonStretchesMenuItem
+            // 
+            this.markCommonStretchesMenuItem.Name = "markCommonStretchesMenuItem";
+            this.markCommonStretchesMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.markCommonStretchesMenuItem.Text = "<Mark common stretches...";
+            this.markCommonStretchesMenuItem.Click += new System.EventHandler(this.markCommonStretchesMenuItem_Click);
+            // 
             // ResultListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,6 +206,7 @@
         private System.Windows.Forms.ToolStripMenuItem excludeResultsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem limitActivityMenuItem;
         private System.Windows.Forms.ToolStripMenuItem limitURMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem markCommonStretchesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;
     }
 }

@@ -215,26 +215,6 @@ namespace TrailsPlugin.UI.MapLayers
                 }
             }
         }
-        public static IGPSBounds GetBounds(IList<IList<IGPSPoint>> trks)
-        {
-            GPSBounds area = null;
-            foreach (IList<IGPSPoint> trk in trks)
-            {
-                GPSBounds area2 = GPSBounds.FromGPSPoints(trk);
-                if (area2 != null)
-                {
-                    if (area == null)
-                    {
-                        area = area2;
-                    }
-                    else
-                    {
-                        area = (GPSBounds)area.Union(area2);
-                    }
-                }
-            }
-            return area;
-        }
         public float HighlightRadius
         {
             set

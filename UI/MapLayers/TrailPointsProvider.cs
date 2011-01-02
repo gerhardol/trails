@@ -62,7 +62,16 @@ namespace TrailsPlugin.UI.MapLayers
 
         public string Name
         {
-            get { return Properties.Resources.TrailPointsControlLayer; }
+            get
+            {
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+                return GpsRunningPlugin.Properties.Resources.TrailPointsControlLayer; 
+#elif MATRIXPLUGIN
+                return MatrixPlugin.Properties.Resources.TrailPointsControlLayer;
+#else // TRAILSPLUGIN
+                return Properties.Resources.TrailPointsControlLayer;
+#endif
+            }
         }
     }
 }

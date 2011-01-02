@@ -82,46 +82,46 @@
     <value>Radio</value>
   </data>
   <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
-    <value>Radio debe ser númerico</value>
+    <value>Radio debe ser nÃºmerico</value>
   </data>
   <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
     <value>Nombre de sendero requerido</value>
   </data>
   <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
-    <value>Nombre único de sendero necesario</value>
+    <value>Nombre Ãºnico de sendero necesario</value>
   </data>
   <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
     <value>Error al actualizar</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Agrega nuevo sendero o puntos seleccionados a un sendero. (selecciona puntos del sendero en el mapa antes de dar click a este botón).</value>
+    <value>Agrega nuevo sendero o puntos seleccionados a un sendero. (selecciona puntos del sendero en el mapa antes de dar click a este botÃ³n).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
-    <value>¿Está seguro de borrar este sendero?</value>
+    <value>Â¿EstÃ¡ seguro de borrar este sendero?</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
     <value>Borra este sendero</value>
   </data>
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
-    <value>Editar este sendero. (selecciona el sendero en el mapa antes de dar click a este botón).</value>
+    <value>Editar este sendero. (selecciona el sendero en el mapa antes de dar click a este botÃ³n).</value>
   </data>
   <data name="UI_Activity_List_ListSettings" xml:space="preserve">
     <comment>STcore</comment>
-    <value>Configuración…</value>
+    <value>ConfiguraciÃ³nâ¦</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
     <comment>ST2 only</comment>
     <value>Debe seleccionar un punto en el mapa.
 
 Para seleccionar un puento, solo de clik en el mapa.
-Agrege nuevos puntos presionando el botón agregar.
+Agrege nuevos puntos presionando el botÃ³n agregar.
 
 Para seleccionar un segundo punto, Opirma CTRL, y de click en otra parte del sendero.
-Selecione los puntos necesario para hacer el sendero único.
+Selecione los puntos necesario para hacer el sendero Ãºnico.
 </value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
-    <value>Desea actualizar la localización de los putnos GPS del sendero
+    <value>Desea actualizar la localizaciÃ³n de los putnos GPS del sendero
 con los actualmente selecionados?</value>
   </data>
   <data name="UI_Settings_DefaultRadius" xml:space="preserve">
@@ -136,11 +136,11 @@ Cambiar este. Valor no modifica los senderos existentes.</value>
   </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <comment>unused</comment>
-    <value>Ocultar Herramientas Gráficas</value>
+    <value>Ocultar Herramientas GrÃ¡ficas</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <comment>Same as STcore </comment>
-    <value>Mostrar Herramientas Gráficas</value>
+    <value>Mostrar Herramientas GrÃ¡ficas</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
     <value>Debe seleccionar un punto en el mapa.

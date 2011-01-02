@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-//Also in Matrix plugin
+//Used in Matrix, Trails, Overlay, UniqueRoutes plugin
 namespace TrailsPlugin.Integration
 {
     public class IntegrationUtility
@@ -47,6 +47,58 @@ namespace TrailsPlugin.Integration
             }
             catch (Exception) { }
             return null;
+        }
+
+        public static string CompabilityText(Type type, string PluginToInstall, string PluginCompatible, string UniquePlugin, System.Version currVersion, System.Version minVersion)
+        {
+            string result = string.Format(PluginToInstall, minVersion.ToString(), UniquePlugin);
+            try
+            {
+                if (type != null)
+                {
+                    if (currVersion.CompareTo(minVersion) >= 0)
+                    {
+                        result = string.Format(OtherPluginVersion, currVersion.ToString(), UniquePlugin) + " " +
+                            PluginCompatible;
+                    }
+                    else
+                    {
+                        result = string.Format(OtherPluginVersion, currVersion.ToString(), UniquePlugin) + " " +
+                            string.Format(PluginToInstall, minVersion.ToString(), UniquePlugin);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return result;
+        }
+        public static string OtherPluginVersion
+        {
+            get
+            {
+                return
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+ GpsRunningPlugin.Util.StringResources
+#else // MATRIXPLUGIN, TRAILSPLUGIN
+                  Properties.Resources
+#endif
+.OtherPluginVersion;
+            }
+        }
+
+        public static string OtherPluginExceptionText
+        {
+            get
+            {
+                return
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+ GpsRunningPlugin.Util.StringResources
+#else // MATRIXPLUGIN, TRAILSPLUGIN
+                  Properties.Resources
+#endif
+.OtherPluginExceptionText;
+            }
         }
     }
 }

@@ -665,7 +665,6 @@ namespace TrailsPlugin.Data {
                 aActivities.TryGetValue(this.m_activity, out t);
                 if (t == null)
                 {
-                    //TODO:
                     return Color.Brown;
                 }
                 return getColor(t.activityColor);

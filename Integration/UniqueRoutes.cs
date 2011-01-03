@@ -22,6 +22,9 @@ using System.IO;
 using System.Reflection;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+#if ST_2_1
+using TrailsPlugin.Data;
+#endif
 
 //Similar file used in Matrix, Trails, Overlay
 namespace TrailsPlugin.Integration

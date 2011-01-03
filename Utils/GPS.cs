@@ -30,6 +30,7 @@ namespace TrailsPlugin.Utils {
 			return new GPSLocation(point.LatitudeDegrees, point.LongitudeDegrees);
 		}
 
+#if !ST_2_1
         public static IGPSBounds GetBounds(IList<IList<IGPSPoint>> trks)
         {
             GPSBounds area = null;
@@ -50,5 +51,6 @@ namespace TrailsPlugin.Utils {
             }
             return area;
         }
-	}
+#endif
+    }
 }

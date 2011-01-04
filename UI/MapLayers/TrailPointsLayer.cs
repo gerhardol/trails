@@ -180,7 +180,7 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     if (value.Count > 0)
                     {
-                        GPSBounds area = null;
+                        IGPSBounds area = null;
                         foreach (MapPolyline m in value.Values)
                         {
                             GPSBounds area2 = GPSBounds.FromGPSPoints(m.Locations);

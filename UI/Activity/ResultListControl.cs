@@ -88,7 +88,6 @@ namespace TrailsPlugin.UI.Activity {
             this.selectWithURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
-            this.markCommonStretchesMenuItem.Visible = false; //TODO: CS update
         }
 
         public void UICultureChanged(CultureInfo culture)

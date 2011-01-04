@@ -50,7 +50,7 @@ else
   open F, "$tfile";
   while(<F>){$csv.=$_;}
   close F;
-  unlink $tfile;
+#  unlink $tfile;
 }
  die "Couldn't get $data" unless defined $csv;
 

@@ -60,13 +60,13 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
-    <value>LÃ¤gg till trail</value>
+    <value>Lägg till trail</value>
   </data>
   <data name="UI_Activity_EditTrail_EditTrail" xml:space="preserve">
     <value>Editera trail</value>
   </data>
   <data name="UI_Activity_EditTrail_InsertFailed" xml:space="preserve">
-    <value>TillÃ¤gg misslyckades</value>
+    <value>Tillägg misslyckades</value>
   </data>
   <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
     <value>Latitude</value>
@@ -78,42 +78,42 @@
     <value>Radie</value>
   </data>
   <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
-    <value>Radie mÃ¥ste vara numerisk.</value>
+    <value>Radie måste vara numerisk.</value>
   </data>
   <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
-    <value>Namn krÃ¤vs pÃ¥ trail.</value>
+    <value>Namn krävs på trail.</value>
   </data>
   <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
-    <value>Unikt namn krÃ¤vs pÃ¥ trail.</value>
+    <value>Unikt namn krävs på trail.</value>
   </data>
   <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
     <value>Uppdatering misslyckades.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>LÃ¤gg till ny trail eller lÃ¤gg till valda punkter till nuvarande trail. (VÃ¤lj punkter pÃ¥ kartan fÃ¶re denna knapp aktiveras.)</value>
+    <value>Lägg till ny trail eller lägg till valda punkter till nuvarande trail. (Välj punkter på kartan före denna knapp aktiveras.)</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
-    <value>Ãr du sÃ¤ker pÃ¥ att du vill ta bort denna trail?</value>
+    <value>Är du säker på att du vill ta bort denna trail?</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
     <value>Ta bort trail.</value>
   </data>
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
-    <value>Editera denna trail. (VÃ¤lj trail punkterna pÃ¥ kartan fÃ¶re denna knapp aktiveras.)</value>
+    <value>Editera denna trail. (Välj trail punkterna på kartan före denna knapp aktiveras.)</value>
   </data>
   <data name="UI_Activity_List_ListSettings" xml:space="preserve">
     <comment>STcore</comment>
-    <value>InstÃ¤llningar fÃ¶r tabell...</value>
+    <value>Inställningar för tabell...</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
     <comment>ST2 only</comment>
-    <value>Du mÃ¥ste vÃ¤lja punkter pÃ¥ kartan.
+    <value>Du måste välja punkter på kartan.
 
-FÃ¶r att vÃ¤lja en punkt, klicka bara pÃ¥ ett aktivitetsspÃ¥r.
+För att välja en punkt, klicka bara på ett aktivitetsspår.
 
-FÃ¶r att vÃ¤lja ytterliggare punkter, anvÃ¤nd CTRL och klicka pÃ¥ en annan punkt pÃ¥ spÃ¥ret.
-VÃ¤lj punkter sÃ¥ denna trail Ã¤r unik jÃ¤mfÃ¶rd med andra trail.
-Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att vÃ¤lja Trail {0} och klicka pÃ¥ knappen fÃ¶r editera.</value>
+För att välja ytterliggare punkter, använd CTRL och klicka på en annan punkt på spåret.
+Välj punkter så denna trail är unik jämförd med andra trail.
+Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Vill du uppdatera trail GPS punkter med de valda punkterna?</value>
@@ -122,10 +122,10 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att vÃ¤lja T
     <value>Default radie</value>
   </data>
   <data name="UI_Settings_DefaultRadius_ToolTip" xml:space="preserve">
-    <value>Default radie fÃ¶r trail punkter dÃ¥ nya punkter lÃ¤ggs till. Ãndring av denna parameter pÃ¥verkar inte existerande spÃ¥r.</value>
+    <value>Default radie för trail punkter då nya punkter läggs till. Ändring av denna parameter påverkar inte existerande spår.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
-    <value>VÃ¤lj {0} fÃ¶r att lÃ¤gga till valda punkter till nuvarande trail, {1} fÃ¶r att lÃ¤gga till ny trail.</value>
+    <value>Välj {0} för att lägga till valda punkter till nuvarande trail, {1} för att lägga till ny trail.</value>
   </data>
   <data name="TrailPointsControlLayer" xml:space="preserve">
     <value>Trail punkter</value>
@@ -135,47 +135,47 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att vÃ¤lja T
   </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <comment>unused</comment>
-    <value>GÃ¶m kartverktyg</value>
+    <value>Göm kartverktyg</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <comment>Same as STcore </comment>
     <value>Visa kartverktyg</value>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
-    <value>Dubbelklicka i tabellen fÃ¶r att editera.</value>
+    <value>Dubbelklicka i tabellen för att editera.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
     <comment>unused</comment>
-    <value>Inga punkter valda pÃ¥ kartan.
+    <value>Inga punkter valda på kartan.
 
-VÃ¤lj {0} fÃ¶r att anvÃ¤nda etapper, {1} fÃ¶r att avbryta och vÃ¤lja punkter pÃ¥ GPS spÃ¥ret.</value>
+Välj {0} för att använda etapper, {1} för att avbryta och välja punkter på GPS spåret.</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
-    <value>BegrÃ¤nsa aktiviteter till valda i listan</value>
+    <value>Begränsa aktiviteter till valda i listan</value>
   </data>
   <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
-    <value>SÃ¤tt referens resultat ({0}, Nuvarande: {1})</value>
+    <value>Sätt referens resultat ({0}, Nuvarande: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
     <value>Markera liknade trail eller etapper i listan</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>BegrÃ¤nsa aktiviter med Unique Routes frÃ¥n referens aktivitet{0}</value>
+    <value>Begränsa aktiviter med Unique Routes från referens aktivitet{0}</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
     <value>Referens Aktivitet</value>
   </data>
   <data name="Trail_NoTrailSelected" xml:space="preserve">
-    <value>-- VÃ¤lj Trail i listan --</value>
+    <value>-- Välj Trail i listan --</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
-    <value>Du mÃ¥ste vÃ¤lja en punkt pÃ¥ kartan.
-FÃ¶r att vÃ¤lja en punkt, klicka bara pÃ¥ ett aktivitetsspÃ¥r.
-Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att vÃ¤lja Trail {0} och klicka pÃ¥ knappen fÃ¶r editera.</value>
+    <value>Du måste välja en punkt på kartan.
+För att välja en punkt, klicka bara på ett aktivitetsspår.
+Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Problem att kommunicera med {0}. Se till att {1} Ã¤r installerad.</value>
+    <value>Problem att kommunicera med {0}. Se till att {1} är installerad.</value>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
     <comment>Matrix</comment>
@@ -185,7 +185,7 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att vÃ¤lja T
     <value>Avancerat</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>LÃ¤gg till liknande aktiviteter med Unique Routes frÃ¥n referens aktivitet{0}</value>
+    <value>Lägg till liknande aktiviteter med Unique Routes från referens aktivitet{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
@@ -197,15 +197,15 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att vÃ¤lja T
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Installera Ã¥tminstone version {0} av {1} fÃ¶r att filtrera aktiviteter med Unique Routes.</value>
+    <value>Installera åtminstone version {0} av {1} för att filtrera aktiviteter med Unique Routes.</value>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
-    <value>Exkludera resultat frÃ¥n tabell</value>
+    <value>Exkludera resultat från tabell</value>
   </data>
   <data name="SetNameAtImport" xml:space="preserve">
-    <value>SÃ¤tt namn vid import</value>
+    <value>Sätt namn vid import</value>
   </data>
   <data name="UI_Activity_List_URCommon" xml:space="preserve">
-    <value>Markera Unique Routes gemensamma strÃ¤ckor</value>
+    <value>Markera Unique Routes gemensamma sträckor</value>
   </data>
 </root>

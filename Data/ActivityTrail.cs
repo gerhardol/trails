@@ -158,6 +158,7 @@ namespace TrailsPlugin.Data {
                         {
                             IList<int> aMatch = new List<int>();
                             int lastMatchInRadius = -1;
+                            int lastMatchPassBy = -1;
                             float trailDistDiff = 0;
                             int prevRouteIndex = -1;
                             float prevDistToPoint = 0;
@@ -191,6 +192,7 @@ namespace TrailsPlugin.Data {
                                 //So A1-A2-B1-C1 is reduced to A2-B1-C1
                                 if (trailgps.Count > 1 && aMatch.Count == 1 &&
                                     routeIndex > lastMatchInRadius &&
+                                    routeIndex > lastMatchPassBy &&
                                     (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||
                                     0<checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius)))
                                 {
@@ -271,6 +273,7 @@ namespace TrailsPlugin.Data {
                                     float factor = checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius);
                                     if (0 < factor)
                                     {
+                                        lastMatchPassBy = routeIndex;
                                         //An estimated point (including time) could be inserted in the track, use closest now
                                         if (prevDistToPoint < routeDist)
                                         {

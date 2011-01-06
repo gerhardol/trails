@@ -48,7 +48,7 @@ namespace TrailsPlugin.Data {
         private float m_lastDistance = float.NaN;
         private float m_distDiff; //to give quality of results
         private IList<int> m_indexes = new List<int>();
-        private int m_trailColor = nextTrailColor++;
+        private Color m_trailColor = getColor(nextTrailColor++);
         private TrailResult m_parentResult = null;
 
         public TrailResult(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
@@ -91,7 +91,7 @@ namespace TrailsPlugin.Data {
                 if (!aActivities.ContainsKey(m_activity))
                 {
                     aActivities.Add(m_activity, new trActivityInfo());
-                    aActivities[m_activity].activityColor = nextActivityColor++;
+                    //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
                 }
                 aActivities[m_activity].res.Add(this);
             }
@@ -655,39 +655,46 @@ namespace TrailsPlugin.Data {
         /*************************************************/
         #region Color
         private static int nextTrailColor = 1;
-        private static int nextActivityColor = 1;
+        //private static int nextActivityColor = 1;
 
-        public Color ActivityColor
-        {
-            get
-            {
-                trActivityInfo t = new trActivityInfo();
-                aActivities.TryGetValue(this.m_activity, out t);
-                if (t == null)
-                {
-                    return Color.Brown;
-                }
-                return getColor(t.activityColor);
-            }
-        }
+        //public Color ActivityColor
+        //{
+        //    get
+        //    {
+        //        trActivityInfo t = new trActivityInfo();
+        //        aActivities.TryGetValue(this.m_activity, out t);
+        //        if (t == null)
+        //        {
+        //            return Color.Brown;
+        //        }
+        //        return t.activityColor;
+        //    }
+        //}
 
+        private bool m_colorOverridden = false;
         public Color TrailColor
         {
             get
             {
-                if (aActivities.Count > 1)
+                if (!m_colorOverridden && aActivities.Count > 1 && this.ParentResult != null)
                 {
                     //TODO: Should be using a result color
-                    return ActivityColor;
+                    //return ActivityColor;
+                    return this.ParentResult.m_trailColor;
                 }
                 else
                 {
-                    return getColor(this.m_trailColor);
+                    return this.m_trailColor;
                 }
+            }
+            set
+            {
+                m_colorOverridden = true;
+                m_trailColor = value;
             }
         }
 
-        private Color getColor(int color)
+        private static Color getColor(int color)
         {
             switch (color%10)
             {
@@ -717,7 +724,7 @@ namespace TrailsPlugin.Data {
         private class trActivityInfo
         {
             public IList<TrailResult> res = new List<TrailResult>();
-            public int activityColor = 0;
+            public Color activityColor = getColor(0);
         }
         private static IDictionary<IActivity, trActivityInfo> aActivities = new Dictionary<IActivity, trActivityInfo>();
         public static IList<TrailResult> TrailResultList(IActivity activity)
@@ -729,7 +736,7 @@ namespace TrailsPlugin.Data {
         public static void Reset()
         {
             nextTrailColor = 1;
-            nextActivityColor = 1;
+            //nextActivityColor = 1;
             aActivities.Clear();
         }
         #endregion

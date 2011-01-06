@@ -441,37 +441,87 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     object row;
                     TreeList.RowHitState hit;
+                    //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
                     row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
                     if (row != null && hit == TreeList.RowHitState.Row)
                     {
                         TrailResult tr = getTrailResultRow(row);
-                        bool isMatch = false;
-                        foreach (TrailResultWrapper t in SelectedItemsWrapper)
+                        bool colorSelected = false;
+                        if (hit != TreeList.RowHitState.PlusMinus)
                         {
-                            if (t.Result == tr)
+                            int nStart = ((MouseEventArgs)e).X;
+                            int spos = l.Location.X;// +l.Parent.Location.X;
+                            for (int i = 0; i < l.Columns.Count; i++)
                             {
-                                isMatch = true;
-                                break;
+                                int epos = spos + l.Columns[i].Width;
+                                if (nStart > spos && nStart < epos)
+                                {
+                                    if (l.Columns[i].Id == TrailResultColumnIds.Color)
+                                    {
+                                        colorSelected = true;
+                                        break;
+                                    }
+                                }
+
+                                spos = epos;
                             }
                         }
-                        if (isMatch)
+                        if (colorSelected)
                         {
-                            IList<TrailResult> aTr = new List<TrailResult>();
-                            if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                            ColorSelectorPopup cs = new ColorSelectorPopup();
+                            cs.Width = 70;
+                            cs.ThemeChanged(m_visualTheme);
+                            cs.DesktopLocation = ((Control)sender).PointToScreen(((MouseEventArgs)e).Location);
+                            cs.Selected = tr.TrailColor;
+                            m_ColorSelectorResult = tr;
+                            cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);
+                            cs.Show();
+                        }
+                        else
+                        {
+                            bool isMatch = false;
+                            foreach (TrailResultWrapper t in SelectedItemsWrapper)
                             {
-                                //Select the single row only
-                                aTr.Add(tr);
+                                if (t.Result == tr)
+                                {
+                                    isMatch = true;
+                                    break;
+                                }
                             }
-                            else
+                            if (isMatch)
                             {
-                                //The user can control what is selected - mark all
-                                aTr = this.SelectedItems;
+                                IList<TrailResult> aTr = new List<TrailResult>();
+                                if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                                {
+                                    //Select the single row only
+                                    aTr.Add(tr);
+                                }
+                                else
+                                {
+                                    //The user can control what is selected - mark all
+                                    aTr = this.SelectedItems;
+                                }
+                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                             }
-                            m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
                         }
                     }
                 }
             }
+        }
+
+        private TrailResult m_ColorSelectorResult = null;
+        void cs_ItemSelected(object sender, ColorSelectorPopup.ItemSelectedEventArgs e)
+        {
+            if (sender is ColorSelectorPopup && m_ColorSelectorResult != null)
+            {
+                ColorSelectorPopup cs = sender as ColorSelectorPopup;
+                if (cs.Selected != m_ColorSelectorResult.TrailColor)
+                {
+                    m_ColorSelectorResult.TrailColor = cs.Selected;
+                    m_page.RefreshData();
+                }
+            }
+            m_ColorSelectorResult = null;
         }
 
         private void selectedRow_DoubleClick(object sender, MouseEventArgs e)

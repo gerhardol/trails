@@ -47,10 +47,10 @@ else
   $data="$spreadsheetURL$csvArg";
   my$tfile="g_csv.tmp.$$";
   `wget  --no-check-certificate -O $tfile "$data"`;
-  open F, "$tfile";
+  open F, "<:encoding(UTF-8)", "$tfile";
   while(<F>){$csv.=$_;}
   close F;
-#  unlink $tfile;
+  unlink $tfile;
 }
  die "Couldn't get $data" unless defined $csv;
 

@@ -252,7 +252,7 @@ Press {0} to use the Lap points, {1} to abort and select points on the GPS track
     <value>Mark other sub Trails or splits in list</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>Limit activities with Unique Routes from reference activity{0}</value>
+    <value>Limit activities with Unique Routes from reference result{0}</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
     <value>Reference Activity</value>
@@ -284,7 +284,7 @@ Make sure that {1} is installed.</value>
     <value>Advanced</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Add similar activities with Unique Routes from reference activity{0}</value>
+    <value>Add similar activities with Unique Routes from reference result{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <value>Activities can be filtered using UniqueRoutes.</value>
@@ -305,6 +305,6 @@ Make sure that {1} is installed.</value>
     <value>Set Name At Import</value>
   </data>
   <data name="UI_Activity_List_URCommon" xml:space="preserve">
-    <value>Mark Unique Routes common stretches</value>
+    <value>Mark Unique Routes Common Stretches</value>
   </data>
 </root>

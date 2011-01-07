@@ -685,19 +685,20 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             try
             {
-                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
+                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
+                    m_controller.ReferenceActivity, m_controller.Activities, null);
 
                 if (similarActivities != null)
                 {
                     IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
                     foreach (IActivity activity in m_controller.Activities)
                     {
-                        if (similarActivities.Contains(activity))
+                        if (similarActivities.Contains(activity) && !allActivities.Contains(activity))
                         {
                             allActivities.Add(activity);
                         }
                     }
-                    m_controller.Activities = allActivities;
+                    m_page.Activities = allActivities;
                 }
             }
             catch (Exception ex)
@@ -711,7 +712,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             try
             {
-                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(m_controller.ReferenceActivity, null);
+                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
+                    m_controller.ReferenceTrailResult.GpsTrack, null, null);
                 if (similarActivities != null)
                 {
                     IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };

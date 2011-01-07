@@ -67,9 +67,8 @@ namespace TrailsPlugin.UI.MapLayers
 
         private static Color MarkedColor(Color tColor)
         {
-            //The Marked color can be adjusted, but several overlays makes it hard to find which is which
-            //return ControlPaint.Dark(tColor);
-            return tColor;
+            //Slightly darker marked color
+            return ControlPaint.Dark(tColor, 0.01F);
         }
         public TrailResult TrailRes
         {

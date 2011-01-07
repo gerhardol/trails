@@ -20,6 +20,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using ZoneFiveSoftware.Common.Data.GPS;
 using System.Xml;
 using System;
+using System.Collections.Generic;
 
 namespace TrailsPlugin.Data {
 	public class TrailGPSLocation {
@@ -107,6 +108,33 @@ namespace TrailsPlugin.Data {
             }
 			return point.DistanceMetersToPoint(thisPoint);
 		}
+
+        public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius)
+        {
+            float north = -180;
+            float south = +180;
+            float east = -90;
+            float west = 90;
+            foreach (TrailGPSLocation g in list)
+            {
+                north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
+                south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
+                east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
+                west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
+            }
+            //Get approx degrees for the radius offset
+            //The magic numbers are size of a degree at the equator
+            //latitude increases about 1% at the poles
+            //longitude is up to 40% longer than linear extension - compensate 20%
+            float lat = 2 * radius / 110574 * 1.005F;
+            float lng = 2 * radius / 111320 * Math.Abs(south) / 90 * 1.2F;
+            north += lat;
+            south -= lat;
+            east += lng;
+            west -= lng;
+            return new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
+        }
+
         // Some temporary handling, no bother proper
         public string getField(int subItemSelected)
         {

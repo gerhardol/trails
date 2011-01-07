@@ -122,30 +122,8 @@ namespace TrailsPlugin.UI.MapLayers
                 //Set selected area to include selected points, including radius and some more
                 if (value.Count > 0)
                 {
-                    float north = -180;
-                    float south = +180;
-                    float east = -90;
-                    float west = 90;
-                    foreach (TrailGPSLocation g in value)
-                    {
-                        north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
-                        south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
-                        east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
-                        west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
-                    }
-                    //Get approx degrees for the radius offset
-                    //The magic numbers are size of a degree at the equator
-                    //latitude increases about 1% at the poles
-                    //longitude is up to 40% longer than linear extension - compensate 20%
-                    float lat = 2 * this.m_highlightRadius / 110574 * 1.005F;
-                    float lng = 2 * this.m_highlightRadius / 111320 * Math.Abs(south) / 90 * 1.2F;
-                    north += lat;
-                    south -= lat;
-                    east += lng;
-                    west -= lng;
-                    GPSBounds area = new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
-                    this.MapControl.SetLocation(area.Center,
-                      this.MapControl.ComputeZoomToFit(area));
+                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, this.m_highlightRadius);
+                    this.DoZoom(area);
                     m_SelectedTrailPoints = value;
                 }
             }

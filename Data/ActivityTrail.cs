@@ -154,7 +154,7 @@ namespace TrailsPlugin.Data {
                             m_resultsListWrapper.Add(result);
                         }
 
-                        if (IsInBounds && trailgps.Count > 0)
+                        else if (IsInBounds && trailgps.Count > 0)
                         {
                             IList<int> aMatch = new List<int>();
                             int lastMatchInRadius = -1;

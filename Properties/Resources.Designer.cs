@@ -347,7 +347,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mark Unique Routes common stretches.
+        ///   Looks up a localized string similar to Mark Unique Routes Common Stretches.
         /// </summary>
         internal static string UI_Activity_List_URCommon {
             get {
@@ -356,7 +356,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Limit activities with Unique Routes from reference activity{0}.
+        ///   Looks up a localized string similar to Limit activities with Unique Routes from reference result{0}.
         /// </summary>
         internal static string UI_Activity_List_URLimit {
             get {
@@ -365,7 +365,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add similar activities with Unique Routes from reference activity{0}.
+        ///   Looks up a localized string similar to Add similar activities with Unique Routes from reference result{0}.
         /// </summary>
         internal static string UI_Activity_List_URSelect {
             get {

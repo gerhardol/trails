@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 #if ST_2_1
 using TrailsPlugin.Data;
@@ -34,10 +35,11 @@ namespace TrailsPlugin.Integration
         //Note: namespace changed, compatibility namespace still used
         private const string UniqueRoutesClr = "UniqueRoutes.Export.UniqueRoutes";
         private const string UniquePlugin = "UniqueRoutesPlugin";
-        private const string findSimilarRoutes = "findSimilarRoutes";
+        private const string findSimilarRoutesActivities = "findSimilarRoutesActivities";
+        private const string findSimilarRouteSnippets = "findSimilarRouteSnippets";
         private const string findCommonStretches = "findCommonStretches";
 
-        private static System.Version minVersion = new System.Version(1, 9, 203, 0);
+        private static System.Version minVersion = new System.Version(1, 9, 235, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedUniqueRoutes = false;
 
@@ -69,19 +71,45 @@ namespace TrailsPlugin.Integration
             get { return GetUniqueRoutes != null; }
         }
 
-        public static IList<IActivity> GetUniqueRoutesForActivity(IActivity activity, System.Windows.Forms.ProgressBar progressBar)
+        public static IList<IActivity> GetUniqueRoutesForActivity(IActivity activity, IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<IActivity> results = null;
 
             try
             {
-                if (progressBar == null)
-                    progressBar = new System.Windows.Forms.ProgressBar();
-
                 if (GetUniqueRoutes != null)
                 {
-                    MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findSimilarRoutes);
-                    object resultFromURPlugIn = methodInfo.Invoke(activity, new object[] { activity, progressBar });
+                    MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findSimilarRoutesActivities);
+                    object resultFromURPlugIn = methodInfo.Invoke(activity, new object[] { activity, activities, progressBar });
+                    results = (IList<IActivity>)resultFromURPlugIn;
+                }
+            }
+            catch (Exception e)
+            {
+                // Log error?
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+            UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine, e);
+            }
+
+            if (GetUniqueRoutes == null)
+            {
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+        UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine);
+            }
+
+            return results;
+        }
+
+        public static IList<IActivity> GetUniqueRoutesForActivity(IGPSRoute route, IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
+        {
+            IList<IActivity> results = null;
+
+            try
+            {
+                if (GetUniqueRoutes != null)
+                {
+                    MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findSimilarRouteSnippets);
+                    object resultFromURPlugIn = methodInfo.Invoke(route, new object[] { route, activities, progressBar });
                     results = (IList<IActivity>)resultFromURPlugIn;
                 }
             }

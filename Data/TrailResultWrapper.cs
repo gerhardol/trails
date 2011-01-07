@@ -65,6 +65,9 @@ namespace TrailsPlugin.Data {
                 return (TrailResult)this.Element;
             }
         }
+
+        //TODO: Calculate children when needed, by implementing Children
+        
         public void Sort()
         {
             if (m_children.Count > 0)

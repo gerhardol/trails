@@ -324,6 +324,11 @@ namespace TrailsPlugin.Data {
                         }
                     }
                 }
+                //children
+                foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
+                {
+                    tr.getSplits();
+                }
             }
             if (m_resultsListWrapper.Count == 0 && m_status != TrailOrderStatus.Match)
             {

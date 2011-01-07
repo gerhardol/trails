@@ -374,29 +374,42 @@ namespace TrailsPlugin.UI.Activity {
                     this.SelectedItemsWrapper = results;
                     isChange = true;
                 }
+                //If a single index is selected, let the reference follow the current result
                 if (isSingleIndex)
                 {
-                    //ST scrolls before the mouse is recorded. Therefore the selected item could be one step off
-                    TrailResult currTr = getMouseResult(false);
-                    if (currTr != null && lastSplitIndex >= 0 && currTr.Order != lastSplitIndex)
+                    if(this.m_controller.ReferenceTrailResult.Order != lastSplitIndex)
                     {
-                        IList<TrailResultWrapper> atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail.ResultTreeList, new List<TrailResult> { currTr.ParentResult });
-                        if (atrp != null && atrp.Count > 0)
+                        if (lastSplitIndex < 0)
                         {
-                            foreach (TrailResultWrapper trc in atrp[0].Children)
+                            this.m_controller.ReferenceTrailResult = this.m_controller.ReferenceTrailResult.ParentResult;
+                            isChange = true;
+                        }
+                        else
+                        {
+                            IList<TrailResultWrapper> atrp;
+                            if (this.m_controller.ReferenceTrailResult.ParentResult == null)
                             {
-                                if (trc.Result.Order == lastSplitIndex)
+                                atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail.ResultTreeList,
+                                    new List<TrailResult> { this.m_controller.ReferenceTrailResult });
+                            }
+                            else
+                            {
+                                atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail.ResultTreeList,
+                                    new List<TrailResult> { this.m_controller.ReferenceTrailResult.ParentResult });
+                            }
+                            if (atrp != null && atrp.Count > 0)
+                            {
+                                foreach (TrailResultWrapper trc in atrp[0].Children)
                                 {
-                                    currTr = trc.Result;
-                                    break;
+                                    if (trc.Result.Order == lastSplitIndex)
+                                    {
+                                        this.m_controller.ReferenceTrailResult = trc.Result;
+                                        isChange = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (currTr != this.m_controller.ReferenceTrailResult)
-                    {
-                        this.m_controller.ReferenceTrailResult = currTr;
-                        isChange = true;
                     }
                 }
             }

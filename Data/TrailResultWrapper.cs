@@ -42,7 +42,8 @@ namespace TrailsPlugin.Data {
             base.Element = new TrailResult(trailgps, activity, order, indexes, distDiff);
             if (par == null)
             {
-                getSplits();
+                //Children are not created by default
+                //getSplits();
             }
         }
 
@@ -53,7 +54,8 @@ namespace TrailsPlugin.Data {
             IList<int> indexes;
             IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
             base.Element = new TrailResult(m_trailgps, activity, order, indexes, float.MaxValue);
-            getSplits();
+            //Children are not created by default
+            //getSplits();
         }
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
             : base(par, ele) { }
@@ -65,8 +67,6 @@ namespace TrailsPlugin.Data {
                 return (TrailResult)this.Element;
             }
         }
-
-        //TODO: Calculate children when needed, by implementing Children
         
         public void Sort()
         {
@@ -82,8 +82,11 @@ namespace TrailsPlugin.Data {
             }
         }
 
+        //TODO: Calculate children when needed, by implementing Children
+        //This is currently called after all parent results have been determined
+        //A good enough reason is that this willgive main activities separate colors, in the intended order
         private IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
-        private void getSplits()
+        public void getSplits()
         {
             IList<TrailResult> children = Result.getSplits();
             if (children != null && children.Count > 1)
@@ -132,6 +135,7 @@ namespace TrailsPlugin.Data {
             return result;
         }
 
+        //Get all TrailResultWrapper (including children) for the provided TrailResult in the list
         public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> tn, IList<TrailResult> tr)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();

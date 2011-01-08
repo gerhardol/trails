@@ -29,16 +29,19 @@
             this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel = new System.Windows.Forms.TableLayoutPanel();
             this.Radius = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
             this.lblTrail = new System.Windows.Forms.Label();
-            this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
             this.TrailName = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
+            this.editBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblRadius = new System.Windows.Forms.Label();
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
-            this.lblRadius = new System.Windows.Forms.Label();
-            this.editBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel.SuspendLayout();
+            this.EList.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnOk
@@ -100,10 +103,12 @@
             this.Panel.Controls.Add(this.TrailName, 1, 0);
             this.Panel.Controls.Add(this.EList, 0, 2);
             this.Panel.Controls.Add(this.lblRadius, 0, 1);
-            this.Panel.Controls.Add(this.btnDelete, 5, 1);
-            this.Panel.Controls.Add(this.btnEdit, 4, 1);
             this.Panel.Controls.Add(this.btnAdd, 3, 1);
             this.Panel.Controls.Add(this.btnSave, 2, 1);
+            this.Panel.Controls.Add(this.btnEdit, 4, 0);
+            this.Panel.Controls.Add(this.btnDelete, 5, 0);
+            this.Panel.Controls.Add(this.btnUp, 4, 1);
+            this.Panel.Controls.Add(this.btnDown, 5, 1);
             this.Panel.Location = new System.Drawing.Point(15, 13);
             this.Panel.Margin = new System.Windows.Forms.Padding(0);
             this.Panel.Name = "Panel";
@@ -137,29 +142,6 @@
             this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.Radius.LostFocus += new System.EventHandler(this.Radius_LostFocus);
             // 
-            // btnSave
-            // 
-            this.btnSave.BackColor = System.Drawing.Color.Transparent;
-            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSave.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnSave.CenterImage = null;
-            this.btnSave.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnSave.HyperlinkStyle = false;
-            this.btnSave.ImageMargin = 2;
-            this.btnSave.LeftImage = null;
-            this.btnSave.Location = new System.Drawing.Point(243, 28);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Padding = new System.Windows.Forms.Padding(2);
-            this.btnSave.PushStyle = true;
-            this.btnSave.RightImage = null;
-            this.btnSave.Size = new System.Drawing.Size(19, 19);
-            this.btnSave.TabIndex = 18;
-            this.btnSave.Text = "S";
-            this.btnSave.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnSave.TextLeftMargin = 2;
-            this.btnSave.TextRightMargin = 2;
-            this.btnSave.Visible = false;
-            // 
             // lblTrail
             // 
             this.lblTrail.AutoSize = true;
@@ -170,6 +152,141 @@
             this.lblTrail.TabIndex = 0;
             this.lblTrail.Text = "Trail:";
             this.lblTrail.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // TrailName
+            // 
+            this.TrailName.AcceptsReturn = false;
+            this.TrailName.AcceptsTab = false;
+            this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.TrailName.BackColor = System.Drawing.Color.White;
+            this.TrailName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.TrailName.ButtonImage = null;
+            this.TrailName.Location = new System.Drawing.Point(91, 0);
+            this.TrailName.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.TrailName.MaxLength = 32767;
+            this.TrailName.Multiline = false;
+            this.TrailName.Name = "TrailName";
+            this.TrailName.ReadOnly = false;
+            this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.TrailName.Size = new System.Drawing.Size(149, 19);
+            this.TrailName.TabIndex = 1;
+            this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            // 
+            // EList
+            // 
+            this.EList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.EList.AutoScroll = true;
+            this.EList.BackColor = System.Drawing.Color.Transparent;
+            this.EList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
+            this.EList.CheckBoxes = false;
+            this.Panel.SetColumnSpan(this.EList, 6);
+            this.EList.Controls.Add(this.editBox);
+            this.EList.DefaultIndent = 15;
+            this.EList.DefaultRowHeight = -1;
+            this.EList.HeaderRowHeight = 21;
+            this.EList.Location = new System.Drawing.Point(3, 53);
+            this.EList.MultiSelect = true;
+            this.EList.Name = "EList";
+            this.EList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
+            this.EList.NumLockedColumns = 0;
+            this.EList.RowAlternatingColors = true;
+            this.EList.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
+            this.EList.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
+            this.EList.RowHotlightMouse = true;
+            this.EList.RowSelectedColor = System.Drawing.SystemColors.Highlight;
+            this.EList.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
+            this.EList.RowSeparatorLines = true;
+            this.EList.ShowLines = false;
+            this.EList.ShowPlusMinus = false;
+            this.EList.Size = new System.Drawing.Size(344, 218);
+            this.EList.TabIndex = 11;
+            this.EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
+            this.EList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EList_KeyDown);
+            this.EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
+            // 
+            // editBox
+            // 
+            this.editBox.AcceptsReturn = false;
+            this.editBox.AcceptsTab = false;
+            this.editBox.BackColor = System.Drawing.Color.White;
+            this.editBox.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.editBox.ButtonImage = null;
+            this.editBox.Location = new System.Drawing.Point(0, 0);
+            this.editBox.MaxLength = 32767;
+            this.editBox.Multiline = false;
+            this.editBox.Name = "editBox";
+            this.editBox.ReadOnly = false;
+            this.editBox.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.editBox.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.editBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.editBox.Size = new System.Drawing.Size(0, 0);
+            this.editBox.TabIndex = 2;
+            this.editBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.editBox.Visible = false;
+            this.editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
+            this.editBox.LostFocus += new System.EventHandler(this.FocusOver);
+            // 
+            // lblRadius
+            // 
+            this.lblRadius.AutoSize = true;
+            this.lblRadius.Location = new System.Drawing.Point(0, 28);
+            this.lblRadius.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
+            this.lblRadius.Name = "lblRadius";
+            this.lblRadius.Size = new System.Drawing.Size(43, 13);
+            this.lblRadius.TabIndex = 19;
+            this.lblRadius.Text = "Radius:";
+            this.lblRadius.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.BackColor = System.Drawing.Color.Transparent;
+            this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnDelete.CenterImage = null;
+            this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnDelete.HyperlinkStyle = false;
+            this.btnDelete.ImageMargin = 2;
+            this.btnDelete.LeftImage = null;
+            this.btnDelete.Location = new System.Drawing.Point(318, 3);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
+            this.btnDelete.PushStyle = true;
+            this.btnDelete.RightImage = null;
+            this.btnDelete.Size = new System.Drawing.Size(20, 19);
+            this.btnDelete.TabIndex = 13;
+            this.btnDelete.Text = "D";
+            this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnDelete.TextLeftMargin = 2;
+            this.btnDelete.TextRightMargin = 2;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // btnEdit
+            // 
+            this.btnEdit.BackColor = System.Drawing.Color.Transparent;
+            this.btnEdit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnEdit.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnEdit.CenterImage = null;
+            this.btnEdit.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnEdit.HyperlinkStyle = false;
+            this.btnEdit.ImageMargin = 2;
+            this.btnEdit.LeftImage = null;
+            this.btnEdit.Location = new System.Drawing.Point(293, 3);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
+            this.btnEdit.PushStyle = true;
+            this.btnEdit.RightImage = null;
+            this.btnEdit.Size = new System.Drawing.Size(19, 19);
+            this.btnEdit.TabIndex = 17;
+            this.btnEdit.Text = "E";
+            this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnEdit.TextLeftMargin = 2;
+            this.btnEdit.TextRightMargin = 2;
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
             // btnAdd
             // 
@@ -194,129 +311,74 @@
             this.btnAdd.TextRightMargin = 2;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
-            // TrailName
+            // btnSave
             // 
-            this.TrailName.AcceptsReturn = false;
-            this.TrailName.AcceptsTab = false;
-            this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.TrailName.BackColor = System.Drawing.Color.White;
-            this.TrailName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
-            this.TrailName.ButtonImage = null;
-            this.TrailName.Location = new System.Drawing.Point(91, 0);
-            this.TrailName.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
-            this.TrailName.MaxLength = 32767;
-            this.TrailName.Multiline = false;
-            this.TrailName.Name = "TrailName";
-            this.TrailName.ReadOnly = false;
-            this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
-            this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
-            this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TrailName.Size = new System.Drawing.Size(149, 19);
-            this.TrailName.TabIndex = 1;
-            this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.btnSave.BackColor = System.Drawing.Color.Transparent;
+            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnSave.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnSave.CenterImage = null;
+            this.btnSave.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnSave.HyperlinkStyle = false;
+            this.btnSave.ImageMargin = 2;
+            this.btnSave.LeftImage = null;
+            this.btnSave.Location = new System.Drawing.Point(243, 28);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Padding = new System.Windows.Forms.Padding(2);
+            this.btnSave.PushStyle = true;
+            this.btnSave.RightImage = null;
+            this.btnSave.Size = new System.Drawing.Size(19, 19);
+            this.btnSave.TabIndex = 18;
+            this.btnSave.Text = "S";
+            this.btnSave.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnSave.TextLeftMargin = 2;
+            this.btnSave.TextRightMargin = 2;
+            this.btnSave.Visible = false;
             // 
-            // btnDelete
+            // btnUp
             // 
-            this.btnDelete.BackColor = System.Drawing.Color.Transparent;
-            this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnDelete.CenterImage = null;
-            this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnDelete.HyperlinkStyle = false;
-            this.btnDelete.ImageMargin = 2;
-            this.btnDelete.LeftImage = null;
-            this.btnDelete.Location = new System.Drawing.Point(318, 28);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
-            this.btnDelete.PushStyle = true;
-            this.btnDelete.RightImage = null;
-            this.btnDelete.Size = new System.Drawing.Size(20, 19);
-            this.btnDelete.TabIndex = 13;
-            this.btnDelete.Text = "D";
-            this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnDelete.TextLeftMargin = 2;
-            this.btnDelete.TextRightMargin = 2;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnUp.BackColor = System.Drawing.Color.Transparent;
+            this.btnUp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnUp.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnUp.CenterImage = null;
+            this.btnUp.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnUp.HyperlinkStyle = false;
+            this.btnUp.ImageMargin = 2;
+            this.btnUp.LeftImage = null;
+            this.btnUp.Location = new System.Drawing.Point(293, 28);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Padding = new System.Windows.Forms.Padding(2);
+            this.btnUp.PushStyle = true;
+            this.btnUp.RightImage = null;
+            this.btnUp.Size = new System.Drawing.Size(19, 19);
+            this.btnUp.TabIndex = 21;
+            this.btnUp.Text = "A";
+            this.btnUp.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnUp.TextLeftMargin = 2;
+            this.btnUp.TextRightMargin = 2;
+            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
             // 
-            // btnEdit
+            // btnDown
             // 
-            this.btnEdit.BackColor = System.Drawing.Color.Transparent;
-            this.btnEdit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnEdit.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnEdit.CenterImage = null;
-            this.btnEdit.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnEdit.HyperlinkStyle = false;
-            this.btnEdit.ImageMargin = 2;
-            this.btnEdit.LeftImage = null;
-            this.btnEdit.Location = new System.Drawing.Point(293, 28);
-            this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
-            this.btnEdit.PushStyle = true;
-            this.btnEdit.RightImage = null;
-            this.btnEdit.Size = new System.Drawing.Size(19, 19);
-            this.btnEdit.TabIndex = 17;
-            this.btnEdit.Text = "E";
-            this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnEdit.TextLeftMargin = 2;
-            this.btnEdit.TextRightMargin = 2;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
-            // 
-            // EList
-            // 
-            this.EList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.EList.AutoScroll = true;
-            this.EList.BackColor = System.Drawing.Color.Transparent;
-            this.EList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
-            this.EList.CheckBoxes = false;
-            this.EList.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
-            this.Panel.SetColumnSpan(this.EList, 6);
-            this.EList.DefaultIndent = 15;
-            this.EList.DefaultRowHeight = -1;
-            this.EList.HeaderRowHeight = 21;
-            this.EList.Location = new System.Drawing.Point(3, 53);
-            this.EList.MultiSelect = true;
-            this.EList.Name = "EList";
-            this.EList.NumHeaderRows = ZoneFiveSoftware.Common.Visuals.TreeList.HeaderRows.One;
-            this.EList.NumLockedColumns = 0;
-            this.EList.RowAlternatingColors = true;
-            this.EList.RowHotlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
-            this.EList.RowHotlightColorText = System.Drawing.SystemColors.HighlightText;
-            this.EList.RowHotlightMouse = true;
-            this.EList.RowSelectedColor = System.Drawing.SystemColors.Highlight;
-            this.EList.RowSelectedColorText = System.Drawing.SystemColors.HighlightText;
-            this.EList.RowSeparatorLines = true;
-            this.EList.ShowLines = false;
-            this.EList.ShowPlusMinus = false;
-            this.EList.Size = new System.Drawing.Size(344, 218);
-            this.EList.TabIndex = 11;
-            this.EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
-            this.EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
-            this.EList.KeyDown += new System.Windows.Forms.KeyEventHandler(EList_KeyDown);
-            // 
-            // lblRadius
-            // 
-            this.lblRadius.AutoSize = true;
-            this.lblRadius.Location = new System.Drawing.Point(0, 28);
-            this.lblRadius.Margin = new System.Windows.Forms.Padding(0, 3, 0, 0);
-            this.lblRadius.Name = "lblRadius";
-            this.lblRadius.Size = new System.Drawing.Size(43, 13);
-            this.lblRadius.TabIndex = 19;
-            this.lblRadius.Text = "Radius:";
-            this.lblRadius.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // editBox
-            // 
-            this.editBox.Size = new System.Drawing.Size(0, 0);
-            this.editBox.Location = new System.Drawing.Point(0, 0);
-            this.editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
-            this.editBox.LostFocus += new System.EventHandler(this.FocusOver);
-            //this.editBox.BackColor = Color.LightYellow;
-            //this.editBox.BorderStyle = BorderStyle.Fixed3D;
-            this.editBox.Visible = false;
-            this.editBox.Text = "";
+            this.btnDown.BackColor = System.Drawing.Color.Transparent;
+            this.btnDown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnDown.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnDown.CenterImage = null;
+            this.btnDown.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnDown.HyperlinkStyle = false;
+            this.btnDown.ImageMargin = 2;
+            this.btnDown.LeftImage = null;
+            this.btnDown.Location = new System.Drawing.Point(318, 28);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Padding = new System.Windows.Forms.Padding(2);
+            this.btnDown.PushStyle = true;
+            this.btnDown.RightImage = null;
+            this.btnDown.Size = new System.Drawing.Size(19, 19);
+            this.btnDown.TabIndex = 22;
+            this.btnDown.Text = "V";
+            this.btnDown.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnDown.TextLeftMargin = 2;
+            this.btnDown.TextRightMargin = 2;
+            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
             // EditTrail
             // 
@@ -337,6 +399,7 @@
             this.Shown += new System.EventHandler(this.EditTrail_Shown);
             this.Panel.ResumeLayout(false);
             this.Panel.PerformLayout();
+            this.EList.ResumeLayout(false);
             this.ResumeLayout(false);
 
 		}
@@ -357,6 +420,8 @@
         private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
 		private System.Windows.Forms.Label lblRadius;
         private ZoneFiveSoftware.Common.Visuals.TextBox editBox;
+        private ZoneFiveSoftware.Common.Visuals.Button btnUp;
+        private ZoneFiveSoftware.Common.Visuals.Button btnDown;
 
 	}
 }

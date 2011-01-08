@@ -39,14 +39,8 @@ namespace TrailsPlugin.UI.Activity {
         private TrailPointsLayer m_layer;
 #endif
 
-#if ST_2_1
         private EditTrail(bool addMode)
         {
-#else
-        private EditTrail(IDailyActivityView view, bool addMode)
-        {
-            m_layer = TrailPointsLayer.Instance(view);
-#endif
             m_addMode = addMode;
             if (m_addMode)
             {
@@ -77,9 +71,12 @@ namespace TrailsPlugin.UI.Activity {
             : this (addMode)
 #else
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, bool addMode)
-            : this (view, addMode)
+            : this (addMode)
 #endif
         {
+#if !ST_2_1
+            m_layer = TrailPointsLayer.Instance(view);
+#endif
             ThemeChanged(visualTheme);
             UICultureChanged(culture);
         }
@@ -92,6 +89,13 @@ namespace TrailsPlugin.UI.Activity {
             btnEdit.Text = "";
             btnDelete.BackgroundImage = CommonIcons.Delete;
             btnDelete.Text = "";
+            btnUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
+            btnUp.Text = "";
+            btnDown.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveDown16;
+            btnDown.Text = "";
+            btnDelete.Enabled = false;
+            btnUp.Enabled = false;
+            btnDown.Enabled = false;
 #if ST_2_1
             this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #else
@@ -180,16 +184,6 @@ namespace TrailsPlugin.UI.Activity {
             EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
             EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
             EList.KeyDown += new KeyEventHandler(EList_KeyDown);
-            //Overlay editable box
-            //editBox.Size = new System.Drawing.Size(0, 0);
-            //editBox.Location = new System.Drawing.Point(0, 0);
-            //EList.Controls.AddRange(new System.Windows.Forms.Control[] { this.editBox });
-            //editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
-            //editBox.LostFocus += new System.EventHandler(this.FocusOver);
-            //editBox.BackColor = Color.LightYellow;
-            //editBox.BorderStyle = BorderStyle.Fixed3D;
-            //editBox.Hide();
-            //editBox.Text = "";
         }
 
         private void EList_DeleteRow()
@@ -361,6 +355,42 @@ namespace TrailsPlugin.UI.Activity {
             MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_EditRow);
         }
 
+        private void btnUp_Click(object sender, EventArgs e)
+        {
+            moveRow(1);
+        }
+
+        private void btnDown_Click(object sender, EventArgs e)
+        {
+            moveRow(-1);
+        }
+        private void moveRow(int isUp)
+        {
+            if (EList.Selected.Count == 1)
+            {
+                IList selected = EList.Selected;
+                IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
+                if (selected != null && selected.Count > 0)
+                {
+                    for (int j = selected.Count - 1; j >= 0; j--)
+                    {
+                        for (int i = result.Count - 1; i >= 0; i--)
+                        {
+                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                            if ((isUp < 0 && i-isUp<result.Count ||
+                                isUp > 0 && i-isUp>=0) &&
+                                selected[j].Equals(r))
+                            {
+                                result[i] = result[i-isUp];
+                                result[i-isUp] = r;
+                                break;
+                            }
+                        }
+                    }
+                    EList.RowData = result;
+                }
+            }
+        }
         private void btnAdd_Click(object sender, EventArgs e)
         {
             EList_AddRow();
@@ -368,6 +398,18 @@ namespace TrailsPlugin.UI.Activity {
         void EList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
+            if (EList.Selected.Count == 1)
+            {
+                btnDelete.Enabled = true;
+                btnUp.Enabled = true;
+                btnDown.Enabled = true;
+            }
+            else
+            {
+                btnDelete.Enabled = false;
+                btnUp.Enabled = false;
+                btnDown.Enabled = false;
+            }
             if (EList.Selected.Count > 0)
             {
                 IList selected = EList.Selected;

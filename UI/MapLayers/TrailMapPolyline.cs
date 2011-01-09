@@ -68,7 +68,7 @@ namespace TrailsPlugin.UI.MapLayers
         private static Color MarkedColor(Color tColor)
         {
             //Slightly darker marked color
-            return ControlPaint.Dark(tColor, 0.01F);
+            return ControlPaint.Dark(tColor,0.01F);
         }
         public TrailResult TrailRes
         {
@@ -85,6 +85,26 @@ namespace TrailsPlugin.UI.MapLayers
             return PluginMain.GetApplication();
 #endif
         }
-            
+
+        public static IGPSBounds getGPSBounds(IDictionary<string, MapPolyline> polylines)
+        {
+            IGPSBounds area = null;
+            foreach (MapPolyline m in polylines.Values)
+            {
+                GPSBounds area2 = GPSBounds.FromGPSPoints(m.Locations);
+                if (area2 != null)
+                {
+                    if (area == null)
+                    {
+                        area = area2;
+                    }
+                    else
+                    {
+                        area = (GPSBounds)area.Union(area2);
+                    }
+                }
+            }
+            return area;
+        }            
     }
 }

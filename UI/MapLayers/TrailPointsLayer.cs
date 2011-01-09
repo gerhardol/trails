@@ -158,41 +158,57 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     if (value.Count > 0)
                     {
-                        IGPSBounds area = null;
-                        foreach (MapPolyline m in value.Values)
-                        {
-                            GPSBounds area2 = GPSBounds.FromGPSPoints(m.Locations);
-                            if (area2 != null)
-                            {
-                                if (area == null)
-                                {
-                                    area = area2;
-                                }
-                                else
-                                {
-                                    area = (GPSBounds)area.Union(area2);
-                                }
-                            }
-                        }
+                        IGPSBounds area = TrailMapPolyline.getGPSBounds(value);
                         DoZoom(area);
                     }
                     RefreshOverlays(true);
                 }
             }
         }
+
+        public IGPSBounds Union(IGPSBounds area1, IGPSBounds area2)
+        {
+            if (area1 != null && area2 != null)
+            {
+                area1 = area1.Union(area2);
+            }
+            else
+            {
+                //At least one of the areas is null
+                if (area2 != null)
+                {
+                    area1 = area2;
+                }
+            }
+            return area1;
+        }
+
+        //Zoom to "relevant" contents (normally done when activities are updated)
+        public void DoZoom()
+        {
+            IGPSBounds area1 = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
+            IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, this.m_highlightRadius);
+            area1 = Union(area1, area2);
+            DoZoom(area1);
+        }
+
         public void DoZoom(IGPSBounds area)
         {
-            if (area != null)
+            if (_showPage)
             {
-                this.MapControl.SetLocation(area.Center,
-                this.MapControl.ComputeZoomToFit(area));
-                if (m_reportMapInstance >= 0)
+                if (area != null)
                 {
-                    m_instances[m_reportMapInstance].MapControl.SetLocation(area.Center,
-                    m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
+                    this.MapControl.SetLocation(area.Center,
+                    this.MapControl.ComputeZoomToFit(area));
+                    if (m_reportMapInstance >= 0)
+                    {
+                        m_instances[m_reportMapInstance].MapControl.SetLocation(area.Center,
+                        m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
+                    }
                 }
             }
         }
+
         public float HighlightRadius
         {
             set

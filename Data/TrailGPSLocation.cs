@@ -122,6 +122,10 @@ namespace TrailsPlugin.Data {
                 east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
                 west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
             }
+            if (north < south || east < west)
+            {
+                return null;
+            }
             //Get approx degrees for the radius offset
             //The magic numbers are size of a degree at the equator
             //latitude increases about 1% at the poles

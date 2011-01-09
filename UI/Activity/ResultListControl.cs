@@ -155,6 +155,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+            summaryList.NumLockedColumns = Data.Settings.ActivityPageNumFixedColumns;
         }
 
         public void RefreshControlState()

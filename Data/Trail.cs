@@ -189,7 +189,16 @@ namespace TrailsPlugin.Data {
 
             //Add start indexes for active laps and for first point for rest following active
             //A pause at the end of the lap is not considered
-            const bool onlyActiveLaps = true;
+            bool onlyActiveLaps = true;
+            //Get around a problem with only Rest laps
+            onlyActiveLaps = false;
+            for (int j = 0; j < activity.Laps.Count; j++)
+            {
+                if (!activity.Laps[j].Rest)
+                {
+                    onlyActiveLaps = true;
+                }
+            }
             int lastIndex = 0;
             indexes = new List<int>();
             IList<string> names = new List<string>();
@@ -206,7 +215,7 @@ namespace TrailsPlugin.Data {
                     ILapInfo l = activity.Laps[j];
                     for (int i = 0; i < activity.GPSRoute.Count; i++)
                     {
-                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(0.5)) &&
+                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(0.9)) &&
                             (indexes.Count == 0 || i > indexes[indexes.Count - 1]) &&
                             (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
                         {

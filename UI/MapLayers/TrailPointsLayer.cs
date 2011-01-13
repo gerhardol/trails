@@ -226,18 +226,16 @@ namespace TrailsPlugin.UI.MapLayers
         //    //Should not be necessary in ST3, updated when needed
         //    RefreshOverlays(); 
         //}
-        public bool ShowPage
+        public bool HidePage()
         {
-            get { return _showPage; }
-            set
-            {
-                bool changed = (value != _showPage);
-                _showPage = value;
-                if (changed)
-                {
-                    RefreshOverlays(true);
-                }
-            }
+            _showPage = false;
+            RefreshOverlays(true);
+            return true;
+        }
+        public void ShowPage(string bookmark)
+        {
+            _showPage = true;
+            RefreshOverlays(true);
         }
 
         /*************************************************************/

@@ -64,7 +64,7 @@ namespace TrailsPlugin.UI.MapLayers
         {
             get
             {
-#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY||GPSRUNNING_HIGHSCORE||GPSRUNNING_PERFORMANCEPREDICTOR
                 return GpsRunningPlugin.Properties.Resources.TrailPointsControlLayer; 
 #elif MATRIXPLUGIN
                 return MatrixPlugin.Properties.Resources.TrailPointsControlLayer;

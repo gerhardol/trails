@@ -77,7 +77,7 @@ namespace TrailsPlugin.UI.MapLayers
         public string key { get { return m_key; } }
         private static IApplication GetApplication()
         {
-#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY||GPSRUNNING_HIGHSCORE||GPSRUNNING_PERFORMANCEPREDICTOR
             return GpsRunningPlugin.Plugin.GetApplication();
 #elif MATRIXPLUGIN
             return MatrixPlugin.MatrixPlugin.GetApplication();

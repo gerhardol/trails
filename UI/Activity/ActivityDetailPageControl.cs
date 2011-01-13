@@ -145,27 +145,29 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         private bool _showPage = false;
-        public bool ShowPage
+        public bool HidePage()
         {
-            get { return _showPage; }
-            set
-            {
-                _showPage = value;
-                m_layer.ShowPage = value;
-                TrailSelector.ShowPage = value;
-                ResultList.ShowPage = value;
-                MultiCharts.ShowPage = value;
+            _showPage = false;
 #if !ST_2_1
-                if (value)
-                {
-                    m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                }
-                else
-                {
-                    m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                }
+            m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 #endif
-            }
+            m_layer.HidePage();
+            TrailSelector.ShowPage = false;
+            ResultList.ShowPage = false;
+            MultiCharts.ShowPage = false;
+            return true;
+        }
+
+        public void ShowPage(string bookmark)
+        {
+            _showPage = true;
+            m_layer.ShowPage(bookmark);
+            TrailSelector.ShowPage = true;
+            ResultList.ShowPage = true;
+            MultiCharts.ShowPage = true;
+#if !ST_2_1
+            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+#endif
         }
 
 		public void RefreshControlState() 
@@ -177,13 +179,13 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshData()
         {
             bool showPage = _showPage;
-            ShowPage = false; //defer updates
+            HidePage(); //defer updates
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
             RefreshRoute(); 
             //Charts are refreshed when list is changed
             //RefreshChart();
-            ShowPage = showPage;
+            ShowPage("");
         }
         public void RefreshChart()
         {

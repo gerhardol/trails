@@ -31,6 +31,7 @@ namespace TrailsPlugin.Data {
         private bool m_matchAll = false;
         private bool m_generated = false;
         private bool m_isReference = false;
+        private int m_HighScore = 0; //0 not used, 1 standard HighScore (could be more)
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
@@ -131,6 +132,18 @@ namespace TrailsPlugin.Data {
                 m_isReference = value;
             }
         }
+        public int HighScore
+        {
+            get
+            {
+                return m_HighScore;
+            }
+            set
+            {
+                m_HighScore = value;
+            }
+        }
+
         public IActivity ReferenceActivity
         {
             get

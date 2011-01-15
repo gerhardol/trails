@@ -77,6 +77,42 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HighScore.
+        /// </summary>
+        internal static string HighScore_Trail {
+            get {
+                return ResourceManager.GetString("HighScore_Trail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A HighScore Trail can be generated..
+        /// </summary>
+        internal static string HighScoreCompatible {
+            get {
+                return ResourceManager.GetString("HighScoreCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HighScore plugin.
+        /// </summary>
+        internal static string HighScorePluginName {
+            get {
+                return ResourceManager.GetString("HighScorePluginName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install at least version {0} of {1} to get a HighScore Trail..
+        /// </summary>
+        internal static string HighScoreToInstall {
+            get {
+                return ResourceManager.GetString("HighScoreToInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Problem communicating with {0}.
         ///Make sure that {1} is installed..
         /// </summary>

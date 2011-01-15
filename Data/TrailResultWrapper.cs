@@ -24,6 +24,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
@@ -56,6 +57,35 @@ namespace TrailsPlugin.Data {
             base.Element = new TrailResult(m_trailgps, activity, order, indexes, float.MaxValue);
             //Children are not created by default
             //getSplits();
+        }
+
+        //Create from HighScore
+        public TrailResultWrapper(Trail trail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt,  int order)
+            : base(null, null)
+        {
+            IList<int> indexes = new List<int>();
+            int i = 0;
+            for (; i < activity.GPSRoute.Count; i++)
+            {
+                if (activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).CompareTo(selInfo.MarkedTimes[0].Lower) >= 0)
+                {
+                    indexes.Add(i);
+                    break;
+                }
+            }
+            for (; i < activity.GPSRoute.Count; i++)
+            {
+                if (activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).CompareTo(selInfo.MarkedTimes[0].Upper) >= 0)
+                {
+                    indexes.Add(i);
+                    break;
+                }
+            }
+            if (indexes.Count >= 2)
+            {
+                base.Element = new TrailResult(activity, order, indexes, float.MaxValue, tt);
+            }
+            //No Children
         }
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
             : base(par, ele) { }

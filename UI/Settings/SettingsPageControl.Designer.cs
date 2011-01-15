@@ -27,14 +27,15 @@
             this.PluginInfoPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
-            this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblDefaultRadius = new System.Windows.Forms.Label();
-            this.txtSetNameAtImport = new System.Windows.Forms.CheckBox();
+            this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblSetNameAtImport = new System.Windows.Forms.Label();
+            this.txtSetNameAtImport = new System.Windows.Forms.CheckBox();
             this.lblUniqueRoutes = new System.Windows.Forms.Label();
+            this.lblHighScore = new System.Windows.Forms.Label();
             this.lblCopyright = new System.Windows.Forms.Label();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.lblLicense = new System.Windows.Forms.Label();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.PluginInfoPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -69,17 +70,19 @@
             this.tableLayoutPanel1.Controls.Add(this.lblSetNameAtImport, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.txtSetNameAtImport, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 8);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 8;
+            this.tableLayoutPanel1.RowCount = 9;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -91,17 +94,27 @@
             this.PluginInfoBanner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.PluginInfoBanner.BackColor = System.Drawing.Color.Transparent;
+            this.tableLayoutPanel1.SetColumnSpan(this.PluginInfoBanner, 2);
             this.PluginInfoBanner.HasMenuButton = false;
             this.PluginInfoBanner.Location = new System.Drawing.Point(0, 0);
             this.PluginInfoBanner.Margin = new System.Windows.Forms.Padding(0);
             this.PluginInfoBanner.Name = "PluginInfoBanner";
             this.PluginInfoBanner.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.tableLayoutPanel1.SetColumnSpan(this.PluginInfoBanner, 2);
-            this.PluginInfoBanner.Size = new System.Drawing.Size(150, 20);
+            this.PluginInfoBanner.Size = new System.Drawing.Size(356, 20);
             this.PluginInfoBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
             this.PluginInfoBanner.TabIndex = 0;
             this.PluginInfoBanner.Text = "Plugin Information";
             this.PluginInfoBanner.UseStyleFont = true;
+            // 
+            // lblDefaultRadius
+            // 
+            this.lblDefaultRadius.AutoSize = true;
+            this.lblDefaultRadius.Location = new System.Drawing.Point(3, 33);
+            this.lblDefaultRadius.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblDefaultRadius.Name = "lblDefaultRadius";
+            this.lblDefaultRadius.Size = new System.Drawing.Size(80, 13);
+            this.lblDefaultRadius.TabIndex = 0;
+            this.lblDefaultRadius.Text = "Default Radius:";
             // 
             // txtDefaultRadius
             // 
@@ -124,35 +137,25 @@
             this.txtDefaultRadius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.txtDefaultRadius.LostFocus += new System.EventHandler(this.txtDefaultRadius_LostFocus);
             // 
-            // lblDefaultRadius
-            // 
-            this.lblDefaultRadius.AutoSize = true;
-            this.lblDefaultRadius.Location = new System.Drawing.Point(3, 33);
-            this.lblDefaultRadius.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.lblDefaultRadius.Name = "lblDefaultRadius";
-            this.lblDefaultRadius.Size = new System.Drawing.Size(80, 13);
-            this.lblDefaultRadius.TabIndex = 0;
-            this.lblDefaultRadius.Text = "Default Radius:";
-            // 
-            // lblDefaultRadius
+            // lblSetNameAtImport
             // 
             this.lblSetNameAtImport.AutoSize = true;
-            this.lblSetNameAtImport.Location = new System.Drawing.Point(3, 33);
+            this.lblSetNameAtImport.Location = new System.Drawing.Point(3, 53);
             this.lblSetNameAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblSetNameAtImport.Name = "lblSetNameAtImport";
-            this.lblSetNameAtImport.Size = new System.Drawing.Size(80, 13);
+            this.lblSetNameAtImport.Size = new System.Drawing.Size(96, 13);
             this.lblSetNameAtImport.TabIndex = 0;
             this.lblSetNameAtImport.Text = "<SetNameAtImport";
             // 
-            // lblDefaultRadius
+            // txtSetNameAtImport
             // 
             this.txtSetNameAtImport.AutoSize = true;
-            this.txtSetNameAtImport.Location = new System.Drawing.Point(3, 33);
+            this.txtSetNameAtImport.Location = new System.Drawing.Point(153, 53);
             this.txtSetNameAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.txtSetNameAtImport.Name = "lblDefaultRadius";
-            this.txtSetNameAtImport.Size = new System.Drawing.Size(80, 13);
+            this.txtSetNameAtImport.Name = "txtSetNameAtImport";
+            this.txtSetNameAtImport.Size = new System.Drawing.Size(15, 14);
             this.txtSetNameAtImport.TabIndex = 0;
-            this.txtSetNameAtImport.CheckedChanged +=new System.EventHandler(txtSetNameAtImport_CheckedChanged);
+            this.txtSetNameAtImport.CheckedChanged += new System.EventHandler(this.txtSetNameAtImport_CheckedChanged);
             // 
             // lblUniqueRoutes
             // 
@@ -164,12 +167,22 @@
             this.lblUniqueRoutes.TabIndex = 1;
             this.lblUniqueRoutes.Text = "<UR placeholder>\r\nline2";
             // 
+            // lblHighScore
+            // 
+            this.lblHighScore.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblHighScore, 2);
+            this.lblHighScore.Location = new System.Drawing.Point(3, 80);
+            this.lblHighScore.Name = "lblHighScore";
+            this.lblHighScore.Size = new System.Drawing.Size(93, 26);
+            this.lblHighScore.TabIndex = 1;
+            this.lblHighScore.Text = "<HS placeholder>\r\nline2";
+            // 
             // lblCopyright
             // 
             this.lblCopyright.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblCopyright, 2);
             this.lblCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCopyright.Location = new System.Drawing.Point(3, 110);
+            this.lblCopyright.Location = new System.Drawing.Point(3, 140);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(350, 20);
             this.lblCopyright.TabIndex = 1;
@@ -179,7 +192,7 @@
             // 
             this.lblLicense.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblLicense, 2);
-            this.lblLicense.Location = new System.Drawing.Point(3, 130);
+            this.lblLicense.Location = new System.Drawing.Point(3, 160);
             this.lblLicense.Name = "lblLicense";
             this.lblLicense.Size = new System.Drawing.Size(350, 39);
             this.lblLicense.TabIndex = 3;
@@ -217,6 +230,7 @@
         private System.Windows.Forms.CheckBox txtSetNameAtImport;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label lblUniqueRoutes;
+        private System.Windows.Forms.Label lblHighScore;
         private System.Windows.Forms.Label lblLicense;
 	}
 }

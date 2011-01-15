@@ -53,6 +53,7 @@ namespace TrailsPlugin.UI.Settings {
             presentSettings();
 
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
+            this.lblHighScore.Text = Integration.HighScore.CompabilityText;
             //Some untranslated strings....
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +

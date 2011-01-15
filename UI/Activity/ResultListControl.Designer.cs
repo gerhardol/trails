@@ -88,6 +88,7 @@
             this.summaryList.Size = new System.Drawing.Size(400, 300);
             this.summaryList.TabIndex = 11;
             this.summaryList.Click += new System.EventHandler(this.summaryList_Click);
+            this.summaryList.MouseLeave += new System.EventHandler(this.summaryList_MouseLeave);
             this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.selectedRow_DoubleClick);
             this.summaryList.MouseMove +=new System.Windows.Forms.MouseEventHandler(summaryList_MouseMove);
             // 
@@ -208,5 +209,7 @@
         private System.Windows.Forms.ToolStripMenuItem limitURMenuItem;
         private System.Windows.Forms.ToolStripMenuItem markCommonStretchesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;
+        private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
+        private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();
     }
 }

@@ -38,7 +38,14 @@ namespace TrailsPlugin.Data {
             m_activities = activities;
             m_trail = trail;
             m_status = TrailOrderStatus.NoInfo;
-            if (Trail.MatchAll || Trail.IsReference)
+            if (m_trail.HighScore > 0)
+            {
+                if(Integration.HighScore.HighScoreIntegrationEnabled)
+                {
+                    m_status = TrailOrderStatus.MatchNoCalc;
+                }
+            }
+            else if (Trail.MatchAll || Trail.IsReference)
             {
                 // Let Reference always match, to trigger possible recalc after
                 m_status = TrailOrderStatus.MatchNoCalc;
@@ -83,7 +90,14 @@ namespace TrailsPlugin.Data {
             {
                 if (status == TrailOrderStatus.NoInfo)
                 {
-                    if (m_trail.IsInBounds(m_activities))
+                    if (m_trail.HighScore > 0)
+                    {
+                        if (Integration.HighScore.HighScoreIntegrationEnabled)
+                        {
+                            this.status = TrailOrderStatus.MatchNoCalc;
+                        }
+                    }
+                    else if (m_trail.IsInBounds(m_activities))
                     {
                         status = TrailOrderStatus.InBoundNoCalc;
                     }
@@ -143,7 +157,26 @@ namespace TrailsPlugin.Data {
 
                 m_resultsListWrapper = new List<TrailResultWrapper>();
                 IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
-                foreach (IActivity activity in m_activities)
+                if (m_trail.HighScore > 0)
+                {
+                    if (Integration.HighScore.HighScoreIntegrationEnabled)
+                    {
+                        IList<Integration.HighScore.HighScoreResult> res = Integration.HighScore.GetHighScoreForActivity(m_activities, null);
+                        if (res != null && res.Count > 0)
+                        {
+                            foreach (Integration.HighScore.HighScoreResult h in Integration.HighScore.GetHighScoreForActivity(m_activities, null))
+                            {
+                                if (h.activity.GPSRoute != null && h.activity.GPSRoute.Count > 0)
+                                {
+                                    this.status = TrailOrderStatus.Match;
+                                    TrailResultWrapper result = new TrailResultWrapper(m_trail, h.activity, h.selInfo, h.tooltip, m_resultsListWrapper.Count + 1);
+                                    m_resultsListWrapper.Add(result);
+                                }
+                            }
+                        }
+                    }
+                }
+                else foreach (IActivity activity in m_activities)
                 {
                     if (activity.GPSRoute != null && activity.GPSRoute.Count > 1)
                     {
@@ -153,7 +186,6 @@ namespace TrailsPlugin.Data {
                             TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1);
                             m_resultsListWrapper.Add(result);
                         }
-
                         else if (IsInBounds && trailgps.Count > 0)
                         {
                             IList<int> aMatch = new List<int>();
@@ -194,13 +226,13 @@ namespace TrailsPlugin.Data {
                                     routeIndex > lastMatchInRadius &&
                                     routeIndex > lastMatchPassBy &&
                                     (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||
-                                    0<checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius)))
+                                    0 < checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius)))
                                 {
                                     //Start over if we pass first point before all were found
                                     aMatch.Clear();
                                     trailDistDiff = 0;
                                 }
-                                
+
                                 if (routeDist < this.Trail.Radius)
                                 {
                                     matchIndex = routeIndex;

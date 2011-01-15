@@ -53,6 +53,7 @@
     <Compile Include="GUIDS.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Integration\HighScore.cs" />
     <Compile Include="Integration\IntegrationUtility.cs" />
     <Compile Include="Integration\UniqueRoutes.cs" />
     <Compile Include="PluginMain.cs" />

@@ -88,6 +88,7 @@ namespace TrailsPlugin.UI.Activity {
             this.selectWithURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
+            this.summaryListToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -581,10 +582,50 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
+        bool summaryListTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
+        System.Drawing.Point summaryListCursorLocationAtMouseMove;
+        TrailResultWrapper summaryListLastEntryAtMouseMove = null;
         void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             m_mouseClickArgs = e;
+           TreeList.RowHitState rowHitState;
+           TrailResultWrapper entry = (TrailResultWrapper)summaryList.RowHitTest(e.Location, out rowHitState);
+           if (entry == summaryListLastEntryAtMouseMove)
+               return;
+           else
+               summaryListToolTip.Hide(summaryList);
+           summaryListLastEntryAtMouseMove = entry;
+           summaryListCursorLocationAtMouseMove = e.Location;
+
+           if (entry != null)
+               summaryListToolTipTimer.Start();
+           else
+               summaryListToolTipTimer.Stop();
         }
+        private void summaryList_MouseLeave(object sender, EventArgs e)
+        {
+            summaryListToolTipTimer.Stop();
+            summaryListToolTip.Hide(summaryList);
+        }
+
+        private void ToolTipTimer_Tick(object sender, EventArgs e)
+        {
+            summaryListToolTipTimer.Stop();
+
+            if (summaryListLastEntryAtMouseMove != null &&
+                summaryListCursorLocationAtMouseMove != null &&
+                !summaryListTooltipDisabled)
+            {
+                string tt = summaryListLastEntryAtMouseMove.Result.ToolTip;
+                summaryListToolTip.Show(tt,
+                              summaryList,
+                              new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                                  Cursor.Current.Size.Width / 2,
+                                        summaryListCursorLocationAtMouseMove.Y),
+                              summaryListToolTip.AutoPopDelay);
+            }
+        }
+
         private TrailResult getMouseResult(bool ensureParent)
         {
             TrailResult tr = null;

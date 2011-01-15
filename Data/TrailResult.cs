@@ -50,13 +50,19 @@ namespace TrailsPlugin.Data {
         private IList<int> m_indexes = new List<int>();
         private Color m_trailColor = getColor(nextTrailColor++);
         private TrailResult m_parentResult = null;
+        private string m_toolTip = null;
 
         public TrailResult(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
             : this(trail.TrailLocations, activity, order, indexes, distDiff)
         {}
         public TrailResult(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
             : this(null, trailgps, activity, order, indexes, distDiff)
-        {}
+        { }
+        public TrailResult(IActivity activity, int order, IList<int> indexes, float distDiff, string toolTip)
+            : this(null, new List<Data.TrailGPSLocation>(), activity, order, indexes, distDiff)
+        { 
+            m_toolTip = toolTip;
+        }
 
         private TrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
         {
@@ -100,25 +106,28 @@ namespace TrailsPlugin.Data {
         public IList<TrailResult> getSplits()
         {
             IList<TrailResult> splits = new List<TrailResult>();
-            for (int i = 1; i < m_indexes.Count; i++)
+            if (m_trailgps.Count > 1)
             {
-                Data.TrailGPSLocation tg1 = m_trailgps[i - 1];
-                Data.TrailGPSLocation tg2=tg1;
-                if (m_trailgps.Count > i)
+                for (int i = 1; i < m_indexes.Count; i++)
                 {
-                    tg2 = m_trailgps[i];
+                    Data.TrailGPSLocation tg1 = m_trailgps[i - 1];
+                    Data.TrailGPSLocation tg2 = tg1;
+                    if (m_trailgps.Count > i)
+                    {
+                        tg2 = m_trailgps[i];
+                    }
+                    TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> { tg1, tg2 },
+                        m_activity, i,
+                        new List<int> { m_indexes[i - 1], m_indexes[i] },
+                        m_distDiff);
+                    tr.m_parentResult = this;
+                    //if (aActivities.Count > 1)
+                    //{
+                    //    nextTrailColor--;
+                    //    tr.m_trailColor = this.m_trailColor;
+                    //}
+                    splits.Add(tr);
                 }
-                TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> {tg1, tg2 },
-                    m_activity, i, 
-                    new List<int> { m_indexes[i - 1], m_indexes[i] }, 
-                    m_distDiff);
-                tr.m_parentResult = this;
-                //if (aActivities.Count > 1)
-                //{
-                //    nextTrailColor--;
-                //    tr.m_trailColor = this.m_trailColor;
-                //}
-                splits.Add(tr);
             }
             return splits;
         }
@@ -136,6 +145,20 @@ namespace TrailsPlugin.Data {
 				return m_order;
 			}
 		}
+        public string ToolTip
+        {
+            get
+            {
+                if (m_toolTip != null)
+                {
+                    return m_toolTip;
+                }
+                else
+                {
+                    return Activity.StartTime + " " + Activity.Name;
+                }
+            }
+        }
 
         public TimeSpan StartTime
         {
@@ -368,15 +391,32 @@ namespace TrailsPlugin.Data {
 				return (value > 0 ? "+" : "") + Utils.Units.ElevationToString(value, "");
 			}
 		}
+
+        //private IValueRangeSeries<DateTime> getPauses()
+        //{
+        //    ActivityInfo info = ActivityInfoCache.Instance.GetInfo(this.Activity);
+        //    IValueRangeSeries<DateTime> pauses;
+        //    bool includeStopped;
+        //    if (includeStopped)
+        //    {
+        //        pauses = info.Activity.TimerPauses;
+        //    }
+        //    else
+        //    {
+        //        pauses = info.NonMovingTimes;
+        //    }
+        //    return pauses;
+        //}
+
         private void getDistanceTrack()
         {
-            //Note: Must have the same indexes as the GPS track....
             if (null == m_distanceMetersTrack)
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
                 //TODO: Non-GPS activities?
                 if (Activity.GPSRoute != null)
                 {
+                    //Note: Must have the same indexes as the GPS track....
                     IDistanceDataTrack track = m_activity.GPSRoute.GetDistanceMetersTrack();
                     if (track != null)
                     {
@@ -396,12 +436,9 @@ namespace TrailsPlugin.Data {
         }
 		public IDistanceDataTrack DistanceMetersTrack 
         {
-            get{
-                //Note: Must have the same indexes as the GPS track....
-                if (null == m_distanceMetersTrack)
-                {
-                    getDistanceTrack();
-                }
+            get
+            {
+                getDistanceTrack();
                 return m_distanceMetersTrack;
 			}
 		}

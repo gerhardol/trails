@@ -52,6 +52,14 @@ namespace TrailsPlugin.Data {
             trail.IsReference = true;
             m_AllTrails.Add(trail.Id, trail);
             m_referenceTrail_Activity = trail;
+
+            //HighScore Trail
+            trail = new Data.Trail();
+            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Name = Properties.Resources.HighScore_Trail;
+            trail.Generated = true;
+            trail.HighScore = 1;
+            m_AllTrails.Add(trail.Id, trail);
         }
 
 		public SortedList<string, Data.Trail> AllTrails {

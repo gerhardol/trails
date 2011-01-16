@@ -569,7 +569,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (sel.MarkedDistances != null)
             {
-                foreach (IValueRange<DateTime> v in sel.MarkedDistances)
+                foreach (IValueRange<double> v in sel.MarkedDistances)
                 {
                     result.Add(GetSingleSelection(tr, v));
                 }

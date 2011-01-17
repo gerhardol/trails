@@ -65,7 +65,7 @@ namespace TrailsPlugin.Data {
                     string date = "";
                     if (m_multiple)
                     {
-                        date = row.FirstTime.ToLocalTime().ToShortDateString()+" ";
+                        date = row.StartDateTime.ToLocalTime().ToShortDateString()+" ";
                     }
                     return date + row.StartTime.ToString();
 				case TrailResultColumnIds.EndTime:

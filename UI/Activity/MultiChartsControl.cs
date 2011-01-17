@@ -360,18 +360,18 @@ namespace TrailsPlugin.UI.Activity {
                 chart.SetSelectedRange(asel);
             }
         }
-        public void SetSelectedRange(IList<float[]> regions)
+        public void SetSelectedResultRange(IList<float[]> regions)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedRange(regions);
+                chart.SetSelectedResultRange(regions);
             }
         }
-        public void SetSelectedRange(int i, IList<float[]> regions)
+        public void SetSelectedResultRange(int i, IList<float[]> regions)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedRange(i, true, regions);
+                chart.SetSelectedResultRange(i, true, regions);
             }
         }
         public void EnsureVisible(IList<TrailResult> atr)

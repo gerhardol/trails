@@ -325,57 +325,55 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
-                if(i>=0)
+                if (i >= 0)
                 {
                     TrailResult tr = m_trailResults[i];
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
 
                     IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
+                    IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
                     if (XAxisReferential == XAxisValue.Time)
                     {
-                        IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<DateTime>(
-                                tr.getActivityTime(at[0]),
-                                tr.getActivityTime(at[1])));
+                                tr.getDateTimeFromElapsedResult(at[0]),
+                                tr.getDateTimeFromElapsedResult(at[1])));
                         }
-                        results.Add(new Data.TrailResultMarked(tr, t));
                     }
                     else
                     {
-                        IValueRangeSeries<double> t = new ValueRangeSeries<double>();
                         foreach (float[] at in regions)
                         {
-                            t.Add(new ValueRange<double>(
-                                tr.getActivityDist(Utils.Units.SetDistance(at[0], m_refTrailResult.Activity)),
-                                tr.getActivityDist(Utils.Units.SetDistance(at[1], m_refTrailResult.Activity))));
+                            t.Add(new ValueRange<DateTime>(
+                                tr.getDateTimeFromDistResult(Utils.Units.SetDistance(at[0], m_refTrailResult.Activity)),
+                                tr.getDateTimeFromDistResult(Utils.Units.SetDistance(at[1], m_refTrailResult.Activity))));
                         }
-                        results.Add(new Data.TrailResultMarked(tr, t));
                     }
+                    results.Add(new Data.TrailResultMarked(tr, t));
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     const int MaxSelectedSeries = 5;
-                    bool markAll=(MainChart.DataSeries.Count <= MaxSelectedSeries);
+                    bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                     //Mark route track, but not chart
                     m_page.MarkTrack(results, false);
-                    m_page.EnsureVisible(new List<Data.TrailResult>{tr}, false);
+                    m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
                     if (markAll)
                     {
-                        m_multiple.SetSelectedRange(regions);
+                        m_multiple.SetSelectedResultRange(regions);
                     }
                     else
                     {
                         //Assumes that not single results are set
-                        m_multiple.SetSelectedRange(i, regions);
+                        m_multiple.SetSelectedResultRange(i, regions);
                     }
                     this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 }
             }
         }
 
-        public void SetSelectedRange(IList<float[]> regions)
+        public void SetSelectedResultRange(IList<float[]> regions)
         {
             for (int i = 0; i < MainChart.DataSeries.Count; i++ )
             {
@@ -384,12 +382,12 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_trailResults.Count>1 || i==0)
                 //if (MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
                 {
-                    SetSelectedRange(i, false, regions);
+                    SetSelectedResultRange(i, false, regions);
                 }
             }
         }
 
-        public void SetSelectedRange(int i, bool clear, IList<float[]> regions)
+        public void SetSelectedResultRange(int i, bool clear, IList<float[]> regions)
         {
             if (m_visible)
             {
@@ -439,25 +437,26 @@ namespace TrailsPlugin.UI.Activity {
                 for (int i = 0; i < m_trailResults.Count; i++)
                 {
                         MainChart.DataSeries[i].ClearSelectedRegions();
+                        //MainChart.DataSeries[i].SetSelectedRange(0, 0);
                         //The "fill" chart is 0, line is 1
                         if (i == 0 && m_trailResults.Count == 1 &&
                                     MainChart.DataSeries.Count > 1)
                         {
                              MainChart.DataSeries[1].ClearSelectedRegions();
                         }
-                    IList<float[]> l = GetSelection(i, sel);
+                    IList<float[]> l = GetResultSelectionFromActivity(i, sel);
                     if (l != null && l.Count > 0)
                     {
                         //Only one range can be selected
                         float x1 = l[0][0];
                         float x2 = l[l.Count - 1][1];
-                        MainChart.DataSeries[i].ClearSelectedRegions();
-                        //The "fill" chart is 0, line is 1
-                        if (i == 0 && m_trailResults.Count == 1 &&
-                            MainChart.DataSeries.Count > 1)
-                        {
-                            MainChart.DataSeries[1].ClearSelectedRegions();
-                        }
+                        //MainChart.DataSeries[i].ClearSelectedRegions();
+                        ////The "fill" chart is 0, line is 1
+                        //if (i == 0 && m_trailResults.Count == 1 &&
+                        //    MainChart.DataSeries.Count > 1)
+                        //{
+                        //    MainChart.DataSeries[1].ClearSelectedRegions();
+                        //}
                         //Ignore ranges outside current range and malformed scales
                         if (x1 < MainChart.XAxis.MaxOriginFarValue &&
                             MainChart.XAxis.MinOriginValue > float.MinValue &&
@@ -492,7 +491,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrailResult tr = m_trailResults[i];
                         if (trm.trailResult == tr)
                         {
-                            foreach (float[] ax in GetSelection(i, trm.selInfo))
+                            foreach (float[] ax in GetResultSelectionFromActivity(i, trm.selInfo))
                             {
                                 //Ignore ranges outside current range and malformed scales
                                 if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
@@ -513,53 +512,59 @@ namespace TrailsPlugin.UI.Activity {
 
         float[] GetSingleSelection(TrailResult tr, IValueRange<DateTime> v)
         {
-            double t1 = 0, t2 = 0;
-            DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
-            d1 = tr.getTimeFromActivity(v.Lower);
-            d2 = tr.getTimeFromActivity(v.Upper);
-            if (XAxisReferential != XAxisValue.Time)
-            {
-                t1 = tr.getDistFromActivity(d1);
-                t2 = tr.getDistFromActivity(d2);
-            }
-            return GetSingleSelection(tr, t1, t2, d1, d2);
-        }
-        float[] GetSingleSelection(TrailResult tr, IValueRange<double> v)
-        {
-            double t1 = 0, t2 = 0;
-            DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
-            t1 = tr.getDistFromActivity(v.Lower);
-            t2 = tr.getDistFromActivity(v.Upper);
+            DateTime d1 = v.Lower;
+            DateTime d2 = v.Upper;
             if (XAxisReferential == XAxisValue.Time)
             {
-                d1 = tr.getTimeFromActivity(t1);
-                d2 = tr.getTimeFromActivity(t2);
-            }
-            return GetSingleSelection(tr, t1, t2, d1, d2);
-        }
-        float[] GetSingleSelection(TrailResult tr, double t1, double t2, DateTime d1, DateTime d2)
-        {
-            float x1 = float.MaxValue, x2 = float.MinValue;
-            //Convert to distance display unit, Time is always in seconds
-            if (XAxisReferential == XAxisValue.Time)
-            {
-                x1 = (float)(tr.getSeconds(d1));
-                x2 = (float)(tr.getSeconds(d2));
+                return GetSingleSelectionFromResult(tr, d1, d2);
             }
             else
             {
-                x1 = Utils.Units.GetDistance(t1, m_refTrailResult.Activity);
-                x2 = Utils.Units.GetDistance(t2, m_refTrailResult.Activity);
+                double t1 = tr.getDistResult(d1);
+                double t2 = tr.getDistResult(d2);
+                return GetSingleSelectionFromResult(tr, t1, t2);
             }
+        }
+        float[] GetSingleSelection(TrailResult tr, IValueRange<double> v)
+        {
+            if (XAxisReferential == XAxisValue.Time)
+            {
+                DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
+                d1 = tr.getDateTimeFromDistActivity(v.Lower);
+                d2 = tr.getDateTimeFromDistActivity(v.Upper);
+                return GetSingleSelectionFromResult(tr, d1, d2);
+            }
+            else
+            {
+                double t1 = tr.getDistResultFromDistActivity(v.Lower);
+                double t2 = tr.getDistResultFromDistActivity(v.Upper);
+                return GetSingleSelectionFromResult(tr, t1, t2);
+            }
+        }
+        float[] GetSingleSelectionFromResult(TrailResult tr, DateTime d1, DateTime d2)
+        {
+            float x1 = float.MaxValue, x2 = float.MinValue;
+            //Convert to distance display unit, Time is always in seconds
+            x1 = (float)(tr.getElapsedResult(d1));
+            x2 = (float)(tr.getElapsedResult(d2));
+            return new float[] { x1, x2 };
+        }
+        float[] GetSingleSelectionFromResult(TrailResult tr, double t1, double t2)
+        {
+            float x1 = float.MaxValue, x2 = float.MinValue;
+            //distance is for result, then to display units
+            x1 = Utils.Units.GetDistance(t1, m_refTrailResult.Activity);
+            x2 = Utils.Units.GetDistance(t2, m_refTrailResult.Activity);
             return new float[] { x1, x2 };
         }
 
-        private IList<float[]> GetSelection(int i, IItemTrackSelectionInfo sel)
+        private IList<float[]> GetResultSelectionFromActivity(int i, IItemTrackSelectionInfo sel)
         {
             IList<float[]> result = new List<float[]>();
 
             TrailResult tr = m_trailResults[i]; 
-            //Currently only one range but several regions can be selected
+            //Currently only one range but several regions in the chart can be selected
+            //Only use one of the selections
             if (sel.MarkedTimes != null)
             {
                 foreach (IValueRange<DateTime> v in sel.MarkedTimes)
@@ -693,11 +698,14 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             foreach (ITimeValueEntry<float> entry in graphPoints)
                             {
-                                if (null != dataFill)
+                                if (!dataLine.Points.ContainsKey(entry.ElapsedSeconds))
                                 {
-                                    dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
+                                    if (null != dataFill)
+                                    {
+                                        dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
+                                    }
+                                    dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
                                 }
-                                dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
                             }
                         }
                         else
@@ -711,13 +719,15 @@ namespace TrailsPlugin.UI.Activity {
                                 if (j < graphPoints.Count)
                                 {
                                     ITimeValueEntry<float> entry = graphPoints[j];
-
-                                    ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
-                                    if (null != dataFill)
+                                    if (!dataLine.Points.ContainsKey(entry.ElapsedSeconds))
                                     {
-                                        dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                        ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
+                                        if (null != dataFill)
+                                        {
+                                            dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                        }
+                                        dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
                                     }
-                                    dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
                                 }
                             }
                         }
@@ -739,25 +749,21 @@ namespace TrailsPlugin.UI.Activity {
 #else
  new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
 #endif
-                    if (XAxisReferential == XAxisValue.Time)
+                    foreach (DateTime t in trailPointResult.TimeTrailPoints)
                     {
-                        foreach (DateTime t in trailPointResult.TimeTrailPoints)
+                        AxisMarker a;
+                        if (XAxisReferential == XAxisValue.Time)
                         {
-                            AxisMarker a = new AxisMarker(trailPointResult.getSeconds(t), icon);
-                            a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
-                            a.Line1Color = Color.Black;
-                            MainChart.XAxis.Markers.Add(a);
+                            a = new AxisMarker(trailPointResult.getElapsedResult(t), icon);
                         }
-                    }
-                    else
-                    {
-                        foreach (double t in trailPointResult.DistanceTrailPoints)
+                        else
                         {
-                            AxisMarker a = new AxisMarker(Utils.Units.GetDistance(t, trailPointResult.Activity), icon);
-                            a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
-                            a.Line1Color = Color.Black;
-                            MainChart.XAxis.Markers.Add(a);
+                            a = new AxisMarker(Utils.Units.GetDistance(
+                                trailPointResult.getDistResult(t), trailPointResult.Activity), icon);
                         }
+                        a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
+                        a.Line1Color = Color.Black;
+                        MainChart.XAxis.Markers.Add(a);
                     }
                 }
                 ZoomToData();

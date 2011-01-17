@@ -27,20 +27,19 @@ namespace TrailsPlugin.Data {
         public TrailResultMarked(TrailResult tr)
         {
             trailResult = tr;
-            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-            t.Add(new ValueRange<DateTime>(tr.FirstTime, tr.LastTime));
-            selInfo.MarkedTimes = t;
+            selInfo.MarkedTimes = tr.getSelInfo();
         }
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
         {
             trailResult = tr;
             selInfo.MarkedTimes = t;
         }
-        public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)
-        {
-            trailResult = tr;
-            selInfo.MarkedDistances = t;
-        }
+        //Note: IItemTrackSelectionInfo uses Activity distances, avoid...
+        //public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)
+        //{
+        //    trailResult = tr;
+        //    selInfo.MarkedDistances = t;
+        //}
         public TrailResultMarked(TrailResult tr, IItemTrackSelectionInfo t)
         {
             trailResult = tr;

@@ -425,7 +425,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //m_view.RouteSelectionProvider.SelectedItems
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
-                if (selected != null && selected.SelectedItems != null && selected.SelectedItems.Count > 0)
+                if (selected != null && selected.SelectedItems != null)
                 {
                     MultiCharts.SetSelectedRange(selected.SelectedItems);
                 }

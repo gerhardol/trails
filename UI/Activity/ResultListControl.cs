@@ -649,14 +649,12 @@ namespace TrailsPlugin.UI.Activity {
             TrailResult tr = getMouseResult(false);
             if (tr != null)
             {
-                currRes = tr.FirstTime.ToLocalTime().ToShortDateString() + " " + 
-                    tr.FirstTime.ToLocalTime().ToShortTimeString();
+                currRes = tr.StartDateTime.ToLocalTime().ToString();
             }
             string refRes = "";
             if (m_controller.ReferenceTrailResult != null)
             {
-                refRes = m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortDateString() + " " + 
-                    m_controller.ReferenceTrailResult.FirstTime.ToLocalTime().ToShortTimeString();
+                refRes = m_controller.ReferenceTrailResult.StartDateTime.ToLocalTime().ToString();
             }
             this.referenceResultMenuItem.Text = string.Format(
                 Properties.Resources.UI_Activity_List_ReferenceResult, currRes, refRes);
@@ -768,7 +766,7 @@ namespace TrailsPlugin.UI.Activity {
             try
             {
                 IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                    m_controller.ReferenceTrailResult.GpsTrack, null, null);
+                    m_controller.ReferenceTrailResult.GPSRoute, null, null);
                 if (similarActivities != null)
                 {
                     IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };

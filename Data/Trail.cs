@@ -228,7 +228,7 @@ namespace TrailsPlugin.Data {
                     ILapInfo l = activity.Laps[j];
                     for (int i = 0; i < activity.GPSRoute.Count; i++)
                     {
-                        if (0 > l.StartTime.CompareTo(activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).AddSeconds(0.9)) &&
+                        if (0 > l.StartTime.CompareTo(TrailResult.getDateTimeFromElapsedActivityStatic(activity, activity.GPSRoute[i]).AddSeconds(0.9)) &&
                             (indexes.Count == 0 || i > indexes[indexes.Count - 1]) &&
                             (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
                         {

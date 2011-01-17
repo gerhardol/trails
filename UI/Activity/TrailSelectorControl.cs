@@ -218,17 +218,26 @@ namespace TrailsPlugin.UI.Activity {
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             ITimeValueEntry<IGPSPoint> p = null;
-            if (null != ts)
+            if (null != m_controller.SingleActivity && null != m_controller.SingleActivity.GPSRoute)
             {
-                p = m_controller.SingleActivity.GPSRoute.GetInterpolatedValue(ts.Lower);
-            }
-            else
-            {
-                //Normally, selecting by time is null, fall back to select by distance
-                if (null != di && null != m_controller.SingleActivity && null != m_controller.SingleActivity.GPSRoute)
+                DateTime d = DateTime.MaxValue;
+                if (null != ts)
                 {
-                    IDistanceDataTrack dt = m_controller.SingleActivity.GPSRoute.GetDistanceMetersTrack();
-                    p = m_controller.SingleActivity.GPSRoute.GetInterpolatedValue(dt.GetTimeAtDistanceMeters(di.Lower));
+                    d = ts.Lower;
+                }
+                else
+                {
+                    //Normally, ST is selecting by distance, this common path
+                    if (null != di &&
+                        null != m_controller.ReferenceTrailResult &&
+                        m_controller.ReferenceTrailResult.Activity == m_controller.SingleActivity)
+                    {
+                        d = m_controller.ReferenceTrailResult.getDateTimeFromDistActivity(di.Lower);
+                    }
+                }
+                if (d != DateTime.MaxValue)
+                {
+                    p = m_controller.SingleActivity.GPSRoute.GetInterpolatedValue(d);
                 }
             }
             if (null != p)
@@ -316,7 +325,6 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (addCurrent)
                 {
-                    //TODO: sort old/new points, so it is possible to add in middle?
                 }
                 else
                 {

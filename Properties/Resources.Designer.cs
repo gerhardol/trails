@@ -544,7 +544,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Activities can be filtered using UniqueRoutes..
+        ///   Looks up a localized string similar to Activities can be filtered using Unique Routes..
         /// </summary>
         internal static string UniqueRoutesCompatible {
             get {
@@ -562,7 +562,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install at least version {0} of {1} to filter activities using UniqueRoutes..
+        ///   Looks up a localized string similar to Install at least version {0} of {1} to filter activities using Unique Routes..
         /// </summary>
         internal static string UniqueRoutesToInstall {
             get {

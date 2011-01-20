@@ -287,7 +287,7 @@ Make sure that {1} is installed.</value>
     <value>Add similar activities with Unique Routes from reference result{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
-    <value>Activities can be filtered using UniqueRoutes.</value>
+    <value>Activities can be filtered using Unique Routes.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">
@@ -295,7 +295,7 @@ Make sure that {1} is installed.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
-    <value>Install at least version {0} of {1} to filter activities using UniqueRoutes.</value>
+    <value>Install at least version {0} of {1} to filter activities using Unique Routes.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">

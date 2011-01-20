@@ -23,36 +23,44 @@ my$sav="$spreadsheetURL$savArg";
 
 my$data = $ARGV[0] || ".";#"$spreadsheetURL$csvArg";
 my$root = $ARGV[1] || ".";
+my$visualdiff = $ARGV[2] || "";
 my$db;
+
+##Debug: diff standard language differences
+if($visualdiff eq ".")
+{
+    #default value is KDiff3 - shows char by char diffs
+    $visualdiff="$ENV{PROGRAMFILES}/KDiff3/kdiff3.exe"
+}
 
 my$csv;
 if($data ne ".")
 {
-  $csv = get($data);
+    $csv = get($data);
 }
 else
 {
-  #Store a copy locally
- if($sav ne "")
- {
-  `wget  --no-check-certificate -O $localcopy "$sav"`;
-  #my $browser = LWP::UserAgent->new;
-  #my$response=$browser->get("$data$savArg");
-  #die "Error at $data$savArg\n ", $response->status_line, "\n Aborting"
-  # unless $response->is_success;
-  #getstore($sav,$localcopy) != 200 || print "Warning: Cannot save copy of $sav in $localcopy\n";
- }
+    #Store a copy locally
+    if($sav ne "")
+    {
+        `wget  --no-check-certificate -O $localcopy "$sav"`;
+        #my $browser = LWP::UserAgent->new;
+        #my$response=$browser->get("$data$savArg");
+        #die "Error at $data$savArg\n ", $response->status_line, "\n Aborting"
+        # unless $response->is_success;
+        #getstore($sav,$localcopy) != 200 || print "Warning: Cannot save copy of $sav in $localcopy\n";
+    }
 
- #Retrieve from Google Spreadsheet
-  $data="$spreadsheetURL$csvArg";
-  my$tfile="g_csv.tmp.$$";
-  `wget  --no-check-certificate -O $tfile "$data"`;
-  open F, "<:encoding(UTF-8)", "$tfile";
-  while(<F>){$csv.=$_;}
-  close F;
-  unlink $tfile;
+    #Retrieve from Google Spreadsheet
+    $data="$spreadsheetURL$csvArg";
+    my$tfile="g_csv.tmp.$$";
+    `wget  --no-check-certificate -O $tfile "$data"`;
+    open F, "<:encoding(UTF-8)", "$tfile";
+    while(<F>){$csv.=$_;}
+    close F;
+    unlink $tfile;
 }
- die "Couldn't get $data" unless defined $csv;
+die "Couldn't get $data" unless defined $csv;
 
 if ($csv =~ m/\<\?xlm/) {
     my$config = XMLin($csv, ForceArray => 1, KeyAttr => {});
@@ -103,7 +111,11 @@ foreach my$sname (keys %{$db->{sections}}) {
     my$section = $db->{sections}{$sname};
     my$sfile = "$root/$sname";
     my$sxml = XMLin($sfile, ForceArray => 1, KeyAttr => {});
-    for(my$i = 2; $i < @{$db->{codes}}; $i++) {
+    my%xmlexists;
+    my$spr_diff="spr_diff.tmp";
+    my$resx_diff="resx_diff.tmp";
+
+    for(my$i = 1; $i < @{$db->{codes}}; $i++) {
         my$res = {};
         $res->{"xsd:schema"} = dclone($sxml->{"xsd:schema"});
         $res->{"resheader"} = dclone($sxml->{"resheader"});
@@ -111,33 +123,96 @@ foreach my$sname (keys %{$db->{sections}}) {
             $res->{"assembly"} = dclone($sxml->{"assembly"});
         }
 
+        if ($i==1)
+        {
+            open(SPR, "> $spr_diff");
+            open(RESX, "> $resx_diff");
+        }
         foreach my$d (@{$sxml->{"data"}}) {
-            if (defined $section->{$d->{name}} &&
-                defined $section->{$d->{name}}[$i] &&
-                $section->{$d->{name}}[$i] ne "")
+            if ($i==1)
             {
-                my$o = dclone($d);
-                $o->{value}[0] = $section->{$d->{name}}[$i];
-                push @{$res->{"data"}}, $o;
+                if(!defined $d->{type})
+                {
+                    if(!defined $section->{$d->{name}} ||
+                    !defined $section->{$d->{name}}[$i])
+                    {
+                        print STDOUT "Warning: spreadsheet no def for $d->{name}\n";
+                    } elsif (!defined $d->{value})
+                    {
+                         print STDOUT "Warning: $sname no value for $d->{name}\n";
+                    } else
+                    {
+                        my$spr=$section->{$d->{name}}[$i];
+                        $spr=~s/\r\n/\n/g;
+                        my$resx=$d->{value}[0];
+                        $resx=~s/\r\n/\n/g;
+                        if ( $spr ne $resx )
+                        {
+                            if($visualdiff ne "")
+                            {
+                                print SPR "$d->{name}\n$spr\n-------\n\n";
+                                print RESX "$d->{name}\n$resx\n-------\n\n";
+                            } else {
+                                print STDOUT "\nWarning: Different definitions for $d->{name}: spreadsheet\n   $spr\n and $sname\n   $resx\n\n";
+                            }
+                        }
+                    }
+                    $xmlexists{$d->{name}}[$i]=$d->{value}[0];
+                }
+            } else {
+                if (defined $section->{$d->{name}} &&
+                    defined $section->{$d->{name}}[$i] &&
+                    $section->{$d->{name}}[$i] ne "")
+                {
+                    my$o = dclone($d);
+                    $o->{value}[0] = $section->{$d->{name}}[$i];
+                    push @{$res->{"data"}}, $o;
+                }
             }
         }
 
-        my$code = $db->{codes}[$i];
-		if (! ($code =~ /^(#|xx|comment|$)/)){
-		if($i==1){$code="";}
-		else{$code.=".";}
-		(my$out = $sfile) =~ s/.resx$/.${code}resx/;
-        print "Writing: $out\n";
-        #print Dumper(@{$res->{"data"}});
-        open OUT, ">$out" or die "failed to create $out";
-		#Set binmode to allow wide characters in the csv
-		binmode OUT,":utf8";
-        print OUT '<?xml version="1.0" encoding="utf-8"?>',"\n";
-        my$txt=XMLout($sorter, $res, KeyAttr => {}, RootName => "root");
-        $txt=~s/\r\n/\n/g;
-        print OUT $txt;
-        close OUT or die "failed to close $out";
-		}
+        if($i==1)
+        {
+            if($visualdiff ne "")
+            {
+                close SPR;
+                close RESX;
+                if(-e $visualdiff)
+                {
+                    print "Executing: \"$visualdiff\" $spr_diff $resx_diff\n";
+                    system("\"$visualdiff\" $spr_diff $resx_diff");
+                    unlink $spr_diff;
+                    unlink $resx_diff;
+                } else {
+                    print "Cannot find \"$visualdiff\" $spr_diff $resx_diff , keeping temp files\n\n";
+                }
+            }
+            foreach my$j (keys %{$section}) {
+                if($j ne "\$this.Text" && !defined $xmlexists{$j})
+                {
+                    print STDOUT "Warning: resx no def for $j\n";
+                }
+            }
+        }
+        else
+        {
+            my$code = $db->{codes}[$i];
+            if (! ($code =~ /^(#|xx|comment|$)/)){
+                if($i==1){$code="";}
+                else{$code.=".";}
+                (my$out = $sfile) =~ s/.resx$/.${code}resx/;
+                print "Writing: $out\n";
+                #print Dumper(@{$res->{"data"}});
+                open OUT, ">$out" or die "failed to create $out";
+                #Set binmode to allow wide characters in the csv
+                binmode OUT,":utf8";
+                print OUT '<?xml version="1.0" encoding="utf-8"?>',"\n";
+                my$txt=XMLout($sorter, $res, KeyAttr => {}, RootName => "root");
+                $txt=~s/\r\n/\n/g;
+                print OUT $txt;
+                close OUT or die "failed to close $out";
+            }
+        }
     }        
 }
 
@@ -155,7 +230,7 @@ sub ParseCSV
     $csv =~ s/\r//g;
     $csv .= "\n";
     my@lines = ();
-	#$i=5;
+    #$i=5;
     while ($csv =~ s/^((([^\n\"]|\\\")*(?<!\\)\"([^\"]|\\\")*(?<!\\)\")*([^\n\"]|\\\")*)\n//) {
         my$line = $1;
         chomp $line;
@@ -166,7 +241,7 @@ sub ParseCSV
         #print STDERR " " . @fields . @fields;
         #print STDERR @fields;
         #print STDERR "\n";
-		push @fields, $line;
+        push @fields, $line;
         @fields = map { s/^\"//; s/\"$//; s/\"\"/\"/g; s/^\s*$//; $_ } @fields;
 
         push @lines, \@fields;
@@ -181,7 +256,7 @@ sub GenDB
 {
     my($rows) = @_;
     my%translations = ();
-	my@sections=();
+    my@sections=();
 
     foreach my$row (@$rows) {
         my@row = @$row;
@@ -195,19 +270,19 @@ sub GenDB
                 $translations{codes} = \@row;
                 next;
             } elsif ($row[0] =~ m%^[\w\\/]+\.resx$%) {
-				@sections=();
-				foreach my$i (@row){
-				  if ($i =~ m%^[\w\\/]+\.resx$%) {
-				    push @sections, $i;
-				  }
-				}
+                @sections=();
+                foreach my$i (@row){
+                    if ($i =~ m%^[\w\\/]+\.resx$%) {
+                        push @sections, $i;
+                    }
+                }
                 next;
             }
             die "No section (resx) defined in data" unless $sections[0];
             die "No country codes defined in data" unless $translations{codes};
-			foreach my$d (@sections){
-              $translations{sections}{$d}{$row[0]} = \@row;
-			}
+            foreach my$d (@sections){
+                $translations{sections}{$d}{$row[0]} = \@row;
+            }
         }
     }
     return \%translations;
@@ -239,9 +314,7 @@ sub ParseWorksheet
             }
             $colnum += 1;
         }
-
         $rows[$rownum++] = \@row;
     }
-
     return \@rows;
 }

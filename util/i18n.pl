@@ -112,8 +112,8 @@ foreach my$sname (keys %{$db->{sections}}) {
     my$sfile = "$root/$sname";
     my$sxml = XMLin($sfile, ForceArray => 1, KeyAttr => {});
     my%xmlexists;
-    my$spr_diff="spr_diff.tmp";
-    my$resx_diff="resx_diff.tmp";
+    my$spr_diff="";
+    my$resx_diff="";
 
     for(my$i = 1; $i < @{$db->{codes}}; $i++) {
         my$res = {};
@@ -123,11 +123,6 @@ foreach my$sname (keys %{$db->{sections}}) {
             $res->{"assembly"} = dclone($sxml->{"assembly"});
         }
 
-        if ($i==1)
-        {
-            open(SPR, "> $spr_diff");
-            open(RESX, "> $resx_diff");
-        }
         foreach my$d (@{$sxml->{"data"}}) {
             if ($i==1)
             {
@@ -150,8 +145,8 @@ foreach my$sname (keys %{$db->{sections}}) {
                         {
                             if($visualdiff ne "")
                             {
-                                print SPR "$d->{name}\n$spr\n-------\n\n";
-                                print RESX "$d->{name}\n$resx\n-------\n\n";
+                                $spr_diff.="$d->{name}\n$spr\n-------\n\n";
+                                $resx_diff.="$d->{name}\n$resx\n-------\n\n";
                             } else {
                                 print STDOUT "\nWarning: Different definitions for $d->{name}: spreadsheet\n   $spr\n and $sname\n   $resx\n\n";
                             }
@@ -173,18 +168,25 @@ foreach my$sname (keys %{$db->{sections}}) {
 
         if($i==1)
         {
-            if($visualdiff ne "")
+            if($visualdiff ne "" &&
+               ($spr_diff ne "" || $resx_diff ne ""))
             {
+                my$spr_diff_file="spr_diff.tmp";
+                my$resx_diff_file="resx_diff.tmp";
+                open(SPR, "> $spr_diff_file");
+                open(RESX, "> $resx_diff_file");
+                print SPR $spr_diff;
+                print RESX $resx_diff;
                 close SPR;
                 close RESX;
                 if(-e $visualdiff)
                 {
-                    print "Executing: \"$visualdiff\" $spr_diff $resx_diff\n";
-                    system("\"$visualdiff\" $spr_diff $resx_diff");
-                    unlink $spr_diff;
-                    unlink $resx_diff;
+                    print "Executing: \"$visualdiff\" $spr_diff_file $resx_diff_file\n";
+                    system("\"$visualdiff\" $spr_diff_file $resx_diff_file");
+                    unlink $spr_diff_file;
+                    unlink $resx_diff_file;
                 } else {
-                    print "Cannot find \"$visualdiff\" $spr_diff $resx_diff , keeping temp files\n\n";
+                    print "Cannot find \"$visualdiff\" $spr_diff_file $resx_diff_file , keeping temp files\n\n";
                 }
             }
             foreach my$j (keys %{$section}) {
@@ -234,6 +236,7 @@ sub ParseCSV
     while ($csv =~ s/^((([^\n\"]|\\\")*(?<!\\)\"([^\"]|\\\")*(?<!\\)\")*([^\n\"]|\\\")*)\n//) {
         my$line = $1;
         chomp $line;
+		if ($line =~ /^\$end/) { $csv=""; last;}
         my@fields = ();
         while ($line =~ s/^(([^,\"]|\\\")*((?<!\\)\"([^\"]|\\\")*(?<!\\)\")*([^,\"]|\\\")*),//) {
             push @fields, $1;

@@ -89,7 +89,8 @@ namespace TrailsPlugin.Data {
         public const string Order = "Order";
         public const string Color = "Color";
         public const string StartTime = "StartTime";
-		public const string EndTime = "EndTime";
+        public const string StartDistance = "StartDistance";
+        public const string EndTime = "EndTime";
 		public const string Duration = "Duration";
 		public const string Distance = "Distance";
 		public const string AvgCadence = "AvgCadence";
@@ -132,8 +133,9 @@ namespace TrailsPlugin.Data {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", 32, StringAlignment.Near));
             int w = mult ? 115 : 70;
-			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Near));
-			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartDistance, CommonResources.Text.LabelStart + CommonResources.Text.LabelDistance + " (" + Utils.Units.GetDistanceLabel(activity) + ")", "", 60, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, "", 60, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Distance, CommonResources.Text.LabelDistance + " (" + Utils.Units.GetDistanceLabel(activity) + ")", "", 60, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgCadence, CommonResources.Text.LabelAvgCadence, "", 60, StringAlignment.Near));
@@ -186,7 +188,6 @@ namespace TrailsPlugin.Data {
         private static double getCompareField(TrailResult x, string id)
         {
             //Should be using reflection....
-            double t;
             switch (id)
             {
                 case TrailResultColumnIds.Color:
@@ -195,13 +196,14 @@ namespace TrailsPlugin.Data {
                     return x.Order;
                 case TrailResultColumnIds.StartTime:
                     return x.StartDateTime.Ticks;
+                case TrailResultColumnIds.StartDistance:
+                    return x.StartDist;
                 case TrailResultColumnIds.EndTime:
                     return x.EndTime.Ticks;
                 case TrailResultColumnIds.Duration:
                     return x.Duration.TotalSeconds;
                 case TrailResultColumnIds.Distance:
-                    double.TryParse(x.Distance, out t);
-                    return t;
+                    return x.Distance;
                 case TrailResultColumnIds.AvgCadence:
                     return x.AvgCadence;
                 case TrailResultColumnIds.AvgGrade:
@@ -215,8 +217,7 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.AvgSpeed:
                     return x.AvgSpeed;
                 case TrailResultColumnIds.ElevChg:
-                    double.TryParse(x.ElevChg, out t);
-                    return t;
+                    return x.ElevChg;
                 case TrailResultColumnIds.FastestPace:
                     return -x.FastestPace;
                 case TrailResultColumnIds.FastestSpeed:

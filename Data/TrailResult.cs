@@ -473,10 +473,10 @@ namespace TrailsPlugin.Data {
 				);
 			}
 		}
-		public string Distance {
+		public double Distance {
 			get
             {
-                return Utils.Units.DistanceToString(DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value, "");
+                return DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value;
 			}
 		}
 
@@ -525,12 +525,12 @@ namespace TrailsPlugin.Data {
 				return this.PaceTrack.Min;
 			}
 		}
-        public string ElevChg
+        public double ElevChg
         {
 			get
             {
 				float value = m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
-				return (value > 0 ? "+" : "") + Utils.Units.ElevationToString(value, "");
+                return value;
 			}
 		}
 
@@ -919,7 +919,7 @@ namespace TrailsPlugin.Data {
 
         string ITrailResult.Distance
         {
-            get { return Distance; }
+            get { return Utils.Units.DistanceToString(Distance, ""); }
         }
 
         IDistanceDataTrack ITrailResult.DistanceMetersTrack
@@ -934,7 +934,7 @@ namespace TrailsPlugin.Data {
 
         string ITrailResult.ElevChg
         {
-            get { return ElevChg; }
+            get { return (ElevChg > 0 ? "+" : "") + Utils.Units.ElevationToString(ElevChg, ""); }
         }
 
         INumericTimeDataSeries ITrailResult.ElevationMetersTrack

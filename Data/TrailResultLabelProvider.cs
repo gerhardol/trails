@@ -68,12 +68,14 @@ namespace TrailsPlugin.Data {
                         date = row.StartDateTime.ToLocalTime().ToShortDateString()+" ";
                     }
                     return date + row.StartTime.ToString();
-				case TrailResultColumnIds.EndTime:
+                case TrailResultColumnIds.StartDistance:
+                    return Utils.Units.DistanceToString(row.StartDist, "");
+                case TrailResultColumnIds.EndTime:
 					return row.EndTime.ToString();
 				case TrailResultColumnIds.Duration:
 					return Utils.Text.ToString(row.Duration);
 				case TrailResultColumnIds.Distance:
-					return row.Distance;
+					return Utils.Units.DistanceToString(row.Distance, "");
 				case TrailResultColumnIds.AvgCadence:
 					return row.AvgCadence.ToString("0.0");
 				case TrailResultColumnIds.AvgHR:
@@ -81,7 +83,7 @@ namespace TrailsPlugin.Data {
 				case TrailResultColumnIds.MaxHR:
 					return row.MaxHR.ToString("0");
 				case TrailResultColumnIds.ElevChg:
-					return row.ElevChg;
+                    return (row.ElevChg > 0 ? "+" : "") + Utils.Units.ElevationToString(row.ElevChg, "");
 				case TrailResultColumnIds.AvgPower:
 					return row.AvgPower.ToString("0.0");
 				case TrailResultColumnIds.AvgGrade:

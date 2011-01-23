@@ -19,10 +19,12 @@ using System;
 using System.ComponentModel;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using System.Xml;
+using TrailsPlugin.Export;
 
 namespace TrailsPlugin {
-	class PluginMain : IPlugin {
-		#region IPlugin Members
+	class PluginMain : IPlugin
+    {
+        #region IPlugin Members
 
 		public IApplication Application {
 			set {
@@ -64,7 +66,7 @@ namespace TrailsPlugin {
             if (settingsVersionCurrent <= settingsVersion)
             {
                 settingsVersion = settingsVersionCurrent;
-//                m_settings = new TrailsPlugin.Data.Settings();
+                //m_settings = new TrailsPlugin.Data.Settings();
                 m_data = new TrailsPlugin.Data.TrailData();
                 TrailsPlugin.Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
                 TrailsPlugin.Data.TrailData.ReadOptions(xmlDoc, nsmgr, pluginNode);
@@ -119,20 +121,31 @@ namespace TrailsPlugin {
 			return m_App;
 		}
 
-		void AppPropertyChanged(object sender, PropertyChangedEventArgs e) {
-            if (settingsVersionCurrent > settingsVersion)
+        void AppPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e != null && e.PropertyName == "Logbook")
             {
-                if (e != null && e.PropertyName == "Logbook")
+                if (settingsVersionCurrent > settingsVersion)
                 {
                     //m_settings = null;
                     m_data = null;
                 }
+
+                // Register our filter criteria provider
+                if (FilterCriteriaControllerWrapper.Instance.IsPluginInstalled &&
+                    FilterCriteriaControllerWrapper.Instance.RegisterMethodAvailable &&
+                    !m_FilterCriteriaProviderRegistered)
+                {
+                    //TODO FS integration inactive
+                    //FilterCriteriaControllerWrapper.Instance.RegisterFilterCriteriaProvider(new TrailsFilterCriteriasProvider());
+                    m_FilterCriteriaProviderRegistered = true;
+                }
             }
-		}
+        }
 
 		private static IApplication m_App = null;
 		private static Data.TrailData m_data = null;
-//		private static Data.Settings m_settings = null;
+		//private static Data.Settings m_settings = null;
 		public static Data.TrailData Data {
 			get {
 				if (m_data == null) {
@@ -167,5 +180,6 @@ namespace TrailsPlugin {
         private static int settingsVersion = 0; //default when not existing
         private const int settingsVersionCurrent = 2;
         public static int Verbose = 0;  //Only changed in xml file
-	}
+        private bool m_FilterCriteriaProviderRegistered = false;
+    }
 }

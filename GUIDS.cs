@@ -29,5 +29,8 @@ namespace TrailsPlugin {
         public static readonly Guid Activity = new Guid("0af379d0-5ebe-11df-a08a-0800200c9a66");
 
         public static readonly Guid DailyActivityView = new Guid("1dc82ca0-88aa-45a5-a6c6-c25f56ad1fc3");
+
+        public static readonly Guid FilteredStatisticsTemplateFilter = new Guid("9274e230-2359-11e0-ac64-0800200c9a66");
+        public static readonly Guid FilteredStatisticsFilter = new Guid("92750940-2359-11e0-ac64-0800200c9a66");
     }
 }

@@ -49,6 +49,11 @@
     <Compile Include="Data\Trail.cs" />
     <Compile Include="Data\TrailGPSLocation.cs" />
     <Compile Include="Data\TrailsItemTrackSelectionInfo.cs" />
+    <Compile Include="Export\FilteredStatisticsPlugin\FilterCriteria\FilterCriteriaControllerWrapper.cs" />
+    <Compile Include="Export\FilteredStatisticsPlugin\FilterCriteria\TrailsFilterCriteria.cs" />
+    <Compile Include="Export\FilteredStatisticsPlugin\FilterCriteria\TemplateTrailsFilterCriteria.cs" />
+    <Compile Include="Export\FilteredStatisticsPlugin\FilterCriteria\TemplatePlaceholderTrailsFilterCriteria.cs" />
+    <Compile Include="Export\FilteredStatisticsPlugin\FilterCriteria\TrailsFilterCriteriaProvider.cs" />
     <Compile Include="Export\Integration.cs" />
     <Compile Include="GUIDS.cs">
       <SubType>Code</SubType>

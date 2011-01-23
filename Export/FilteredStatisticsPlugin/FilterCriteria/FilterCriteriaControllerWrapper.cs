@@ -25,9 +25,9 @@ namespace TrailsPlugin.Export  //FilteredStatisticsPlugin
 {
     class FilterCriteriaControllerWrapper
     {
-        private FilterCriteriaControllerWrapper()
-        {
-        }
+        //private FilterCriteriaControllerWrapper()
+        //{
+        //}
 
         private void Initialize()
         {

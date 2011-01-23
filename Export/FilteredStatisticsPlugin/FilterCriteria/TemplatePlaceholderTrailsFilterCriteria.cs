@@ -31,9 +31,9 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 {
     class TemplateTrailsPlaceholderFilterCriteria
     {
-        public TemplateTrailsPlaceholderFilterCriteria()
-        {
-        }
+        //public TemplateTrailsPlaceholderFilterCriteria()
+        //{
+        //}
 
 #region IFilterCriteria members
 

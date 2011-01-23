@@ -136,8 +136,7 @@ namespace TrailsPlugin {
                     FilterCriteriaControllerWrapper.Instance.RegisterMethodAvailable &&
                     !m_FilterCriteriaProviderRegistered)
                 {
-                    //TODO FS integration inactive
-                    //FilterCriteriaControllerWrapper.Instance.RegisterFilterCriteriaProvider(new TrailsFilterCriteriasProvider());
+                    FilterCriteriaControllerWrapper.Instance.RegisterFilterCriteriaProvider(new TrailsFilterCriteriasProvider());
                     m_FilterCriteriaProviderRegistered = true;
                 }
             }

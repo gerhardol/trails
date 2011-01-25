@@ -324,11 +324,14 @@ namespace TrailsPlugin.Data {
             bool result = false;
             foreach (IActivity activity in acts)
             {
-                IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
-                result = this.IsInBounds(gpsBounds);
-                if (result)
+                if (activity != null && activity.GPSRoute != null)
                 {
-                    break;
+                    IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
+                    result = this.IsInBounds(gpsBounds);
+                    if (result)
+                    {
+                        break;
+                    }
                 }
             }
             return result;

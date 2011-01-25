@@ -319,4 +319,7 @@ Make sure that {1} is installed.</value>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>
   </data>
+  <data name="TrailResultName" xml:space="preserve">
+    <value>TrailResult</value>
+  </data>
 </root>

@@ -51,8 +51,9 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         {
             Int32 index = 0;
 
+            //Disable for now - could be confusing
             index = AddGenericCriteria(index, typeof(TrailsFilterCriteria));
-            //index = AddGenericCriteria(index, typeof(TemplateTrailsPlaceholderFilterCriteria));
+            index = AddGenericCriteria(index, typeof(TemplateTrailsFilterCriteria));
 
             if (m_Criterias.Count > index)
             {
@@ -62,36 +63,12 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             // Register on the template UI callback
             if (!m_TemplateSelectionPlaceholderRegistered)
             {
-                (m_Criterias[0] as TrailsFilterCriteria).TrailsCriteriaSelected += new TrailsFilterCriteria.TrailsCriteriaSelectedEventHandler(OnTrailsCriteriaSelected);
-
+                //(m_Criterias[1] as TemplateTrailsPlaceholderFilterCriteria).TrailsCriteriaSelected += new TemplateTrailsPlaceholderFilterCriteria.TrailsCriteriaSelectedEventHandler(OnTemplateTrailsCriteriaSelected);
                 m_TemplateSelectionPlaceholderRegistered = true;
             }
 
             TriggerFilterCriteriasChanged();
         }
-
-        void OnTrailsCriteriaSelected(TrailsFilterCriteria criteria, object previousCriteria, out object resultCriteria)
-        {
-            //TODO
-            resultCriteria = null;
-        }
-
-        //void OnTemplateTrailsCriteriaSelected(TemplateTrailsPlaceholderFilterCriteria criteria, object previousCriteria, out object resultCriteria)
-        //{
-        //    //TODO 
-        //    //TrailSelectorBox dlg = new TrailSelectorBox(previousCriteria);
-
-        //    //dlg.ShowDialog();
-        //    //if (dlg.DialogResult == DialogResult.OK)
-        //    //{
-        //    //    resultCriteria = new TemplateTrailsFilterCriteria(null, dlg.SelectedEquipmentId);
-        //    //}
-        //    //else
-        //    //{
-        //    //    resultCriteria = previousCriteria;
-        //    //}
-        //    resultCriteria = null;
-        //}
 
         protected void TriggerFilterCriteriasChanged()
         {
@@ -119,6 +96,18 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             return ++index;
         }
 
+        public static TrailsPlugin.Controller.TrailController Controller
+        {
+            get
+            {
+                if (m_controller == null)
+                {
+                    m_controller = TrailsPlugin.Controller.TrailController.Instance;
+                }
+                return m_controller;
+            }
+        }
+        private static TrailsPlugin.Controller.TrailController m_controller;
         private List<object> m_Criterias = new List<object>();
         private bool m_TemplateSelectionPlaceholderRegistered = false;
     }

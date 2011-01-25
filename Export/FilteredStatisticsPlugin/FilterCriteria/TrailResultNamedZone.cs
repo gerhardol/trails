@@ -29,6 +29,14 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 {
     class TrailResultNamedZone
     {
+        public TrailResultNamedZone(TrailsPlugin.Data.ActivityTrail trail, IActivity activity)
+        {
+            m_Trail = trail;
+            m_Activity = activity;
+
+            m_ValidTimesDirty = true;
+            TriggerValidTimesChanged();
+        }
         public TrailResultNamedZone(TrailsPlugin.Data.ActivityTrail trail, TrailsPlugin.Data.TrailResult tr)
         {
             m_Trail = trail;
@@ -42,9 +50,24 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         public String Name
         {
-            get { return m_Trail.Trail.Name+" "+m_TrailResult.StartDateTime.ToString(); }
+            get
+            {
+                string result = m_Trail.Trail.Name;
+                if (m_TrailResult != null)
+                {
+                    if (m_Trail.Trail.HighScore > 0)
+                    {
+                        result += " (" +
+                            TrailsPlugin.Utils.Units.DistanceToString(m_TrailResult.Distance, "u") + ")";
+                    }
+                    else
+                    {
+                        result += " " + m_TrailResult.StartDateTime.ToString();
+                    }
+                }
+                return result;
+            }
         }
-
         public IValueRangeSeries<DateTime> ValidTimes
         {
             get
@@ -89,17 +112,30 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             if (m_ValidTimesDirty)
             {
                 m_ValidTimesDirty = false;
-
                 m_ValidTimes.Clear();
-                ValueRange<DateTime> range = new ValueRange<DateTime>(m_TrailResult.StartDateTime, m_TrailResult.EndDateTime);
-                m_ValidTimes = new ValueRangeSeries<DateTime>();
-                m_ValidTimes.Add(range);
+
+                if (m_TrailResult != null)
+                {
+                    m_ValidTimes = m_TrailResult.getSelInfo();
+                }
+                else if (m_Activity != null)
+                {
+                    TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
+                    foreach (TrailsPlugin.Data.TrailResult tr in m_Trail.Results)
+                    {
+                        foreach(IValueRange<DateTime> t in tr.getSelInfo())
+                        {
+                            m_ValidTimes.Add(t);
+                        }
+                    }
+                }
             }
         }
 
+        private IActivity m_Activity = null;
         private TrailsPlugin.Data.ActivityTrail m_Trail;
-        private TrailsPlugin.Data.TrailResult m_TrailResult;
-        private ValueRangeSeries<DateTime> m_ValidTimes = new ValueRangeSeries<DateTime>();
+        private TrailsPlugin.Data.TrailResult m_TrailResult = null;
+        private IValueRangeSeries<DateTime> m_ValidTimes = new ValueRangeSeries<DateTime>();
         private bool m_ValidTimesDirty = false;
     }
 }

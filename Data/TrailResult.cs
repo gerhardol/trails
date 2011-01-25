@@ -23,6 +23,7 @@ using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
@@ -221,7 +222,22 @@ namespace TrailsPlugin.Data {
         //    }
         //}
 
+        //IItemTrackSelectionInfo Selection
+        //{
+        //    get
+        //    {
+        //        TrailsItemTrackSelectionInfo result = new TrailsItemTrackSelectionInfo();
+        //        result.MarkedTimes = new ValueRangeSeries<DateTime>();
+        //        ValueRange<DateTime> range = new ValueRange<DateTime>(this.StartDateTime, this.EndDateTime);
+        //        result.MarkedTimes = new ValueRangeSeries<DateTime>();
+        //        result.MarkedTimes.Add(range);
 
+        //        return result;
+        //    }
+        //}
+
+
+            /*************************************************/
         //DateTime vs elapsed result/activity, distance result/activity conversions
 
         //Get result time and distance from activity references
@@ -323,6 +339,8 @@ namespace TrailsPlugin.Data {
                 return m_ActivityInfo;
             }
         }
+
+        //
         private TimeSpan getElapsedWithoutPauses(DateTime entryTime)
         {
             TimeSpan elapsed = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
@@ -351,6 +369,10 @@ namespace TrailsPlugin.Data {
                 this.Activity.StartTime, TimeSpan.FromSeconds(elapsed.ElapsedSeconds), Pauses);
         }
 
+
+
+        /*********************************************/
+        //Distance
         private void getDistanceTrack()
         {
             if (null == m_distanceMetersTrack)

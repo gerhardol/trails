@@ -41,13 +41,10 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             BuildNamedZones();
         }
 
-        void OnActivityDataChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Activity.EquipmentUsed")
-            {
-                BuildNamedZones();
-            }
-        }
+        //void OnActivityDataChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    BuildNamedZones();
+        //}
 
 #region IFilterCriteria members
 
@@ -63,7 +60,14 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 if (m_Activity != value)
                 {
                     m_Activity = value;
-                    Controller.Activities = new List<IActivity> { m_Activity };
+                    if (m_Activity == null)
+                    {
+                        TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity>();
+                    }
+                    else
+                    {
+                        TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
+                    }
 
                     BuildNamedZones();
                 }
@@ -72,7 +76,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
 	    public string DisplayName
 	    {
-            get { return Properties.Resources.TrailName; }
+            get { return Properties.Resources.TrailResultName; }
         }
 
         public List<object> NamedZones
@@ -95,15 +99,14 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 return true;
             }
         }
-        
-        //public object TemplateCompatibleCriteria
-        //{
-        //    get
-        //    {
-        //        //TODO
-        //        return new TemplateTrailsFilterCriteria(m_Activity, "");
-        //    }
-        //}
+
+        public object TemplateCompatibleCriteria
+        {
+            get
+            {
+                return null;//new TemplateTrailsFilterCriteria(m_Activity);
+            }
+        }
 
         public bool IsSerializable
         {
@@ -134,7 +137,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
             if (m_Activity != null)
             {
-                IList<TrailsPlugin.Data.ActivityTrail> res = Controller.OrderedTrails;
+                IList<TrailsPlugin.Data.ActivityTrail> res = TrailsFilterCriteriasProvider.Controller.OrderedTrails;
 
                 foreach(TrailsPlugin.Data.ActivityTrail trail in res)
                 {
@@ -159,22 +162,10 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             }
         }
 
-        private TrailsPlugin.Controller.TrailController Controller
-        {
-            get
-            {
-                if (m_controller == null)
-                {
-                    m_controller = TrailsPlugin.Controller.TrailController.Instance;
-                }
-                return m_controller;
-            }
-        }
-        private TrailsPlugin.Controller.TrailController m_controller;
         private const UInt16 m_DataVersion = 1; 
         private IActivity m_Activity = null;
         private List<object> m_NamedZones = new List<object>();
-        public delegate void TrailsCriteriaSelectedEventHandler(TrailsFilterCriteria criteria, object previousCriteria, out object resultCriteria);
-        public event TrailsCriteriaSelectedEventHandler TrailsCriteriaSelected;
+        //public delegate void TrailsCriteriaSelectedEventHandler(TrailsFilterCriteria criteria, object previousCriteria, out object resultCriteria);
+        //public event TrailsCriteriaSelectedEventHandler TrailsCriteriaSelected;
     }
 }

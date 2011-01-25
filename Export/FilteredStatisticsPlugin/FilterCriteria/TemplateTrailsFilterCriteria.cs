@@ -29,33 +29,14 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 {
     class TemplateTrailsFilterCriteria
     {
-        public TemplateTrailsFilterCriteria(IActivity activity, string equipmentId)
+        public TemplateTrailsFilterCriteria()
+        {
+        }
+        public TemplateTrailsFilterCriteria(IActivity activity)
         {
             Activity = activity;
-            m_EquipmentId = equipmentId;
-
-            //m_ActivityDataChangedHelper.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(OnActivityDataChanged);
-            //Common.Data.BikeSetupChanged += new Common.Data.BikeSetupChangedEventHandler(OnGearChartBikeSetupChanged);
-
             BuildNamedZones();
         }
-
-        void OnActivityDataChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Activity.EquipmentUsed")
-            {
-                BuildNamedZones();
-            }
-        }
-
-        //void OnGearChartBikeSetupChanged(object sender, string setupId)
-        //{
-        //    // Check if the modified setup is used by our current activity
-        //    if (m_EquipmentId.Equals(setupId))
-        //    {
-        //        BuildNamedZones();
-        //    }
-        //}
 
 #region IFilterCriteria members
 
@@ -71,7 +52,14 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 if (m_Activity != value)
                 {
                     m_Activity = value;
-                    //m_ActivityDataChangedHelper.Activity = m_Activity;
+                    if (m_Activity == null)
+                    {
+                        TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity>();
+                    }
+                    else
+                    {
+                        TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
+                    }
 
                     BuildNamedZones();
                 }
@@ -92,7 +80,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         {
             get
             {
-                return true;
+                return false;
             }
         }
 
@@ -108,8 +96,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         {
             get
             {
-                //TODO  Common.Data.GetActivityEquipmentId(m_Activity)
-                return new TemplateTrailsFilterCriteria(m_Activity, "");
+                return new TemplateTrailsFilterCriteria(m_Activity);
             }
         }
 
@@ -120,8 +107,6 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         public void SerializeCriteria(Stream stream)
         {
-            stream.Write(BitConverter.GetBytes(Encoding.UTF8.GetByteCount(m_EquipmentId)), 0, sizeof(Int32));
-            stream.Write(Encoding.UTF8.GetBytes(m_EquipmentId), 0, Encoding.UTF8.GetByteCount(m_EquipmentId));
         }
 
         public UInt16 DataVersion
@@ -131,33 +116,30 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         public object DeserializeCriteria(Stream stream, UInt16 version)
         {
-            return null;
+            return this;
         }
 
-        public bool ValidateConsistency()
-        {
-            //TODO FS integration
-            //IList<string> equipmentIds = new List<string>{""};// Common.Data.GetEquipmentIds();
-
-            //return equipmentIds.IndexOf(EquipmentId) != -1;
-            return true;
-        }
+        //public bool ValidateConsistency()
+        //{
+        //    return true;
+        //}
 
         public event PropertyChangedEventHandler NamedZonedListChanged;
-
 #endregion
 
         private void BuildNamedZones()
         {
             m_NamedZones.Clear();
 
-            //List<SprocketCombo> sprockets = Common.Data.GetSprocketCombos(m_EquipmentId);
+            IList<TrailsPlugin.Data.ActivityTrail> res = TrailsFilterCriteriasProvider.Controller.OrderedTrails;
 
-            //foreach(SprocketCombo gear in sprockets)
-            //{
-            //    m_NamedZones.Add(new GearNamedZone(m_Activity, gear));
-            //}
-
+            foreach (TrailsPlugin.Data.ActivityTrail trail in res)
+            {
+                if (!trail.Trail.Generated)
+                {
+                    m_NamedZones.Add(new TrailResultNamedZone(trail, m_Activity));
+                }
+            }
             TriggerNamedZonesListChanged();
         }
 
@@ -169,15 +151,8 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             }
         }
 
-        public string EquipmentId
-        {
-            get { return m_EquipmentId; }
-        }
-
         private const UInt16 m_DataVersion = 1;
         private IActivity m_Activity = null;
-        //private ActivityDataChangedHelper m_ActivityDataChangedHelper = new ActivityDataChangedHelper(null);
-        private string m_EquipmentId = null;
         private List<object> m_NamedZones = new List<object>();
     }
 }

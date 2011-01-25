@@ -31,9 +31,9 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 {
     class TemplateTrailsPlaceholderFilterCriteria
     {
-        //public TemplateTrailsPlaceholderFilterCriteria()
-        //{
-        //}
+        public TemplateTrailsPlaceholderFilterCriteria()
+        {
+        }
 
 #region IFilterCriteria members
 
@@ -105,7 +105,8 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 stringBuffer = new byte[stringLength];
                 stream.Read(stringBuffer, 0, stringLength);
 
-                return new TemplateTrailsFilterCriteria(null, Encoding.UTF8.GetString(stringBuffer));
+                return new TemplateTrailsFilterCriteria(Encoding.UTF8.GetString(stringBuffer));
+                //TODO return new TemplateTrailsFilterCriteria(null, Encoding.UTF8.GetString(stringBuffer));
             }
             else
             {
@@ -113,21 +114,21 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             }
         }
 
-        public object OnSelectedInList(object previousSelection)
-        {
-            if (TrailsCriteriaSelected != null)
-            {
-                // Make sure we have maximum 1 registered object since we have a return value
-                Debug.Assert(TrailsCriteriaSelected.GetInvocationList().GetLength(0) == 1);
+        //public object OnSelectedInList(object previousSelection)
+        //{
+        //    if (TrailsCriteriaSelected != null)
+        //    {
+        //        // Make sure we have maximum 1 registered object since we have a return value
+        //        Debug.Assert(TrailsCriteriaSelected.GetInvocationList().GetLength(0) == 1);
 
-                object result;
-                TrailsCriteriaSelected(this, previousSelection, out result);
+        //        object result;
+        //        TrailsCriteriaSelected(this, previousSelection, out result);
 
-                return result;
-            }
+        //        return result;
+        //    }
 
-            return previousSelection;
-        }
+        //    return previousSelection;
+        //}
 
         public event PropertyChangedEventHandler NamedZonedListChanged;
 
@@ -142,7 +143,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         }
 
         private const UInt16 m_DataVersion = 1;
-        public delegate void TrailsCriteriaSelectedEventHandler(TemplateTrailsPlaceholderFilterCriteria criteria, object previousCriteria, out object resultCriteria);
-        public event TrailsCriteriaSelectedEventHandler TrailsCriteriaSelected;
-    }
+        //public delegate void TrailsCriteriaSelectedEventHandler(TemplateTrailsPlaceholderFilterCriteria criteria, object previousCriteria, out object resultCriteria);
+        //public event TrailsCriteriaSelectedEventHandler TrailsCriteriaSelected;
+     }
 }

@@ -527,17 +527,18 @@ namespace TrailsPlugin.UI.Activity {
         }
         float[] GetSingleSelection(TrailResult tr, IValueRange<double> v)
         {
+            //Note: Selcting in Route gives unpaused distance...
             if (XAxisReferential == XAxisValue.Time)
             {
                 DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
-                d1 = tr.getDateTimeFromDistActivity(v.Lower);
-                d2 = tr.getDateTimeFromDistActivity(v.Upper);
+                d1 = tr.getDateTimeFromUnpausedDistActivity(v.Lower);
+                d2 = tr.getDateTimeFromUnpausedDistActivity(v.Upper);
                 return GetSingleSelectionFromResult(tr, d1, d2);
             }
             else
             {
-                double t1 = tr.getDistResultFromDistActivity(v.Lower);
-                double t2 = tr.getDistResultFromDistActivity(v.Upper);
+                double t1 = tr.getDistResultFromUnpausedDistActivity(v.Lower);
+                double t2 = tr.getDistResultFromUnpausedDistActivity(v.Upper);
                 return GetSingleSelectionFromResult(tr, t1, t2);
             }
         }

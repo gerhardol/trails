@@ -107,6 +107,8 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         public void SerializeCriteria(Stream stream)
         {
+            //stream.Write(BitConverter.GetBytes(Encoding.UTF8.GetByteCount(m_EquipmentId)), 0, sizeof(Int32));
+            //stream.Write(Encoding.UTF8.GetBytes(m_EquipmentId), 0, Encoding.UTF8.GetByteCount(m_EquipmentId));
         }
 
         public UInt16 DataVersion
@@ -116,6 +118,28 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         public object DeserializeCriteria(Stream stream, UInt16 version)
         {
+            //if (version >= 1)
+            //{
+            //    byte[] intBuffer = new byte[sizeof(Int32)];
+            //    byte[] stringBuffer;
+            //    Int32 stringLength;
+
+            //    stream.Read(intBuffer, 0, sizeof(Int32));
+            //    stringLength = BitConverter.ToInt32(intBuffer, 0);
+            //    stringBuffer = new byte[stringLength];
+            //    stream.Read(stringBuffer, 0, stringLength);
+            //    foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsFilterCriteriasProvider.Controller.OrderedTrails)
+            //    {
+            //        if (trail.Trail.Name.Equals(Encoding.UTF8.GetString(stringBuffer)))
+            //        {
+            //            return new TemplateTrailsFilterCriteria(null);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    throw new Exception("Invalid version");
+            //}
             return this;
         }
 
@@ -129,17 +153,32 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         private void BuildNamedZones()
         {
-            m_NamedZones.Clear();
+            List<object> namedZones = new List<object>();
+            //m_NamedZones.Clear();
 
-            IList<TrailsPlugin.Data.ActivityTrail> res = TrailsFilterCriteriasProvider.Controller.OrderedTrails;
-
-            foreach (TrailsPlugin.Data.ActivityTrail trail in res)
+            foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsFilterCriteriasProvider.Controller.OrderedTrails)
             {
-                if (!trail.Trail.Generated)
+                if (!trail.Trail.Generated && 
+                    (m_Activity == null || trail.status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc))
                 {
-                    m_NamedZones.Add(new TrailResultNamedZone(trail, m_Activity));
+                    bool added = false;
+                    foreach (object o in m_NamedZones)
+                    {
+                        TrailsPlugin.Data.ActivityTrail t2 = o as TrailsPlugin.Data.ActivityTrail;
+                        if (t2 == trail)
+                        {
+                            namedZones.Add(o);
+                            added = true;
+                            break;
+                        }
+                    }
+                    if (!added)
+                    {
+                        namedZones.Add(new TrailResultNamedZone(trail, m_Activity));
+                    }
                 }
             }
+            m_NamedZones = namedZones;
             TriggerNamedZonesListChanged();
         }
 

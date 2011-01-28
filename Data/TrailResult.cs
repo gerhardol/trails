@@ -36,6 +36,7 @@ namespace TrailsPlugin.Data {
 		private INumericTimeDataSeries m_heartRatePerMinuteTrack;
         private IDistanceDataTrack m_distanceMetersTrack = null;
         private IDistanceDataTrack m_activityDistanceMetersTrack = null;
+        private IDistanceDataTrack m_activityUnpausedDistanceMetersTrack = null;
         private INumericTimeDataSeries m_elevationMetersTrack;
 		private INumericTimeDataSeries m_powerWattsTrack;
         private INumericTimeDataSeries m_speedTrack;
@@ -136,10 +137,13 @@ namespace TrailsPlugin.Data {
             }
             return splits;
         }
+
+        /**********************************************************/
         public IActivity Activity
         {
             get { return m_activity; }
         }
+        //Distance error used to sort results
         public float DistDiff
         {
             get { return (float)(m_distDiff/Math.Pow(m_indexes.Count, 1.5)); }
@@ -165,18 +169,34 @@ namespace TrailsPlugin.Data {
             }
         }
 
+        /****************************************************************/
+        public TimeSpan Duration
+        {
+            get
+            {
+                return getElapsedWithoutPauses(this.GPSRoute, this.GPSRoute[this.GPSRoute.Count-1]);
+            }
+        }
+        public double Distance
+        {
+            get
+            {
+                return DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value;
+            }
+        }
+
         public TimeSpan StartTime
         {
             get
             {
-                return m_startTime.ToLocalTime().TimeOfDay;
+                return StartDateTime.ToLocalTime().TimeOfDay;
             }
         }
         public TimeSpan EndTime
         {
             get
             {
-                return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]).ToLocalTime().TimeOfDay;
+                return EndDateTime.ToLocalTime().TimeOfDay;
             }
         }
         public DateTime StartDateTime
@@ -193,6 +213,8 @@ namespace TrailsPlugin.Data {
                 return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
             }
         }
+        //All of result including pauses/stopped
+        //This is how FilteredStatistics want the info
         public IValueRangeSeries<DateTime> getSelInfo()
         {
             IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
@@ -237,7 +259,7 @@ namespace TrailsPlugin.Data {
         //}
 
 
-            /*************************************************/
+        /*************************************************/
         //DateTime vs elapsed result/activity, distance result/activity conversions
 
         //Get result time and distance from activity references
@@ -254,15 +276,23 @@ namespace TrailsPlugin.Data {
         }
         public double getDistResultFromDistActivity(double t)
         {
-           return t - StartDist;
+            return t - StartDist;
+        }
+        public double getDistResultFromUnpausedDistActivity(double t)
+        {
+            return getDistResult(getDateTimeFromUnpausedDistActivity(t));
         }
         public DateTime getDateTimeFromDistActivity(double t)
         {
             return ActivityDistanceMetersTrack.GetTimeAtDistanceMeters(t);
         }
+        public DateTime getDateTimeFromUnpausedDistActivity(double t)
+        {
+            return ActivityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t);
+        }
         public static DateTime getDateTimeFromElapsedActivityStatic(IActivity act, ITimeValueEntry<IGPSPoint> p)
         {
-            //Added here, if there are pauses tricks required
+            //Added here, if there are tricks for pauses required
             return act.GPSRoute.EntryDateTime(p);
         }
 
@@ -290,61 +320,11 @@ namespace TrailsPlugin.Data {
             return StartDist + t;
         }
 
-
-        private bool includeStopped()
-        {
-            bool includeStopped = true;
-#if ST_2_1
-            // If UseEnteredData is set, exclude Stopped
-            if (info.Activity.UseEnteredData == false && info.Time.Equals(info.ActualTrackTime))
-            {
-                includeStopped = true;
-            }
-#else
-            includeStopped = TrailsPlugin.PluginMain.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
-#endif
-            return includeStopped;
-        }
-
-        IValueRangeSeries<DateTime> m_pauses = null;
-        IValueRangeSeries<DateTime> Pauses
-        {
-            get
-            {
-                //TODO enable pauses again
-                if (m_pauses == null)
-                {
-                    if (includeStopped())
-                    {
-                        m_pauses = Info.Activity.TimerPauses;
-                    }
-                    else
-                    {
-                        m_pauses = Info.NonMovingTimes;
-                    }
-                    m_pauses = new ValueRangeSeries<DateTime>();
-                }
-                return m_pauses;
-            }
-        }
-        ActivityInfo m_ActivityInfo = null; //TODO: Is caching really needed here?
-        ActivityInfo Info
-        {
-            get
-            {
-                if (m_ActivityInfo == null)
-                {
-                    m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(this.Activity);
-                }
-                return m_ActivityInfo;
-            }
-        }
-
-        //
+        /***************************************************/
         private TimeSpan getElapsedWithoutPauses(DateTime entryTime)
         {
             TimeSpan elapsed = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
-                this.Activity.StartTime, entryTime, Pauses);
+                this.StartDateTime, entryTime, Pauses);
             return elapsed;
         }
         private TimeSpan getElapsedWithoutPauses(IGPSRoute dataSeries, ITimeValueEntry<IGPSPoint> time)
@@ -369,6 +349,56 @@ namespace TrailsPlugin.Data {
                 this.Activity.StartTime, TimeSpan.FromSeconds(elapsed.ElapsedSeconds), Pauses);
         }
 
+        /*********************************************/
+        private bool includeStopped()
+        {
+            bool includeStopped = true;
+#if ST_2_1
+            // If UseEnteredData is set, exclude Stopped
+            if (info.Activity.UseEnteredData == false && info.Time.Equals(info.ActualTrackTime))
+            {
+                includeStopped = true;
+            }
+#else
+            includeStopped = TrailsPlugin.PluginMain.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
+#endif
+            return includeStopped;
+        }
+
+        IValueRangeSeries<DateTime> m_pauses = null;
+        IValueRangeSeries<DateTime> Pauses
+        {
+            get
+            {
+                if (m_pauses == null)
+                {
+                    if (includeStopped())
+                    {
+                        m_pauses = Info.Activity.TimerPauses;
+                    }
+                    else
+                    {
+                        m_pauses = Info.NonMovingTimes;
+                    }
+                }
+                return m_pauses;
+            }
+        }
+        //ActivityInfo m_ActivityInfo = null;
+        ActivityInfo Info
+        {
+            get
+            {
+                //Caching is not needed, done by ST
+                return ActivityInfoCache.Instance.GetInfo(this.Activity);
+                //if (m_ActivityInfo == null)
+                //{
+                //    m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(this.Activity);
+                //}
+                //return m_ActivityInfo;
+            }
+        }
+
 
 
         /*********************************************/
@@ -379,11 +409,11 @@ namespace TrailsPlugin.Data {
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = true;
-                //TODO: Non-GPS activities? Is Distance calc OK?
                 if (Activity.GPSRoute != null)
                 {
                     ////Note: track has same index as GPS, to avoid tricky first/last selection
                     //m_activityDistanceMetersTrack = m_activity.GPSRoute.GetDistanceMetersTrack();
+                    m_activityUnpausedDistanceMetersTrack = Info.ActualDistanceMetersTrack;
                     if (includeStopped())
                     {
                         m_activityDistanceMetersTrack = Info.ActualDistanceMetersTrack;
@@ -394,8 +424,6 @@ namespace TrailsPlugin.Data {
                     }
                     if (m_activityDistanceMetersTrack != null)
                     {
-                        m_startDistance = m_activityDistanceMetersTrack[m_startIndex].Value;
-                        //m_lastDistance = track[m_endIndex].Value;
                         //for (int i = m_startIndex; i <= m_endIndex; i++)
                         //{
                         //    ITimeValueEntry<float> time = m_activityDistanceMetersTrack[i];
@@ -411,20 +439,18 @@ namespace TrailsPlugin.Data {
                         {
                             i++;
                         }
+                        m_startDistance = m_activityDistanceMetersTrack[i].Value;
                         while (i < m_activityDistanceMetersTrack.Count &&
                             0 <= this.EndDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
                         {
-                            //                            this.m_distanceMetersTrack.Add();
                             ITimeValueEntry<float> time = m_activityDistanceMetersTrack[i];
                             m_distanceMetersTrack.Add(
-                                m_distanceMetersTrack.EntryDateTime(time),
-                                //xxx fix distancetrack generation
-                                //getElapsedWithoutPauses(m_activityDistanceMetersTrack, time),
-                                //m_startTime.AddSeconds(time.ElapsedSeconds),
-                                time.Value - m_startDistance
+                                m_activityDistanceMetersTrack.EntryDateTime(time),
+                                (float)getDistResultFromDistActivity(time.Value)
                                 );
                             i++;
                         }
+                        //float m_lastDistance = m_activityDistanceMetersTrack[--i].Value;
                     }
                 }
             }
@@ -443,6 +469,14 @@ namespace TrailsPlugin.Data {
             {
                 getDistanceTrack();
                 return m_activityDistanceMetersTrack;
+            }
+        }
+        public IDistanceDataTrack ActivityUnpausedDistanceMetersTrack
+        {
+            get
+            {
+                getDistanceTrack();
+                return m_activityUnpausedDistanceMetersTrack;
             }
         }
 
@@ -485,22 +519,6 @@ namespace TrailsPlugin.Data {
                 return results;
             }
         }
-        public TimeSpan Duration
-        {
-			get {
-                //xxx enable pauses return getElapsedWithoutPauses(this.GPSRoute, m_activity.GPSRoute[m_endIndex]);
-                return TimeSpan.FromSeconds(
-					m_activity.GPSRoute[m_endIndex].ElapsedSeconds
-					- m_activity.GPSRoute[m_startIndex].ElapsedSeconds
-				);
-			}
-		}
-		public double Distance {
-			get
-            {
-                return DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value;
-			}
-		}
 
 		public float AvgCadence {
 			get {
@@ -529,8 +547,8 @@ namespace TrailsPlugin.Data {
 		}
 		public float AvgSpeed {
 			get {
-				return this.SpeedTrack.Avg;
-			}
+                return Utils.Units.GetSpeed(this.Distance / this.Duration.TotalSeconds, m_activity, Speed.Units.Speed);
+            }
 		}
 		public float FastestSpeed {
 			get {
@@ -539,7 +557,8 @@ namespace TrailsPlugin.Data {
 		}
 		public double AvgPace {
 			get {
-				return this.PaceTrack.Avg;
+                //Note: Using PaceTrack.Avg will give bad values if a track has slow parts
+                return Utils.Units.GetSpeed(this.Distance / this.Duration.TotalSeconds, m_activity, Speed.Units.Pace); 
 			}
 		}
 		public double FastestPace {
@@ -677,7 +696,6 @@ namespace TrailsPlugin.Data {
             {
                 if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
                 {
-                    //xxx pauses support no datetime getElapsedWithoutPauses(this.DistanceMetersTrack, time)
                     DateTime d1 = this.getDateTimeFromElapsedResult(t.ElapsedSeconds);
                     DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
                     result.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));

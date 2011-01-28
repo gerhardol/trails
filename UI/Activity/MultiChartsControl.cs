@@ -257,29 +257,30 @@ namespace TrailsPlugin.UI.Activity {
                         chart.ShowPage = visible;
                     }
                     chart.EndUpdate();
-                    if (!m_multiple && visible &&
-                        !chart.HasValues() &&
-                        chart.YAxisReferential != speedPaceYaxis)
+                    if (visible && !chart.HasValues() )
                     {
                         chart.ShowPage = false;
                         //Replace empty chart
-                        foreach (TrailLineChart chart2 in m_lineCharts)
+                        if (!m_multiple && chart.YAxisReferential != speedPaceYaxis)
                         {
-                            if (chart2.YAxisReferential == speedPaceYaxis)
+                            foreach (TrailLineChart chart2 in m_lineCharts)
                             {
-                                chart2.BeginUpdate();
-                                chart2.ShowPage = false;
-                                if (!m_multiple)
+                                if (chart2.YAxisReferential == speedPaceYaxis)
                                 {
-                                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart2.YAxisReferential) + " / " +
-                                    TrailLineChart.XAxisValueString(chart2.XAxisReferential);
+                                    chart2.BeginUpdate();
+                                    chart2.ShowPage = false;
+                                    if (!m_multiple)
+                                    {
+                                        this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart2.YAxisReferential) + " / " +
+                                        TrailLineChart.XAxisValueString(chart2.XAxisReferential);
+                                    }
+                                    chart2.XAxisReferential = Data.Settings.XAxisValue;
+                                    IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                                    chart2.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                                    chart2.TrailResults = list;
+                                    chart2.ShowPage = visible;
+                                    chart2.EndUpdate();
                                 }
-                                chart2.XAxisReferential = Data.Settings.XAxisValue;
-                                IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                                chart2.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                                chart2.TrailResults = list;
-                                chart2.ShowPage = visible;
-                                chart2.EndUpdate();
                             }
                         }
                     }

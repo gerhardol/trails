@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element msdata:IsDataSet="true" name="root">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" name="value" type="xsd:string" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" msdata:Ordinal="1" name="value" type="xsd:string" />
+                <xsd:element minOccurs="0" msdata:Ordinal="2" name="comment" type="xsd:string" />
+              </xsd:sequence>
+              <xsd:attribute msdata:Ordinal="1" name="name" type="xsd:string" use="required" />
+              <xsd:attribute msdata:Ordinal="3" name="type" type="xsd:string" />
+              <xsd:attribute msdata:Ordinal="4" name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" msdata:Ordinal="1" name="value" type="xsd:string" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="TrailsName" xml:space="preserve">
+    <comment>ActivityPage title</comment>
+    <value>Trails</value>
+  </data>
+  <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
+    <value>Aggiungi un Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_EditTrail" xml:space="preserve">
+    <value>Modifica il Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_InsertFailed" xml:space="preserve">
+    <value>Inserimento fallito</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
+    <value>Latitudine</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Longitude" xml:space="preserve">
+    <value>Longitudine</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Radius" xml:space="preserve">
+    <value>Raggio</value>
+  </data>
+  <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
+    <value>Il raggio deve essere espresso da un numero</value>
+  </data>
+  <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
+    <value>E' richiesto il nome del Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
+    <value>E' richiesto un nome univoco per il Trail</value>
+  </data>
+  <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
+    <value>Aggiornamento fallito</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
+    <value>Aggiungere un nuovo Trail o aggiungere i punti selezionati al Trail corrente. (Selezionare i punti sulla mappa prima di premere questo pulsante).</value>
+  </data>
+  <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
+    <value>Sicuro di volere cancellare questo Trail?</value>
+  </data>
+  <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
+    <value>Cancellare questo Trail</value>
+  </data>
+  <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
+    <value>Modificare questo Trail. (Selezionare i punti del Trail sulla mappa prima di premere questo pulsante).</value>
+  </data>
+  <data name="UI_Activity_List_ListSettings" xml:space="preserve">
+    <comment>STcore</comment>
+    <value>Impostazioni della lista …</value>
+  </data>
+  <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
+    <comment>ST2 only</comment>
+    <value>Devi selezionare un punto sulla mappa.
+
+Per selezionare un punto, click sulla traccia.
+Aggiungi nuovi punti premendo il pulsante Add.
+
+Per selezionare un secondo punto, tieni premuto CTRL e click su un altra parte della traccia.
+Seleziona quanti punti sono necessari per rendere questo Trail univoco ripetto ad altri Trails.
+
+Per fare una copia dell'attività di riferimento corrente, seleziona Trail {0}, quindi premi il pulsante Edit.</value>
+  </data>
+  <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
+    <value>Vuoi aggiornare le coordinate GPS del Trail ai punti attualmente selezionati?</value>
+  </data>
+  <data name="UI_Settings_DefaultRadius" xml:space="preserve">
+    <value>Raggio di default</value>
+  </data>
+  <data name="UI_Settings_DefaultRadius_ToolTip" xml:space="preserve">
+    <value>Raggio di default per i punti del Trail quando si aggiungono nuovi Trail.
+
+Il cambiamento di questo valore non avrà effetto sui Trail esistenti.</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
+    <value>Premere {0} per aggiungere i punti selezionati al Trail corrente, {1} per aggiungere un nuovo Trail.</value>
+  </data>
+  <data name="TrailPointsControlLayer" xml:space="preserve">
+    <value>Punti di Trail</value>
+  </data>
+  <data name="TrailChartsName" xml:space="preserve">
+    <value>Grafici di Trail</value>
+  </data>
+  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
+    <comment>unused</comment>
+    <value>Nascondere gli strumenti del grafico</value>
+  </data>
+  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
+    <comment>Same as STcore </comment>
+    <value>Mostrare gli strumenti del grafico</value>
+  </data>
+  <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
+    <value>Doppio click per modificare i valori della tabella.</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
+    <comment>unused</comment>
+    <value>Nessun punto selezionato sulla mappa.
+
+Premere {0} per usare i Lap points, {1} per uscire e selezionare i punti sulla traccia GPS.
+</value>
+  </data>
+  <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
+    <value>Limitare le attività a quelle selezionate nella lista</value>
+  </data>
+  <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
+    <value>Impostare il risultato di riferimento ({0}, Attuale: {1})</value>
+  </data>
+  <data name="UI_Activity_List_Splits" xml:space="preserve">
+    <value>Identificare altre sezioni di Trails oppure sezioni nella lista</value>
+  </data>
+  <data name="UI_Activity_List_URLimit" xml:space="preserve">
+    <value>Limitare le attività con Unique Routes dai risultati di riferimento {0}</value>
+  </data>
+  <data name="Trail_Reference_Name" xml:space="preserve">
+    <value>Attività di riferimento</value>
+  </data>
+  <data name="Trail_NoTrailSelected" xml:space="preserve">
+    <value>- Seleziona il Trail nella lista -</value>
+  </data>
+  <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
+    <value>Devi selezionare un punto sulla mappa.
+
+Per selezionare un punto, click sulla traccia.
+
+Per selezionare un punto, click sulla traccia.
+Aggiungi nuovi punti premendo il pulsante Add.
+
+Per fare una copia dell'attività di riferimento corrente, seleziona Trail {0}, quindi premi il pulsante Edit. 
+
+</value>
+  </data>
+  <data name="OtherPluginExceptionText" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Assicurarsi che {1} sia installato.</value>
+  </data>
+  <data name="OtherPluginVersion" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Riscontrata versione {0} di {1}.</value>
+  </data>
+  <data name="UI_Activity_List_Advanced" xml:space="preserve">
+    <value>Avanzato</value>
+  </data>
+  <data name="UI_Activity_List_URSelect" xml:space="preserve">
+    <value>Aggiungere conUnique Routes attività simili dall'attività di riferimento {0}</value>
+  </data>
+  <data name="UniqueRoutesCompatible" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Le attività possono essere filtrate utilizzando il plugin Unique Routes.</value>
+  </data>
+  <data name="UniqueRoutesPluginName" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>PluginUnique Routes</value>
+  </data>
+  <data name="UniqueRoutesToInstall" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Installare almeno la versione {0} di {1} per filtrare le attività utilizzando il plugin Unique Routes.</value>
+  </data>
+  <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
+    <value>Escludere il risultato dalla lista</value>
+  </data>
+  <data name="SetNameAtImport" xml:space="preserve">
+    <value>Imposta il nome all'importazione</value>
+  </data>
+  <data name="UI_Activity_List_URCommon" xml:space="preserve">
+    <value>Identificare i tratti comuni di Unique Routes</value>
+  </data>
+  <data name="HighScoreCompatible" xml:space="preserve">
+    <value>Può essere generato un HighScore Trail</value>
+  </data>
+  <data name="HighScorePluginName" xml:space="preserve">
+    <value>Plugin HighScore</value>
+  </data>
+  <data name="HighScoreToInstall" xml:space="preserve">
+    <value>Installare almeno la versione {0} di {1} per avere HighScore Trail.
+Problemi a comunicare con {0}.</value>
+  </data>
+  <data name="HighScore_Trail" xml:space="preserve">
+    <value>HighScore</value>
+  </data>
+</root>

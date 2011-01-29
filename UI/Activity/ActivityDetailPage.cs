@@ -49,7 +49,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_control.Activities = m_activities;
             }
-            RefreshPage();
+            //RefreshPage();
         }
         public System.Guid Id { get { return GUIDs.Activity; } }
 #else
@@ -68,21 +68,24 @@ namespace TrailsPlugin.UI.Activity {
         private IList<IActivity> m_activities = new List<IActivity>();
 		private ActivityDetailPageControl m_control = null;
 
-		public Control CreatePageControl() {
+		public Control CreatePageControl()
+        {
 			if (m_control == null) {				
 #if ST_2_1
 				m_control = new ActivityDetailPageControl();
+                m_control.Activities = m_activities;
 #else
                 m_control = new ActivityDetailPageControl(this, m_view);
 #endif
-                m_control.Activities = m_activities;
             }
 			return m_control;
 		}
 
 		public bool HidePage()
         {
+#if !ST_2_1
             this.m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(OnViewSelectedItemsChanged);
+#endif
             if (null != m_control)
             {
                 m_control.HidePage();
@@ -122,7 +125,13 @@ namespace TrailsPlugin.UI.Activity {
 
 		public void ShowPage(string bookmark)
         {
+#if ST_2_1
+            m_control.Activities = m_activities;
+#else
             this.m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
+            //Set activities
+            OnViewSelectedItemsChanged(this, null);
+#endif
             if (m_control != null)
             {
                 m_control.ShowPage(bookmark);
@@ -160,9 +169,7 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-
 		#region INotifyPropertyChanged Members
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion

@@ -109,6 +109,10 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 _showPage = value;
+                //if (_showPage)
+                //{
+                //    RefreshControlState();
+                //}
             }
         }
 

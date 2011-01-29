@@ -160,17 +160,19 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ShowPage(string bookmark)
         {
+            bool showPage = _showPage;
+            _showPage = true;
             m_layer.ShowPage(bookmark);
             TrailSelector.ShowPage = true;
             ResultList.ShowPage = true;
             MultiCharts.ShowPage = true;
 #if !ST_2_1
-            if(!_showPage)
+            //Avoid reregistering
+            if (!showPage)
             {
                  m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
             }
 #endif
-            _showPage = true;
         }
 
 		public void RefreshControlState() 
@@ -188,7 +190,10 @@ namespace TrailsPlugin.UI.Activity {
             RefreshRoute(); 
             //Charts are refreshed when list is changed
             //RefreshChart();
-            ShowPage("");
+            if (showPage)
+            {
+                ShowPage("");
+            }
         }
         public void RefreshChart()
         {

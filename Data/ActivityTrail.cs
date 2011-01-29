@@ -506,6 +506,28 @@ namespace TrailsPlugin.Data {
                     return this.SortValue > to2.SortValue ? 1 : -1;
                 }
             }
+            else if (status == TrailOrderStatus.MatchNoCalc)
+            {
+                //Sort generated trails as Reference, Splits, HighScore
+                //(Splits could be before Ref but his will increase resonse time with many activities)
+                if (this.Trail.IsReference)
+                {
+                    return -1;
+                }
+                else if (to2.Trail.IsReference)
+                {
+                    return 1;
+                }
+                else if (this.Trail.HighScore > 0)
+                {
+                    return 1;
+                }
+                else if (to2.Trail.HighScore > 0)
+                {
+                    return -1;
+                }
+            }
+
             //Sort remaining by name
             return this.Trail.Name.CompareTo(to2.Trail.Name);
         }

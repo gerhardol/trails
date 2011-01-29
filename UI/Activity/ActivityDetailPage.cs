@@ -40,7 +40,6 @@ namespace TrailsPlugin.UI.Activity {
         public ActivityDetailPage(IDailyActivityView view)
         {
             this.m_view = view;
-            this.m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
         }
 
         private void OnViewSelectedItemsChanged(object sender, EventArgs e)
@@ -81,7 +80,9 @@ namespace TrailsPlugin.UI.Activity {
 			return m_control;
 		}
 
-		public bool HidePage() {
+		public bool HidePage()
+        {
+            this.m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(OnViewSelectedItemsChanged);
             if (null != m_control)
             {
                 m_control.HidePage();
@@ -119,7 +120,9 @@ namespace TrailsPlugin.UI.Activity {
 			}
 		}
 
-		public void ShowPage(string bookmark) {
+		public void ShowPage(string bookmark)
+        {
+            this.m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
             if (m_control != null)
             {
                 m_control.ShowPage(bookmark);

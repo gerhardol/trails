@@ -142,7 +142,7 @@ namespace TrailsPlugin.UI.Activity {
 			ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
-            IList<IItemTrackSelectionInfo> selectedGPS = m_view.RouteSelectionProvider.SelectedItems;
+            IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
 #endif
             countGPS = selectedGPS.Count;
             if (countGPS > 0)
@@ -178,7 +178,8 @@ namespace TrailsPlugin.UI.Activity {
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
-            IList<IItemTrackSelectionInfo> selectedGPS = m_view.RouteSelectionProvider.SelectedItems;
+            IList<IItemTrackSelectionInfo> selectedGPS = (IList<IItemTrackSelectionInfo>)
+                        TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
 #endif
             countGPS = selectedGPS.Count;
             if (countGPS > 0)

@@ -527,18 +527,18 @@ namespace TrailsPlugin.UI.Activity {
         }
         float[] GetSingleSelection(TrailResult tr, IValueRange<double> v)
         {
-            //Note: Selcting in Route gives unpaused distance...
+            //Note: Selcting in Route gives unpaused distance, but this should be handled in the selection
             if (XAxisReferential == XAxisValue.Time)
             {
                 DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
-                d1 = tr.getDateTimeFromUnpausedDistActivity(v.Lower);
-                d2 = tr.getDateTimeFromUnpausedDistActivity(v.Upper);
+                d1 = tr.getDateTimeFromDistActivity(v.Lower);
+                d2 = tr.getDateTimeFromDistActivity(v.Upper);
                 return GetSingleSelectionFromResult(tr, d1, d2);
             }
             else
             {
-                double t1 = tr.getDistResultFromUnpausedDistActivity(v.Lower);
-                double t2 = tr.getDistResultFromUnpausedDistActivity(v.Upper);
+                double t1 = tr.getDistResultFromDistActivity(v.Lower);
+                double t2 = tr.getDistResultFromDistActivity(v.Upper);
                 return GetSingleSelectionFromResult(tr, t1, t2);
             }
         }
@@ -620,14 +620,20 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (hasValues == null)
             {
-                foreach (ChartDataSeries t in MainChart.DataSeries)
+                //A diff to itself is not a value - enable replacing
+                if (!(m_trailResults == null || m_refTrailResult == null ||
+                    (YAxisReferential == LineChartTypes.DiffTime || YAxisReferential == LineChartTypes.DiffDist) &&
+                    m_trailResults.Count == 1 /*&& m_trailResults == m_refTrailResult*/))
                 {
-                    foreach (KeyValuePair<float, PointF> v in t.Points)
+                    foreach (ChartDataSeries t in MainChart.DataSeries)
                     {
-                        if (v.Value.Y != 0)
+                        foreach (KeyValuePair<float, PointF> v in t.Points)
                         {
-                            hasValues = true;
-                            return true;
+                            if (v.Value.Y != 0)
+                            {
+                                hasValues = true;
+                                return true;
+                            }
                         }
                     }
                 }

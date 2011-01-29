@@ -160,14 +160,17 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ShowPage(string bookmark)
         {
-            _showPage = true;
             m_layer.ShowPage(bookmark);
             TrailSelector.ShowPage = true;
             ResultList.ShowPage = true;
             MultiCharts.ShowPage = true;
 #if !ST_2_1
-            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+            if(!_showPage)
+            {
+                 m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+            }
 #endif
+            _showPage = true;
         }
 
 		public void RefreshControlState() 
@@ -427,7 +430,11 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null)
                 {
-                    MultiCharts.SetSelectedRange(selected.SelectedItems);
+                    if(m_controller.SingleActivity != null)
+                    {
+                        MultiCharts.SetSelectedRange(
+                          TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, m_controller.SingleActivity));
+                    }
                 }
             }
         }

@@ -43,7 +43,7 @@ namespace TrailsPlugin.Data {
         public TrailResultMarked(TrailResult tr, IItemTrackSelectionInfo t)
         {
             trailResult = tr;
-            selInfo.SetFromSelection(t);
+            selInfo.SetFromSelection(t, tr.Activity);
         }
         public TrailResult trailResult;
         public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();

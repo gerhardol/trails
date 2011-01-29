@@ -36,7 +36,7 @@ namespace TrailsPlugin.Data {
 		private INumericTimeDataSeries m_heartRatePerMinuteTrack;
         private IDistanceDataTrack m_distanceMetersTrack = null;
         private IDistanceDataTrack m_activityDistanceMetersTrack = null;
-        private IDistanceDataTrack m_activityUnpausedDistanceMetersTrack = null;
+        //private IDistanceDataTrack m_activityUnpausedDistanceMetersTrack = null;
         private INumericTimeDataSeries m_elevationMetersTrack;
 		private INumericTimeDataSeries m_powerWattsTrack;
         private INumericTimeDataSeries m_speedTrack;
@@ -265,7 +265,7 @@ namespace TrailsPlugin.Data {
         //Get result time and distance from activity references
         public double getDistResult(DateTime t)
         {
-            //Ignore malformed activities
+            //Ignore malformed activities and selection outside the result
             double res = 0;
             try
             {
@@ -278,18 +278,18 @@ namespace TrailsPlugin.Data {
         {
             return t - StartDist;
         }
-        public double getDistResultFromUnpausedDistActivity(double t)
-        {
-            return getDistResult(getDateTimeFromUnpausedDistActivity(t));
-        }
+        //public double getDistResultFromUnpausedDistActivity(double t)
+        //{
+        //    return getDistResult(getDateTimeFromUnpausedDistActivity(t));
+        //}
         public DateTime getDateTimeFromDistActivity(double t)
         {
             return ActivityDistanceMetersTrack.GetTimeAtDistanceMeters(t);
         }
-        public DateTime getDateTimeFromUnpausedDistActivity(double t)
-        {
-            return ActivityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t);
-        }
+        //public DateTime getDateTimeFromUnpausedDistActivity(double t)
+        //{
+        //    return ActivityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t);
+        //}
         public static DateTime getDateTimeFromElapsedActivityStatic(IActivity act, ITimeValueEntry<IGPSPoint> p)
         {
             //Added here, if there are tricks for pauses required
@@ -313,7 +313,13 @@ namespace TrailsPlugin.Data {
         }
         public DateTime getDateTimeFromDistResult(double t)
         {
-            return DistanceMetersTrack.GetTimeAtDistanceMeters(t);
+            DateTime res = DateTime.MinValue;
+            try
+            {
+                res = DistanceMetersTrack.GetTimeAtDistanceMeters(t);
+            }
+            catch { }
+            return res;
         }
         public double getDistActivityFromDistResult(double t)
         {
@@ -411,9 +417,8 @@ namespace TrailsPlugin.Data {
                 m_distanceMetersTrack.AllowMultipleAtSameTime = true;
                 if (Activity.GPSRoute != null)
                 {
-                    ////Note: track has same index as GPS, to avoid tricky first/last selection
                     //m_activityDistanceMetersTrack = m_activity.GPSRoute.GetDistanceMetersTrack();
-                    m_activityUnpausedDistanceMetersTrack = Info.ActualDistanceMetersTrack;
+                    //m_activityUnpausedDistanceMetersTrack = Info.ActualDistanceMetersTrack;
                     if (includeStopped())
                     {
                         m_activityDistanceMetersTrack = Info.ActualDistanceMetersTrack;
@@ -424,15 +429,6 @@ namespace TrailsPlugin.Data {
                     }
                     if (m_activityDistanceMetersTrack != null)
                     {
-                        //for (int i = m_startIndex; i <= m_endIndex; i++)
-                        //{
-                        //    ITimeValueEntry<float> time = m_activityDistanceMetersTrack[i];
-                        //    m_distanceMetersTrack.Add(
-                        //        getElapsedWithoutPauses(m_activityDistanceMetersTrack, time),
-                        //        //m_startTime.AddSeconds(time.ElapsedSeconds),
-                        //        time.Value - m_startDistance
-                        //    );
-                        //}
                         int i = 0;
                         while (i < m_activityDistanceMetersTrack.Count &&
                             0 < this.StartDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
@@ -471,14 +467,14 @@ namespace TrailsPlugin.Data {
                 return m_activityDistanceMetersTrack;
             }
         }
-        public IDistanceDataTrack ActivityUnpausedDistanceMetersTrack
-        {
-            get
-            {
-                getDistanceTrack();
-                return m_activityUnpausedDistanceMetersTrack;
-            }
-        }
+        //public IDistanceDataTrack ActivityUnpausedDistanceMetersTrack
+        //{
+        //    get
+        //    {
+        //        getDistanceTrack();
+        //        return m_activityUnpausedDistanceMetersTrack;
+        //    }
+        //}
 
         /*************************************************/
         public TrailResult ParentResult

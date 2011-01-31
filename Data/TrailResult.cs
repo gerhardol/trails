@@ -704,12 +704,16 @@ namespace TrailsPlugin.Data {
             INumericTimeDataSeries result = new NumericTimeDataSeries();
             foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
             {
-                if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                try
                 {
-                    DateTime d1 = this.getDateTimeFromElapsedResult(t.ElapsedSeconds);
-                    DateTime d2 = refRes.getDateTimeFromElapsedResult(t.ElapsedSeconds);
-                    result.Add(d1, t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value);
+                    if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                    {
+                        DateTime d1 = this.getDateTimeFromElapsedResult(t.ElapsedSeconds);
+                        DateTime d2 = refRes.getDateTimeFromElapsedResult(t.ElapsedSeconds);
+                        result.Add(d1, t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value);
+                    }
                 }
+                catch { }
             }
             return result;
         }

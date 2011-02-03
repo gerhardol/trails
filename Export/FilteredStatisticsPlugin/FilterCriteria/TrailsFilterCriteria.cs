@@ -76,7 +76,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
 	    public string DisplayName
 	    {
-            get { return Properties.Resources.TrailResultName; }
+            get { return Properties.Resources.TrailName; }
         }
 
         public List<object> NamedZones
@@ -133,24 +133,45 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
         private void BuildNamedZones()
         {
-            m_NamedZones.Clear();
+            List<object> namedZones = new List<object>();
 
             if (m_Activity != null)
             {
-                IList<TrailsPlugin.Data.ActivityTrail> res = TrailsFilterCriteriasProvider.Controller.OrderedTrails;
-
-                foreach(TrailsPlugin.Data.ActivityTrail trail in res)
+                foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsFilterCriteriasProvider.Controller.OrderedTrails)
                 {
-                    if (trail.status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
+                    //TrailResults
+                    if (!trail.Trail.Generated &&
+                        (m_Activity == null || trail.status < TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc))
+                    {
+                        bool added = false;
+                        foreach (object o in m_NamedZones)
+                        {
+                            TrailsPlugin.Data.ActivityTrail t2 = o as TrailsPlugin.Data.ActivityTrail;
+                            if (t2 == trail)
+                            {
+                                namedZones.Add(o);
+                                added = true;
+                                break;
+                            }
+                        }
+                        if (!added)
+                        {
+                            namedZones.Add(new TrailResultNamedZone(trail, m_Activity));
+                        }
+                    }
+
+                    //Generated results. Only HighScore is interesting
+                    if (trail.Trail.HighScore > 0 && trail.status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
                     {
                         foreach (TrailsPlugin.Data.TrailResult tr in trail.Results)
                         {
-                            m_NamedZones.Add(new TrailResultNamedZone(trail, tr));
+                            namedZones.Add(new TrailResultNamedZone(trail, tr));
                         }
                     }
                 }
             }
 
+            m_NamedZones = namedZones;
             TriggerNamedZonesListChanged();
         }
 

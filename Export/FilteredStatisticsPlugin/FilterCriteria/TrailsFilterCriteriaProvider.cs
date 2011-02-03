@@ -51,10 +51,9 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         {
             Int32 index = 0;
 
-            //Disable for now - could be confusing
-            //Useful for HighScore though
-            //index = AddGenericCriteria(index, typeof(TrailsFilterCriteria));
-            index = AddGenericCriteria(index, typeof(TemplateTrailsFilterCriteria));
+            //Disable Template for now - not saving anyway
+            index = AddGenericCriteria(index, typeof(TrailsFilterCriteria));
+            //index = AddGenericCriteria(index, typeof(TemplateTrailsFilterCriteria));
 
             if (m_Criterias.Count > index)
             {

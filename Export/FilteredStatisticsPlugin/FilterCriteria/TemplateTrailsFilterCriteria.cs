@@ -154,7 +154,6 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         private void BuildNamedZones()
         {
             List<object> namedZones = new List<object>();
-            //m_NamedZones.Clear();
 
             foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsFilterCriteriasProvider.Controller.OrderedTrails)
             {

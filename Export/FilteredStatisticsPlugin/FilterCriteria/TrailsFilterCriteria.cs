@@ -104,7 +104,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         {
             get
             {
-                return new TemplateTrailsFilterCriteria(m_Activity);
+                return this;// new TemplateTrailsFilterCriteria(m_Activity);
             }
         }
 

@@ -31,7 +31,8 @@ namespace TrailsPlugin.Data {
         private bool m_matchAll = false;
         private bool m_generated = false;
         private bool m_isReference = false;
-        private int m_HighScore = 0; //0 not used, 1 standard HighScore (could be more)
+        private int m_HighScore = 0; //0 not used, 1 standard HighScore (could be more variants)
+        private int m_maxAllowedMisses = 0;
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
@@ -98,7 +99,17 @@ namespace TrailsPlugin.Data {
 				m_radius = value;
 			}
 		}
-
+        public int MaxAllowedMisses
+        {
+            get
+            {
+                return m_maxAllowedMisses;
+            }
+            set
+            {
+                m_maxAllowedMisses = value;
+            }
+        }
         public bool MatchAll
         {
             get
@@ -274,18 +285,27 @@ namespace TrailsPlugin.Data {
 
         static public Trail FromXml(XmlNode node) {
 			Trail trail = new Trail();
-			if (node.Attributes["id"] == null) {
+            string attr;
+            if (node.Attributes["id"] == null)
+            {
 				trail.Id = System.Guid.NewGuid().ToString();
 			} else {
 				trail.Id = node.Attributes["id"].Value;
 			}
 			trail.Name = node.Attributes["name"].Value;
-            //Could be a separate setting
+            //Hidden possibility to get trails matching everything while activities are seen
             if (trail.Name.EndsWith("MatchAll"))
             {
                 trail.MatchAll = true;
             }
-            trail.Radius = Settings.parseFloat(node.Attributes["radius"].Value);
+            if (node.Attributes["radius"] != null)
+            {
+                trail.Radius = Settings.parseFloat(node.Attributes["radius"].Value);
+            }
+            if (node.Attributes["maxAllowedMisses"] != null)
+            {
+                trail.MaxAllowedMisses = (Int16)XmlConvert.ToInt16(node.Attributes["maxAllowedMisses"].Value);
+            }
 			trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("TrailGPSLocation")) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
@@ -311,6 +331,9 @@ namespace TrailsPlugin.Data {
             trailNode.Attributes.Append(a);
             a = doc.CreateAttribute("radius");
             a.Value = this.Radius.ToString();
+            trailNode.Attributes.Append(a);
+            a = doc.CreateAttribute("maxAllowedMisses");
+            a.Value = this.MaxAllowedMisses.ToString();
             trailNode.Attributes.Append(a);
             foreach (TrailGPSLocation point in this.TrailLocations)
             {

@@ -196,6 +196,8 @@ namespace TrailsPlugin.Data
                             float trailDistDiff = 0;
                             int prevRouteIndex = -1;
                             float prevDistToPoint = 0;
+                            int maxAllowedMisses = Math.Min(m_trail.MaxAllowedMisses, trailgps.Count - 2);
+                            int currentMisses = 0;
                             for (int routeIndex = 0; routeIndex < activity.GPSRoute.Count; routeIndex++)
                             {
                                 int matchIndex = -1;
@@ -317,6 +319,7 @@ namespace TrailsPlugin.Data
                                     }
                                 }
 
+                                //Add to result 
                                 if (matchIndex >= 0 &&
                                     //Allow match with same index only for first point
                                  (aMatch.Count == 0 || aMatch[aMatch.Count - 1] < matchIndex))
@@ -326,10 +329,29 @@ namespace TrailsPlugin.Data
 
                                     if (isEndTrailPoint(trailgps, aMatch.Count))
                                     {
-                                        Status = TrailOrderStatus.Match;
+                                        //Check if this is a partial match
+                                        bool isPartial = false;
+                                        for (int i = 0; i < aMatch.Count; i++)
+                                        {
+                                            if (aMatch[i] < 0)
+                                            {
+                                                isPartial = true;
+                                                break;
+                                            }
+                                        }
+                                        if (isPartial)
+                                        {
+                                            Status = TrailOrderStatus.MatchPartial;
+                                        }
+                                        else
+                                        {
+                                            Status = TrailOrderStatus.Match;
+
+                                        }
                                         TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1, aMatch, trailDistDiff);
                                         m_resultsListWrapper.Add(result);
 
+                                        currentMisses=0;
                                         aMatch.Clear();
                                         trailDistDiff = 0;
                                         //Try this point again as start
@@ -357,6 +379,28 @@ namespace TrailsPlugin.Data
                                 }
                                 prevRouteIndex = routeIndex;
                                 prevDistToPoint = routeDist;
+
+                                //If reaching the end, check if we can add partial trails
+                                if (routeIndex >= activity.GPSRoute.Count-1 && aMatch.Count > 0 && currentMisses < maxAllowedMisses)
+                                {
+                                    currentMisses++;
+                                    aMatch.Add(-1);
+                                    if (isEndTrailPoint(trailgps, aMatch.Count))
+                                    {
+                                        Status = TrailOrderStatus.MatchPartial;
+                                        TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1, aMatch, trailDistDiff);
+                                        m_resultsListWrapper.Add(result);
+                                    }
+                                    else
+                                    {
+                                        //Start searching from previous match
+                                        routeIndex = TrailResult.prevValidIndex(aMatch);
+                                        if (routeIndex < 0)
+                                        {
+                                            routeIndex = 0;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

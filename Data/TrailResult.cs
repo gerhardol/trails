@@ -86,12 +86,12 @@ namespace TrailsPlugin.Data {
             m_trailgps = trailgps;
             m_activity = activity;
             m_order = order;
-            m_startIndex = indexes[0];
-            m_endIndex = indexes[indexes.Count - 1];
             foreach (int i in indexes)
             {
                 m_indexes.Add(i);
             }
+            m_startIndex = TrailResult.nextValidIndex(m_indexes, 0);
+            m_endIndex = TrailResult.prevValidIndex(m_indexes);
             m_distDiff = distDiff;
 
             m_startTime = m_activity.StartTime.AddSeconds(m_activity.GPSRoute[m_startIndex].ElapsedSeconds);
@@ -113,7 +113,9 @@ namespace TrailsPlugin.Data {
             {
                 for (int i = 1; i < m_indexes.Count; i++)
                 {
-                    if (m_trailgps.Count > i)
+                    int startIndex = m_indexes[i - 1];
+                    int endIndex = nextValidIndex(m_indexes, i);
+                    if (m_trailgps.Count > i && startIndex >= 0 && endIndex >= 0)
                     {
                         Data.TrailGPSLocation tg1 = m_trailgps[i - 1];
                         Data.TrailGPSLocation tg2 = tg1;
@@ -123,7 +125,7 @@ namespace TrailsPlugin.Data {
                         }
                         TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> { tg1, tg2 },
                             m_activity, i,
-                            new List<int> { m_indexes[i - 1], m_indexes[i] },
+                            new List<int> { startIndex, endIndex },
                             m_distDiff);
                         tr.m_parentResult = this;
                         //if (aActivities.Count > 1)
@@ -136,6 +138,34 @@ namespace TrailsPlugin.Data {
                 }
             }
             return splits;
+        }
+
+        //Get the previous valid index (could be the first)
+        public static int prevValidIndex(IList<int> aMatch)
+        {
+            int res = -1;
+            for (int i = aMatch.Count - 1; i >= 0; i--)
+            {
+                if (aMatch[i] >= 0)
+                {
+                    res = aMatch[i];
+                    break;
+                }
+            }
+            return res;
+        }
+        public static int nextValidIndex(IList<int> aMatch, int start)
+        {
+            int res = -1;
+            for (int i = start; i < aMatch.Count; i++)
+            {
+                if (aMatch[i] >= 0)
+                {
+                    res = aMatch[i];
+                    break;
+                }
+            }
+            return res;
         }
 
         /**********************************************************/
@@ -507,7 +537,7 @@ namespace TrailsPlugin.Data {
                 IList<DateTime> results = new List<DateTime>();
                 foreach (int i in m_indexes)
                 {
-                    if (i < m_activity.GPSRoute.Count)
+                    if (i>=0 && i < m_activity.GPSRoute.Count)
                     {
                         results.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]));
                     }

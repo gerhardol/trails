@@ -446,6 +446,14 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     return Properties.Resources.square_green_add;
                 }
+                else if (t.status == TrailOrderStatus.MatchPartial)
+                {
+                    return Properties.Resources.square_teal;
+                }
+                else if (t.status == TrailOrderStatus.InBoundPartialMatch)
+                {
+                    return Properties.Resources.badge_square_cross;
+                }
                 else if (t.status == TrailOrderStatus.InBound)
                 {
                     return Properties.Resources.square_red;

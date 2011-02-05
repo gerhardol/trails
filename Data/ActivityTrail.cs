@@ -336,6 +336,9 @@ namespace TrailsPlugin.Data {
                                     }
                                     else
                                     {
+                                        //At least one point match
+                                        status = TrailOrderStatus.InBoundPartialMatch;
+
                                         //Start search for next point after this match
                                         routeIndex = matchIndex;
 
@@ -537,6 +540,6 @@ namespace TrailsPlugin.Data {
     {
         //<= InBound is inbound
         //InBoundNoCalc is better than InBound, as it may be Match
-        Match, MatchNoCalc, InBoundNoCalc, InBound, NotInBound, NoInfo
+        Match, MatchNoCalc, MatchPartial, InBoundNoCalc, InBoundPartialMatch, InBound, NotInBound, NoInfo
     }
 }

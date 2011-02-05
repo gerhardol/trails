@@ -198,25 +198,26 @@
     <None Include="Resources\ZoomToContent.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\square-blue.png" />
+    <None Include="Resources\square-blue-16-ns.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\square-green.png" />
+    <None Include="Resources\square-green-16-ns.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\square-red.png" />
+    <None Include="Resources\square-red-16-ns.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\DropDown.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\square_green_add.bmp" />
+    <None Include="Resources\badge-square-plus-16-ns.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\square-green-add.png" />
+    <None Include="Resources\badge-square-check-16-ns.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\square-green-check.png" />
+    <Content Include="Resources\badge-square-cross-16-ns.png" />
+    <Content Include="Resources\square-teal-16-ns.png" />
   </ItemGroup>
   <Import Project=".\Common\Common-Files.csproj" />
 </Project>

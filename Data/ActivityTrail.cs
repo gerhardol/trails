@@ -22,8 +22,10 @@ using System.Text;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using ZoneFiveSoftware.Common.Visuals;
 
-namespace TrailsPlugin.Data {
+namespace TrailsPlugin.Data
+{
 	public class ActivityTrail : IComparable
     {
         private IList<IActivity> m_activities;
@@ -69,7 +71,7 @@ namespace TrailsPlugin.Data {
             }
         }
 
-        public TrailOrderStatus status
+        public TrailOrderStatus Status
         {
             get
             {
@@ -88,33 +90,33 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                if (status == TrailOrderStatus.NoInfo)
+                if (Status == TrailOrderStatus.NoInfo)
                 {
                     if (m_trail.HighScore > 0)
                     {
                         if (Integration.HighScore.HighScoreIntegrationEnabled)
                         {
-                            this.status = TrailOrderStatus.MatchNoCalc;
+                            this.Status = TrailOrderStatus.MatchNoCalc;
                         }
                     }
                     else if (m_trail.IsInBounds(m_activities))
                     {
-                        status = TrailOrderStatus.InBoundNoCalc;
+                        Status = TrailOrderStatus.InBoundNoCalc;
                     }
                     else
                     {
-                        status = TrailOrderStatus.NotInBound;
+                        Status = TrailOrderStatus.NotInBound;
                     }
                 }
                 //Any activity in bounds?
-                return status <= TrailOrderStatus.InBound;
+                return Status <= TrailOrderStatus.InBound;
             }
         }
         public bool IsNoCalc
         {
             get
             {
-                return (status == TrailOrderStatus.MatchNoCalc || status == TrailOrderStatus.InBoundNoCalc);
+                return (Status == TrailOrderStatus.MatchNoCalc || Status == TrailOrderStatus.InBoundNoCalc);
             }
         }
         public IList<TrailResult> Results
@@ -168,7 +170,7 @@ namespace TrailsPlugin.Data {
                             {
                                 if (h.activity.GPSRoute != null && h.activity.GPSRoute.Count > 0)
                                 {
-                                    this.status = TrailOrderStatus.Match;
+                                    this.Status = TrailOrderStatus.Match;
                                     TrailResultWrapper result = new TrailResultWrapper(m_trail, h.activity, h.selInfo, h.tooltip, m_resultsListWrapper.Count + 1);
                                     m_resultsListWrapper.Add(result);
                                 }
@@ -182,7 +184,7 @@ namespace TrailsPlugin.Data {
                     {
                         if (m_trail.MatchAll)
                         {
-                            this.status = TrailOrderStatus.Match;
+                            this.Status = TrailOrderStatus.Match;
                             TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1);
                             m_resultsListWrapper.Add(result);
                         }
@@ -324,7 +326,7 @@ namespace TrailsPlugin.Data {
 
                                     if (isEndTrailPoint(trailgps, aMatch.Count))
                                     {
-                                        status = TrailOrderStatus.Match;
+                                        Status = TrailOrderStatus.Match;
                                         TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1, aMatch, trailDistDiff);
                                         m_resultsListWrapper.Add(result);
 
@@ -337,7 +339,7 @@ namespace TrailsPlugin.Data {
                                     else
                                     {
                                         //At least one point match
-                                        status = TrailOrderStatus.InBoundPartialMatch;
+                                        Status = TrailOrderStatus.InBoundMatchPartial;
 
                                         //Start search for next point after this match
                                         routeIndex = matchIndex;
@@ -365,9 +367,9 @@ namespace TrailsPlugin.Data {
                     tr.getSplits();
                 }
             }
-            if (m_resultsListWrapper.Count == 0 && m_status != TrailOrderStatus.Match)
+            if (m_resultsListWrapper.Count == 0 && m_status == TrailOrderStatus.InBoundNoCalc)
             {
-                //Downgrade status
+                //Downgrade status from "speculative match"
                 m_status = TrailOrderStatus.InBound;
             }
         }
@@ -490,11 +492,11 @@ namespace TrailsPlugin.Data {
                 return 1;
             }
             ActivityTrail to2 = obj as ActivityTrail;
-            if (status != to2.status)
+            if (Status != to2.Status)
             {
-                return status > to2.status ? 1 : -1;
+                return Status > to2.Status ? 1 : -1;
             }
-            else if (status == TrailOrderStatus.Match)
+            else if (Status == TrailOrderStatus.Match)
             {
                 if (this.Trail.MatchAll != to2.Trail.MatchAll)
                 {
@@ -509,7 +511,7 @@ namespace TrailsPlugin.Data {
                     return this.SortValue > to2.SortValue ? 1 : -1;
                 }
             }
-            else if (status == TrailOrderStatus.MatchNoCalc)
+            else if (Status == TrailOrderStatus.MatchNoCalc)
             {
                 //Sort generated trails as Reference, Splits, HighScore
                 //(Splits could be before Ref but his will increase resonse time with many activities)
@@ -536,10 +538,58 @@ namespace TrailsPlugin.Data {
         }
         #endregion
     }
+
+    /*******************************************************/
+
+    public class TrailDropdownLabelProvider : TreeList.ILabelProvider
+    {
+
+        public System.Drawing.Image GetImage(object element, TreeList.Column column)
+        {
+            ActivityTrail t = (ActivityTrail)element;
+            switch (t.Status)
+            {
+                case TrailOrderStatus.Match:
+                    return Properties.Resources.square_green;
+                case TrailOrderStatus.MatchNoCalc:
+                    return Properties.Resources.square_green_check;
+                case TrailOrderStatus.MatchPartial:
+                    return Properties.Resources.square_green_minus;
+                case TrailOrderStatus.InBoundNoCalc:
+                    return Properties.Resources.square_green_plus;
+                case TrailOrderStatus.InBoundMatchPartial:
+                    return Properties.Resources.square_red_plus;
+                case TrailOrderStatus.InBound:
+                    return Properties.Resources.square_red;
+                case TrailOrderStatus.NotInBound:
+                    return Properties.Resources.square_blue;
+                default:
+                    return null;
+            }
+        }
+        public string GetText(object element, TreeList.Column column)
+        {
+            ActivityTrail t = (ActivityTrail)element;
+            string name = t.Trail.Name;
+            if (t.Status == TrailOrderStatus.Match)
+            {
+                name += " (" + t.Results.Count + ")";
+            }
+            else if (t.Status == TrailOrderStatus.MatchNoCalc)
+            {
+                if (t.Trail.MatchAll)
+                {
+                    name += " (" + t.ActivityCount + ")";
+                }
+            }
+            return name;
+        }
+    }
+
     public enum TrailOrderStatus
     {
         //<= InBound is inbound
         //InBoundNoCalc is better than InBound, as it may be Match
-        Match, MatchNoCalc, MatchPartial, InBoundNoCalc, InBoundPartialMatch, InBound, NotInBound, NoInfo
+        Match, MatchNoCalc, MatchPartial, InBoundMatchPartial, InBoundNoCalc, InBound, NotInBound, NoInfo
     }
 }

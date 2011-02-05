@@ -158,7 +158,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsFilterCriteriasProvider.Controller.OrderedTrails)
             {
                 if (!trail.Trail.Generated && 
-                    (m_Activity == null || trail.status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc))
+                    (m_Activity == null || trail.Status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc))
                 {
                     bool added = false;
                     foreach (object o in m_NamedZones)

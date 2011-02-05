@@ -430,62 +430,6 @@ namespace TrailsPlugin.UI.Activity {
 
         /*******************************************************/
 
-		class TrailDropdownLabelProvider : TreeList.ILabelProvider {
-
-			public Image GetImage(object element, TreeList.Column column) {
-                ActivityTrail t = (ActivityTrail)element;
-                if (t.status == TrailOrderStatus.Match)
-                {
-                    return Properties.Resources.square_green;
-                }
-                else if (t.status == TrailOrderStatus.MatchNoCalc)
-                {
-                    return Properties.Resources.square_green_check;
-                }
-                else if (t.status == TrailOrderStatus.InBoundNoCalc)
-                {
-                    return Properties.Resources.square_green_add;
-                }
-                else if (t.status == TrailOrderStatus.MatchPartial)
-                {
-                    return Properties.Resources.square_teal;
-                }
-                else if (t.status == TrailOrderStatus.InBoundPartialMatch)
-                {
-                    return Properties.Resources.badge_square_cross;
-                }
-                else if (t.status == TrailOrderStatus.InBound)
-                {
-                    return Properties.Resources.square_red;
-                }
-                else if (t.status == TrailOrderStatus.NotInBound)
-                {
-                    return Properties.Resources.square_blue;
-                }
-                else
-                {
-                    return null;
-                }
-			}
-
-			public string GetText(object element, TreeList.Column column) {
-                ActivityTrail t = (ActivityTrail)element;
-                string name = t.Trail.Name;
-                if (t.status == TrailOrderStatus.Match)
-                {
-                    name += " (" + t.Results.Count + ")";
-                }
-                else if (t.status == TrailOrderStatus.MatchNoCalc)
-                {
-                    if (t.Trail.MatchAll)
-                    {
-                        name += " (" + t.ActivityCount + ")";
-                    }
-                }
-                return name;
-            }
-		}
-
 		private void TrailName_ItemSelected(object sender, EventArgs e) {
             ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
             if(sender is TreeListPopup)

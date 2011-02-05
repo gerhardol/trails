@@ -141,7 +141,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 {
                     //TrailResults
                     if (!trail.Trail.Generated &&
-                        (m_Activity == null || trail.status < TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc))
+                        (m_Activity == null || trail.Status < TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc))
                     {
                         bool added = false;
                         foreach (object o in m_NamedZones)
@@ -161,7 +161,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     }
 
                     //Generated results. Only HighScore is interesting
-                    if (trail.Trail.HighScore > 0 && trail.status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
+                    if (trail.Trail.HighScore > 0 && trail.Status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
                     {
                         foreach (TrailsPlugin.Data.TrailResult tr in trail.Results)
                         {

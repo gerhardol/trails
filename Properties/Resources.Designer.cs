@@ -69,13 +69,6 @@ namespace TrailsPlugin.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap badge_square_cross {
-            get {
-                object obj = ResourceManager.GetObject("badge_square_cross", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap DropDown {
             get {
                 object obj = ResourceManager.GetObject("DropDown", resourceCulture);
@@ -161,16 +154,23 @@ namespace TrailsPlugin.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap square_green_add {
+        internal static System.Drawing.Bitmap square_green_check {
             get {
-                object obj = ResourceManager.GetObject("square_green_add", resourceCulture);
+                object obj = ResourceManager.GetObject("square_green_check", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap square_green_check {
+        internal static System.Drawing.Bitmap square_green_minus {
             get {
-                object obj = ResourceManager.GetObject("square_green_check", resourceCulture);
+                object obj = ResourceManager.GetObject("square_green_minus", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap square_green_plus {
+            get {
+                object obj = ResourceManager.GetObject("square_green_plus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -182,9 +182,9 @@ namespace TrailsPlugin.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap square_teal {
+        internal static System.Drawing.Bitmap square_red_plus {
             get {
-                object obj = ResourceManager.GetObject("square_teal", resourceCulture);
+                object obj = ResourceManager.GetObject("square_red_plus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

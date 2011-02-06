@@ -195,14 +195,18 @@ namespace TrailsPlugin.Data
                             int lastMatchPassBy = -1;
                             float trailDistDiff = 0;
                             int prevRouteIndex = -1;
+                            int prevMatchIndex = -1; //Last index that match for this activity
                             float prevDistToPoint = 0;
-                            int maxAllowedMisses = Math.Min(m_trail.MaxAllowedMisses, trailgps.Count - 2);
+                            int maxAllowedMisses = m_trail.MaxAllowedMisses;
                             int currentMisses = 0;
                             for (int routeIndex = 0; routeIndex < activity.GPSRoute.Count; routeIndex++)
                             {
                                 int matchIndex = -1;
                                 float routeDist = distanceTrailToRoute(activity, trailgps, aMatch.Count, routeIndex);
                                 float matchDist = float.MaxValue;
+
+                                //////////////////////////////////////
+                                //Shorten the trail if possible
 
                                 //TODO: Find a way to get shorter trails
                                 //The algorithm here will reduce A'1-B'1-A'2-B'2-C to A'2-B'2-C
@@ -237,6 +241,8 @@ namespace TrailsPlugin.Data
                                     trailDistDiff = 0;
                                 }
 
+                                //////////////////////////////////////
+                                //Find the best GPS point for this result
                                 if (routeDist < this.Trail.Radius)
                                 {
                                     matchIndex = routeIndex;
@@ -319,7 +325,8 @@ namespace TrailsPlugin.Data
                                     }
                                 }
 
-                                //Add to result 
+                                /////////////////////////////////////
+                                //Add found match to result 
                                 if (matchIndex >= 0 &&
                                     //Allow match with same index only for first point
                                  (aMatch.Count == 0 || aMatch[aMatch.Count - 1] < matchIndex))
@@ -380,8 +387,9 @@ namespace TrailsPlugin.Data
                                 prevRouteIndex = routeIndex;
                                 prevDistToPoint = routeDist;
 
+                                ////////////////////////////////////////////////
                                 //If reaching the end, check if we can add partial trails
-                                if (routeIndex >= activity.GPSRoute.Count-1 && aMatch.Count > 0 && currentMisses < maxAllowedMisses)
+                                if (routeIndex >= activity.GPSRoute.Count-1 && currentMisses < maxAllowedMisses)
                                 {
                                     currentMisses++;
                                     aMatch.Add(-1);
@@ -393,12 +401,24 @@ namespace TrailsPlugin.Data
                                     }
                                     else
                                     {
-                                        //Start searching from previous match
-                                        routeIndex = TrailResult.prevValidIndex(aMatch);
-                                        if (routeIndex < 0)
-                                        {
-                                            routeIndex = 0;
-                                        }
+                                        //Start searching from previous match if there is one
+                                        routeIndex = prevMatchIndex;
+                                        //xxx TrailResult.prevValidIndex(aMatch);
+                                        //if (routeIndex < 0)
+                                        //{
+                                        //    if (aMatch.Count < maxAllowedMisses)
+                                        //    {
+                                        //        routeIndex = activity.GPSRoute.Count;
+                                        //    }
+                                        //    else
+                                        //    {
+                                        //        ///xxx get last match instead?
+                                        //        routeIndex = lastMatchInRadius;
+                                        //    }
+                                        //    //xxx getelse if (m_resultsListWrapper.Count>0 && m_resultsListWrapper[m_resultsListWrapper.Count-1].Result.i
+                                        //    //{
+                                        //}
+
                                     }
                                 }
                             }
@@ -411,7 +431,8 @@ namespace TrailsPlugin.Data
                     tr.getSplits();
                 }
             }
-            if (m_resultsListWrapper.Count == 0 && m_status == TrailOrderStatus.InBoundNoCalc)
+            if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound &&
+                (m_status == TrailOrderStatus.InBoundNoCalc || m_status == TrailOrderStatus.MatchNoCalc))
             {
                 //Downgrade status from "speculative match"
                 m_status = TrailOrderStatus.InBound;
@@ -545,6 +566,10 @@ namespace TrailsPlugin.Data
                 if (this.Trail.MatchAll != to2.Trail.MatchAll)
                 {
                     return (this.Trail.MatchAll) ? 1 : -1;
+                }
+                else if (this.Trail.Generated != to2.Trail.Generated)
+                {
+                    return (this.Trail.Generated) ? 1 : -1; ;
                 }
                 //else if (activityTrail.Results.Count != to2.activityTrail.Results.Count)
                 //{

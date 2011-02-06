@@ -28,11 +28,12 @@ namespace TrailsPlugin.Data {
 		public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
 		private float m_radius;
+        private int m_maxAllowedMisses = 0;
+
         private bool m_matchAll = false;
         private bool m_generated = false;
         private bool m_isReference = false;
         private int m_HighScore = 0; //0 not used, 1 standard HighScore (could be more variants)
-        private int m_maxAllowedMisses = 0;
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
@@ -62,6 +63,7 @@ namespace TrailsPlugin.Data {
             }
             //Do not copy "auto" attributes
             result.m_radius = this.m_radius;
+            result.m_maxAllowedMisses = this.m_maxAllowedMisses;
             foreach (TrailGPSLocation t in this.TrailLocations)
             {
                 result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name));
@@ -103,7 +105,7 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                return m_maxAllowedMisses;
+                return Math.Min(m_maxAllowedMisses, this.TrailLocations.Count - 2);
             }
             set
             {
@@ -283,9 +285,9 @@ namespace TrailsPlugin.Data {
             return t1;
         }
 
-        static public Trail FromXml(XmlNode node) {
+        static public Trail FromXml(XmlNode node)
+        {
 			Trail trail = new Trail();
-            string attr;
             if (node.Attributes["id"] == null)
             {
 				trail.Id = System.Guid.NewGuid().ToString();

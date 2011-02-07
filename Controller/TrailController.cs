@@ -296,7 +296,7 @@ namespace TrailsPlugin.Controller
             //Check that the ref is for current result
             if (m_referenceTrailResult != null &&
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status == TrailOrderStatus.Match)
+                m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
             {
                 if (TrailResultWrapper.SelectedItems(m_currentActivityTrail.ResultTreeList, 
                     new List<TrailResult>{m_referenceTrailResult}).Count==0)
@@ -309,7 +309,7 @@ namespace TrailsPlugin.Controller
             if (m_referenceTrailResult == null &&
                 m_referenceActivity != null &&
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status == TrailOrderStatus.Match)
+                m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
             {
                 foreach (Data.TrailResult tr in m_currentActivityTrail.Results)
                 {
@@ -323,7 +323,7 @@ namespace TrailsPlugin.Controller
 
             if (m_referenceTrailResult == null &&
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status == TrailOrderStatus.Match &&
+                m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial &&
                 m_currentActivityTrail.Results.Count > 0)
             {
                 m_referenceTrailResult = m_currentActivityTrail.Results[0];

@@ -383,9 +383,10 @@ namespace TrailsPlugin.Data {
                 return false;
             }
             //increase bounds to include radius in the bounds checking
-            //Use a magic aproximate formula, about twice the radius
-            float latOffset = m_radius * 2 * 18 / 195/10000;
-            float longOffset = latOffset * (1 - Math.Abs(activityBounds.NorthLatitudeDegrees) / 90);
+            //Use a magic aproximate formula
+            const int radOff = 10;
+            float latOffset = radOff * m_radius * 18 / 195 / 10000;
+            float longOffset = latOffset * 5 * (1 - Math.Abs(activityBounds.NorthLatitudeDegrees) / 90);
             IGPSBounds gpsBounds = new GPSBounds(
                 new GPSLocation(activityBounds.NorthLatitudeDegrees + latOffset, activityBounds.WestLongitudeDegrees - longOffset),
                 new GPSLocation(activityBounds.SouthLatitudeDegrees - latOffset, activityBounds.EastLongitudeDegrees + longOffset));

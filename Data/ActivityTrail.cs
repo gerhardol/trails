@@ -666,6 +666,6 @@ namespace TrailsPlugin.Data
     {
         //<= InBound is inbound
         //InBoundNoCalc is better than InBound, as it may be Match
-        Match, MatchNoCalc, MatchPartial, InBoundMatchPartial, InBoundNoCalc, InBound, NotInBound, NoInfo
+        Match, MatchPartial, MatchNoCalc, InBoundMatchPartial, InBoundNoCalc, InBound, NotInBound, NoInfo
     }
 }

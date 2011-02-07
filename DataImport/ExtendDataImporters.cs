@@ -52,7 +52,7 @@ namespace TrailsPlugin.DataImport
                         m_controller.Activities = new List<IActivity> { activity };
                         foreach (ActivityTrail at in m_controller.OrderedTrails)
                         {
-                            if (at.Status == TrailOrderStatus.Match &&
+                            if (at.Status <= TrailOrderStatus.MatchPartial &&
                                 !at.Trail.Generated)
                             {
                                 activity.Name = at.Trail.Name;

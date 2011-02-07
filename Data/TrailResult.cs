@@ -44,8 +44,8 @@ namespace TrailsPlugin.Data {
         private IGPSRoute m_gpsTrack;
         private IList<IGPSPoint> m_gpsPoints;
         private INumericTimeDataSeries m_paceTrack;
-        private int m_startIndex;
-		private int m_endIndex;
+        private int m_startIndex = -1;
+		private int m_endIndex = -1;
         private DateTime m_startTime;
         private float m_startDistance = float.NaN;
         //private float m_lastDistance = float.NaN;
@@ -120,15 +120,16 @@ namespace TrailsPlugin.Data {
                 for (int i = 1; i < m_indexes.Count; i++)
                 {
                     int startIndex = m_indexes[i - 1];
-                    int endIndex = nextValidIndex(m_indexes, i);
-                    if (m_trailgps.Count > i && startIndex >= 0 && endIndex >= 0)
+                    int i2 = nextValidIndex(m_indexes, i);
+                    int endIndex = -1;
+                    if (i2 >= 0)
+                    {
+                        endIndex = m_indexes[i2];
+                    }
+                    if (m_trailgps.Count > i && startIndex >= 0 && endIndex >= 0 && m_trailgps.Count > i2)
                     {
                         Data.TrailGPSLocation tg1 = m_trailgps[i - 1];
-                        Data.TrailGPSLocation tg2 = tg1;
-                        if (m_trailgps.Count > i)
-                        {
-                            tg2 = m_trailgps[i];
-                        }
+                        Data.TrailGPSLocation tg2 =  m_trailgps[i2];
                         TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> { tg1, tg2 },
                             m_activity, i,
                             new List<int> { startIndex, endIndex },
@@ -147,14 +148,14 @@ namespace TrailsPlugin.Data {
         }
 
         //Get the valid index (could be the first)
-        public static int nextValidIndex(IList<int> aMatch, int start)
+        private static int nextValidIndex(IList<int> aMatch, int start)
         {
             int res = -1;
             for (int i = start; i < aMatch.Count; i++)
             {
                 if (aMatch[i] >= 0)
                 {
-                    res = aMatch[i];
+                    res = i;
                     break;
                 }
             }

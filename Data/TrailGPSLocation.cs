@@ -119,7 +119,7 @@ namespace TrailsPlugin.Data {
             a.Value = this.Name.ToString();
             TrailGPSLocationNode.Attributes.Append(a);
             a = doc.CreateAttribute(xmlTags.sRequired);
-            a.Value = this.Required.ToString();
+            a.Value = XmlConvert.ToString(this.Required);
             TrailGPSLocationNode.Attributes.Append(a);
             return TrailGPSLocationNode;
 		}

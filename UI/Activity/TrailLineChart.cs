@@ -719,21 +719,24 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack;
 
-                            //Debug.Assert(distanceTrack.Count == graphPoints.Count);
-                            for (int j = 0; j < distanceTrack.Count; ++j)
+                            if (null != m_refTrailResult)
                             {
-                                float distanceValue = Utils.Units.GetDistance(distanceTrack[j].Value, m_refTrailResult.Activity);
-                                if (j < graphPoints.Count)
+                                //Debug.Assert(distanceTrack.Count == graphPoints.Count);
+                                for (int j = 0; j < distanceTrack.Count; ++j)
                                 {
-                                    ITimeValueEntry<float> entry = graphPoints[j];
-                                    if (!dataLine.Points.ContainsKey(entry.ElapsedSeconds))
+                                    float distanceValue = Utils.Units.GetDistance(distanceTrack[j].Value, m_refTrailResult.Activity);
+                                    if (j < graphPoints.Count)
                                     {
-                                        ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
-                                        if (null != dataFill)
+                                        ITimeValueEntry<float> entry = graphPoints[j];
+                                        if (!dataLine.Points.ContainsKey(entry.ElapsedSeconds))
                                         {
-                                            dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                            ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
+                                            if (null != dataFill)
+                                            {
+                                                dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                            }
+                                            dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
                                         }
-                                        dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
                                     }
                                 }
                             }

@@ -28,7 +28,7 @@ namespace TrailsPlugin.Data {
 		public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
 		private float m_radius;
-        private int m_maxAllowedMisses = 0;
+        private int m_maxRequiredMisses = 0;
 
         private bool m_matchAll = false;
         private bool m_generated = false;
@@ -63,10 +63,10 @@ namespace TrailsPlugin.Data {
             }
             //Do not copy "auto" attributes
             result.m_radius = this.m_radius;
-            result.m_maxAllowedMisses = this.m_maxAllowedMisses;
+            result.m_maxRequiredMisses = this.m_maxRequiredMisses;
             foreach (TrailGPSLocation t in this.TrailLocations)
             {
-                result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name));
+                result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name, t.Required));
             }
             return result;
         }
@@ -101,15 +101,16 @@ namespace TrailsPlugin.Data {
 				m_radius = value;
 			}
 		}
-        public int MaxAllowedMisses
+        //This property is not visible in the GUI
+        public int MaxRequiredMisses
         {
             get
             {
-                return Math.Min(m_maxAllowedMisses, this.TrailLocations.Count - 2);
+                return m_maxRequiredMisses;
             }
             set
             {
-                m_maxAllowedMisses = value;
+                m_maxRequiredMisses = value;
             }
         }
         public bool MatchAll
@@ -288,28 +289,28 @@ namespace TrailsPlugin.Data {
         static public Trail FromXml(XmlNode node)
         {
 			Trail trail = new Trail();
-            if (node.Attributes["id"] == null)
+            if (node.Attributes[xmlTags.sId] == null)
             {
 				trail.Id = System.Guid.NewGuid().ToString();
 			} else {
-				trail.Id = node.Attributes["id"].Value;
+				trail.Id = node.Attributes[xmlTags.sId].Value;
 			}
-			trail.Name = node.Attributes["name"].Value;
+            trail.Name = node.Attributes[xmlTags.sName].Value;
             //Hidden possibility to get trails matching everything while activities are seen
             if (trail.Name.EndsWith("MatchAll"))
             {
                 trail.MatchAll = true;
             }
-            if (node.Attributes["radius"] != null)
+            if (node.Attributes[xmlTags.sRadius] != null)
             {
-                trail.Radius = Settings.parseFloat(node.Attributes["radius"].Value);
+                trail.Radius = Settings.parseFloat(node.Attributes[xmlTags.sRadius].Value);
             }
-            if (node.Attributes["maxAllowedMisses"] != null)
+            if (node.Attributes[xmlTags.sMaxRequiredMisses] != null)
             {
-                trail.MaxAllowedMisses = (Int16)XmlConvert.ToInt16(node.Attributes["maxAllowedMisses"].Value);
+                trail.MaxRequiredMisses = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMaxRequiredMisses].Value);
             }
 			trail.TrailLocations.Clear();
-			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes("TrailGPSLocation")) {
+			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
                 if (null == trail.TrailLocations[trail.TrailLocations.Count-1].Name
                     || trail.TrailLocations[trail.TrailLocations.Count-1].Name.Equals(""))
@@ -324,24 +325,38 @@ namespace TrailsPlugin.Data {
 
         public XmlNode ToXml(XmlDocument doc)
         {
-            XmlNode trailNode = doc.CreateElement("Trail");
-            XmlAttribute a = doc.CreateAttribute("id");
+            XmlNode trailNode = doc.CreateElement(xmlTags.sTrail);
+            XmlAttribute a = doc.CreateAttribute(xmlTags.sId);
             a.Value = this.Id;
             trailNode.Attributes.Append(a);
-            a = doc.CreateAttribute("name");
+            a = doc.CreateAttribute(xmlTags.sName);
             a.Value = this.Name;
             trailNode.Attributes.Append(a);
-            a = doc.CreateAttribute("radius");
+            a = doc.CreateAttribute(xmlTags.sRadius);
             a.Value = this.Radius.ToString();
             trailNode.Attributes.Append(a);
-            a = doc.CreateAttribute("maxAllowedMisses");
-            a.Value = this.MaxAllowedMisses.ToString();
-            trailNode.Attributes.Append(a);
+            //Undocumented non-GUI prperty
+            if (this.MaxRequiredMisses > 0)
+            {
+                a = doc.CreateAttribute(xmlTags.sMaxRequiredMisses);
+                a.Value = this.MaxRequiredMisses.ToString();
+                trailNode.Attributes.Append(a);
+            }
             foreach (TrailGPSLocation point in this.TrailLocations)
             {
                 trailNode.AppendChild(point.ToXml(doc));
             }
             return trailNode;
+        }
+
+        private class xmlTags
+        {
+            public const string sTrail = "Trail";
+            public const string sId = "id";
+            public const string sName = "name";
+            public const string sRadius = "radius";
+            public const string sMaxRequiredMisses = "maxRequiredMisses";
+            public const string sTrailGPSLocation = "TrailGPSLocation";
         }
 
         public bool IsInBounds(IList<IActivity> acts)

@@ -120,12 +120,15 @@ namespace TrailsPlugin.UI.Activity {
             this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
             presentRadius();
         }
-		private void btnCancel_Click(object sender, System.EventArgs e) {
+
+		private void btnCancel_Click(object sender, System.EventArgs e)
+        {
 			this.DialogResult = DialogResult.Cancel;
 			Close();
 		}
 
-		private void btnOk_Click(object sender, System.EventArgs e) {
+		private void btnOk_Click(object sender, System.EventArgs e)
+        {
 			if (TrailName.Text.Length == 0) {
 				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
 				return;
@@ -176,14 +179,22 @@ namespace TrailsPlugin.UI.Activity {
             presentRadius();
 
             EList.Columns.Clear();
-            EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 100, StringAlignment.Near));
-            EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 100, StringAlignment.Near));
-            EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 100, StringAlignment.Near));
+            EList.CheckBoxes = true;
+            EList.Columns.Add(new TreeList.Column("Required", Properties.Resources.Required, 20, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 80, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 80, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 120, StringAlignment.Near));
+
             EList.RowData = m_TrailToEdit.TrailLocations;
+            for (int i = 0; i < m_TrailToEdit.TrailLocations.Count; i++)
+            {
+                EList.SetChecked(m_TrailToEdit.TrailLocations[i], m_TrailToEdit.TrailLocations[i].Required);
+            }
 
             EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
             EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
             EList.KeyDown += new KeyEventHandler(EList_KeyDown);
+            EList.CheckedChanged += new TreeList.ItemEventHandler(EList_CheckedChanged);
         }
 
         private void EList_DeleteRow()
@@ -237,10 +248,19 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             TrailGPSLocation add = new TrailGPSLocation(result[selectRow].LatitudeDegrees + 0.01F, result[selectRow].LongitudeDegrees + 0.01F, result[selectRow].Name +
-                " " +ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew);
+                " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew, result[selectRow].Required);
             result.Insert(selectRow+1, add);
             EList.RowData = result;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
+        }
+
+        void EList_CheckedChanged(object sender, TreeList.ItemEventArgs e)
+        {
+            if (e.Item is TrailGPSLocation)
+            {
+                TrailGPSLocation t = e.Item as TrailGPSLocation;
+                t.Required = !t.Required;
+            }
         }
 
         private void presentRadius()
@@ -268,6 +288,7 @@ namespace TrailsPlugin.UI.Activity {
             t[rowSelected]=
                 ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].setField(subItemSelected, editBox.Text);
             EList.RowData = t;
+            m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[rowSelected]};
         }
         private void EditOver(object sender, System.Windows.Forms.KeyPressEventArgs e)

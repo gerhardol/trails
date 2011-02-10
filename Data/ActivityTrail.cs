@@ -197,6 +197,7 @@ namespace TrailsPlugin.Data
                             int prevRouteIndex = -1;
                             int prevMatchIndex = -1; //Last index that match for this activity
                             float prevDistToPoint = 0;
+                            float prevDistToStartPoint = 0;
                             int maxRequiredMisses = m_trail.MaxRequiredMisses;
                             int currRequiredMisses = 0;
                             for (int routeIndex = 0; routeIndex < activity.GPSRoute.Count; routeIndex++)
@@ -231,14 +232,22 @@ namespace TrailsPlugin.Data
                                 //Special case of the algorithm above, restarting if the first point is seen again.
                                 //So A1-A2-B1-C1 is reduced to A2-B1-C1
                                 if (trailgps.Count > 1 && aMatch.Count == 1 &&
-                                    routeIndex > lastMatchInRadius &&
-                                    routeIndex > lastMatchPassBy &&
-                                    (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||
-                                    0 < checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius)))
+                                    lastMatchInRadius > -1 && lastMatchPassBy > -1 &&
+                                    routeIndex > lastMatchInRadius && routeIndex > lastMatchPassBy)
                                 {
-                                    //Start over if we pass first point before all were found
-                                    aMatch.Clear();
-                                    trailDistDiff = 0;
+                                    float routeDistStartPoint = distanceTrailToRoute(activity, trailgps, aMatch.Count, routeIndex);
+                                    if (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||
+                                    0 < checkPass(routePoint(activity, prevRouteIndex), prevDistToStartPoint, routePoint(activity, routeIndex), routeDistStartPoint, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius))
+                                    {
+                                        //Start over if we pass first point before all were found
+                                        aMatch.Clear();
+                                        trailDistDiff = 0;
+                                    }
+                                    prevDistToStartPoint = routeDistStartPoint;
+                                }
+                                else
+                                {
+                                    prevDistToStartPoint = routeDist;
                                 }
 
                                 //////////////////////////////////////

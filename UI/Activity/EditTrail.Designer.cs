@@ -103,7 +103,7 @@
             this.Panel.Controls.Add(this.TrailName, 1, 0);
             this.Panel.Controls.Add(this.EList, 0, 2);
             this.Panel.Controls.Add(this.lblRadius, 0, 1);
-            this.Panel.Controls.Add(this.btnAdd, 3, 1);
+            this.Panel.Controls.Add(this.btnAdd, 3, 0);
             this.Panel.Controls.Add(this.btnSave, 2, 1);
             this.Panel.Controls.Add(this.btnEdit, 4, 0);
             this.Panel.Controls.Add(this.btnDelete, 5, 0);

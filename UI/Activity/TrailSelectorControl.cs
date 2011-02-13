@@ -149,7 +149,7 @@ namespace TrailsPlugin.UI.Activity {
             IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
 #endif
             countGPS = selectedGPS.Count;
-            if (countGPS > 0)
+            if (countGPS > 0 && !m_controller.CurrentActivityTrail.Trail.Generated)
             {
 #if ST_2_1
                 m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
@@ -186,7 +186,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
 #endif
             countGPS = selectedGPS.Count;
-            if (countGPS > 0)
+            if (countGPS > 0 && !m_controller.CurrentActivityTrail.Trail.Generated)
             {
 #if ST_2_1
 				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
@@ -440,7 +440,7 @@ namespace TrailsPlugin.UI.Activity {
             m_page.RefreshData();
             m_page.RefreshControlState();
 
-           GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, t.Trail.Radius);
+           GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3*t.Trail.Radius);
             m_layer.DoZoom(area);
 		}
 

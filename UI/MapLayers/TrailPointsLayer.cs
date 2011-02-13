@@ -122,7 +122,7 @@ namespace TrailsPlugin.UI.MapLayers
                 //Set selected area to include selected points, including radius and some more
                 if (value.Count > 0)
                 {
-                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, this.m_highlightRadius);
+                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, 2*this.m_highlightRadius);
                     this.DoZoom(area);
                     m_SelectedTrailPoints = value;
                 }
@@ -187,7 +187,7 @@ namespace TrailsPlugin.UI.MapLayers
         public void DoZoom()
         {
             IGPSBounds area1 = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
-            IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, this.m_highlightRadius);
+            IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2*this.m_highlightRadius);
             area1 = Union(area1, area2);
             DoZoom(area1);
         }

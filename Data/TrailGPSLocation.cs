@@ -147,31 +147,61 @@ namespace TrailsPlugin.Data {
 
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius)
         {
+            return getGPSBounds(list, radius, false);
+        }
+        public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius, bool requiredCheck)
+        {
             float north = -180;
             float south = +180;
             float east = -90;
             float west = 90;
+            int noRequired = 0;
+            const int minRequired = 1; //list.Count-trail.MaxRequiredMisses
             foreach (TrailGPSLocation g in list)
             {
-                north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
-                south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
-                east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
-                west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
+                //Check if there are too few required - then all points must be considered
+                if (g.Required)
+                {
+                    noRequired++;
+                }
+            }
+            foreach (TrailGPSLocation g in list)
+            {
+                if (g.Required || !requiredCheck || noRequired < minRequired)
+                {
+                    north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
+                    south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
+                    east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
+                    west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
+                }
             }
             if (north < south || east < west)
             {
                 return null;
             }
-            //Get approx degrees for the radius offset
+            //Get approx degrees for the radius offset increasing/(decreasing) the bounds
             //The magic numbers are size of a degree at the equator
             //latitude increases about 1% at the poles
             //longitude is up to 40% longer than linear extension - compensate 20%
-            float lat = 2 * radius / 110574 * 1.005F;
+            float lat = radius / 110574 * 1.005F;
             float lng = 2 * radius / 111320 * Math.Abs(south) / 90 * 1.2F;
             north += lat;
             south -= lat;
             east += lng;
             west -= lng;
+            //if radius is negative, area may have to be adjusted
+            if (north < south)
+            {
+                float tmp = (north+south)/2;
+                north = tmp;
+                south = tmp;
+            }
+            if (east < west)
+            {
+                float tmp = (west+east)/2;
+                west = tmp;
+                east = tmp;
+            }
             return new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
         }
 
@@ -238,7 +268,6 @@ namespace TrailsPlugin.Data {
                 }
             }
             return result;
-
         }
 	}
 }

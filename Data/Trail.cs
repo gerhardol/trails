@@ -90,6 +90,7 @@ namespace TrailsPlugin.Data {
             set
             {
                 m_trailLocations = value;
+                m_gpsBounds = null;
             }
         }
 
@@ -99,7 +100,8 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_radius = value;
-			}
+                m_gpsBounds = null;
+            }
 		}
         //This property is not visible in the GUI
         public int MaxRequiredMisses
@@ -178,6 +180,7 @@ namespace TrailsPlugin.Data {
                 {
                     //Just reset, value is fetched when needed
                     m_referenceActivity = null;
+                    m_gpsBounds = null;
                 }
             }
         }
@@ -190,8 +193,9 @@ namespace TrailsPlugin.Data {
                 if ((m_referenceActivity == null || refAct != m_referenceActivity) && refAct != null && 
                     refAct.GPSRoute != null && refAct.GPSRoute.Count > 0)
                 {
+                    m_gpsBounds = null;
                     m_referenceActivity = refAct;
-                    m_trailLocations = new List<TrailGPSLocation>(); ;
+                    m_trailLocations = new List<TrailGPSLocation>();
                     result = true;
                 }
             }
@@ -377,27 +381,30 @@ namespace TrailsPlugin.Data {
             return result;
         }
 
+        //The bounds to check for - smaller than real bounds
+        IGPSBounds m_gpsBounds = null;
+        private IGPSBounds GpsBounds
+        {
+            get
+            {
+                m_gpsBounds = null;
+                if (m_gpsBounds == null)
+                {
+                    m_gpsBounds = TrailGPSLocation.getGPSBounds(this.TrailLocations, -10 * m_radius, true);
+                }
+                return m_gpsBounds;
+            }
+        }
 		private bool IsInBounds(IGPSBounds activityBounds) {
             if (null == activityBounds || this.TrailLocations.Count == 0)
             {
                 return false;
             }
-            //increase bounds to include radius in the bounds checking
-            //Use a magic aproximate formula
-            const int radOff = 10;
-            float latOffset = radOff * m_radius * 18 / 195 / 10000;
-            float longOffset = latOffset * 5 * (1 - Math.Abs(activityBounds.NorthLatitudeDegrees) / 90);
-            IGPSBounds gpsBounds = new GPSBounds(
-                new GPSLocation(activityBounds.NorthLatitudeDegrees + latOffset, activityBounds.WestLongitudeDegrees - longOffset),
-                new GPSLocation(activityBounds.SouthLatitudeDegrees - latOffset, activityBounds.EastLongitudeDegrees + longOffset));
-            foreach (TrailGPSLocation trailGPSLocation in this.TrailLocations)
+            if (this.GpsBounds == null)
             {
-                if (!gpsBounds.Contains(trailGPSLocation.GpsLocation)) 
-                {
-					return false;
-				}
-			}
-			return true;
+                return false;
+            }
+            return activityBounds.Contains(this.GpsBounds);
 		}
 	}
 }

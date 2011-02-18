@@ -53,7 +53,7 @@ namespace TrailsPlugin.Data {
             : base(null, null)
         {
             IList<int> indexes;
-            IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
+            IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes, false);
             base.Element = new TrailResult(m_trailgps, activity, order, indexes, float.MaxValue);
             //Children are not created by default
             //getSplits();

@@ -216,18 +216,25 @@ namespace TrailsPlugin.Data {
         public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
             out IList<int> indexes)
         {
-            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
-
             //Add start indexes for active laps and for first point for rest following active
             //A pause at the end of the lap is not considered
-            bool onlyActiveLaps = true;
+            return TrailGpsPointsFromSplits(activity, out indexes, true);
+        }
+        public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
+            out IList<int> indexes, bool onlyActiveLaps)
+        {
+            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
+
             //Get around a problem with only Rest laps
-            onlyActiveLaps = false;
-            for (int j = 0; j < activity.Laps.Count; j++)
+            if (onlyActiveLaps)
             {
-                if (!activity.Laps[j].Rest)
+                onlyActiveLaps = false;
+                for (int j = 0; j < activity.Laps.Count; j++)
                 {
-                    onlyActiveLaps = true;
+                    if (!activity.Laps[j].Rest)
+                    {
+                        onlyActiveLaps = true;
+                    }
                 }
             }
             int lastIndex = 0;

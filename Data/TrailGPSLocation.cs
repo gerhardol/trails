@@ -184,7 +184,7 @@ namespace TrailsPlugin.Data {
             //latitude increases about 1% at the poles
             //longitude is up to 40% longer than linear extension - compensate 20%
             float lat = radius / 110574 * 1.005F;
-            float lng = 2 * radius / 111320 * Math.Abs(south) / 90 * 1.2F;
+            float lng = (float)(radius / 111132 / Math.Cos(Math.Abs(north) * Math.PI / 180));// 111320 * (1 - Math.Abs(north) / 90) * 1.2F;
             north += lat;
             south -= lat;
             east += lng;

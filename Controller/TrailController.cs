@@ -129,9 +129,9 @@ namespace TrailsPlugin.Controller
                 //If last used trail had results, use it
                 foreach (ActivityTrail to in OrderedTrails)
                 {
-                    if (to.Trail.Id == m_lastTrailId)
+                    if (to.Trail.Id == m_lastTrailId && !to.Trail.Generated)
                     {
-                        if (to.IsInBounds)
+                        if (to.Status <= TrailOrderStatus.InBoundMatchPartial)
                         {
                             m_currentActivityTrail = to;
                         }

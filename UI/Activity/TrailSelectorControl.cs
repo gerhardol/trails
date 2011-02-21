@@ -49,6 +49,7 @@ namespace TrailsPlugin.UI.Activity {
         private CultureInfo m_culture;
         private TrailController m_controller;
 #if ST_2_1
+        private Object m_view = null; //dummy
         private UI.MapLayers.MapControlLayer m_layer;
 #else
         private IDailyActivityView m_view = null;
@@ -63,13 +64,12 @@ namespace TrailsPlugin.UI.Activity {
         }
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller,
 #if ST_2_1
-          UI.MapLayers.MapControlLayer layer)
-        {
+          Object m_view, UI.MapLayers.MapControlLayer layer)
 #else
           IDailyActivityView view, TrailPointsLayer layer)
+#endif
         {
             m_view = view;
-#endif
             m_layer = layer;
             m_page = page;
             m_controller = controller;
@@ -200,11 +200,7 @@ namespace TrailsPlugin.UI.Activity {
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
             } else {
-#if ST_2_1
-				EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
-#else
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
-#endif
                 if (dialog.ShowDialog() == DialogResult.OK) {
 					m_page.RefreshControlState();
 					m_page.RefreshData();
@@ -326,11 +322,7 @@ namespace TrailsPlugin.UI.Activity {
                     addCurrent = true;
                 }
             }
-#if ST_2_1
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, !addCurrent);
-#else
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent);
-#endif
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 if (addCurrent)
@@ -360,11 +352,7 @@ namespace TrailsPlugin.UI.Activity {
 			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
-#if ST_2_1
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, false);
-#else
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
-#endif
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {

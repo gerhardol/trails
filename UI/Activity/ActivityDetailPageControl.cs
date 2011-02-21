@@ -66,6 +66,7 @@ namespace TrailsPlugin.UI.Activity {
 		private bool m_isExpanded = false;
 
 #if ST_2_1
+        private Object m_view = null;
         private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
 #else
         private IDetailPage m_DetailPage = null;
@@ -97,15 +98,9 @@ namespace TrailsPlugin.UI.Activity {
 
             this.ExpandSplitContainer.Panel2Collapsed = true;
 
-#if ST_2_1
-            TrailSelector.SetControl(this, m_controller, m_layer);
-            ResultList.SetControl(this, m_controller);
-            MultiCharts.SetControl(this, m_controller);
-#else
             TrailSelector.SetControl(this, m_controller, m_view, m_layer);
             ResultList.SetControl(this, m_controller, m_view);
             MultiCharts.SetControl(this, m_controller, m_view);
-#endif
 #if ST_2_1
 			SplitContainer sc = DailyActivitySplitter;
             if (sc != null)

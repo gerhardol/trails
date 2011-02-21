@@ -292,8 +292,8 @@ namespace TrailsPlugin.UI.Activity {
             //        IList<float[]> regions;
             //MainChart.DataSeries[1].GetSelectedRegions(out regions);
             //        if(regions.Count>0))
+            MainChart.Refresh();
             MainChart.AutozoomToData(true);
-			MainChart.Refresh();
 		}
 
         void copyChartMenuItem_Click(object sender, EventArgs e)

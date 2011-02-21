@@ -22,7 +22,6 @@ using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
-
 #if !ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 #endif
@@ -50,7 +49,7 @@ namespace TrailsPlugin.UI.Activity {
             InitControls();
         }
 #if ST_2_1
-        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
         {
 #else
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)

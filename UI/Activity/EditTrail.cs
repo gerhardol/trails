@@ -69,12 +69,11 @@ namespace TrailsPlugin.UI.Activity {
             InitControls();
         }
 #if ST_2_1
-        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, bool addMode)
-            : this (addMode)
+        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, Object view, bool addMode)
 #else
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, bool addMode)
-            : this (addMode)
 #endif
+            : this (addMode)
         {
 #if !ST_2_1
             m_layer = TrailPointsLayer.Instance(view);

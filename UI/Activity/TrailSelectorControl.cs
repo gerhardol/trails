@@ -119,12 +119,11 @@ namespace TrailsPlugin.UI.Activity {
 		public void RefreshControlState() 
         {
             bool enabled = (m_controller.ReferenceActivity != null);
-			btnAdd.Enabled = enabled;
-			TrailName.Enabled = enabled;
+            btnAdd.Enabled = enabled;
+            TrailName.Enabled = enabled;
 
-			enabled = (m_controller.CurrentActivityTrailDisplayed != null);
+            enabled = (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
-			btnDelete.Enabled = enabled;
 
             if (enabled)
             {
@@ -134,6 +133,12 @@ namespace TrailsPlugin.UI.Activity {
             {
                 TrailName.Text = Properties.Resources.Trail_NoTrailSelected;
             }
+            enabled = (m_controller.CurrentActivityTrailDisplayed != null) && m_controller.CurrentActivityTrailDisplayed.Trail.Generated;
+            btnDelete.Enabled = enabled;
+
+            enabled = (m_controller.CurrentActivityTrailDisplayed == null) || !m_controller.CurrentActivityTrailDisplayed.Trail.Generated;
+            btnAdd.Enabled = enabled;
+            btnDelete.Enabled = enabled;
         }
 
 

@@ -44,6 +44,10 @@ namespace TrailsPlugin.Data {
 
         public Trail Copy(bool isEdit)
         {
+            return Copy(isEdit, null);
+        }
+        public Trail Copy(bool isEdit, IActivity activity)
+        {
             Trail result = new Trail();
             if (isEdit)
             {
@@ -56,6 +60,14 @@ namespace TrailsPlugin.Data {
                 {
                     result.Name = this.m_referenceActivity.Name;
                 }
+                else if (this.m_generated && activity != null && activity.Name != "")
+                {
+                    result.Name = activity.Name;
+                }
+                else if (this.m_generated && activity != null && activity.Location != "")
+                {
+                    result.Name = activity.Location;
+                }
                 else
                 {
                     result.Name = this.Name + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
@@ -64,9 +76,19 @@ namespace TrailsPlugin.Data {
             //Do not copy "auto" attributes
             result.m_radius = this.m_radius;
             result.m_maxRequiredMisses = this.m_maxRequiredMisses;
-            foreach (TrailGPSLocation t in this.TrailLocations)
+            if (this.MatchAll && activity != null && this.TrailLocations.Count == 0)
             {
-                result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name, t.Required));
+                //get all points
+                IList<int> indexes;
+                result.TrailLocations = Trail.TrailGpsPointsFromSplits(
+                    activity, out indexes, false);
+            }
+            else
+            {
+                foreach (TrailGPSLocation t in this.TrailLocations)
+                {
+                    result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name, t.Required));
+                }
             }
             return result;
         }
@@ -239,11 +261,16 @@ namespace TrailsPlugin.Data {
             }
             int lastIndex = 0;
             indexes = new List<int>();
+            IList<bool> required = new List<bool>();
             IList<string> names = new List<string>();
-            if (null == activity.Laps || 0 == activity.Laps.Count)
+            if (null == activity || null == activity.Laps || 0 == activity.Laps.Count)
             {
                 indexes.Add(0);
-                names.Add(activity.Name);
+                required.Add(true);
+                if (null != activity)
+                {
+                    names.Add(activity.Name);
+                }
             }
             else
             {
@@ -258,6 +285,7 @@ namespace TrailsPlugin.Data {
                             (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
                         {
                             indexes.Add(i);
+                            required.Add(!l.Rest);
                             names.Add(l.Notes);
                             i++;
                             break;
@@ -265,11 +293,21 @@ namespace TrailsPlugin.Data {
                     }
                 }
             }
+
+            bool lastIsRestlap = false;
+            if (null == activity ||
+                null == activity.Laps || 
+                0 == activity.Laps.Count ||
+                activity.Laps[activity.Laps.Count-1].Rest)
+            {
+                lastIsRestlap = true;
+            }
             if (indexes.Count == 0 || 
                 activity.GPSRoute.Count - 1 > indexes[indexes.Count - 1] &&
-                (!onlyActiveLaps || null == activity.Laps || 0 == activity.Laps.Count || !activity.Laps[activity.Laps.Count-1].Rest))
+                (!onlyActiveLaps || !lastIsRestlap))
             {
                 indexes.Add(activity.GPSRoute.Count - 1);
+                required.Add(!lastIsRestlap);
                 names.Add(activity.Name);
             }
 
@@ -283,7 +321,7 @@ namespace TrailsPlugin.Data {
                 results.Add(new Data.TrailGPSLocation(
                 activity.GPSRoute[indexes[i]].Value.LatitudeDegrees,
                 activity.GPSRoute[indexes[i]].Value.LongitudeDegrees,
-                name));
+                name, required[i]));
             }
             return results;
         }

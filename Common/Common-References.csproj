@@ -200,15 +200,24 @@ REM generate the plugin.xml file
 ECHO ^&lt;?xml version="1.0" encoding="utf-8" ?^&gt; &gt;  "$(TargetDir)\plugin.xml"
 ECHO ^&lt;plugin id="%25guid%25" minimumCommonVersion="%25StVersion%25" /^&gt; &gt;&gt; "$(TargetDir)\plugin.xml"
 
-IF NOT "$(ConfigurationType)"=="Release" GOTO END
+rem IF NOT "$(ConfigurationType)"=="Release" GOTO DebugPluginPackage
 
 DEL "%25stPlgFile%25"
 IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END
-"%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25" "$(TargetDir)*" -x!*.st*plugin -x!*.tmp -x!*.pdb -x!*.locked -x!$(ProjectName).xml
+"%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25" "$(TargetDir)*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!$(ProjectName).xml
+rem "%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25" "$(TargetDir)*" -x!*.st*plugin -x!*.tmp -x!*.pdb -x!*.locked -x!$(ProjectName).xml
 
 IF "%25stPlgoutdir%25"=="" GOTO END
 IF not EXIST "%25stPlgoutdir%25" GOTO END
 COPY "%25stPlgFile%25" "%25stPlgoutdir%25"
+GOTO end
+
+:DebugPluginPackage
+GOTO end
+REM Create debug package
+DEL "%25stPlgFile%25"
+IF NOT EXIST "%25programfiles%25\7-zip\7z.exe" GOTO END
+"%25programfiles%25\7-zip\7z" a -r -tzip "%25stPlgFile%25" "$(TargetDir)*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!$(ProjectName).xml
 
 :END</PostBuildEvent>
   </PropertyGroup>

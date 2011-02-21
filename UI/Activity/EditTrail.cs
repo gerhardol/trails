@@ -22,6 +22,7 @@ using System.Drawing;
 using System;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.GPS;
 using TrailsPlugin.Data;
@@ -53,8 +54,9 @@ namespace TrailsPlugin.UI.Activity {
                 this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
                 if (m_TrailToEdit.Generated)
                 {
+                    IActivity activity = Controller.TrailController.Instance.ReferenceActivity;
                     //Create copy of the trail
-                    m_TrailToEdit = m_TrailToEdit.Copy(false);
+                    m_TrailToEdit = m_TrailToEdit.Copy(false, activity);
                     m_addMode = true;
                     this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
                 }

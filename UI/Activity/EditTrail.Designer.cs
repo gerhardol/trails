@@ -34,12 +34,13 @@
             this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.editBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblRadius = new System.Windows.Forms.Label();
-            this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnSave = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel.SuspendLayout();
             this.EList.SuspendLayout();
             this.SuspendLayout();
@@ -104,7 +105,6 @@
             this.Panel.Controls.Add(this.EList, 0, 2);
             this.Panel.Controls.Add(this.lblRadius, 0, 1);
             this.Panel.Controls.Add(this.btnAdd, 3, 0);
-            this.Panel.Controls.Add(this.btnSave, 2, 1);
             this.Panel.Controls.Add(this.btnEdit, 4, 0);
             this.Panel.Controls.Add(this.btnDelete, 5, 0);
             this.Panel.Controls.Add(this.btnUp, 4, 1);
@@ -242,28 +242,28 @@
             this.lblRadius.Text = "Radius:";
             this.lblRadius.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnDelete
+            // btnAdd
             // 
-            this.btnDelete.BackColor = System.Drawing.Color.Transparent;
-            this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnDelete.CenterImage = null;
-            this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnDelete.HyperlinkStyle = false;
-            this.btnDelete.ImageMargin = 2;
-            this.btnDelete.LeftImage = null;
-            this.btnDelete.Location = new System.Drawing.Point(318, 3);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
-            this.btnDelete.PushStyle = true;
-            this.btnDelete.RightImage = null;
-            this.btnDelete.Size = new System.Drawing.Size(20, 19);
-            this.btnDelete.TabIndex = 13;
-            this.btnDelete.Text = "D";
-            this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnDelete.TextLeftMargin = 2;
-            this.btnDelete.TextRightMargin = 2;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnAdd.BackColor = System.Drawing.Color.Transparent;
+            this.btnAdd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnAdd.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnAdd.CenterImage = null;
+            this.btnAdd.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnAdd.HyperlinkStyle = false;
+            this.btnAdd.ImageMargin = 2;
+            this.btnAdd.LeftImage = null;
+            this.btnAdd.Location = new System.Drawing.Point(268, 3);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
+            this.btnAdd.PushStyle = true;
+            this.btnAdd.RightImage = null;
+            this.btnAdd.Size = new System.Drawing.Size(19, 19);
+            this.btnAdd.TabIndex = 10;
+            this.btnAdd.Text = "A";
+            this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnAdd.TextLeftMargin = 2;
+            this.btnAdd.TextRightMargin = 2;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
             // btnEdit
             // 
@@ -288,51 +288,28 @@
             this.btnEdit.TextRightMargin = 2;
             this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
-            // btnAdd
+            // btnDelete
             // 
-            this.btnAdd.BackColor = System.Drawing.Color.Transparent;
-            this.btnAdd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnAdd.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnAdd.CenterImage = null;
-            this.btnAdd.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnAdd.HyperlinkStyle = false;
-            this.btnAdd.ImageMargin = 2;
-            this.btnAdd.LeftImage = null;
-            this.btnAdd.Location = new System.Drawing.Point(268, 28);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
-            this.btnAdd.PushStyle = true;
-            this.btnAdd.RightImage = null;
-            this.btnAdd.Size = new System.Drawing.Size(19, 19);
-            this.btnAdd.TabIndex = 10;
-            this.btnAdd.Text = "A";
-            this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnAdd.TextLeftMargin = 2;
-            this.btnAdd.TextRightMargin = 2;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
-            // btnSave
-            // 
-            this.btnSave.BackColor = System.Drawing.Color.Transparent;
-            this.btnSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSave.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnSave.CenterImage = null;
-            this.btnSave.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnSave.HyperlinkStyle = false;
-            this.btnSave.ImageMargin = 2;
-            this.btnSave.LeftImage = null;
-            this.btnSave.Location = new System.Drawing.Point(243, 28);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Padding = new System.Windows.Forms.Padding(2);
-            this.btnSave.PushStyle = true;
-            this.btnSave.RightImage = null;
-            this.btnSave.Size = new System.Drawing.Size(19, 19);
-            this.btnSave.TabIndex = 18;
-            this.btnSave.Text = "S";
-            this.btnSave.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnSave.TextLeftMargin = 2;
-            this.btnSave.TextRightMargin = 2;
-            this.btnSave.Visible = false;
+            this.btnDelete.BackColor = System.Drawing.Color.Transparent;
+            this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnDelete.CenterImage = null;
+            this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnDelete.HyperlinkStyle = false;
+            this.btnDelete.ImageMargin = 2;
+            this.btnDelete.LeftImage = null;
+            this.btnDelete.Location = new System.Drawing.Point(318, 3);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
+            this.btnDelete.PushStyle = true;
+            this.btnDelete.RightImage = null;
+            this.btnDelete.Size = new System.Drawing.Size(20, 19);
+            this.btnDelete.TabIndex = 13;
+            this.btnDelete.Text = "D";
+            this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnDelete.TextLeftMargin = 2;
+            this.btnDelete.TextRightMargin = 2;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnUp
             // 
@@ -380,6 +357,52 @@
             this.btnDown.TextRightMargin = 2;
             this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
+            // btnCopy
+            // 
+            this.btnCopy.BackColor = System.Drawing.Color.Transparent;
+            this.btnCopy.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnCopy.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnCopy.CenterImage = null;
+            this.btnCopy.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnCopy.HyperlinkStyle = false;
+            this.btnCopy.ImageMargin = 2;
+            this.btnCopy.LeftImage = null;
+            this.btnCopy.Location = new System.Drawing.Point(18, 303);
+            this.btnCopy.Name = "btnCopy";
+            this.btnCopy.Padding = new System.Windows.Forms.Padding(2);
+            this.btnCopy.PushStyle = true;
+            this.btnCopy.RightImage = null;
+            this.btnCopy.Size = new System.Drawing.Size(19, 19);
+            this.btnCopy.TabIndex = 23;
+            this.btnCopy.Text = "CC";
+            this.btnCopy.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnCopy.TextLeftMargin = 2;
+            this.btnCopy.TextRightMargin = 2;
+            this.btnCopy.Click += new System.EventHandler(btnCopy_Click);
+            // 
+            // btnExport
+            // 
+            this.btnExport.BackColor = System.Drawing.Color.Transparent;
+            this.btnExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnExport.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnExport.CenterImage = null;
+            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnExport.HyperlinkStyle = false;
+            this.btnExport.ImageMargin = 2;
+            this.btnExport.LeftImage = null;
+            this.btnExport.Location = new System.Drawing.Point(52, 303);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Padding = new System.Windows.Forms.Padding(2);
+            this.btnExport.PushStyle = true;
+            this.btnExport.RightImage = null;
+            this.btnExport.Size = new System.Drawing.Size(19, 19);
+            this.btnExport.TabIndex = 24;
+            this.btnExport.Text = "E";
+            this.btnExport.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnExport.TextLeftMargin = 2;
+            this.btnExport.TextRightMargin = 2;
+            this.btnExport.Click += new System.EventHandler(btnExport_Click);
+            // 
             // EditTrail
             // 
             this.AcceptButton = this.btnOk;
@@ -387,6 +410,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(381, 328);
+            this.Controls.Add(this.btnExport);
+            this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.Panel);
@@ -409,8 +434,7 @@
 		private System.Windows.Forms.ToolTip toolTip;
 		private ZoneFiveSoftware.Common.Visuals.Button btnOk;
 		private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
-		private System.Windows.Forms.TableLayoutPanel Panel;
-		private ZoneFiveSoftware.Common.Visuals.Button btnSave;
+        private System.Windows.Forms.TableLayoutPanel Panel;
 		private System.Windows.Forms.Label lblTrail;
 		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
 		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
@@ -422,6 +446,8 @@
         private ZoneFiveSoftware.Common.Visuals.TextBox editBox;
         private ZoneFiveSoftware.Common.Visuals.Button btnUp;
         private ZoneFiveSoftware.Common.Visuals.Button btnDown;
+        private ZoneFiveSoftware.Common.Visuals.Button btnCopy;
+        private ZoneFiveSoftware.Common.Visuals.Button btnExport;
 
 	}
 }

@@ -64,7 +64,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller,
 #if ST_2_1
-          Object m_view, UI.MapLayers.MapControlLayer layer)
+          Object view, UI.MapLayers.MapControlLayer layer)
 #else
           IDailyActivityView view, TrailPointsLayer layer)
 #endif
@@ -137,7 +137,6 @@ namespace TrailsPlugin.UI.Activity {
             btnDelete.Enabled = enabled;
 
             enabled = (m_controller.CurrentActivityTrailDisplayed == null) || !m_controller.CurrentActivityTrailDisplayed.Trail.Generated;
-            btnAdd.Enabled = enabled;
             btnDelete.Enabled = enabled;
         }
 
@@ -154,7 +153,7 @@ namespace TrailsPlugin.UI.Activity {
             IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
 #endif
             countGPS = selectedGPS.Count;
-            if (countGPS > 0 && !m_controller.CurrentActivityTrail.Trail.Generated)
+            if (countGPS > 0)
             {
 #if ST_2_1
                 m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
@@ -291,7 +290,6 @@ namespace TrailsPlugin.UI.Activity {
             return result;
         }
 #if ST_2_1
-//ST_2_1
         IList<TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
@@ -314,7 +312,7 @@ namespace TrailsPlugin.UI.Activity {
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             bool addCurrent = false;
-            if (m_controller.CurrentActivityTrailDisplayed != null)
+            if (m_controller.CurrentActivityTrailDisplayed != null && !m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
             {
                 if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
                     "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)

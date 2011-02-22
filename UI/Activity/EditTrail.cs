@@ -43,6 +43,9 @@ namespace TrailsPlugin.UI.Activity {
         private EditTrail(bool addMode)
         {
             m_addMode = addMode;
+
+            InitializeComponent();
+
             if (m_addMode)
             {
                 m_TrailToEdit = new TrailsPlugin.Data.Trail();
@@ -65,7 +68,7 @@ namespace TrailsPlugin.UI.Activity {
                     m_TrailToEdit = m_TrailToEdit.Copy(true);
                 }
             }
-            InitializeComponent();
+            //Done after init code, as it depends on it
             InitControls();
         }
 #if ST_2_1
@@ -90,13 +93,22 @@ namespace TrailsPlugin.UI.Activity {
             btnEdit.Text = "";
             btnDelete.BackgroundImage = CommonIcons.Delete;
             btnDelete.Text = "";
+            btnDelete.Enabled = false;
             btnUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
             btnUp.Text = "";
+            btnUp.Enabled = false;
             btnDown.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveDown16;
             btnDown.Text = "";
-            btnDelete.Enabled = false;
-            btnUp.Enabled = false;
             btnDown.Enabled = false;
+            btnCopy.Text = "";
+            btnCopy.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
+            if (m_addMode)
+            {
+                this.btnCopy.Enabled = false;
+            }
+            btnExport.Text = "";
+            btnExport.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Export16;
+            btnExport.Visible = false;//TODO
 #if ST_2_1
             this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #else
@@ -155,7 +167,19 @@ namespace TrailsPlugin.UI.Activity {
 			Close();
 		}
 
-		private void EditTrail_Activated(object sender, System.EventArgs e) {
+        void btnCopy_Click(object sender, System.EventArgs e)
+        {
+            m_addMode = true;
+            this.btnCopy.Enabled = false;
+        }
+
+        void btnExport_Click(object sender, System.EventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void EditTrail_Activated(object sender, System.EventArgs e)
+        {
 			TrailName.Focus();
 		}
 

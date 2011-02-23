@@ -636,6 +636,7 @@ namespace TrailsPlugin.Data
             else if (Status == TrailOrderStatus.MatchNoCalc)
             {
                 //Sort generated trails as Reference, Splits, HighScore
+                //If this is changed, consider changing checkCurrentTrailOrdered() so not the trail always follows the generated trail
                 //(Splits could be before Ref but his will increase resonse time with many activities)
                 if (this.Trail.IsReference)
                 {

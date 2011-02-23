@@ -129,7 +129,9 @@ namespace TrailsPlugin.Controller
                 //If last used trail had results, use it
                 foreach (ActivityTrail to in OrderedTrails)
                 {
-                    if (to.Trail.Id == m_lastTrailId && !to.Trail.Generated)
+                    //Avoid switch automatically to Reference, as this is the first in list and often ato selected and then will stick
+                    //If Splits or HighScore is selected, follow it
+                    if (to.Trail.Id == m_lastTrailId && !to.Trail.IsReference)
                     {
                         if (to.Status <= TrailOrderStatus.InBoundMatchPartial)
                         {

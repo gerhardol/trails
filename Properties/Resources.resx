@@ -331,4 +331,10 @@ Make sure that {1} is installed.</value>
   <data name="Required" xml:space="preserve">
     <value>Required</value>
   </data>
+  <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
+    <value>Edit a copy of the Trail?</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
+    <value>Export Trail as activity?</value>
+  </data>
 </root>

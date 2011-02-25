@@ -108,7 +108,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             btnExport.Text = "";
             btnExport.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Export16;
-            btnExport.Visible = false;//TODO
+            btnExport.Visible = true;
 #if ST_2_1
             this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #else
@@ -169,13 +169,33 @@ namespace TrailsPlugin.UI.Activity {
 
         void btnCopy_Click(object sender, System.EventArgs e)
         {
-            m_addMode = true;
-            this.btnCopy.Enabled = false;
+            if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_EditTrail_Copy, CommonResources.Text.ActionOk, CommonResources.Text.ActionCancel),
+                "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                m_addMode = true;
+                this.btnCopy.Enabled = false;
+            }
         }
 
         void btnExport_Click(object sender, System.EventArgs e)
         {
-            throw new System.NotImplementedException();
+            if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_EditTrail_Export, CommonResources.Text.ActionOk, CommonResources.Text.ActionCancel),
+                "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                DateTime startTime = DateTime.Now;
+                IActivity activity = PluginMain.GetApplication().Logbook.Activities.Add(startTime);
+                activity.GPSRoute = new GPSRoute();
+                activity.Name = m_TrailToEdit.Name;
+                activity.Notes += "Radius: " + m_TrailToEdit.Radius + "m";
+                const int lapLength = 60; //A constant time between points
+                for (int i = 0; i < m_TrailToEdit.TrailLocations.Count; i++)
+                {
+                    activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(m_TrailToEdit.TrailLocations[i].LatitudeDegrees, m_TrailToEdit.TrailLocations[i].LongitudeDegrees, 0));
+                    activity.Laps.Add(startTime.AddSeconds(i * lapLength), TimeSpan.FromSeconds(lapLength));
+                    activity.Laps[i].Rest = !m_TrailToEdit.TrailLocations[i].Required;
+                    activity.Laps[i].Notes = m_TrailToEdit.TrailLocations[i].Name;
+                }
+            }
         }
 
         private void EditTrail_Activated(object sender, System.EventArgs e)

@@ -271,6 +271,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit a copy of the Trail?.
+        /// </summary>
+        internal static string UI_Activity_EditTrail_Copy {
+            get {
+                return ResourceManager.GetString("UI_Activity_EditTrail_Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Double click the table to edit values..
         /// </summary>
         internal static string UI_Activity_EditTrail_EditRow {
@@ -285,6 +294,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_EditTrail_EditTrail {
             get {
                 return ResourceManager.GetString("UI_Activity_EditTrail_EditTrail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Trail as activity?.
+        /// </summary>
+        internal static string UI_Activity_EditTrail_Export {
+            get {
+                return ResourceManager.GetString("UI_Activity_EditTrail_Export", resourceCulture);
             }
         }
         

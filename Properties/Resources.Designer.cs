@@ -244,15 +244,6 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to TrailResult.
-        /// </summary>
-        internal static string TrailResultName {
-            get {
-                return ResourceManager.GetString("TrailResultName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Trails.
         /// </summary>
         internal static string TrailsName {

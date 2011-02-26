@@ -214,4 +214,16 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="HighScoreToInstall" xml:space="preserve">
     <value>Installera åtminstone version {0} av {1} får att HighScoreTrail.</value>
   </data>
+  <data name="Required" xml:space="preserve">
+    <value>Obligatorisk</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
+    <value>Editera en kopia av nuvarande trail?</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
+    <value>Exportera trail som aktivitet?</value>
+  </data>
+  <data name="UI_Activity_List_AddInBound" xml:space="preserve">
+    <value>Lägg till aktiviteter i trail område som resultat</value>
+  </data>
 </root>

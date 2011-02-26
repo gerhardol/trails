@@ -1,5 +1,21 @@
 #!/usr/bin/perl
 
+#Copyright (C) 2009 Mark Williams
+#Copyright (C) 2011 Gerhard Olsson
+
+#This library is free software; you can redistribute it and/or
+#modify it under the terms of the GNU Lesser General Public
+#License as published by the Free Software Foundation; either
+#version 3 of the License, or (at your option) any later version.
+#
+#This library is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#Lesser General Public License for more details.
+#
+#You should have received a copy of the GNU Lesser General Public
+#License along with this library. If not, see <http://www.gnu.org/licenses/>.
+
 use strict;
 use warnings FATAL => qw/all/;
 use Time::Local;
@@ -16,15 +32,23 @@ my$localcopy="Resources.xls";
 #my$spreadsheetURL='https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=tNZna7OU_2RlRYv5Iv_csgg';
 my$spreadsheetURL='http://spreadsheets.google.com/ccc?key=tNZna7OU_2RlRYv5Iv_csgg';
 my$sav="$spreadsheetURL$savArg";
+my$verbose=1;
+if(defined $ENV{VERBOSE})
+{
+  $verbose=$ENV{VERBOSE};
+}
 
+#"local" usage with .csv file requres only specing the file as first argument
 #Set name on file if Google access does not work
 #$spreadsheetURL="file:g:/Users/go/dev/gc/gps-running/Resources.csv";
 #$csvArg="";
+#$sav="";
 
 my$data = $ARGV[0] || ".";#"$spreadsheetURL$csvArg";
 my$root = $ARGV[1] || ".";
 my$visualdiff = $ARGV[2] || "";
 my$db;
+my$noTranslate="##NOTRANSLATE##";
 
 ##Debug: diff standard language differences
 if($visualdiff eq ".")
@@ -33,9 +57,32 @@ if($visualdiff eq ".")
   $visualdiff="$ENV{PROGRAMFILES}/KDiff3/kdiff3.exe"
 }
 
+#Special handling in testing the script
+my$testMode=0;
+if(defined $ENV{TEST_MODE})
+{
+  $testMode=$ENV{TEST_MODE};
+  $sav="";
+}
+
 my$csv;
 if($data ne ".")
 {
+  #File is likely local, add prefix
+  if(-f $data)
+  {
+    my$pwd = $ENV{PWD};
+    if ($data =~ /\w:/)
+    {
+      $pwd="";
+    }
+    else
+    {
+      $pwd =~ s%/cygdrive/(\w)%${1}:%;
+      $pwd = "$pwd/";
+    }
+    $data="file:$pwd$data";
+  }
   $csv = get($data);
 }
 else
@@ -54,7 +101,12 @@ else
   #Retrieve from Google Spreadsheet
   $data="$spreadsheetURL$csvArg";
   my$tfile="g_csv.tmp.$$";
-  `wget  --no-check-certificate -O $tfile "$data"`;
+  my$cmd="wget  --no-check-certificate -O $tfile \"$data\"";
+  if($verbose>0)
+  {
+    print "$cmd\n";
+  }
+  `$cmd`;
   open F, "<:encoding(UTF-8)", "$tfile";
   while(<F>) {$csv.=$_;}
   close F;
@@ -135,7 +187,7 @@ foreach my$sname (keys %{$db->{sections}})
     {
       if ($i==1)
       {
-      #First code is used for checks only
+        #First code is used for checks only
         if(!defined $d->{type})
         {
           if(!defined $section->{$d->{name}} ||
@@ -177,7 +229,10 @@ foreach my$sname (keys %{$db->{sections}})
         {
           my$o = dclone($d);
           $o->{value}[0] = $section->{$d->{name}}[$i];
-          push @{$res->{"data"}}, $o;
+          if($section->{$d->{name}}[$i] ne $noTranslate)
+          {
+            push @{$res->{"data"}}, $o;
+          }
         }
       }
     }
@@ -197,17 +252,20 @@ foreach my$sname (keys %{$db->{sections}})
         close RESX;
         if(-e $visualdiff)
         {
-          print "Executing: \"$visualdiff\" $spr_diff_file $resx_diff_file\n";
+          if($verbose>1)
+          {
+            print "Executing: \"$visualdiff\" $spr_diff_file $resx_diff_file\n";
+          }
           system("\"$visualdiff\" $spr_diff_file $resx_diff_file");
           unlink $spr_diff_file;
           unlink $resx_diff_file;
         }
         else
         {
-          print "Cannot find \"$visualdiff\" $spr_diff_file $resx_diff_file , keeping temp files\n\n";
+          print "Error: Cannot find \"$visualdiff\" $spr_diff_file $resx_diff_file , keeping temp files\n\n";
         }
       }
-      foreach my$j (keys %{$section})
+      foreach my$j (sort keys %{$section})
       {
         if($j ne "\$this.Text" &&
         !defined $xmlexists{$j})
@@ -218,22 +276,76 @@ foreach my$sname (keys %{$db->{sections}})
     }
     else
     {
+      #The codes to be written to resx
       my$code = $db->{codes}[$i];
       if (! ($code =~ /^(#|xx|comment|$)/))
       {
-        if($i==1) {$code="";}
-        else {$code.=".";}
-        (my$out = $sfile) =~ s/.resx$/.${code}resx/;
-        print "Writing: $out\n";
-        #print Dumper(@{$res->{"data"}});
-        open OUT, ">$out" or die "failed to create $out";
-        #Set binmode to allow wide characters in the csv
-        binmode OUT,":utf8";
-        print OUT '<?xml version="1.0" encoding="utf-8"?>',"\n";
-        my$txt=XMLout($sorter, $res, KeyAttr => {}, RootName => "root");
-        $txt=~s/\r\n/\n/g;
-        print OUT $txt;
-        close OUT or die "failed to close $out";
+        my$missing=0;
+        my$matching=0;
+        my$missingText="Info: No def for $code\n";
+        #check that references like {0} matches
+        foreach my$j (sort keys %{$section})
+        {
+          if($j ne "\$this.Text" &&
+            defined $xmlexists{$j} &&
+            defined $section->{$j})
+          {
+            if (!defined $section->{$j}[$i] ||
+              $section->{$j}[$i] eq "")
+            {
+              $missing++;
+              if($verbose>1)
+              {
+                $missingText.="\t$j";
+                if($verbose>9)
+                {
+                  $missingText.="\t$xmlexists{$j}[1]"
+                }
+                $missingText.="\n";
+              }
+            }
+            elsif($section->{$j}[$i] ne $noTranslate)
+            {
+              $matching++;
+              while($xmlexists{$j}[1] =~ /(\{\d+\})/g)
+              {
+                my$m=$1;
+                if ($section->{$j}[$i] !~ /\Q${m}\E/)
+                {
+                  print STDOUT "Error: Incorrect formatting for $code \"$j\", $m: $section->{$j}[$i] ($xmlexists{$j}[1])\n";
+                }
+              }
+            }
+          }
+        }
+ 
+        if ($matching==0)
+        {
+          print "Info: No translation for $code\n";
+        }
+        else
+        {
+          if($missing>0)
+          {
+            print $missingText;
+          }
+          if($i==1) {$code="";}
+          else {$code.=".";}
+          (my$out = $sfile) =~ s/.resx$/.${code}resx/;
+          if($verbose>0)
+          {
+            printf "Writing (strings:%d, missing:%d): $out\n", $matching, $missing;
+            #print Dumper(@{$res->{"data"}});
+          }
+          open OUT, ">$out" or die "failed to create $out";
+          #Set binmode to allow wide characters in the csv
+          binmode OUT,":utf8";
+          print OUT '<?xml version="1.0" encoding="utf-8"?>',"\n";
+          my$txt=XMLout($sorter, $res, KeyAttr => {}, RootName => "root");
+          $txt=~s/\r\n/\n/g;
+          print OUT $txt;
+          close OUT or die "failed to close $out";
+        }
       }
     }
   }    
@@ -243,8 +355,10 @@ my$out = XMLout($db, KeyAttr => {});
 $out =~ s%^<opt>%<?xml version="1.0" encoding="UTF-8" standalone="no" ?>%;
 $out =~ s%</opt>$%%;
 
-#print Dumper($db);
-
+if($verbose>99)
+{
+  print Dumper($db);
+}
 exit 0;
 
 sub ParseCSV

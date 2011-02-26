@@ -319,9 +319,6 @@ Make sure that {1} is installed.</value>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>
   </data>
-  <data name="TrailResultName" xml:space="preserve">
-    <value>TrailResult</value>
-  </data>
   <data name="square_red_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\square-red-plus.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -333,14 +330,11 @@ Make sure that {1} is installed.</value>
   </data>
   <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
     <value>Edit a copy of the Trail?</value>
-    <comment>new</comment>
   </data>
   <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
     <value>Export Trail as activity?</value>
-    <comment>new</comment>
   </data>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
     <value>Add InBound activities as results</value>
-    <comment>new</comment>
   </data>
 </root>

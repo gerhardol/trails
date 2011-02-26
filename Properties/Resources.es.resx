@@ -118,7 +118,8 @@ Agrege nuevos puntos presionando el botón agregar.
 
 Para seleccionar un segundo punto, Opirma CTRL, y de click en otra parte del sendero.
 Selecione los puntos necesario para hacer el sendero único.
-</value>
+
+To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Desea actualizar la localización de los putnos GPS del sendero
@@ -145,6 +146,8 @@ Cambiar este. Valor no modifica los senderos existentes.</value>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
     <value>Debe seleccionar un punto en el mapa.
 
-Para seleccionar un puento, solo de clik en el mapa.</value>
+Para seleccionar un puento, solo de clik en el mapa.
+
+To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
   </data>
 </root>

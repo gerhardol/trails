@@ -191,7 +191,8 @@ Per fare una copia dell'attività di riferimento corrente, seleziona Trail {0}, 
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Assicurarsi che {1} sia installato.</value>
+    <value>Problemi a comunicare con {0}.
+Assicurarsi che {1} sia installato.</value>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
     <comment>Matrix</comment>
@@ -231,8 +232,7 @@ Per fare una copia dell'attività di riferimento corrente, seleziona Trail {0}, 
     <value>Plugin HighScore</value>
   </data>
   <data name="HighScoreToInstall" xml:space="preserve">
-    <value>Installare almeno la versione {0} di {1} per avere HighScore Trail.
-Problemi a comunicare con {0}.</value>
+    <value>Installare almeno la versione {0} di {1} per avere HighScore Trail.</value>
   </data>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>

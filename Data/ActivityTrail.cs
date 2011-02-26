@@ -30,12 +30,13 @@ namespace TrailsPlugin.Data
     {
         private IList<IActivity> m_activities;
 		private Data.Trail m_trail;
-        private IList<Data.TrailResultWrapper> m_resultsListWrapper;
+        private IList<Data.TrailResultWrapper> m_resultsListWrapper = new List<TrailResultWrapper>();
         private IList<Data.TrailResult> m_resultsList = null;
         private TrailOrderStatus m_status;
         private IActivity m_resultActivity = null;
         //Counter for "no results"
-        public IDictionary<TrailOrderStatus, int> noResCount = new Dictionary<TrailOrderStatus, int>();
+        public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
+        public IList<IActivity> m_inBound = new List<IActivity>();
 
         public ActivityTrail(IList<IActivity> activities, Data.Trail trail)
         {
@@ -153,13 +154,25 @@ namespace TrailsPlugin.Data
                 tr.Sort();
             }
         }
+
+        public void AddInBoundResult()
+        {
+            foreach (IActivity activity in m_inBound)
+            {
+                if (activity.GPSRoute != null && activity.GPSRoute.Count > 1)
+                {
+                    TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1);
+                    m_resultsListWrapper.Add(result);
+                }
+            }
+        }
+
         public void CalcResults()
         {
-            if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
+            if (m_resultsListWrapper.Count == 0 || m_trail.TrailChanged(m_resultActivity))
             {
                 m_resultActivity = m_trail.ReferenceActivity;
 
-                m_resultsListWrapper = new List<TrailResultWrapper>();
                 IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
                 if (m_trail.HighScore > 0)
                 {
@@ -194,8 +207,9 @@ namespace TrailsPlugin.Data
                             }
                             else if (trailgps.Count > 0)
                             {
-                                if (IsInBounds)
+                                if (m_trail.IsInBounds(new List<IActivity>{activity}))
                                 {
+                                    m_inBound.Add(activity);
                                     IList<int> aMatch = new List<int>();
                                     int lastMatchInRadius = -1;
                                     int lastMatchPassBy = -1;
@@ -448,20 +462,20 @@ namespace TrailsPlugin.Data
                                     if (aMatch.Count > 0)
                                     {
                                         TrailOrderStatus t = TrailOrderStatus.InBoundMatchPartial;
-                                        if (!noResCount.ContainsKey(t))
+                                        if (!m_noResCount.ContainsKey(t))
                                         {
-                                            noResCount[t] = 0;
+                                            m_noResCount[t] = 0;
                                         }
-                                        noResCount[t]++;
+                                        m_noResCount[t]++;
                                     }
                                     else if (m_status >= TrailOrderStatus.InBoundNoCalc)
                                     {
                                         TrailOrderStatus t = TrailOrderStatus.InBound;
-                                        if (!noResCount.ContainsKey(t))
+                                        if (!m_noResCount.ContainsKey(t))
                                         {
-                                            noResCount[t] = 0;
+                                            m_noResCount[t] = 0;
                                         }
-                                        noResCount[t]++;
+                                        m_noResCount[t]++;
                                     }
                                 }
                                 //NotInBound is pruned prior to this
@@ -706,12 +720,21 @@ namespace TrailsPlugin.Data
                     name += " (" + t.ActivityCount + ")";
                 }
             }
-            else if ((t.Status == TrailOrderStatus.InBoundMatchPartial ||
-                t.Status == TrailOrderStatus.InBound || 
-                t.Status == TrailOrderStatus.NotInBound) &&
-                t.noResCount.ContainsKey(t.Status))
+            else if ((t.Status == TrailOrderStatus.InBoundMatchPartial) &&
+                t.m_noResCount.ContainsKey(t.Status))
             {
-                name += " (" + t.noResCount[t.Status] + ")";
+                name += " (" + t.m_noResCount[t.Status];
+                if (t.m_noResCount.ContainsKey(TrailOrderStatus.InBound))
+                {
+                    name += ", " + t.m_noResCount[TrailOrderStatus.InBound];
+                }
+                name += ")";
+            }
+            else if ((t.Status == TrailOrderStatus.InBound ||
+                t.Status == TrailOrderStatus.NotInBound) &&
+                t.m_noResCount.ContainsKey(t.Status))
+            {
+                name += " (" + t.m_noResCount[t.Status] + ")";
             }
             return name;
         }

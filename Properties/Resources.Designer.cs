@@ -379,6 +379,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add InBound activities as results.
+        /// </summary>
+        internal static string UI_Activity_List_AddInBound {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_AddInBound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced.
         /// </summary>
         internal static string UI_Activity_List_Advanced {

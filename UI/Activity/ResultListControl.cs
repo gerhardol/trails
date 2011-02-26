@@ -103,6 +103,7 @@ namespace TrailsPlugin.UI.Activity {
             this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
             this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
             this.markCommonStretchesMenuItem.Text = Properties.Resources.UI_Activity_List_URCommon;
+            this.addInBoundActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddInBound;
             this.RefreshColumns();
         }
         public void ThemeChanged(ITheme visualTheme)
@@ -716,8 +717,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshControlState();
             }
         }
-
-        void limitActivityMenuItem_Click(object sender, System.EventArgs e)
+       void limitActivityMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
             if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0)
@@ -731,6 +731,16 @@ namespace TrailsPlugin.UI.Activity {
                 m_view.SelectionProvider.SelectedItems = (List<IActivity>)aAct;
             }
 #endif
+       }
+
+       void addInBoundActivitiesMenuItem_Click(object sender, System.EventArgs e)
+        {
+            if (m_controller.CurrentActivityTrail != null)
+            {
+                m_controller.CurrentActivityTrail.AddInBoundResult();
+                m_page.RefreshData();
+                m_page.RefreshControlState();
+            }
         }
 
         void limitURMenuItem_Click(object sender, System.EventArgs e)

@@ -37,6 +37,7 @@
             this.limitURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectWithURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.markCommonStretchesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addInBoundActivitiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
@@ -139,7 +140,8 @@
             this.limitActivityMenuItem,
             this.limitURMenuItem,
             this.selectWithURMenuItem,
-            this.markCommonStretchesMenuItem});
+            this.markCommonStretchesMenuItem,
+            this.addInBoundActivitiesMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
@@ -179,6 +181,13 @@
             this.markCommonStretchesMenuItem.Text = "<Mark common stretches...";
             this.markCommonStretchesMenuItem.Click += new System.EventHandler(this.markCommonStretchesMenuItem_Click);
             // 
+            // addInBoundActivitiesMenuItem
+            // 
+            this.addInBoundActivitiesMenuItem.Name = "addInBoundActivitiesMenuItem";
+            this.addInBoundActivitiesMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.addInBoundActivitiesMenuItem.Text = "<addInBoundActivities...";
+            this.addInBoundActivitiesMenuItem.Click += new System.EventHandler(this.addInBoundActivitiesMenuItem_Click);
+            // 
             // ResultListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -209,6 +218,7 @@
         private System.Windows.Forms.ToolStripMenuItem limitURMenuItem;
         private System.Windows.Forms.ToolStripMenuItem markCommonStretchesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addInBoundActivitiesMenuItem;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
         private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();
     }

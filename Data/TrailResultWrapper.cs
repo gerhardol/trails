@@ -129,7 +129,7 @@ namespace TrailsPlugin.Data {
                 }
             }
         }
-        public bool RemoveChildren(IList<TrailResultWrapper> tn)
+        public bool RemoveChildren(IList<TrailResultWrapper> tn, bool invertSelection)
         {
             bool result = true;
             foreach (TrailResultWrapper tr in tn)

@@ -36,13 +36,18 @@ namespace TrailsPlugin.Data
         private IActivity m_resultActivity = null;
         //Counter for "no results"
         public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
-        public IList<IActivity> m_inBound = new List<IActivity>();
+        private IList<IActivity> m_inBound = new List<IActivity>();
+        private bool m_canAddInbound = true;
 
         public ActivityTrail(IList<IActivity> activities, Data.Trail trail)
         {
             m_activities = activities;
             m_trail = trail;
             m_status = TrailOrderStatus.NoInfo;
+            if (m_trail.Generated)
+            {
+                m_canAddInbound = false;
+            }
             if (m_trail.HighScore > 0)
             {
                 if(Integration.HighScore.HighScoreIntegrationEnabled)
@@ -155,8 +160,16 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public bool CanAddInbound
+        {
+            get
+            {
+                return m_canAddInbound;
+            }
+        }
         public void AddInBoundResult()
         {
+            m_canAddInbound = false;
             foreach (IActivity activity in m_inBound)
             {
                 if (activity.GPSRoute != null && activity.GPSRoute.Count > 1)
@@ -506,8 +519,25 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public void Remove(IList<TrailResultWrapper> atr)
+        public void Remove(IList<TrailResultWrapper> atr, bool invertSelection)
         {
+            IList<TrailResultWrapper> selected = atr;
+            if (invertSelection)
+            {
+                selected = new List<TrailResultWrapper>();
+                foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
+                {
+                    if (!atr.Contains(tr))
+                    {
+                        selected.Add(tr);
+                    }
+                }
+            }
+            if (invertSelection && selected.Count == m_resultsListWrapper.Count)
+            {
+                //Must keep at least one in "inverted"
+                return;
+            }
             //Needed?
             //foreach (TrailResult trr in m_resultsList)
             //{
@@ -515,9 +545,9 @@ namespace TrailsPlugin.Data
             //}
             foreach (TrailResultWrapper trr in m_resultsListWrapper)
             {
-                trr.RemoveChildren(atr);
+                trr.RemoveChildren(selected, invertSelection);
             }
-            foreach (TrailResultWrapper tr in atr)
+            foreach (TrailResultWrapper tr in selected)
             {
                 if (Results.Contains(tr.Result))
                 {
@@ -529,6 +559,7 @@ namespace TrailsPlugin.Data
                 }
             }
         }
+
         private static float checkPass(IGPSPoint r1, float d1, IGPSPoint r2, float d2, TrailGPSLocation trailp, float radius)
         {
             float factor = 0;

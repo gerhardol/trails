@@ -92,6 +92,7 @@
             this.summaryList.MouseLeave += new System.EventHandler(this.summaryList_MouseLeave);
             this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.selectedRow_DoubleClick);
             this.summaryList.MouseMove +=new System.Windows.Forms.MouseEventHandler(summaryList_MouseMove);
+            this.summaryList.KeyDown +=new System.Windows.Forms.KeyEventHandler(summaryList_KeyDown);
             // 
             // listMenu
             // 

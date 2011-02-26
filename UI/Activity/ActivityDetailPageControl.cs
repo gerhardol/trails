@@ -315,7 +315,10 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                         {
                             m.Click += new MouseEventHandler(mapPoly_Click);
-                            result.Add(m.key, m);
+                            if (!result.ContainsKey(m.key))
+                            {
+                                result.Add(m.key, m);
+                            }
                         }
                     }
                     m_layer.MarkedTrailRoutes = result;

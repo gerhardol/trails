@@ -25,6 +25,7 @@ use Data::Dumper;
 use XML::Simple;
 use Storable qw(dclone);
 use LWP::Simple;
+binmode STDOUT, ":encoding(UTF-8)";
 
 my$csvArg='&output=csv&gid=3';
 my$savArg='&output=xls';
@@ -282,7 +283,7 @@ foreach my$sname (keys %{$db->{sections}})
       {
         my$missing=0;
         my$matching=0;
-        my$missingText="Info: No def for $code\n";
+        my$missingText="";
         #check that references like {0} matches
         foreach my$j (sort keys %{$section})
         {
@@ -296,6 +297,10 @@ foreach my$sname (keys %{$db->{sections}})
               $missing++;
               if($verbose>1)
               {
+                if ($missingText eq "")
+                {
+                  $missingText="Info: No def for $code\n";
+                }
                 $missingText.="\t$j";
                 if($verbose>9)
                 {

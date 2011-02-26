@@ -725,7 +725,7 @@ namespace TrailsPlugin.Data {
             result.AllowMultipleAtSameTime = true;
             foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
             {
-                if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
                 {
                     DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                     DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
@@ -741,7 +741,7 @@ namespace TrailsPlugin.Data {
             {
                 try
                 {
-                    if (t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                    if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
                     {
                         DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                         DateTime d2 = refRes.getDateTimeFromElapsedResult(refRes.DistanceMetersTrack, t);

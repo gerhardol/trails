@@ -106,6 +106,7 @@ namespace TrailsPlugin.UI.Activity {
             this.addInBoundActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddInBound;
             this.RefreshColumns();
         }
+
         public void ThemeChanged(ITheme visualTheme)
         {
             m_visualTheme = visualTheme;
@@ -427,6 +428,95 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        void excludeSelectedResults(bool invertSelection)
+        {
+            if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0 &&
+                m_controller.CurrentActivityTrail.ResultTreeList != null)
+            {
+                IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
+                m_controller.CurrentActivityTrail.Remove(atr, invertSelection);
+                m_page.RefreshData();
+                m_page.RefreshControlState();
+            }
+        }
+        void copyTable()
+        {
+            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+        }
+
+        void selectSimilarSplitsChanged()
+        {
+            TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
+            selectSimilarSplits();
+            RefreshControlState();
+        }
+
+        void selectWithUR()
+        {
+            if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled)
+            {
+                try
+                {
+                    IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
+                        m_controller.ReferenceTrailResult.GPSRoute, null, null);
+                    if (similarActivities != null)
+                    {
+                        IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
+                        foreach (IActivity activity in similarActivities)
+                        {
+                            if (!m_controller.Activities.Contains(activity))
+                            {
+                                allActivities.Add(activity);
+                            }
+                        }
+                        ActivityTrail t = m_controller.CurrentActivityTrail;
+                        m_controller.Activities = allActivities;
+                        if (m_controller.CurrentActivityTrailDisplayed == null)
+                        {
+                            m_controller.CurrentActivityTrail = t;
+                        }
+                        m_page.RefreshData();
+                        m_page.RefreshControlState();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        void markCommonStretches()
+        {
+            if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled)
+            {
+                IList<IActivity> activities = new List<IActivity>();
+                foreach (TrailResultWrapper t in SelectedItemsWrapper)
+                {
+                    if (!activities.Contains(t.Result.Activity))
+                    {
+                        activities.Add(t.Result.Activity);
+                    }
+                }
+                IList<TrailResultMarked> aTrm = new List<TrailResultMarked>();
+                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = UniqueRoutes.GetCommonStretchesForActivity(m_controller.ReferenceActivity, activities, null);
+                if (commonStretches != null && commonStretches.Count > 0)
+                {
+                    foreach (TrailResult tr in this.SelectedItems)
+                    {
+                        if (m_controller.ReferenceActivity != tr.Activity &&
+                            commonStretches.ContainsKey(tr.Activity) &&
+                            commonStretches[tr.Activity] != null)
+                        {
+                            aTrm.Add(new TrailResultMarked(tr, commonStretches[tr.Activity][0].MarkedTimes));
+                        }
+                    }
+                }
+                m_page.MarkTrack(aTrm);
+                m_page.SetSelectedRegions(aTrm);
+            }
+        }
+
         /************************************************************/
         void summaryList_Click(object sender, System.EventArgs e)
         {
@@ -582,10 +672,36 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshChart();
             }
         }
+
+        void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                excludeSelectedResults(e.Modifiers == Keys.Shift);
+            }
+            else if (e.KeyCode == Keys.Space)
+            {
+                selectSimilarSplitsChanged();
+            }
+            else if (e.KeyCode == Keys.U)
+            {
+                selectWithUR();
+            }
+            else if (e.KeyCode == Keys.C && e.Modifiers == Keys.Control)
+            {
+                copyTable();
+            }
+            else if (e.KeyCode == Keys.C)
+            {
+                markCommonStretches();
+            }
+        }
+
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
         bool summaryListTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
         System.Drawing.Point summaryListCursorLocationAtMouseMove;
         TrailResultWrapper summaryListLastEntryAtMouseMove = null;
+
         void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             m_mouseClickArgs = e;
@@ -659,12 +775,16 @@ namespace TrailsPlugin.UI.Activity {
             }
             this.referenceResultMenuItem.Text = string.Format(
                 Properties.Resources.UI_Activity_List_ReferenceResult, currRes, refRes);
+            if (m_controller.CurrentActivityTrailDisplayed != null)
+            {
+                this.addInBoundActivitiesMenuItem.Enabled = m_controller.CurrentActivityTrailDisplayed.CanAddInbound;
+            }
             e.Cancel = false;
         }
 
         void copyTableMenu_Click(object sender, EventArgs e)
         {
-            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+            copyTable();
         }
 
         private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -701,23 +821,15 @@ namespace TrailsPlugin.UI.Activity {
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
         {
-            TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
-            selectSimilarSplits();
-            RefreshControlState();
+            selectSimilarSplitsChanged();
         }
 
         void excludeResultsMenuItem_Click(object sender, System.EventArgs e)
         {
-            if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0 &&
-                m_controller.CurrentActivityTrail.ResultTreeList!= null)
-            {
-                IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
-                m_controller.CurrentActivityTrail.Remove(atr);
-                m_page.RefreshData();
-                m_page.RefreshControlState();
-            }
+            excludeSelectedResults(false);
         }
-       void limitActivityMenuItem_Click(object sender, System.EventArgs e)
+        
+        void limitActivityMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
             if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0)
@@ -771,64 +883,14 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        void selectWithURMenuItem_Click(object sender, System.EventArgs e)
-        {
-            try
-            {
-                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                    m_controller.ReferenceTrailResult.GPSRoute, null, null);
-                if (similarActivities != null)
-                {
-                    IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
-                    foreach (IActivity activity in similarActivities)
-                    {
-                        if (!m_controller.Activities.Contains(activity))
-                        {
-                            allActivities.Add(activity);
-                        }
-                    }
-                    ActivityTrail t = m_controller.CurrentActivityTrail;
-                    m_controller.Activities = allActivities;
-                    if (m_controller.CurrentActivityTrailDisplayed == null)
-                    {
-                        m_controller.CurrentActivityTrail = t;
-                    }
-                    m_page.RefreshData();
-                    m_page.RefreshControlState();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         void markCommonStretchesMenuItem_Click(object sender, System.EventArgs e)
         {
-            IList<IActivity> activities = new List<IActivity>();
-            foreach (TrailResultWrapper t in SelectedItemsWrapper)
-            {
-                if (!activities.Contains(t.Result.Activity))
-                {
-                    activities.Add(t.Result.Activity);
-                }
-            }
-            IList<TrailResultMarked> aTrm = new List<TrailResultMarked>();
-            IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = UniqueRoutes.GetCommonStretchesForActivity(m_controller.ReferenceActivity, activities, null);
-            if (commonStretches != null && commonStretches.Count > 0)
-            {
-                foreach (TrailResult tr in this.SelectedItems)
-                {
-                    if (m_controller.ReferenceActivity != tr.Activity &&
-                        commonStretches.ContainsKey(tr.Activity) &&
-                        commonStretches[tr.Activity] != null)
-                    {
-                        aTrm.Add(new TrailResultMarked(tr, commonStretches[tr.Activity][0].MarkedTimes));
-                    }
-                }
-            }
-            m_page.MarkTrack(aTrm);
-            m_page.SetSelectedRegions(aTrm);
+            markCommonStretches();
         }
+        void selectWithURMenuItem_Click(object sender, System.EventArgs e)
+        {
+            selectWithUR();
+        }
+
     }
 }

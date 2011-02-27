@@ -135,6 +135,19 @@ Cambiar este. Valor no modifica los senderos existentes.</value>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
     <value>Presiona {0} para agregar puntos seleccionados al sendero actual , {1} para agregar nuevo sendero.</value>
   </data>
+  <data name="TrailPointsControlLayer" xml:space="preserve">
+    <value>Punto de sendero</value>
+  </data>
+  <data name="TrailChartsName" xml:space="preserve">
+    <value>Gráficas de senderos</value>
+  </data>
+  <data name="TrailName" xml:space="preserve">
+    <value>senderos</value>
+  </data>
+  <data name="ApplicationName" xml:space="preserve">
+    <comment>Name of application, displayed in GUI</comment>
+    <value>Plugin Trails (Senderos)</value>
+  </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <comment>unused</comment>
     <value>Ocultar Herramientas Gráficas</value>
@@ -143,11 +156,98 @@ Cambiar este. Valor no modifica los senderos existentes.</value>
     <comment>Same as STcore </comment>
     <value>Mostrar Herramientas Gráficas</value>
   </data>
+  <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
+    <value>Doble click en tabla para editar valores.</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
+    <comment>unused</comment>
+    <value>Ningun punto seleccionado en el mapa.
+
+Click  {0} para usar los punto sde vuelta, {1} para seleccionar los puntos GPS manualmente</value>
+  </data>
+  <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
+    <value>Limitar las actividades a las actividades seleccionadas en la lista</value>
+  </data>
+  <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
+    <value>Referencia resultado ({0}, actual: {1})</value>
+  </data>
+  <data name="UI_Activity_List_Splits" xml:space="preserve">
+    <value>Marcar otras subsecciones o vueltas en la lista</value>
+  </data>
+  <data name="UI_Activity_List_URLimit" xml:space="preserve">
+    <value>Limitar actividades con Unique Routes usando referencia {0}</value>
+  </data>
+  <data name="Trail_Reference_Name" xml:space="preserve">
+    <value>Actividad de referencia</value>
+  </data>
+  <data name="Trail_NoTrailSelected" xml:space="preserve">
+    <value>-- Selecciona sendero de la lista --</value>
+  </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
     <value>Debe seleccionar un punto en el mapa.
 
-Para seleccionar un puento, solo de clik en el mapa.
+Para seleccionar un punto, solo de clik en el mapa.
 
 To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
+  </data>
+  <data name="OtherPluginExceptionText" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Problema de  comunicación con {0}.
+Asegurese de que {1} esté instalado.</value>
+  </data>
+  <data name="OtherPluginVersion" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Detecteda la versión {0} de {1}.</value>
+  </data>
+  <data name="UI_Activity_List_Advanced" xml:space="preserve">
+    <value>Avanzado</value>
+  </data>
+  <data name="UI_Activity_List_URSelect" xml:space="preserve">
+    <value>Agrega actividades similares con plugin Unique Routes usando la referencia{0}</value>
+  </data>
+  <data name="UniqueRoutesCompatible" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Las actividades pueden ser filtradas por el plugin Unique Routes</value>
+  </data>
+  <data name="UniqueRoutesPluginName" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Plugin Unique Routes</value>
+  </data>
+  <data name="UniqueRoutesToInstall" xml:space="preserve">
+    <comment>Matrix</comment>
+    <value>Instala al menos la versión {0} de {1} para filtrar usando Unique Routes.</value>
+  </data>
+  <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
+    <value>Excluir resultados de la lista</value>
+  </data>
+  <data name="SetNameAtImport" xml:space="preserve">
+    <value>Establecer nombre al importar</value>
+  </data>
+  <data name="UI_Activity_List_URCommon" xml:space="preserve">
+    <value>Marcar extensiones comunes de Unique Routes</value>
+  </data>
+  <data name="HighScoreCompatible" xml:space="preserve">
+    <value>Un sendero de High Score puede ser generado</value>
+  </data>
+  <data name="HighScorePluginName" xml:space="preserve">
+    <value>Plugin HighScore</value>
+  </data>
+  <data name="HighScoreToInstall" xml:space="preserve">
+    <value>Instale al menos la versión {0} de {1} para acceder a Trails del plugin HighScore.</value>
+  </data>
+  <data name="HighScore_Trail" xml:space="preserve">
+    <value>HighScore</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Requerido</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
+    <value>Editar una copia del sendero</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
+    <value>Exportar sendero como actividad</value>
+  </data>
+  <data name="UI_Activity_List_AddInBound" xml:space="preserve">
+    <value>Añadir actividades de entrada como resultados</value>
   </data>
 </root>

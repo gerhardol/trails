@@ -188,7 +188,7 @@ Click  {0} para usar los punto sde vuelta, {1} para seleccionar los puntos GPS m
 
 Para seleccionar un punto, solo de clik en el mapa.
 
-To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
+Para hacer una copia de la actividad de referencia, seleccione sendero {0}, y haga click en el botón Editar</value>
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
     <comment>Matrix</comment>

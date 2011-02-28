@@ -141,6 +141,13 @@ Il cambiamento di questo valore non avrà effetto sui Trail esistenti.</value>
   <data name="TrailChartsName" xml:space="preserve">
     <value>Grafici di Trail</value>
   </data>
+  <data name="TrailName" xml:space="preserve">
+    <value>Trail</value>
+  </data>
+  <data name="ApplicationName" xml:space="preserve">
+    <comment>Name of application, displayed in GUI</comment>
+    <value>Trails Plugin</value>
+  </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <comment>unused</comment>
     <value>Nascondere gli strumenti del grafico</value>
@@ -236,5 +243,17 @@ Assicurarsi che {1} sia installato.</value>
   </data>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Richiesto</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
+    <value>Modificare una copia del Trail?</value>
+  </data>
+  <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
+    <value>Esportare il Trail come attività?</value>
+  </data>
+  <data name="UI_Activity_List_AddInBound" xml:space="preserve">
+    <value>Aggiungere le attività nella zona come risultati</value>
   </data>
 </root>

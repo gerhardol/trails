@@ -532,6 +532,19 @@ namespace TrailsPlugin.Data
                         selected.Add(tr);
                     }
                 }
+                //Exclude parents to selected
+                foreach (TrailResultWrapper tr in atr)
+                {
+                    if (tr.Parent != null)
+                    {
+                        TrailResultWrapper tr2 = tr.Parent as TrailResultWrapper;
+                        if (selected.Contains(tr2))
+                        {
+                            selected.Remove(tr2);
+                        }
+                    }
+                }
+
             }
             if (invertSelection && selected.Count == m_resultsListWrapper.Count)
             {

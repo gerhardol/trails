@@ -40,9 +40,10 @@
             this.ExpandSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
-            // trailSelector
+            // TrailSelector
             // 
             this.TrailSelector.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TrailSelector.Name = "TrailSelector";
             // 
             // ResultList
             // 

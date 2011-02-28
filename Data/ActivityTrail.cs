@@ -543,6 +543,8 @@ namespace TrailsPlugin.Data
             //{
             //    trr.RemoveChildren(atr[0].Result);
             //}
+            //This will not have any effect with invertSelection, as 'selected' contains
+            //complement to parents only
             foreach (TrailResultWrapper trr in m_resultsListWrapper)
             {
                 trr.RemoveChildren(selected, invertSelection);

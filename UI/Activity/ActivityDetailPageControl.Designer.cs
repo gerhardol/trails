@@ -27,8 +27,8 @@
             this.TrailSelector = new TrailSelectorControl();
             this.UpperSplitContainer = new System.Windows.Forms.SplitContainer();
             this.LowerSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.ResultList = new ResultListControl();
-            this.MultiCharts = new MultiChartsControl();
+            this.ResultList = new TrailsPlugin.UI.Activity.ResultListControl();
+            this.MultiCharts = new TrailsPlugin.UI.Activity.MultiChartsControl();
             this.ExpandSplitContainer = new System.Windows.Forms.SplitContainer();
             this.UpperSplitContainer.Panel1.SuspendLayout();
             this.UpperSplitContainer.Panel2.SuspendLayout();
@@ -44,9 +44,12 @@
             // 
             this.TrailSelector.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
-            // summaryListControl
+            // ResultList
             // 
             this.ResultList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ResultList.Name = "ResultList";
+            this.ResultList.Location = new System.Drawing.Point(0, 0);
+            this.ResultList.Margin = new System.Windows.Forms.Padding(0);
             // 
             // MultiCharts
             // 
@@ -54,7 +57,7 @@
             this.MultiCharts.Collapse += new System.EventHandler(MultiCharts_Collapse);
             this.MultiCharts.Expand += new System.EventHandler(btnExpand_Click);
             // 
-            // ActPageSplitContainer
+            // UpperSplitContainer
             // 
             this.UpperSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.UpperSplitContainer.Location = new System.Drawing.Point(0, 0);
@@ -63,13 +66,13 @@
             this.UpperSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             this.UpperSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             // 
-            // ActPageSplitContainer.Panel1
+            // UpperSplitContainer.Panel1
             // 
             this.UpperSplitContainer.Panel1.Controls.Add(this.TrailSelector);
             this.UpperSplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
             this.UpperSplitContainer.Panel1MinSize = 20;
             // 
-            // ActPageSplitContainer.Panel2
+            // UpperSplitContainer.Panel2
             // 
             this.UpperSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.UpperSplitContainer.Panel2.Controls.Add(this.LowerSplitContainer);
@@ -78,20 +81,22 @@
             this.UpperSplitContainer.SplitterDistance = 22;
             this.UpperSplitContainer.SplitterWidth = 1;
             this.UpperSplitContainer.TabIndex = 17;
-            //
+            // 
+            // LowerSplitContainer
+            // 
             this.LowerSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LowerSplitContainer.Location = new System.Drawing.Point(0, 27);
             this.LowerSplitContainer.Margin = new System.Windows.Forms.Padding(0);
             this.LowerSplitContainer.Name = "LowerSplitContainer";
             this.LowerSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // ActPageSplitContainer.Panel1
+            // LowerSplitContainer.Panel1
             // 
             this.LowerSplitContainer.Panel1.Controls.Add(this.ResultList);
             this.LowerSplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
             this.LowerSplitContainer.Panel1MinSize = 50;
             // 
-            // ActPageSplitContainer.Panel2
+            // LowerSplitContainer.Panel2
             // 
             this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);

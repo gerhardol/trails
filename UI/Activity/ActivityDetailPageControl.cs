@@ -88,15 +88,13 @@ namespace TrailsPlugin.UI.Activity {
 
 			this.InitializeComponent();
 			InitControls();
-#if !ST_2_1
-            this.ExpandSplitContainer.Panel2Collapsed = true;
-#endif
 		}
 
 		void InitControls()
         {
-
+#if !ST_2_1
             this.ExpandSplitContainer.Panel2Collapsed = true;
+#endif
 
             TrailSelector.SetControl(this, m_controller, m_view, m_layer);
             ResultList.SetControl(this, m_controller, m_view);
@@ -118,6 +116,7 @@ namespace TrailsPlugin.UI.Activity {
             this.ResultList.UICultureChanged(culture);
             this.MultiCharts.UICultureChanged(culture);
         }
+
         public void ThemeChanged(ITheme visualTheme)
         {
             m_visualTheme = visualTheme;

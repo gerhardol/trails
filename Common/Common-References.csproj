@@ -94,12 +94,12 @@
   -->
   <!-- references to ST API 3.0 -->
   <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
-    <Reference Include="Common.Data, Version=3.0.3769.30863, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Common.Data, Version=3.0.4068.25375, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Common.Visuals, Version=3.0.3769.30868, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Common.Visuals, Version=3.0.4068.25368, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
       <Private>False</Private>
@@ -163,7 +163,7 @@ set guid=$(PluginId)
 IF "%25guid%25"=="" GOTO END
 
 REM ST version, for plugin.xml file
-SET StVersion=3.0.3924
+SET StVersion=3.0.4068
 IF "$(StPluginVersion)"=="2" SET StVersion=2.1.3478
 
 REM 7-zip must be configured, hardcoded path used

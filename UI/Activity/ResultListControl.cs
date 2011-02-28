@@ -191,7 +191,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Set size, to not waste chart
                 int resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
                 this.summaryList.Height = this.summaryList.HeaderRowHeight +
-                    this.summaryList.DefaultRowHeight * resRows;
+                    20 * resRows + 15;
             }
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;

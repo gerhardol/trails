@@ -118,14 +118,17 @@ namespace TrailsPlugin.Data {
         private IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
         public void getSplits()
         {
-            IList<TrailResult> children = Result.getSplits();
-            if (children != null && children.Count > 1)
+            if (this.Result != null)
             {
-                foreach (TrailResult tr in children)
+                IList<TrailResult> children = this.Result.getSplits();
+                if (children != null && children.Count > 1)
                 {
-                    TrailResultWrapper tn = new TrailResultWrapper(this, tr);
-                    this.Children.Add(tn);
-                    m_children.Add(tn);
+                    foreach (TrailResult tr in children)
+                    {
+                        TrailResultWrapper tn = new TrailResultWrapper(this, tr);
+                        this.Children.Add(tn);
+                        m_children.Add(tn);
+                    }
                 }
             }
         }
@@ -194,7 +197,7 @@ namespace TrailsPlugin.Data {
         #region IComparable<Product> Members
         public int CompareTo(object obj)
         {
-            if (obj is TrailResultWrapper)
+            if (obj is TrailResultWrapper && this.Result != null && ((TrailResultWrapper)obj).Result != null)
             {
                 return this.Result.CompareTo(((TrailResultWrapper)obj).Result);
             }

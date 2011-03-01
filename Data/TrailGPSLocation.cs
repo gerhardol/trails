@@ -151,10 +151,10 @@ namespace TrailsPlugin.Data {
         }
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius, bool requiredCheck)
         {
-            float north = -180;
-            float south = +180;
-            float east = -90;
-            float west = 90;
+            float north = -90;
+            float south = +90;
+            float east = -180;
+            float west = 180;
             int noRequired = 0;
             const int minRequired = 1; //list.Count-trail.MaxRequiredMisses
             foreach (TrailGPSLocation g in list)
@@ -244,8 +244,8 @@ namespace TrailsPlugin.Data {
                     pos = float.NaN;
                 }
                 if (float.NaN == pos
-                    || subItemSelected == 1 && 180 < Math.Abs(pos)
-                    || subItemSelected == 2 && 90 < Math.Abs(pos)
+                    || subItemSelected == 1 && 90 < Math.Abs(pos)
+                    || subItemSelected == 2 && 180 < Math.Abs(pos)
                     )
                 {
                     valid = 0;

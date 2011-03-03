@@ -36,64 +36,40 @@ namespace TrailsPlugin.UI.MapLayers
 {
     public class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
-        private DateTime m_creationTime = DateTime.Now;
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 1)
         {
-            m_instances.Add(this);
+            Guid currentView = MapUtils.GetApplication().ActiveView.Id;
+            if (m_layers.ContainsKey(currentView))
+            {
+                m_layers[currentView].m_extraMapLayer = this;
+            }
+            else
+            {
+                m_layers[currentView] = this;
+            }
             //PluginMain.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
             //listener = new RouteItemsDataChangeListener(control);
             //listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
         }
-        //TODO: Hack, there is no known relation between view and route control/layer
+        //Note: There is an assumption of the relation between view and route control/layer
         //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
         public static TrailPointsLayer Instance(IView view)
         {
-            TrailPointsLayer result = m_instances[0];
-            if (view == null)
+            TrailPointsLayer result = null;
+            if (view != null && m_layers != null && m_layers.ContainsKey(view.Id))
             {
-                //No activity page, use daily view
-                return result;
+                result = m_layers[view.Id];
             }
-            string viewType = view.GetType().FullName;
-
-            if (m_instances == null || m_instances.Count == 0)
+            else if (m_layers.Count > 0)
             {
-                //error, will likely give exceptions later
-                return null;
-            }
-            else if (viewType.EndsWith(".DailyActivityView.MainView"))
-            {
-                result = m_instances[0]; 
-            }
-            else if ((viewType.EndsWith(".ActivityReportDetailsPage") ||
-                viewType.EndsWith(".ReportsView.MainView"))
-                && m_instances.Count > 1)
-            {
-                for (int i = 1; i < m_instances.Count - 1; i++)
+                foreach (TrailPointsLayer l in m_layers.Values)
                 {
-                    if (m_instances[i + 1].m_creationTime.Subtract(m_instances[i].m_creationTime).TotalSeconds < 1)
-                    {
-                        result = m_instances[i];
-                        result.m_reportMapInstance = i + 1;
-                    }
+                    //Just any layer - the first should be the best
+                    result = l;
+                    break;
                 }
             }
-            //    if IRouteSettings have overlays
-            //else if (viewType.EndsWith("RouteView.MainView")
-            //    && m_instances.Count > 1)
-            //{
-            //    if (m_instances.Count <= 2)
-            //    {
-            //        result = m_instances[1];
-            //    }
-            //    else if (m_instances.Count == 4)
-            //    {
-            //        result = m_instances[3];
-            //    }
-            //}
-
-            //If we get here, this is really an error. Do not throw it in the user's face right now
             return result;
         }
 
@@ -200,10 +176,10 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     this.MapControl.SetLocation(area.Center,
                     this.MapControl.ComputeZoomToFit(area));
-                    if (m_reportMapInstance >= 0)
+                    if (m_extraMapLayer != null)
                     {
-                        m_instances[m_reportMapInstance].MapControl.SetLocation(area.Center,
-                        m_instances[m_reportMapInstance].MapControl.ComputeZoomToFit(area));
+                        m_extraMapLayer.MapControl.SetLocation(area.Center,
+                        m_extraMapLayer.MapControl.ComputeZoomToFit(area));
                     }
                 }
             }
@@ -446,15 +422,15 @@ namespace TrailsPlugin.UI.MapLayers
             MapControl.AddOverlays(addedOverlays);
             pointOverlays = newPointOverlays;
             routeOverlays = newRouteOverlays;
-            if (m_reportMapInstance >= 0)
+            if (m_extraMapLayer != null)
             {
                 try
                 {
                     //Remove overlays are not working properly, the Map is not very usable
-                    m_instances[m_reportMapInstance].MapControl.AddOverlays(addedOverlays);
+                    m_extraMapLayer.MapControl.AddOverlays(addedOverlays);
                 }catch(Exception){}
-                m_instances[m_reportMapInstance].pointOverlays = newPointOverlays;
-                m_instances[m_reportMapInstance].routeOverlays = newRouteOverlays;
+                m_extraMapLayer.pointOverlays = newPointOverlays;
+                m_extraMapLayer.routeOverlays = newRouteOverlays;
             }
         }
 
@@ -464,9 +440,9 @@ namespace TrailsPlugin.UI.MapLayers
             pointOverlays.Clear();
             MapControl.RemoveOverlays(routeOverlays.Values);
             routeOverlays.Clear();
-            if (m_reportMapInstance >= 0)
+            if (m_extraMapLayer != null)
             {
-                m_instances[m_reportMapInstance].ClearOverlays();
+                m_extraMapLayer.ClearOverlays();
             }
         }
 
@@ -483,8 +459,8 @@ namespace TrailsPlugin.UI.MapLayers
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
         private float m_highlightRadius;
         private bool _showPage;
-        private int m_reportMapInstance = -1;
-        private static IList<TrailPointsLayer> m_instances = new List<TrailPointsLayer>(3);
+        private static IDictionary<Guid, TrailPointsLayer> m_layers = new Dictionary<Guid, TrailPointsLayer>();
+        private TrailPointsLayer m_extraMapLayer = null;
     }
 }
 #endif

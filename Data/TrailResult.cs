@@ -381,11 +381,12 @@ namespace TrailsPlugin.Data {
             return getElapsedWithoutPauses(entryTime);
         }
 
-        private DateTime getTimeWithPauses(ITimeValueEntry<float> elapsed)
-        {
-            return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
-                this.Activity.StartTime, TimeSpan.FromSeconds(elapsed.ElapsedSeconds), Pauses);
-        }
+        //private DateTime getTimeWithPauses(ITimeValueEntry<float> elapsed)
+        //{
+        //    //Note: Uses the Activity.StartTime, should be related to the track time
+        //    return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+        //        this.Activity.StartTime, TimeSpan.FromSeconds(elapsed.ElapsedSeconds), Pauses);
+        //}
 
         /*********************************************/
         private bool includeStopped()

@@ -74,5 +74,19 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
     }
+
+    static class MapUtils
+    {
+        public static IApplication GetApplication()
+        {
+#if GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY||GPSRUNNING_HIGHSCORE||GPSRUNNING_PERFORMANCEPREDICTOR
+            return GpsRunningPlugin.Plugin.GetApplication();
+#elif MATRIXPLUGIN
+            return MatrixPlugin.MatrixPlugin.GetApplication();
+#else // TRAILSPLUGIN
+            return PluginMain.GetApplication();
+#endif
+        }
+    }
 }
 #endif

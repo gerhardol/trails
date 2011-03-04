@@ -61,7 +61,7 @@
             // 
             // summaryList
             // 
-            this.summaryList.AutoScroll = true;
+            this.summaryList.AutoScroll = false;
             this.summaryList.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.summaryList.BackColor = System.Drawing.Color.Transparent;
             this.summaryList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;

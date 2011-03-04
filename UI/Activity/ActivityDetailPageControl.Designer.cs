@@ -96,6 +96,7 @@
             this.LowerSplitContainer.Panel1.Controls.Add(this.ResultList);
             this.LowerSplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
             this.LowerSplitContainer.Panel1MinSize = 50;
+            this.LowerSplitContainer.Panel1.AutoScroll = true;
             // 
             // LowerSplitContainer.Panel2
             // 

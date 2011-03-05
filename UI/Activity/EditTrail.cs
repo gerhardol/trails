@@ -317,7 +317,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             float result;
             result = (float)UnitUtil.Elevation.Parse(Radius.Text);
-            if (result > 0)
+            if (!float.IsNaN(result) && result > 0)
             {
                 m_TrailToEdit.Radius = result;
             }

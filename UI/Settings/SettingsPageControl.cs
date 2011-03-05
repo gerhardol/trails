@@ -66,7 +66,7 @@ namespace TrailsPlugin.UI.Settings {
 		private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {
 			float result;
             result = (float)UnitUtil.Elevation.Parse(txtDefaultRadius.Text);
-            if (result > 0)
+            if (!float.IsNaN(result) && result > 0)
             {
                 Data.Settings.DefaultRadius = result;
             }

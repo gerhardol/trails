@@ -27,6 +27,7 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.GPS;
 using TrailsPlugin.Data;
 using TrailsPlugin.UI.MapLayers;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class EditTrail : Form {
@@ -310,12 +311,12 @@ namespace TrailsPlugin.UI.Activity {
 
         private void presentRadius()
         {
-            Radius.Text = Utils.Units.ElevationToString(m_TrailToEdit.Radius, "u");
+            Radius.Text = UnitUtil.Elevation.ToString(m_TrailToEdit.Radius, "u");
         }
         private void Radius_LostFocus(object sender, System.EventArgs e)
         {
             float result;
-            result = Utils.Units.ParseElevation(Radius.Text);
+            result = (float)UnitUtil.Elevation.Parse(Radius.Text);
             if (result > 0)
             {
                 m_TrailToEdit.Radius = result;

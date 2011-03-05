@@ -18,6 +18,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data {
     class TrailResultLabelProvider : TreeList.DefaultLabelProvider
@@ -69,13 +70,13 @@ namespace TrailsPlugin.Data {
                     }
                     return date + row.StartTime.ToString();
                 case TrailResultColumnIds.StartDistance:
-                    return Utils.Units.DistanceToString(row.StartDist, "");
+                    return UnitUtil.Distance.ToString(row.StartDist, "");
                 case TrailResultColumnIds.EndTime:
 					return row.EndTime.ToString();
 				case TrailResultColumnIds.Duration:
 					return Utils.Text.ToString(row.Duration);
 				case TrailResultColumnIds.Distance:
-					return Utils.Units.DistanceToString(row.Distance, "");
+					return UnitUtil.Distance.ToString(row.Distance, "");
 				case TrailResultColumnIds.AvgCadence:
 					return row.AvgCadence.ToString("0.0");
 				case TrailResultColumnIds.AvgHR:
@@ -83,7 +84,7 @@ namespace TrailsPlugin.Data {
 				case TrailResultColumnIds.MaxHR:
 					return row.MaxHR.ToString("0");
 				case TrailResultColumnIds.ElevChg:
-                    return (row.ElevChg > 0 ? "+" : "") + Utils.Units.ElevationToString(row.ElevChg, "");
+                    return (row.ElevChg > 0 ? "+" : "") + UnitUtil.Elevation.ToString(row.ElevChg, "");
 				case TrailResultColumnIds.AvgPower:
 					return row.AvgPower.ToString("0.0");
 				case TrailResultColumnIds.AvgGrade:

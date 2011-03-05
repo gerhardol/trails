@@ -24,6 +24,7 @@ using System.ComponentModel;
 using System.Text;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 {
@@ -58,7 +59,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     if (m_Trail.Trail.HighScore > 0)
                     {
                         result += " (" +
-                            TrailsPlugin.Utils.Units.DistanceToString(m_TrailResult.Distance, "u") + ")";
+                            UnitUtil.Distance.ToString(m_TrailResult.Distance, "u") + ")";
                     }
                     else
                     {

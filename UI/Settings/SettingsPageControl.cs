@@ -26,6 +26,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.Settings {
 	public partial class SettingsPageControl : UserControl {
@@ -36,7 +37,7 @@ namespace TrailsPlugin.UI.Settings {
 
         private void presentSettings()
         {
-            txtDefaultRadius.Text = Utils.Units.ElevationToString(Data.Settings.DefaultRadius, "u");
+            txtDefaultRadius.Text = UnitUtil.Elevation.ToString(Data.Settings.DefaultRadius, "u");
             txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
         }
         public void ThemeChanged(ITheme visualTheme)
@@ -64,7 +65,7 @@ namespace TrailsPlugin.UI.Settings {
 
 		private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {
 			float result;
-            result = Utils.Units.ParseElevation(txtDefaultRadius.Text);
+            result = (float)UnitUtil.Elevation.Parse(txtDefaultRadius.Text);
             if (result > 0)
             {
                 Data.Settings.DefaultRadius = result;

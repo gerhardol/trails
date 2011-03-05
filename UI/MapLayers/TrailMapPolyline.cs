@@ -30,6 +30,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using TrailsPlugin.Data;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.MapLayers
 {
@@ -51,7 +52,7 @@ namespace TrailsPlugin.UI.MapLayers
 
         //Complete trail
         public TrailMapPolyline(TrailResult tr)
-            : this(tr.GpsPoints(), MapUtils.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr)
+            : this(tr.GpsPoints(), UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr)
         { }
 
         //Marked part of a track
@@ -60,7 +61,7 @@ namespace TrailsPlugin.UI.MapLayers
             IList<TrailMapPolyline> results = new List<TrailMapPolyline>();
             foreach (IList<IGPSPoint> gp in tr.GpsPoints(sel))
             {
-                results.Add(new TrailMapPolyline(gp, MapUtils.GetApplication().SystemPreferences.RouteSettings.RouteWidth * 2, MarkedColor(tr.TrailColor), tr, "m" + results.Count));
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth * 2, MarkedColor(tr.TrailColor), tr, "m" + results.Count));
             }
             return results;
         }

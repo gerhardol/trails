@@ -31,6 +31,7 @@ using ZoneFiveSoftware.Common.Visuals.Mapping;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using TrailsPlugin.Data;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.MapLayers
 {
@@ -39,7 +40,7 @@ namespace TrailsPlugin.UI.MapLayers
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)
             : base(provider, control, 1)
         {
-            Guid currentView = MapUtils.GetApplication().ActiveView.Id;
+            Guid currentView = UnitUtil.GetApplication().ActiveView.Id;
             if (m_layers.ContainsKey(currentView))
             {
                 m_layers[currentView].m_extraMapLayer = this;
@@ -48,10 +49,11 @@ namespace TrailsPlugin.UI.MapLayers
             {
                 m_layers[currentView] = this;
             }
-            //PluginMain.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
+            //UnitUtil.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
             //listener = new RouteItemsDataChangeListener(control);
             //listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
         }
+
         //Note: There is an assumption of the relation between view and route control/layer
         //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
         public static TrailPointsLayer Instance(IView view)

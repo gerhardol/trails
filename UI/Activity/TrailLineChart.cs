@@ -38,6 +38,7 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
 using TrailsPlugin.Data;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class TrailLineChart : UserControl {
@@ -347,8 +348,8 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<DateTime>(
-                                tr.getDateTimeFromDistResult(Utils.Units.SetDistance(at[0], m_refTrailResult.Activity)),
-                                tr.getDateTimeFromDistResult(Utils.Units.SetDistance(at[1], m_refTrailResult.Activity))));
+                                tr.getDateTimeFromDistResult(UnitUtil.Distance.ConvertTo(at[0], m_refTrailResult.Activity)),
+                                tr.getDateTimeFromDistResult(UnitUtil.Distance.ConvertTo(at[1], m_refTrailResult.Activity))));
                         }
                     }
                     results.Add(new Data.TrailResultMarked(tr, t));
@@ -554,8 +555,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
             //distance is for result, then to display units
-            x1 = Utils.Units.GetDistance(t1, m_refTrailResult.Activity);
-            x2 = Utils.Units.GetDistance(t2, m_refTrailResult.Activity);
+            x1 = (float)UnitUtil.Distance.ConvertFrom(t1, m_refTrailResult.Activity);
+            x2 = (float)UnitUtil.Distance.ConvertFrom(t2, m_refTrailResult.Activity);
             return new float[] { x1, x2 };
         }
 
@@ -724,7 +725,7 @@ namespace TrailsPlugin.UI.Activity {
                                 //Debug.Assert(distanceTrack.Count == graphPoints.Count);
                                 for (int j = 0; j < distanceTrack.Count; ++j)
                                 {
-                                    float distanceValue = Utils.Units.GetDistance(distanceTrack[j].Value, m_refTrailResult.Activity);
+                                    float distanceValue = (float)UnitUtil.Distance.ConvertFrom(distanceTrack[j].Value, m_refTrailResult.Activity);
                                     if (j < graphPoints.Count)
                                     {
                                         ITimeValueEntry<float> entry = graphPoints[j];
@@ -768,7 +769,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            a = new AxisMarker(Utils.Units.GetDistance(
+                            a = new AxisMarker((float)UnitUtil.Distance.ConvertFrom(
                                 trailPointResult.getDistResult(t), trailPointResult.Activity), icon);
                         }
                         a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
@@ -796,7 +797,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             MainChart.XAxis.Formatter = new Formatter.General();
                             MainChart.XAxis.Label = CommonResources.Text.LabelDistance + " (" +
-                                                    Utils.Units.GetDistanceLabel(activity) + ")";
+                                                    UnitUtil.Distance.LabelAbbrAct(activity) + ")";
                             break;
                         }
                     case XAxisValue.Time:
@@ -832,7 +833,7 @@ namespace TrailsPlugin.UI.Activity {
                     case LineChartTypes.Elevation:
                         {
                             MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
-                                                       Utils.Units.GetElevationLabel(activity) + ")";
+                                                       UnitUtil.Elevation.LabelAbbrAct(activity) + ")";
                             break;
                         }
                     case LineChartTypes.HeartRateBPM:
@@ -856,14 +857,14 @@ namespace TrailsPlugin.UI.Activity {
                     case LineChartTypes.Speed:
                         {
                             MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" +
-                                                    Utils.Units.GetSpeedLabel(activity) + ")";
+                                                    UnitUtil.Speed.LabelAbbrAct(activity) + ")";
                             break;
                         }
                     case LineChartTypes.Pace:
                         {
                             MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
                             MainChart.YAxis.Label = CommonResources.Text.LabelPace + " (" +
-                                                    Utils.Units.GetPaceLabel(activity) + ")";
+                                                    UnitUtil.Speed.LabelAbbrAct(activity) + ")";
                             break;
                         }
                     case LineChartTypes.DiffTime:
@@ -877,7 +878,7 @@ namespace TrailsPlugin.UI.Activity {
 
                             MainChart.YAxis.Formatter = new Formatter.General();
                             MainChart.YAxis.Label = CommonResources.Text.LabelDistance + " (" +
-                                                    Utils.Units.GetDistanceLabel(activity) + ")";
+                                                    UnitUtil.Distance.LabelAbbrAct(activity) + ")";
                             break;
                         }
                     default:
@@ -904,7 +905,7 @@ namespace TrailsPlugin.UI.Activity {
 						// Value is in meters so convert to the right unit
 						track = new NumericTimeDataSeries();
 						foreach (ITimeValueEntry<float> entry in tempResult) {
-                            float temp = Utils.Units.GetElevation(entry.Value, m_refTrailResult.Activity); 
+                            float temp = (float)UnitUtil.Elevation.ConvertFrom(entry.Value, m_refTrailResult.Activity); 
 
 							track.Add(tempResult.EntryDateTime(entry), (float)temp);
 						}
@@ -982,7 +983,7 @@ namespace TrailsPlugin.UI.Activity {
                         track = new NumericTimeDataSeries();
                         foreach (ITimeValueEntry<float> entry in tempResult)
                         {
-                            track.Add(tempResult.EntryDateTime(entry), Utils.Units.GetDistance(entry.Value,m_refTrailResult.Activity));
+                            track.Add(tempResult.EntryDateTime(entry), (float)UnitUtil.Distance.ConvertFrom(entry.Value,m_refTrailResult.Activity));
                         }
                         break;
                     }

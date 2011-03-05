@@ -25,6 +25,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
+using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data {
     public class TrailResult : ITrailResult, IComparable
@@ -579,7 +580,7 @@ namespace TrailsPlugin.Data {
 		}
 		public float AvgSpeed {
 			get {
-                return Utils.Units.GetSpeed(this.Distance / this.Duration.TotalSeconds, m_activity, Speed.Units.Speed);
+                return (float)UnitUtil.Speed.ConvertFrom(this.Distance / this.Duration.TotalSeconds, m_activity);
             }
 		}
 		public float FastestSpeed {
@@ -590,7 +591,7 @@ namespace TrailsPlugin.Data {
 		public double AvgPace {
 			get {
                 //Note: Using PaceTrack.Avg will give bad values if a track has slow parts
-                return Utils.Units.GetSpeed(this.Distance / this.Duration.TotalSeconds, m_activity, Speed.Units.Pace); 
+                return (float)UnitUtil.Pace.ConvertFrom(this.Distance / this.Duration.TotalSeconds, m_activity); 
 			}
 		}
 		public double FastestPace {
@@ -677,7 +678,7 @@ namespace TrailsPlugin.Data {
 						ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
 						if (value != null)
                         {
-                            float speed = Utils.Units.GetSpeed(value.Value, m_activity, Speed.Units.Speed);
+                            float speed = (float)UnitUtil.Speed.ConvertFrom(value.Value, m_activity);
                             m_speedTrack.Add(time, speed);
 						}
 					}
@@ -698,7 +699,7 @@ namespace TrailsPlugin.Data {
                         ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
                         if (value != null)
                         {
-                            float pace = Utils.Units.GetSpeed(value.Value, m_activity, Speed.Units.Pace);
+                            float pace = (float)UnitUtil.Pace.ConvertFrom(value.Value, m_activity);
                             if (pace != float.NaN)
                             {
                                 m_paceTrack.Add(time, pace);
@@ -995,7 +996,7 @@ namespace TrailsPlugin.Data {
 
         string ITrailResult.Distance
         {
-            get { return Utils.Units.DistanceToString(Distance, ""); }
+            get { return UnitUtil.Distance.ToString(Distance, ""); }
         }
 
         IDistanceDataTrack ITrailResult.DistanceMetersTrack
@@ -1010,7 +1011,7 @@ namespace TrailsPlugin.Data {
 
         string ITrailResult.ElevChg
         {
-            get { return (ElevChg > 0 ? "+" : "") + Utils.Units.ElevationToString(ElevChg, ""); }
+            get { return (ElevChg > 0 ? "+" : "") + UnitUtil.Elevation.ToString(ElevChg, ""); }
         }
 
         INumericTimeDataSeries ITrailResult.ElevationMetersTrack

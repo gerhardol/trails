@@ -71,17 +71,6 @@ namespace TrailsPlugin.Controller
             }
         }
 
-        public IActivity SingleActivity {
-            get
-            {
-                if (m_activities != null && m_activities.Count == 1)
-                {
-                    return m_activities[0];
-                }
-                return null;
-			}
-		}
-
         //Used when no calculation is forced, ie displaying
         public ActivityTrail CurrentActivityTrailDisplayed
         {

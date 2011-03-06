@@ -84,29 +84,43 @@ namespace TrailsPlugin.Data
             this.Activity = activity;
         }
 
+        //SelectedDistances is in Activity without pauses distance
+        //Add SelectedTime instead
         public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelection
-            (IList<IItemTrackSelectionInfo> selected, IActivity activity)
+            (IList<IItemTrackSelectionInfo> selected, IList<IActivity> activities)
         {
-            //SelectedDistances is in Activity without pauses distance
-            //Add SelectedTime instead
-            if (selected.Count == 0)
+            if (selected.Count == 0 || activities == null)
             {
+                //Do not adjust selection
                 return selected;
             }
-            IDistanceDataTrack m_activityUnpausedDistanceMetersTrack =
-                ActivityInfoCache.Instance.GetInfo(activity).ActualDistanceMetersTrack;
             for(int i = 0; i<selected.Count; i++)
             {
-                TrailsItemTrackSelectionInfo tmpSel = new TrailsItemTrackSelectionInfo();
-                tmpSel.SetFromSelection(selected[i], activity);
-                if (selected[i].SelectedDistance != null)
+                IActivity activity = null;
+                foreach(IActivity a in activities)
                 {
-                    tmpSel.SelectedTime = new ValueRange<DateTime>(
-                            m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
-                            m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper));
-                    tmpSel.SelectedDistance = null;
+                    //In ST3.0.4068 (at least) only one 
+                    if (selected[i].ItemReferenceId == a.ReferenceId)
+                    {
+                        activity = a;
+                        break;
+                    }
                 }
-                selected[i] = tmpSel;
+                if (activity != null)
+                {
+                    IDistanceDataTrack m_activityUnpausedDistanceMetersTrack =
+                        ActivityInfoCache.Instance.GetInfo(activity).ActualDistanceMetersTrack;
+                    TrailsItemTrackSelectionInfo tmpSel = new TrailsItemTrackSelectionInfo();
+                    tmpSel.SetFromSelection(selected[i], activity);
+                    if (selected[i].SelectedDistance != null)
+                    {
+                        tmpSel.SelectedTime = new ValueRange<DateTime>(
+                                m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
+                                m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper));
+                        tmpSel.SelectedDistance = null;
+                    }
+                    selected[i] = tmpSel;
+                }
             }
             return selected;
         }

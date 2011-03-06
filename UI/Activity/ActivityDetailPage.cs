@@ -65,9 +65,6 @@ namespace TrailsPlugin.UI.Activity {
             }
 		}
 #endif
-        private IList<IActivity> m_activities = new List<IActivity>();
-		private ActivityDetailPageControl m_control = null;
-
 		public Control CreatePageControl()
         {
 			if (m_control == null) {				
@@ -176,6 +173,8 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
         private IDailyActivityView m_view = null;
 #endif
+        private IList<IActivity> m_activities = new List<IActivity>();
+        private ActivityDetailPageControl m_control = null;
         private IList<string> menuPath = null;
         private bool menuEnabled = true;
         private bool menuVisible = true;

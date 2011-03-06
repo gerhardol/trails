@@ -142,15 +142,16 @@ namespace TrailsPlugin.UI.Activity {
 
 
         /************************************************************/
-		private void btnAdd_Click(object sender, EventArgs e) {
-
+		private void btnAdd_Click(object sender, EventArgs e)
+        {
+            //xxx single activity use
             int countGPS = 0;
 #if ST_2_1
 			IMapControl mapControl = m_layer.MapControl;
 			ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
-            IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
+            IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities);
 #endif
             countGPS = selectedGPS.Count;
             if (countGPS > 0)
@@ -187,7 +188,7 @@ namespace TrailsPlugin.UI.Activity {
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
             IList<IItemTrackSelectionInfo> selectedGPS = (IList<IItemTrackSelectionInfo>)
-                        TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_controller.SingleActivity);
+                        TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities);
 #endif
             countGPS = selectedGPS.Count;
             if (countGPS > 0 && !m_controller.CurrentActivityTrail.Trail.Generated)
@@ -219,11 +220,22 @@ namespace TrailsPlugin.UI.Activity {
         /*************************************************************************************************************/
 //ST3
         //TODO: Rewrite, using IItemTrackSelectionInfo help functions
-        IList<TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di)
+        IList<TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             ITimeValueEntry<IGPSPoint> p = null;
-            if (null != m_controller.SingleActivity && null != m_controller.SingleActivity.GPSRoute)
+
+            IActivity activity = null;
+            foreach (IActivity a in m_page.ViewActivities)
+            {
+                //In ST3.0.4068 at least only one 
+                if (id == a.ReferenceId)
+                {
+                    activity = a;
+                    break;
+                }
+            }
+            if (null != activity && null != activity.GPSRoute)
             {
                 DateTime d = DateTime.MaxValue;
                 if (null != ts)
@@ -232,17 +244,17 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    //Normally, ST is selecting by distance, this common path
+                    //Normally, ST is selecting by distance, this is the common path
                     if (null != di &&
                         null != m_controller.ReferenceTrailResult &&
-                        m_controller.ReferenceTrailResult.Activity == m_controller.SingleActivity)
+                        m_controller.ReferenceTrailResult.Activity == activity)
                     {
                         d = m_controller.ReferenceTrailResult.getDateTimeFromDistActivity(di.Lower);
                     }
                 }
                 if (d != DateTime.MaxValue)
                 {
-                    p = m_controller.SingleActivity.GPSRoute.GetInterpolatedValue(d);
+                    p = activity.GPSRoute.GetInterpolatedValue(d);
                 }
             }
             if (null != p)
@@ -265,7 +277,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     foreach (IValueRange<DateTime> ts in tm)
                     {
-                        result2 = Trail.MergeTrailLocations(result2, getGPS(ts, null));
+                        result2 = Trail.MergeTrailLocations(result2, getGPS(ts, null, aSelectGPS[i].ItemReferenceId));
                     }
                 }
                 if (result2.Count == 0)
@@ -276,13 +288,13 @@ namespace TrailsPlugin.UI.Activity {
 
                         foreach (IValueRange<double> td1 in td)
                         {
-                            result2 = Trail.MergeTrailLocations(result2, getGPS(null, td1));
+                            result2 = Trail.MergeTrailLocations(result2, getGPS(null, td1, aSelectGPS[i].ItemReferenceId));
                         }
                     }
                     if (result2.Count == 0)
                     {
                         //Selected
-                        result2 = getGPS(selectGPS.SelectedTime, selectGPS.SelectedDistance);
+                        result2 = getGPS(selectGPS.SelectedTime, selectGPS.SelectedDistance, aSelectGPS[i].ItemReferenceId);
                     }
                 }
                 result = Trail.MergeTrailLocations(result, result2);

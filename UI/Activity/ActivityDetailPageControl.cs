@@ -169,7 +169,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-		public void RefreshControlState() 
+        public void RefreshControlState() 
         {
             ResultList.RefreshControlState();
             TrailSelector.RefreshControlState();
@@ -215,17 +215,22 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     points.Add(point);
                 }
-                //Extra check for TrailOrdered - displayed status
-                if (!isSingleView && m_controller.CurrentActivityTrailDisplayed!=null)
+                //check for TrailOrdered - displayed status
+                if (m_controller.CurrentActivityTrailDisplayed!=null)
                 {
                     IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
-                        //Possibly limit no of Trails shown, it slows down (show complete Activities?)
-                        TrailMapPolyline m = new TrailMapPolyline(tr);
-                        m.Click += new MouseEventHandler(mapPoly_Click);
-                        routes.Add(m.key, m);
+                        //Do not map activities displayed already
+                        if (ViewActivities == null || ViewActivities.Count == 0 || ViewActivities.Count > 1 ||
+                            ViewActivities[0] != tr.Activity)
+                        {
+                            //Possibly limit no of Trails shown, it slows down Gmaps
+                            TrailMapPolyline m = new TrailMapPolyline(tr);
+                            m.Click += new MouseEventHandler(mapPoly_Click);
+                            routes.Add(m.key, m);
+                        }
                     }
                     m_layer.TrailRoutes = routes;
                 }
@@ -238,34 +243,35 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Some views like mapping is only working in single view - there are likely better tests
-        public bool isSingleView
+        public IList<IActivity> ViewActivities
         {
             get
             {
-#if !ST_2_1
-                if (CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems) == null)
-                {
-                    return false;
-                }
-#endif
-                return true;
+                return CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
             }
         }
+
+        //Some views like mapping is only working in single view - there are likely better tests
+//        public bool isSingleView
+//        {
+//            get
+//            {
+//#if !ST_2_1
+//                if (CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems) == null)
+//                {
+//                    return false;
+//                }
+//#endif
+//                return true;
+//            }
+//        }
         private bool isReportView
         {
             get
             {
             bool result = false;
 #if !ST_2_1
-            string viewType = m_view.GetType().FullName;
-
-            //if (viewType.EndsWith(".DailyActivityView.MainView"))
-            //{
-            //    result = false; 
-            //}
-            //else 
-            if (viewType.EndsWith(".ActivityReportDetailsPage"))
+            if (m_view.Id == GUIDs.ReportView)
             { 
                 result = true;
             }
@@ -284,10 +290,43 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             if (_showPage)
             {
+                bool single = false;
                 if (m_view != null &&
-                    m_view.RouteSelectionProvider != null &&
-                    isSingleView && m_controller.SingleActivity != null)
+                    m_view.RouteSelectionProvider != null)
                 {
+                    //Check if there is a reasonable safety to assume that only ony activity is displayed and
+                    single = true;
+
+                    IActivity activity = null;
+                    foreach (IActivity a in ViewActivities)
+                    {
+                        if (activity != null && a != activity)
+                        {
+                            single = false;
+                            break;
+                        }
+                        activity=a;
+                    }
+                    if (single)
+                    {
+                        foreach (TrailResultMarked a in atr)
+                        {
+                            if (activity != null && a.trailResult.Activity != activity)
+                            {
+                                single = false;
+                                break;
+                            }
+                            activity = a.trailResult.Activity;
+                        }
+                        if (activity == null)
+                        {
+                            single = false;
+                        }
+                    }
+                }
+                if(single)
+                {
+                    //TODO: Also check that correct activity is updated
                     if (!markChart)
                     {
                         m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
@@ -296,10 +335,8 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Only one activity, OK to merge selections on one track
                         TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
-                        r.Activity = m_controller.SingleActivity;
                         m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
                         m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(r)));
-
                     }
                     if (!markChart)
                     {
@@ -432,11 +469,8 @@ namespace TrailsPlugin.UI.Activity {
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null)
                 {
-                    if(m_controller.SingleActivity != null)
-                    {
-                        MultiCharts.SetSelectedRange(
-                          TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, m_controller.SingleActivity));
-                    }
+                    MultiCharts.SetSelectedRange(
+                      TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities));
                 }
             }
         }

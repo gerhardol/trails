@@ -63,6 +63,7 @@ namespace TrailsPlugin.Data {
             foreach (TrailResultMarked trm in atrm)
             {
                 result.Union(trm.selInfo);
+                result.Activity = trm.trailResult.Activity; //TODO: verfify only one activity
             }
             return result;
         }

@@ -495,6 +495,10 @@ namespace GpsRunningPlugin.Util
             {
                 return Length.LabelAbbr(GetUnit(activity));
             }
+            public static string LabelAbbrAct2(IActivity activity)
+            {
+                return encPar(LabelAbbrAct(activity));
+            }
         }
 
         /*********************************************************************************/
@@ -680,6 +684,10 @@ namespace GpsRunningPlugin.Util
             {
                 return Length.LabelAbbr(GetUnit(activity));
             }
+            public static string LabelAbbrAct2(IActivity activity)
+            {
+                return encPar(LabelAbbrAct(activity));
+            }
         }
 
         /*********************************************************************************/
@@ -814,6 +822,10 @@ namespace GpsRunningPlugin.Util
             public static string LabelAbbrAct(IActivity activity)
             {
                 return getLabel(activity);
+            }
+            public static string LabelAbbrAct2(IActivity activity)
+            {
+                return encPar(LabelAbbrAct(activity));
             }
         }
 
@@ -973,6 +985,10 @@ namespace GpsRunningPlugin.Util
             public static string LabelAbbrAct(IActivity activity)
             {
                 return getLabel(activity);
+            }
+            public static string LabelAbbrAct2(IActivity activity)
+            {
+                return encPar(LabelAbbrAct(activity));
             }
         }
 

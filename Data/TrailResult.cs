@@ -33,18 +33,7 @@ namespace TrailsPlugin.Data {
         private IList<Data.TrailGPSLocation> m_trailgps;
 		private IActivity m_activity;
 		private int m_order;
-		private INumericTimeDataSeries m_cadencePerMinuteTrack;
-		private INumericTimeDataSeries m_heartRatePerMinuteTrack;
-        private IDistanceDataTrack m_distanceMetersTrack = null;
-        private IDistanceDataTrack m_activityDistanceMetersTrack = null;
-        //private IDistanceDataTrack m_activityUnpausedDistanceMetersTrack = null;
-        private INumericTimeDataSeries m_elevationMetersTrack;
-		private INumericTimeDataSeries m_powerWattsTrack;
-        private INumericTimeDataSeries m_speedTrack;
-        private INumericTimeDataSeries m_gradeTrack;
-        private IGPSRoute m_gpsTrack;
-        private IList<IGPSPoint> m_gpsPoints;
-        private INumericTimeDataSeries m_paceTrack;
+
         private int m_startIndex = -1;
 		private int m_endIndex = -1;
         private DateTime m_startTime;
@@ -56,6 +45,29 @@ namespace TrailsPlugin.Data {
         private TrailResult m_parentResult = null;
         private string m_toolTip = null;
 
+        private IDistanceDataTrack m_distanceMetersTrack = null;
+        private IDistanceDataTrack m_activityDistanceMetersTrack = null;
+        //private IDistanceDataTrack m_activityUnpausedDistanceMetersTrack = null;
+        private INumericTimeDataSeries m_elevationMetersTrack;
+        private INumericTimeDataSeries m_cadencePerMinuteTrack;
+        private INumericTimeDataSeries m_heartRatePerMinuteTrack;
+        private INumericTimeDataSeries m_powerWattsTrack;
+        private INumericTimeDataSeries m_speedTrack;
+        private INumericTimeDataSeries m_paceTrack;
+        private INumericTimeDataSeries m_gradeTrack;
+
+        //Converted tracks, to display format
+        private TrailResult m_cacheTrackRef = null;
+        private IDistanceDataTrack m_distanceMetersTrack0 = null;
+        private INumericTimeDataSeries m_elevationMetersTrack0;
+        private INumericTimeDataSeries m_speedTrack0;
+        private INumericTimeDataSeries m_paceTrack0;
+        private INumericTimeDataSeries m_DiffTimeTrack0 = null;
+        private INumericTimeDataSeries m_DiffDistTrack0 = null;
+
+        private IGPSRoute m_gpsTrack;
+        private IList<IGPSPoint> m_gpsPoints;
+        
         public TrailResult(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
             : this(trail.TrailLocations, activity, order, indexes, distDiff)
         {}
@@ -476,11 +488,10 @@ namespace TrailsPlugin.Data {
                         while (i < m_activityDistanceMetersTrack.Count &&
                             0 <= this.EndDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
                         {
-                            ITimeValueEntry<float> time = m_activityDistanceMetersTrack[i];
-                            m_distanceMetersTrack.Add(
-                                m_activityDistanceMetersTrack.EntryDateTime(time),
-                                (float)getDistResultFromDistActivity(time.Value)
-                                );
+                            ITimeValueEntry<float> timeValue = m_activityDistanceMetersTrack[i];
+                            DateTime time = m_activityDistanceMetersTrack.EntryDateTime(timeValue);
+                            float val = (float)getDistResultFromDistActivity(timeValue.Value);
+                            m_distanceMetersTrack.Add(time, val);
                             i++;
                         }
                         //float m_lastDistance = m_activityDistanceMetersTrack[--i].Value;
@@ -659,6 +670,27 @@ namespace TrailsPlugin.Data {
 				return m_heartRatePerMinuteTrack;
 			}
 		}
+        //Unused, no cache
+        public INumericTimeDataSeries HeartRatePerMinutePercentMaxTrack
+        {
+            get
+            {
+                IAthleteInfoEntry lastAthleteEntry = PluginMain.GetApplication().Logbook.Athlete.InfoEntries.LastEntryAsOfDate(m_activity.StartTime);
+                INumericTimeDataSeries track = new NumericTimeDataSeries();
+                // Value is in BPM so convert to the % max HR if we have the info
+                if (!float.IsNaN(lastAthleteEntry.MaximumHeartRatePerMinute))
+                {
+                    INumericTimeDataSeries tempResult = this.HeartRatePerMinuteTrack;
+                    foreach (ITimeValueEntry<float> entry in tempResult)
+                    {
+                        float hr = (entry.Value / lastAthleteEntry.MaximumHeartRatePerMinute) * 100;
+                        track.Add(tempResult.EntryDateTime(entry), hr);
+                    }
+                }
+                return track;
+            }
+        }
+
 		public INumericTimeDataSeries PowerWattsTrack {
 			get {
 				if (m_powerWattsTrack == null) {
@@ -667,7 +699,8 @@ namespace TrailsPlugin.Data {
 				return m_powerWattsTrack;
 			}
 		}
-		public INumericTimeDataSeries SpeedTrack {
+		public INumericTimeDataSeries SpeedTrack
+        {
 			get {
 				if (m_speedTrack == null) {
 					m_speedTrack = new NumericTimeDataSeries();
@@ -678,7 +711,7 @@ namespace TrailsPlugin.Data {
 						ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
 						if (value != null)
                         {
-                            float speed = (float)UnitUtil.Speed.ConvertFrom(value.Value, m_activity);
+                            float speed = value.Value;// (float)UnitUtil.Speed.ConvertFrom(value.Value, m_activity);
                             m_speedTrack.Add(time, speed);
 						}
 					}
@@ -686,7 +719,9 @@ namespace TrailsPlugin.Data {
 				return m_speedTrack;
 			}
 		}
-		public INumericTimeDataSeries PaceTrack {
+        
+        public INumericTimeDataSeries PaceTrack
+        {
 			get {
 				if (m_paceTrack == null) {
                     //PaceTrack could share a common base track (in m/s) with SpeedTrack,
@@ -699,7 +734,7 @@ namespace TrailsPlugin.Data {
                         ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
                         if (value != null)
                         {
-                            float pace = (float)UnitUtil.Pace.ConvertFrom(value.Value, m_activity);
+                            float pace = value.Value;// (float)UnitUtil.Pace.ConvertFrom(value.Value, m_activity);
                             if (pace != float.NaN)
                             {
                                 m_paceTrack.Add(time, pace);
@@ -721,38 +756,141 @@ namespace TrailsPlugin.Data {
                 return m_gradeTrack;
             }
         }
-        public INumericTimeDataSeries DiffTimeTrack(TrailResult refRes)
+        private bool checkCacheRef(TrailResult refRes)
         {
-            INumericTimeDataSeries result = new NumericTimeDataSeries();
-            result.AllowMultipleAtSameTime = true;
-            foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+            if (refRes == null || refRes != m_cacheTrackRef)
             {
-                if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
-                {
-                    DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                    DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
-                    result.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));
-                }
+                m_cacheTrackRef = refRes;
+                m_distanceMetersTrack0 = null;
+                m_elevationMetersTrack0 = null;
+                m_speedTrack0 = null;
+                m_paceTrack0 = null;
+                m_DiffTimeTrack0 = null;
+                m_DiffDistTrack0 = null;
+                return true;
             }
-            return result;
+            return false;
         }
-        public INumericTimeDataSeries DiffDistTrack(TrailResult refRes)
+
+        public IDistanceDataTrack DistanceMetersTrack0(TrailResult refRes)
         {
-            INumericTimeDataSeries result = new NumericTimeDataSeries();
-            foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+            checkCacheRef(refRes);
+            if (m_distanceMetersTrack0 == null || m_distanceMetersTrack == null)
             {
-                try
+                m_distanceMetersTrack0 = new DistanceDataTrack();
+                foreach (ITimeValueEntry<float> entry in this.DistanceMetersTrack)
                 {
-                    if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds)
+                    float val = (float)UnitUtil.Distance.ConvertFrom(entry.Value, refRes.Activity);
+                    if (val != float.NaN)
                     {
-                        DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                        DateTime d2 = refRes.getDateTimeFromElapsedResult(refRes.DistanceMetersTrack, t);
-                        result.Add(d1, t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value);
+                        m_distanceMetersTrack0.Add(m_distanceMetersTrack0.EntryDateTime(entry), val);
                     }
                 }
-                catch { }
             }
-            return result;
+            return m_distanceMetersTrack0;
+        }
+        public INumericTimeDataSeries ElevationMetersTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_elevationMetersTrack0 == null || m_elevationMetersTrack == null)
+            {
+                m_elevationMetersTrack0 = new NumericTimeDataSeries();
+                foreach (ITimeValueEntry<float> entry in this.ElevationMetersTrack)
+                {
+                    float val = (float)UnitUtil.Elevation.ConvertFrom(entry.Value, refRes.Activity);
+                    if (val != float.NaN)
+                    {
+                        m_elevationMetersTrack0.Add(m_elevationMetersTrack0.EntryDateTime(entry), val);
+                    }
+                }
+            }
+            return m_elevationMetersTrack0;
+        }
+        public INumericTimeDataSeries SpeedTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_speedTrack0 == null || m_speedTrack == null)
+            {
+                m_speedTrack0 = new NumericTimeDataSeries();
+                foreach (ITimeValueEntry<float> entry in this.SpeedTrack)
+                {
+                    float val = (float)UnitUtil.Speed.ConvertFrom(entry.Value, refRes.Activity);
+                    if (val != float.NaN)
+                    {
+                        m_speedTrack0.Add(m_speedTrack0.EntryDateTime(entry), val);
+                    }
+                }
+            }
+            return m_speedTrack0;
+        }
+        public INumericTimeDataSeries PaceTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_paceTrack0 == null || m_paceTrack == null)
+            {
+                m_paceTrack0 = new NumericTimeDataSeries();
+                foreach (ITimeValueEntry<float> entry in this.PaceTrack)
+                {
+                    float val = (float)UnitUtil.Pace.ConvertFrom(entry.Value, refRes.Activity);
+                    if (val != float.NaN)
+                    {
+                        m_paceTrack0.Add(m_paceTrack0.EntryDateTime(entry), val);
+                    }
+                }
+            }
+            return m_paceTrack0;
+        }
+        public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_DiffTimeTrack0 == null)
+            {
+                m_DiffTimeTrack0 = new NumericTimeDataSeries();
+                float oldElapsedSeconds = -1;
+                foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+                {
+                    try
+                    {
+                        if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds &&
+                            t.ElapsedSeconds > oldElapsedSeconds)
+                        {
+                            DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
+                            DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
+                            m_DiffTimeTrack0.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));
+                        }
+                        oldElapsedSeconds = t.ElapsedSeconds;
+                    }
+                    catch { }
+                }
+            }
+            return m_DiffTimeTrack0;
+        }
+        public INumericTimeDataSeries DiffDistTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_DiffDistTrack0 == null)
+            {
+                m_DiffDistTrack0 = new NumericTimeDataSeries();
+                float oldElapsedSeconds = -1;
+                foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
+                {
+                    try
+                    {
+                        if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds &&
+                            t.ElapsedSeconds > oldElapsedSeconds)
+                        {
+                            DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
+                            DateTime d2 = refRes.getDateTimeFromElapsedResult(refRes.DistanceMetersTrack, t);
+                            float diff = (float)UnitUtil.Distance.ConvertFrom(t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value, refRes.Activity);
+                            m_DiffDistTrack0.Add(d1, diff);
+                        }
+                        oldElapsedSeconds = t.ElapsedSeconds;
+                    }
+                    catch { }
+                }
+                //TODO: add point in the end compared to reference
+            }
+            return m_DiffDistTrack0;
         }
 
         private void getGps()
@@ -1056,7 +1194,9 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.PaceTrack
         {
-            get { return PaceTrack; }
+            //Note: should be exporting raw speedtrack
+            //get { return PaceTrack; }
+            get { return PaceTrack0(this); }
         }
 
         INumericTimeDataSeries ITrailResult.PowerWattsTrack
@@ -1066,7 +1206,9 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.SpeedTrack
         {
-            get { return SpeedTrack; }
+            //Note: should be exporting raw speedtrack
+            //get { return SpeedTrack; }
+            get { return SpeedTrack0(this); }
         }
 
         TimeSpan ITrailResult.StartTime

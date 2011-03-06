@@ -45,8 +45,9 @@ namespace TrailsPlugin.UI.Activity {
         private Data.TrailResult m_refTrailResult = null;
         private IList<Data.TrailResult> m_trailResults = new List<Data.TrailResult>();
         private XAxisValue m_XAxisReferential = XAxisValue.Time;
+        private IList<LineChartTypes> m_YAxisReferentials = new List<LineChartTypes>();
+        private LineChartTypes m_defaultYAxisReferential = LineChartTypes.Speed;
         private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
-        //private IList<LineChartTypes> m_YAxisReferential_right = null;
         private Color m_ChartFillColor = Color.WhiteSmoke;
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
@@ -163,18 +164,21 @@ namespace TrailsPlugin.UI.Activity {
 
         public enum LineChartTypes
         {
-			Cadence,
-			Elevation,
-			HeartRateBPM,
-			HeartRatePercentMax,
-			Power,
-			Grade,
-			Speed,
-			Pace,
+            Cadence,
+            Elevation,
+            HeartRateBPM,
+            HeartRatePercentMax,
+            Power,
+            Grade,
+            Speed,
+            Pace,
             SpeedPace,
             DiffTime,
-            DiffDist
-		}
+            DiffDist,
+            DiffHeartRateBPM, //NotUsedInTrails
+            Time, //NotUsedInTrails
+            Distance //NotUsedInTrails
+        }
         public static IList<LineChartTypes> DefaultLineChartTypes()
         {
             return new List<LineChartTypes>{
@@ -704,40 +708,47 @@ namespace TrailsPlugin.UI.Activity {
 
                         if (XAxisReferential == XAxisValue.Time)
                         {
+                            float oldElapsedSeconds = -1;
                             foreach (ITimeValueEntry<float> entry in graphPoints)
                             {
-                                if (!dataLine.Points.ContainsKey(entry.ElapsedSeconds))
+                                float value = entry.Value;//ConvertUnit(entry.Value, GenSeriesEntry.LineChartType);
+                                if (oldElapsedSeconds != entry.ElapsedSeconds)
                                 {
                                     if (null != dataFill)
                                     {
-                                        dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
+                                        dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
                                     }
-                                    dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, entry.Value));
+                                    dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
                                 }
+                                oldElapsedSeconds = entry.ElapsedSeconds;
                             }
                         }
                         else
                         {
-                            IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack;
-
                             if (null != m_refTrailResult)
                             {
-                                //Debug.Assert(distanceTrack.Count == graphPoints.Count);
-                                for (int j = 0; j < distanceTrack.Count; ++j)
+                            IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack0(m_refTrailResult);
+
+                                float oldElapsedSeconds = -1;
+                                foreach (ITimeValueEntry<float> dtEntry in distanceTrack)
                                 {
-                                    float distanceValue = (float)UnitUtil.Distance.ConvertFrom(distanceTrack[j].Value, m_refTrailResult.Activity);
-                                    if (j < graphPoints.Count)
+                                    float elapsedSeconds = dtEntry.ElapsedSeconds;
+                                    if(elapsedSeconds <= graphPoints.TotalElapsedSeconds)
                                     {
-                                        ITimeValueEntry<float> entry = graphPoints[j];
-                                        if (!dataLine.Points.ContainsKey(entry.ElapsedSeconds))
+                                        ITimeValueEntry<float> valueEntry = graphPoints.GetInterpolatedValue(graphPoints.StartTime.AddSeconds(elapsedSeconds));
+                                        float value = valueEntry.Value;//ConvertUnit(valueEntry.Value, GenSeriesEntry.LineChartType);
+                                        //float distanceValue = ConvertUnit(dtEntry.Value, LineChartTypes.Distance);
+                                        float distanceValue = dtEntry.Value;// (float)UnitUtil.Distance.ConvertFrom(dtEntry.Value, m_refTrailResult.Activity);
+ 
+                                        if (oldElapsedSeconds != elapsedSeconds)
                                         {
-                                            ///Debug.Assert(distanceTrack[j].ElapsedSeconds == entry.ElapsedSeconds);
                                             if (null != dataFill)
                                             {
-                                                dataFill.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                                dataFill.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
                                             }
-                                            dataLine.Points.Add(entry.ElapsedSeconds, new PointF(distanceValue, entry.Value));
+                                            dataLine.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
                                         }
+                                        oldElapsedSeconds = elapsedSeconds;
                                     }
                                 }
                             }
@@ -758,23 +769,30 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                         CommonResources.Images.Information16;
 #else
- new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
+                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
 #endif
                     foreach (DateTime t in trailPointResult.TimeTrailPoints)
                     {
-                        AxisMarker a;
+                        AxisMarker a = null;
                         if (XAxisReferential == XAxisValue.Time)
                         {
                             a = new AxisMarker(trailPointResult.getElapsedResult(t), icon);
                         }
                         else
                         {
-                            a = new AxisMarker((float)UnitUtil.Distance.ConvertFrom(
-                                trailPointResult.getDistResult(t), trailPointResult.Activity), icon);
+                            float time = (float)UnitUtil.Distance.ConvertFrom(
+                                trailPointResult.getDistResult(t), trailPointResult.Activity);
+                            if (!float.IsNaN(time))
+                            {
+                                a = new AxisMarker(time, icon);
+                            }
                         }
-                        a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
-                        a.Line1Color = Color.Black;
-                        MainChart.XAxis.Markers.Add(a);
+                        if (a != null)
+                        {
+                            a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
+                            a.Line1Color = Color.Goldenrod;
+                            MainChart.XAxis.Markers.Add(a);
+                        }
                     }
                 }
                 ZoomToData();
@@ -795,9 +813,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     case XAxisValue.Distance:
                         {
-                            MainChart.XAxis.Formatter = new Formatter.General();
-                            MainChart.XAxis.Label = CommonResources.Text.LabelDistance + " (" +
-                                                    UnitUtil.Distance.LabelAbbrAct(activity) + ")";
+                            MainChart.XAxis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
+                            MainChart.XAxis.Label = CommonResources.Text.LabelDistance +
+                                                    UnitUtil.Distance.LabelAbbrAct2(activity);
                             break;
                         }
                     case XAxisValue.Time:
@@ -813,189 +831,218 @@ namespace TrailsPlugin.UI.Activity {
                             break;
                         }
                 }
-
                 // Y axis
-                MainChart.YAxis.Formatter = new Formatter.General();
-                switch (YAxisReferential)
+                MainChart.YAxisRight.Clear();
+                m_YAxisReferentials.Clear();
+                //if (m_dataSeries.Count == 0)
+                //{
+                //    CreateAxis(m_defaultYAxisReferential, true);
+                //}
+                //else
+                //{
+                //    bool boFirst = true;
+                //    foreach (GenericChartDataSeries series in m_dataSeries)
+                //    {
+                //        IAxis axis = FindAxis(series.LineChartType);
+                //        if (axis == null)
+                //        {
+                //            CreateAxis(series.LineChartType, boFirst);
+                //            boFirst = false;
+                //        }
+                //    }
+                //}
+                IAxis axis = FindAxis(m_YAxisReferential);
+                if (axis == null)
                 {
-                    case LineChartTypes.Cadence:
-                        {
-                            MainChart.YAxis.Label = CommonResources.Text.LabelCadence + " (" +
-                                                    CommonResources.Text.LabelRPM + ")";
-                            break;
-                        }
-                    case LineChartTypes.Grade:
-                        {
-                            MainChart.YAxis.Formatter = new Percent100();
-                            MainChart.YAxis.Label = CommonResources.Text.LabelGrade + " (%)";
-                            break;
-                        }
-                    case LineChartTypes.Elevation:
-                        {
-                            MainChart.YAxis.Label = CommonResources.Text.LabelElevation + " (" +
-                                                       UnitUtil.Elevation.LabelAbbrAct(activity) + ")";
-                            break;
-                        }
-                    case LineChartTypes.HeartRateBPM:
-                        {
-                            MainChart.YAxis.Label = CommonResources.Text.LabelHeartRate + " (" +
-                                                    CommonResources.Text.LabelBPM + ")";
-                            break;
-                        }
-                    case LineChartTypes.HeartRatePercentMax:
-                        {
-                            MainChart.YAxis.Label = CommonResources.Text.LabelHeartRate + " (" +
-                                                    CommonResources.Text.LabelPercentOfMax + ")";
-                            break;
-                        }
-                    case LineChartTypes.Power:
-                        {
-                            MainChart.YAxis.Label = CommonResources.Text.LabelPower + " (" +
-                                                    CommonResources.Text.LabelWatts + ")";
-                            break;
-                        }
-                    case LineChartTypes.Speed:
-                        {
-                            MainChart.YAxis.Label = CommonResources.Text.LabelSpeed + " (" +
-                                                    UnitUtil.Speed.LabelAbbrAct(activity) + ")";
-                            break;
-                        }
-                    case LineChartTypes.Pace:
-                        {
-                            MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
-                            MainChart.YAxis.Label = CommonResources.Text.LabelPace + " (" +
-                                                    UnitUtil.Speed.LabelAbbrAct(activity) + ")";
-                            break;
-                        }
-                    case LineChartTypes.DiffTime:
-                        {
-                            MainChart.YAxis.Formatter = new Formatter.SecondsToTime();
-                            MainChart.YAxis.Label = CommonResources.Text.LabelTime;
-                            break;
-                        }
-                    case LineChartTypes.DiffDist:
-                        {
-
-                            MainChart.YAxis.Formatter = new Formatter.General();
-                            MainChart.YAxis.Label = CommonResources.Text.LabelDistance + " (" +
-                                                    UnitUtil.Distance.LabelAbbrAct(activity) + ")";
-                            break;
-                        }
-                    default:
-                        {
-                            Debug.Assert(false);
-                            break;
-                        }
+                    CreateAxis(m_YAxisReferential, true);
                 }
             }
         }
 
-		private INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result) {
+        private IAxis FindAxis(LineChartTypes lineChartType)
+        {
+            IAxis axis = null;
+            bool boAxisTypeExists = false;
+            int i;
+            for (i = 0; i < m_YAxisReferentials.Count; i++)
+            {
+                if (lineChartType == m_YAxisReferentials[i])
+                {
+                    boAxisTypeExists = true;
+                    break;
+                }
+            }
+            if (boAxisTypeExists)
+            {
+                if (i == 0)
+                {
+                    axis = MainChart.YAxis;
+                }
+                else
+                {
+                    axis = MainChart.YAxisRight[i - 1];
+                }
+            }
+            return axis;
+        }
+        
+        private void CreateAxis(LineChartTypes axisType, bool left)
+        {
+            m_YAxisReferentials.Add(axisType);
+            
+            IAxis axis;
+            if (left)
+            {
+                axis = MainChart.YAxis;
+            }
+            else
+            {
+                axis = new RightVerticalAxis(MainChart);
+                axis.SmartZoom = true;
+                MainChart.YAxisRight.Add(axis);
+            }
+
+            switch (axisType)
+            {
+                case LineChartTypes.Cadence:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.Cadence.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelCadence + UnitUtil.Cadence.LabelAbbr2;
+                        break;
+                    }
+                case LineChartTypes.Grade:
+                    {
+                        axis.Formatter = new Formatter.Percent();
+                        axis.Label = CommonResources.Text.LabelGrade + " (%)";
+                        break;
+                    }
+                case LineChartTypes.Elevation:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelElevation + UnitUtil.Elevation.LabelAbbrAct2(m_refTrailResult.Activity);
+                        break;
+                    }
+                case LineChartTypes.HeartRateBPM:
+                case LineChartTypes.DiffHeartRateBPM:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.HeartRate.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelHeartRate + UnitUtil.HeartRate.LabelAbbr2;
+                        break;
+                    }
+                case LineChartTypes.HeartRatePercentMax:
+                    {
+                        axis.Label = CommonResources.Text.LabelHeartRate + " (" +
+                                                CommonResources.Text.LabelPercentOfMax + ")";
+                        break;
+                    }
+                case LineChartTypes.Power:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.Power.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelPower + UnitUtil.Power.LabelAbbr2;
+                        break;
+                    }
+                case LineChartTypes.Speed:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.Speed.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelSpeed + UnitUtil.Pace.LabelAbbrAct2(m_refTrailResult.Activity);
+                        break;
+                    }
+                case LineChartTypes.Pace:
+                    {
+                        axis.Formatter = new Formatter.SecondsToTime();
+                        axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(m_refTrailResult.Activity);
+                        break;
+                    }
+                case LineChartTypes.DiffTime:
+                case LineChartTypes.Time:
+                    {
+                        axis.Formatter = new Formatter.SecondsToTime();
+                        axis.Label = CommonResources.Text.LabelTime;
+                        break;
+                    }
+                case LineChartTypes.DiffDist:
+                case LineChartTypes.Distance:
+                    {
+
+                        axis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Distance.LabelAbbrAct2(m_refTrailResult.Activity);
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Assert(false);
+                        break;
+                    }
+            }
+        }
+
+        private INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result)
+        {
 			// Fail safe
 			INumericTimeDataSeries track = new NumericTimeDataSeries();
 
-			switch (YAxisReferential) {
-				case LineChartTypes.Cadence: {
-						track = result.CadencePerMinuteTrack;
-						break;
-					}
-				case LineChartTypes.Elevation: {
-						INumericTimeDataSeries tempResult = result.ElevationMetersTrack;
+            switch (YAxisReferential)
+            {
+                case LineChartTypes.Cadence:
+                    {
+                        track = result.CadencePerMinuteTrack;
+                        break;
+                    }
+                case LineChartTypes.Elevation:
+                    {
+                        track = result.ElevationMetersTrack0(m_refTrailResult);
+                        break;
+                    }
+                case LineChartTypes.HeartRateBPM:
+                    {
+                        track = result.HeartRatePerMinuteTrack;
+                        break;
+                    }
+                case LineChartTypes.HeartRatePercentMax:
+                    {
+                        track = result.HeartRatePerMinutePercentMaxTrack;
+                        break;
+                    }
+                case LineChartTypes.Power:
+                    {
+                        track = result.PowerWattsTrack;
+                        break;
+                    }
+                case LineChartTypes.Grade:
+                    {
+                        track = result.GradeTrack;
+                        break;
+                    }
 
-						// Value is in meters so convert to the right unit
-						track = new NumericTimeDataSeries();
-						foreach (ITimeValueEntry<float> entry in tempResult) {
-                            float temp = (float)UnitUtil.Elevation.ConvertFrom(entry.Value, m_refTrailResult.Activity); 
-
-							track.Add(tempResult.EntryDateTime(entry), (float)temp);
-						}
-						break;
-					}
-				case LineChartTypes.HeartRateBPM: {
-						track = result.HeartRatePerMinuteTrack;
-						break;
-					}
-				/*
-								case LineChartTypes.HeartRatePercentMax: {
-										track = new NumericTimeDataSeries();
-
-										IAthleteInfoEntry lastAthleteEntry = PluginMain.GetApplication().Logbook.Athlete.InfoEntries.LastEntryAsOfDate(Activity.StartTime);
-
-										// Value is in BPM so convert to the % max HR if we have the info
-										if (!float.IsNaN(lastAthleteEntry.MaximumHeartRatePerMinute)) {
-											INumericTimeDataSeries tempResult = activityInfo.SmoothedHeartRateTrack;
-
-											foreach (ITimeValueEntry<float> entry in tempResult) {
-												double temp = (entry.Value / lastAthleteEntry.MaximumHeartRatePerMinute) * 100;
-
-												track.Add(tempResult.EntryDateTime(entry), (float)temp);
-											}
-										}
-										break;
-									}
-				*/
-				case LineChartTypes.Power: {
-						track = result.PowerWattsTrack;
-						break;
-					}
-				case LineChartTypes.Grade: {
-						track = result.GradeTrack;
-						break;
-					}
-
-				case LineChartTypes.Speed: {
-						INumericTimeDataSeries tempResult = result.SpeedTrack;
-
-						track = new NumericTimeDataSeries();
-						foreach (ITimeValueEntry<float> entry in tempResult) {
-							track.Add(tempResult.EntryDateTime(entry), entry.Value);
-						}
-						break;
-					}
+                case LineChartTypes.Speed:
+                    {
+                        track = result.SpeedTrack0(m_refTrailResult);
+                        break;
+                    }
 
                 case LineChartTypes.Pace:
                     {
-                        INumericTimeDataSeries tempResult = result.PaceTrack;
-
-                        track = new NumericTimeDataSeries();
-                        foreach (ITimeValueEntry<float> entry in tempResult)
-                        {
-                            track.Add(tempResult.EntryDateTime(entry), entry.Value);
-                        }
+                        track = result.PaceTrack0(m_refTrailResult);
                         break;
                     }
 
                 case LineChartTypes.DiffTime:
                     {
-                        INumericTimeDataSeries tempResult = result.DiffTimeTrack(m_refTrailResult);
-
-                        track = new NumericTimeDataSeries();
-                        foreach (ITimeValueEntry<float> entry in tempResult)
-                        {
-                            track.Add(tempResult.EntryDateTime(entry), entry.Value);
-                        }
+                        track = result.DiffTimeTrack0(m_refTrailResult);
                         break;
                     }
                 case LineChartTypes.DiffDist:
                     {
-                        INumericTimeDataSeries tempResult = result.DiffDistTrack(m_refTrailResult);
-
-                        track = new NumericTimeDataSeries();
-                        foreach (ITimeValueEntry<float> entry in tempResult)
-                        {
-                            track.Add(tempResult.EntryDateTime(entry), (float)UnitUtil.Distance.ConvertFrom(entry.Value,m_refTrailResult.Activity));
-                        }
+                        track = result.DiffDistTrack0(m_refTrailResult);
                         break;
                     }
 
                 default:
                     {
-						Debug.Assert(false);
-						break;
-					}
-
-			}
-
+                        Debug.Assert(false);
+                        break;
+                    }
+            }
 			return track;
 		}
 

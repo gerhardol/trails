@@ -28,11 +28,13 @@ namespace TrailsPlugin.Data {
         {
             trailResult = tr;
             selInfo.MarkedTimes = tr.getSelInfo();
+            selInfo.Activity = tr.Activity;
         }
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
         {
             trailResult = tr;
             selInfo.MarkedTimes = t;
+            selInfo.Activity = tr.Activity;
         }
         //Note: IItemTrackSelectionInfo uses Activity distances, avoid...
         //public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)

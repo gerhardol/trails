@@ -175,6 +175,7 @@ namespace TrailsPlugin.UI.Activity {
             SpeedPace,
             DiffTime,
             DiffDist,
+            DiffDistTime,
             DiffHeartRateBPM, //NotUsedInTrails
             Time, //NotUsedInTrails
             Distance //NotUsedInTrails
@@ -231,14 +232,19 @@ namespace TrailsPlugin.UI.Activity {
                         yAxisLabel = CommonResources.Text.LabelGrade;
                         break;
                     }
+                case LineChartTypes.DiffDist:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelDistance;
+                        break;
+                    }
                 case LineChartTypes.DiffTime:
                     {
                         yAxisLabel = CommonResources.Text.LabelTime;
                         break;
                     }
-                case LineChartTypes.DiffDist:
+                case LineChartTypes.DiffDistTime:
                     {
-                        yAxisLabel = CommonResources.Text.LabelDistance;
+                        yAxisLabel = CommonResources.Text.LabelDistance + CommonResources.Text.LabelTime;
                         break;
                     }
                 default:
@@ -431,11 +437,15 @@ namespace TrailsPlugin.UI.Activity {
                     MainChart.DataSeries.Count > 0 &&
                 m_trailResults.Count > 0 && ShowPage)
             {
-                //This is used in single activity mode, when selected on the route
+                //This is used in single activity mode, when selected on the route - all should be for the same activity
                 Data.TrailsItemTrackSelectionInfo sel = new Data.TrailsItemTrackSelectionInfo();
                 foreach (IItemTrackSelectionInfo trm in asel)
                 {
                     sel.Union(trm);
+                    if (trm is TrailsItemTrackSelectionInfo)
+                    {
+                        sel.Activity = (trm as TrailsItemTrackSelectionInfo).Activity;
+                    }
                 }
 
                 //Set the matching time distance for the activity

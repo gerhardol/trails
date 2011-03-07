@@ -38,6 +38,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.diffTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diffDistTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,6 +91,7 @@
             this.toolStripSeparator1,
             this.diffTimeToolStripMenuItem,
             this.diffDistToolStripMenuItem,
+            this.diffDistTimeToolStripMenuItem,
             this.toolStripSeparator2,
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem,
@@ -172,6 +174,13 @@
             this.diffDistToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.diffDistToolStripMenuItem.Text = "diffDist";
             this.diffDistToolStripMenuItem.Click += new System.EventHandler(this.diffDistToolStripMenuItem_Click);
+            // 
+            // diffDistTimeToolStripMenuItem
+            // 
+            this.diffDistTimeToolStripMenuItem.Name = "diffDistTimeToolStripMenuItem";
+            this.diffDistTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.diffDistTimeToolStripMenuItem.Text = "diffDistTime";
+            this.diffDistTimeToolStripMenuItem.Click += new System.EventHandler(this.diffDistTimeToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -450,6 +459,7 @@
         private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem diffTimeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem diffDistToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diffDistTimeToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;

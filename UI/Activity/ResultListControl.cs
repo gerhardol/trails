@@ -697,6 +697,14 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        void SummaryPanel_SizeChanged(object sender, System.EventArgs e)
+        {
+            if (SummaryPanel.Size.Width > summaryList.Size.Width)
+            {
+                summaryList.Size = new System.Drawing.Size(SummaryPanel.Size.Width, summaryList.Size.Height);
+            }
+        }
+
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
         bool summaryListTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
         System.Drawing.Point summaryListCursorLocationAtMouseMove;

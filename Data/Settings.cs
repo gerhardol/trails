@@ -198,6 +198,11 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_xAxisValue = (TrailLineChart.XAxisValue)Enum.Parse(typeof(TrailLineChart.XAxisValue), attr, true); }
             attr = pluginNode.GetAttribute(xmlTags.sChartType);
             if (attr.Length > 0) { m_chartType = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes), attr, true); }
+            if (m_chartType == TrailLineChart.LineChartTypes.DiffDist ||
+                m_chartType == TrailLineChart.LineChartTypes.DiffTime)
+            {
+                m_chartType = TrailLineChart.LineChartTypes.DiffDistTime;
+            }
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
             if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
@@ -235,7 +240,19 @@ namespace TrailsPlugin.Data {
                 String[] values = attr.Split(';');
                 foreach (String column in values)
                 {
-                    m_MultiChartTypes.Add((TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes), column, true));
+                    TrailLineChart.LineChartTypes t = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes), column, true);
+                    //Compatibility w previous, where DifTime/DiffDist could be speced directly
+                    if (t == TrailLineChart.LineChartTypes.DiffDist || t == TrailLineChart.LineChartTypes.DiffTime)
+                    {
+                        if (!m_MultiChartTypes.Contains(TrailLineChart.LineChartTypes.DiffDistTime))
+                        {
+                            m_MultiChartTypes.Add(TrailLineChart.LineChartTypes.DiffDistTime);
+                        }
+                    }
+                    else
+                    {
+                        m_MultiChartTypes.Add(t);
+                    }
                 }
             }
         }

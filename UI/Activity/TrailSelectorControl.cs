@@ -172,13 +172,13 @@ namespace TrailsPlugin.UI.Activity {
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
  		}
-        private TrailsItemTrackSelectionInfo getSel(DateTime t)
-        {
-            IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
-            TrailsItemTrackSelectionInfo s = new TrailsItemTrackSelectionInfo();
-            s.SelectedTime = v;
-            return s;
-        }
+        //private TrailsItemTrackSelectionInfo getSel(DateTime t)
+        //{
+        //    IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
+        //    TrailsItemTrackSelectionInfo s = new TrailsItemTrackSelectionInfo();
+        //    s.SelectedTime = v;
+        //    return s;
+        //}
 
         private void btnEdit_Click(object sender, EventArgs e) {
             int countGPS = 0;

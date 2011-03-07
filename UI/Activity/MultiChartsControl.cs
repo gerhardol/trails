@@ -79,6 +79,8 @@ namespace TrailsPlugin.UI.Activity {
             this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
 
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
+            this.diffTimeToolStripMenuItem.Visible = false;
+            this.diffDistToolStripMenuItem.Visible = false;
 
             //The panels and charts should probably be created manually instead
             m_lineCharts = new List<TrailLineChart>();
@@ -128,6 +130,7 @@ namespace TrailsPlugin.UI.Activity {
 
             this.diffTimeToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffTime);
             this.diffDistToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffDist);
+            this.diffDistTimeToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffDistTime); //TODO: Difference
 
             this.timeToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Time);
             this.distanceToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Distance);
@@ -223,6 +226,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     speedPaceYaxis = TrailLineChart.LineChartTypes.Pace;
                 }
+                TrailLineChart.LineChartTypes diffYaxis = TrailLineChart.LineChartTypes.DiffDist;
+                if (Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance)
+                {
+                    diffYaxis = TrailLineChart.LineChartTypes.DiffTime;
+                }
 
                 foreach (TrailLineChart chart in m_lineCharts)
                 {
@@ -231,11 +239,15 @@ namespace TrailsPlugin.UI.Activity {
                     if (m_multiple &&
                         (Data.Settings.MultiChartType.Contains(chart.YAxisReferential) ||
                         chart.YAxisReferential == speedPaceYaxis &&
-                        Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace)) ||
+                        Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace) ||
+                        chart.YAxisReferential == diffYaxis &&
+                        Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.DiffDistTime)) ||
                        !m_multiple &&
                         (chart.YAxisReferential == Data.Settings.ChartType ||
                         chart.YAxisReferential == speedPaceYaxis &&
-                            TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType))
+                            TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType ||
+                        chart.YAxisReferential == diffYaxis &&
+                            TrailLineChart.LineChartTypes.DiffDistTime == Data.Settings.ChartType))
                     {
                         visible = true;
                     }
@@ -244,15 +256,15 @@ namespace TrailsPlugin.UI.Activity {
                     chart.ShowPage = false;
                     if (visible)
                     {
+                        chart.XAxisReferential = Data.Settings.XAxisValue;
+                        IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                        chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                        chart.TrailResults = list;
                         if (!m_multiple)
                         {
                             this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart.YAxisReferential) + " / " +
                             TrailLineChart.XAxisValueString(chart.XAxisReferential);
                         }
-                        chart.XAxisReferential = Data.Settings.XAxisValue;
-                        IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                        chart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                        chart.TrailResults = list;
                         chart.ShowPage = visible;
                     }
                     chart.EndUpdate();
@@ -268,15 +280,15 @@ namespace TrailsPlugin.UI.Activity {
                                 {
                                     chart2.BeginUpdate();
                                     chart2.ShowPage = false;
+                                    chart2.XAxisReferential = Data.Settings.XAxisValue;
+                                    IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                                    chart2.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                                    chart2.TrailResults = list;
                                     if (!m_multiple)
                                     {
                                         this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart2.YAxisReferential) + " / " +
                                         TrailLineChart.XAxisValueString(chart2.XAxisReferential);
                                     }
-                                    chart2.XAxisReferential = Data.Settings.XAxisValue;
-                                    IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                                    chart2.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                                    chart2.TrailResults = list;
                                     chart2.ShowPage = visible;
                                     chart2.EndUpdate();
                                 }
@@ -314,6 +326,7 @@ namespace TrailsPlugin.UI.Activity {
 
             diffTimeToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffTime);
             diffDistToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffDist);
+            diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffDistTime);
 
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
             distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
@@ -439,6 +452,10 @@ namespace TrailsPlugin.UI.Activity {
         private void diffDistToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(TrailLineChart.LineChartTypes.DiffDist);
+        }
+        private void diffDistTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshChart(TrailLineChart.LineChartTypes.DiffDistTime);
         }
 
         private void distanceToolStripMenuItem_Click(object sender, EventArgs e)

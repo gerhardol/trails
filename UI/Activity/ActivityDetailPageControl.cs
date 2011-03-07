@@ -290,75 +290,52 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             if (_showPage)
             {
-                bool single = false;
+                IActivity viewActivity = null;
+                if (ViewActivities != null && ViewActivities.Count == 1)
+                {
+                    viewActivity = ViewActivities[0];
+                }
                 if (m_view != null &&
                     m_view.RouteSelectionProvider != null)
                 {
-                    //Check if there is a reasonable safety to assume that only ony activity is displayed and
-                    single = true;
-
-                    IActivity activity = null;
-                    foreach (IActivity a in ViewActivities)
+                    //For activities drawn by default, use common marking
+                    IList<TrailResultMarked> atr2 = new List<TrailResultMarked>();
+                    foreach (TrailResultMarked trm in atr)
                     {
-                        if (activity != null && a != activity)
+                        if (trm.trailResult.Activity == viewActivity)
                         {
-                            single = false;
-                            break;
-                        }
-                        activity=a;
-                    }
-                    if (single)
-                    {
-                        foreach (TrailResultMarked a in atr)
-                        {
-                            if (activity != null && a.trailResult.Activity != activity)
-                            {
-                                single = false;
-                                break;
-                            }
-                            activity = a.trailResult.Activity;
-                        }
-                        if (activity == null)
-                        {
-                            single = false;
+                            atr2.Add(trm);
                         }
                     }
-                }
-                if(single)
-                {
-                    //TODO: Also check that correct activity is updated
                     if (!markChart)
                     {
                         m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                     }
-                    if (atr.Count > 0)
-                    {
-                        //Only one activity, OK to merge selections on one track
-                        TrailsItemTrackSelectionInfo r = TrailResultMarked.SelInfoUnion(atr);
-                        m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { r };
-                        m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(r)));
-                    }
+                    //Only one activity, OK to merge selections on one track
+                    TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atr2);
+                    m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { result };
+                    m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
                     if (!markChart)
                     {
                         m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                     }
                 }
-                else
+                IDictionary<string, MapPolyline> mresult = new Dictionary<string, MapPolyline>();
+                foreach (TrailResultMarked trm in atr)
                 {
-                    IDictionary<string, MapPolyline> result = new Dictionary<string, MapPolyline>();
-                    foreach (TrailResultMarked trm in atr)
+                    foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                     {
-                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
+                        if (trm.trailResult.Activity != viewActivity)
                         {
                             m.Click += new MouseEventHandler(mapPoly_Click);
-                            if (!result.ContainsKey(m.key))
+                            if(!mresult.ContainsKey(m.key))
                             {
-                                result.Add(m.key, m);
+                                mresult.Add(m.key, m);
                             }
                         }
                     }
-                    m_layer.MarkedTrailRoutes = result;
                 }
+                m_layer.MarkedTrailRoutes = mresult;
             }
 #endif
         }

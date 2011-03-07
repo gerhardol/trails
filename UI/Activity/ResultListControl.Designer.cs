@@ -58,10 +58,12 @@
             this.SummaryPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.SummaryPanel.Size = new System.Drawing.Size(400, 300);
             this.SummaryPanel.TabIndex = 1;
+            this.SummaryPanel.SizeChanged += new System.EventHandler(SummaryPanel_SizeChanged);
             // 
             // summaryList
             // 
-            this.summaryList.AutoScroll = false;
+            this.summaryList.AutoScroll = true;
+            this.summaryList.AutoSize = true;
             this.summaryList.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.summaryList.BackColor = System.Drawing.Color.Transparent;
             this.summaryList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
@@ -86,7 +88,7 @@
             this.summaryList.RowSeparatorLines = true;
             this.summaryList.ShowLines = false;
             this.summaryList.ShowPlusMinus = true;
-            this.summaryList.Size = new System.Drawing.Size(400, 300);
+            this.summaryList.Size = new System.Drawing.Size(400, 60);
             this.summaryList.TabIndex = 11;
             this.summaryList.Click += new System.EventHandler(this.summaryList_Click);
             this.summaryList.MouseLeave += new System.EventHandler(this.summaryList_MouseLeave);

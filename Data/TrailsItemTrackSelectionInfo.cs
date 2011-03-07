@@ -99,7 +99,7 @@ namespace TrailsPlugin.Data
                 IActivity activity = null;
                 foreach(IActivity a in activities)
                 {
-                    //In ST3.0.4068 (at least) only one 
+                    //In ST3.0.4068 (at least) only one activity is selected
                     if (selected[i].ItemReferenceId == a.ReferenceId)
                     {
                         activity = a;

@@ -281,7 +281,14 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*************************************************************************************************************/
-        public void MarkTrack(IList<TrailResultMarked> atr)
+        public int SetResultListHeight
+        {
+            set
+            {
+                this.LowerSplitContainer.SplitterDistance = value;
+            }
+        }
+            public void MarkTrack(IList<TrailResultMarked> atr)
         {
             MarkTrack(atr, true);
         }

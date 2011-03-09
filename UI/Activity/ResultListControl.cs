@@ -189,8 +189,8 @@ namespace TrailsPlugin.UI.Activity {
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
 
                 //Set size, to not waste chart
-                int resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
-                this.summaryList.Height = this.summaryList.HeaderRowHeight +
+                int resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count+1);
+                m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
                     20 * resRows + 15;
             }
             //By setting to null, the last used is selected, or some defaults
@@ -701,7 +701,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (SummaryPanel.Size.Width > summaryList.Size.Width)
             {
-                summaryList.Size = new System.Drawing.Size(SummaryPanel.Size.Width, summaryList.Size.Height);
+                //xxx summaryList.Size = new System.Drawing.Size(SummaryPanel.Size.Width, summaryList.Size.Height);
             }
         }
 

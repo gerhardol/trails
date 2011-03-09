@@ -237,7 +237,7 @@ namespace TrailsPlugin.UI.Activity
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.chartTablePanel);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.MinimumSize = new System.Drawing.Size(250, 100);
+            this.MinimumSize = new System.Drawing.Size(0, 0);
             this.Name = "TrailLineChart";
             this.Size = new System.Drawing.Size(400, 100);
             this.chartTablePanel.ResumeLayout(false);

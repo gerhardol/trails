@@ -799,6 +799,7 @@ namespace TrailsPlugin.Data
             {
                 name += " (" + t.m_noResCount[t.Status] + ")";
             }
+            //Note: No result for InBoundNoCalc
             return name;
         }
     }

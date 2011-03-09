@@ -24,7 +24,7 @@
 		/// </summary>
 		private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            this.SummaryPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.SummaryPanel = new System.Windows.Forms.Panel();
             this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,16 +46,11 @@
             // 
             this.SummaryPanel.AutoSize = true;
             this.SummaryPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SummaryPanel.ColumnCount = 1;
-            this.SummaryPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.SummaryPanel.Controls.Add(this.summaryList, 0, 0);
+            this.SummaryPanel.Controls.Add(this.summaryList);
             this.SummaryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SummaryPanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.SummaryPanel.Location = new System.Drawing.Point(0, 0);
             this.SummaryPanel.Margin = new System.Windows.Forms.Padding(0);
             this.SummaryPanel.Name = "SummaryPanel";
-            this.SummaryPanel.RowCount = 1;
-            this.SummaryPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.SummaryPanel.Size = new System.Drawing.Size(400, 300);
             this.SummaryPanel.TabIndex = 1;
             this.SummaryPanel.SizeChanged += new System.EventHandler(SummaryPanel_SizeChanged);
@@ -198,7 +193,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.SummaryPanel);
             this.Name = "ResultListControl";
-            this.Size = new System.Drawing.Size(400, 300);
+            this.Size = new System.Drawing.Size(400, 60);
             this.SummaryPanel.ResumeLayout(false);
             this.listMenu.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -208,7 +203,7 @@
 
 		#endregion
 
-        private System.Windows.Forms.TableLayoutPanel SummaryPanel;
+        private System.Windows.Forms.Panel SummaryPanel;
 		private ZoneFiveSoftware.Common.Visuals.TreeList summaryList;
 		private System.Windows.Forms.ContextMenuStrip listMenu;
         private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;

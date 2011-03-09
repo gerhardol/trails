@@ -102,9 +102,9 @@
             // 
             this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
-            this.LowerSplitContainer.Panel2MinSize = 100;
+            this.LowerSplitContainer.Panel2MinSize = 0;
             this.LowerSplitContainer.Size = new System.Drawing.Size(400, 273);
-            this.LowerSplitContainer.SplitterDistance = 60;
+            this.LowerSplitContainer.SplitterDistance = 100;
             this.LowerSplitContainer.SplitterWidth = 1;
             this.LowerSplitContainer.TabIndex = 18;
             // 
@@ -119,7 +119,7 @@
             // 
             this.ExpandSplitContainer.Panel1.Controls.Add(this.UpperSplitContainer);
             this.ExpandSplitContainer.Panel1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.ExpandSplitContainer.Panel1MinSize = 225;
+            this.ExpandSplitContainer.Panel1MinSize = 0;
             // 
             // ExpandSplitContainer.Panel2
             // 

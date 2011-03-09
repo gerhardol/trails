@@ -27,7 +27,8 @@ namespace TrailsPlugin.Data {
 		public string Id = Guid.NewGuid().ToString();
 		public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
-		private float m_radius;
+        private float m_radius;
+        private float m_minDistance = 0;
         private int m_maxRequiredMisses = 0;
 
         private bool m_matchAll = false;
@@ -75,6 +76,7 @@ namespace TrailsPlugin.Data {
             }
             //Do not copy "auto" attributes
             result.m_radius = this.m_radius;
+            result.m_minDistance = this.m_minDistance;
             result.m_maxRequiredMisses = this.m_maxRequiredMisses;
             if (this.MatchAll && activity != null && this.TrailLocations.Count == 0)
             {
@@ -125,6 +127,18 @@ namespace TrailsPlugin.Data {
                 m_gpsBounds = null;
             }
 		}
+        //This property is not visible in the GUI
+        public float MinDistance
+        {
+            get
+            {
+                return m_minDistance;
+            }
+            set
+            {
+                m_minDistance = value;
+            }
+        }
         //This property is not visible in the GUI
         public int MaxRequiredMisses
         {
@@ -354,11 +368,15 @@ namespace TrailsPlugin.Data {
             {
                 trail.Radius = Settings.parseFloat(node.Attributes[xmlTags.sRadius].Value);
             }
+            if (node.Attributes[xmlTags.sMinDistance] != null)
+            {
+                trail.MinDistance = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMinDistance].Value);
+            }
             if (node.Attributes[xmlTags.sMaxRequiredMisses] != null)
             {
                 trail.MaxRequiredMisses = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMaxRequiredMisses].Value);
             }
-			trail.TrailLocations.Clear();
+            trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
                 if (null == trail.TrailLocations[trail.TrailLocations.Count-1].Name
@@ -384,7 +402,13 @@ namespace TrailsPlugin.Data {
             a = doc.CreateAttribute(xmlTags.sRadius);
             a.Value = this.Radius.ToString();
             trailNode.Attributes.Append(a);
-            //Undocumented non-GUI prperty
+            //Undocumented non-GUI property
+            if (this.MinDistance > 0)
+            {
+                a = doc.CreateAttribute(xmlTags.sMinDistance);
+                a.Value = this.MinDistance.ToString();
+                trailNode.Attributes.Append(a);
+            }
             if (this.MaxRequiredMisses > 0)
             {
                 a = doc.CreateAttribute(xmlTags.sMaxRequiredMisses);
@@ -404,6 +428,7 @@ namespace TrailsPlugin.Data {
             public const string sId = "id";
             public const string sName = "name";
             public const string sRadius = "radius";
+            public const string sMinDistance = "minDistance";
             public const string sMaxRequiredMisses = "maxRequiredMisses";
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }

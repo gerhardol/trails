@@ -235,6 +235,13 @@ namespace TrailsPlugin.Data
                                     float prevDistToStartPoint = 0;
                                     int maxRequiredMisses = m_trail.MaxRequiredMisses;
                                     int currRequiredMisses = 0;
+                                    IDistanceDataTrack dTrack = null;
+                                    //Ignore short legs
+                                    if (this.Trail.MinDistance > 0)
+                                    {
+                                        dTrack = activity.GPSRoute.GetDistanceMetersTrack();
+                                    }
+
                                     for (int routeIndex = 0; routeIndex < activity.GPSRoute.Count; routeIndex++)
                                     {
                                         int matchIndex = -1;
@@ -381,6 +388,14 @@ namespace TrailsPlugin.Data
                                             {
                                                 currRequiredMisses++;
                                             }
+                                        }
+
+                                        //Ignore short legs
+                                        if (this.Trail.MinDistance > 0 && matchIndex >= 0 && aMatch.Count > 0 &&
+                                            aMatch[aMatch.Count - 1] >= 0 && dTrack != null &&
+                                            this.Trail.MinDistance > (dTrack[matchIndex].Value - dTrack[aMatch[aMatch.Count - 1]].Value))
+                                        {
+                                            matchIndex = -1;
                                         }
 
                                         /////////////////////////////////////

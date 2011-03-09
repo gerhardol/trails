@@ -176,6 +176,8 @@ namespace TrailsPlugin.Data
                 {
                     TrailResultWrapper result = new TrailResultWrapper(m_trail, activity, m_resultsListWrapper.Count + 1);
                     m_resultsListWrapper.Add(result);
+                    //add children
+                    result.getSplits();
                 }
             }
         }

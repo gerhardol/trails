@@ -175,6 +175,7 @@ namespace TrailsPlugin.Data {
                     west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
                 }
             }
+            //Overlapping, could be an exception
             if (north < south || east < west)
             {
                 return null;
@@ -184,19 +185,20 @@ namespace TrailsPlugin.Data {
             //latitude increases about 1% at the poles
             //longitude is up to 40% longer than linear extension - compensate 20%
             float lat = radius / 110574 * 1.005F;
-            float lng = (float)(radius / 111132 / Math.Cos(Math.Abs(north) * Math.PI / 180));// 111320 * (1 - Math.Abs(north) / 90) * 1.2F;
+            float lng = (float)(radius / 111132 / Math.Cos(Math.Abs(north) * Math.PI / 180));
             north += lat;
             south -= lat;
             east += lng;
             west -= lng;
             //if radius is negative, area may have to be adjusted
-            if (north < south)
+            //With no required points, use center of trail
+            if (north < south || noRequired < minRequired)
             {
                 float tmp = (north+south)/2;
                 north = tmp;
                 south = tmp;
             }
-            if (east < west)
+            if (east < west || noRequired < minRequired)
             {
                 float tmp = (west+east)/2;
                 west = tmp;

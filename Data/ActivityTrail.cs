@@ -44,7 +44,7 @@ namespace TrailsPlugin.Data
             m_activities = activities;
             m_trail = trail;
             m_status = TrailOrderStatus.NoInfo;
-            if (m_trail.Generated)
+            if (m_trail.Generated && !m_trail.IsReference)
             {
                 m_canAddInbound = false;
             }

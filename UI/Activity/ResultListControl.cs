@@ -233,7 +233,8 @@ namespace TrailsPlugin.UI.Activity {
                         //Select a value
                         setValue = TrailResultWrapper.SelectedItems
                     ((IList<TrailResultWrapper>)summaryList.RowData, TrailResultWrapper.GetTrailResults(m_SelectedItemsWrapper));
-                        if (null == setValue && null != summaryList.RowData && ((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
+                        if ((null == setValue || setValue.Count==0) && 
+                            null != summaryList.RowData && ((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
                         {
                             setValue = new List<TrailResultWrapper> {
                            ((IList<TrailResultWrapper>)summaryList.RowData)[0] };

@@ -847,6 +847,7 @@ namespace TrailsPlugin.Data {
             {
                 m_DiffTimeTrack0 = new NumericTimeDataSeries();
                 float oldElapsedSeconds = -1;
+                float lastValue = 0;
                 foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                 {
                     try
@@ -856,15 +857,33 @@ namespace TrailsPlugin.Data {
                         {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                             DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
-                            m_DiffTimeTrack0.Add(d1, (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds));
+                            lastValue = (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds);
+                            m_DiffTimeTrack0.Add(d1, lastValue);
+                            oldElapsedSeconds = t.ElapsedSeconds;
                         }
-                        oldElapsedSeconds = t.ElapsedSeconds;
                     }
                     catch { }
+                }
+
+                //Add a point last in the track, to show the complete dist in the chart
+                //Alternatively use speed to extrapolate difference
+                if (DistanceMetersTrack.Count > 0)
+                {
+                    ITimeValueEntry<float> t = DistanceMetersTrack[DistanceMetersTrack.Count - 1];
+                    if (oldElapsedSeconds < t.ElapsedSeconds)
+                    {
+                        try
+                        {
+                            DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
+                            m_DiffTimeTrack0.Add(d1, lastValue);
+                        }
+                        catch { }
+                    }
                 }
             }
             return m_DiffTimeTrack0;
         }
+
         public INumericTimeDataSeries DiffDistTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -872,6 +891,7 @@ namespace TrailsPlugin.Data {
             {
                 m_DiffDistTrack0 = new NumericTimeDataSeries();
                 float oldElapsedSeconds = -1;
+                float lastValue = 0;
                 foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                 {
                     try
@@ -881,14 +901,28 @@ namespace TrailsPlugin.Data {
                         {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                             DateTime d2 = refRes.getDateTimeFromElapsedResult(refRes.DistanceMetersTrack, t);
-                            float diff = (float)UnitUtil.Distance.ConvertFrom(t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value, refRes.Activity);
-                            m_DiffDistTrack0.Add(d1, diff);
+                            lastValue = (float)UnitUtil.Distance.ConvertFrom(t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value, refRes.Activity);
+                            m_DiffDistTrack0.Add(d1, lastValue);
+                            oldElapsedSeconds = t.ElapsedSeconds;
                         }
-                        oldElapsedSeconds = t.ElapsedSeconds;
                     }
                     catch { }
                 }
-                //TODO: add point in the end compared to reference
+                //Add a point last in the track, to show the complete dist in the chart
+                //Alternatively use speed to extrapolate difference
+                if (DistanceMetersTrack.Count > 0)
+                {
+                    ITimeValueEntry<float> t = DistanceMetersTrack[DistanceMetersTrack.Count - 1];
+                    if (oldElapsedSeconds < t.ElapsedSeconds)
+                    {
+                        try
+                        {
+                            DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
+                            m_DiffDistTrack0.Add(d1, lastValue);
+                        }
+                        catch { }
+                    }
+                }
             }
             return m_DiffDistTrack0;
         }

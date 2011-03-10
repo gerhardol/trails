@@ -638,7 +638,7 @@ namespace TrailsPlugin.UI.Activity {
                 //A diff to itself is not a value - enable replacing
                 if (!(m_trailResults == null || m_refTrailResult == null ||
                     (YAxisReferential == LineChartTypes.DiffTime || YAxisReferential == LineChartTypes.DiffDist) &&
-                    m_trailResults.Count == 1 /*&& m_trailResults == m_refTrailResult*/))
+                    m_trailResults.Count == 1 && m_trailResults == m_refTrailResult))
                 {
                     foreach (ChartDataSeries t in MainChart.DataSeries)
                     {

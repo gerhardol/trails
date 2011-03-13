@@ -361,7 +361,8 @@ namespace TrailsPlugin.Data
                                                 localMax = Math.Max(localMax, distToPoint2);
                                             }
                                         }
-                                        else
+                                            //Check for pass-by - ignore if prevous was match for single point trails
+                                        else if (trailgps.Count > 1 || aMatch.Count>0 && prevRouteIndex+1<routeIndex)
                                         {
                                             float factor = checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius);
                                             if (0 < factor)

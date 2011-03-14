@@ -62,6 +62,14 @@ namespace TrailsPlugin.Controller
                     if (m_currentActivityTrail != null)
                     {
                         m_lastTrailId = m_currentActivityTrail.Trail.Id;
+                        //m_currentActivityTrail.Results;
+                    }
+                    if (m_CurrentOrderedTrails != null)
+                    {
+                        for (int i = 0; i < m_CurrentOrderedTrails.Count;i++ )
+                        {
+                            m_CurrentOrderedTrails[i] = null;
+                        }
                     }
                     m_CurrentOrderedTrails = null;
                     m_currentActivityTrail = null;

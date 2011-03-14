@@ -30,7 +30,7 @@ namespace TrailsPlugin.Data
     {
         private IList<IActivity> m_activities;
 		private Data.Trail m_trail;
-        private IList<Data.TrailResultWrapper> m_resultsListWrapper = new List<TrailResultWrapper>();
+        private IList<Data.TrailResultWrapper> m_resultsListWrapper = null;
         private IList<Data.TrailResult> m_resultsList = null;
         private TrailOrderStatus m_status;
         private IActivity m_resultActivity = null;
@@ -169,6 +169,7 @@ namespace TrailsPlugin.Data
         }
         public void AddInBoundResult()
         {
+            CalcResults();
             m_canAddInbound = false;
             foreach (IActivity activity in m_inBound)
             {
@@ -184,8 +185,9 @@ namespace TrailsPlugin.Data
 
         public void CalcResults()
         {
-            if (m_resultsListWrapper.Count == 0 || m_trail.TrailChanged(m_resultActivity))
+            if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
             {
+                m_resultsListWrapper = new List<TrailResultWrapper>();
                 m_resultActivity = m_trail.ReferenceActivity;
 
                 IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
@@ -539,56 +541,59 @@ namespace TrailsPlugin.Data
 
         public void Remove(IList<TrailResultWrapper> atr, bool invertSelection)
         {
-            IList<TrailResultWrapper> selected = atr;
-            if (invertSelection)
+            if (this.m_resultsListWrapper != null)
             {
-                selected = new List<TrailResultWrapper>();
-                foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
+                IList<TrailResultWrapper> selected = atr;
+                if (invertSelection)
                 {
-                    if (!atr.Contains(tr))
+                    selected = new List<TrailResultWrapper>();
+                    foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
                     {
-                        selected.Add(tr);
-                    }
-                }
-                //Exclude parents to selected
-                foreach (TrailResultWrapper tr in atr)
-                {
-                    if (tr.Parent != null)
-                    {
-                        TrailResultWrapper tr2 = tr.Parent as TrailResultWrapper;
-                        if (selected.Contains(tr2))
+                        if (!atr.Contains(tr))
                         {
-                            selected.Remove(tr2);
+                            selected.Add(tr);
                         }
                     }
-                }
+                    //Exclude parents to selected
+                    foreach (TrailResultWrapper tr in atr)
+                    {
+                        if (tr.Parent != null)
+                        {
+                            TrailResultWrapper tr2 = tr.Parent as TrailResultWrapper;
+                            if (selected.Contains(tr2))
+                            {
+                                selected.Remove(tr2);
+                            }
+                        }
+                    }
 
-            }
-            if (invertSelection && selected.Count == m_resultsListWrapper.Count)
-            {
-                //Must keep at least one in "inverted"
-                return;
-            }
-            //Needed?
-            //foreach (TrailResult trr in m_resultsList)
-            //{
-            //    trr.RemoveChildren(atr[0].Result);
-            //}
-            //This will not have any effect with invertSelection, as 'selected' contains
-            //complement to parents only
-            foreach (TrailResultWrapper trr in m_resultsListWrapper)
-            {
-                trr.RemoveChildren(selected, invertSelection);
-            }
-            foreach (TrailResultWrapper tr in selected)
-            {
-                if (Results.Contains(tr.Result))
-                {
-                    Results.Remove(tr.Result);
                 }
-                if (ResultTreeList.Contains(tr))
+                if (invertSelection && selected.Count == m_resultsListWrapper.Count)
                 {
-                    ResultTreeList.Remove(tr);
+                    //Must keep at least one in "inverted"
+                    return;
+                }
+                //Needed?
+                //foreach (TrailResult trr in m_resultsList)
+                //{
+                //    trr.RemoveChildren(atr[0].Result);
+                //}
+                //This will not have any effect with invertSelection, as 'selected' contains
+                //complement to parents only
+                foreach (TrailResultWrapper trr in m_resultsListWrapper)
+                {
+                    trr.RemoveChildren(selected, invertSelection);
+                }
+                foreach (TrailResultWrapper tr in selected)
+                {
+                    if (Results.Contains(tr.Result))
+                    {
+                        Results.Remove(tr.Result);
+                    }
+                    if (ResultTreeList.Contains(tr))
+                    {
+                        ResultTreeList.Remove(tr);
+                    }
                 }
             }
         }
@@ -613,7 +618,11 @@ namespace TrailsPlugin.Data
             {
                 //Law of cosines - get angle at r1
                 double d3 = r1.DistanceMetersToPoint(r2);
-                double a1 = Math.Acos((d1 * d1 + d3 * d3 - d2 * d2) / (2 * d1 * d3));
+                double a0 = (d1 * d1 + d3 * d3 - d2 * d2) / (2 * d1 * d3);
+                //Rounding errors w GPS measurements
+                a0 = Math.Min(a0, 1);
+                a0 = Math.Max(a0, -1);
+                double a1 = Math.Acos(a0);
                 //Dist from r1 to closest point
                 double d = Math.Abs(d1 * Math.Cos(a1));
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)

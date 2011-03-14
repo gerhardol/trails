@@ -321,7 +321,10 @@ namespace TrailsPlugin.UI.Activity {
                     //Only one activity, OK to merge selections on one track
                     TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atr2);
                     m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { result };
-                    m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
+                    if (atr != null && atr.Count > 0)
+                    {
+                        m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
+                    }
                     if (!markChart)
                     {
                         m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);

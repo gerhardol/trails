@@ -458,8 +458,18 @@ namespace TrailsPlugin.UI.Activity {
             {
                 try
                 {
-                    IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                        m_controller.ReferenceTrailResult.GPSRoute, null, null);
+                    IList<IActivity> similarActivities = null;
+                    if (m_controller.ReferenceTrailResult != null &&
+                        m_controller.ReferenceTrailResult.GPSRoute != null)
+                    {
+                        similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
+                           m_controller.ReferenceTrailResult.GPSRoute, null, null);
+                    }
+                    else if (m_controller.ReferenceActivity != null)
+                    {
+                        similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
+                           m_controller.ReferenceActivity.GPSRoute, null, null);
+                    }
                     if (similarActivities != null)
                     {
                         IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };

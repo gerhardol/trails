@@ -46,8 +46,9 @@ namespace TrailsPlugin.UI.Activity {
         private IList<Data.TrailResult> m_trailResults = new List<Data.TrailResult>();
         private XAxisValue m_XAxisReferential = XAxisValue.Time;
         private IList<LineChartTypes> m_YAxisReferentials = new List<LineChartTypes>();
-        private LineChartTypes m_defaultYAxisReferential = LineChartTypes.Speed;
-        private LineChartTypes m_YAxisReferential = LineChartTypes.Speed;
+        private IDictionary<LineChartTypes, IAxis> m_axis = new Dictionary<LineChartTypes, IAxis>();
+        private IDictionary<LineChartTypes, Color> m_color = new Dictionary<LineChartTypes, Color>();
+        private bool m_multipleCharts = false;
         private Color m_ChartFillColor = Color.WhiteSmoke;
         private Color m_ChartLineColor = Color.LightSkyBlue;
         private Color m_ChartSelectedColor = Color.AliceBlue;
@@ -87,6 +88,15 @@ namespace TrailsPlugin.UI.Activity {
 //            }
 #endif
             fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
+            m_color.Add(LineChartTypes.Speed, Color.Navy);
+            m_color.Add(LineChartTypes.Pace, Color.Navy);
+            m_color.Add(LineChartTypes.Elevation, Color.Sienna);
+            m_color.Add(LineChartTypes.Grade, Color.Sienna);
+            m_color.Add(LineChartTypes.HeartRateBPM, Color.Red);
+            m_color.Add(LineChartTypes.Cadence, Color.Green);
+            m_color.Add(LineChartTypes.Power, Color.Purple);
+            m_color.Add(LineChartTypes.DiffTime, Color.Chocolate);
+            m_color.Add(LineChartTypes.DiffDist, Color.CornflowerBlue);
         }
 
         public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple)
@@ -164,6 +174,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public enum LineChartTypes
         {
+            Unknown,
             Cadence,
             Elevation,
             HeartRateBPM,
@@ -313,13 +324,22 @@ namespace TrailsPlugin.UI.Activity {
             //MainChart.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
+        void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
+        {
+            foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
+            {
+                kp.Value.LabelColor = m_color[kp.Key];
+            }
+            e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
+        }
+
         void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
             if (e != null && e.DataSeries != null && m_page != null)
             {
                 //Get index for dataseries - same as for result
                 int i = -1;
-                if (MainChart.DataSeries.Count==2 &&
+                if (MainChart.DataSeries.Count==2 && m_YAxisReferentials.Count==1 &&
                     m_trailResults.Count==1)
                 {
                     //Match the result, the first is the fill chart
@@ -338,7 +358,8 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 if (i >= 0)
                 {
-                    TrailResult tr = m_trailResults[i];
+                    //Results must be added in order
+                    TrailResult tr = m_trailResults[i/m_YAxisReferentials.Count];
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
 
@@ -400,7 +421,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void SetSelectedResultRange(int i, bool clear, IList<float[]> regions)
         {
-            if (m_visible)
+            if (ShowPage)
             {
                 this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 if (clear)
@@ -433,9 +454,9 @@ namespace TrailsPlugin.UI.Activity {
         //No TrailResult - use all possible matches
         public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel)
         {
-            if (MainChart != null && MainChart.DataSeries != null &&
+            if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
                     MainChart.DataSeries.Count > 0 &&
-                m_trailResults.Count > 0 && ShowPage)
+                m_trailResults.Count > 0)
             {
                 //This is used in single activity mode, when selected on the route - all should be for the same activity
                 Data.TrailsItemTrackSelectionInfo sel = new Data.TrailsItemTrackSelectionInfo();
@@ -490,9 +511,9 @@ namespace TrailsPlugin.UI.Activity {
         //only mark in chart, no range/summary
         public void SetSelectedRegions(IList<TrailResultMarked> atr)
         {
-            if (MainChart != null && MainChart.DataSeries != null &&
+            if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
                     MainChart.DataSeries.Count > 0 &&
-                m_trailResults.Count > 0 && ShowPage)
+                m_trailResults.Count > 0)
             {
                 foreach(ChartDataSeries c in MainChart.DataSeries)
                 {
@@ -630,141 +651,152 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //Find if the chart has any data
-        private bool? hasValues=null;
-        public bool HasValues()
+        public bool AnyData()
         {
-            if (hasValues == null)
+            return YAxisReferentials != null && YAxisReferentials.Count>0;
+        }
+        private IDictionary<LineChartTypes,bool> m_hasValues=null;
+        public bool HasValues(LineChartTypes yaxis)
+        {
+            if (m_hasValues == null)
             {
+                m_hasValues = new Dictionary<LineChartTypes, bool>();
+            }
+            if(!m_hasValues.ContainsKey(yaxis))
+            {
+                m_hasValues.Add(yaxis, false);
                 //A diff to itself is not a value - enable replacing
                 if (!(m_trailResults == null || m_refTrailResult == null ||
-                    (YAxisReferential == LineChartTypes.DiffTime || YAxisReferential == LineChartTypes.DiffDist) &&
-                    m_trailResults.Count == 1 && m_trailResults == m_refTrailResult))
+                    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
+                    m_trailResults.Count == 1 && m_trailResults[0] == m_refTrailResult))
                 {
-                    foreach (ChartDataSeries t in MainChart.DataSeries)
+                    for (int i = 0; i < m_trailResults.Count; i++)
                     {
-                        foreach (KeyValuePair<float, PointF> v in t.Points)
+                        TrailResult tr = m_trailResults[i];
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis);
+
+                        if (graphPoints.Count > 1)
                         {
-                            if (v.Value.Y != 0)
-                            {
-                                hasValues = true;
-                                return true;
-                            }
+                            m_hasValues[yaxis] = true;
+                            break;
                         }
                     }
                 }
-                hasValues = false;
             }
-            return (bool)hasValues;
+            return m_hasValues[yaxis];
         }
 
-        private void SetupDataSeries()
+        virtual protected void SetupDataSeries()
         {
 			MainChart.DataSeries.Clear();
             MainChart.XAxis.Markers.Clear();
             if (m_visible)
             {
-                hasValues = null;
+                m_hasValues = null;
 
                 // Add main data. We must use 2 separate data series to overcome the display
                 //  bug in fill mode.  The main data series is normally rendered but the copy
                 //  is set in Line mode to be displayed over the fill
-
-                for (int i = 0; i < m_trailResults.Count; i++)
+                foreach (LineChartTypes yaxis in m_YAxisReferentials)
                 {
-                    TrailResult tr = m_trailResults[i];
-                    INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr);
 
-                    if (graphPoints.Count <= 1)
+                    for (int i = 0; i < m_trailResults.Count; i++)
                     {
-                        if (m_trailResults.Count > 1)
+                        TrailResult tr = m_trailResults[i];
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis);
+
+                        if (graphPoints.Count <= 1)
                         {
-                            //Add empty, Dataseries index must match results 
-                            MainChart.DataSeries.Add(new ChartDataSeries(MainChart, MainChart.YAxis));
-                        }
-                    }
-                    else
-                    {
-                        Color chartFillColor = ChartFillColor;
-                        Color chartLineColor = ChartLineColor;
-                        Color chartSelectedColor = ChartSelectedColor;
-                        if (m_trailResults.Count > 1)
-                        {
-                            chartFillColor = m_trailResults[i].TrailColor;
-                            chartLineColor = chartFillColor;
-                            chartSelectedColor = chartFillColor;
-                        }
-
-                        ChartDataSeries dataFill = null;
-                        ChartDataSeries dataLine = new ChartDataSeries(MainChart, MainChart.YAxis);
-
-                        if (m_trailResults.Count == 1)
-                        {
-                            dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
-                            MainChart.DataSeries.Add(dataFill);
-
-                            dataFill.ChartType = ChartDataSeries.Type.Fill;
-                            dataFill.FillColor = chartFillColor;
-                            dataFill.LineColor = chartLineColor;
-                            dataFill.SelectedColor = chartSelectedColor;
-                            dataFill.LineWidth = 2;
-
-                            MainChart.XAxis.Markers.Clear();
-                        }
-                        MainChart.DataSeries.Add(dataLine);
-
-                        dataLine.ChartType = ChartDataSeries.Type.Line;
-                        dataLine.LineColor = chartLineColor;
-                        dataLine.SelectedColor = chartSelectedColor;
-
-                        if (XAxisReferential == XAxisValue.Time)
-                        {
-                            float oldElapsedSeconds = -1;
-                            foreach (ITimeValueEntry<float> entry in graphPoints)
+                            if (m_trailResults.Count > 1)
                             {
-                                float value = entry.Value;//ConvertUnit(entry.Value, GenSeriesEntry.LineChartType);
-                                if (oldElapsedSeconds != entry.ElapsedSeconds)
-                                {
-                                    if (null != dataFill)
-                                    {
-                                        dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
-                                    }
-                                    dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
-                                }
-                                oldElapsedSeconds = entry.ElapsedSeconds;
+                                //Add empty, Dataseries index must match results 
+                                MainChart.DataSeries.Add(new ChartDataSeries(MainChart, m_axis[yaxis]));
                             }
                         }
                         else
                         {
-                            if (null != m_refTrailResult)
+                            Color chartFillColor = System.Drawing.Color.WhiteSmoke;
+                            Color chartLineColor = m_color[yaxis];
+                            Color chartSelectedColor = ControlPaint.Dark(m_color[yaxis], 0.01F); ;
+                            if (m_trailResults.Count > 1)
                             {
-                            IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack0(m_refTrailResult);
+                                chartFillColor = m_trailResults[i].TrailColor;
+                                chartLineColor = chartFillColor;
+                                chartSelectedColor = chartFillColor;
+                            }
 
+                            ChartDataSeries dataFill = null;
+                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
+
+                            if (m_trailResults.Count == 1 && m_YAxisReferentials.Count == 1)
+                            {
+                                dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
+                                MainChart.DataSeries.Add(dataFill);
+
+                                dataFill.ChartType = ChartDataSeries.Type.Fill;
+                                dataFill.FillColor = chartFillColor;
+                                dataFill.LineColor = chartLineColor;
+                                dataFill.SelectedColor = chartSelectedColor;
+                                dataFill.LineWidth = 2;
+                            }
+                            MainChart.DataSeries.Add(dataLine);
+
+                            dataLine.ChartType = ChartDataSeries.Type.Line;
+                            dataLine.LineColor = chartLineColor;
+                            dataLine.SelectedColor = chartSelectedColor;
+
+                            if (XAxisReferential == XAxisValue.Time)
+                            {
                                 float oldElapsedSeconds = -1;
-                                foreach (ITimeValueEntry<float> dtEntry in distanceTrack)
+                                foreach (ITimeValueEntry<float> entry in graphPoints)
                                 {
-                                    float elapsedSeconds = dtEntry.ElapsedSeconds;
-                                    if(elapsedSeconds <= graphPoints.TotalElapsedSeconds)
+                                    float value = entry.Value;//ConvertUnit(entry.Value, GenSeriesEntry.LineChartType);
+                                    if (oldElapsedSeconds != entry.ElapsedSeconds)
                                     {
-                                        ITimeValueEntry<float> valueEntry = graphPoints.GetInterpolatedValue(graphPoints.StartTime.AddSeconds(elapsedSeconds));
-                                        float value = valueEntry.Value;//ConvertUnit(valueEntry.Value, GenSeriesEntry.LineChartType);
-                                        //float distanceValue = ConvertUnit(dtEntry.Value, LineChartTypes.Distance);
-                                        float distanceValue = dtEntry.Value;// (float)UnitUtil.Distance.ConvertFrom(dtEntry.Value, m_refTrailResult.Activity);
- 
-                                        if (oldElapsedSeconds != elapsedSeconds)
+                                        if (null != dataFill)
                                         {
-                                            if (null != dataFill)
-                                            {
-                                                dataFill.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
-                                            }
-                                            dataLine.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
+                                            dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
                                         }
-                                        oldElapsedSeconds = elapsedSeconds;
+                                        dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
+                                    }
+                                    oldElapsedSeconds = entry.ElapsedSeconds;
+                                }
+                            }
+                            else
+                            {
+                                if (null != m_refTrailResult)
+                                {
+                                    IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack0(m_refTrailResult);
+
+                                    float oldElapsedSeconds = -1;
+                                    foreach (ITimeValueEntry<float> dtEntry in distanceTrack)
+                                    {
+                                        float elapsedSeconds = dtEntry.ElapsedSeconds;
+                                        if (elapsedSeconds <= graphPoints.TotalElapsedSeconds)
+                                        {
+                                            ITimeValueEntry<float> valueEntry = graphPoints.GetInterpolatedValue(graphPoints.StartTime.AddSeconds(elapsedSeconds));
+                                            float value = valueEntry.Value;//ConvertUnit(valueEntry.Value, GenSeriesEntry.LineChartType);
+                                            //float distanceValue = ConvertUnit(dtEntry.Value, LineChartTypes.Distance);
+                                            float distanceValue = dtEntry.Value;// (float)UnitUtil.Distance.ConvertFrom(dtEntry.Value, m_refTrailResult.Activity);
+
+                                            if (oldElapsedSeconds != elapsedSeconds)
+                                            {
+                                                if (null != dataFill)
+                                                {
+                                                    dataFill.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
+                                                }
+                                                dataLine.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
+                                            }
+                                            oldElapsedSeconds = elapsedSeconds;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+
+                MainChart.XAxis.Markers.Clear();
                 Data.TrailResult trailPointResult = m_refTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
                 if (m_trailResults.Count == 1 ||
@@ -843,155 +875,120 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 // Y axis
                 MainChart.YAxisRight.Clear();
-                m_YAxisReferentials.Clear();
-                //if (m_dataSeries.Count == 0)
-                //{
-                //    CreateAxis(m_defaultYAxisReferential, true);
-                //}
-                //else
-                //{
-                //    bool boFirst = true;
-                //    foreach (GenericChartDataSeries series in m_dataSeries)
-                //    {
-                //        IAxis axis = FindAxis(series.LineChartType);
-                //        if (axis == null)
-                //        {
-                //            CreateAxis(series.LineChartType, boFirst);
-                //            boFirst = false;
-                //        }
-                //    }
-                //}
-                IAxis axis = FindAxis(m_YAxisReferential);
-                if (axis == null)
+                bool boFirst = true;
+                foreach (LineChartTypes yaxis in m_YAxisReferentials)
                 {
-                    CreateAxis(m_YAxisReferential, true);
+                    CreateAxis(yaxis, boFirst);
+                    boFirst = false;
+
                 }
             }
         }
-
-        private IAxis FindAxis(LineChartTypes lineChartType)
+        
+        private void CreateAxis(LineChartTypes axisType, bool left)
         {
-            IAxis axis = null;
-            bool boAxisTypeExists = false;
-            int i;
-            for (i = 0; i < m_YAxisReferentials.Count; i++)
+            if ((m_trailResults == null || m_refTrailResult == null ||
+                (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist) &&
+                m_trailResults.Count == 1 && m_trailResults == m_refTrailResult))
             {
-                if (lineChartType == m_YAxisReferentials[i])
-                {
-                    boAxisTypeExists = true;
-                    break;
-                }
+                return;
             }
-            if (boAxisTypeExists)
+            if (!m_axis.ContainsKey(axisType))
             {
-                if (i == 0)
+                IAxis axis;
+                if (left)
                 {
                     axis = MainChart.YAxis;
                 }
                 else
                 {
-                    axis = MainChart.YAxisRight[i - 1];
+                    axis = new RightVerticalAxis(MainChart);
+                    axis.SmartZoom = true;
+                    MainChart.YAxisRight.Add(axis);
+                }
+                m_axis.Add(axisType, axis);
+                axis.LabelColor = m_color[axisType];
+
+                switch (axisType)
+                {
+                    case LineChartTypes.Cadence:
+                        {
+                            axis.Formatter = new Formatter.General(UnitUtil.Cadence.DefaultDecimalPrecision);
+                            axis.Label = CommonResources.Text.LabelCadence + UnitUtil.Cadence.LabelAbbr2;
+                            break;
+                        }
+                    case LineChartTypes.Grade:
+                        {
+                            axis.Formatter = new Formatter.Percent();
+                            axis.Label = CommonResources.Text.LabelGrade + " (%)";
+                            break;
+                        }
+                    case LineChartTypes.Elevation:
+                        {
+                            axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision);
+                            axis.Label = CommonResources.Text.LabelElevation + UnitUtil.Elevation.LabelAbbrAct2(m_refTrailResult.Activity);
+                            break;
+                        }
+                    case LineChartTypes.HeartRateBPM:
+                    case LineChartTypes.DiffHeartRateBPM:
+                        {
+                            axis.Formatter = new Formatter.General(UnitUtil.HeartRate.DefaultDecimalPrecision);
+                            axis.Label = CommonResources.Text.LabelHeartRate + UnitUtil.HeartRate.LabelAbbr2;
+                            break;
+                        }
+                    case LineChartTypes.HeartRatePercentMax:
+                        {
+                            axis.Label = CommonResources.Text.LabelHeartRate + " (" +
+                                                    CommonResources.Text.LabelPercentOfMax + ")";
+                            break;
+                        }
+                    case LineChartTypes.Power:
+                        {
+                            axis.Formatter = new Formatter.General(UnitUtil.Power.DefaultDecimalPrecision);
+                            axis.Label = CommonResources.Text.LabelPower + UnitUtil.Power.LabelAbbr2;
+                            break;
+                        }
+                    case LineChartTypes.Speed:
+                        {
+                            axis.Formatter = new Formatter.General(UnitUtil.Speed.DefaultDecimalPrecision);
+                            axis.Label = CommonResources.Text.LabelSpeed + UnitUtil.Pace.LabelAbbrAct2(m_refTrailResult.Activity);
+                            break;
+                        }
+                    case LineChartTypes.Pace:
+                        {
+                            axis.Formatter = new Formatter.SecondsToTime();
+                            axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(m_refTrailResult.Activity);
+                            break;
+                        }
+                    case LineChartTypes.DiffTime:
+                    case LineChartTypes.Time:
+                        {
+                            axis.Formatter = new Formatter.SecondsToTime();
+                            axis.Label = CommonResources.Text.LabelTime;
+                            break;
+                        }
+                    case LineChartTypes.DiffDist:
+                    case LineChartTypes.Distance:
+                        {
+                            axis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
+                            axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Distance.LabelAbbrAct2(m_refTrailResult.Activity);
+                            break;
+                        }
+                    default:
+                        {
+                            Debug.Assert(false);
+                            break;
+                        }
                 }
             }
-            return axis;
-        }
-        
-        private void CreateAxis(LineChartTypes axisType, bool left)
-        {
-            m_YAxisReferentials.Add(axisType);
-            
-            IAxis axis;
-            if (left)
-            {
-                axis = MainChart.YAxis;
-            }
-            else
-            {
-                axis = new RightVerticalAxis(MainChart);
-                axis.SmartZoom = true;
-                MainChart.YAxisRight.Add(axis);
-            }
-
-            switch (axisType)
-            {
-                case LineChartTypes.Cadence:
-                    {
-                        axis.Formatter = new Formatter.General(UnitUtil.Cadence.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelCadence + UnitUtil.Cadence.LabelAbbr2;
-                        break;
-                    }
-                case LineChartTypes.Grade:
-                    {
-                        axis.Formatter = new Formatter.Percent();
-                        axis.Label = CommonResources.Text.LabelGrade + " (%)";
-                        break;
-                    }
-                case LineChartTypes.Elevation:
-                    {
-                        axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelElevation + UnitUtil.Elevation.LabelAbbrAct2(m_refTrailResult.Activity);
-                        break;
-                    }
-                case LineChartTypes.HeartRateBPM:
-                case LineChartTypes.DiffHeartRateBPM:
-                    {
-                        axis.Formatter = new Formatter.General(UnitUtil.HeartRate.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelHeartRate + UnitUtil.HeartRate.LabelAbbr2;
-                        break;
-                    }
-                case LineChartTypes.HeartRatePercentMax:
-                    {
-                        axis.Label = CommonResources.Text.LabelHeartRate + " (" +
-                                                CommonResources.Text.LabelPercentOfMax + ")";
-                        break;
-                    }
-                case LineChartTypes.Power:
-                    {
-                        axis.Formatter = new Formatter.General(UnitUtil.Power.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelPower + UnitUtil.Power.LabelAbbr2;
-                        break;
-                    }
-                case LineChartTypes.Speed:
-                    {
-                        axis.Formatter = new Formatter.General(UnitUtil.Speed.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelSpeed + UnitUtil.Pace.LabelAbbrAct2(m_refTrailResult.Activity);
-                        break;
-                    }
-                case LineChartTypes.Pace:
-                    {
-                        axis.Formatter = new Formatter.SecondsToTime();
-                        axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(m_refTrailResult.Activity);
-                        break;
-                    }
-                case LineChartTypes.DiffTime:
-                case LineChartTypes.Time:
-                    {
-                        axis.Formatter = new Formatter.SecondsToTime();
-                        axis.Label = CommonResources.Text.LabelTime;
-                        break;
-                    }
-                case LineChartTypes.DiffDist:
-                case LineChartTypes.Distance:
-                    {
-
-                        axis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Distance.LabelAbbrAct2(m_refTrailResult.Activity);
-                        break;
-                    }
-                default:
-                    {
-                        Debug.Assert(false);
-                        break;
-                    }
-            }
         }
 
-        private INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result)
+        private INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart)
         {
 			// Fail safe
 			INumericTimeDataSeries track = new NumericTimeDataSeries();
 
-            switch (YAxisReferential)
+            switch (lineChart)
             {
                 case LineChartTypes.Cadence:
                     {
@@ -1067,62 +1064,82 @@ namespace TrailsPlugin.UI.Activity {
         [DisplayName("Y Axis value")]
         public LineChartTypes YAxisReferential
         {
-            get { return m_YAxisReferential; }
+            get
+            {
+                if (m_YAxisReferentials == null || m_YAxisReferentials.Count == 0)
+                {
+                    return LineChartTypes.Unknown;
+                }
+                return m_YAxisReferentials[0];
+            }
             set
             {
-                m_YAxisReferential = value;
+                YAxisReferentials = new List<LineChartTypes> { value };
             }
         }
+        public IList<LineChartTypes> YAxisReferentials
+        {
+            get
+            {
+                return m_YAxisReferentials;
+            }
+            set
+            {
+                m_YAxisReferentials = value;
+                m_axis = new Dictionary<LineChartTypes, IAxis>();
 
-        //[DisplayName("Y Axis value, right")]
-        //public IList<LineChartTypes> YAxisReferential_right
+            }
+        }
+        public bool MultipleCharts
+        {
+            get
+            {
+                return m_multipleCharts;
+            }
+            set
+            {
+                m_multipleCharts = value;
+            }
+        }
+        //public Color ChartFillColor
         //{
-        //    get { return m_YAxisReferential_right; }
-        //    set
-        //    {
-        //        m_YAxisReferential_right = value;
+        //    get { return m_ChartFillColor; }
+        //    set {
+        //        if (m_ChartFillColor != value) {
+        //            m_ChartFillColor = value;
+
+        //            foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
+        //                dataSerie.FillColor = ChartFillColor;
+        //            }
+        //        }
         //    }
         //}
 
-        public Color ChartFillColor
-        {
-			get { return m_ChartFillColor; }
-			set {
-				if (m_ChartFillColor != value) {
-					m_ChartFillColor = value;
+        //public Color ChartLineColor {
+        //    get { return m_ChartLineColor; }
+        //    set {
+        //        if (ChartLineColor != value) {
+        //            m_ChartLineColor = value;
 
-					foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
-						dataSerie.FillColor = ChartFillColor;
-					}
-				}
-			}
-		}
+        //            foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
+        //                dataSerie.LineColor = ChartLineColor;
+        //            }
+        //        }
+        //    }
+        //}
 
-		public Color ChartLineColor {
-			get { return m_ChartLineColor; }
-			set {
-				if (ChartLineColor != value) {
-					m_ChartLineColor = value;
+        //public Color ChartSelectedColor {
+        //    get { return m_ChartSelectedColor; }
+        //    set {
+        //        if (ChartSelectedColor != value) {
+        //            m_ChartSelectedColor = value;
 
-					foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
-						dataSerie.LineColor = ChartLineColor;
-					}
-				}
-			}
-		}
-
-		public Color ChartSelectedColor {
-			get { return m_ChartSelectedColor; }
-			set {
-				if (ChartSelectedColor != value) {
-					m_ChartSelectedColor = value;
-
-					foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
-						dataSerie.SelectedColor = ChartSelectedColor;
-					}
-				}
-			}
-		}
+        //            foreach (ChartDataSeries dataSerie in MainChart.DataSeries) {
+        //                dataSerie.SelectedColor = ChartSelectedColor;
+        //            }
+        //        }
+        //    }
+        //}
 
 		[Browsable(false)]
         public Data.TrailResult ReferenceTrailResult

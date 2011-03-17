@@ -756,6 +756,7 @@ namespace TrailsPlugin.Data {
                 return m_gradeTrack;
             }
         }
+
         private bool checkCacheRef(TrailResult refRes)
         {
             if (refRes == null || refRes != m_cacheTrackRef)

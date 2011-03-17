@@ -50,10 +50,12 @@
             this.paceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.elevationChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.heartrateChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.multiChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.cadenceChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.gradeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.diffTimeChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.diffDistChart = new TrailsPlugin.UI.Activity.TrailLineChart();
+            this.powerChart = new TrailsPlugin.UI.Activity.TrailLineChart();
             this.ChartBanner.SuspendLayout();
             this.detailMenu.SuspendLayout();
             this.ChartPanel.SuspendLayout();
@@ -243,19 +245,23 @@
             this.ChartPanel.ColumnCount = 1;
             this.ChartPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.ChartPanel.Controls.Add(this.ChartBanner, 0, 0);
-            this.ChartPanel.Controls.Add(this.speedChart, 0, 1);
-            this.ChartPanel.Controls.Add(this.paceChart, 0, 2);
-            this.ChartPanel.Controls.Add(this.elevationChart, 0, 3);
-            this.ChartPanel.Controls.Add(this.heartrateChart, 0, 4);
-            this.ChartPanel.Controls.Add(this.cadenceChart, 0, 5);
-            this.ChartPanel.Controls.Add(this.gradeChart, 0, 6);
-            this.ChartPanel.Controls.Add(this.diffTimeChart, 0, 7);
-            this.ChartPanel.Controls.Add(this.diffDistChart, 0, 8);
+            this.ChartPanel.Controls.Add(this.multiChart, 0, 1);
+            this.ChartPanel.Controls.Add(this.speedChart, 0, 2);
+            this.ChartPanel.Controls.Add(this.paceChart, 0, 3);
+            this.ChartPanel.Controls.Add(this.elevationChart, 0, 4);
+            this.ChartPanel.Controls.Add(this.heartrateChart, 0, 5);
+            this.ChartPanel.Controls.Add(this.cadenceChart, 0, 6);
+            this.ChartPanel.Controls.Add(this.gradeChart, 0, 7);
+            this.ChartPanel.Controls.Add(this.powerChart, 0, 8);
+            this.ChartPanel.Controls.Add(this.diffTimeChart, 0, 9);
+            this.ChartPanel.Controls.Add(this.diffDistChart, 0, 10);
             this.ChartPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ChartPanel.Location = new System.Drawing.Point(0, 0);
             this.ChartPanel.Name = "ChartPanel";
-            this.ChartPanel.RowCount = 9;
+            this.ChartPanel.RowCount = 10;
             this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.ChartPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -267,14 +273,34 @@
             this.ChartPanel.Size = new System.Drawing.Size(260, 520);
             this.ChartPanel.TabIndex = 2;
             // 
+            // multiChart
+            // 
+            this.multiChart.AutoSize = true;
+            this.multiChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            //this.multiChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.multiChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            //this.multiChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.multiChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.multiChart.Location = new System.Drawing.Point(0, 720);
+            this.multiChart.Margin = new System.Windows.Forms.Padding(0);
+            this.multiChart.MinimumSize = new System.Drawing.Size(100, 0);
+            this.multiChart.Name = "multiChart";
+            this.multiChart.ReferenceTrailResult = null;
+            this.multiChart.ShowPage = false;
+            this.multiChart.Size = new System.Drawing.Size(500, 100);
+            this.multiChart.TabIndex = 1;
+            this.multiChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.multiChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Unknown;
+            this.multiChart.MultipleCharts = true;
+            // 
             // speedChart
             // 
             this.speedChart.AutoSize = true;
             this.speedChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.speedChart.BackColor = System.Drawing.SystemColors.Control;
-            this.speedChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.speedChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.speedChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.speedChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.speedChart.ChartLineColor = System.Drawing.Color.Blue;
+            //this.speedChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.speedChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.speedChart.Location = new System.Drawing.Point(0, 0);
             this.speedChart.Margin = new System.Windows.Forms.Padding(0);
@@ -292,9 +318,9 @@
             this.paceChart.AutoSize = true;
             this.paceChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.paceChart.BackColor = System.Drawing.SystemColors.Control;
-            this.paceChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.paceChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.paceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.paceChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.paceChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
+            //this.paceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.paceChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.paceChart.Location = new System.Drawing.Point(0, 120);
             this.paceChart.Margin = new System.Windows.Forms.Padding(0);
@@ -311,9 +337,9 @@
             // 
             this.elevationChart.AutoSize = true;
             this.elevationChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.elevationChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.elevationChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.elevationChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.elevationChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.elevationChart.ChartLineColor = System.Drawing.Color.Green;
+            //this.elevationChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.elevationChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.elevationChart.Location = new System.Drawing.Point(0, 220);
             this.elevationChart.Margin = new System.Windows.Forms.Padding(0);
@@ -330,9 +356,9 @@
             // 
             this.heartrateChart.AutoSize = true;
             this.heartrateChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.heartrateChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.heartrateChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.heartrateChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.heartrateChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.heartrateChart.ChartLineColor = System.Drawing.Color.Red;
+            //this.heartrateChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.heartrateChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.heartrateChart.Location = new System.Drawing.Point(0, 320);
             this.heartrateChart.Margin = new System.Windows.Forms.Padding(0);
@@ -349,9 +375,9 @@
             // 
             this.cadenceChart.AutoSize = true;
             this.cadenceChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.cadenceChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.cadenceChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.cadenceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.cadenceChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.cadenceChart.ChartLineColor = System.Drawing.Color.Yellow;
+            //this.cadenceChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.cadenceChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cadenceChart.Location = new System.Drawing.Point(0, 420);
             this.cadenceChart.Margin = new System.Windows.Forms.Padding(0);
@@ -368,9 +394,9 @@
             // 
             this.gradeChart.AutoSize = true;
             this.gradeChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.gradeChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.gradeChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.gradeChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.gradeChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.gradeChart.ChartLineColor = System.Drawing.Color.LightGreen;
+            //this.gradeChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.gradeChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gradeChart.Location = new System.Drawing.Point(0, 520);
             this.gradeChart.Margin = new System.Windows.Forms.Padding(0);
@@ -387,9 +413,9 @@
             // 
             this.diffTimeChart.AutoSize = true;
             this.diffTimeChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.diffTimeChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.diffTimeChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.diffTimeChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.diffTimeChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.diffTimeChart.ChartLineColor = System.Drawing.Color.Pink;
+            //this.diffTimeChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.diffTimeChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.diffTimeChart.Location = new System.Drawing.Point(0, 620);
             this.diffTimeChart.Margin = new System.Windows.Forms.Padding(0);
@@ -406,9 +432,9 @@
             // 
             this.diffDistChart.AutoSize = true;
             this.diffDistChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.diffDistChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
-            this.diffDistChart.ChartLineColor = System.Drawing.Color.LightSkyBlue;
-            this.diffDistChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            //this.diffDistChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.diffDistChart.ChartLineColor = System.Drawing.Color.HotPink;
+            //this.diffDistChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
             this.diffDistChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.diffDistChart.Location = new System.Drawing.Point(0, 720);
             this.diffDistChart.Margin = new System.Windows.Forms.Padding(0);
@@ -420,6 +446,25 @@
             this.diffDistChart.TabIndex = 7;
             this.diffDistChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
             this.diffDistChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.DiffDist;
+            // 
+            // powerChart
+            // 
+            this.powerChart.AutoSize = true;
+            this.powerChart.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            //this.powerChart.ChartFillColor = System.Drawing.Color.WhiteSmoke;
+            //this.powerChart.ChartLineColor = System.Drawing.Color.Purple;
+            //this.powerChart.ChartSelectedColor = System.Drawing.Color.AliceBlue;
+            this.powerChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.powerChart.Location = new System.Drawing.Point(0, 720);
+            this.powerChart.Margin = new System.Windows.Forms.Padding(0);
+            this.powerChart.MinimumSize = new System.Drawing.Size(100, 0);
+            this.powerChart.Name = "powerChart";
+            this.powerChart.ReferenceTrailResult = null;
+            this.powerChart.ShowPage = false;
+            this.powerChart.Size = new System.Drawing.Size(500, 100);
+            this.powerChart.TabIndex = 7;
+            this.powerChart.XAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.XAxisValue.Time;
+            this.powerChart.YAxisReferential = TrailsPlugin.UI.Activity.TrailLineChart.LineChartTypes.Power;
             // 
             // MultiChartsControl
             // 
@@ -444,14 +489,16 @@
         private System.Windows.Forms.ContextMenuStrip detailMenu;
         private ZoneFiveSoftware.Common.Visuals.Button btnExpand;
         private System.Windows.Forms.TableLayoutPanel ChartPanel;
-		private TrailLineChart cadenceChart;
-		private TrailLineChart heartrateChart;
+        private TrailLineChart multiChart;
+        private TrailLineChart cadenceChart;
+        private TrailLineChart heartrateChart;
         private TrailLineChart speedChart;
         private TrailLineChart paceChart;
         private TrailLineChart elevationChart;
         private TrailLineChart gradeChart;
         private TrailLineChart diffTimeChart;
         private TrailLineChart diffDistChart;
+        private TrailLineChart powerChart;
         private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem elevationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem heartRateToolStripMenuItem;

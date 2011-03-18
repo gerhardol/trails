@@ -475,9 +475,14 @@ namespace TrailsPlugin.Data {
                 return false;
             }
             //Have to adjust as ST will not consider i.e. 11,9453<11,92103<11,92104
-            IGPSBounds a2 = new GPSBounds(
-                new GPSLocation(activityBounds.NorthLatitudeDegrees+0.01F, activityBounds.WestLongitudeDegrees-0.01F),
-                new GPSLocation(activityBounds.SouthLatitudeDegrees-0.01F, activityBounds.EastLongitudeDegrees+0.01F));
+            IGPSBounds a2 = activityBounds;
+            if (this.GpsBounds.NorthLatitudeDegrees == this.GpsBounds.SouthLatitudeDegrees ||
+                this.GpsBounds.WestLongitudeDegrees == this.GpsBounds.EastLongitudeDegrees)
+            {
+                a2 = new GPSBounds(
+                new GPSLocation(activityBounds.NorthLatitudeDegrees + 0.01F, activityBounds.WestLongitudeDegrees - 0.01F),
+                new GPSLocation(activityBounds.SouthLatitudeDegrees - 0.01F, activityBounds.EastLongitudeDegrees + 0.01F));
+            }
             return a2.Contains(this.GpsBounds);
 		}
 	}

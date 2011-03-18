@@ -796,7 +796,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
-                MainChart.XAxis.Markers.Clear();
                 Data.TrailResult trailPointResult = m_refTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
                 if (m_trailResults.Count == 1 ||

@@ -246,119 +246,118 @@ namespace TrailsPlugin.UI.Activity {
                 TrailLineChart updateChart = m_multiChart;
                 if (m_multipleCharts)
                 {
+                    foreach (TrailLineChart chart in m_lineCharts)
+                    {
+                        chart.ShowPage = false;
+                    }
                     m_multiChart.BeginUpdate();
-                    m_multiChart.ShowPage = false;
+                    //m_multiChart.ShowPage = false;
+                    m_multiChart.XAxisReferential = Data.Settings.XAxisValue;
+                    IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                    m_multiChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                    m_multiChart.TrailResults = list;
+                    foreach (TrailLineChart.LineChartTypes t in Data.Settings.MultiChartType)
+                    {
+                        TrailLineChart.LineChartTypes t2 = t;
+                        if (t2 == TrailLineChart.LineChartTypes.SpeedPace)
+                        {
+                            t2 = speedPaceYaxis;
+                        }
+                        if (t2 == TrailLineChart.LineChartTypes.DiffDistTime)
+                        {
+                            t2 = diffYaxis;
+                        }
+                        if (!m_multiChart.YAxisReferentials.Contains(t2) &&
+                            m_multiChart.HasValues(t2))
+                        {
+                            m_multiChart.YAxisReferentials.Add(t2);
+                        }
+                    }
+                    m_multiChart.ShowPage = true;
+
+                    if (!m_multiChart.AnyData())
+                    {
+                        m_multiChart.YAxisReferential = speedPaceYaxis;
+                        m_multiChart.ShowPage = true;
+                    }
+                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(m_multiChart.YAxisReferential) + " / " +
+                    TrailLineChart.XAxisValueString(m_multiChart.XAxisReferential);
+                    m_multiChart.EndUpdate();
                 }
-                foreach (TrailLineChart chart in m_lineCharts)
+                else
                 {
-                    bool visible = false;
+                    foreach (TrailLineChart chart in m_lineCharts)
+                    {
+                        bool visible = false;
 
-                    if (!chart.MultipleCharts && (m_multipleGraphs || m_multipleCharts) &&
-                        (Data.Settings.MultiChartType.Contains(chart.YAxisReferential) ||
-                        chart.YAxisReferential == speedPaceYaxis &&
-                        Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.SpeedPace) ||
-                        chart.YAxisReferential == diffYaxis &&
-                        Data.Settings.MultiChartType.Contains(TrailLineChart.LineChartTypes.DiffDistTime)) ||
-                        !m_multipleGraphs &&
-                        (chart.YAxisReferential == Data.Settings.ChartType ||
-                        chart.YAxisReferential == speedPaceYaxis &&
-                            TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType ||
-                        chart.YAxisReferential == diffYaxis &&
-                            TrailLineChart.LineChartTypes.DiffDistTime == Data.Settings.ChartType))
-                    {
-                        visible = true;
-                    }
+                        if (m_multipleGraphs &&
+                            (Data.Settings.MultiGraphType.Contains(chart.YAxisReferential) ||
+                            chart.YAxisReferential == speedPaceYaxis &&
+                            Data.Settings.MultiGraphType.Contains(TrailLineChart.LineChartTypes.SpeedPace) ||
+                            chart.YAxisReferential == diffYaxis &&
+                            Data.Settings.MultiGraphType.Contains(TrailLineChart.LineChartTypes.DiffDistTime)) ||
 
-                    if (m_multipleCharts)
-                    {
-                        updateChart = m_multiChart;
-                    }
-                    else
-                    {
+                            !m_multipleGraphs &&
+                            (chart.YAxisReferential == Data.Settings.ChartType ||
+                            chart.YAxisReferential == speedPaceYaxis &&
+                                TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType ||
+                            chart.YAxisReferential == diffYaxis &&
+                                TrailLineChart.LineChartTypes.DiffDistTime == Data.Settings.ChartType))
+                        {
+                            visible = true;
+                        }
+
                         updateChart = chart;
                         updateChart.BeginUpdate();
-                    }
-                    chart.ShowPage = false;
-                    if (visible && ( !m_multipleCharts || 
-                        !m_multiChart.YAxisReferentials.Contains(chart.YAxisReferential)))
-                    {
-                        if (!m_multipleCharts || updateChart.YAxisReferentials.Count == 0)
+                        chart.ShowPage = false;
+                        if (visible)
                         {
                             updateChart.XAxisReferential = Data.Settings.XAxisValue;
                             IList<Data.TrailResult> list = this.m_page.SelectedItems;
                             updateChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                             updateChart.TrailResults = list;
-                            if (!m_multipleGraphs && (!m_multipleCharts || updateChart.YAxisReferentials.Count == 1))
+                            if (!m_multipleGraphs && updateChart.YAxisReferentials.Count == 1)
                             {
                                 this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart.YAxisReferential) + " / " +
                                 TrailLineChart.XAxisValueString(chart.XAxisReferential);
                             }
-                        }
-                        if (updateChart.HasValues(chart.YAxisReferential))
-                        {
-                            if (m_multipleCharts)
-                            {
-                                m_multiChart.YAxisReferentials.Add(chart.YAxisReferential);
-                            }
-                            else
+                            if (updateChart.HasValues(chart.YAxisReferential))
                             {
                                 updateChart.ShowPage = visible;
                             }
-                        }
-                        else
-                        {
-                            if (!m_multipleCharts && visible && !updateChart.HasValues(chart.YAxisReferential))
+                            else
                             {
-                                chart.ShowPage = false;
-                                m_multiChart.YAxisReferentials.Remove(chart.YAxisReferential);
-                                //Replace empty chart
-                                if (!m_multipleGraphs && chart.YAxisReferential != speedPaceYaxis)
+                                if (visible && !updateChart.HasValues(chart.YAxisReferential))
                                 {
-                                    foreach (TrailLineChart replaceChart in m_lineCharts)
+                                    chart.ShowPage = false;
+                                    //Replace empty chart
+                                    if (!m_multipleGraphs && chart.YAxisReferential != speedPaceYaxis)
                                     {
-                                        if (replaceChart.YAxisReferential == speedPaceYaxis)
+                                        foreach (TrailLineChart replaceChart in m_lineCharts)
                                         {
-                                            replaceChart.BeginUpdate();
-                                            replaceChart.ShowPage = false;
-                                            replaceChart.XAxisReferential = Data.Settings.XAxisValue;
-                                            IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                                            replaceChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                                            replaceChart.TrailResults = list;
-                                            if (!m_multipleGraphs)
+                                            if (replaceChart.YAxisReferential == speedPaceYaxis)
                                             {
-                                                this.ChartBanner.Text = TrailLineChart.ChartTypeString(replaceChart.YAxisReferential) + " / " +
-                                                TrailLineChart.XAxisValueString(replaceChart.XAxisReferential);
+                                                replaceChart.BeginUpdate();
+                                                replaceChart.ShowPage = false;
+                                                replaceChart.XAxisReferential = Data.Settings.XAxisValue;
+                                                IList<Data.TrailResult> list2 = this.m_page.SelectedItems;
+                                                replaceChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                                                replaceChart.TrailResults = list2;
+                                                if (!m_multipleGraphs)
+                                                {
+                                                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(replaceChart.YAxisReferential) + " / " +
+                                                    TrailLineChart.XAxisValueString(replaceChart.XAxisReferential);
+                                                }
+                                                replaceChart.ShowPage = visible;
+                                                replaceChart.EndUpdate();
                                             }
-                                            replaceChart.ShowPage = visible;
-                                            replaceChart.EndUpdate();
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    if (!m_multipleCharts)
-                    {
                         updateChart.EndUpdate();
                     }
-                }
-                if (m_multipleCharts)
-                {
-                    if (!m_multiChart.AnyData())
-                    {
-                        m_multiChart.YAxisReferential = speedPaceYaxis;
-                        m_multiChart.XAxisReferential = Data.Settings.XAxisValue;
-                        IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                        m_multiChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                        m_multiChart.TrailResults = list;
-                        if (!m_multipleGraphs && (!m_multipleCharts || updateChart.YAxisReferentials.Count == 1))
-                        {
-                            this.ChartBanner.Text = TrailLineChart.ChartTypeString(m_multiChart.YAxisReferential) + " / " +
-                            TrailLineChart.XAxisValueString(m_multiChart.XAxisReferential);
-                        }
-                    }
-                    m_multiChart.ShowPage = true;
-                    m_multiChart.EndUpdate();
                 }
                 RefreshRows();
                 RefreshChartMenu();
@@ -367,9 +366,13 @@ namespace TrailsPlugin.UI.Activity {
 
         private bool setLineChartChecked(TrailLineChart.LineChartTypes t)
         {
-            if (m_multipleGraphs || m_multipleCharts)
+            if (m_multipleCharts)
             {
                 return Data.Settings.MultiChartType.Contains(t);
+            }
+            else if (m_multipleGraphs)
+            {
+                return Data.Settings.MultiGraphType.Contains(t);
             }
             else
             {
@@ -399,9 +402,13 @@ namespace TrailsPlugin.UI.Activity {
 
         void RefreshChart(TrailLineChart.LineChartTypes t)
         {
-            if (m_multipleGraphs || m_multipleCharts)
+            if (m_multipleCharts)
             {
                 Data.Settings.ToggleMultiChartType = t;
+            }
+            if (m_multipleGraphs)
+            {
+                Data.Settings.ToggleMultiGraphType = t;
             }
             else
             {

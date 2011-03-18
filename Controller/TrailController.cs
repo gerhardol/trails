@@ -59,26 +59,31 @@ namespace TrailsPlugin.Controller
                 if (m_activities != value)
                 {
                     m_activities = value;
-                    if (m_currentActivityTrail != null)
-                    {
-                        m_lastTrailId = m_currentActivityTrail.Trail.Id;
-                        //m_currentActivityTrail.Results;
-                    }
-                    if (m_CurrentOrderedTrails != null)
-                    {
-                        for (int i = 0; i < m_CurrentOrderedTrails.Count;i++ )
-                        {
-                            m_CurrentOrderedTrails[i] = null;
-                        }
-                    }
-                    m_CurrentOrderedTrails = null;
-                    m_currentActivityTrail = null;
-                    m_lastReferenceActivity = m_referenceActivity;
-                    m_referenceActivity = null;
+                    this.Reset();
                 }
             }
         }
 
+        //Reset calculations, without changing selected activities
+        public void Reset()
+        {
+            if (m_currentActivityTrail != null)
+            {
+                m_lastTrailId = m_currentActivityTrail.Trail.Id;
+                //m_currentActivityTrail.Results;
+            }
+            if (m_CurrentOrderedTrails != null)
+            {
+                for (int i = 0; i < m_CurrentOrderedTrails.Count; i++)
+                {
+                    m_CurrentOrderedTrails[i] = null;
+                }
+            }
+            m_CurrentOrderedTrails = null;
+            m_currentActivityTrail = null;
+            m_lastReferenceActivity = m_referenceActivity;
+            m_referenceActivity = null;
+        }
         //Used when no calculation is forced, ie displaying
         public ActivityTrail CurrentActivityTrailDisplayed
         {

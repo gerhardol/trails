@@ -36,6 +36,7 @@ namespace TrailsPlugin.Data {
             m_xAxisValue = TrailLineChart.XAxisValue.Distance;
             m_chartType = TrailLineChart.LineChartTypes.SpeedPace;
             m_MultiChartTypes = TrailsPlugin.UI.Activity.TrailLineChart.DefaultLineChartTypes();
+            m_MultiGraphTypes = TrailsPlugin.UI.Activity.TrailLineChart.DefaultLineChartTypes();
 
             m_activityPageColumns = TrailResultColumnIds.DefaultColumns();
             m_summaryViewSortColumn = TrailResultColumnIds.Order;
@@ -52,6 +53,7 @@ namespace TrailsPlugin.Data {
         private static TrailLineChart.XAxisValue m_xAxisValue;
         private static TrailLineChart.LineChartTypes m_chartType;
         private static IList<TrailLineChart.LineChartTypes> m_MultiChartTypes;
+        private static IList<TrailLineChart.LineChartTypes> m_MultiGraphTypes;
         private static bool m_ShowChartToolBar;
         private static bool m_SelectSimilarResults;
         private static string m_summaryViewSortColumn;
@@ -92,6 +94,28 @@ namespace TrailsPlugin.Data {
                 else
                 {
                     m_MultiChartTypes.Add(value);
+                }
+            }
+        }
+
+        public static IList<TrailLineChart.LineChartTypes> MultiGraphType
+        {
+            get
+            {
+                return m_MultiGraphTypes;
+            }
+        }
+        public static TrailLineChart.LineChartTypes ToggleMultiGraphType
+        {
+            set
+            {
+                if (m_MultiGraphTypes.Contains(value))
+                {
+                    m_MultiGraphTypes.Remove(value);
+                }
+                else
+                {
+                    m_MultiGraphTypes.Add(value);
                 }
             }
         }
@@ -233,6 +257,7 @@ namespace TrailsPlugin.Data {
                     m_activityPageColumns.Add(column);
                 }
             }
+
             attr = pluginNode.GetAttribute(xmlTags.sMultiChartType);
             if (attr.Length > 0)
             {
@@ -252,6 +277,29 @@ namespace TrailsPlugin.Data {
                     else
                     {
                         m_MultiChartTypes.Add(t);
+                    }
+                }
+            }
+
+            attr = pluginNode.GetAttribute(xmlTags.sMultiGraphType);
+            if (attr.Length > 0)
+            {
+                m_MultiGraphTypes.Clear();
+                String[] values = attr.Split(';');
+                foreach (String column in values)
+                {
+                    TrailLineChart.LineChartTypes t = (TrailLineChart.LineChartTypes)Enum.Parse(typeof(TrailLineChart.LineChartTypes), column, true);
+                    //Compatibility w previous, where DifTime/DiffDist could be speced directly
+                    if (t == TrailLineChart.LineChartTypes.DiffDist || t == TrailLineChart.LineChartTypes.DiffTime)
+                    {
+                        if (!m_MultiGraphTypes.Contains(TrailLineChart.LineChartTypes.DiffDistTime))
+                        {
+                            m_MultiGraphTypes.Add(TrailLineChart.LineChartTypes.DiffDistTime);
+                        }
+                    }
+                    else
+                    {
+                        m_MultiGraphTypes.Add(t);
                     }
                 }
             }
@@ -283,6 +331,7 @@ namespace TrailsPlugin.Data {
                 else { colText += ";" + column; }
             }
             pluginNode.SetAttribute(xmlTags.sColumns, colText);
+
             colText = null;
             foreach (TrailLineChart.LineChartTypes column in m_MultiChartTypes)
             {
@@ -290,6 +339,14 @@ namespace TrailsPlugin.Data {
                 else { colText += ";" + column.ToString(); }
             }
             pluginNode.SetAttribute(xmlTags.sMultiChartType, colText);
+
+            colText = null;
+            foreach (TrailLineChart.LineChartTypes column in m_MultiGraphTypes)
+            {
+                if (colText == null) { colText = column.ToString(); }
+                else { colText += ";" + column.ToString(); }
+            }
+            pluginNode.SetAttribute(xmlTags.sMultiGraphType, colText);
         }
 
         private class xmlTags
@@ -299,6 +356,7 @@ namespace TrailsPlugin.Data {
             public const string sXAxis = "sXAxis";
             public const string sChartType = "sChartType";
             public const string sMultiChartType = "sMultiChartType";
+            public const string sMultiGraphType = "sMultiGraphType";
             public const string summaryViewSortColumn = "summaryViewSortColumn";
             public const string summaryViewSortDirection = "summaryViewSortDirection";
             public const string ShowChartToolBar = "ShowChartToolBar";

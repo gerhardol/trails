@@ -444,6 +444,15 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshControlState();
             }
         }
+        void selectAll()
+        {
+            System.Collections.IList all = new List<TrailResultWrapper>();
+            foreach(TrailResultWrapper t in (IList<TrailResultWrapper>)this.summaryList.RowData)
+            {
+                all.Add(t);
+            }
+            this.SelectedItemsRaw = all;
+        }
         void copyTable()
         {
             summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
@@ -698,9 +707,9 @@ namespace TrailsPlugin.UI.Activity {
             {
                 selectSimilarSplitsChanged();
             }
-            else if (e.KeyCode == Keys.U)
+            else if (e.KeyCode == Keys.A && e.Modifiers == Keys.Control)
             {
-                selectWithUR();
+                selectAll();
             }
             else if (e.KeyCode == Keys.C && e.Modifiers == Keys.Control)
             {
@@ -709,6 +718,15 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.C)
             {
                 markCommonStretches();
+            }
+            else if (e.KeyCode == Keys.R)
+            {
+                m_controller.Reset();
+                m_page.RefreshData();
+            }
+            else if (e.KeyCode == Keys.U)
+            {
+                selectWithUR();
             }
         }
 

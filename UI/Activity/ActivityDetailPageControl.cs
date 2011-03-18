@@ -182,8 +182,7 @@ namespace TrailsPlugin.UI.Activity {
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
             RefreshRoute(); 
-            //Charts are refreshed when list is changed
-            //RefreshChart();
+            //Charts are refreshed when list is changed, no need for RefreshChart();
             if (showPage)
             {
                 ShowPage("");

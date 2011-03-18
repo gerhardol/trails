@@ -187,12 +187,16 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
-
-                //Set size, to not waste chart
-                int resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count+1);
-                m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
-                    20 * resRows + 15;
             }
+            //Set size, to not waste chart
+            int resRows = 0;
+            if (summaryList.RowData != null)
+            {
+                resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
+            }
+            m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
+                18 * resRows + 15;
+
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;
         }
@@ -712,7 +716,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (SummaryPanel.Size.Width > summaryList.Size.Width)
             {
-                //xxx summaryList.Size = new System.Drawing.Size(SummaryPanel.Size.Width, summaryList.Size.Height);
+                //No longer necessary
+                //summaryList.Size = new System.Drawing.Size(SummaryPanel.Size.Width, summaryList.Size.Height);
             }
         }
 

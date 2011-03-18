@@ -144,7 +144,7 @@ namespace TrailsPlugin.UI.Activity {
         /************************************************************/
 		private void btnAdd_Click(object sender, EventArgs e)
         {
-            //xxx single activity use
+            //single activity use
             int countGPS = 0;
 #if ST_2_1
 			IMapControl mapControl = m_layer.MapControl;

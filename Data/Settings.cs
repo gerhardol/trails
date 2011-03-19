@@ -73,7 +73,7 @@ namespace TrailsPlugin.Data {
             set
             {
                 m_chartType = value;
-                PluginMain.WriteExtensionData();
+                Plugin.WriteExtensionData();
             }
         }
         public static IList<TrailLineChart.LineChartTypes> MultiChartType
@@ -127,7 +127,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_xAxisValue = value;
-				PluginMain.WriteExtensionData();
+				Plugin.WriteExtensionData();
 			}
 		}
         public static IList<string> ActivityPageColumns
@@ -137,7 +137,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_activityPageColumns = value;
-				PluginMain.WriteExtensionData();
+				Plugin.WriteExtensionData();
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_activityPageNumFixedColumns = value;
-				PluginMain.WriteExtensionData();
+				Plugin.WriteExtensionData();
 			}
 		}
 
@@ -159,7 +159,7 @@ namespace TrailsPlugin.Data {
 			}
 			set {
 				m_defaultRadius = value;
-				PluginMain.WriteExtensionData();
+				Plugin.WriteExtensionData();
 			}
 		}
         public static bool ShowChartToolBar

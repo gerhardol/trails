@@ -139,7 +139,7 @@ namespace TrailsPlugin
         }
         static public string fileCircle(int sizeX, int sizeY, out Size iconSize)
         {
-            string basePath = PluginMain.GetApplication().
+            string basePath = Plugin.GetApplication().
 #if ST_2_1
                 SystemPreferences.WebFilesFolder +
 #else

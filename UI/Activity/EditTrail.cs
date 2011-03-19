@@ -148,8 +148,8 @@ namespace TrailsPlugin.UI.Activity {
 				return;
 			}
 			Data.Trail trail = null;
-            if (m_addMode && PluginMain.Data.NameExists(TrailName.Text) ||
-                !m_addMode && PluginMain.Data.AllTrails.TryGetValue(TrailName.Text, out trail) &&
+            if (m_addMode && Plugin.Data.NameExists(TrailName.Text) ||
+                !m_addMode && Plugin.Data.AllTrails.TryGetValue(TrailName.Text, out trail) &&
                 trail != m_TrailToEdit)
             {
                 MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
@@ -184,7 +184,7 @@ namespace TrailsPlugin.UI.Activity {
                 "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 DateTime startTime = DateTime.Now;
-                IActivity activity = PluginMain.GetApplication().Logbook.Activities.Add(startTime);
+                IActivity activity = Plugin.GetApplication().Logbook.Activities.Add(startTime);
                 activity.GPSRoute = new GPSRoute();
                 activity.Name = m_TrailToEdit.Name;
                 activity.Notes += "Radius: " + m_TrailToEdit.Radius + "m";

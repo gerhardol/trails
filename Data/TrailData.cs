@@ -99,7 +99,7 @@ namespace TrailsPlugin.Data {
             }
             trail.Id = System.Guid.NewGuid().ToString();
             m_AllTrails.Add(trail.Id, trail);
-            PluginMain.WriteExtensionData();
+            Plugin.WriteExtensionData();
             return true;
         }
 
@@ -113,7 +113,7 @@ namespace TrailsPlugin.Data {
 			if (m_AllTrails.ContainsKey(trail.Id)) {
 				m_AllTrails.Remove(trail.Id);
 				m_AllTrails.Add(trail.Id, trail);
-				PluginMain.WriteExtensionData();
+				Plugin.WriteExtensionData();
 				return true;
 			} else {
 				return false;
@@ -122,7 +122,7 @@ namespace TrailsPlugin.Data {
 		public bool DeleteTrail(Data.Trail trail) {
 			if (m_AllTrails.ContainsKey(trail.Id)) {
 				m_AllTrails.Remove(trail.Id);
-				PluginMain.WriteExtensionData();
+				Plugin.WriteExtensionData();
 				return true;
 			} else {
 				return false;
@@ -150,7 +150,7 @@ namespace TrailsPlugin.Data {
         public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
         {
             XmlNode trails = doc.CreateElement("Trails");
-            foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values)
+            foreach (Data.Trail trail in Plugin.Data.AllTrails.Values)
             {
                 if (!trail.Generated)
                 {
@@ -179,7 +179,7 @@ namespace TrailsPlugin.Data {
         //This is not called by default
 		public XmlNode ToXml(XmlDocument doc) {
 			XmlNode trails = doc.CreateElement("Trails");
-			foreach (Data.Trail trail in PluginMain.Data.AllTrails.Values) {
+			foreach (Data.Trail trail in Plugin.Data.AllTrails.Values) {
 				trails.AppendChild(trail.ToXml(doc));
 			}
 			return trails;

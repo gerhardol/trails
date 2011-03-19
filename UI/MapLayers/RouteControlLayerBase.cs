@@ -38,7 +38,7 @@ namespace TrailsPlugin.UI.MapLayers
             this.control = control;
             this.zOrder = zOrder;
             this.mapControl = control.MapControl;
-            AddMapControlEventHandlers();
+            //AddMapControlEventHandlers();
             control.Resize += new EventHandler(OnRouteControlResize);
             control.VisibleChanged += new EventHandler(OnRouteControlVisibleChanged);
             control.MapControlChanged += new EventHandler(OnRouteControlMapControlChanged);
@@ -46,7 +46,7 @@ namespace TrailsPlugin.UI.MapLayers
             control.SelectedItemsChanged += new EventHandler(OnRouteControlSelectedItemsChanged);
             control.Disposed += delegate(object sender, EventArgs e)
             {
-                RemoveMapControlEventHandlers();
+                //RemoveMapControlEventHandlers();
                 control.Resize -= new EventHandler(OnRouteControlResize);
                 control.VisibleChanged -= new EventHandler(OnRouteControlVisibleChanged);
                 control.MapControlChanged -= new EventHandler(OnRouteControlMapControlChanged);

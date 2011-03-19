@@ -53,13 +53,13 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                 PluginMain.GetApplication().VisualTheme;
 #else
-                PluginMain.GetApplication().SystemPreferences.VisualTheme;
+                Plugin.GetApplication().SystemPreferences.VisualTheme;
 #endif
         private CultureInfo m_culture =
 #if ST_2_1
                 new System.Globalization.CultureInfo("en");
 #else
-                PluginMain.GetApplication().SystemPreferences.UICulture;
+                Plugin.GetApplication().SystemPreferences.UICulture;
 #endif
 
 		private Controller.TrailController m_controller;

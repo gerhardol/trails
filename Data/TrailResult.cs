@@ -412,7 +412,7 @@ namespace TrailsPlugin.Data {
                 includeStopped = true;
             }
 #else
-            includeStopped = TrailsPlugin.PluginMain.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
+            includeStopped = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
 #endif
             return includeStopped;
         }
@@ -675,7 +675,7 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                IAthleteInfoEntry lastAthleteEntry = PluginMain.GetApplication().Logbook.Athlete.InfoEntries.LastEntryAsOfDate(m_activity.StartTime);
+                IAthleteInfoEntry lastAthleteEntry = Plugin.GetApplication().Logbook.Athlete.InfoEntries.LastEntryAsOfDate(m_activity.StartTime);
                 INumericTimeDataSeries track = new NumericTimeDataSeries();
                 // Value is in BPM so convert to the % max HR if we have the info
                 if (!float.IsNaN(lastAthleteEntry.MaximumHeartRatePerMinute))

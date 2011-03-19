@@ -22,7 +22,7 @@ using System.Xml;
 using TrailsPlugin.Export;
 
 namespace TrailsPlugin {
-	class PluginMain : IPlugin
+	class Plugin : IPlugin
     {
         #region IPlugin Members
 
@@ -93,7 +93,7 @@ namespace TrailsPlugin {
             //m_settings = new TrailsPlugin.Data.Settings();
 
             XmlDocument doc = new XmlDocument();
-            string xml = PluginMain.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
+            string xml = Plugin.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
             if (xml == "")
             {
                 xml = "<TrailsPlugin/>";
@@ -112,8 +112,8 @@ namespace TrailsPlugin {
                 doc.LoadXml("<TrailsPlugin/>");
                 doc.DocumentElement.AppendChild(m_data.ToXml(doc));
                 //doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
-                PluginMain.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
-                PluginMain.GetApplication().Logbook.Modified = true;
+                Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
+                Plugin.GetApplication().Logbook.Modified = true;
             }
 		}
 
@@ -148,7 +148,7 @@ namespace TrailsPlugin {
 		public static Data.TrailData Data {
 			get {
 				if (m_data == null) {
-                    if (null == PluginMain.GetApplication().Logbook)
+                    if (null == Plugin.GetApplication().Logbook)
                     {
                         //logbook is null if it could not be loaded, to avoid an exception that occurs at exit
                         //m_settings = new TrailsPlugin.Data.Settings();
@@ -156,7 +156,7 @@ namespace TrailsPlugin {
                     }
                     else
                     {
-                        PluginMain.ReadExtensionData();
+                        Plugin.ReadExtensionData();
                     }
 				}
 				return m_data;

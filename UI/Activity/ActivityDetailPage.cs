@@ -40,6 +40,9 @@ namespace TrailsPlugin.UI.Activity {
         public ActivityDetailPage(IDailyActivityView view)
         {
             this.m_view = view;
+            m_prevViewId = view.Id;
+            view.SelectionProvider.SelectedItemsChanged += new EventHandler(OnViewSelectedItemsChanged);
+            Plugin.GetApplication().PropertyChanged += new PropertyChangedEventHandler(Application_PropertyChanged);
         }
 
         private void OnViewSelectedItemsChanged(object sender, EventArgs e)
@@ -49,8 +52,26 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_control.Activities = m_activities;
             }
-            //RefreshPage();
         }
+
+        void Application_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            //Hide/Show the page if view is changing, to handle listeners and refresh
+            if (m_showPage && e.PropertyName == "ActiveView")
+            {
+                Guid viewId = Plugin.GetApplication().ActiveView.Id;
+                if (viewId == m_view.Id)
+                {
+                    if (m_control != null) { m_control.ShowPage(m_bookmark); }
+                }
+                else if (m_prevViewId == m_view.Id)
+                {
+                    if (m_control != null) { m_control.HidePage(); }
+                }
+                m_prevViewId = viewId;
+            }
+        }
+
         public System.Guid Id { get { return GUIDs.Activity; } }
 #else
 		public IActivity Activity {
@@ -80,6 +101,7 @@ namespace TrailsPlugin.UI.Activity {
 
 		public bool HidePage()
         {
+            m_showPage = false;
 #if !ST_2_1
             this.m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(OnViewSelectedItemsChanged);
 #endif
@@ -129,6 +151,8 @@ namespace TrailsPlugin.UI.Activity {
             //Set activities
             OnViewSelectedItemsChanged(this, null);
 #endif
+            m_showPage = true;
+            m_bookmark = bookmark;
             if (m_control != null)
             {
                 m_control.ShowPage(bookmark);
@@ -172,7 +196,10 @@ namespace TrailsPlugin.UI.Activity {
 		#endregion
 #if !ST_2_1
         private IDailyActivityView m_view = null;
+        private Guid m_prevViewId;
 #endif
+        private bool m_showPage = false;
+        private string m_bookmark = null;
         private IList<IActivity> m_activities = new List<IActivity>();
         private ActivityDetailPageControl m_control = null;
         private IList<string> m_menuPath = null;

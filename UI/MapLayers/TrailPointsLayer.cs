@@ -49,9 +49,6 @@ namespace TrailsPlugin.UI.MapLayers
             {
                 m_layers[currentView] = this;
             }
-            //UnitUtil.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
-            //listener = new RouteItemsDataChangeListener(control);
-            //listener.PropertyChanged += new PropertyChangedEventHandler(OnRouteItemsPropertyChanged);
         }
 
         //Note: There is an assumption of the relation between view and route control/layer
@@ -165,7 +162,7 @@ namespace TrailsPlugin.UI.MapLayers
         public void DoZoom()
         {
             IGPSBounds area1 = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
-            IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2*this.m_highlightRadius);
+                IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * this.m_highlightRadius);
             area1 = Union(area1, area2);
             DoZoom(area1);
         }
@@ -207,6 +204,7 @@ namespace TrailsPlugin.UI.MapLayers
         public bool HidePage()
         {
             _showPage = false;
+            RemoveMapControlEventHandlers();
             RefreshOverlays(true);
             return true;
         }
@@ -214,6 +212,7 @@ namespace TrailsPlugin.UI.MapLayers
         {
             _showPage = true;
             RefreshOverlays(true);
+            AddMapControlEventHandlers();
         }
 
         /*************************************************************/

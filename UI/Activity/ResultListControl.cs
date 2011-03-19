@@ -665,7 +665,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 TrailResult tr = getTrailResultRow(row);
                 string bookmark = "id=" + tr.Activity;
-                PluginMain.GetApplication().ShowView(view, bookmark);
+                Plugin.GetApplication().ShowView(view, bookmark);
             }
         }
 

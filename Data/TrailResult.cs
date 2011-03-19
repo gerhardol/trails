@@ -116,12 +116,12 @@ namespace TrailsPlugin.Data {
             m_startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
             if (par == null)
             {
-                if (!aActivities.ContainsKey(m_activity))
+                if (!s_activities.ContainsKey(m_activity))
                 {
-                    aActivities.Add(m_activity, new trActivityInfo());
+                    s_activities.Add(m_activity, new trActivityInfo());
                     //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
                 }
-                aActivities[m_activity].res.Add(this);
+                s_activities[m_activity].res.Add(this);
             }
         }
 
@@ -1057,7 +1057,7 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                if (!m_colorOverridden && aActivities.Count > 1 && this.ParentResult != null)
+                if (!m_colorOverridden && s_activities.Count > 1 && this.ParentResult != null)
                 {
                     return this.ParentResult.m_trailColor;
                 }
@@ -1105,18 +1105,18 @@ namespace TrailsPlugin.Data {
             public IList<TrailResult> res = new List<TrailResult>();
             public Color activityColor = getColor(0);
         }
-        private static IDictionary<IActivity, trActivityInfo> aActivities = new Dictionary<IActivity, trActivityInfo>();
+        private static IDictionary<IActivity, trActivityInfo> s_activities = new Dictionary<IActivity, trActivityInfo>();
         public static IList<TrailResult> TrailResultList(IActivity activity)
         {
             trActivityInfo t = new trActivityInfo();
-            aActivities.TryGetValue(activity, out t);
+            s_activities.TryGetValue(activity, out t);
             return t.res;
         }
         public static void Reset()
         {
             nextTrailColor = 1;
             //nextActivityColor = 1;
-            aActivities.Clear();
+            s_activities.Clear();
         }
         #endregion
 

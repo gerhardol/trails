@@ -36,7 +36,7 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_expanded = false;
         private bool m_multipleGraphs = false;
         private bool m_multipleCharts = true;
-        private bool _showPage;
+        private bool m_showPage;
         private ActivityDetailPageControl m_page;
         private Controller.TrailController m_controller;
         private IList<TrailLineChart> m_lineCharts;
@@ -146,11 +146,11 @@ namespace TrailsPlugin.UI.Activity {
 
         public bool ShowPage
         {
-            get { return _showPage; }
+            get { return m_showPage; }
             set
             {
-                _showPage = value;
-                if (_showPage)
+                m_showPage = value;
+                if (m_showPage)
                 {
                     RefreshChart();
                 }
@@ -179,7 +179,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
                     btnExpand.BackgroundImage = CommonIcons.LowerHalf;
                 }
-                ShowPage = _showPage;
+                ShowPage = m_showPage;
                 //This could be changed to zoom to data only at changes
                 foreach (TrailLineChart t in m_lineCharts)
                 {
@@ -222,7 +222,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshChart()
         {
-            if (_showPage)
+            if (m_showPage)
             {
                 TrailLineChart.LineChartTypes speedPaceYaxis;
                 if (m_controller.ReferenceActivity != null &&

@@ -138,10 +138,10 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private bool _showPage = false;
+        private bool m_showPage = false;
         public bool HidePage()
         {
-            _showPage = false;
+            m_showPage = false;
 #if !ST_2_1
             m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 #endif
@@ -154,8 +154,8 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ShowPage(string bookmark)
         {
-            bool showPage = _showPage;
-            _showPage = true;
+            bool showPage = m_showPage;
+            m_showPage = true;
             m_layer.ShowPage(bookmark);
             TrailSelector.ShowPage = true;
             ResultList.ShowPage = true;
@@ -177,7 +177,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshData()
         {
-            bool showPage = _showPage;
+            bool showPage = m_showPage;
             HidePage(); //defer updates
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
@@ -294,7 +294,7 @@ namespace TrailsPlugin.UI.Activity {
         public void MarkTrack(IList<TrailResultMarked> atr, bool markChart)
         {
 #if !ST_2_1
-            if (_showPage)
+            if (m_showPage)
             {
                 IActivity viewActivity = null;
                 if (ViewActivities != null && ViewActivities.Count == 1)

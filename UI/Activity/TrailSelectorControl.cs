@@ -102,13 +102,13 @@ namespace TrailsPlugin.UI.Activity {
             m_visualTheme = visualTheme;
             TrailName.ThemeChanged(visualTheme);
         }
-        private bool _showPage = false;
+        private bool m_showPage = false;
         public bool ShowPage
         {
-            get { return _showPage; }
+            get { return m_showPage; }
             set
             {
-                _showPage = value;
+                m_showPage = value;
                 //if (_showPage)
                 //{
                 //    RefreshControlState();

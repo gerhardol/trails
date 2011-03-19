@@ -92,26 +92,26 @@ namespace TrailsPlugin.UI.Activity {
 
         public IList<string> MenuPath
         {
-            get { return menuPath; }
-            set { menuPath = value; OnPropertyChanged("MenuPath"); }
+            get { return m_menuPath; }
+            set { m_menuPath = value; OnPropertyChanged("MenuPath"); }
         }
 
         public bool MenuEnabled
         {
-            get { return menuEnabled; }
-            set { menuEnabled = value; OnPropertyChanged("MenuEnabled"); }
+            get { return m_menuEnabled; }
+            set { m_menuEnabled = value; OnPropertyChanged("MenuEnabled"); }
         }
 
         public bool MenuVisible
         {
-            get { return menuVisible; }
-            set { menuVisible = value; OnPropertyChanged("MenuVisible"); }
+            get { return m_menuVisible; }
+            set { m_menuVisible = value; OnPropertyChanged("MenuVisible"); }
         }
 
         public bool PageMaximized
         {
-            get { return pageMaximized; }
-            set { pageMaximized = value; OnPropertyChanged("PageMaximized"); }
+            get { return m_pageMaximized; }
+            set { m_pageMaximized = value; OnPropertyChanged("PageMaximized"); }
         }
         public void RefreshPage()
         {
@@ -175,10 +175,10 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         private IList<IActivity> m_activities = new List<IActivity>();
         private ActivityDetailPageControl m_control = null;
-        private IList<string> menuPath = null;
-        private bool menuEnabled = true;
-        private bool menuVisible = true;
-        private bool pageMaximized = false;
+        private IList<string> m_menuPath = null;
+        private bool m_menuEnabled = true;
+        private bool m_menuVisible = true;
+        private bool m_pageMaximized = false;
 
         private void OnPropertyChanged(string propertyName)
         {

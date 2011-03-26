@@ -28,7 +28,7 @@ namespace TrailsPlugin.Data
 {
 	public class ActivityTrail : IComparable
     {
-        private IList<IActivity> m_activities;
+        private Controller.TrailController m_controller;
 		private Data.Trail m_trail;
         private IList<Data.TrailResultWrapper> m_resultsListWrapper = null;
         private IList<Data.TrailResult> m_resultsList = null;
@@ -39,9 +39,9 @@ namespace TrailsPlugin.Data
         private IList<IActivity> m_inBound = new List<IActivity>();
         private bool m_canAddInbound = true;
 
-        public ActivityTrail(IList<IActivity> activities, Data.Trail trail)
+        public ActivityTrail(Controller.TrailController controller, Data.Trail trail)
         {
-            m_activities = activities;
+            m_controller = controller; ;
             m_trail = trail;
             m_status = TrailOrderStatus.NoInfo;
             if (m_trail.Generated && !m_trail.IsReference)
@@ -75,7 +75,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return m_activities.Count;
+                return m_controller.Activities.Count;
             }
         }
 
@@ -107,7 +107,7 @@ namespace TrailsPlugin.Data
                             this.Status = TrailOrderStatus.MatchNoCalc;
                         }
                     }
-                    else if (m_trail.IsInBounds(m_activities))
+                    else if (m_trail.IsInBounds(m_controller.Activities))
                     {
                         Status = TrailOrderStatus.InBoundNoCalc;
                     }
@@ -195,10 +195,10 @@ namespace TrailsPlugin.Data
                 {
                     if (Integration.HighScore.HighScoreIntegrationEnabled)
                     {
-                        IList<Integration.HighScore.HighScoreResult> res = Integration.HighScore.GetHighScoreForActivity(m_activities, null);
+                        IList<Integration.HighScore.HighScoreResult> res = Integration.HighScore.GetHighScoreForActivity(m_controller.Activities, null);
                         if (res != null && res.Count > 0)
                         {
-                            foreach (Integration.HighScore.HighScoreResult h in Integration.HighScore.GetHighScoreForActivity(m_activities, null))
+                            foreach (Integration.HighScore.HighScoreResult h in Integration.HighScore.GetHighScoreForActivity(m_controller.Activities, null))
                             {
                                 if (h.activity.GPSRoute != null && h.activity.GPSRoute.Count > 0)
                                 {
@@ -212,7 +212,7 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    foreach (IActivity activity in m_activities)
+                    foreach (IActivity activity in m_controller.Activities)
                     {
                         if (activity.GPSRoute != null && activity.GPSRoute.Count > 1)
                         {

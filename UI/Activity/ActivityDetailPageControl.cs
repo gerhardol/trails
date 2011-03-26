@@ -287,10 +287,12 @@ namespace TrailsPlugin.UI.Activity {
                 this.LowerSplitContainer.SplitterDistance = value;
             }
         }
-            public void MarkTrack(IList<TrailResultMarked> atr)
+        
+        public void MarkTrack(IList<TrailResultMarked> atr)
         {
             MarkTrack(atr, true);
         }
+
         public void MarkTrack(IList<TrailResultMarked> atr, bool markChart)
         {
 #if !ST_2_1

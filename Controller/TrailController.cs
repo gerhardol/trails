@@ -356,7 +356,7 @@ namespace TrailsPlugin.Controller
             m_CurrentOrderedTrails = new List<ActivityTrail>();
             foreach (Data.Trail trail in Plugin.Data.AllTrails.Values)
             {
-                ActivityTrail to = new TrailsPlugin.Data.ActivityTrail(Activities, trail);
+                ActivityTrail to = new TrailsPlugin.Data.ActivityTrail(this, trail);
                 if (to.IsInBounds)
                 {
                     if (to.Status != TrailOrderStatus.MatchNoCalc &&
@@ -375,7 +375,7 @@ namespace TrailsPlugin.Controller
 			if (Plugin.Data.InsertTrail(trail))
             {
                 m_CurrentOrderedTrails = null;
-				m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(m_activities, trail);
+				m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);
 				m_lastTrailId = trail.Id;
 				return true;
 			} 

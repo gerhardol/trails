@@ -31,7 +31,9 @@ namespace TrailsPlugin.Export
 
             foreach (Trail trail in Plugin.Data.AllTrails.Values)
             {
-                var activityTrail = new ActivityTrail(activities, trail);
+                Controller.TrailController controller = Controller.TrailController.Instance;
+                controller.Activities = activities;
+                var activityTrail = new ActivityTrail(controller, trail);
 
                 List<ITrailResult> trailResults = new List<ITrailResult>();
                 foreach (var result in activityTrail.Results)

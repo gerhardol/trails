@@ -169,7 +169,7 @@ namespace TrailsPlugin.UI.MapLayers
 
         public void DoZoom(IGPSBounds area)
         {
-            if (_showPage)
+            if (m_showPage)
             {
                 if (area != null)
                 {
@@ -203,14 +203,14 @@ namespace TrailsPlugin.UI.MapLayers
         //}
         public bool HidePage()
         {
-            _showPage = false;
+            m_showPage = false;
             RemoveMapControlEventHandlers();
             RefreshOverlays(true);
             return true;
         }
         public void ShowPage(string bookmark)
         {
-            _showPage = true;
+            m_showPage = true;
             RefreshOverlays(true);
             AddMapControlEventHandlers();
         }
@@ -234,10 +234,10 @@ namespace TrailsPlugin.UI.MapLayers
 
         protected override void OnRouteControlVisibleChanged(object sender, EventArgs e)
         {
-            if (RouteControl.Visible && routeSettingsChanged)
+            if (RouteControl.Visible && m_routeSettingsChanged)
             {
                 ClearOverlays();
-                routeSettingsChanged = false;
+                m_routeSettingsChanged = false;
                 RefreshOverlays();
             }
         }
@@ -312,7 +312,7 @@ namespace TrailsPlugin.UI.MapLayers
                 ResetMapControl();
             }
 
-            if (!_showPage) return;
+            if (!m_showPage) return;
 
             IGPSBounds windowBounds = MapControlBounds;
             IList<IMapOverlay> addedOverlays = new List<IMapOverlay>();
@@ -372,11 +372,11 @@ namespace TrailsPlugin.UI.MapLayers
                 MapPolyline m = pair.Value;
                 newRouteOverlays.Add(m.Locations, m);
                 if ((!m_scalingChanged) && 
-                    routeOverlays.ContainsKey(m.Locations) && 
+                    m_routeOverlays.ContainsKey(m.Locations) && 
                     !dupRoutes.ContainsKey(m.Locations))
                 {
                     //No need to refresh this point
-                    routeOverlays.Remove(m.Locations);
+                    m_routeOverlays.Remove(m.Locations);
                 }
                 else
                 {
@@ -401,11 +401,11 @@ namespace TrailsPlugin.UI.MapLayers
             }
             foreach (IGPSPoint location in visibleLocations)
             {
-                if ((!m_scalingChanged) && pointOverlays.ContainsKey(location))
+                if ((!m_scalingChanged) && m_pointOverlays.ContainsKey(location))
                 {
                     //No need to refresh this point
-                    newPointOverlays.Add(location, pointOverlays[location]);
-                    pointOverlays.Remove(location);
+                    newPointOverlays.Add(location, m_pointOverlays[location]);
+                    m_pointOverlays.Remove(location);
                 }
                 else
                 {
@@ -421,8 +421,8 @@ namespace TrailsPlugin.UI.MapLayers
             m_scalingChanged = false;
             ClearOverlays();
             MapControl.AddOverlays(addedOverlays);
-            pointOverlays = newPointOverlays;
-            routeOverlays = newRouteOverlays;
+            m_pointOverlays = newPointOverlays;
+            m_routeOverlays = newRouteOverlays;
             if (m_extraMapLayer != null)
             {
                 try
@@ -430,17 +430,17 @@ namespace TrailsPlugin.UI.MapLayers
                     //Remove overlays are not working properly, the Map is not very usable
                     m_extraMapLayer.MapControl.AddOverlays(addedOverlays);
                 }catch(Exception){}
-                m_extraMapLayer.pointOverlays = newPointOverlays;
-                m_extraMapLayer.routeOverlays = newRouteOverlays;
+                m_extraMapLayer.m_pointOverlays = newPointOverlays;
+                m_extraMapLayer.m_routeOverlays = newRouteOverlays;
             }
         }
 
         public void ClearOverlays()
         {
-            MapControl.RemoveOverlays(pointOverlays.Values);
-            pointOverlays.Clear();
-            MapControl.RemoveOverlays(routeOverlays.Values);
-            routeOverlays.Clear();
+            MapControl.RemoveOverlays(m_pointOverlays.Values);
+            m_pointOverlays.Clear();
+            MapControl.RemoveOverlays(m_routeOverlays.Values);
+            m_routeOverlays.Clear();
             if (m_extraMapLayer != null)
             {
                 m_extraMapLayer.ClearOverlays();
@@ -449,9 +449,9 @@ namespace TrailsPlugin.UI.MapLayers
 
         private bool m_scalingChanged = false;
         MapIcon m_icon = null;
-        private bool routeSettingsChanged = false;
-        private IDictionary<IGPSPoint, IMapOverlay> pointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
-        private IDictionary<IList<IGPSPoint>, IMapOverlay> routeOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();
+        private bool m_routeSettingsChanged = false;
+        private IDictionary<IGPSPoint, IMapOverlay> m_pointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
+        private IDictionary<IList<IGPSPoint>, IMapOverlay> m_routeOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();
         //private RouteItemsDataChangeListener listener;
 
         private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();
@@ -459,7 +459,7 @@ namespace TrailsPlugin.UI.MapLayers
         private IDictionary<string, MapPolyline> m_TrailRoutes = new Dictionary<string, MapPolyline>();
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
         private float m_highlightRadius;
-        private bool _showPage;
+        private bool m_showPage;
         private static IDictionary<Guid, TrailPointsLayer> m_layers = new Dictionary<Guid, TrailPointsLayer>();
         private TrailPointsLayer m_extraMapLayer = null;
     }

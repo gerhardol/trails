@@ -143,6 +143,14 @@ namespace TrailsPlugin.Data
                 return m_resultsList;
             }
         }
+
+        public void Clear()
+        {
+            foreach (TrailResultWrapper t in ResultTreeList)
+            {
+                t.Result.Clear();
+            }
+        }
         public IList<TrailResultWrapper> ResultTreeList
         {
             get

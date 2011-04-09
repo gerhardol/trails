@@ -208,7 +208,9 @@ namespace TrailsPlugin.Data {
             get { return m_MaxAutoCalcResults; }
             set { m_MaxAutoCalcResults = value; }
         }
-
+        //Temporary, not stored right now
+        public static bool RestIsPause = false;
+        
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
             defaults();

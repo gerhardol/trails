@@ -186,7 +186,8 @@ namespace TrailsPlugin.UI.Activity {
 #else
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
-                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
+                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1 || 
+                    m_controller.CurrentActivityTrail.Trail.HighScore>0);
             }
             //Set size, to not waste chart
             int resRows = 0;
@@ -194,6 +195,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
             }
+            resRows = Math.Max(resRows, 2);
             m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
                 18 * resRows + 15;
 
@@ -707,9 +709,18 @@ namespace TrailsPlugin.UI.Activity {
             {
                 selectSimilarSplitsChanged();
             }
-            else if (e.KeyCode == Keys.A && e.Modifiers == Keys.Control)
+            else if (e.KeyCode == Keys.A)
             {
-                selectAll();
+                if (e.Modifiers == Keys.Control)
+                {
+                    selectAll();
+                }
+                else if (e.Modifiers == Keys.Shift)
+                {
+                    TrailsPlugin.Data.Settings.RestIsPause = !TrailsPlugin.Data.Settings.RestIsPause;
+                    m_controller.CurrentActivityTrail.Clear();
+                    m_page.RefreshData();
+                }
             }
             else if (e.KeyCode == Keys.C && e.Modifiers == Keys.Control)
             {

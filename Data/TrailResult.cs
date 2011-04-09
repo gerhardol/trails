@@ -36,7 +36,8 @@ namespace TrailsPlugin.Data {
 
         private int m_startIndex = -1;
 		private int m_endIndex = -1;
-        private DateTime m_startTime;
+        private DateTime? m_startTime = null;
+        private DateTime? m_endTime = null;
         private float m_startDistance = float.NaN;
         //private float m_lastDistance = float.NaN;
         private float m_distDiff; //to give quality of results
@@ -47,7 +48,6 @@ namespace TrailsPlugin.Data {
 
         private IDistanceDataTrack m_distanceMetersTrack = null;
         private IDistanceDataTrack m_activityDistanceMetersTrack = null;
-        //private IDistanceDataTrack m_activityUnpausedDistanceMetersTrack = null;
         private INumericTimeDataSeries m_elevationMetersTrack;
         private INumericTimeDataSeries m_cadencePerMinuteTrack;
         private INumericTimeDataSeries m_heartRatePerMinuteTrack;
@@ -113,7 +113,6 @@ namespace TrailsPlugin.Data {
             }
             m_distDiff = distDiff;
 
-            m_startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
             if (par == null)
             {
                 if (!s_activities.ContainsKey(m_activity))
@@ -211,6 +210,10 @@ namespace TrailsPlugin.Data {
         {
             get
             {
+                if (GPSRoute == null || GPSRoute.Count == 0)
+                {
+                    return TimeSpan.FromSeconds(0);
+                }
                 return getElapsedWithoutPauses(this.GPSRoute, this.GPSRoute[this.GPSRoute.Count-1]);
             }
         }
@@ -247,14 +250,46 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                return m_startTime;
+                if (m_startTime == null)
+                {
+                    DateTime startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
+                    DateTime endTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                    m_startTime = startTime;
+                    while (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused((DateTime)m_startTime, Pauses))
+                    {
+                        m_startTime = ((DateTime)m_startTime).Add(TimeSpan.FromSeconds(1));
+                        if (endTime.CompareTo((DateTime)m_startTime) <= 0)
+                        {
+                            //Trail (or subtrail) is completely paused. Use all
+                            m_startTime = startTime;
+                            break;
+                        }
+                    }
+                }
+                return (DateTime)m_startTime;
             }
         }
         public DateTime EndDateTime
         {
             get
             {
-                return m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                if (m_endTime == null)
+                {
+                    DateTime endTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                    DateTime startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
+                    m_endTime = endTime;
+                    while (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused((DateTime)m_endTime, Pauses))
+                    {
+                         m_endTime = ((DateTime)m_endTime).Add(TimeSpan.FromSeconds(-1));
+                         if (startTime.CompareTo((DateTime)m_endTime) >= 0)
+                         {
+                             //Trail (or subtrail) is completely paused. Use all
+                             m_endTime = endTime;
+                             break;
+                         }
+                    }
+                }
+                return (DateTime)m_endTime;
             }
         }
         //All of result including pauses/stopped
@@ -424,13 +459,48 @@ namespace TrailsPlugin.Data {
             {
                 if (m_pauses == null)
                 {
+                    if (m_parentResult != null)
+                    {
+                        return m_parentResult.Pauses;
+                    }
+                    m_pauses = new ValueRangeSeries<DateTime>();
+                    IValueRangeSeries<DateTime> actPause;
                     if (includeStopped())
                     {
-                        m_pauses = Info.Activity.TimerPauses;
+                        actPause = Info.Activity.TimerPauses;
                     }
                     else
                     {
-                        m_pauses = Info.NonMovingTimes;
+                        actPause = Info.NonMovingTimes;
+                    }
+                    foreach (ValueRange<DateTime> t in actPause)
+                    {
+                        m_pauses.Add(t);
+                    }
+
+                    if (Settings.RestIsPause)
+                    {
+                        for (int i = 0; i<Info.Activity.Laps.Count; i++)
+                        {
+                            ILapInfo lap = Info.Activity.Laps[i];
+                            if (lap.Rest)
+                            {
+                                DateTime endTime;
+                                if (i < Info.Activity.Laps.Count - 1)
+                                {
+                                    endTime = Info.Activity.Laps[i + 1].StartTime;
+                                    if (!Info.Activity.Laps[i + 1].Rest)
+                                    {
+                                        endTime -= TimeSpan.FromSeconds(1);
+                                    }
+                                }
+                                else
+                                {
+                                    endTime = Info.EndTime;
+                                }
+                                m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, endTime));
+                            }
+                        }
                     }
                 }
                 return m_pauses;
@@ -442,10 +512,13 @@ namespace TrailsPlugin.Data {
             get
             {
                 //Caching is not needed, done by ST
+                //TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.HeartRateSmoothingSeconds = 120;
                 return ActivityInfoCache.Instance.GetInfo(this.Activity);
+                //ActivityInfo m_ActivityInfo = null;
                 //if (m_ActivityInfo == null)
                 //{
                 //    m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(this.Activity);
+                //    //m_ActivityInfo.Activity.syst
                 //}
                 //return m_ActivityInfo;
             }
@@ -635,6 +708,34 @@ namespace TrailsPlugin.Data {
 			}
 		}
 
+        //Reset values used in calculations
+        public void Clear()
+        {
+            m_distanceMetersTrack0 = null;
+            m_elevationMetersTrack0 = null;
+            m_speedTrack0 = null;
+            m_paceTrack0 = null;
+            m_DiffTimeTrack0 = null;
+            m_DiffDistTrack0 = null;
+
+            m_pauses = null;
+            m_startTime = null;
+            m_endTime = null;
+            
+            m_distanceMetersTrack = null;
+            m_activityDistanceMetersTrack = null;
+            m_elevationMetersTrack = null;
+            m_cadencePerMinuteTrack = null;
+            m_heartRatePerMinuteTrack = null;
+            m_powerWattsTrack = null;
+            m_speedTrack = null;
+            m_paceTrack = null;
+            m_gradeTrack = null;
+
+            m_gpsPoints = null;
+            m_gpsTrack = null;
+        }
+
         public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
         {
             INumericTimeDataSeries track = new NumericTimeDataSeries();
@@ -711,7 +812,7 @@ namespace TrailsPlugin.Data {
 						ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
 						if (value != null)
                         {
-                            float speed = value.Value;// (float)UnitUtil.Speed.ConvertFrom(value.Value, m_activity);
+                            float speed = value.Value;
                             m_speedTrack.Add(time, speed);
 						}
 					}
@@ -720,6 +821,7 @@ namespace TrailsPlugin.Data {
 			}
 		}
         
+        //This section has caused a exception once
         public INumericTimeDataSeries PaceTrack
         {
 			get {
@@ -762,12 +864,14 @@ namespace TrailsPlugin.Data {
             if (refRes == null || refRes != m_cacheTrackRef)
             {
                 m_cacheTrackRef = refRes;
+                //Clear();
                 m_distanceMetersTrack0 = null;
                 m_elevationMetersTrack0 = null;
                 m_speedTrack0 = null;
                 m_paceTrack0 = null;
                 m_DiffTimeTrack0 = null;
                 m_DiffDistTrack0 = null;
+
                 return true;
             }
             return false;
@@ -776,7 +880,7 @@ namespace TrailsPlugin.Data {
         public IDistanceDataTrack DistanceMetersTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if (m_distanceMetersTrack0 == null || m_distanceMetersTrack == null)
+            if (m_distanceMetersTrack0 == null)
             {
                 m_distanceMetersTrack0 = new DistanceDataTrack();
                 foreach (ITimeValueEntry<float> entry in this.DistanceMetersTrack)
@@ -790,10 +894,11 @@ namespace TrailsPlugin.Data {
             }
             return m_distanceMetersTrack0;
         }
+
         public INumericTimeDataSeries ElevationMetersTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if (m_elevationMetersTrack0 == null || m_elevationMetersTrack == null)
+            if (m_elevationMetersTrack0 == null)
             {
                 m_elevationMetersTrack0 = new NumericTimeDataSeries();
                 foreach (ITimeValueEntry<float> entry in this.ElevationMetersTrack)
@@ -807,10 +912,11 @@ namespace TrailsPlugin.Data {
             }
             return m_elevationMetersTrack0;
         }
+
         public INumericTimeDataSeries SpeedTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if (m_speedTrack0 == null || m_speedTrack == null)
+            if (m_speedTrack0 == null)
             {
                 m_speedTrack0 = new NumericTimeDataSeries();
                 foreach (ITimeValueEntry<float> entry in this.SpeedTrack)
@@ -824,10 +930,11 @@ namespace TrailsPlugin.Data {
             }
             return m_speedTrack0;
         }
+
         public INumericTimeDataSeries PaceTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if (m_paceTrack0 == null || m_paceTrack == null)
+            if (m_paceTrack0 == null)
             {
                 m_paceTrack0 = new NumericTimeDataSeries();
                 foreach (ITimeValueEntry<float> entry in this.PaceTrack)
@@ -841,6 +948,7 @@ namespace TrailsPlugin.Data {
             }
             return m_paceTrack0;
         }
+
         public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -936,11 +1044,17 @@ namespace TrailsPlugin.Data {
             {
                 for (int i = m_startIndex; i <= m_endIndex; i++)
                 {
-                    m_gpsPoints.Add(m_activity.GPSRoute[i].Value);
-                    m_gpsTrack.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]), m_activity.GPSRoute[i].Value);
+                    DateTime time = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
+                    IGPSPoint point = m_activity.GPSRoute[i].Value;
+                    if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
+                    {
+                        m_gpsPoints.Add(point);
+                        m_gpsTrack.Add(time, point);
+                    }
                 }
             }
         }
+
         public IGPSRoute GPSRoute
         {
             get
@@ -952,6 +1066,7 @@ namespace TrailsPlugin.Data {
                 return m_gpsTrack;
             }
         }
+
         public IList<IGPSPoint> GpsPoints()
         {
             if (m_gpsPoints == null)

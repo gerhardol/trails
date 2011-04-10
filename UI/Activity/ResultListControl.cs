@@ -193,11 +193,11 @@ namespace TrailsPlugin.UI.Activity {
             int resRows = 0;
             if (summaryList.RowData != null)
             {
-                resRows = Math.Min(5, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
+                resRows = Math.Min(7, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
             }
-            resRows = Math.Max(resRows, 2);
+            resRows = Math.Max(resRows, 3);
             m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
-                18 * resRows + 15;
+                17 * resRows + 16;
 
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;
@@ -715,9 +715,16 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     selectAll();
                 }
-                else if (e.Modifiers == Keys.Shift)
+                else 
                 {
-                    TrailsPlugin.Data.Settings.RestIsPause = !TrailsPlugin.Data.Settings.RestIsPause;
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        TrailsPlugin.Data.Settings.RestIsPause = false;
+                    }
+                    else
+                    {
+                        TrailsPlugin.Data.Settings.RestIsPause = true;
+                    }
                     m_controller.CurrentActivityTrail.Clear();
                     m_page.RefreshData();
                 }
@@ -734,6 +741,17 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_controller.Reset();
                 m_page.RefreshData();
+            }
+            else if (e.KeyCode == Keys.S)
+            {
+                if (e.Modifiers == Keys.Shift)
+                {
+                    m_page.SetResultListHeight += 17;
+                }
+                else
+                {
+                    m_page.SetResultListHeight += 17;
+                }
             }
             else if (e.KeyCode == Keys.U)
             {

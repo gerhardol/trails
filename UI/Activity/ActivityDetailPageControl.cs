@@ -282,6 +282,10 @@ namespace TrailsPlugin.UI.Activity {
         /*************************************************************************************************************/
         public int SetResultListHeight
         {
+            get
+            {
+                return this.LowerSplitContainer.SplitterDistance;
+            }
             set
             {
                 this.LowerSplitContainer.SplitterDistance = value;

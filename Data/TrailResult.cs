@@ -223,6 +223,7 @@ namespace TrailsPlugin.Data {
             {
                 if (DistanceMetersTrack != null && DistanceMetersTrack.Count > 0)
                 {
+                    //TODO: calculate unpaused distance
                     return DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value;
                 }
                 else
@@ -253,17 +254,23 @@ namespace TrailsPlugin.Data {
                 if (m_startTime == null)
                 {
                     DateTime startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
-                    DateTime endTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
-                    m_startTime = startTime;
-                    while (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused((DateTime)m_startTime, Pauses))
+                    DateTime endTime   = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                    //m_startTime = startTime;
+                    //while (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused((DateTime)m_startTime, Pauses))
+                    //{
+                    //    m_startTime = ((DateTime)m_startTime).Add(TimeSpan.FromSeconds(1));
+                    //    if (endTime.CompareTo((DateTime)m_startTime) <= 0)
+                    //    {
+                    //        //Trail (or subtrail) is completely paused. Use all
+                    //        m_startTime = startTime;
+                    //        break;
+                    //    }
+                    //}
+                    m_startTime = getUnpausedTime(startTime, Pauses, true);
+                    if (endTime.CompareTo((DateTime)m_startTime) <= 0)
                     {
-                        m_startTime = ((DateTime)m_startTime).Add(TimeSpan.FromSeconds(1));
-                        if (endTime.CompareTo((DateTime)m_startTime) <= 0)
-                        {
-                            //Trail (or subtrail) is completely paused. Use all
-                            m_startTime = startTime;
-                            break;
-                        }
+                        //Trail (or subtrail) is completely paused. Use all
+                        m_startTime = startTime;
                     }
                 }
                 return (DateTime)m_startTime;
@@ -275,23 +282,52 @@ namespace TrailsPlugin.Data {
             {
                 if (m_endTime == null)
                 {
-                    DateTime endTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
                     DateTime startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
-                    m_endTime = endTime;
-                    while (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused((DateTime)m_endTime, Pauses))
+                    DateTime endTime   = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                    //m_endTime = endTime;
+                    //while (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused((DateTime)m_endTime, Pauses))
+                    //{
+                    //     m_endTime = ((DateTime)m_endTime).Add(TimeSpan.FromSeconds(-1));
+                    //     if (startTime.CompareTo((DateTime)m_endTime) >= 0)
+                    //     {
+                    //         //Trail (or subtrail) is completely paused. Use all
+                    //         m_endTime = endTime;
+                    //         break;
+                    //     }
+                    //}
+                    m_endTime = getUnpausedTime(endTime, Pauses, false);
+                    if (startTime.CompareTo((DateTime)m_endTime) >= 0)
                     {
-                         m_endTime = ((DateTime)m_endTime).Add(TimeSpan.FromSeconds(-1));
-                         if (startTime.CompareTo((DateTime)m_endTime) >= 0)
-                         {
-                             //Trail (or subtrail) is completely paused. Use all
-                             m_endTime = endTime;
-                             break;
-                         }
+                        //Trail (or subtrail) is completely paused. Use all
+                        m_endTime = endTime;
                     }
                 }
                 return (DateTime)m_endTime;
             }
         }
+        private static DateTime getUnpausedTime(DateTime time, IValueRangeSeries<DateTime> pauses, bool next)
+        {
+            if (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, pauses))
+            {
+                foreach (IValueRange<DateTime> pause in pauses)
+                {
+                    if (time.CompareTo(pause.Lower) > 0 &&
+                        time.CompareTo(pause.Upper) < 0)
+                    {
+                        if (next)
+                        {
+                            time = (pause.Upper).Add(TimeSpan.FromSeconds(1));
+                        }
+                        else
+                        {
+                            time = pause.Lower.Add(TimeSpan.FromSeconds(-1));
+                        }
+                    }
+                }
+            }
+            return time;
+        }
+
         //All of result including pauses/stopped
         //This is how FilteredStatistics want the info
         public IValueRangeSeries<DateTime> getSelInfo()
@@ -355,7 +391,8 @@ namespace TrailsPlugin.Data {
         }
         public double getDistResultFromDistActivity(double t)
         {
-            return t - StartDist;
+            //return t - StartDist;
+            return DistanceMetersTrack.GetInterpolatedValue(getDateTimeFromDistActivity(t)).Value;
         }
         //public double getDistResultFromUnpausedDistActivity(double t)
         //{
@@ -558,16 +595,30 @@ namespace TrailsPlugin.Data {
                         {
                             m_startDistance = m_activityDistanceMetersTrack[i].Value;
                         }
+                        float? prevDist=null;
+                        float distance=0;
                         while (i < m_activityDistanceMetersTrack.Count &&
                             0 <= this.EndDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
                         {
                             ITimeValueEntry<float> timeValue = m_activityDistanceMetersTrack[i];
                             DateTime time = m_activityDistanceMetersTrack.EntryDateTime(timeValue);
-                            float val = (float)getDistResultFromDistActivity(timeValue.Value);
-                            m_distanceMetersTrack.Add(time, val);
+                            float actDist = timeValue.Value;
+                            //float val = (float)getDistResultFromDistActivity(timeValue.Value);
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
+                            {
+                                if (prevDist != null)
+                                {
+                                    distance += actDist - (float)prevDist;
+                                }
+                                m_distanceMetersTrack.Add(time, distance);
+                                prevDist = actDist;
+                            }
+                            else
+                            {
+                                prevDist = null;
+                            }
                             i++;
                         }
-                        //float m_lastDistance = m_activityDistanceMetersTrack[--i].Value;
                     }
                 }
             }
@@ -746,7 +797,8 @@ namespace TrailsPlugin.Data {
                 {
                     DateTime time = getDateTimeFromElapsedResult(this.DistanceMetersTrack, this.DistanceMetersTrack[i]);
                     ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
-                    if (value != null)
+                    if (value != null &&
+                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
                     {
                         track.Add(time, value.Value);
                     }
@@ -967,7 +1019,10 @@ namespace TrailsPlugin.Data {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                             DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
                             lastValue = (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds);
-                            m_DiffTimeTrack0.Add(d1, lastValue);
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            {
+                                m_DiffTimeTrack0.Add(d1, lastValue);
+                            }
                             oldElapsedSeconds = t.ElapsedSeconds;
                         }
                     }
@@ -984,7 +1039,10 @@ namespace TrailsPlugin.Data {
                         try
                         {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                            m_DiffTimeTrack0.Add(d1, lastValue);
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            {
+                                m_DiffTimeTrack0.Add(d1, lastValue);
+                            }
                         }
                         catch { }
                     }
@@ -1011,7 +1069,10 @@ namespace TrailsPlugin.Data {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                             DateTime d2 = refRes.getDateTimeFromElapsedResult(refRes.DistanceMetersTrack, t);
                             lastValue = (float)UnitUtil.Distance.ConvertFrom(t.Value - refRes.DistanceMetersTrack.GetInterpolatedValue(d2).Value, refRes.Activity);
-                            m_DiffDistTrack0.Add(d1, lastValue);
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            {
+                                m_DiffDistTrack0.Add(d1, lastValue);
+                            }
                             oldElapsedSeconds = t.ElapsedSeconds;
                         }
                     }
@@ -1027,7 +1088,10 @@ namespace TrailsPlugin.Data {
                         try
                         {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                            m_DiffDistTrack0.Add(d1, lastValue);
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            {
+                                m_DiffDistTrack0.Add(d1, lastValue);
+                            }
                         }
                         catch { }
                     }

@@ -563,7 +563,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         float[] GetSingleSelection(TrailResult tr, IValueRange<double> v)
         {
-            //Note: Selcting in Route gives unpaused distance, but this should be handled in the selection
+            //Note: Selecting in Route gives unpaused distance, but this should be handled in the selection
             if (XAxisReferential == XAxisValue.Time)
             {
                 DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;

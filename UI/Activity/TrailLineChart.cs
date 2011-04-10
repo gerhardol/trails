@@ -1195,7 +1195,7 @@ namespace TrailsPlugin.UI.Activity {
             summaryListCursorLocationAtMouseMove = e.Location;
         }
 
-        int MainChart_KeyDown_Smooth(System.Windows.Forms.KeyEventArgs e, int val)
+        int MainChart_KeyDown_Smooth(System.Windows.Forms.KeyEventArgs e, int val, IList<LineChartTypes> chartTypes)
         {
             if (e.Modifiers == Keys.Control)
             {
@@ -1214,6 +1214,13 @@ namespace TrailsPlugin.UI.Activity {
                     val = 0;
                 }
             }
+            foreach (LineChartTypes chartType in chartTypes)
+            {
+                if (m_axis.ContainsKey(chartType))
+                {
+                    m_axis[chartType].LabelColor = Color.Black;
+                }
+            }
             if (summaryListCursorLocationAtMouseMove != null)
             {
                 summaryListToolTip.Show(val.ToString(),
@@ -1230,27 +1237,32 @@ namespace TrailsPlugin.UI.Activity {
             if (e.KeyCode == Keys.C)
             {
                 ReferenceTrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds);
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds,
+                    new List<LineChartTypes>{LineChartTypes.Cadence});
             }
             else if (e.KeyCode == Keys.E)
             {
                 ReferenceTrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds);
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds,
+                    new List<LineChartTypes>{LineChartTypes.Elevation, LineChartTypes.Grade});
             }
             else if (e.KeyCode == Keys.H)
             {
                 ReferenceTrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds);
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds,
+                    new List<LineChartTypes>{LineChartTypes.HeartRateBPM, LineChartTypes.HeartRatePercentMax});
             }
             else if (e.KeyCode == Keys.P)
             {
                 ReferenceTrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds);
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds,
+                    new List<LineChartTypes>{LineChartTypes.Power});
             }
             else if (e.KeyCode == Keys.S)
             {
                 ReferenceTrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds);
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds,
+                    new List<LineChartTypes>{LineChartTypes.Speed, LineChartTypes.Pace});
             }
 
 

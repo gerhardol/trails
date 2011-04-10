@@ -28,21 +28,33 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
 
 namespace TrailsPlugin.Data {
-    public class TrailActivityInfoOptions : IActivityInfoOptions
+    public class ActivityInfoOptions : IActivityInfoOptions
     {
-        public TrailActivityInfoOptions()
+        public ActivityInfoOptions(bool defaultSmoothing)
             : base()
         {
             IAnalysisSettings a = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings;
             m_CadenceCutoff = a.CadenceCutoff;
-            m_CadenceSmoothingSeconds = a.CadenceSmoothingSeconds;
-            m_ElevationSmoothingSeconds = a.ElevationSmoothingSeconds;
-            m_HeartRateSmoothingSeconds = a.HeartRateSmoothingSeconds;
             m_IncludePaused = a.IncludePaused;
             m_IncludeStopped = a.IncludeStopped;
             m_PowerCutoff = a.PowerCutoff;
-            m_PowerSmoothingSeconds = a.PowerSmoothingSeconds;
-            m_SpeedSmoothingSeconds = a.SpeedSmoothingSeconds;
+
+            if (defaultSmoothing)
+            {
+                m_CadenceSmoothingSeconds = a.CadenceSmoothingSeconds;
+                m_ElevationSmoothingSeconds = a.ElevationSmoothingSeconds;
+                m_HeartRateSmoothingSeconds = a.HeartRateSmoothingSeconds;
+                m_PowerSmoothingSeconds = a.PowerSmoothingSeconds;
+                m_SpeedSmoothingSeconds = a.SpeedSmoothingSeconds;
+            }
+            else
+            {
+                m_CadenceSmoothingSeconds = 0;
+                m_ElevationSmoothingSeconds = 0;
+                m_HeartRateSmoothingSeconds = 0;
+                m_PowerSmoothingSeconds = 0;
+                m_SpeedSmoothingSeconds = 0;
+            }
         }
 
         private int m_CadenceCutoff;

@@ -67,15 +67,15 @@ namespace TrailsPlugin.Data {
 
         private IGPSRoute m_gpsTrack;
         private IList<IGPSPoint> m_gpsPoints;
-        private static TrailActivityInfoOptions m_TrailActivityInfoOptions;
+        private static ActivityInfoOptions m_TrailActivityInfoOptions;
 
-        public TrailActivityInfoOptions TrailActivityInfoOptions
+        public static ActivityInfoOptions TrailActivityInfoOptions
         {
             get
             {
                 if (m_TrailActivityInfoOptions == null)
                 {
-                    m_TrailActivityInfoOptions = new TrailActivityInfoOptions();
+                    m_TrailActivityInfoOptions = new ActivityInfoOptions(true);
                 }
                 return m_TrailActivityInfoOptions;
             }
@@ -527,23 +527,22 @@ namespace TrailsPlugin.Data {
             }
         }
 
-        //ActivityInfo m_ActivityInfo = null;
+        ActivityInfo m_ActivityInfo = null;
         ActivityInfo Info
         {
             get
             {
                 //Caching is not needed, done by ST
-                return ActivityInfoCache.Instance.GetInfo(this.Activity);
-                //Example implementation with custom InfoCache
-            //    if (m_ActivityInfo == null)
-            //    {
-            //        ActivityInfoCache c = new ActivityInfoCache();
-            //        TrailActivityInfoOptions t = new TrailActivityInfoOptions();
-            //        t.HeartRateSmoothingSeconds = 120;
-            //        c.Options=t;
-            //        m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(this.Activity);
-            //    }
-            //    return m_ActivityInfo;
+                //return ActivityInfoCache.Instance.GetInfo(this.Activity);
+                //Custom InfoCache, to control smoothing
+                if (m_ActivityInfo == null)
+                {
+                    ActivityInfoCache c = new ActivityInfoCache();
+                    ActivityInfoOptions t = new ActivityInfoOptions(false);
+                    c.Options = t;
+                    m_ActivityInfo = c.GetInfo(this.Activity);
+                }
+                return m_ActivityInfo;
             }
         }
 
@@ -733,7 +732,7 @@ namespace TrailsPlugin.Data {
         {
 			get {
 				if (m_elevationMetersTrack == null) {
-					m_elevationMetersTrack = this.copyTrailTrack(Activity.ElevationMetersTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+					m_elevationMetersTrack = this.copyTrailTrack(Info.SmoothedElevationTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
 				}
 				return m_elevationMetersTrack;
 			}
@@ -755,11 +754,16 @@ namespace TrailsPlugin.Data {
             m_DiffTimeTrack0 = null;
             m_DiffDistTrack0 = null;
 
+            //smoothing control
+            //m_TrailActivityInfoOptions = null;
+
             if (!onlyDisplay)
             {
                 m_pauses = null;
                 m_startTime = null;
                 m_endTime = null;
+
+                //m_ActivityInfo = null;
 
                 m_distanceMetersTrack = null;
                 m_activityDistanceMetersTrack = null;
@@ -801,7 +805,7 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries CadencePerMinuteTrack {
 			get {
 				if (m_cadencePerMinuteTrack == null) {
-                    m_cadencePerMinuteTrack = this.copyTrailTrack(Activity.CadencePerMinuteTrack, TrailActivityInfoOptions.CadenceSmoothingSeconds);
+                    m_cadencePerMinuteTrack = this.copyTrailTrack(Info.SmoothedCadenceTrack, TrailActivityInfoOptions.CadenceSmoothingSeconds);
 				}
 				return m_cadencePerMinuteTrack;
 			}
@@ -809,7 +813,7 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries HeartRatePerMinuteTrack {
 			get {
 				if (m_heartRatePerMinuteTrack == null) {
-                    m_heartRatePerMinuteTrack = this.copyTrailTrack(Activity.HeartRatePerMinuteTrack, TrailActivityInfoOptions.HeartRateSmoothingSeconds);
+                    m_heartRatePerMinuteTrack = this.copyTrailTrack(Info.SmoothedHeartRateTrack, TrailActivityInfoOptions.HeartRateSmoothingSeconds);
 				}
 				return m_heartRatePerMinuteTrack;
 			}
@@ -838,7 +842,7 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries PowerWattsTrack {
 			get {
 				if (m_powerWattsTrack == null) {
-                    m_powerWattsTrack = this.copyTrailTrack(Activity.PowerWattsTrack, TrailActivityInfoOptions.PowerSmoothingSeconds);
+                    m_powerWattsTrack = this.copyTrailTrack(Info.SmoothedPowerTrack, TrailActivityInfoOptions.PowerSmoothingSeconds);
 				}
 				return m_powerWattsTrack;
 			}
@@ -855,13 +859,7 @@ namespace TrailsPlugin.Data {
 						ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
                         if (i>0 && prevTime.CompareTo(time) < 0)
                         {
-                            float speed = 0;
-                            speed = (float)((this.DistanceMetersTrack[i].Value - this.DistanceMetersTrack[i - 1].Value) / time.Subtract(prevTime).TotalSeconds);
-                            if (i == 0)
-                            {
-                                //Fake speed in first point...
-                                m_speedTrack.Add(prevTime, speed);
-                            }
+                            float speed = value.Value;
                             m_speedTrack.Add(time, speed);
                         }
                         prevTime = time;
@@ -978,7 +976,8 @@ namespace TrailsPlugin.Data {
             {
                 m_DiffTimeTrack0 = new NumericTimeDataSeries();
                 float oldElapsedSeconds = -1;
-                float lastValue = 0;
+                float lastValue = 0; 
+                //int nextTrailIndex = 1;
                 foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                 {
                     try
@@ -986,14 +985,22 @@ namespace TrailsPlugin.Data {
                         if (refRes != null && t.ElapsedSeconds <= refRes.DistanceMetersTrack.TotalElapsedSeconds &&
                             t.ElapsedSeconds > oldElapsedSeconds)
                         {
+                        //if ((nextTrailIndex >= 0 && nextTrailIndex <= m_indexes.Count - 1 && m_indexes.Count == refRes.m_indexes.Count) &&
+                        //    Activity.GPSRoute != null && Activity.GPSRoute.Count > m_indexes[nextTrailIndex] &&
+                        //    refRes.Activity.GPSRoute != null && refRes.Activity.GPSRoute.Count > refRes.m_indexes[nextTrailIndex])
+                        //{
+                        //    DateTime t1 = Activity.GPSRoute.EntryDateTime(Activity.GPSRoute[m_indexes[nextTrailIndex]]);
+                        //    DateTime t2 = refRes.Activity.GPSRoute.EntryDateTime(refRes.Activity.GPSRoute[m_indexes[nextTrailIndex]]);
+                        //{
+                        //}
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                             DateTime d2 = refRes.DistanceMetersTrack.GetTimeAtDistanceMeters(t.Value);
                             lastValue = (float)(-t.ElapsedSeconds + d2.Subtract(refRes.DistanceMetersTrack.StartTime).TotalSeconds);
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
                                 m_DiffTimeTrack0.Add(d1, lastValue);
+                                oldElapsedSeconds = t.ElapsedSeconds;
                             }
-                            oldElapsedSeconds = t.ElapsedSeconds;
                         }
                     }
                     catch { }
@@ -1042,8 +1049,8 @@ namespace TrailsPlugin.Data {
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
                                 m_DiffDistTrack0.Add(d1, lastValue);
+                                oldElapsedSeconds = t.ElapsedSeconds;
                             }
-                            oldElapsedSeconds = t.ElapsedSeconds;
                         }
                     }
                     catch { }

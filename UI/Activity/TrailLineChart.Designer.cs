@@ -191,6 +191,8 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.TabIndex = 0;
             this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
             this.MainChart.SelectingData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectingData);
+            this.MainChart.KeyDown += new System.Windows.Forms.KeyEventHandler(MainChart_KeyDown);
+            this.MainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(MainChart_MouseMove);
             // 
             // chartContextMenu
             // 
@@ -265,5 +267,6 @@ namespace TrailsPlugin.UI.Activity
         private ZoneFiveSoftware.Common.Visuals.Button ZoomInButton;
         private ZoneFiveSoftware.Common.Visuals.Button ZoomToContentButton;
         private ZoneFiveSoftware.Common.Visuals.Button SaveImageButton;
+        private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
     }
 }

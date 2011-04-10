@@ -1189,6 +1189,78 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        System.Drawing.Point summaryListCursorLocationAtMouseMove;
+        void MainChart_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            summaryListCursorLocationAtMouseMove = e.Location;
+        }
+
+        int MainChart_KeyDown_Smooth(System.Windows.Forms.KeyEventArgs e, int val)
+        {
+            if (e.Modifiers == Keys.Control)
+            {
+                val = 0;
+            }
+            else
+            {
+                int add = 1;
+                if (e.Modifiers == Keys.Shift)
+                {
+                    add = -add;
+                }
+                val += add;
+                if (val < 0)
+                {
+                    val = 0;
+                }
+            }
+            if (summaryListCursorLocationAtMouseMove != null)
+            {
+                summaryListToolTip.Show(val.ToString(),
+                              this,
+                              new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                                  Cursor.Current.Size.Width / 2,
+                                        summaryListCursorLocationAtMouseMove.Y),
+                              summaryListToolTip.AutoPopDelay);
+            }
+            return val;
+        }
+        void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.C)
+            {
+                ReferenceTrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds);
+            }
+            else if (e.KeyCode == Keys.E)
+            {
+                ReferenceTrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds);
+            }
+            else if (e.KeyCode == Keys.H)
+            {
+                ReferenceTrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds);
+            }
+            else if (e.KeyCode == Keys.P)
+            {
+                ReferenceTrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds);
+            }
+            else if (e.KeyCode == Keys.S)
+            {
+                ReferenceTrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(e, ReferenceTrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds);
+            }
+
+
+            foreach (TrailResult t in TrailResults)
+            {
+                t.Clear(false);
+            }
+            m_page.RefreshChart();
+        }
+
 		public bool BeginUpdate() {
 			return MainChart.BeginUpdate();
 		}

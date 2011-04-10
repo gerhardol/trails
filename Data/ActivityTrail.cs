@@ -148,7 +148,7 @@ namespace TrailsPlugin.Data
         {
             foreach (TrailResultWrapper t in ResultTreeList)
             {
-                t.Result.Clear();
+                t.Result.Clear(false);
             }
         }
         public IList<TrailResultWrapper> ResultTreeList

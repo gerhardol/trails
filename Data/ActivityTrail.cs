@@ -242,7 +242,8 @@ namespace TrailsPlugin.Data
                                     int prevRouteIndex = -1;
                                     int prevMatchIndex = -1; //Last index that match for this activity
                                     float prevDistToPoint = 0;
-                                    float prevDistToStartPoint = 0;
+                                    int prevStartPointIndex = -1;
+                                    float prevDistToStartPoint = -1;
                                     int maxRequiredMisses = m_trail.MaxRequiredMisses;
                                     int currRequiredMisses = 0;
                                     IDistanceDataTrack dTrack = null;
@@ -280,26 +281,31 @@ namespace TrailsPlugin.Data
                                         //        trailDistDiff = 0;
                                         //    }
                                         //}
-
                                         //Special case of the algorithm above, restarting if the first point is seen again.
                                         //So A1-A2-B1-C1 is reduced to A2-B1-C1
                                         if (trailgps.Count > 1 && aMatch.Count == 1 &&
-                                            lastMatchInRadius > -1 && lastMatchPassBy > -1 &&
                                             routeIndex > lastMatchInRadius && routeIndex > lastMatchPassBy)
                                         {
-                                            float routeDistStartPoint = distanceTrailToRoute(activity, trailgps, aMatch.Count, routeIndex);
-                                            if (distanceTrailToRoute(activity, trailgps, 0, routeIndex) < this.m_trail.Radius ||
-                                            0 < checkPass(routePoint(activity, prevRouteIndex), prevDistToStartPoint, routePoint(activity, routeIndex), routeDistStartPoint, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius))
+                                            float routeDistStartPoint = distanceTrailToRoute(activity, trailgps, 0, routeIndex);
+                                            if (routeDistStartPoint < this.m_trail.Radius ||
+                                                (routeIndex- prevStartPointIndex) == 1 &&
+                                            0 < checkPass(routePoint(activity, prevStartPointIndex), prevDistToStartPoint, routePoint(activity, routeIndex), routeDistStartPoint, trailgps[TrailIndex(trailgps, 0)], this.Trail.Radius))
                                             {
                                                 //Start over if we pass first point before all were found
                                                 aMatch.Clear();
                                                 trailDistDiff = 0;
+                                                prevStartPointIndex = -1;
+                                                routeDist = routeDistStartPoint;
                                             }
-                                            prevDistToStartPoint = routeDistStartPoint;
+                                            else
+                                            {
+                                                prevStartPointIndex = routeIndex;
+                                                prevDistToStartPoint = routeDistStartPoint;
+                                            }
                                         }
                                         else
                                         {
-                                            prevDistToStartPoint = routeDist;
+                                            prevStartPointIndex = -1;
                                         }
 
                                         //////////////////////////////////////
@@ -308,6 +314,7 @@ namespace TrailsPlugin.Data
                                         {
                                             matchIndex = routeIndex;
                                             matchDist = routeDist;
+                                            lastMatchInRadius = routeIndex;
                                             float prevDistToPoint2 = routeDist;
                                             float localMax = float.MaxValue;
                                             //There is a match, but following points may be better
@@ -320,6 +327,9 @@ namespace TrailsPlugin.Data
                                                     //No longer in radius, we have the best match
                                                     break;
                                                 }
+                                                //still in radius
+                                                lastMatchInRadius = routeIndex2;
+
                                                 if (aMatch.Count == 0)
                                                 {
                                                     //start point
@@ -364,8 +374,6 @@ namespace TrailsPlugin.Data
                                                         matchDist = distToPoint2;
                                                     }
                                                 }
-                                                //still in radius
-                                                lastMatchInRadius = routeIndex2;
 
                                                 prevDistToPoint2 = distToPoint2;
                                                 localMax = Math.Max(localMax, distToPoint2);

@@ -296,6 +296,8 @@ namespace TrailsPlugin.Data
                                                 trailDistDiff = 0;
                                                 prevStartPointIndex = -1;
                                                 routeDist = routeDistStartPoint;
+                                                prevRouteIndex = prevStartPointIndex;
+                                                prevDistToPoint = prevDistToStartPoint;
                                             }
                                             else
                                             {
@@ -379,8 +381,8 @@ namespace TrailsPlugin.Data
                                                 localMax = Math.Max(localMax, distToPoint2);
                                             }
                                         }
-                                            //Check for pass-by - ignore if prevous was match for single point trails
-                                        else if (trailgps.Count > 1 || aMatch.Count>0 && prevRouteIndex+1<routeIndex)
+                                        //Check for pass-by - ignore if previous was match for single point trails
+                                        else if (trailgps.Count > 1 || aMatch.Count>0 && routeIndex-prevRouteIndex == 1)
                                         {
                                             float factor = checkPass(routePoint(activity, prevRouteIndex), prevDistToPoint, routePoint(activity, routeIndex), routeDist, trailgps[TrailIndex(trailgps, aMatch.Count)], this.Trail.Radius);
                                             if (0 < factor)
@@ -630,8 +632,9 @@ namespace TrailsPlugin.Data
                 || r1.LongitudeDegrees < trailp.LongitudeDegrees
                                 && r2.LongitudeDegrees > trailp.LongitudeDegrees
                 || d1 < radius * Math.Sqrt(2)
-                || d2 < radius * Math.Sqrt(2))
+                && d2 < radius * Math.Sqrt(2))
             {
+                //TODO: Review this algorithm. Seem to work though...
                 //Law of cosines - get angle at r1
                 double d3 = r1.DistanceMetersToPoint(r2);
                 double a0 = (d1 * d1 + d3 * d3 - d2 * d2) / (2 * d1 * d3);
@@ -639,10 +642,12 @@ namespace TrailsPlugin.Data
                 a0 = Math.Min(a0, 1);
                 a0 = Math.Max(a0, -1);
                 double a1 = Math.Acos(a0);
-                //Dist from r1 to closest point
+                //Dist from r1 to closest point on d2
                 double d = Math.Abs(d1 * Math.Cos(a1));
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
-                if (d < d3 && d1 * Math.Sin(a1) < radius)
+                //This means the angle a1 must be +/- 90 degrees
+                double d4 = d1 * Math.Sin(a1);
+                if (d < d3 && d4 < radius && (Math.Abs(a1) < Math.PI/2))
                 {
                     factor = 1 - (float)(d / d3);
                     //Return factor, to return best aproximation something like below could be used

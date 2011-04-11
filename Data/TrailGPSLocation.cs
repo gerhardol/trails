@@ -35,6 +35,11 @@ namespace TrailsPlugin.Data {
             this._required = required;
         }
 
+        public override string ToString()
+        {
+            return _name + " " + _required + " " + _gpsLocation;
+        }
+
         private GPSLocation _gpsLocation;
         public GPSLocation GpsLocation
         {

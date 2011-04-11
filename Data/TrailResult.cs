@@ -56,10 +56,15 @@ namespace TrailsPlugin.Data {
         //private INumericTimeDataSeries m_paceTrack;
         private INumericTimeDataSeries m_gradeTrack;
 
-        //Converted tracks, to display format
+        //Converted tracks, to display format, with smoothing
+        //Should be in a separate class
         private TrailResult m_cacheTrackRef = null;
         private IDistanceDataTrack m_distanceMetersTrack0 = null;
+        private INumericTimeDataSeries m_cadencePerMinuteTrack0;
         private INumericTimeDataSeries m_elevationMetersTrack0;
+        private INumericTimeDataSeries m_gradeTrack0;
+        private INumericTimeDataSeries m_heartRatePerMinuteTrack0;
+        private INumericTimeDataSeries m_powerWattsTrack0;
         private INumericTimeDataSeries m_speedTrack0;
         private INumericTimeDataSeries m_paceTrack0;
         private INumericTimeDataSeries m_DiffTimeTrack0 = null;
@@ -732,7 +737,7 @@ namespace TrailsPlugin.Data {
         {
 			get {
 				if (m_elevationMetersTrack == null) {
-					m_elevationMetersTrack = this.copyTrailTrack(Info.SmoothedElevationTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+					m_elevationMetersTrack = this.copyTrailTrack(Info.SmoothedElevationTrack);
 				}
 				return m_elevationMetersTrack;
 			}
@@ -749,6 +754,10 @@ namespace TrailsPlugin.Data {
         {
             m_distanceMetersTrack0 = null;
             m_elevationMetersTrack0 = null;
+            m_gradeTrack0 = null;
+            m_heartRatePerMinuteTrack0 = null;
+            m_powerWattsTrack0 = null;
+            m_cadencePerMinuteTrack0 = null;
             m_speedTrack0 = null;
             m_paceTrack0 = null;
             m_DiffTimeTrack0 = null;
@@ -780,7 +789,8 @@ namespace TrailsPlugin.Data {
             }
         }
 
-        public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source, int smooth)
+        //copy the relevant part to a new track
+        public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
         {
             INumericTimeDataSeries track = new NumericTimeDataSeries();
             track.AllowMultipleAtSameTime = true;
@@ -796,6 +806,30 @@ namespace TrailsPlugin.Data {
                         track.Add(time, value.Value);
                     }
                 }
+            }
+            return track;
+        }
+        //Copy the raw unsmoothed track
+        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, int smooth)
+        {
+            INumericTimeDataSeries track = new NumericTimeDataSeries();
+            if (source != null)
+            {
+                    float oldElapsedSeconds = -1;
+                foreach (ITimeValueEntry<float> t in source)
+                {
+                    try
+                    {
+                        if (t.ElapsedSeconds > oldElapsedSeconds)
+                        {
+                DateTime time = source.EntryDateTime(t);
+                
+                        track.Add(time, t.Value);
+                }
+                        oldElapsedSeconds=t.ElapsedSeconds;
+                    }
+                    catch{}
+                }
                 float min; float max;
                 track = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(track, smooth, out min, out max);
             }
@@ -805,7 +839,7 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries CadencePerMinuteTrack {
 			get {
 				if (m_cadencePerMinuteTrack == null) {
-                    m_cadencePerMinuteTrack = this.copyTrailTrack(Info.SmoothedCadenceTrack, TrailActivityInfoOptions.CadenceSmoothingSeconds);
+                    m_cadencePerMinuteTrack = this.copyTrailTrack(Info.SmoothedCadenceTrack);
 				}
 				return m_cadencePerMinuteTrack;
 			}
@@ -813,36 +847,36 @@ namespace TrailsPlugin.Data {
 		public INumericTimeDataSeries HeartRatePerMinuteTrack {
 			get {
 				if (m_heartRatePerMinuteTrack == null) {
-                    m_heartRatePerMinuteTrack = this.copyTrailTrack(Info.SmoothedHeartRateTrack, TrailActivityInfoOptions.HeartRateSmoothingSeconds);
+                    m_heartRatePerMinuteTrack = this.copyTrailTrack(Info.SmoothedHeartRateTrack);
 				}
 				return m_heartRatePerMinuteTrack;
 			}
 		}
         //Unused, no cache
-        public INumericTimeDataSeries HeartRatePerMinutePercentMaxTrack
-        {
-            get
-            {
-                IAthleteInfoEntry lastAthleteEntry = Plugin.GetApplication().Logbook.Athlete.InfoEntries.LastEntryAsOfDate(m_activity.StartTime);
-                INumericTimeDataSeries track = new NumericTimeDataSeries();
-                // Value is in BPM so convert to the % max HR if we have the info
-                if (!float.IsNaN(lastAthleteEntry.MaximumHeartRatePerMinute))
-                {
-                    INumericTimeDataSeries tempResult = this.HeartRatePerMinuteTrack;
-                    foreach (ITimeValueEntry<float> entry in tempResult)
-                    {
-                        float hr = (entry.Value / lastAthleteEntry.MaximumHeartRatePerMinute) * 100;
-                        track.Add(tempResult.EntryDateTime(entry), hr);
-                    }
-                }
-                return track;
-            }
-        }
+        //public INumericTimeDataSeries HeartRatePerMinutePercentMaxTrack
+        //{
+        //    get
+        //    {
+        //        IAthleteInfoEntry lastAthleteEntry = Plugin.GetApplication().Logbook.Athlete.InfoEntries.LastEntryAsOfDate(m_activity.StartTime);
+        //        INumericTimeDataSeries track = new NumericTimeDataSeries();
+        //        // Value is in BPM so convert to the % max HR if we have the info
+        //        if (!float.IsNaN(lastAthleteEntry.MaximumHeartRatePerMinute))
+        //        {
+        //            INumericTimeDataSeries tempResult = this.HeartRatePerMinuteTrack;
+        //            foreach (ITimeValueEntry<float> entry in tempResult)
+        //            {
+        //                float hr = (entry.Value / lastAthleteEntry.MaximumHeartRatePerMinute) * 100;
+        //                track.Add(tempResult.EntryDateTime(entry), hr);
+        //            }
+        //        }
+        //        return track;
+        //    }
+        //}
 
 		public INumericTimeDataSeries PowerWattsTrack {
 			get {
 				if (m_powerWattsTrack == null) {
-                    m_powerWattsTrack = this.copyTrailTrack(Info.SmoothedPowerTrack, TrailActivityInfoOptions.PowerSmoothingSeconds);
+                    m_powerWattsTrack = this.copyTrailTrack(Info.SmoothedPowerTrack);
 				}
 				return m_powerWattsTrack;
 			}
@@ -864,9 +898,6 @@ namespace TrailsPlugin.Data {
                         }
                         prevTime = time;
 					}
-                    float min;
-                    float max;
-                    m_speedTrack = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(m_speedTrack, TrailActivityInfoOptions.SpeedSmoothingSeconds, out min, out max);
                 }
 				return m_speedTrack;
 			}
@@ -879,7 +910,7 @@ namespace TrailsPlugin.Data {
                 if (m_gradeTrack == null)
                 {
                     //TODO: Implement raw grade track
-                    m_gradeTrack = this.copyTrailTrack(Info.SmoothedGradeTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+                    m_gradeTrack = this.copyTrailTrack(Info.SmoothedGradeTrack);
                 }
                 return m_gradeTrack;
             }
@@ -933,6 +964,46 @@ namespace TrailsPlugin.Data {
             return m_elevationMetersTrack0;
         }
 
+        public INumericTimeDataSeries GradeTrack0(TrailResult refRes)
+        {
+            //checkCacheRef(refRes);
+            if (m_gradeTrack0 == null)
+            {
+                m_gradeTrack0 = copySmoothTrack(this.GradeTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+            }
+            return m_gradeTrack0;
+        }
+
+        public INumericTimeDataSeries CadencePerMinuteTrack0(TrailResult refRes)
+        {
+            //checkCacheRef(refRes);
+            if (m_cadencePerMinuteTrack0 == null)
+            {
+                m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, TrailActivityInfoOptions.CadenceSmoothingSeconds);
+            }
+            return m_cadencePerMinuteTrack0;
+        }
+
+        public INumericTimeDataSeries HeartRatePerMinuteTrack0(TrailResult refRes)
+        {
+            //checkCacheRef(refRes);
+            if (m_heartRatePerMinuteTrack0 == null)
+            {
+                m_heartRatePerMinuteTrack0 = copySmoothTrack(this.HeartRatePerMinuteTrack, TrailActivityInfoOptions.HeartRateSmoothingSeconds);
+            }
+            return m_heartRatePerMinuteTrack0;
+        }
+
+        public INumericTimeDataSeries PowerWattsTrack0(TrailResult refRes)
+        {
+            //checkCacheRef(refRes);
+            if (m_powerWattsTrack0 == null)
+            {
+                m_powerWattsTrack0 = copySmoothTrack(this.PowerWattsTrack, TrailActivityInfoOptions.PowerSmoothingSeconds);
+            }
+            return m_powerWattsTrack0;
+        }
+
         public INumericTimeDataSeries SpeedTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -947,6 +1018,9 @@ namespace TrailsPlugin.Data {
                         m_speedTrack0.Add(m_speedTrack0.EntryDateTime(entry), val);
                     }
                 }
+                float min;
+                float max;
+                m_speedTrack0 = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(m_speedTrack0, TrailActivityInfoOptions.SpeedSmoothingSeconds, out min, out max);
             }
             return m_speedTrack0;
         }
@@ -965,6 +1039,9 @@ namespace TrailsPlugin.Data {
                         m_paceTrack0.Add(m_paceTrack0.EntryDateTime(entry), val);
                     }
                 }
+                float min;
+                float max;
+                m_paceTrack0 = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(m_paceTrack0, TrailActivityInfoOptions.SpeedSmoothingSeconds, out min, out max);
             }
             return m_paceTrack0;
         }
@@ -1310,7 +1387,7 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.CadencePerMinuteTrack
         {
-            get { return CadencePerMinuteTrack; }
+            get { return CadencePerMinuteTrack0(this); }
         }
 
         IActivityCategory ITrailResult.Category
@@ -1320,8 +1397,7 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.CopyTrailTrack(INumericTimeDataSeries source)
         {
-            //CalculatedFields sends smoothed track, so no smoothing needed
-            return copyTrailTrack(source, 0);
+            return copyTrailTrack(source);
         }
 
         string ITrailResult.Distance
@@ -1346,7 +1422,7 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.ElevationMetersTrack
         {
-            get { return ElevationMetersTrack; }
+            get { return ElevationMetersTrack0(this); }
         }
 
         TimeSpan ITrailResult.EndTime
@@ -1366,12 +1442,12 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.GradeTrack
         {
-            get { return GradeTrack; }
+            get { return GradeTrack0(this); }
         }
 
         INumericTimeDataSeries ITrailResult.HeartRatePerMinuteTrack
         {
-            get { return HeartRatePerMinuteTrack; }
+            get { return HeartRatePerMinuteTrack0(this); }
         }
 
         float ITrailResult.MaxHR
@@ -1393,13 +1469,11 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.PowerWattsTrack
         {
-            get { return PowerWattsTrack; }
+            get { return PowerWattsTrack0(this); }
         }
 
         INumericTimeDataSeries ITrailResult.SpeedTrack
         {
-            //Note: should be exporting raw speedtrack
-            //get { return SpeedTrack; }
             get { return SpeedTrack0(this); }
         }
 

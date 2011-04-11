@@ -673,6 +673,7 @@ namespace TrailsPlugin.UI.Activity {
                     for (int i = 0; i < m_trailResults.Count; i++)
                     {
                         TrailResult tr = m_trailResults[i];
+                        //As this value is cached, it is no extra to request and drop it
                         INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis);
 
                         if (graphPoints.Count > 1)
@@ -991,7 +992,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 case LineChartTypes.Cadence:
                     {
-                        track = result.CadencePerMinuteTrack;
+                        track = result.CadencePerMinuteTrack0(m_refTrailResult);
                         break;
                     }
                 case LineChartTypes.Elevation:
@@ -1001,22 +1002,22 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 case LineChartTypes.HeartRateBPM:
                     {
-                        track = result.HeartRatePerMinuteTrack;
+                        track = result.HeartRatePerMinuteTrack0(m_refTrailResult);
                         break;
                     }
-                case LineChartTypes.HeartRatePercentMax:
-                    {
-                        track = result.HeartRatePerMinutePercentMaxTrack;
-                        break;
-                    }
+                //case LineChartTypes.HeartRatePercentMax:
+                //    {
+                //        track = result.HeartRatePerMinutePercentMaxTrack;
+                //        break;
+                //    }
                 case LineChartTypes.Power:
                     {
-                        track = result.PowerWattsTrack;
+                        track = result.PowerWattsTrack0(m_refTrailResult);
                         break;
                     }
                 case LineChartTypes.Grade:
                     {
-                        track = result.GradeTrack;
+                        track = result.GradeTrack0(m_refTrailResult);
                         break;
                     }
 
@@ -1167,6 +1168,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (m_trailResults != value)
                 {
+                    m_hasValues = null;
                     if (value == null)
                     {
                         m_trailResults = new List<Data.TrailResult>();
@@ -1268,7 +1270,7 @@ namespace TrailsPlugin.UI.Activity {
 
             foreach (TrailResult t in TrailResults)
             {
-                t.Clear(false);
+                t.Clear(true);
             }
             m_page.RefreshChart();
         }

@@ -1257,6 +1257,17 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     increase = false;
                 }
+                if (!m_axis.ContainsKey(selectedTypes))
+                {
+                    foreach(LineChartTypes l in m_axis.Keys)
+                    {
+                        if (m_axis[l] is LeftVerticalAxis)
+                        {
+                            selectedTypes=l;
+                            break;
+                        }
+                    }
+                }
             }
             else if (e.KeyCode == Keys.C)
             {

@@ -1197,16 +1197,17 @@ namespace TrailsPlugin.UI.Activity {
             summaryListCursorLocationAtMouseMove = e.Location;
         }
 
-        int MainChart_KeyDown_Smooth(System.Windows.Forms.KeyEventArgs e, int val, IList<LineChartTypes> chartTypes)
+        int MainChart_KeyDown_Smooth(int val, IList<LineChartTypes> chartTypes, bool increase, bool reset, bool zero)
         {
-            if (e.Modifiers == Keys.Control)
+            //No action for reset, value alreade set
+            if (zero)
             {
                 val = 0;
             }
-            else
+            else if (!reset)
             {
                 int add = 1;
-                if (e.Modifiers == Keys.Shift)
+                if (!increase)
                 {
                     add = -add;
                 }
@@ -1214,13 +1215,6 @@ namespace TrailsPlugin.UI.Activity {
                 if (val < 0)
                 {
                     val = 0;
-                }
-            }
-            foreach (LineChartTypes chartType in chartTypes)
-            {
-                if (m_axis.ContainsKey(chartType))
-                {
-                    m_axis[chartType].LabelColor = Color.Black;
                 }
             }
             if (summaryListCursorLocationAtMouseMove != null)
@@ -1234,37 +1228,109 @@ namespace TrailsPlugin.UI.Activity {
             }
             return val;
         }
+
         void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.C)
+            LineChartTypes selectedTypes = LineChartTypes.Unknown;
+
+            bool increase = true;
+            bool reset = false;
+            bool zero = false;
+
+            if (e.KeyCode == Keys.Home)
             {
-                TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds,
-                    new List<LineChartTypes>{LineChartTypes.Cadence});
+                reset = true;
+            }
+            else if (e.KeyCode == Keys.End)
+            {
+                zero = true;
+            }
+            else if (e.Modifiers == Keys.Shift)
+            {
+                increase = false;
+            }
+
+            if (e.KeyCode == Keys.PageDown || e.KeyCode == Keys.PageUp)
+            {
+                selectedTypes = m_lastSelectedType;
+                if (e.KeyCode == Keys.PageDown)
+                {
+                    increase = false;
+                }
+            }
+            else if (e.KeyCode == Keys.C)
+            {
+                selectedTypes = LineChartTypes.Cadence;
             }
             else if (e.KeyCode == Keys.E)
             {
-                TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new List<LineChartTypes>{LineChartTypes.Elevation, LineChartTypes.Grade});
+                selectedTypes = LineChartTypes.Elevation;
             }
             else if (e.KeyCode == Keys.H)
             {
-                TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds,
-                    new List<LineChartTypes>{LineChartTypes.HeartRateBPM, LineChartTypes.HeartRatePercentMax});
+                selectedTypes = LineChartTypes.HeartRateBPM;
             }
             else if (e.KeyCode == Keys.P)
             {
-                TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds,
-                    new List<LineChartTypes>{LineChartTypes.Power});
+                selectedTypes = LineChartTypes.Power;
             }
             else if (e.KeyCode == Keys.S)
             {
+                selectedTypes = LineChartTypes.Speed;
+            }
+
+            IList<LineChartTypes> chartTypes = new List<LineChartTypes> { selectedTypes };
+            if (selectedTypes == LineChartTypes.Cadence)
+            {
+                int val = TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds;
+                if (reset)
+                {
+                    val = (new ActivityInfoOptions(true)).CadenceSmoothingSeconds;
+                }
+                TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+            }
+            else if (selectedTypes == LineChartTypes.Elevation || selectedTypes == LineChartTypes.Grade)
+            {
+                int val = TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds;
+                if (reset)
+                {
+                    val = (new ActivityInfoOptions(true)).ElevationSmoothingSeconds;
+                }
+                chartTypes.Add(LineChartTypes.Grade);
+                TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+            }
+            else if (selectedTypes == LineChartTypes.HeartRateBPM)
+            {
+                int val = TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds;
+                if (reset)
+                {
+                    val = (new ActivityInfoOptions(true)).HeartRateSmoothingSeconds;
+                }
+                TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+            }
+            else if (selectedTypes == LineChartTypes.Power)
+            {
+                int val = TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds;
+                if (reset)
+                {
+                    val = (new ActivityInfoOptions(true)).PowerSmoothingSeconds;
+                }
+                TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
+                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+            }
+            else if (selectedTypes == LineChartTypes.Speed || selectedTypes == LineChartTypes.Pace)
+            {
+                int val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
+                if (reset)
+                {
+                    val = (new ActivityInfoOptions(true)).SpeedSmoothingSeconds;
+                }
+                chartTypes.Add(LineChartTypes.Pace);
                 TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(e, TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                    new List<LineChartTypes>{LineChartTypes.Speed, LineChartTypes.Pace});
+                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
             }
 
 
@@ -1273,9 +1339,37 @@ namespace TrailsPlugin.UI.Activity {
                 t.Clear(true);
             }
             m_page.RefreshChart();
+            foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
+            {
+                if (chartTypes.Contains(kp.Key))
+                {
+                    kp.Value.LabelColor = Color.Black;
+                }
+                else
+                {
+                    kp.Value.LabelColor = m_color[kp.Key];
+                }
+            }
         }
 
-		public bool BeginUpdate() {
+        private LineChartTypes m_lastSelectedType = LineChartTypes.Unknown;
+        void MainChart_SelectAxisLabel(object sender, ChartBase.AxisEventArgs e)
+        {
+            if (e.Axis is RightVerticalAxis || e.Axis is LeftVerticalAxis)
+            {
+                foreach (LineChartTypes l in m_axis.Keys)
+                {
+                    if (m_axis[l] == e.Axis)
+                    {
+                        m_lastSelectedType = l;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public bool BeginUpdate()
+        {
 			return MainChart.BeginUpdate();
 		}
 

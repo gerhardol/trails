@@ -193,6 +193,7 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.SelectingData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectingData);
             this.MainChart.KeyDown += new System.Windows.Forms.KeyEventHandler(MainChart_KeyDown);
             this.MainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(MainChart_MouseMove);
+            this.MainChart.SelectAxisLabel += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectAxisLabelHandler(MainChart_SelectAxisLabel);
             // 
             // chartContextMenu
             // 

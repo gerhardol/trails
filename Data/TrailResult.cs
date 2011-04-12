@@ -969,6 +969,9 @@ namespace TrailsPlugin.Data {
                         m_elevationMetersTrack0.Add(m_elevationMetersTrack0.EntryDateTime(entry), val);
                     }
                 }
+                float min;
+                float max;
+                m_elevationMetersTrack0 = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(m_elevationMetersTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds, out min, out max);
             }
             return m_elevationMetersTrack0;
         }

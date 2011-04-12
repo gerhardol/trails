@@ -763,6 +763,20 @@ namespace GpsRunningPlugin.Util
                 return PaceOrSpeed.ConvertFrom(false, value, activity);
             }
 
+
+            public static double ConvertTo(double value)
+            {
+                return ConvertTo(value, Unit);
+            }
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return Length.Convert(value, du, Length.Units.Meter)/60/60;
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return PaceOrSpeed.ConvertTo(false, value, activity);
+            }
+
             public static double Parse(string p)
             {
                 return Length.Convert(double.Parse(p, NumberFormatInfo.InvariantInfo), Unit, Length.Units.Meter) / (60 * 60);
@@ -892,6 +906,19 @@ namespace GpsRunningPlugin.Util
                 return PaceOrSpeed.ConvertFrom(true, value, activity);
             }
 
+            public static double ConvertTo(double value)
+            {
+                return ConvertTo(value, Unit);
+            }
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return Length.Convert(1/value, du, Length.Units.Meter);
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return PaceOrSpeed.ConvertTo(true, value, activity);
+            }
+
             public static double Parse(string p)
             {
                 //Almost the same as parsing time, except that no colons is interpreted as minutes
@@ -995,7 +1022,7 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class PaceOrSpeed
         {
-            public static float ConvertFrom(bool isPace, double value, IActivity activity)
+            public static Length.Units GetUnit(bool isPace, ref double value, IActivity activity)
             {
                 //speed is in m/s
                 double speed = value;
@@ -1005,11 +1032,11 @@ namespace GpsRunningPlugin.Util
 #if ST_2_1
                     du = activity.Category.DistanceUnits;
 #else
-                    du = (isPace) ? 
+                    du = (isPace) ?
                         activity.Category.PaceDistance.ValueUnits : activity.Category.SpeedDistance.ValueUnits;
                     //scale, custom unit may be other than one
                     speed = speed /
-                        (float)((isPace) ? 
+                        (float)((isPace) ?
                         activity.Category.PaceDistance.Value : activity.Category.SpeedDistance.Value);
 #endif
                 }
@@ -1017,6 +1044,14 @@ namespace GpsRunningPlugin.Util
                 {
                     du = GetApplication().SystemPreferences.DistanceUnits;
                 }
+                return du;
+            }
+
+            public static float ConvertFrom(bool isPace, double value, IActivity activity)
+            {
+                //speed is in m/s
+                double speed = value;
+                Length.Units du = GetUnit(isPace, ref speed, activity);
                 //convert from (x*)m/s to (x*)<unit>/s
                 speed = Distance.ConvertFrom(speed, du);
 
@@ -1032,6 +1067,29 @@ namespace GpsRunningPlugin.Util
                 }
                 return (float)speed;
             }
+            public static float ConvertTo(bool isPace, double value, IActivity activity)
+            {
+                //speed is in m/s
+                double speed = value;
+                Length.Units du = GetUnit(isPace, ref speed, activity);
+
+                if (isPace)
+                {
+                    //pace is <time (s)>/<unit>
+                    speed = 1 / speed;
+                }
+                else
+                {
+                    //speed is <unit>/h
+                    speed = speed / 60 / 60;
+                }
+
+                //convert from (x*)m/s to (x*)<unit>/s
+                speed = Distance.ConvertTo(speed, du);
+
+                return (float)speed;
+            }
+
             public static int DefaultDecimalPrecision(bool isPace)
             {
                 if (isPace)

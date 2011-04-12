@@ -186,8 +186,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
-                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1 || 
-                    m_controller.CurrentActivityTrail.Trail.HighScore>0);
+                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
             }
             //Set size, to not waste chart
             int resRows = 0;

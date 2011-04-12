@@ -211,10 +211,9 @@ namespace TrailsPlugin.Data {
                     return x.AvgGrade;
                 case TrailResultColumnIds.AvgHR:
                     return x.AvgHR;
-                case TrailResultColumnIds.AvgPace:
-                    return -x.AvgPace;
                 case TrailResultColumnIds.AvgPower:
                     return x.AvgPower;
+                case TrailResultColumnIds.AvgPace:
                 case TrailResultColumnIds.AvgSpeed:
                     return x.AvgSpeed;
                 case TrailResultColumnIds.ElevChg:

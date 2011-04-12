@@ -74,29 +74,29 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.EndTime:
 					return row.EndTime.ToString();
 				case TrailResultColumnIds.Duration:
-					return Utils.Text.ToString(row.Duration);
+					return UnitUtil.Time.ToString(row.Duration);
 				case TrailResultColumnIds.Distance:
 					return UnitUtil.Distance.ToString(row.Distance, "");
 				case TrailResultColumnIds.AvgCadence:
-					return row.AvgCadence.ToString("0.0");
+                    return UnitUtil.Cadence.ToString(row.AvgCadence);
 				case TrailResultColumnIds.AvgHR:
-					return row.AvgHR.ToString("0");
+                    return UnitUtil.HeartRate.ToString(row.AvgHR);
 				case TrailResultColumnIds.MaxHR:
-					return row.MaxHR.ToString("0");
+					return UnitUtil.HeartRate.ToString(row.MaxHR);
 				case TrailResultColumnIds.ElevChg:
                     return (row.ElevChg > 0 ? "+" : "") + UnitUtil.Elevation.ToString(row.ElevChg, "");
 				case TrailResultColumnIds.AvgPower:
-					return row.AvgPower.ToString("0.0");
+					return UnitUtil.Power.ToString(row.AvgPower);
 				case TrailResultColumnIds.AvgGrade:
 					return (row.AvgGrade).ToString("0.0%");
 				case TrailResultColumnIds.AvgSpeed:
-					return row.AvgSpeed.ToString("0.0");
+					return UnitUtil.Speed.ToString(row.AvgSpeed);
 				case TrailResultColumnIds.FastestSpeed:
-					return row.FastestSpeed.ToString("0.0");
+                    return UnitUtil.Speed.ToString(row.FastestSpeed);
 				case TrailResultColumnIds.AvgPace:
-                    return Utils.Text.ToString(row.AvgPace);					
+                    return UnitUtil.Pace.ToString(row.AvgSpeed);					
 				case TrailResultColumnIds.FastestPace:
-					return Utils.Text.ToString(row.FastestPace);
+                    return UnitUtil.Pace.ToString(row.FastestPace);
                 case TrailResultColumnIds.Name:
                     return row.Name;
                 default:

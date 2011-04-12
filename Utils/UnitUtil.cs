@@ -1022,7 +1022,7 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class PaceOrSpeed
         {
-            public static Length.Units GetUnit(bool isPace, ref double value, IActivity activity)
+            public static Length.Units GetUnit(bool isPace, ref double value, IActivity activity, bool convertFrom)
             {
                 //speed is in m/s
                 double speed = value;
@@ -1035,9 +1035,13 @@ namespace GpsRunningPlugin.Util
                     du = (isPace) ?
                         activity.Category.PaceDistance.ValueUnits : activity.Category.SpeedDistance.ValueUnits;
                     //scale, custom unit may be other than one
-                    speed = speed /
-                        (float)((isPace) ?
+                    double scale = (float)((isPace) ?
                         activity.Category.PaceDistance.Value : activity.Category.SpeedDistance.Value);
+                    if (convertFrom)
+                    {
+                        scale = 1 / scale;
+                    }
+                    speed *= scale;
 #endif
                 }
                 else
@@ -1051,7 +1055,7 @@ namespace GpsRunningPlugin.Util
             {
                 //speed is in m/s
                 double speed = value;
-                Length.Units du = GetUnit(isPace, ref speed, activity);
+                Length.Units du = GetUnit(isPace, ref speed, activity, true);
                 //convert from (x*)m/s to (x*)<unit>/s
                 speed = Distance.ConvertFrom(speed, du);
 
@@ -1071,7 +1075,7 @@ namespace GpsRunningPlugin.Util
             {
                 //speed is in m/s
                 double speed = value;
-                Length.Units du = GetUnit(isPace, ref speed, activity);
+                Length.Units du = GetUnit(isPace, ref speed, activity, false);
 
                 if (isPace)
                 {

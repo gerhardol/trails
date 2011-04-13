@@ -745,7 +745,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Shift)
                 {
-                    m_page.SetResultListHeight += 17;
+                    m_page.SetResultListHeight -= 17;
                 }
                 else
                 {

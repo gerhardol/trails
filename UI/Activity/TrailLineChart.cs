@@ -1340,6 +1340,7 @@ namespace TrailsPlugin.UI.Activity {
                     val = (new ActivityInfoOptions(true)).SpeedSmoothingSeconds;
                 }
                 chartTypes.Add(LineChartTypes.Pace);
+                //chartTypes.Add(LineChartTypes.SpeedPace);
                 TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds =
                     MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
             }

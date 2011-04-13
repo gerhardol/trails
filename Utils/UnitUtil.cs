@@ -881,7 +881,7 @@ namespace GpsRunningPlugin.Util
                 string str = "";
                 if (fmt.EndsWith("U")) { str = " " + Label; fmt = fmt.Remove(fmt.Length - 1); }
                 if (fmt.EndsWith("u")) { str = " " + LabelAbbr; fmt = fmt.Remove(fmt.Length - 1); }
-                if (Math.Abs(speedMS) == double.MinValue)//"divide by zero" check. Or some hardcoded value?
+                if (speedMS==0 || Math.Abs(speedMS) == double.MinValue || double.IsInfinity(speedMS) || double.IsNaN(speedMS))//"divide by zero" check. Or some hardcoded value?
                 {
                     str = "-" + str;
                 }

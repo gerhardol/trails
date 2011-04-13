@@ -228,7 +228,7 @@ namespace TrailsPlugin.UI.Activity {
             IActivity activity = null;
             foreach (IActivity a in m_page.ViewActivities)
             {
-                //In ST3.0.4068 at least only one 
+                //In ST3.0.4068 only one activity here 
                 if (id == a.ReferenceId)
                 {
                     activity = a;

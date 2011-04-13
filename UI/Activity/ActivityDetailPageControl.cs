@@ -222,8 +222,7 @@ namespace TrailsPlugin.UI.Activity {
                     foreach (TrailResult tr in results)
                     {
                         //Do not map activities displayed already
-                        if (ViewActivities == null || ViewActivities.Count == 0 || ViewActivities.Count > 1 ||
-                            ViewActivities[0] != tr.Activity)
+                        if (!ViewSingleActivity(tr.Activity))
                         {
                             //Possibly limit no of Trails shown, it slows down Gmaps
                             TrailMapPolyline m = new TrailMapPolyline(tr);
@@ -248,6 +247,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 return CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
             }
+        }
+        //Try to find if ST is mapping a certain activity
+        public bool ViewSingleActivity(IActivity activity)
+        {
+            return activity == CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }
 
         //Some views like mapping is only working in single view - there are likely better tests
@@ -302,11 +306,6 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             if (m_showPage)
             {
-                IActivity viewActivity = null;
-                if (ViewActivities != null && ViewActivities.Count == 1)
-                {
-                    viewActivity = ViewActivities[0];
-                }
                 if (m_view != null &&
                     m_view.RouteSelectionProvider != null)
                 {
@@ -314,7 +313,7 @@ namespace TrailsPlugin.UI.Activity {
                     IList<TrailResultMarked> atr2 = new List<TrailResultMarked>();
                     foreach (TrailResultMarked trm in atr)
                     {
-                        if (trm.trailResult.Activity == viewActivity)
+                        if (ViewSingleActivity(trm.trailResult.Activity))
                         {
                             atr2.Add(trm);
                         }
@@ -340,7 +339,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                     {
-                        if (trm.trailResult.Activity != viewActivity)
+                        if (!ViewSingleActivity(trm.trailResult.Activity))
                         {
                             m.Click += new MouseEventHandler(mapPoly_Click);
                             if(!mresult.ContainsKey(m.key))

@@ -277,17 +277,19 @@ namespace TrailsPlugin.Data {
             System.Diagnostics.Debug.Assert(null != activity);
 
             indexes = new TrailResultInfo(activity);
+            IList<bool> lapActive = new List<bool>();
             bool isGPS = (null != activity.GPSRoute) && (0 < activity.GPSRoute.Count);
 
             if (null == activity.Laps || 0 == activity.Laps.Count)
             {
                 indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart, activity.Name));
+                lapActive.Add(true);
                 if (isGPS)
                 {
                     results.Add(new Data.TrailGPSLocation(
                     activity.GPSRoute[0].Value.LatitudeDegrees,
                     activity.GPSRoute[0].Value.LongitudeDegrees,
-                    activity.Name, true));
+                    activity.Name, lapActive[lapActive.Count-1]));
                 }
             }
             else
@@ -295,10 +297,11 @@ namespace TrailsPlugin.Data {
                 for (int j = 0; j < activity.Laps.Count; j++)
                 {
                     ILapInfo l = activity.Laps[j];
-                    if ((indexes.Count == 0) &&
+                    if (/*(indexes.Count == 0) &&*/
                         (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
                     {
                         indexes.Points.Add(new TrailResultPoint(l.StartTime, l.Notes));
+                lapActive.Add(!l.Rest);
                         if (isGPS)
                         {
                             for (int i = 0; i < activity.GPSRoute.Count; i++)
@@ -331,6 +334,7 @@ namespace TrailsPlugin.Data {
                 (!onlyActiveLaps || !lastIsRestlap))
             {
                 indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd, activity.Name));
+                lapActive.Add(!lastIsRestlap);
                 if (isGPS)
                 {
                     results.Add(new Data.TrailGPSLocation(
@@ -339,7 +343,22 @@ namespace TrailsPlugin.Data {
                     activity.Name, !lastIsRestlap));
                 }
             }
-
+            results = new List<Data.TrailGPSLocation>();
+            if (isGPS)
+            {
+                for (int i = 0; i < indexes.Points.Count; i++)
+                {
+                    TrailResultPoint p = indexes.Points[i];
+                    try
+                    {
+                        ITimeValueEntry<IGPSPoint> g = activity.GPSRoute.GetInterpolatedValue(p.Time);
+                        results.Add(new Data.TrailGPSLocation(
+                          g.Value.LatitudeDegrees, g.Value.LongitudeDegrees,
+                          p.Name, lapActive[i]));
+                    }
+                    catch { }
+                }
+            }
             return results;
         }
 

@@ -81,7 +81,7 @@ namespace TrailsPlugin.Data {
             if (this.MatchAll && activity != null && this.TrailLocations.Count == 0)
             {
                 //get all points
-                IList<int> indexes;
+                IList<DateTime> indexes;
                 result.TrailLocations = Trail.TrailGpsPointsFromSplits(
                     activity, out indexes, false);
             }
@@ -245,19 +245,19 @@ namespace TrailsPlugin.Data {
 
         public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity)
         {
-            IList<int> indexes;
+            IList<DateTime> indexes;
 
             return TrailGpsPointsFromSplits(activity, out indexes);
         }
         public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
-            out IList<int> indexes)
+            out IList<DateTime> indexes)
         {
             //Add start indexes for active laps and for first point for rest following active
             //A pause at the end of the lap is not considered
             return TrailGpsPointsFromSplits(activity, out indexes, true);
         }
         public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
-            out IList<int> indexes, bool onlyActiveLaps)
+            out IList<DateTime> indexes, bool onlyActiveLaps)
         {
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
 
@@ -273,70 +273,73 @@ namespace TrailsPlugin.Data {
                     }
                 }
             }
-            int lastIndex = 0;
-            indexes = new List<int>();
-            IList<bool> required = new List<bool>();
-            IList<string> names = new List<string>();
-            if (null == activity || null == activity.Laps || 0 == activity.Laps.Count)
+            indexes = new List<DateTime>();
+
+            System.Diagnostics.Debug.Assert(null != activity);
+
+            bool isGPS = (null != activity.GPSRoute) && (0 < activity.GPSRoute.Count);
+
+            if (null == activity.Laps || 0 == activity.Laps.Count)
             {
-                indexes.Add(0);
-                required.Add(true);
-                if (null != activity)
+                indexes.Add(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart);
+                if (isGPS)
                 {
-                    names.Add(activity.Name);
+                    results.Add(new Data.TrailGPSLocation(
+                    activity.GPSRoute[0].Value.LatitudeDegrees,
+                    activity.GPSRoute[0].Value.LongitudeDegrees,
+                    activity.Name, true));
                 }
             }
             else
             {
-                lastIndex = activity.GPSRoute.Count - 1;
                 for (int j = 0; j < activity.Laps.Count; j++)
                 {
                     ILapInfo l = activity.Laps[j];
-                    for (int i = 0; i < activity.GPSRoute.Count; i++)
+                    if ((indexes.Count == 0) &&
+                        (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
                     {
-                        if (0 > l.StartTime.CompareTo(TrailResult.getDateTimeFromElapsedActivityStatic(activity, activity.GPSRoute[i]).AddSeconds(0.9)) &&
-                            (indexes.Count == 0 || i > indexes[indexes.Count - 1]) &&
-                            (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest))
+                        indexes.Add(l.StartTime);
+                        if (isGPS)
                         {
-                            indexes.Add(i);
-                            required.Add(!l.Rest);
-                            names.Add(l.Notes);
-                            i++;
-                            break;
+                            for (int i = 0; i < activity.GPSRoute.Count; i++)
+                            {
+                                DateTime time = TrailResult.getDateTimeFromElapsedActivityStatic(activity.GPSRoute, activity.GPSRoute[i]);
+                                if (0 > l.StartTime.CompareTo(time.AddSeconds(0.9)) /*xxx&&
+                                    (indexes.Count == 0 || time.CompareTo(indexes[indexes.Count - 1]) > 0) &&
+                                    (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest)*/)
+                                {
+                                    results.Add(new Data.TrailGPSLocation(
+                                    activity.GPSRoute[i].Value.LatitudeDegrees,
+                                    activity.GPSRoute[i].Value.LongitudeDegrees,
+                                    l.Notes, !l.Rest));
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
             }
 
             bool lastIsRestlap = false;
-            if (null == activity ||
-                null == activity.Laps || 
+            if (null == activity.Laps || 
                 0 == activity.Laps.Count ||
                 activity.Laps[activity.Laps.Count-1].Rest)
             {
                 lastIsRestlap = true;
             }
             if (indexes.Count == 0 || 
-                activity.GPSRoute.Count - 1 > indexes[indexes.Count - 1] &&
                 (!onlyActiveLaps || !lastIsRestlap))
             {
-                indexes.Add(activity.GPSRoute.Count - 1);
-                required.Add(!lastIsRestlap);
-                names.Add(activity.Name);
+                indexes.Add(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd);
+                if (isGPS)
+                {
+                    results.Add(new Data.TrailGPSLocation(
+                    activity.GPSRoute[activity.GPSRoute.Count - 1].Value.LatitudeDegrees,
+                    activity.GPSRoute[activity.GPSRoute.Count - 1].Value.LongitudeDegrees,
+                    activity.Name, !lastIsRestlap));
+                }
             }
 
-            for (int i = 0; i < indexes.Count; i++)
-            {
-                string name = "";
-                if (i < names.Count)
-                {
-                    name = names[i];
-                }
-                results.Add(new Data.TrailGPSLocation(
-                activity.GPSRoute[indexes[i]].Value.LatitudeDegrees,
-                activity.GPSRoute[indexes[i]].Value.LongitudeDegrees,
-                name, required[i]));
-            }
             return results;
         }
 

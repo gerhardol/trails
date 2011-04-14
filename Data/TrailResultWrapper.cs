@@ -30,14 +30,14 @@ using ITrailExport;
 namespace TrailsPlugin.Data {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
-        public TrailResultWrapper(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
+        public TrailResultWrapper(Trail trail, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
             : this(trail.TrailLocations, activity, order, indexes, distDiff)
         { }
-        public TrailResultWrapper(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        public TrailResultWrapper(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
             : this(null, trailgps, activity, order, indexes, distDiff)
         { }
 
-        private TrailResultWrapper(TrailResultWrapper par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        private TrailResultWrapper(TrailResultWrapper par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
             : base(par, null)
         {
             base.Element = new TrailResult(trailgps, activity, order, indexes, distDiff);
@@ -52,35 +52,20 @@ namespace TrailsPlugin.Data {
         public TrailResultWrapper(Trail trail, IActivity activity, int order)
             : base(null, null)
         {
-            IList<int> indexes;
+            IList<DateTime> indexes;
             IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes, false);
             base.Element = new TrailResult(m_trailgps, activity, order, indexes, float.MaxValue);
             //Children are not created by default
             //getSplits();
         }
 
-        //Create from HighScore
+        //Create from HighScore, add the first and last time stamps
         public TrailResultWrapper(Trail trail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt,  int order)
             : base(null, null)
         {
-            IList<int> indexes = new List<int>();
-            int i = 0;
-            for (; i < activity.GPSRoute.Count; i++)
-            {
-                if (activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).CompareTo(selInfo.MarkedTimes[0].Lower) >= 0)
-                {
-                    indexes.Add(i);
-                    break;
-                }
-            }
-            for (; i < activity.GPSRoute.Count; i++)
-            {
-                if (activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]).CompareTo(selInfo.MarkedTimes[0].Upper) >= 0)
-                {
-                    indexes.Add(i);
-                    break;
-                }
-            }
+            IList<DateTime> indexes = new List<DateTime>();
+            indexes.Add(selInfo.MarkedTimes[0].Lower);
+            indexes.Add(selInfo.MarkedTimes[0].Upper);
             if (indexes.Count >= 2)
             {
                 base.Element = new TrailResult(activity, order, indexes, float.MaxValue, tt);

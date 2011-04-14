@@ -106,7 +106,7 @@ namespace TrailsPlugin.Integration
 
             try
             {
-                if (GetUniqueRoutes != null)
+                if (GetUniqueRoutes != null && route != null)
                 {
                     MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findSimilarRouteSnippets);
                     object resultFromURPlugIn = methodInfo.Invoke(route, new object[] { route, activities, progressBar });

@@ -30,18 +30,15 @@ using GpsRunningPlugin.Util;
 namespace TrailsPlugin.Data {
     public class TrailResult : ITrailResult, IComparable
     {
-        private IList<Data.TrailGPSLocation> m_trailgps;
+        private IList<Data.TrailGPSLocation> m_trailgps; //xxx no trail points for splits only match
 		private IActivity m_activity;
 		private int m_order;
 
-        private int m_startIndex = -1;
-		private int m_endIndex = -1;
         private DateTime? m_startTime = null;
         private DateTime? m_endTime = null;
         private float m_startDistance = float.NaN;
-        //private float m_lastDistance = float.NaN;
         private float m_distDiff; //to give quality of results
-        private IList<int> m_indexes = new List<int>();
+        private IList<DateTime> m_points = new List<DateTime>();
         private Color m_trailColor = getColor(nextTrailColor++);
         private TrailResult m_parentResult = null;
         private string m_toolTip = null;
@@ -53,7 +50,6 @@ namespace TrailsPlugin.Data {
         private INumericTimeDataSeries m_heartRatePerMinuteTrack;
         private INumericTimeDataSeries m_powerWattsTrack;
         private INumericTimeDataSeries m_speedTrack;
-        //private INumericTimeDataSeries m_paceTrack;
         private INumericTimeDataSeries m_gradeTrack;
 
         //Converted tracks, to display format, with smoothing
@@ -89,20 +85,20 @@ namespace TrailsPlugin.Data {
                 m_TrailActivityInfoOptions = value;
             }
         }
-        
-        public TrailResult(Trail trail, IActivity activity, int order, IList<int> indexes, float distDiff)
+
+        public TrailResult(Trail trail, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
             : this(trail.TrailLocations, activity, order, indexes, distDiff)
         {}
-        public TrailResult(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        public TrailResult(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
             : this(null, trailgps, activity, order, indexes, distDiff)
         { }
-        public TrailResult(IActivity activity, int order, IList<int> indexes, float distDiff, string toolTip)
+        public TrailResult(IActivity activity, int order, IList<DateTime> indexes, float distDiff, string toolTip)
             : this(null, new List<Data.TrailGPSLocation>(), activity, order, indexes, distDiff)
         { 
             m_toolTip = toolTip;
         }
 
-        private TrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        private TrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
         {
             createTrailResult(par, trailgps, activity, order, indexes, distDiff);
         }
@@ -110,28 +106,20 @@ namespace TrailsPlugin.Data {
         //Create from splits
         public TrailResult(Trail trail, IActivity activity, int order)
         {
-            IList<int> indexes;
+            IList<DateTime> indexes;
             m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
             createTrailResult(null, m_trailgps, activity, order, indexes, float.MaxValue);
         }
 
-        private void createTrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<int> indexes, float distDiff)
+        private void createTrailResult(TrailResult par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
         {
             m_parentResult = par;
             m_trailgps = trailgps;
             m_activity = activity;
             m_order = order;
-            foreach (int i in indexes)
+            foreach (DateTime i in indexes)
             {
-                m_indexes.Add(i);
-                if (i >= 0)
-                {
-                    if (m_startIndex < 0)
-                    {
-                        m_startIndex = i;
-                    }
-                    m_endIndex = i;
-                }
+                m_points.Add(i);
             }
             m_distDiff = distDiff;
 
@@ -151,49 +139,44 @@ namespace TrailsPlugin.Data {
             IList<TrailResult> splits = new List<TrailResult>();
             if (m_trailgps.Count > 1)
             {
-                for (int i = 1; i < m_indexes.Count; i++)
+                for (int i = 0; i < m_points.Count-1; i++)
                 {
-                    int startIndex = m_indexes[i - 1];
-                    int i2 = nextValidIndex(m_indexes, i);
-                    int endIndex = -1;
-                    if (i2 >= 0)
+                    DateTime startTime = m_points[i];
+                    if (startTime != DateTime.MinValue)
                     {
-                        endIndex = m_indexes[i2];
-                    }
-                    if (m_trailgps.Count > i && startIndex >= 0 && endIndex >= 0 && m_trailgps.Count > i2)
-                    {
-                        Data.TrailGPSLocation tg1 = m_trailgps[i - 1];
-                        Data.TrailGPSLocation tg2 =  m_trailgps[i2];
-                        TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> { tg1, tg2 },
-                            m_activity, i,
-                            new List<int> { startIndex, endIndex },
-                            m_distDiff);
-                        tr.m_parentResult = this;
-                        //if (aActivities.Count > 1)
-                        //{
-                        //    nextTrailColor--;
-                        //    tr.m_trailColor = this.m_trailColor;
-                        //}
-                        splits.Add(tr);
+                        int j = i + 1;
+                        for (; j < m_points.Count; j++)
+                        {
+                            if (m_points[j] != DateTime.MinValue)
+                            {
+                                break;
+                            }
+                        }
+                        if (m_trailgps.Count > i && m_trailgps.Count >= j)
+                        {
+                            DateTime endTime = m_points[j];
+                            if (endTime != DateTime.MinValue)
+                            {
+                                Data.TrailGPSLocation tg1 = m_trailgps[i];
+                                Data.TrailGPSLocation tg2 = m_trailgps[j];
+                                TrailResult tr = new TrailResult(this, new List<Data.TrailGPSLocation> { tg1, tg2 },
+                                    m_activity, i+1,
+                                    new List<DateTime> { startTime, endTime },
+                                    m_distDiff);
+                                tr.m_parentResult = this;
+                                //if (aActivities.Count > 1)
+                                //{
+                                //    nextTrailColor--;
+                                //    tr.m_trailColor = this.m_trailColor;
+                                //}
+                                splits.Add(tr);
+                            }
+                        }
+                        i = j-1;//Next index to try
                     }
                 }
             }
             return splits;
-        }
-
-        //Get the valid index (could be the first)
-        private static int nextValidIndex(IList<int> aMatch, int start)
-        {
-            int res = -1;
-            for (int i = start; i < aMatch.Count; i++)
-            {
-                if (aMatch[i] >= 0)
-                {
-                    res = i;
-                    break;
-                }
-            }
-            return res;
         }
 
         /**********************************************************/
@@ -204,7 +187,7 @@ namespace TrailsPlugin.Data {
         //Distance error used to sort results
         public float DistDiff
         {
-            get { return (float)(m_distDiff/Math.Pow(m_indexes.Count, 1.5)); }
+            get { return (float)(m_distDiff/Math.Pow(m_points.Count, 1.5)); }
         }
         public int Order
         {
@@ -232,11 +215,11 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                if (GPSRoute == null || GPSRoute.Count == 0)
+                if (DistanceMetersTrack == null || DistanceMetersTrack.Count == 0)
                 {
                     return TimeSpan.FromSeconds(0);
                 }
-                return getElapsedWithoutPauses(this.GPSRoute, this.GPSRoute[this.GPSRoute.Count-1]);
+                return getElapsedWithoutPauses(this.DistanceMetersTrack, this.DistanceMetersTrack[this.DistanceMetersTrack.Count - 1]);
             }
         }
         public double Distance
@@ -274,8 +257,8 @@ namespace TrailsPlugin.Data {
             {
                 if (m_startTime == null)
                 {
-                    DateTime startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
-                    DateTime endTime   = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                    DateTime startTime = m_points[0];
+                    DateTime endTime = m_points[m_points.Count - 1];
                     m_startTime = getUnpausedTime(startTime, Pauses, true);
                     if (endTime.CompareTo((DateTime)m_startTime) <= 0)
                     {
@@ -292,8 +275,8 @@ namespace TrailsPlugin.Data {
             {
                 if (m_endTime == null)
                 {
-                    DateTime startTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_startIndex]);
-                    DateTime endTime   = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_endIndex]);
+                    DateTime startTime = m_points[0];
+                    DateTime endTime = m_points[m_points.Count - 1];
                     m_endTime = getUnpausedTime(endTime, Pauses, false);
                     if (startTime.CompareTo((DateTime)m_endTime) >= 0)
                     {
@@ -372,10 +355,10 @@ namespace TrailsPlugin.Data {
         //{
         //    return ActivityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t);
         //}
-        public static DateTime getDateTimeFromElapsedActivityStatic(IActivity act, ITimeValueEntry<IGPSPoint> p)
+        public static DateTime getDateTimeFromElapsedActivityStatic(IGPSRoute gps, ITimeValueEntry<IGPSPoint> p)
         {
             //Added here, if there are tricks for pauses required
-            return act.GPSRoute.EntryDateTime(p);
+            return gps.EntryDateTime(p);
         }
 
         //Elapsed vs DateTime for result
@@ -561,54 +544,51 @@ namespace TrailsPlugin.Data {
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = true;
-                if (Activity.GPSRoute != null)
+                //m_activityDistanceMetersTrack = m_activity.GPSRoute.GetDistanceMetersTrack();
+                //m_activityUnpausedDistanceMetersTrack = Info.ActualDistanceMetersTrack;
+                if (includeStopped())
                 {
-                    //m_activityDistanceMetersTrack = m_activity.GPSRoute.GetDistanceMetersTrack();
-                    //m_activityUnpausedDistanceMetersTrack = Info.ActualDistanceMetersTrack;
-                    if (includeStopped())
+                    m_activityDistanceMetersTrack = Info.ActualDistanceMetersTrack;
+                }
+                else
+                {
+                    m_activityDistanceMetersTrack = Info.MovingDistanceMetersTrack;
+                }
+                if (m_activityDistanceMetersTrack != null)
+                {
+                    int i = 0;
+                    while (i < m_activityDistanceMetersTrack.Count &&
+                        0 < this.StartDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
                     {
-                        m_activityDistanceMetersTrack = Info.ActualDistanceMetersTrack;
+                        i++;
                     }
-                    else
+                    if (i < m_activityDistanceMetersTrack.Count)
                     {
-                        m_activityDistanceMetersTrack = Info.MovingDistanceMetersTrack;
+                        m_startDistance = m_activityDistanceMetersTrack[i].Value;
                     }
-                    if (m_activityDistanceMetersTrack != null)
+                    float? prevDist = null;
+                    float distance = 0;
+                    while (i < m_activityDistanceMetersTrack.Count &&
+                        0 <= this.EndDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
                     {
-                        int i = 0;
-                        while (i < m_activityDistanceMetersTrack.Count &&
-                            0 < this.StartDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
+                        ITimeValueEntry<float> timeValue = m_activityDistanceMetersTrack[i];
+                        DateTime time = m_activityDistanceMetersTrack.EntryDateTime(timeValue);
+                        float actDist = timeValue.Value;
+                        //float val = (float)getDistResultFromDistActivity(timeValue.Value);
+                        if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
                         {
-                            i++;
-                        }
-                        if (i < m_activityDistanceMetersTrack.Count)
-                        {
-                            m_startDistance = m_activityDistanceMetersTrack[i].Value;
-                        }
-                        float? prevDist=null;
-                        float distance=0;
-                        while (i < m_activityDistanceMetersTrack.Count &&
-                            0 <= this.EndDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
-                        {
-                            ITimeValueEntry<float> timeValue = m_activityDistanceMetersTrack[i];
-                            DateTime time = m_activityDistanceMetersTrack.EntryDateTime(timeValue);
-                            float actDist = timeValue.Value;
-                            //float val = (float)getDistResultFromDistActivity(timeValue.Value);
-                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
+                            if (prevDist != null)
                             {
-                                if (prevDist != null)
-                                {
-                                    distance += actDist - (float)prevDist;
-                                }
-                                m_distanceMetersTrack.Add(time, distance);
-                                prevDist = actDist;
+                                distance += actDist - (float)prevDist;
                             }
-                            else
-                            {
-                                prevDist = null;
-                            }
-                            i++;
+                            m_distanceMetersTrack.Add(time, distance);
+                            prevDist = actDist;
                         }
+                        else
+                        {
+                            prevDist = null;
+                        }
+                        i++;
                     }
                 }
             }
@@ -666,15 +646,16 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                IList<DateTime> results = new List<DateTime>();
-                foreach (int i in m_indexes)
-                {
-                    if (i>=0 && i < m_activity.GPSRoute.Count)
-                    {
-                        results.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]));
-                    }
-                }
-                return results;
+                return m_points;
+                //IList<DateTime> results = new List<DateTime>();
+                //foreach (int i in m_indexes)
+                //{
+                //    if (i>=0 && i < m_activity.GPSRoute.Count)
+                //    {
+                //        results.Add(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]));
+                //    }
+                //}
+                //return results;
             }
         }
 
@@ -714,12 +695,6 @@ namespace TrailsPlugin.Data {
                 return (float)UnitUtil.Speed.ConvertTo(this.SpeedTrack0(m_cacheTrackRef).Max, m_cacheTrackRef.Activity);
 			}
 		}
-        //public double AvgPace {
-        //    get {
-        //        //Note: Using PaceTrack.Avg will give bad values if a track has slow parts
-        //        return (float)UnitUtil.Pace.ConvertFrom(this.Distance / this.Duration.TotalSeconds, m_activity); 
-        //    }
-        //}
         //Smoothing could differ speed/pace, why this is separate
 		public double FastestPace {
             get
@@ -732,7 +707,11 @@ namespace TrailsPlugin.Data {
         {
 			get
             {
-				float value = m_activity.GPSRoute[m_endIndex].Value.ElevationMeters - m_activity.GPSRoute[m_startIndex].Value.ElevationMeters;
+                float value = 0;
+                if (ElevationMetersTrack != null && ElevationMetersTrack.Count > 1)
+                {
+                    value = ElevationMetersTrack[ElevationMetersTrack.Count - 1].Value - ElevationMetersTrack[0].Value;
+                }
                 return value;
 			}
 		}
@@ -773,8 +752,8 @@ namespace TrailsPlugin.Data {
             if (!onlyDisplay)
             {
                 m_pauses = null;
-                m_startTime = null;
-                m_endTime = null;
+                //m_startTime = null;
+                //m_endTime = null;
 
                 //m_ActivityInfo = null;
 
@@ -1170,16 +1149,23 @@ namespace TrailsPlugin.Data {
         {
             m_gpsTrack = new GPSRoute();
             m_gpsPoints = new List<IGPSPoint>();
-            if (Activity.GPSRoute != null)
+            if (m_activity.GPSRoute != null && StartDateTime != DateTime.MinValue && EndDateTime != DateTime.MinValue)
             {
-                for (int i = m_startIndex; i <= m_endIndex; i++)
+                for (int i = 0; i < m_activity.GPSRoute.Count; i++)
                 {
                     DateTime time = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
-                    IGPSPoint point = m_activity.GPSRoute[i].Value;
-                    if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
+                    if (time.CompareTo(EndDateTime) > 0)
                     {
-                        m_gpsPoints.Add(point);
-                        m_gpsTrack.Add(time, point);
+                        break;
+                    }
+                    if (time.CompareTo(StartDateTime) >= 0)
+                    {
+                        IGPSPoint point = m_activity.GPSRoute[i].Value;
+                        if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
+                        {
+                            m_gpsPoints.Add(point);
+                            m_gpsTrack.Add(time, point);
+                        }
                     }
                 }
             }

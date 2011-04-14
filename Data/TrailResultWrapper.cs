@@ -30,17 +30,14 @@ using ITrailExport;
 namespace TrailsPlugin.Data {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
-        public TrailResultWrapper(Trail trail, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
-            : this(trail.TrailLocations, activity, order, indexes, distDiff)
-        { }
-        public TrailResultWrapper(IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
-            : this(null, trailgps, activity, order, indexes, distDiff)
+        public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
+            : this(activityTrail, null, order, indexes, distDiff)
         { }
 
-        private TrailResultWrapper(TrailResultWrapper par, IList<Data.TrailGPSLocation> trailgps, IActivity activity, int order, IList<DateTime> indexes, float distDiff)
+        private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff)
             : base(par, null)
         {
-            base.Element = new TrailResult(trailgps, activity, order, indexes, distDiff);
+            base.Element = new TrailResult(activityTrail, order, indexes, distDiff);
             if (par == null)
             {
                 //Children are not created by default
@@ -48,27 +45,27 @@ namespace TrailsPlugin.Data {
             }
         }
 
-        //Create from splits
-        public TrailResultWrapper(Trail trail, IActivity activity, int order)
+        //Create results from splits
+        public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, int order)
             : base(null, null)
         {
-            IList<DateTime> indexes;
+            TrailResultInfo indexes;
             IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes, false);
-            base.Element = new TrailResult(m_trailgps, activity, order, indexes, float.MaxValue);
+            base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue);
             //Children are not created by default
             //getSplits();
         }
 
         //Create from HighScore, add the first and last time stamps
-        public TrailResultWrapper(Trail trail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt,  int order)
+        public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
             : base(null, null)
         {
-            IList<DateTime> indexes = new List<DateTime>();
-            indexes.Add(selInfo.MarkedTimes[0].Lower);
-            indexes.Add(selInfo.MarkedTimes[0].Upper);
+            TrailResultInfo indexes = new TrailResultInfo(activity);
+            indexes.Points.Add(new TrailResultPoint(selInfo.MarkedTimes[0].Lower, ""));
+            indexes.Points.Add(new TrailResultPoint(selInfo.MarkedTimes[0].Upper, ""));
             if (indexes.Count >= 2)
             {
-                base.Element = new TrailResult(activity, order, indexes, float.MaxValue, tt);
+                base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue, tt);
             }
             //No Children
         }

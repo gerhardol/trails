@@ -68,7 +68,7 @@ namespace TrailsPlugin.Data {
                     {
                         date = row.StartDateTime.ToLocalTime().ToShortDateString()+" ";
                     }
-                    return date + row.StartTime.ToString();
+                    return date + row.StartDateTime.ToLocalTime().ToString("T");
                 case TrailResultColumnIds.StartDistance:
                     return UnitUtil.Distance.ToString(row.StartDist, "");
                 case TrailResultColumnIds.EndTime:

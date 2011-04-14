@@ -211,7 +211,7 @@ namespace TrailsPlugin.Data {
             {
                 if (DistanceMetersTrack == null || DistanceMetersTrack.Count == 0)
                 {
-                    return TimeSpan.FromSeconds(0);
+                    return Info.Time;
                 }
                 return getElapsedWithoutPauses(this.DistanceMetersTrack, this.DistanceMetersTrack[this.DistanceMetersTrack.Count - 1]);
             }
@@ -226,7 +226,7 @@ namespace TrailsPlugin.Data {
                 }
                 else
                 {
-                    return 0;
+                    return Info.DistanceMeters;
                 }
             }
         }
@@ -259,6 +259,10 @@ namespace TrailsPlugin.Data {
                         //Trail (or subtrail) is completely paused. Use all
                         m_startTime = startTime;
                     }
+                    if (m_startTime == DateTime.MinValue)
+                    {
+                        m_startTime = Activity.StartTime;
+                    }
                 }
                 return (DateTime)m_startTime;
             }
@@ -276,6 +280,10 @@ namespace TrailsPlugin.Data {
                     {
                         //Trail (or subtrail) is completely paused. Use all
                         m_endTime = endTime;
+                    }
+                    if (m_endTime == DateTime.MinValue)
+                    {
+                        m_endTime = Info.ActualTrackEnd;
                     }
                 }
                 return (DateTime)m_endTime;

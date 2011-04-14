@@ -118,11 +118,11 @@ namespace TrailsPlugin.UI.Activity {
 
 		public void RefreshControlState() 
         {
-            bool enabled = (m_controller.ReferenceActivity != null);
+            bool enabled = true;//Enabled also when no trails/activities (m_controller.ReferenceActivity != null);
             btnAdd.Enabled = enabled;
             TrailName.Enabled = enabled;
 
-            enabled = (m_controller.CurrentActivityTrailDisplayed != null);
+            enabled = true;//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
 
             if (enabled)

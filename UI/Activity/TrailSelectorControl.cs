@@ -125,7 +125,7 @@ namespace TrailsPlugin.UI.Activity {
             enabled = true;//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
 
-            if (enabled)
+            if (enabled && null != m_controller.CurrentActivityTrailDisplayed)
             {
                 TrailName.Text = m_controller.CurrentActivityTrailDisplayed.Trail.Name;
             }

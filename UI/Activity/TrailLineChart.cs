@@ -56,6 +56,7 @@ namespace TrailsPlugin.UI.Activity {
         private ITheme m_visualTheme;
         private ActivityDetailPageControl m_page;
         private MultiChartsControl m_multiple;
+        private bool m_resyncAtTrailPoints = false;
 
         public TrailLineChart()
         {
@@ -237,8 +238,8 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<DateTime>(
-                                tr.getDateTimeFromElapsedResult(at[0]),
-                                tr.getDateTimeFromElapsedResult(at[1])));
+                                tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[0])),
+                                tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[1]))));
                         }
                     }
                     else
@@ -246,8 +247,8 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<DateTime>(
-                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(at[0], m_refTrailResult)),
-                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(at[1], m_refTrailResult))));
+                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetTime(tr, at[0]), m_refTrailResult)),
+                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetTime(tr, at[1]), m_refTrailResult))));
                         }
                     }
                     results.Add(new Data.TrailResultMarked(tr, t));
@@ -541,7 +542,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailResult tr = m_trailResults[i];
                         //As this value is cached, it is no extra to request and drop it
-                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis);
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, m_refTrailResult);
 
                         if (graphPoints.Count > 1)
                         {
@@ -571,7 +572,7 @@ namespace TrailsPlugin.UI.Activity {
                     for (int i = 0; i < m_trailResults.Count; i++)
                     {
                         TrailResult tr = m_trailResults[i];
-                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis);
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, m_refTrailResult);
 
                         if (graphPoints.Count <= 1)
                         {
@@ -613,49 +614,55 @@ namespace TrailsPlugin.UI.Activity {
                             dataLine.LineColor = chartLineColor;
                             dataLine.SelectedColor = chartSelectedColor;
 
+                            INumericTimeDataSeries dataPoints;
                             if (XAxisReferential == XAxisValue.Time)
                             {
-                                float oldElapsedSeconds = -1;
-                                foreach (ITimeValueEntry<float> entry in graphPoints)
-                                {
-                                    float value = entry.Value;
-                                    if (oldElapsedSeconds != entry.ElapsedSeconds)
-                                    {
-                                        if (null != dataFill)
-                                        {
-                                            dataFill.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
-                                        }
-                                        dataLine.Points.Add(entry.ElapsedSeconds, new PointF(entry.ElapsedSeconds, value));
-                                    }
-                                    oldElapsedSeconds = entry.ElapsedSeconds;
-                                }
+                                dataPoints = graphPoints;
                             }
                             else
                             {
-                                if (null != m_refTrailResult)
+                                dataPoints = m_trailResults[i].DistanceMetersTrack0(m_refTrailResult);
+                            }
+                            float oldElapsedSeconds = float.MinValue;
+                            float oldElapsed = float.MinValue;
+                            int currOffsetIndex = 0;
+                            foreach (ITimeValueEntry<float> entry in dataPoints)
+                            {
+                                float elapsedSeconds = entry.ElapsedSeconds;
+                                if (XAxisReferential == XAxisValue.Time || elapsedSeconds <= graphPoints.TotalElapsedSeconds)
                                 {
-                                    IDistanceDataTrack distanceTrack = m_trailResults[i].DistanceMetersTrack0(m_refTrailResult);
-
-                                    float oldElapsedSeconds = -1;
-                                    foreach (ITimeValueEntry<float> dtEntry in distanceTrack)
+                                    float elapsed;
+                                    if (XAxisReferential == XAxisValue.Time)
                                     {
-                                        float elapsedSeconds = dtEntry.ElapsedSeconds;
-                                        if (elapsedSeconds <= graphPoints.TotalElapsedSeconds)
+                                        elapsed = elapsedSeconds;
+                                    }
+                                    else
+                                    {
+                                        elapsed = entry.Value;
+                                    }
+                                    float nextElapsed;
+                                    elapsed += GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+                                    if (oldElapsedSeconds < elapsedSeconds &&
+                                        (!m_resyncAtTrailPoints ||
+                                        oldElapsed < elapsed && elapsed <= nextElapsed))
+                                    {
+                                        ITimeValueEntry<float> valEntry;
+                                        if (XAxisReferential == XAxisValue.Time)
                                         {
-                                            ITimeValueEntry<float> valueEntry = graphPoints.GetInterpolatedValue(graphPoints.StartTime.AddSeconds(elapsedSeconds));
-                                            float value = valueEntry.Value;
-                                            float distanceValue = dtEntry.Value;
-                                            
-                                            if (oldElapsedSeconds != elapsedSeconds)
-                                            {
-                                                if (null != dataFill)
-                                                {
-                                                    dataFill.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
-                                                }
-                                                dataLine.Points.Add(elapsedSeconds, new PointF(distanceValue, value));
-                                            }
-                                            oldElapsedSeconds = elapsedSeconds;
+                                            valEntry = entry;
                                         }
+                                        else
+                                        {
+                                            valEntry = graphPoints.GetInterpolatedValue(graphPoints.EntryDateTime(entry));
+                                        }
+                                        float value = valEntry.Value;
+                                        if (null != dataFill)
+                                        {
+                                            dataFill.Points.Add(entry.ElapsedSeconds, new PointF(elapsed, value));
+                                        }
+                                        dataLine.Points.Add(entry.ElapsedSeconds, new PointF(elapsed, value));
+                                        oldElapsedSeconds = elapsedSeconds;
+                                        oldElapsed = elapsed;
                                     }
                                 }
                             }
@@ -663,6 +670,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
+                ///////TrailPoints
                 Data.TrailResult trailPointResult = m_refTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
                 if (m_trailResults.Count == 1 ||
@@ -707,15 +715,66 @@ namespace TrailsPlugin.UI.Activity {
             }
 		}
 
+        private float GetResyncOffsetTime(TrailResult tr, float elapsed)
+        {
+            float nextElapsed;
+            int currOffsetIndex = 0;
+            return elapsed - GetResyncOffset(XAxisValue.Time, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
+        private float GetResyncOffsetDist(TrailResult tr, float elapsed)
+        {
+            float nextElapsed;
+            int currOffsetIndex = 0;
+            return elapsed - GetResyncOffset(XAxisValue.Distance, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
+
+        private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed, out float nextElapsed, ref int currOffsetIndex)
+        {
+            IList<double> trElapsed;
+            IList<double> refElapsed;
+            float offset = 0;
+            if (m_resyncAtTrailPoints)
+            {
+                if (XAxisReferential == XAxisValue.Time)
+                {
+                    trElapsed = tr.TrailPointTimeOffset0(m_refTrailResult);
+                    refElapsed = m_refTrailResult.TrailPointTimeOffset0(m_refTrailResult);
+                }
+                else
+                {
+                    trElapsed = tr.TrailPointDistOffset0(m_refTrailResult);
+                    refElapsed = m_refTrailResult.TrailPointDistOffset0(m_refTrailResult);
+                }
+                while (currOffsetIndex < trElapsed.Count - 1 && elapsed > trElapsed[currOffsetIndex+1])
+                {
+                    currOffsetIndex++;
+                }
+
+                if (currOffsetIndex < trElapsed.Count -1)
+                {
+                    nextElapsed = (float)trElapsed[currOffsetIndex+1];
+                }
+                else
+                {
+                    nextElapsed = float.MaxValue;
+                }
+
+                if (currOffsetIndex < refElapsed.Count)
+                {
+                    offset = (float)(refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]);
+                }
+            }
+            else
+            {
+                nextElapsed = 0;
+            }
+            return offset;
+        }
+
         private void SetupAxes()
         {
-            if (m_visible)
+            if (m_visible && m_refTrailResult != null)
             {
-                IActivity activity = null;
-                if (m_refTrailResult != null)
-                {
-                    activity = m_refTrailResult.Activity;
-                }
                 // X axis
                 LineChartUtil.SetupXAxisFormatter(XAxisReferential, MainChart.XAxis, m_refTrailResult.Activity);
 
@@ -723,7 +782,7 @@ namespace TrailsPlugin.UI.Activity {
                 MainChart.YAxisRight.Clear();
                 foreach (LineChartTypes yaxis in m_YAxisReferentials)
                 {
-                    CreateAxis(yaxis, m_axis.Count==1);
+                    CreateAxis(yaxis, m_axis.Count==0);
                 }
             }
         }
@@ -755,7 +814,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart)
+        private static INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart, TrailResult m_refTrailResult)
         {
 			// Fail safe
 			INumericTimeDataSeries track = new NumericTimeDataSeries();
@@ -969,6 +1028,7 @@ namespace TrailsPlugin.UI.Activity {
             bool increase = true;
             bool reset = false;
             bool zero = false;
+            bool refreshData = true;
 
             if (e.KeyCode == Keys.Home)
             {
@@ -1021,6 +1081,11 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.S)
             {
                 selectedTypes = LineChartTypes.Speed;
+            }
+            else if (e.KeyCode == Keys.T)
+            {
+                m_resyncAtTrailPoints = (e.Modifiers != Keys.Shift);
+                refreshData = false;
             }
 
             IList<LineChartTypes> chartTypes = new List<LineChartTypes> { selectedTypes };
@@ -1078,10 +1143,12 @@ namespace TrailsPlugin.UI.Activity {
                     MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
             }
 
-
-            foreach (TrailResult t in TrailResults)
+            if (refreshData)
             {
-                t.Clear(true);
+                foreach (TrailResult t in TrailResults)
+                {
+                    t.Clear(true);
+                }
             }
             m_page.RefreshChart();
             foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)

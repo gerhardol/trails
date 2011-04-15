@@ -394,6 +394,16 @@ namespace TrailsPlugin.Data {
             return ActivityDistanceMetersTrack.GetInterpolatedValue(getDateTimeFromDistResult(t)).Value;
         }
 
+        //Chart and Result must have the same understanding of Distance
+        public static double DistanceConvertTo(double t, TrailResult refRes)
+        {
+            return UnitUtil.Distance.ConvertTo(t, refRes.Activity);
+        }
+        public static double DistanceConvertFrom(double t, TrailResult refRes)
+        {
+            return UnitUtil.Distance.ConvertFrom(t, refRes.Activity);
+        }
+                                
         /***************************************************/
         private TimeSpan getElapsedWithoutPauses(DateTime entryTime)
         {
@@ -469,6 +479,7 @@ namespace TrailsPlugin.Data {
             {
                 if (m_pauses == null)
                 {
+                    //Note: Assumes that subtrails are a part of parent - could be changed
                     if (m_parentResult != null)
                     {
                         return m_parentResult.Pauses;

@@ -246,8 +246,8 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (float[] at in regions)
                         {
                             t.Add(new ValueRange<DateTime>(
-                                tr.getDateTimeFromDistResult(UnitUtil.Distance.ConvertTo(at[0], m_refTrailResult.Activity)),
-                                tr.getDateTimeFromDistResult(UnitUtil.Distance.ConvertTo(at[1], m_refTrailResult.Activity))));
+                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(at[0], m_refTrailResult)),
+                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(at[1], m_refTrailResult))));
                         }
                     }
                     results.Add(new Data.TrailResultMarked(tr, t));
@@ -457,8 +457,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
             //distance is for result, then to display units
-            x1 = (float)UnitUtil.Distance.ConvertFrom(t1, m_refTrailResult.Activity);
-            x2 = (float)UnitUtil.Distance.ConvertFrom(t2, m_refTrailResult.Activity);
+            x1 = (float)TrailResult.DistanceConvertFrom(t1, m_refTrailResult);
+            x2 = (float)TrailResult.DistanceConvertFrom(t2, m_refTrailResult);
             return new float[] { x1, x2 };
         }
 
@@ -618,7 +618,7 @@ namespace TrailsPlugin.UI.Activity {
                                 float oldElapsedSeconds = -1;
                                 foreach (ITimeValueEntry<float> entry in graphPoints)
                                 {
-                                    float value = entry.Value;//ConvertUnit(entry.Value, GenSeriesEntry.LineChartType);
+                                    float value = entry.Value;
                                     if (oldElapsedSeconds != entry.ElapsedSeconds)
                                     {
                                         if (null != dataFill)
@@ -643,10 +643,9 @@ namespace TrailsPlugin.UI.Activity {
                                         if (elapsedSeconds <= graphPoints.TotalElapsedSeconds)
                                         {
                                             ITimeValueEntry<float> valueEntry = graphPoints.GetInterpolatedValue(graphPoints.StartTime.AddSeconds(elapsedSeconds));
-                                            float value = valueEntry.Value;//ConvertUnit(valueEntry.Value, GenSeriesEntry.LineChartType);
-                                            //float distanceValue = ConvertUnit(dtEntry.Value, LineChartTypes.Distance);
-                                            float distanceValue = dtEntry.Value;// (float)UnitUtil.Distance.ConvertFrom(dtEntry.Value, m_refTrailResult.Activity);
-
+                                            float value = valueEntry.Value;
+                                            float distanceValue = dtEntry.Value;
+                                            
                                             if (oldElapsedSeconds != elapsedSeconds)
                                             {
                                                 if (null != dataFill)
@@ -689,8 +688,8 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            float time = (float)UnitUtil.Distance.ConvertFrom(
-                                trailPointResult.getDistResult(t), trailPointResult.Activity);
+                            float time = (float)TrailResult.DistanceConvertFrom(
+                                trailPointResult.getDistResult(t), trailPointResult);
                             if (!float.IsNaN(time))
                             {
                                 a = new AxisMarker(time, icon);
@@ -722,12 +721,9 @@ namespace TrailsPlugin.UI.Activity {
 
                 // Y axis
                 MainChart.YAxisRight.Clear();
-                bool boFirst = true;
                 foreach (LineChartTypes yaxis in m_YAxisReferentials)
                 {
-                    CreateAxis(yaxis, boFirst);
-                    boFirst = false;
-
+                    CreateAxis(yaxis, m_axis.Count==1);
                 }
             }
         }

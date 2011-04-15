@@ -98,14 +98,14 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            //speedChart.YAxisReferential = TrailLineChart.LineChartTypes.Speed;
-            //paceChart.YAxisReferential = TrailLineChart.LineChartTypes.Pace;
-            //heartrateChart.YAxisReferential = TrailLineChart.LineChartTypes.HeartRateBPM;
-            //gradeChart.YAxisReferential = TrailLineChart.LineChartTypes.Grade;
-            //elevationChart.YAxisReferential = TrailLineChart.LineChartTypes.Elevation;
-            //cadenceChart.YAxisReferential = TrailLineChart.LineChartTypes.Cadence;
-            //diffTime.YAxisReferential = TrailLineChart.LineChartTypes.diffTime;
-            //diffDist.YAxisReferential = TrailLineChart.LineChartTypes.diffDist;
+            //speedChart.YAxisReferential = LineChartTypes.Speed;
+            //paceChart.YAxisReferential = LineChartTypes.Pace;
+            //heartrateChart.YAxisReferential = LineChartTypes.HeartRateBPM;
+            //gradeChart.YAxisReferential = LineChartTypes.Grade;
+            //elevationChart.YAxisReferential = LineChartTypes.Elevation;
+            //cadenceChart.YAxisReferential = LineChartTypes.Cadence;
+            //diffTime.YAxisReferential = LineChartTypes.diffTime;
+            //diffDist.YAxisReferential = LineChartTypes.diffDist;
             this.Expanded = m_expanded;
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
         }
@@ -126,21 +126,21 @@ namespace TrailsPlugin.UI.Activity {
             {
                 t.UICultureChanged(culture);
             }
-            this.speedToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Speed);
-            this.paceToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Pace);
-            this.speedPaceToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.SpeedPace);
-            this.elevationToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Elevation);
-            this.cadenceToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Cadence);
-            this.heartRateToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.HeartRateBPM);
-            this.gradeStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Grade);
-            this.powerToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.Power);
+            this.speedToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Speed);
+            this.paceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Pace);
+            this.speedPaceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.SpeedPace);
+            this.elevationToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Elevation);
+            this.cadenceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Cadence);
+            this.heartRateToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.HeartRateBPM);
+            this.gradeStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Grade);
+            this.powerToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Power);
 
-            this.diffTimeToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffTime);
-            this.diffDistToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffDist);
-            this.diffDistTimeToolStripMenuItem.Text = TrailLineChart.ChartTypeString(TrailLineChart.LineChartTypes.DiffDistTime);
+            this.diffTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
+            this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
+            this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
 
-            this.timeToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Time);
-            this.distanceToolStripMenuItem.Text = TrailLineChart.XAxisValueString(TrailLineChart.XAxisValue.Distance);
+            this.timeToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Time);
+            this.distanceToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Distance);
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
 
@@ -224,23 +224,23 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_showPage)
             {
-                TrailLineChart.LineChartTypes speedPaceYaxis;
+                LineChartTypes speedPaceYaxis;
                 if (m_controller.ReferenceActivity != null &&
                     m_controller.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
                 {
-                    speedPaceYaxis = TrailLineChart.LineChartTypes.Speed;
+                    speedPaceYaxis = LineChartTypes.Speed;
                 }
                 else
                 {
-                    speedPaceYaxis = TrailLineChart.LineChartTypes.Pace;
+                    speedPaceYaxis = LineChartTypes.Pace;
                 }
-                TrailLineChart.LineChartTypes diffYaxis = TrailLineChart.LineChartTypes.DiffDist;
-                if (Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance)
+                LineChartTypes diffYaxis = LineChartTypes.DiffDist;
+                if (Data.Settings.XAxisValue == XAxisValue.Distance)
                 {
-                    diffYaxis = TrailLineChart.LineChartTypes.DiffTime;
+                    diffYaxis = LineChartTypes.DiffTime;
                 }
 
-                m_multiChart.YAxisReferentials=new List<TrailLineChart.LineChartTypes>();
+                m_multiChart.YAxisReferentials=new List<LineChartTypes>();
                 multiChart.ShowPage = false;
                 //TODO: Temporary handling. Cleanup and decide multiple graphs and charts
                 TrailLineChart updateChart = m_multiChart;
@@ -256,14 +256,14 @@ namespace TrailsPlugin.UI.Activity {
                     IList<Data.TrailResult> list = this.m_page.SelectedItems;
                     m_multiChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                     m_multiChart.TrailResults = list;
-                    foreach (TrailLineChart.LineChartTypes t in Data.Settings.MultiChartType)
+                    foreach (LineChartTypes t in Data.Settings.MultiChartType)
                     {
-                        TrailLineChart.LineChartTypes t2 = t;
-                        if (t2 == TrailLineChart.LineChartTypes.SpeedPace)
+                        LineChartTypes t2 = t;
+                        if (t2 == LineChartTypes.SpeedPace)
                         {
                             t2 = speedPaceYaxis;
                         }
-                        if (t2 == TrailLineChart.LineChartTypes.DiffDistTime)
+                        if (t2 == LineChartTypes.DiffDistTime)
                         {
                             t2 = diffYaxis;
                         }
@@ -280,8 +280,8 @@ namespace TrailsPlugin.UI.Activity {
                         m_multiChart.YAxisReferential = speedPaceYaxis;
                         m_multiChart.ShowPage = true;
                     }
-                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(m_multiChart.YAxisReferential) + " / " +
-                    TrailLineChart.XAxisValueString(m_multiChart.XAxisReferential);
+                    this.ChartBanner.Text = LineChartUtil.ChartTypeString(m_multiChart.YAxisReferential) + " / " +
+                    LineChartUtil.XAxisValueString(m_multiChart.XAxisReferential);
                     m_multiChart.EndUpdate();
                 }
                 else
@@ -293,16 +293,16 @@ namespace TrailsPlugin.UI.Activity {
                         if (m_multipleGraphs &&
                             (Data.Settings.MultiGraphType.Contains(chart.YAxisReferential) ||
                             chart.YAxisReferential == speedPaceYaxis &&
-                            Data.Settings.MultiGraphType.Contains(TrailLineChart.LineChartTypes.SpeedPace) ||
+                            Data.Settings.MultiGraphType.Contains(LineChartTypes.SpeedPace) ||
                             chart.YAxisReferential == diffYaxis &&
-                            Data.Settings.MultiGraphType.Contains(TrailLineChart.LineChartTypes.DiffDistTime)) ||
+                            Data.Settings.MultiGraphType.Contains(LineChartTypes.DiffDistTime)) ||
 
                             !m_multipleGraphs &&
                             (chart.YAxisReferential == Data.Settings.ChartType ||
                             chart.YAxisReferential == speedPaceYaxis &&
-                                TrailLineChart.LineChartTypes.SpeedPace == Data.Settings.ChartType ||
+                                LineChartTypes.SpeedPace == Data.Settings.ChartType ||
                             chart.YAxisReferential == diffYaxis &&
-                                TrailLineChart.LineChartTypes.DiffDistTime == Data.Settings.ChartType))
+                                LineChartTypes.DiffDistTime == Data.Settings.ChartType))
                         {
                             visible = true;
                         }
@@ -318,8 +318,8 @@ namespace TrailsPlugin.UI.Activity {
                             updateChart.TrailResults = list;
                             if (!m_multipleGraphs && updateChart.YAxisReferentials.Count == 1)
                             {
-                                this.ChartBanner.Text = TrailLineChart.ChartTypeString(chart.YAxisReferential) + " / " +
-                                TrailLineChart.XAxisValueString(chart.XAxisReferential);
+                                this.ChartBanner.Text = LineChartUtil.ChartTypeString(chart.YAxisReferential) + " / " +
+                                LineChartUtil.XAxisValueString(chart.XAxisReferential);
                             }
                             if (updateChart.HasValues(chart.YAxisReferential))
                             {
@@ -345,8 +345,8 @@ namespace TrailsPlugin.UI.Activity {
                                                 replaceChart.TrailResults = list2;
                                                 if (!m_multipleGraphs)
                                                 {
-                                                    this.ChartBanner.Text = TrailLineChart.ChartTypeString(replaceChart.YAxisReferential) + " / " +
-                                                    TrailLineChart.XAxisValueString(replaceChart.XAxisReferential);
+                                                    this.ChartBanner.Text = LineChartUtil.ChartTypeString(replaceChart.YAxisReferential) + " / " +
+                                                    LineChartUtil.XAxisValueString(replaceChart.XAxisReferential);
                                                 }
                                                 replaceChart.ShowPage = visible;
                                                 replaceChart.EndUpdate();
@@ -364,7 +364,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private bool setLineChartChecked(TrailLineChart.LineChartTypes t)
+        private bool setLineChartChecked(LineChartTypes t)
         {
             if (m_multipleCharts)
             {
@@ -382,25 +382,25 @@ namespace TrailsPlugin.UI.Activity {
         void RefreshChartMenu()
         {
             //TODO: disable if track exists (or ref for diff). 
-            speedToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Speed);
-            paceToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Pace);
-            speedPaceToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.SpeedPace);
-            elevationToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Elevation);
-            cadenceToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Cadence);
-            heartRateToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.HeartRateBPM);
-            gradeStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Grade);
-            powerToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.Power);
+            speedToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Speed);
+            paceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Pace);
+            speedPaceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.SpeedPace);
+            elevationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Elevation);
+            cadenceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Cadence);
+            heartRateToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.HeartRateBPM);
+            gradeStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Grade);
+            powerToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Power);
 
-            diffTimeToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffTime);
-            diffDistToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffDist);
-            diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(TrailLineChart.LineChartTypes.DiffDistTime);
+            diffTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffTime);
+            diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
+            diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
 
-            timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Time;
-            distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == TrailLineChart.XAxisValue.Distance;
+            timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;
+            distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Distance;
             this.showToolBarMenuItem.Checked = Data.Settings.ShowChartToolBar;
         }
 
-        void RefreshChart(TrailLineChart.LineChartTypes t)
+        void RefreshChart(LineChartTypes t)
         {
             if (m_multipleCharts)
             {
@@ -417,7 +417,7 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChart();
         }
 
-        void RefreshChart(TrailLineChart.XAxisValue t)
+        void RefreshChart(XAxisValue t)
         {
             Data.Settings.XAxisValue = t;
             RefreshChart();
@@ -478,62 +478,62 @@ namespace TrailsPlugin.UI.Activity {
         /***************************************/
         private void speedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.Speed);
+            RefreshChart(LineChartTypes.Speed);
         }
         private void paceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.Pace);
+            RefreshChart(LineChartTypes.Pace);
         }
         private void speedPaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.SpeedPace);
+            RefreshChart(LineChartTypes.SpeedPace);
         }
 
         private void elevationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.Elevation);
+            RefreshChart(LineChartTypes.Elevation);
         }
 
         private void heartRateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.HeartRateBPM);
+            RefreshChart(LineChartTypes.HeartRateBPM);
         }
 
         private void cadenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.Cadence);
+            RefreshChart(LineChartTypes.Cadence);
         }
 
         private void gradeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.Grade);
+            RefreshChart(LineChartTypes.Grade);
         }
         private void powerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.Power);
+            RefreshChart(LineChartTypes.Power);
         }
 
         private void diffTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.DiffTime);
+            RefreshChart(LineChartTypes.DiffTime);
         }
         private void diffDistToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.DiffDist);
+            RefreshChart(LineChartTypes.DiffDist);
         }
         private void diffDistTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.LineChartTypes.DiffDistTime);
+            RefreshChart(LineChartTypes.DiffDistTime);
         }
 
         private void distanceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.XAxisValue.Distance);
+            RefreshChart(XAxisValue.Distance);
         }
 
         private void timeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(TrailLineChart.XAxisValue.Time);
+            RefreshChart(XAxisValue.Time);
         }
 
         private void showToolBarMenuItem_Click(object sender, EventArgs e)

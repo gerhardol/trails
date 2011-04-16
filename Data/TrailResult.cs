@@ -250,7 +250,7 @@ namespace TrailsPlugin.Data {
                     }
                     if (m_startTime == DateTime.MinValue)
                     {
-                        m_startTime = Activity.StartTime;
+                        m_startTime = Info.ActualTrackStart;
                     }
                 }
                 return (DateTime)m_startTime;
@@ -440,6 +440,7 @@ namespace TrailsPlugin.Data {
                         {
                             time = pause.Lower.Add(TimeSpan.FromSeconds(-1));
                         }
+                        break;
                     }
                 }
             }
@@ -545,6 +546,23 @@ namespace TrailsPlugin.Data {
                     {
                         m_startDistance = m_activityDistanceMetersTrack[i].Value;
                     }
+
+                    float startOffset = 0;
+                    if (i < m_activityDistanceMetersTrack.Count &&
+                        0 > this.StartDateTime.CompareTo(m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])) &&
+                            !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(StartDateTime, Pauses))
+                    {
+                        if (Activity.GPSRoute != null)
+                        {
+                            ITimeValueEntry<IGPSPoint> gpsP = Activity.GPSRoute.GetInterpolatedValue(StartDateTime);
+                            if (gpsP != null)
+                            {
+                                startOffset = gpsP.Value.DistanceMetersToPoint(Activity.GPSRoute[i].Value);
+                            }
+                        }
+                        m_distanceMetersTrack.Add(StartDateTime, 0);
+                    }
+
                     float? prevDist = null;
                     float distance = 0;
                     float oldElapsed = float.MinValue;
@@ -563,7 +581,7 @@ namespace TrailsPlugin.Data {
                             {
                                 distance += actDist - (float)prevDist;
                             }
-                            m_distanceMetersTrack.Add(time, distance);
+                            m_distanceMetersTrack.Add(time, distance + startOffset);
                             prevDist = actDist;
                             oldElapsed = elapsed;
                         }
@@ -572,6 +590,22 @@ namespace TrailsPlugin.Data {
                             prevDist = null;
                         }
                         i++;
+                    }
+
+                    if (0 > this.EndDateTime.CompareTo(m_distanceMetersTrack.EntryDateTime(m_distanceMetersTrack[m_distanceMetersTrack.Count - 1])) &&
+                            !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndDateTime, Pauses))
+                    {
+                        distance = m_distanceMetersTrack[m_distanceMetersTrack.Count - 1].Value;
+                        if (Activity.GPSRoute != null)
+                        {
+                            ITimeValueEntry<IGPSPoint> gpsP = Activity.GPSRoute.GetInterpolatedValue(m_distanceMetersTrack.EntryDateTime(m_distanceMetersTrack[m_distanceMetersTrack.Count-1]));
+                            ITimeValueEntry<IGPSPoint> gpsP2 = Activity.GPSRoute.GetInterpolatedValue(EndDateTime);
+                            if (gpsP != null && gpsP2 != null)
+                            {
+                                distance += gpsP.Value.DistanceMetersToPoint(gpsP2.Value);
+                            }
+                        }
+                        m_distanceMetersTrack.Add(EndDateTime, distance);
                     }
                 }
             }
@@ -831,8 +865,8 @@ namespace TrailsPlugin.Data {
             if (!onlyDisplay)
             {
                 m_pauses = null;
-                //m_startTime = null;
-                //m_endTime = null;
+                m_startTime = null;
+                m_endTime = null;
 
                 //m_ActivityInfo = null;
 
@@ -1197,23 +1231,45 @@ namespace TrailsPlugin.Data {
         {
             m_gpsTrack = new GPSRoute();
             m_gpsPoints = new List<IGPSPoint>();
-            if (m_activity.GPSRoute != null && StartDateTime != DateTime.MinValue && EndDateTime != DateTime.MinValue)
+            if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
+                StartDateTime != DateTime.MinValue && EndDateTime != DateTime.MinValue)
             {
-                for (int i = 0; i < m_activity.GPSRoute.Count; i++)
+                int i = 0;
+                while (i < m_activity.GPSRoute.Count &&
+                       0 < this.StartDateTime.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
+                {
+                    i++;
+                }
+                if (i < m_activity.GPSRoute.Count &&
+                    0 > StartDateTime.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
+                {
+                    //Insert start point
+                    ITimeValueEntry<IGPSPoint> gpsP = m_activity.GPSRoute.GetInterpolatedValue(StartDateTime);
+                    if (gpsP != null)
+                    {
+                        m_gpsPoints.Add(gpsP.Value);
+                        m_gpsTrack.Add(StartDateTime, gpsP.Value);
+                    }
+                }
+                while (i < m_activity.GPSRoute.Count &&
+                       0 < this.EndDateTime.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i])))
                 {
                     DateTime time = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
-                    if (time.CompareTo(EndDateTime) > 0)
+                    IGPSPoint point = m_activity.GPSRoute[i].Value;
+                    if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
                     {
-                        break;
+                        m_gpsPoints.Add(point);
+                        m_gpsTrack.Add(time, point);
                     }
-                    if (time.CompareTo(StartDateTime) >= 0)
+                    i++;
+                }
+                if (0 < this.EndDateTime.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_gpsTrack.Count-1])))
+                {
+                    ITimeValueEntry<IGPSPoint> gpsP = m_activity.GPSRoute.GetInterpolatedValue(EndDateTime);
+                    if (gpsP != null)
                     {
-                        IGPSPoint point = m_activity.GPSRoute[i].Value;
-                        if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
-                        {
-                            m_gpsPoints.Add(point);
-                            m_gpsTrack.Add(time, point);
-                        }
+                        m_gpsPoints.Add(gpsP.Value);
+                        m_gpsTrack.Add(EndDateTime, gpsP.Value);
                     }
                 }
             }
@@ -1269,11 +1325,32 @@ namespace TrailsPlugin.Data {
                     {
                         i++;
                     }
+                    if (i < GpsTrack.Count &&
+                        0 > r.Lower.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
+                    {
+                        //Insert start point
+                        ITimeValueEntry<IGPSPoint> gpsP = GpsTrack.GetInterpolatedValue(r.Lower);
+                        if (gpsP != null)
+                        {
+                            track.Add(gpsP.Value);
+                        }
+                    }
+                    ITimeValueEntry<IGPSPoint> entry = null;
                     while (i < GpsTrack.Count &&
                         0 <= r.Upper.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
                     {
-                        track.Add(GpsTrack[i].Value);
+                        entry = GpsTrack[i];
+                        track.Add(entry.Value);
                         i++;
+                    }
+                    if (entry!= null &&
+                        0 > r.Upper.CompareTo(GpsTrack.EntryDateTime(entry)))
+                    {
+                        ITimeValueEntry<IGPSPoint> gpsP = GpsTrack.GetInterpolatedValue(r.Upper);
+                        if (gpsP != null)
+                        {
+                            track.Add(gpsP.Value);
+                        }
                     }
                     result.Add(track);
                 }
@@ -1300,11 +1377,34 @@ namespace TrailsPlugin.Data {
                     {
                         i++;
                     }
+                    DateTime time = getDateTimeFromDistActivity(r.Lower);
+                    if (i < GpsTrack.Count &&
+                        0 > time.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
+                    {
+                        //Insert start point
+                        ITimeValueEntry<IGPSPoint> gpsP = GpsTrack.GetInterpolatedValue(time);
+                        if (gpsP != null)
+                        {
+                            track.Add(gpsP.Value);
+                        }
+                    }
+                    ITimeValueEntry<IGPSPoint> entry = null;
                     while (i < GpsTrack.Count &&
                         getDistResultFromDistActivity(r.Upper) >= DistanceMetersTrack[i].Value)
                     {
-                        track.Add(GpsTrack[i].Value);
+                        entry = GpsTrack[i];
+                        track.Add(entry.Value);
                         i++;
+                    }
+                    time = getDateTimeFromDistActivity(r.Upper);
+                    if (entry != null &&
+                        0 > time.CompareTo(GpsTrack.EntryDateTime(entry)))
+                    {
+                        ITimeValueEntry<IGPSPoint> gpsP = GpsTrack.GetInterpolatedValue(time);
+                        if (gpsP != null)
+                        {
+                            track.Add(gpsP.Value);
+                        }
                     }
                     result.Add(track);
                 }

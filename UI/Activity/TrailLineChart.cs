@@ -723,6 +723,7 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
         //From a value in the chart, get "real" elapsed
+        //TODO: incorrect around trail points
         private float GetResyncOffsetTime(TrailResult tr, float elapsed)
         {
             float nextElapsed;
@@ -744,6 +745,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed, out float nextElapsed)
         {
+            //Possibility to cache the index
             int currOffsetIndex = 0;
             return GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
         }
@@ -769,15 +771,14 @@ namespace TrailsPlugin.UI.Activity {
                     currOffsetIndex++;
                 }
 
-                if (currOffsetIndex < trElapsed.Count -1)
+                if (currOffsetIndex < refElapsed.Count -1)
                 {
-                    nextElapsed = (float)trElapsed[currOffsetIndex+1];
+                    nextElapsed = (float)refElapsed[currOffsetIndex+1];
                 }
                 else
                 {
                     nextElapsed = float.MaxValue;
                 }
-
                 if (currOffsetIndex < refElapsed.Count)
                 {
                     offset = (float)(refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]);

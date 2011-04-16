@@ -192,9 +192,9 @@ namespace TrailsPlugin.UI.Activity {
             int resRows = 0;
             if (summaryList.RowData != null)
             {
-                resRows = Math.Min(7, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
+                resRows = Math.Max(8, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
             }
-            resRows = Math.Max(resRows, 3);
+            resRows = Math.Min(resRows, 4);
             m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
                 17 * resRows + 16;
 

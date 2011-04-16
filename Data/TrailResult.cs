@@ -1164,10 +1164,11 @@ namespace TrailsPlugin.Data {
             //checkCacheRef(refRes);
             if (m_trailPointDistOffset0 == null)
             {
+                //Note: Beware of calling order. i.e. DistanceMetersTrack0(refRes) could clear m_trailPointDistOffset0
+                IDistanceDataTrack distanceTrack = this.DistanceMetersTrack0(refRes);
+                IList<double> timeOffset = this.TrailPointTimeOffset0(refRes);
                 m_trailPointDistOffset0 = new List<double>();
                 m_trailPointDistOffset0.Add(0);
-                IList<double> timeOffset = this.TrailPointTimeOffset0(refRes);
-                IDistanceDataTrack distanceTrack = this.DistanceMetersTrack0(refRes);
                 for (int k = 1; k < timeOffset.Count; k++)
                 {
                     double val;

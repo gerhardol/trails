@@ -132,12 +132,12 @@ namespace TrailsPlugin
 
         const int brushSize = 6; //Even
         //The outer radius defines the included area
-        static public string fileCircle(int sizeX, int sizeY)
+        static public string fileCircle(int sizeX, int sizeY, Color color)
         {
             Size iconSize;
-            return fileCircle(sizeX, sizeY, out iconSize);
+            return fileCircle(sizeX, sizeY, color, out iconSize);
         }
-        static public string fileCircle(int sizeX, int sizeY, out Size iconSize)
+        static public string fileCircle(int sizeX, int sizeY, Color color, out Size iconSize)
         {
             string basePath = Plugin.GetApplication().
 #if ST_2_1
@@ -167,14 +167,14 @@ namespace TrailsPlugin
             if (1 != sizeX % 2) { sizeX++; }
             if (1 != sizeY % 2) { sizeY++; }
             iconSize = new Size(sizeX, sizeY);
-            string filePath = basePath + "circle-" + sizeX+"_"+sizeY + ".png";
+            string filePath = basePath + "circle-" + color + sizeX+"_"+sizeY + ".png";
             if (!File.Exists(filePath))
             {
                 //No version handling other than filename
                 Bitmap myBitmap = new Bitmap(sizeX, sizeY);
                 Graphics myGraphics = Graphics.FromImage(myBitmap);
                 myGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                myGraphics.DrawEllipse(new Pen(Color.Red, brushSize), new Rectangle(brushSize / 2, brushSize / 2, 
+                myGraphics.DrawEllipse(new Pen(color, brushSize), new Rectangle(brushSize / 2, brushSize / 2, 
                     myBitmap.Width - brushSize, myBitmap.Height - brushSize));
                 myGraphics.DrawEllipse(new Pen(Color.Black, 1), new Rectangle(1, 1, 
                     myBitmap.Width - 2, myBitmap.Height - 2));
@@ -186,7 +186,7 @@ namespace TrailsPlugin
         }
         static public string Circle(int sizeX, int sizeY, out Size iconSize)
         {
-            return "file://" + fileCircle(sizeX, sizeY, out iconSize);
+            return "file://" + fileCircle(sizeX, sizeY, Color.Red, out iconSize);
         }
 	}
 }

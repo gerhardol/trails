@@ -91,10 +91,12 @@ namespace TrailsPlugin.Data
                 LineChartTypes.SpeedPace, LineChartTypes.Elevation,
                 LineChartTypes.HeartRateBPM, LineChartTypes.Cadence};
         }
+
         public static string ChartTypeString(LineChartTypes x)
         {
             return LineChartTypesString((LineChartTypes)x);
         }
+
         public static string LineChartTypesString(LineChartTypes YAxisReferential)
         {
             string yAxisLabel = "";

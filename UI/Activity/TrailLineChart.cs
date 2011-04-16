@@ -194,17 +194,18 @@ namespace TrailsPlugin.UI.Activity {
 
         void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
-            foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
-            {
-                kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key];
-            }
-            e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
+            //Note: MainChart_SelectData fires before and after this event
         }
 
         void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
             if (e != null && e.DataSeries != null && m_page != null)
             {
+                foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
+                {
+                    kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key];
+                }
+                e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
                 //Get index for dataseries - same as for result
                 int i = -1;
                 if (MainChart.DataSeries.Count==2 && m_axis.Count==1 &&
@@ -227,29 +228,28 @@ namespace TrailsPlugin.UI.Activity {
                 if (i >= 0)
                 {
                     //Results must be added in order
-                    TrailResult tr = m_trailResults[i / m_axis.Count];
+                    TrailResult tr = m_trailResults[i % this.TrailResults.Count];
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
 
                     IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
                     IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-                    if (XAxisReferential == XAxisValue.Time)
+                    foreach (float[] at in regions)
                     {
-                        foreach (float[] at in regions)
+                        DateTime d1;
+                        DateTime d2;
+                        if (XAxisReferential == XAxisValue.Time)
                         {
-                            t.Add(new ValueRange<DateTime>(
-                                tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[0])),
-                                tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[1]))));
+                            d1 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[0]));
+                            d2 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[1]));
                         }
-                    }
-                    else
-                    {
-                        foreach (float[] at in regions)
+                        else
                         {
-                            t.Add(new ValueRange<DateTime>(
-                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetTime(tr, at[0]), m_refTrailResult)),
-                                tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetTime(tr, at[1]), m_refTrailResult))));
+                            
+                            d1 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[0]), ReferenceTrailResult));
+                            d2 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[1]), ReferenceTrailResult));
                         }
+                        t.Add(new ValueRange<DateTime>(d1, d2));
                     }
                     results.Add(new Data.TrailResultMarked(tr, t));
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
@@ -458,8 +458,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
             //distance is for result, then to display units
-            x1 = (float)TrailResult.DistanceConvertFrom(t1, m_refTrailResult);
-            x2 = (float)TrailResult.DistanceConvertFrom(t2, m_refTrailResult);
+            x1 = (float)TrailResult.DistanceConvertFrom(t1, ReferenceTrailResult);
+            x2 = (float)TrailResult.DistanceConvertFrom(t2, ReferenceTrailResult);
             return new float[] { x1, x2 };
         }
 
@@ -542,7 +542,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailResult tr = m_trailResults[i];
                         //As this value is cached, it is no extra to request and drop it
-                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, m_refTrailResult);
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
 
                         if (graphPoints.Count > 1)
                         {
@@ -566,13 +566,14 @@ namespace TrailsPlugin.UI.Activity {
                 // Add main data. We must use 2 separate data series to overcome the display
                 //  bug in fill mode.  The main data series is normally rendered but the copy
                 //  is set in Line mode to be displayed over the fill
+                //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
                 foreach (LineChartTypes yaxis in m_axis.Keys)
                 {
 
                     for (int i = 0; i < m_trailResults.Count; i++)
                     {
                         TrailResult tr = m_trailResults[i];
-                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, m_refTrailResult);
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
 
                         if (graphPoints.Count <= 1)
                         {
@@ -584,14 +585,20 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            Color chartFillColor = System.Drawing.Color.WhiteSmoke;
-                            Color chartLineColor = LineChartUtil.ChartColor[yaxis];
-                            Color chartSelectedColor = ControlPaint.Dark(LineChartUtil.ChartColor[yaxis], 0.01F); ;
-                            if (m_trailResults.Count > 1)
+                            Color chartLineColor;
+                            Color chartSelectedColor;
+                            Color chartFillColor;
+                            if (m_trailResults.Count <= 1)
                             {
-                                chartFillColor = m_trailResults[i].TrailColor;
-                                chartLineColor = chartFillColor;
-                                chartSelectedColor = chartFillColor;
+                                chartLineColor = LineChartUtil.ChartColor[yaxis];
+                                chartSelectedColor = ControlPaint.Dark(LineChartUtil.ChartColor[yaxis], 0.01F);
+                                chartFillColor = System.Drawing.Color.WhiteSmoke;
+                            }
+                            else
+                            {
+                                chartLineColor = m_trailResults[i].TrailColor;
+                                chartSelectedColor = chartLineColor;
+                                chartFillColor = chartLineColor;
                             }
 
                             ChartDataSeries dataFill = null;
@@ -621,30 +628,32 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             else
                             {
-                                dataPoints = m_trailResults[i].DistanceMetersTrack0(m_refTrailResult);
+                                dataPoints = m_trailResults[i].DistanceMetersTrack0(ReferenceTrailResult);
                             }
                             float oldElapsedSeconds = float.MinValue;
-                            float oldElapsed = float.MinValue;
-                            int currOffsetIndex = 0;
+                            float oldXvalue = float.MinValue;
                             foreach (ITimeValueEntry<float> entry in dataPoints)
                             {
                                 float elapsedSeconds = entry.ElapsedSeconds;
                                 if (XAxisReferential == XAxisValue.Time || elapsedSeconds <= graphPoints.TotalElapsedSeconds)
                                 {
-                                    float elapsed;
+                                    float xvalue;
                                     if (XAxisReferential == XAxisValue.Time)
                                     {
-                                        elapsed = elapsedSeconds;
+                                        xvalue = elapsedSeconds;
                                     }
                                     else
                                     {
-                                        elapsed = entry.Value;
+                                        xvalue = entry.Value;
                                     }
-                                    float nextElapsed;
-                                    elapsed += GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+                                    //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
+                                    //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
+                                    //or cut (elapsed is higher than next limit, then decreases at trail point)  
+                                    float nextXvalue;
+                                    xvalue += GetResyncOffset(XAxisReferential, tr, xvalue, out nextXvalue);
                                     if (oldElapsedSeconds < elapsedSeconds &&
                                         (!m_resyncAtTrailPoints ||
-                                        oldElapsed < elapsed && elapsed <= nextElapsed))
+                                        oldXvalue < xvalue && xvalue <= nextXvalue))
                                     {
                                         ITimeValueEntry<float> valEntry;
                                         if (XAxisReferential == XAxisValue.Time)
@@ -655,14 +664,14 @@ namespace TrailsPlugin.UI.Activity {
                                         {
                                             valEntry = graphPoints.GetInterpolatedValue(graphPoints.EntryDateTime(entry));
                                         }
-                                        float value = valEntry.Value;
+                                        float yvalue = valEntry.Value;
                                         if (null != dataFill)
                                         {
-                                            dataFill.Points.Add(entry.ElapsedSeconds, new PointF(elapsed, value));
+                                            dataFill.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
                                         }
-                                        dataLine.Points.Add(entry.ElapsedSeconds, new PointF(elapsed, value));
+                                        dataLine.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
                                         oldElapsedSeconds = elapsedSeconds;
-                                        oldElapsed = elapsed;
+                                        oldXvalue = xvalue;
                                     }
                                 }
                             }
@@ -671,7 +680,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 ///////TrailPoints
-                Data.TrailResult trailPointResult = m_refTrailResult;
+                Data.TrailResult trailPointResult = ReferenceTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
                 if (m_trailResults.Count == 1 ||
                     m_trailResults.Count > 0 && trailPointResult == null)
@@ -685,27 +694,25 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                         CommonResources.Images.Information16;
 #else
-                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11));
+                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11, trailPointResult.TrailColor));
 #endif
+                    double oldElapsed = double.MinValue;
                     foreach (DateTime t in trailPointResult.TimeTrailPoints)
                     {
-                        AxisMarker a = null;
+                        double elapsed;
                         if (XAxisReferential == XAxisValue.Time)
                         {
-                            a = new AxisMarker(trailPointResult.getElapsedResult(t), icon);
+                            elapsed = trailPointResult.getElapsedResult(t);
                         }
                         else
                         {
-                            float time = (float)TrailResult.DistanceConvertFrom(
+                            elapsed = TrailResult.DistanceConvertFrom(
                                 trailPointResult.getDistResult(t), trailPointResult);
-                            if (!float.IsNaN(time))
-                            {
-                                a = new AxisMarker(time, icon);
-                            }
                         }
-                        if (a != null)
+                        if (!double.IsNaN(elapsed) && elapsed > oldElapsed)
                         {
-                            a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
+                            AxisMarker a = new AxisMarker(elapsed, icon);
+                                                    a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
                             a.Line1Color = Color.Goldenrod;
                             MainChart.XAxis.Markers.Add(a);
                         }
@@ -715,6 +722,7 @@ namespace TrailsPlugin.UI.Activity {
             }
 		}
 
+        //From a value in the chart, get "real" elapsed
         private float GetResyncOffsetTime(TrailResult tr, float elapsed)
         {
             float nextElapsed;
@@ -728,6 +736,17 @@ namespace TrailsPlugin.UI.Activity {
             return elapsed - GetResyncOffset(XAxisValue.Distance, tr, elapsed, out nextElapsed, ref currOffsetIndex);
         }
 
+        private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed)
+        {
+            float nextElapsed;
+            int currOffsetIndex = 0;
+            return GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
+        private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed, out float nextElapsed)
+        {
+            int currOffsetIndex = 0;
+            return GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
         private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed, out float nextElapsed, ref int currOffsetIndex)
         {
             IList<double> trElapsed;
@@ -737,13 +756,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (XAxisReferential == XAxisValue.Time)
                 {
-                    trElapsed = tr.TrailPointTimeOffset0(m_refTrailResult);
-                    refElapsed = m_refTrailResult.TrailPointTimeOffset0(m_refTrailResult);
+                    trElapsed = tr.TrailPointTimeOffset0(ReferenceTrailResult);
+                    refElapsed = ReferenceTrailResult.TrailPointTimeOffset0(ReferenceTrailResult);
                 }
                 else
                 {
-                    trElapsed = tr.TrailPointDistOffset0(m_refTrailResult);
-                    refElapsed = m_refTrailResult.TrailPointDistOffset0(m_refTrailResult);
+                    trElapsed = tr.TrailPointDistOffset0(ReferenceTrailResult);
+                    refElapsed = ReferenceTrailResult.TrailPointDistOffset0(ReferenceTrailResult);
                 }
                 while (currOffsetIndex < trElapsed.Count - 1 && elapsed > trElapsed[currOffsetIndex+1])
                 {
@@ -773,10 +792,10 @@ namespace TrailsPlugin.UI.Activity {
 
         private void SetupAxes()
         {
-            if (m_visible && m_refTrailResult != null)
+            if (m_visible && ReferenceTrailResult != null)
             {
                 // X axis
-                LineChartUtil.SetupXAxisFormatter(XAxisReferential, MainChart.XAxis, m_refTrailResult.Activity);
+                LineChartUtil.SetupXAxisFormatter(XAxisReferential, MainChart.XAxis, ReferenceTrailResult.Activity);
 
                 // Y axis
                 MainChart.YAxisRight.Clear();
@@ -789,9 +808,9 @@ namespace TrailsPlugin.UI.Activity {
         
         private void CreateAxis(LineChartTypes axisType, bool left)
         {
-            if ((m_trailResults == null || m_refTrailResult == null ||
+            if ((m_trailResults == null || ReferenceTrailResult == null ||
                 (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist) &&
-                m_trailResults.Count == 1 && m_trailResults == m_refTrailResult))
+                m_trailResults.Count == 1 && m_trailResults == ReferenceTrailResult))
             {
                 return;
             }
@@ -810,11 +829,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 m_axis.Add(axisType, axis);
                 axis.LabelColor = LineChartUtil.ChartColor[axisType];
-                LineChartUtil.SetupYAxisFormatter(axisType, axis, m_refTrailResult.Activity);
+                LineChartUtil.SetupYAxisFormatter(axisType, axis, ReferenceTrailResult.Activity);
             }
         }
 
-        private static INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart, TrailResult m_refTrailResult)
+        private static INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart, TrailResult refRes)
         {
 			// Fail safe
 			INumericTimeDataSeries track = new NumericTimeDataSeries();
@@ -823,17 +842,17 @@ namespace TrailsPlugin.UI.Activity {
             {
                 case LineChartTypes.Cadence:
                     {
-                        track = result.CadencePerMinuteTrack0(m_refTrailResult);
+                        track = result.CadencePerMinuteTrack0(refRes);
                         break;
                     }
                 case LineChartTypes.Elevation:
                     {
-                        track = result.ElevationMetersTrack0(m_refTrailResult);
+                        track = result.ElevationMetersTrack0(refRes);
                         break;
                     }
                 case LineChartTypes.HeartRateBPM:
                     {
-                        track = result.HeartRatePerMinuteTrack0(m_refTrailResult);
+                        track = result.HeartRatePerMinuteTrack0(refRes);
                         break;
                     }
                 //case LineChartTypes.HeartRatePercentMax:
@@ -843,35 +862,35 @@ namespace TrailsPlugin.UI.Activity {
                 //    }
                 case LineChartTypes.Power:
                     {
-                        track = result.PowerWattsTrack0(m_refTrailResult);
+                        track = result.PowerWattsTrack0(refRes);
                         break;
                     }
                 case LineChartTypes.Grade:
                     {
-                        track = result.GradeTrack0(m_refTrailResult);
+                        track = result.GradeTrack0(refRes);
                         break;
                     }
 
                 case LineChartTypes.Speed:
                     {
-                        track = result.SpeedTrack0(m_refTrailResult);
+                        track = result.SpeedTrack0(refRes);
                         break;
                     }
 
                 case LineChartTypes.Pace:
                     {
-                        track = result.PaceTrack0(m_refTrailResult);
+                        track = result.PaceTrack0(refRes);
                         break;
                     }
 
                 case LineChartTypes.DiffTime:
                     {
-                        track = result.DiffTimeTrack0(m_refTrailResult);
+                        track = result.DiffTimeTrack0(refRes);
                         break;
                     }
                 case LineChartTypes.DiffDist:
                     {
-                        track = result.DiffDistTrack0(m_refTrailResult);
+                        track = result.DiffDistTrack0(refRes);
                         break;
                     }
 
@@ -1089,58 +1108,68 @@ namespace TrailsPlugin.UI.Activity {
             }
 
             IList<LineChartTypes> chartTypes = new List<LineChartTypes> { selectedTypes };
-            if (selectedTypes == LineChartTypes.Cadence)
+            switch (selectedTypes)
             {
-                int val = TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds;
-                if (reset)
+                case LineChartTypes.Cadence:
                 {
-                    val = (new ActivityInfoOptions(true)).CadenceSmoothingSeconds;
+                    int val = TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds;
+                    if (reset)
+                    {
+                        val = (new ActivityInfoOptions(true)).CadenceSmoothingSeconds;
+                    }
+                    TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
+                        MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+                    break;
                 }
-                TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
-            }
-            else if (selectedTypes == LineChartTypes.Elevation || selectedTypes == LineChartTypes.Grade)
-            {
-                int val = TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds;
-                if (reset)
+                case LineChartTypes.Elevation:
+                case LineChartTypes.Grade:
                 {
-                    val = (new ActivityInfoOptions(true)).ElevationSmoothingSeconds;
+                    int val = TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds;
+                    if (reset)
+                    {
+                        val = (new ActivityInfoOptions(true)).ElevationSmoothingSeconds;
+                    }
+                    chartTypes.Add(LineChartTypes.Grade);
+                    TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
+                        MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+                    break;
                 }
-                chartTypes.Add(LineChartTypes.Grade);
-                TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
-            }
-            else if (selectedTypes == LineChartTypes.HeartRateBPM)
-            {
-                int val = TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds;
-                if (reset)
+                case LineChartTypes.HeartRateBPM:
                 {
-                    val = (new ActivityInfoOptions(true)).HeartRateSmoothingSeconds;
+                    int val = TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds;
+                    if (reset)
+                    {
+                        val = (new ActivityInfoOptions(true)).HeartRateSmoothingSeconds;
+                    }
+                    TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
+                        MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+                    break;
                 }
-                TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
-            }
-            else if (selectedTypes == LineChartTypes.Power)
-            {
-                int val = TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds;
-                if (reset)
+                case LineChartTypes.Power:
                 {
-                    val = (new ActivityInfoOptions(true)).PowerSmoothingSeconds;
+                    int val = TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds;
+                    if (reset)
+                    {
+                        val = (new ActivityInfoOptions(true)).PowerSmoothingSeconds;
+                    }
+                    TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
+                        MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+                    break;
                 }
-                TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
-            }
-            else if (selectedTypes == LineChartTypes.Speed || selectedTypes == LineChartTypes.Pace)
-            {
-                int val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
-                if (reset)
+                case LineChartTypes.Speed:
+                case LineChartTypes.Pace:
                 {
-                    val = (new ActivityInfoOptions(true)).SpeedSmoothingSeconds;
+                    int val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
+                    if (reset)
+                    {
+                        val = (new ActivityInfoOptions(true)).SpeedSmoothingSeconds;
+                    }
+                    chartTypes.Add(LineChartTypes.Pace);
+                    //chartTypes.Add(LineChartTypes.SpeedPace);
+                    TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds =
+                        MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
+                    break;
                 }
-                chartTypes.Add(LineChartTypes.Pace);
-                //chartTypes.Add(LineChartTypes.SpeedPace);
-                TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds =
-                    MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
             }
 
             if (refreshData)

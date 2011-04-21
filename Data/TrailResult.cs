@@ -1257,29 +1257,7 @@ namespace TrailsPlugin.Data {
             return m_trailPointTime0;
         }
 
-        //Use ActivityDistanceMetersTrack as TimeTrailPoints may be outside the time for ActivityDistanceMetersTrack
-        private float getDistAtIndex(int k)
-        {
-            float distance = 0;
-            ITimeValueEntry<float> interpolatedP = ActivityDistanceMetersTrackPause.GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
-            if (interpolatedP != null)
-            {
-                distance = interpolatedP.Value;
-            }
-
-            return (float)(UnitUtil.Distance.ConvertFrom(distance, m_cacheTrackRef.Activity));
-        }
-        private float getDistAtIndex2(int k)
-        {
-            float distance = 0;
-            ITimeValueEntry<float> interpolatedP2 = ActivityDistanceMetersTrack.GetInterpolatedValue(this.TrailPointDateTime[k]);
-            if (interpolatedP2 != null)
-            {
-                distance = interpolatedP2.Value;
-            }
-
-            return (float)(UnitUtil.Distance.ConvertFrom(distance, m_cacheTrackRef.Activity));
-        }
+        //Use ActivityDistanceMetersTrackPause as TimeTrailPoints may be outside the time for DistanceMetersTrack
         public IList<double> TrailPointDist0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1290,34 +1268,35 @@ namespace TrailsPlugin.Data {
                 float start = (float)UnitUtil.Distance.ConvertFrom(ActivityDistanceMetersTrackPause.GetInterpolatedValue(StartDateTime).Value, m_cacheTrackRef.Activity);
                 for (int k = 0; k < TrailPointDateTime.Count; k++)
                 {
-                    double val, val1;
+                    double val=0, val1=0;
                     if (TrailPointDateTime[k] > DateTime.MinValue)
                     {
-                        val = getDistAtIndex(k);
-                        val1 = getDistAtIndex(k);
+                        ITimeValueEntry<float> interpolatedP = ActivityDistanceMetersTrackPause.GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
+                        if (interpolatedP != null)
+                        {
+                            val = (float)(UnitUtil.Distance.ConvertFrom(interpolatedP.Value-start, m_cacheTrackRef.Activity));
+                        }
+                        interpolatedP = ActivityDistanceMetersTrack.GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
+                        ITimeValueEntry<float> interpolatedP2 = ActivityDistanceMetersTrack.GetInterpolatedValue(this.TrailPointDateTime[k]);
+                        if (interpolatedP != null && interpolatedP2 != null)
+                        {
+                            val1 = (float)(UnitUtil.Distance.ConvertFrom(interpolatedP.Value - interpolatedP2.Value, m_cacheTrackRef.Activity));
+                        }
+
                         if (k > 0 && val == 0)
                         {
-                            val = m_trailPointDist0[k - 1] + start;
-                        }
-                        if (k > 0 && val1 == 0)
-                        {
-                            val1 = val;
+                            val = m_trailPointDist0[k - 1];
                         }
                     }
                     else
                     {
                         if (k > 0)
                         {
-                            val = m_trailPointDist0[k - 1] + start;
+                            val = m_trailPointDist0[k - 1];
                         }
-                        else
-                        {
-                            val = 0;
-                        }
-                        val1 = val;
                     }
-                    m_trailPointDist0.Add(val - start);
-                    m_trailPointDistOffset0.Add(val-val1);
+                    m_trailPointDist0.Add(val);
+                    m_trailPointDistOffset0.Add(val1);
                 }
                 for (int k = 0; k < m_trailPointDistOffset0.Count; k++)
                 {

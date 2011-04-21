@@ -698,6 +698,41 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)
+        {
+            if (activityCat == null)
+            {
+                return false;
+            }
+            else if (activityCat == filterCat)
+            {
+                return true;
+            }
+            return IsCurrentCategory(activityCat.Parent, filterCat);
+        }
+
+        void addCurrentCategory()
+        {
+            IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
+            foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
+            {
+                if (!m_controller.Activities.Contains(activity) && 
+                    IsCurrentCategory (activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter))
+                {
+                    //Insert after the reference, then the order is normally OK
+                    allActivities.Insert(1, activity);
+                }
+            }
+            ActivityTrail t = m_controller.CurrentActivityTrail;
+            m_controller.Activities = allActivities;
+            if (m_controller.CurrentActivityTrailDisplayed == null)
+            {
+                m_controller.CurrentActivityTrail = t;
+            }
+            m_page.RefreshData();
+            m_page.RefreshControlState();
+        }
+
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -735,6 +770,10 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.C)
             {
                 markCommonStretches();
+            }
+            else if (e.KeyCode == Keys.I)
+            {
+                addCurrentCategory();
             }
             else if (e.KeyCode == Keys.R)
             {

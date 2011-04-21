@@ -650,10 +650,10 @@ namespace TrailsPlugin.UI.Activity {
                                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
                                     //or cut (elapsed is higher than next limit, then decreases at trail point)  
                                     float nextXvalue;
-                                    xvalue += GetResyncOffset(XAxisReferential, tr, xvalue, out nextXvalue);
+                                    xvalue += GetResyncOffset(XAxisReferential, false, tr, xvalue, out nextXvalue);
                                     if (oldElapsedSeconds < elapsedSeconds &&
                                         (!m_resyncAtTrailPoints ||
-                                        oldXvalue < xvalue && xvalue <= nextXvalue))
+                                        oldXvalue < xvalue && xvalue < nextXvalue))
                                     {
                                         ITimeValueEntry<float> valEntry;
                                         if (XAxisReferential == XAxisValue.Time)
@@ -664,12 +664,15 @@ namespace TrailsPlugin.UI.Activity {
                                         {
                                             valEntry = graphPoints.GetInterpolatedValue(graphPoints.EntryDateTime(entry));
                                         }
-                                        float yvalue = valEntry.Value;
-                                        if (null != dataFill)
+                                        if (valEntry != null)
                                         {
-                                            dataFill.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
+                                            float yvalue = valEntry.Value;
+                                            if (null != dataFill)
+                                            {
+                                                dataFill.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
+                                            }
+                                            dataLine.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
                                         }
-                                        dataLine.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
                                         oldElapsedSeconds = elapsedSeconds;
                                         oldXvalue = xvalue;
                                     }
@@ -682,7 +685,7 @@ namespace TrailsPlugin.UI.Activity {
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = ReferenceTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
-                if (m_trailResults.Count == 1 ||
+                if (!m_resyncAtTrailPoints && m_trailResults.Count == 1 ||
                     m_trailResults.Count > 0 && trailPointResult == null)
                 {
                     trailPointResult = m_trailResults[0];
@@ -697,7 +700,7 @@ namespace TrailsPlugin.UI.Activity {
                         new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11, trailPointResult.TrailColor));
 #endif
                     double oldElapsed = double.MinValue;
-                    foreach (DateTime t in trailPointResult.TimeTrailPoints)
+                    foreach (DateTime t in trailPointResult.TrailPointDateTime)
                     {
                         double elapsed;
                         if (XAxisReferential == XAxisValue.Time)
@@ -728,65 +731,88 @@ namespace TrailsPlugin.UI.Activity {
         {
             float nextElapsed;
             int currOffsetIndex = 0;
-            return elapsed - GetResyncOffset(XAxisValue.Time, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+            return elapsed - GetResyncOffset(XAxisValue.Time, true, tr, elapsed, out nextElapsed, ref currOffsetIndex);
         }
         private float GetResyncOffsetDist(TrailResult tr, float elapsed)
         {
             float nextElapsed;
             int currOffsetIndex = 0;
-            return elapsed - GetResyncOffset(XAxisValue.Distance, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+            return elapsed - GetResyncOffset(XAxisValue.Distance, true, tr, elapsed, out nextElapsed, ref currOffsetIndex);
         }
 
-        private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed)
-        {
-            float nextElapsed;
-            int currOffsetIndex = 0;
-            return GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
-        }
-        private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed, out float nextElapsed)
+        //private float GetResyncOffset(XAxisValue XAxisReferential, bool elapsedIsRef, TrailResult tr, float elapsed)
+        //{
+        //    float nextElapsed;
+        //    float startOffset;
+        //    int currOffsetIndex = 0;
+        //    return GetResyncOffset(XAxisReferential, false, tr, elapsed, out nextElapsed, out startOffset, ref currOffsetIndex);
+        //}
+        private float GetResyncOffset(XAxisValue XAxisReferential, bool elapsedIsRef, TrailResult tr, float elapsed, out float nextElapsed)
         {
             //Possibility to cache the index
             int currOffsetIndex = 0;
-            return GetResyncOffset(XAxisReferential, tr, elapsed, out nextElapsed, ref currOffsetIndex);
+            return GetResyncOffset(XAxisReferential, elapsedIsRef, tr, elapsed, out nextElapsed, ref currOffsetIndex);
         }
-        private float GetResyncOffset(XAxisValue XAxisReferential, TrailResult tr, float elapsed, out float nextElapsed, ref int currOffsetIndex)
+        private float GetResyncOffset(XAxisValue XAxisReferential, bool elapsedIsRef, TrailResult tr, float elapsed, out float nextElapsed, ref int currOffsetIndex)
         {
             IList<double> trElapsed;
+            IList<double> trOffset;
             IList<double> refElapsed;
             float offset = 0;
+            nextElapsed = float.MaxValue;
             if (m_resyncAtTrailPoints)
             {
                 if (XAxisReferential == XAxisValue.Time)
                 {
-                    trElapsed = tr.TrailPointTimeOffset0(ReferenceTrailResult);
-                    refElapsed = ReferenceTrailResult.TrailPointTimeOffset0(ReferenceTrailResult);
+                    trElapsed = tr.TrailPointTime0(ReferenceTrailResult);
+                    trOffset = tr.TrailPointTimeOffset0(ReferenceTrailResult);
+                    refElapsed = ReferenceTrailResult.TrailPointTime0(ReferenceTrailResult);
                 }
                 else
                 {
-                    trElapsed = tr.TrailPointDistOffset0(ReferenceTrailResult);
-                    refElapsed = ReferenceTrailResult.TrailPointDistOffset0(ReferenceTrailResult);
-                }
-                while (currOffsetIndex < trElapsed.Count - 1 && elapsed > trElapsed[currOffsetIndex+1])
-                {
-                    currOffsetIndex++;
+                    trElapsed = tr.TrailPointDist0(ReferenceTrailResult);
+                    trOffset = tr.TrailPointDistOffset01(ReferenceTrailResult);
+                    refElapsed = ReferenceTrailResult.TrailPointDist0(ReferenceTrailResult);
                 }
 
-                if (currOffsetIndex < refElapsed.Count -1)
+                if (elapsedIsRef)
                 {
-                    nextElapsed = (float)refElapsed[currOffsetIndex+1];
+                    while (currOffsetIndex < refElapsed.Count - 1 && elapsed >= refElapsed[currOffsetIndex + 1])
+                    {
+                        currOffsetIndex++;
+                    }
+                    if (currOffsetIndex < trElapsed.Count - 1)
+                    {
+                        nextElapsed = (float)trElapsed[currOffsetIndex + 1];
+                    }
                 }
                 else
                 {
-                    nextElapsed = float.MaxValue;
+                    while (currOffsetIndex < trElapsed.Count - 1 && elapsed >= trElapsed[currOffsetIndex + 1])
+                    {
+                        currOffsetIndex++;
+                    }
+                    if (currOffsetIndex < refElapsed.Count -1)
+                    {
+                        nextElapsed = (float)refElapsed[currOffsetIndex + 1];
+                    }
+                }
+                if (currOffsetIndex > 1)
+                {
+                }
+                float startOffset;
+                if (currOffsetIndex < trOffset.Count)
+                {
+                    startOffset = (float)trOffset[currOffsetIndex];
+                }
+                else
+                {
+                    startOffset = 0;
                 }
                 if (currOffsetIndex < refElapsed.Count)
                 {
-                    offset = (float)(refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]);
+                    offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex])+startOffset);
                 }
-            }
-            else
-            {
-                nextElapsed = 0;
             }
             return offset;
         }

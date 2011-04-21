@@ -274,14 +274,16 @@ namespace TrailsPlugin.Data
 
         public static readonly IDictionary<LineChartTypes, Color> ChartColor = new Dictionary<LineChartTypes, Color>()
             {
-                {LineChartTypes.Speed, Color.Navy},
-                {LineChartTypes.Pace, Color.Navy},
-                {LineChartTypes.Elevation, Color.Sienna},
-                {LineChartTypes.Grade, Color.Sienna},
+                //Aproximate same as ST colors
+                {LineChartTypes.Speed, Color.FromArgb(32, 74, 135)},
+                {LineChartTypes.Pace, Color.FromArgb(32, 74, 135)},
+                {LineChartTypes.Elevation, Color.FromArgb(143, 89, 2)},
+                {LineChartTypes.Grade, Color.FromArgb(193, 125, 17)},
                 {LineChartTypes.HeartRateBPM, Color.Red},
-                {LineChartTypes.Cadence, Color.Green},
-                {LineChartTypes.Power, Color.Purple},
-                {LineChartTypes.DiffTime, Color.Chocolate},
+                {LineChartTypes.Cadence, Color.FromArgb(78, 154, 6)},
+                {LineChartTypes.Power, Color.FromArgb(92, 53, 102)},
+                //Private
+                {LineChartTypes.DiffTime, Color.DarkCyan},
                 {LineChartTypes.DiffDist, Color.CornflowerBlue}
             };
     }

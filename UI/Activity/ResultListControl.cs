@@ -195,8 +195,11 @@ namespace TrailsPlugin.UI.Activity {
                 resRows = Math.Max(8, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
             }
             resRows = Math.Min(resRows, 4);
-            m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
-                cResultListHeight * resRows + 16;
+            if ((m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight - resRows > 6)
+            {
+                m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
+                    cResultListHeight * resRows + 16;
+            }
 
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;

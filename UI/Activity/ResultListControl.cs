@@ -196,11 +196,12 @@ namespace TrailsPlugin.UI.Activity {
             }
             resRows = Math.Min(resRows, 4);
             m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
-                17 * resRows + 16;
+                cResultListHeight * resRows + 16;
 
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;
         }
+        private const int cResultListHeight = 17;
 
         //Wrapper for ST2
         private System.Collections.IList SelectedItemsRaw
@@ -640,6 +641,24 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        void summaryList_DoubleClick(object sender, System.EventArgs e)
+        {
+            if (sender is TreeList)
+            {
+                object row;
+                TreeList.RowHitState hit;
+                //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
+                row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
+                if (row != null && hit == TreeList.RowHitState.Row)
+                {
+                    Guid view = GUIDs.DailyActivityView;
+                    TrailResult tr = getTrailResultRow(row);
+                    string bookmark = "id=" + tr.Activity;
+                    Plugin.GetApplication().ShowView(view, bookmark);
+                }
+            }
+        }
+
         private TrailResult m_ColorSelectorResult = null;
         void cs_ItemSelected(object sender, ColorSelectorPopup.ItemSelectedEventArgs e)
         {
@@ -655,20 +674,21 @@ namespace TrailsPlugin.UI.Activity {
             m_ColorSelectorResult = null;
         }
 
-        private void selectedRow_DoubleClick(object sender, MouseEventArgs e)
-        {
-            Guid view = GUIDs.DailyActivityView;
+        //Never active when plusminus (?) is added
+        //private void summaryList_MouseDoubleClick(object sender, MouseEventArgs e)
+        //{
+        //    Guid view = GUIDs.DailyActivityView;
 
-            object row;
-            TreeList.RowHitState dummy;
-            row = summaryList.RowHitTest(e.Location, out dummy);
-            if (row != null)
-            {
-                TrailResult tr = getTrailResultRow(row);
-                string bookmark = "id=" + tr.Activity;
-                Plugin.GetApplication().ShowView(view, bookmark);
-            }
-        }
+        //    object row;
+        //    TreeList.RowHitState dummy;
+        //    row = summaryList.RowHitTest(e.Location, out dummy);
+        //    if (row != null)
+        //    {
+        //        TrailResult tr = getTrailResultRow(row);
+        //        string bookmark = "id=" + tr.Activity;
+        //        Plugin.GetApplication().ShowView(view, bookmark);
+        //    }
+        //}
 
         private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.ColumnEventArgs e)
         {
@@ -713,14 +733,18 @@ namespace TrailsPlugin.UI.Activity {
 
         void addCurrentCategory()
         {
-            IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
+            IList<IActivity> allActivities = new List<IActivity>();
+            foreach (IActivity activity in m_controller.Activities)
+            {
+                allActivities.Add(activity);
+            }
             foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
             {
-                if (!m_controller.Activities.Contains(activity) && 
-                    IsCurrentCategory (activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter))
+                if (!m_controller.Activities.Contains(activity) &&
+                    IsCurrentCategory(activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter))
                 {
-                    //Insert after the reference, then the order is normally OK
-                    allActivities.Insert(1, activity);
+                    //Insert after the current activities, then the order is normally OK
+                    allActivities.Insert(m_controller.Activities.Count, activity);
                 }
             }
             ActivityTrail t = m_controller.CurrentActivityTrail;
@@ -738,6 +762,7 @@ namespace TrailsPlugin.UI.Activity {
             if (e.KeyCode == Keys.Delete)
             {
                 excludeSelectedResults(e.Modifiers == Keys.Shift);
+                selectAll();
             }
             else if (e.KeyCode == Keys.Space)
             {
@@ -784,11 +809,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Shift)
                 {
-                    m_page.SetResultListHeight -= 17;
+                    m_page.SetResultListHeight -= cResultListHeight;
                 }
                 else
                 {
-                    m_page.SetResultListHeight += 17;
+                    m_page.SetResultListHeight += cResultListHeight;
                 }
             }
             else if (e.KeyCode == Keys.U)

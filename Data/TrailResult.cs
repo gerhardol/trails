@@ -1036,7 +1036,11 @@ namespace TrailsPlugin.Data {
             //checkCacheRef(refRes);
             if (m_gradeTrack0 == null)
             {
-                m_gradeTrack0 = copySmoothTrack(this.GradeTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+                m_gradeTrack0 = new NumericTimeDataSeries();
+                foreach (ITimeValueEntry<float> entry in copySmoothTrack(this.GradeTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds))
+                {
+                    m_gradeTrack0.Add(m_gradeTrack0.EntryDateTime(entry), entry.Value * 100);
+                }
             }
             return m_gradeTrack0;
         }
@@ -1257,7 +1261,6 @@ namespace TrailsPlugin.Data {
             return m_trailPointTime0;
         }
 
-        //Use ActivityDistanceMetersTrackPause as TimeTrailPoints may be outside the time for DistanceMetersTrack
         public IList<double> TrailPointDist0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1265,17 +1268,19 @@ namespace TrailsPlugin.Data {
             {
                 m_trailPointDist0 = new List<double>();
                 m_trailPointDistOffset0 = new List<double>();
-                float start = (float)UnitUtil.Distance.ConvertFrom(ActivityDistanceMetersTrackPause.GetInterpolatedValue(StartDateTime).Value, m_cacheTrackRef.Activity);
+                float start = ActivityDistanceMetersTrackPause.GetInterpolatedValue(StartDateTime).Value;
                 for (int k = 0; k < TrailPointDateTime.Count; k++)
                 {
                     double val=0, val1=0;
                     if (TrailPointDateTime[k] > DateTime.MinValue)
                     {
+                        //Use ActivityDistanceMetersTrackPause as TimeTrailPoints may be outside the time for DistanceMetersTrack
                         ITimeValueEntry<float> interpolatedP = ActivityDistanceMetersTrackPause.GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
                         if (interpolatedP != null)
                         {
-                            val = (float)(UnitUtil.Distance.ConvertFrom(interpolatedP.Value-start, m_cacheTrackRef.Activity));
+                            val = (float)(UnitUtil.Distance.ConvertFrom(interpolatedP.Value - start, m_cacheTrackRef.Activity));
                         }
+                        //Use "ST" distance track to get offset from detected start
                         interpolatedP = ActivityDistanceMetersTrack.GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
                         ITimeValueEntry<float> interpolatedP2 = ActivityDistanceMetersTrack.GetInterpolatedValue(this.TrailPointDateTime[k]);
                         if (interpolatedP != null && interpolatedP2 != null)
@@ -1703,7 +1708,9 @@ namespace TrailsPlugin.Data {
 
         INumericTimeDataSeries ITrailResult.GradeTrack
         {
-            get { return GradeTrack0(m_cacheTrackRef); }
+            //TODO copySmoothTrack(this.GradeTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+            get { return copySmoothTrack(this.GradeTrack, TrailActivityInfoOptions.ElevationSmoothingSeconds); }
+            //get { return GradeTrack0(m_cacheTrackRef); }
         }
 
         INumericTimeDataSeries ITrailResult.HeartRatePerMinuteTrack

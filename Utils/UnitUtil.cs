@@ -502,6 +502,65 @@ namespace GpsRunningPlugin.Util
         }
 
         /*********************************************************************************/
+        public static class Grade
+        {
+            //private static Length.Units Unit { get { return null; } }
+            public static int DefaultDecimalPrecision { get { return 1; } }
+            private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
+
+            public static string ToString(double p)
+            {
+                return ToString(p, DefFmt);
+            }
+            public static string ToString(double p, string fmt)
+            {
+                string str = "";
+                if (fmt.EndsWith("U")) { str = " " + Label; fmt = fmt.Remove(fmt.Length - 1); }
+                if (fmt.EndsWith("u")) { str = " " + LabelAbbr; fmt = fmt.Remove(fmt.Length - 1); }
+                return ConvertFrom(p).ToString((fmt));
+            }
+
+            public static double ConvertFrom(double p)
+            {
+                return p;
+            }
+
+            public static double Parse(string p)
+            {
+                return double.Parse(p, NumberFormatInfo.InvariantInfo);
+            }
+
+            public static String Label
+            {
+                get
+                {
+                    return "%";
+                }
+            }
+            public static String LabelAbbr
+            {
+                get
+                {
+                    return "%";
+                }
+            }
+            public static String LabelAbbr2
+            {
+                get
+                {
+                    return encPar(LabelAbbr);
+                }
+            }
+            public static String LabelAxis
+            {
+                get
+                {
+                    return CommonResources.Text.LabelGrade + LabelAbbr2;
+                }
+            }
+        }
+
+        /*********************************************************************************/
         public static class Time
         {
             //This class handles Time as in "Time for activities" rather than "Time of day"

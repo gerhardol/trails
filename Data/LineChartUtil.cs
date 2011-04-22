@@ -43,7 +43,7 @@ namespace TrailsPlugin.Data
         Cadence,
         Elevation,
         HeartRateBPM,
-        HeartRatePercentMax,
+        //HeartRatePercentMax,
         Power,
         Grade,
         Speed,
@@ -117,11 +117,11 @@ namespace TrailsPlugin.Data
                         yAxisLabel = CommonResources.Text.LabelHeartRate;
                         break;
                     }
-                case LineChartTypes.HeartRatePercentMax:
-                    {
-                        yAxisLabel = CommonResources.Text.LabelHeartRate;
-                        break;
-                    }
+                //case LineChartTypes.HeartRatePercentMax:
+                //    {
+                //        yAxisLabel = CommonResources.Text.LabelHeartRate;
+                //        break;
+                //    }
                 case LineChartTypes.Power:
                     {
                         yAxisLabel = CommonResources.Text.LabelPower;
@@ -209,8 +209,8 @@ namespace TrailsPlugin.Data
                     }
                 case LineChartTypes.Grade:
                     {
-                        axis.Formatter = new Formatter.Percent();
-                        axis.Label = CommonResources.Text.LabelGrade + " (%)";
+                        axis.Formatter = new Formatter.General(UnitUtil.Grade.DefaultDecimalPrecision);
+                        axis.Label = UnitUtil.Grade.LabelAxis;
                         break;
                     }
                 case LineChartTypes.Elevation:
@@ -226,12 +226,12 @@ namespace TrailsPlugin.Data
                         axis.Label = CommonResources.Text.LabelHeartRate + UnitUtil.HeartRate.LabelAbbr2;
                         break;
                     }
-                case LineChartTypes.HeartRatePercentMax:
-                    {
-                        axis.Label = CommonResources.Text.LabelHeartRate + " (" +
-                                                CommonResources.Text.LabelPercentOfMax + ")";
-                        break;
-                    }
+                //case LineChartTypes.HeartRatePercentMax:
+                //    {
+                //        axis.Label = CommonResources.Text.LabelHeartRate + " (" +
+                //                                CommonResources.Text.LabelPercentOfMax + ")";
+                //        break;
+                //    }
                 case LineChartTypes.Power:
                     {
                         axis.Formatter = new Formatter.General(UnitUtil.Power.DefaultDecimalPrecision);

@@ -57,6 +57,7 @@ namespace TrailsPlugin.UI.Activity {
         private ActivityDetailPageControl m_page;
         private MultiChartsControl m_multiple;
         private bool m_resyncAtTrailPoints = false;
+        private bool m_selectDataHandler = true; //Event handler is enabled by default
 
         public TrailLineChart()
         {
@@ -208,26 +209,24 @@ namespace TrailsPlugin.UI.Activity {
                 e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
                 //Get index for dataseries - same as for result
                 int i = -1;
-                if (MainChart.DataSeries.Count==2 && m_axis.Count==1 &&
-                    m_trailResults.Count==1)
+
+                for (int j = 0; j < MainChart.DataSeries.Count; j++)
                 {
-                    //Match the result, the first is the fill chart
-                    i = 0;
-                }
-                else
-                {
-                    for (int j = 0; j < MainChart.DataSeries.Count; j++)
+                    if (e.DataSeries.Equals(MainChart.DataSeries[j]))
                     {
-                        if (e.DataSeries.Equals(MainChart.DataSeries[j]))
-                        {
-                            i = j;
-                            break;
-                        }
+                        i = j;
+                        break;
                     }
                 }
                 if (i >= 0)
                 {
-                    //Results must be added in order
+                    if (i==1 && MainChart.DataSeries[0].ChartType == ChartDataSeries.Type.Fill)
+                    {
+                        //Use the fill chart rather than the line chart (this normally not occurs)
+                        i = 0;
+                    }
+
+                    //Results must be added in order, so they can be resolved to result here
                     TrailResult tr = m_trailResults[i % this.TrailResults.Count];
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
@@ -253,6 +252,8 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     results.Add(new Data.TrailResultMarked(tr, t));
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                    m_selectDataHandler = false;
+
                     const int MaxSelectedSeries = 5;
                     bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                     //Mark route track, but not chart
@@ -269,6 +270,7 @@ namespace TrailsPlugin.UI.Activity {
                         m_multiple.SetSelectedResultRange(i, regions);
                     }
                     this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                    m_selectDataHandler = true;
                 }
             }
         }
@@ -278,21 +280,23 @@ namespace TrailsPlugin.UI.Activity {
             for (int i = 0; i < MainChart.DataSeries.Count; i++ )
             {
                 MainChart.DataSeries[i].ClearSelectedRegions();
-                //For "single result" only select first series
-                if (m_trailResults.Count>1 || i==0)
-                //if (MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
+                //Do not mark the line chart related to fill chart
+                if (!(i==1 && MainChart.DataSeries[0].ChartType == ChartDataSeries.Type.Fill))
                 {
                     SetSelectedResultRange(i, false, regions);
                 }
             }
         }
 
-        public void SetSelectedResultRange(int i, bool clear, IList<float[]> regions)
+        public void SetSelectedResultRange(int i, bool clearAll, IList<float[]> regions)
         {
             if (ShowPage)
             {
-                this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                if (clear)
+                if (m_selectDataHandler)
+                {
+                    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                }
+                if (clearAll)
                 {
                     foreach (ChartDataSeries t in MainChart.DataSeries)
                     {
@@ -302,7 +306,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 if (MainChart.DataSeries != null && MainChart.DataSeries.Count > i)
                 {
-                    if (!clear)
+                    if (!clearAll)
                     {
                         MainChart.DataSeries[i].ClearSelectedRegions();
                     }
@@ -312,10 +316,14 @@ namespace TrailsPlugin.UI.Activity {
                         //{
                         //    //s.AddSelecedRegion(at[0], at[1]);
                         //}
+                        //Separate ranges cannot be selected
                         MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
                     }
                 }
-                this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                if (m_selectDataHandler)
+                {
+                    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                }
             }
         }
 
@@ -587,34 +595,31 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             Color chartLineColor;
                             Color chartSelectedColor;
-                            Color chartFillColor;
                             if (m_trailResults.Count <= 1)
                             {
                                 chartLineColor = LineChartUtil.ChartColor[yaxis];
                                 chartSelectedColor = ControlPaint.Dark(LineChartUtil.ChartColor[yaxis], 0.01F);
-                                chartFillColor = System.Drawing.Color.WhiteSmoke;
                             }
                             else
                             {
                                 chartLineColor = m_trailResults[i].TrailColor;
                                 chartSelectedColor = chartLineColor;
-                                chartFillColor = chartLineColor;
                             }
+                            Color chartFillColor = chartLineColor;
 
                             ChartDataSeries dataFill = null;
-                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
 
-                            if (m_trailResults.Count == 1 && m_axis.Count == 1)
+                            if (m_trailResults.Count == 1 && m_axis[yaxis] is LeftVerticalAxis)
                             {
                                 dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
                                 MainChart.DataSeries.Add(dataFill);
 
                                 dataFill.ChartType = ChartDataSeries.Type.Fill;
-                                dataFill.FillColor = chartFillColor;
                                 dataFill.LineColor = chartLineColor;
                                 dataFill.SelectedColor = chartSelectedColor;
-                                dataFill.LineWidth = 2;
+                                dataFill.FillColor = Color.WhiteSmoke;
                             }
+                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
                             MainChart.DataSeries.Add(dataLine);
 
                             dataLine.ChartType = ChartDataSeries.Type.Line;

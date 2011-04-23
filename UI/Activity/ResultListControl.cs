@@ -734,7 +734,7 @@ namespace TrailsPlugin.UI.Activity {
             return IsCurrentCategory(activityCat.Parent, filterCat);
         }
 
-        void addCurrentCategory()
+        void addCurrentCategory(bool addAll)
         {
             IList<IActivity> allActivities = new List<IActivity>();
             foreach (IActivity activity in m_controller.Activities)
@@ -744,7 +744,7 @@ namespace TrailsPlugin.UI.Activity {
             foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
             {
                 if (!m_controller.Activities.Contains(activity) &&
-                    IsCurrentCategory(activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter))
+                    (addAll || IsCurrentCategory(activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter)))
                 {
                     //Insert after the current activities, then the order is normally OK
                     allActivities.Insert(m_controller.Activities.Count, activity);
@@ -752,7 +752,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             ActivityTrail t = m_controller.CurrentActivityTrail;
             m_controller.Activities = allActivities;
-            if (m_controller.CurrentActivityTrailDisplayed == null)
+            if (m_controller.CurrentActivityTrailDisplayed != t)
             {
                 m_controller.CurrentActivityTrail = t;
             }
@@ -801,7 +801,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.I)
             {
-                addCurrentCategory();
+                addCurrentCategory(e.Modifiers == Keys.Shift);
             }
             else if (e.KeyCode == Keys.R)
             {

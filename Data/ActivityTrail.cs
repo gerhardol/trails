@@ -44,10 +44,13 @@ namespace TrailsPlugin.Data
             m_controller = controller; ;
             m_trail = trail;
             m_status = TrailOrderStatus.NoInfo;
+
             if (m_trail.Generated && !m_trail.IsReference)
             {
                 m_canAddInbound = false;
             }
+
+            //Preset status
             if (m_trail.HighScore > 0)
             {
                 if(Integration.HighScore.HighScoreIntegrationEnabled)
@@ -60,7 +63,7 @@ namespace TrailsPlugin.Data
                 // Let Reference always match, to trigger possible recalc after
                 m_status = TrailOrderStatus.MatchNoCalc;
             }
-            else if (!Trail.IsReference && Trail.TrailLocations.Count == 0)
+            else if (Trail.TrailLocations.Count == 0)
             {
                 m_status = TrailOrderStatus.NotInBound;
             }
@@ -98,22 +101,15 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (Status == TrailOrderStatus.NoInfo)
+                if (Status == TrailOrderStatus.NoInfo || Trail.IsReference && Status == TrailOrderStatus.MatchNoCalc)
                 {
-                    if (m_trail.HighScore > 0)
-                    {
-                        if (Integration.HighScore.HighScoreIntegrationEnabled)
-                        {
-                            this.Status = TrailOrderStatus.MatchNoCalc;
-                        }
-                    }
-                    else if (m_trail.IsInBounds(m_controller.Activities))
+                    if (m_trail.IsInBounds(m_controller.Activities))
                     {
                         Status = TrailOrderStatus.InBoundNoCalc;
                     }
                     else
                     {
-                        Status = TrailOrderStatus.NotInBound;
+                        m_status = TrailOrderStatus.NotInBound;
                     }
                 }
                 //Any activity in bounds?

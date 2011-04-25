@@ -114,10 +114,14 @@ namespace TrailsPlugin.Data
                     tmpSel.SetFromSelection(selected[i], activity);
                     if (selected[i].SelectedDistance != null)
                     {
-                        tmpSel.SelectedTime = new ValueRange<DateTime>(
-                                m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
-                                m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper));
-                        tmpSel.SelectedDistance = null;
+                        try
+                        {
+                            tmpSel.SelectedTime = new ValueRange<DateTime>(
+                                    m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
+                                    m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper));
+                            tmpSel.SelectedDistance = null;
+                        }
+                        catch { }
                     }
                     selected[i] = tmpSel;
                 }

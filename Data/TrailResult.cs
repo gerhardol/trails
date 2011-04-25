@@ -319,21 +319,26 @@ namespace TrailsPlugin.Data {
         //DateTime vs elapsed result/activity, distance result/activity conversions
 
         //Get result time and distance from activity references
-        public double getDistResult(DateTime t)
+        private float getDistFromTrackTime(IDistanceDataTrack distTrack, DateTime t)
         {
             //Ignore malformed activities and selection outside the result
-            double res = 0;
-            try
+            float res = 0;
+            ITimeValueEntry<float> entry = distTrack.GetInterpolatedValue(t);
+            if (entry != null)
             {
-                res = DistanceMetersTrack.GetInterpolatedValue(t).Value;
+                res = entry.Value;
             }
-            catch { }
             return res;
         }
-        public double getDistResultFromDistActivity(double t)
+        public float getDistResult(DateTime t)
+        {
+            //Ignore malformed activities and selection outside the result
+            return getDistFromTrackTime(DistanceMetersTrack, t);
+        }
+        public float getDistResultFromDistActivity(double t)
         {
             //Cannot use "t - StartDist" as there may be pauses
-            return DistanceMetersTrack.GetInterpolatedValue(getDateTimeFromDistActivity(t)).Value;
+            return getDistFromTrackTime(DistanceMetersTrack, getDateTimeFromDistActivity(t));
         }
         //public double getDistResultFromUnpausedDistActivity(double t)
         //{
@@ -341,7 +346,7 @@ namespace TrailsPlugin.Data {
         //}
         public DateTime getDateTimeFromDistActivity(double t)
         {
-            return ActivityDistanceMetersTrack.GetTimeAtDistanceMeters(t);
+            return getDateTimeFromTrack(ActivityDistanceMetersTrack, (float)t);
         }
         //public DateTime getDateTimeFromUnpausedDistActivity(double t)
         //{
@@ -392,19 +397,23 @@ namespace TrailsPlugin.Data {
         {
             return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(StartDateTime, TimeSpan.FromSeconds(t), Pauses);
         }
-        public DateTime getDateTimeFromDistResult(double t)
+        private DateTime getDateTimeFromTrack(IDistanceDataTrack distTrack, float t)
         {
             DateTime res = DateTime.MinValue;
             try
             {
-                res = DistanceMetersTrack.GetTimeAtDistanceMeters(t);
+                res = distTrack.GetTimeAtDistanceMeters(t);
             }
             catch { }
             return res;
         }
-        public double getDistActivityFromDistResult(double t)
+        public DateTime getDateTimeFromDistResult(double t)
         {
-            return ActivityDistanceMetersTrack.GetInterpolatedValue(getDateTimeFromDistResult(t)).Value;
+            return getDateTimeFromTrack(DistanceMetersTrack, (float)t);
+        }
+        public float getDistActivityFromDistResult(double t)
+        {
+            return getDistFromTrackTime(ActivityDistanceMetersTrack, getDateTimeFromDistResult(t));
         }
 
         //Chart and Result must have the same understanding of Distance
@@ -769,10 +778,13 @@ namespace TrailsPlugin.Data {
                         if (elapsed > oldElapsed)
                         {
                             DateTime time = getDateTimeFromElapsedResult(this.DistanceMetersTrack, this.DistanceMetersTrack[i]);
-                            ITimeValueEntry<float> value = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
-                            float speed = value.Value;
-                            m_speedTrack.Add(time, speed);
-                            oldElapsed = elapsed;
+                            ITimeValueEntry<float> entry = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
+                            if (entry != null)
+                            {
+                                float speed = entry.Value;
+                                m_speedTrack.Add(time, speed);
+                                oldElapsed = elapsed;
+                            }
                         }
                     }
                 }
@@ -954,9 +966,9 @@ namespace TrailsPlugin.Data {
                 {
                     float elapsed = this.DistanceMetersTrack[i].ElapsedSeconds;
                     DateTime time = this.DistanceMetersTrack.EntryDateTime(this.DistanceMetersTrack[i]);
-                    ITimeValueEntry<float> value = source.GetInterpolatedValue(time);
-                    if (value != null && elapsed > oldElapsed)                    {
-                        track.Add(time, value.Value);
+                    ITimeValueEntry<float> entry = source.GetInterpolatedValue(time);
+                    if (entry != null && elapsed > oldElapsed)                    {
+                        track.Add(time, entry.Value);
                         oldElapsed = elapsed;
                     }
                 }
@@ -1179,9 +1191,13 @@ namespace TrailsPlugin.Data {
                         {
                             DateTime d1 = this.getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
                             DateTime d2 = m_cacheTrackRef.getDateTimeFromElapsedResult(m_cacheTrackRef.DistanceMetersTrack, t);//TODO: t is for different track
-                            lastValue = (float)UnitUtil.Distance.ConvertFrom(t.Value - m_cacheTrackRef.DistanceMetersTrack.GetInterpolatedValue(d2).Value, m_cacheTrackRef.Activity);
-                            m_DiffDistTrack0.Add(d1, lastValue);
-                            oldElapsed = elapsed;
+                            ITimeValueEntry<float> entry = m_cacheTrackRef.DistanceMetersTrack.GetInterpolatedValue(d2);
+                            if (entry != null)
+                            {
+                                lastValue = (float)UnitUtil.Distance.ConvertFrom(t.Value - entry.Value, m_cacheTrackRef.Activity);
+                                m_DiffDistTrack0.Add(d1, lastValue);
+                                oldElapsed = elapsed;
+                            }
                         }
                     }
                     catch { }

@@ -131,7 +131,7 @@ namespace TrailsPlugin.Controller
                 //If last used trail had results, use it
                 foreach (ActivityTrail to in OrderedTrails)
                 {
-                    //Avoid switch automatically to Reference, as this is the first in list and often ato selected and then will stick
+                    //Avoid switch automatically to Reference, as this is the first in list and often to selected and then will stick
                     //If Splits or HighScore is selected, follow it
                     if (to.Trail.Id == m_lastTrailId && !to.Trail.IsReference)
                     {

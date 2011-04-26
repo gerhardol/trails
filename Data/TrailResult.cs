@@ -616,7 +616,8 @@ namespace TrailsPlugin.Data {
                         i++;
                     }
 
-                    if (0 > this.EndDateTime.CompareTo(m_distanceMetersTrack.EntryDateTime(m_distanceMetersTrack[m_distanceMetersTrack.Count - 1])) &&
+                    if (m_distanceMetersTrack.Count>0 && 
+                        0 > this.EndDateTime.CompareTo(m_distanceMetersTrack.EntryDateTime(m_distanceMetersTrack[m_distanceMetersTrack.Count - 1])) &&
                             !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndDateTime, Pauses))
                     {
                         distance = m_distanceMetersTrack[m_distanceMetersTrack.Count - 1].Value;
@@ -1365,7 +1366,8 @@ namespace TrailsPlugin.Data {
                     }
                     i++;
                 }
-                if (0 < this.EndDateTime.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_gpsTrack.Count-1])))
+                if (m_gpsTrack.Count > 0 &&
+                    0 < this.EndDateTime.CompareTo(m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[m_gpsTrack.Count - 1])))
                 {
                     ITimeValueEntry<IGPSPoint> interpolatedP = m_activity.GPSRoute.GetInterpolatedValue(EndDateTime);
                     if (interpolatedP != null)

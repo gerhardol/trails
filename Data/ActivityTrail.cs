@@ -105,10 +105,12 @@ namespace TrailsPlugin.Data
                 {
                     if (m_trail.IsInBounds(m_controller.Activities))
                     {
+                        //Do not downgrade MatchNoCalc here
                         Status = TrailOrderStatus.InBoundNoCalc;
                     }
                     else
                     {
+                        //Downgrade status
                         m_status = TrailOrderStatus.NotInBound;
                     }
                 }

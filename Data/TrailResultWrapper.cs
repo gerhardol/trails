@@ -89,7 +89,10 @@ namespace TrailsPlugin.Data {
                 this.Children.Clear(); 
                 foreach (TrailResultWrapper tn in m_children)
                 {
-                    this.Children.Add(tn);
+                    if (!TrailsPlugin.Data.Settings.RestIsPause || tn.Result.Duration.TotalSeconds > 1)
+                    {
+                        this.Children.Add(tn);
+                    }
                 }
             }
         }

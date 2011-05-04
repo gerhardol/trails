@@ -744,7 +744,9 @@ namespace TrailsPlugin.UI.Activity {
             foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
             {
                 if (!m_controller.Activities.Contains(activity) &&
-                    (addAll || IsCurrentCategory(activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter)))
+                    (addAll || 
+                    m_controller.ReferenceActivity != null && IsCurrentCategory(activity.Category, m_controller.ReferenceActivity.Category) ||
+                    m_controller.ReferenceActivity == null && IsCurrentCategory(activity.Category, Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter)))
                 {
                     //Insert after the current activities, then the order is normally OK
                     allActivities.Insert(m_controller.Activities.Count, activity);

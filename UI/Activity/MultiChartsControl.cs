@@ -77,12 +77,16 @@ namespace TrailsPlugin.UI.Activity {
             this.elevationToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
             this.gradeStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
             this.powerToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
-            this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
 
-            //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
+            this.diffDistTimeToolStripMenuItem.Image = Properties.Resources.delta;
+            //this.diffTimeToolStripMenuItem.Image = Properties.Resources.delta;
+            //this.diffDistToolStripMenuItem.Image = Properties.Resources.delta;
             this.diffTimeToolStripMenuItem.Visible = false;
             this.diffDistToolStripMenuItem.Visible = false;
+
+            this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
+            //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
 
             //The panels and charts should probably be created manually instead
             m_lineCharts = new List<TrailLineChart>();

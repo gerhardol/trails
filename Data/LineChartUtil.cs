@@ -94,7 +94,7 @@ namespace TrailsPlugin.Data
 
         public static string ChartTypeString(LineChartTypes x)
         {
-            return LineChartTypesString((LineChartTypes)x);
+            return LineChartTypesString(x);
         }
 
         public static string LineChartTypesString(LineChartTypes YAxisReferential)

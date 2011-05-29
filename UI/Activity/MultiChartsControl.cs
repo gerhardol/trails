@@ -141,6 +141,7 @@ namespace TrailsPlugin.UI.Activity {
 
             this.diffTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
             this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
+            //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
 
             this.timeToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Time);
@@ -398,6 +399,14 @@ namespace TrailsPlugin.UI.Activity {
             diffTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffTime);
             diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
             diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
+            if (Data.Settings.XAxisValue == XAxisValue.Distance)
+            {
+               this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
+            }
+            else
+            {
+                this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
+            }
 
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;
             distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Distance;

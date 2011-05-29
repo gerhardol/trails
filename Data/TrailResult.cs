@@ -1166,7 +1166,7 @@ namespace TrailsPlugin.Data {
                         elapsed <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                     {
                         DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                        DateTime d2 = getDateTimeFromElapsedResult(m_cacheTrackRef.DistanceMetersTrack, t);
+                        DateTime d2 = getDateTimeFromTrack(m_cacheTrackRef.DistanceMetersTrack, t.Value);
                         lastValue = (float)(-getElapsedResult(d1) + m_cacheTrackRef.getElapsedResult(d2));
                         m_DiffTimeTrack0.Add(d1, lastValue);
                         oldElapsed = elapsed;

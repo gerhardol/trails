@@ -1151,6 +1151,7 @@ namespace TrailsPlugin.Data {
             return m_paceTrack0;
         }
 
+        /********************************************************************/
         public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1159,6 +1160,8 @@ namespace TrailsPlugin.Data {
                 m_DiffTimeTrack0 = new NumericTimeDataSeries();
                 float oldElapsed = float.MinValue;
                 float lastValue = 0;
+                int dateTrailPointIndex = -1;
+                float refOffset = 0;
                 foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                 {
                     float elapsed = t.ElapsedSeconds;
@@ -1166,7 +1169,21 @@ namespace TrailsPlugin.Data {
                         elapsed <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                     {
                         DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                        DateTime d2 = getDateTimeFromTrack(m_cacheTrackRef.DistanceMetersTrack, t.Value);
+                        while (dateTrailPointIndex == -1 ||
+                            dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
+                            d1 > this.TrailPointDateTime[dateTrailPointIndex + 1])
+                        {
+                            dateTrailPointIndex++;
+                            if (dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
+                                dateTrailPointIndex < refRes.TrailPointDateTime.Count - 1 &&
+                                this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
+                                refRes.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
+                            {
+                                refOffset = refRes.getDistResult(refRes.TrailPointDateTime[dateTrailPointIndex]) -
+                                   this.getDistResult(this.TrailPointDateTime[dateTrailPointIndex]);
+                            }
+                        }
+                        DateTime d2 = getDateTimeFromTrack(m_cacheTrackRef.DistanceMetersTrack, t.Value + refOffset);
                         lastValue = (float)(-getElapsedResult(d1) + m_cacheTrackRef.getElapsedResult(d2));
                         m_DiffTimeTrack0.Add(d1, lastValue);
                         oldElapsed = elapsed;
@@ -1192,13 +1209,32 @@ namespace TrailsPlugin.Data {
                 m_DiffDistTrack0 = new NumericTimeDataSeries();
                 float oldElapsed = float.MinValue;
                 float lastValue = 0;
+                int dateTrailPointIndex = -1;
+                uint refOffset = 0;
+
                 foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                 {
                     float elapsed = t.ElapsedSeconds;
                     if (elapsed > oldElapsed && elapsed <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                     {
                         DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
-                        DateTime d2 = getDateTimeFromElapsedResult(m_cacheTrackRef.DistanceMetersTrack, t);
+                        while (dateTrailPointIndex == -1 ||
+                            dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
+                            d1 > this.TrailPointDateTime[dateTrailPointIndex + 1])
+                        {
+                            dateTrailPointIndex++;
+                            if (dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
+                                dateTrailPointIndex < refRes.TrailPointDateTime.Count - 1 &&
+                                this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
+                                refRes.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
+                            {
+                                refOffset = (uint)(refRes.getElapsedResult(refRes.TrailPointDateTime[dateTrailPointIndex]) -
+                                   this.getElapsedResult(this.TrailPointDateTime[dateTrailPointIndex]));
+                            }
+                        }
+
+                        ITimeValueEntry<float> t2 = new TimeValueEntry<float>(t.ElapsedSeconds+refOffset, t.Value);
+                        DateTime d2 = getDateTimeFromElapsedResult(m_cacheTrackRef.DistanceMetersTrack, t2);
                         int status;
                         double dist = getDistFromTrackTime(m_cacheTrackRef.DistanceMetersTrack, d2, out status);
                         if (status == 0)
@@ -1222,23 +1258,33 @@ namespace TrailsPlugin.Data {
             return m_DiffDistTrack0;
         }
 
-        IList<double> m_trailPointTimeOffset0;
-        IList<double> m_trailPointDistOffset0;
+
+        /********************************************************************/
+        IList<double> m_trailPointTimeOffset;
+        IList<double> m_trailPointDistOffset;
         public IList<double> TrailPointTimeOffset0(TrailResult refRes)
         {
-            return m_trailPointTimeOffset0;
+            TrailPointTime0(refRes);
+            return m_trailPointTimeOffset;
         }
         public IList<double> TrailPointDistOffset01(TrailResult refRes)
         {
-            return m_trailPointDistOffset0;
+            TrailPointDist0(refRes);
+            IList<double> trailPointDistOffset0 = new List<double>();
+            foreach(float f in m_trailPointDistOffset)
+            {
+                trailPointDistOffset0.Add(UnitUtil.Distance.ConvertFrom(f, m_cacheTrackRef.Activity));
+            }
+
+            return trailPointDistOffset0;
         }
         public IList<double> TrailPointTime0(TrailResult refRes)
         {
             //checkCacheRef(refRes);
-            if (m_trailPointTime0 == null)
+            if (m_trailPointTime0 == null || m_trailPointTimeOffset == null)
             {
                 m_trailPointTime0 = new List<double>();
-                m_trailPointTimeOffset0 = new List<double>();
+                m_trailPointTimeOffset = new List<double>();
                 for (int k = 0; k < this.TrailPointDateTime.Count; k++)
                 {
                     double val, val1;
@@ -1265,13 +1311,13 @@ namespace TrailsPlugin.Data {
                         val1 = 0;
                     }
                     m_trailPointTime0.Add(val);
-                    m_trailPointTimeOffset0.Add(val1);
+                    m_trailPointTimeOffset.Add(val1);
                 }
-                for (int k = 0; k < m_trailPointTimeOffset0.Count - 1; k++)
+                for (int k = 0; k < m_trailPointTimeOffset.Count - 1; k++)
                 {
-                    if (m_trailPointTimeOffset0[k] > m_trailPointTime0[k + 1] - m_trailPointTime0[k])
+                    if (m_trailPointTimeOffset[k] > m_trailPointTime0[k + 1] - m_trailPointTime0[k])
                     {
-                        m_trailPointTimeOffset0[k] = 0;
+                        m_trailPointTimeOffset[k] = 0;
                     }
                 }
             }
@@ -1281,10 +1327,10 @@ namespace TrailsPlugin.Data {
         public IList<double> TrailPointDist0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if (m_trailPointDist0 == null)
+            if (m_trailPointDist0 == null || m_trailPointDistOffset == null)
             {
                 m_trailPointDist0 = new List<double>();
-                m_trailPointDistOffset0 = new List<double>();
+                m_trailPointDistOffset = new List<double>();
                 for (int k = 0; k < TrailPointDateTime.Count; k++)
                 {
                     double val=0, val1=0;
@@ -1305,7 +1351,7 @@ namespace TrailsPlugin.Data {
                         ITimeValueEntry<float> interpolatedP2 = ActivityDistanceMetersTrack.GetInterpolatedValue(this.TrailPointDateTime[k]);
                         if (interpolatedP != null && interpolatedP2 != null)
                         {
-                            val1 = (float)(UnitUtil.Distance.ConvertFrom(interpolatedP.Value - interpolatedP2.Value, m_cacheTrackRef.Activity));
+                            val1 = interpolatedP.Value - interpolatedP2.Value;
                         }
                     }
                     else
@@ -1316,13 +1362,13 @@ namespace TrailsPlugin.Data {
                         }
                     }
                     m_trailPointDist0.Add(val);
-                    m_trailPointDistOffset0.Add(val1);
+                    m_trailPointDistOffset.Add(val1);
                 }
-                for (int k = 0; k < m_trailPointDistOffset0.Count; k++)
+                for (int k = 0; k < m_trailPointDistOffset.Count; k++)
                 {
-                    if (k < m_trailPointDistOffset0.Count - 1 && m_trailPointDistOffset0[k] > m_trailPointDist0[k + 1] - m_trailPointDist0[k])
+                    if (k < m_trailPointDistOffset.Count - 1 && m_trailPointDistOffset[k] > m_trailPointDist0[k + 1] - m_trailPointDist0[k])
                     {
-                        m_trailPointDistOffset0[k] = 0;
+                        m_trailPointDistOffset[k] = 0;
                     }
                 }
             }

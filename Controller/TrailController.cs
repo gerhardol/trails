@@ -126,39 +126,18 @@ namespace TrailsPlugin.Controller
 
         private void checkCurrentTrailOrdered(bool checkRef)
         {
-            if (m_currentActivityTrail == null && m_activities.Count > 0)
+            if (Activities.Count > 0)
             {
-                //If last used trail had results, use it
-                foreach (ActivityTrail to in OrderedTrails)
+                if (m_currentActivityTrail == null && m_activities.Count > 0)
                 {
-                    //Avoid switch automatically to Reference, as this is the first in list and often to selected and then will stick
-                    //If Splits or HighScore is selected, follow it
-                    if (to.Trail.Id == m_lastTrailId && !to.Trail.IsReference)
-                    {
-                        if (to.Status <= TrailOrderStatus.InBoundMatchPartial)
-                        {
-                            m_currentActivityTrail = to;
-                        }
-                        break;
-                    }
-                }
-            }
-            if (m_currentActivityTrail == null &&
-                OrderedTrails.Count > 0)
-            {
-                if (checkRef)
-                {
-                    checkReferenceActivity(false);
-                }
-                if (m_referenceActivity != null &&
-                    m_referenceActivity.Name != "")
-                {
-                    //Try matching names
+                    //If last used trail had results, use it
                     foreach (ActivityTrail to in OrderedTrails)
                     {
-                        if (to.Trail.Name == m_referenceActivity.Name)
+                        //Avoid switch automatically to Reference, as this is the first in list and often to selected and then will stick
+                        //If Splits or HighScore is selected, follow it
+                        if (to.Trail.Id == m_lastTrailId && !to.Trail.IsReference)
                         {
-                            if (to.IsInBounds)
+                            if (to.Status <= TrailOrderStatus.InBoundMatchPartial)
                             {
                                 m_currentActivityTrail = to;
                             }
@@ -166,32 +145,56 @@ namespace TrailsPlugin.Controller
                         }
                     }
                 }
-            }
-            if (m_currentActivityTrail == null &&
-                OrderedTrails.Count > 0)
-            {
-                //The ordered list should have the best match first
-                //(but results may not be calculated)
-                m_currentActivityTrail = OrderedTrails[0];
-            }
-            if (m_currentActivityTrail != null)
-            {
-                //Reset Ref trail
-                if (m_currentActivityTrail.Trail.IsReference &&
-                    m_referenceActivity != m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
+                if (m_currentActivityTrail == null &&
+                    OrderedTrails.Count > 0)
                 {
-                    m_currentActivityTrail.Trail.ReferenceActivityNoCalc = null;
+                    if (checkRef)
+                    {
+                        checkReferenceActivity(false);
+                    }
+                    if (m_referenceActivity != null &&
+                        m_referenceActivity.Name != "")
+                    {
+                        //Try matching names
+                        foreach (ActivityTrail to in OrderedTrails)
+                        {
+                            if (to.Trail.Name == m_referenceActivity.Name)
+                            {
+                                if (to.IsInBounds)
+                                {
+                                    m_currentActivityTrail = to;
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
-            }
-            if (m_currentActivityTrail != null)
-            {
-                //Precalculate results if not too heavy
-                //Ref trail may require recalc, only recalc when requested
-                if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                    Activities.Count * Plugin.Data.AllTrails.Values.Count <=
-                    TrailsPlugin.Data.Settings.MaxAutoCalcActivitiesTrails)
+                if (m_currentActivityTrail == null &&
+                    OrderedTrails.Count > 0)
                 {
-                    m_currentActivityTrail.CalcResults();
+                    //The ordered list should have the best match first
+                    //(but results may not be calculated)
+                    m_currentActivityTrail = OrderedTrails[0];
+                }
+                if (m_currentActivityTrail != null)
+                {
+                    //Reset Ref trail
+                    if (m_currentActivityTrail.Trail.IsReference &&
+                        m_referenceActivity != m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
+                    {
+                        m_currentActivityTrail.Trail.ReferenceActivityNoCalc = null;
+                    }
+                }
+                if (m_currentActivityTrail != null)
+                {
+                    //Precalculate results if not too heavy
+                    //Ref trail may require recalc, only recalc when requested
+                    if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
+                        Activities.Count * Plugin.Data.AllTrails.Values.Count <=
+                        TrailsPlugin.Data.Settings.MaxAutoCalcActivitiesTrails)
+                    {
+                        m_currentActivityTrail.CalcResults();
+                    }
                 }
             }
         }

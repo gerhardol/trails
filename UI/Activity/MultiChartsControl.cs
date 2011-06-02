@@ -401,11 +401,11 @@ namespace TrailsPlugin.UI.Activity {
             diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
             if (Data.Settings.XAxisValue == XAxisValue.Distance)
             {
-               this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
+                this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
             }
             else
             {
-                this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
+                this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             }
 
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;

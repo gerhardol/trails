@@ -179,6 +179,10 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool showPage = m_showPage;
             HidePage(); //defer updates
+            if (m_controller.CurrentActivityTrailDisplayed != null)
+            {
+                m_controller.CurrentActivityTrailDisplayed.Clear();
+            }
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
             RefreshRoute(); 

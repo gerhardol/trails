@@ -141,13 +141,13 @@ namespace TrailsPlugin.Data {
                 foreach (TrailResultWrapper tnp in tn)
                 {
                     result.Add(tnp.Result);
-                    foreach (TrailResultWrapper tnc in tnp.Children)
-                    {
-                        if (!result.Contains(tnc.Result))
-                        {
-                            result.Add(tnc.Result);
-                        }
-                    }
+                    //foreach (TrailResultWrapper tnc in tnp.Children)
+                    //{
+                    //    if (!result.Contains(tnc.Result))
+                    //    {
+                    //        result.Add(tnc.Result);
+                    //    }
+                    //}
                 }
             }
             return result;

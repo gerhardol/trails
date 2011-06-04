@@ -31,7 +31,6 @@ namespace TrailsPlugin.Data
         private Controller.TrailController m_controller;
 		private Data.Trail m_trail;
         private IList<Data.TrailResultWrapper> m_resultsListWrapper = null;
-        private IList<Data.TrailResult> m_resultsList = null;
         private TrailOrderStatus m_status;
         private IActivity m_resultActivity = null;
         //Counter for "no results"
@@ -129,24 +128,22 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (m_resultsList == null)
-                {
-                    //CalcResults();
-                    m_resultsList = new List<TrailResult>();
-                    foreach (TrailResultWrapper tr in ResultTreeList)
-                    {
-                        m_resultsList.Add(tr.Result);
-                    }
-                }
-                return m_resultsList;
+                return TrailResultWrapper.GetTrailResults(ResultTreeList);
             }
         }
 
+        public void Reset()
+        {
+            m_resultsListWrapper = null;
+        }
         public void Clear()
         {
-            foreach (TrailResultWrapper t in ResultTreeList)
+            if (m_resultsListWrapper != null)
             {
-                t.Result.Clear(false);
+                foreach (TrailResultWrapper t in m_resultsListWrapper)
+                {
+                    t.Result.Clear(false);
+                }
             }
         }
         public IList<TrailResultWrapper> ResultTreeList

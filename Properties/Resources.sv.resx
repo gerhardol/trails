@@ -226,4 +226,10 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
     <value>Lägg till aktiviteter i trail område som resultat</value>
   </data>
+  <data name="UI_Chart_resyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Synka diff vid trail punkter</value>
+  </data>
+  <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
+    <value>Synka diagram vid trail punkter</value>
+  </data>
 </root>

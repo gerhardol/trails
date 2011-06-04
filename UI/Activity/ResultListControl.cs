@@ -169,6 +169,7 @@ namespace TrailsPlugin.UI.Activity {
         
         public void RefreshList()
         {
+            System.Collections.IList currSelected = summaryList.SelectedItems;
             summaryList.RowData = null;
 
             if (m_controller.CurrentActivityTrailDisplayed != null)
@@ -184,27 +185,32 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                 this.summaryList.SelectedChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #else
+                //summaryList.SelectedItems = currSelected;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
             }
             //Set size, to not waste chart
-            int resRows = 0;
+            const int minRows = 4;
+            const int maxRows = 8;
+            int resRows = minRows; 
             if (summaryList.RowData != null)
             {
-                resRows = Math.Max(8, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
+                resRows = Math.Max(maxRows, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
             }
-            resRows = Math.Min(resRows, 4);
-            if ((m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight - resRows > 6)
+            int currRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
+            //Change size if much too small/big only
+            if (resRows >= maxRows && currRows <= minRows || 
+                resRows <= minRows && currRows >= maxRows)
             {
-                m_page.SetResultListHeight = this.summaryList.HeaderRowHeight +
-                    cResultListHeight * resRows + 16;
+                m_page.SetResultListHeight = this.summaryList.HeaderRowHeight + 16 +
+                    cResultListHeight * resRows;
             }
 
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;
         }
-        private const int cResultListHeight = 17;
+        private const int cResultListHeight = 17;//Should be possible to read out
 
         //Wrapper for ST2
         private System.Collections.IList SelectedItemsRaw
@@ -228,20 +234,21 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             }
         }
-        private IList<TrailResultWrapper> m_SelectedItemsWrapper=null;
+        private System.Collections.IList m_prevSelectedItems = null;
         //Wrap the table SelectedItems, from a generic type
         private IList<TrailResultWrapper> SelectedItemsWrapper
         {
             set
             {
-                IList<TrailResultWrapper> setValue = (List<TrailResultWrapper>)value;
-                if (null == setValue || !setValue.Equals(m_SelectedItemsWrapper))
+                IList<TrailResultWrapper> setValue = value;
+                if (null == setValue || !setValue.Equals(m_prevSelectedItems))
                 {
                     if (setValue == null || setValue.Count == 0)
                     {
-                        //Select a value
-                        setValue = TrailResultWrapper.SelectedItems
-                    ((IList<TrailResultWrapper>)summaryList.RowData, TrailResultWrapper.GetTrailResults(m_SelectedItemsWrapper));
+                        //Get all current values in prev selection
+                        setValue = TrailResultWrapper.SelectedItems(
+                    (IList<TrailResultWrapper>)summaryList.RowData,
+                    TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems)));
                         if ((null == setValue || setValue.Count==0) && 
                             null != summaryList.RowData && ((IList<TrailResultWrapper>)summaryList.RowData).Count > 0)
                         {
@@ -249,27 +256,20 @@ namespace TrailsPlugin.UI.Activity {
                            ((IList<TrailResultWrapper>)summaryList.RowData)[0] };
                         }
                     }
-                    m_SelectedItemsWrapper = setValue;
-                    SelectedItemsRaw = (List<TrailResultWrapper>)setValue;
                 }
+                //Set value, let callback update m_prevSelectedItems and refresh chart
+                SelectedItemsRaw = (List<TrailResultWrapper>)setValue;
             }
             get
             {
-                return (IList<TrailResultWrapper>)getTrailResultWrapperSelection(this.SelectedItemsRaw);
+                return getTrailResultWrapperSelection(this.SelectedItemsRaw);
             }
         }
 
         public IList<TrailResult> SelectedItems
         {
-//            set
-//            {
-//                IList<TrailResultWrapper> results = TrailResultWrapper.SelectedItems
-//                    ((IList<TrailResultWrapper>)summaryList.RowData, value);
-//                SelectedItemsWrapper = (List<TrailResultWrapper>)results;
-//                summaryList.EnsureVisible(results);
-//            }
             get {
-                return getTrailResultSelection(SelectedItemsWrapper);
+                return TrailResultWrapper.GetTrailResults(SelectedItemsWrapper);
             }
         }
         public void EnsureVisible(IList<TrailResult> atr)
@@ -318,19 +318,6 @@ namespace TrailsPlugin.UI.Activity {
             return aTr;
         }
 
-        public static IList<TrailResult> getTrailResultSelection(IList<TrailResultWrapper> tlist)
-        {
-            IList<TrailResult> aTr = new List<TrailResult>();
-            foreach (TrailResultWrapper t in tlist)
-            {
-                if (t != null)
-                {
-                    aTr.Add(((TrailResultWrapper)t).Result);
-                }
-            }
-            return aTr;
-        }
-
         private void summaryList_Sort()
         {
             if (m_controller.CurrentActivityTrailDisplayed != null)
@@ -359,9 +346,9 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultWrapper t in this.SelectedItemsWrapper)
                 {
                     int splitIndex = -1;
-                    if (((TrailResultWrapper)t).Parent != null)
+                    if (t.Parent != null)
                     {
-                        splitIndex = ((TrailResultWrapper)t).Result.Order;
+                        splitIndex = t.Result.Order;
                     }
                     isSingleIndex = (lastSplitIndex == null || lastSplitIndex == splitIndex) ? true : false;
                     lastSplitIndex=splitIndex;
@@ -719,6 +706,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_page.RefreshChart();
             }
+            m_prevSelectedItems = summaryList.SelectedItems;
         }
 
         bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)
@@ -767,7 +755,6 @@ namespace TrailsPlugin.UI.Activity {
             if (e.KeyCode == Keys.Delete)
             {
                 excludeSelectedResults(e.Modifiers == Keys.Shift);
-                selectAll();
             }
             else if (e.KeyCode == Keys.Space)
             {
@@ -789,7 +776,6 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailsPlugin.Data.Settings.RestIsPause = true;
                     }
-                    m_controller.CurrentActivityTrail.Clear();
                     m_page.RefreshData();
                 }
             }
@@ -807,7 +793,14 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
-                m_controller.Reset();
+                //m_controller.Reset();
+                if (m_controller.OrderedTrails != null)
+                {
+                    foreach (ActivityTrail t in m_controller.OrderedTrails)
+                    {
+                        t.Reset();
+                    }
+                }
                 m_page.RefreshData();
             }
             else if (e.KeyCode == Keys.S)

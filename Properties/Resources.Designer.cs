@@ -582,6 +582,24 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resync Diff at Trail Points.
+        /// </summary>
+        internal static string UI_Chart_resyncDiffAtTrailPoints {
+            get {
+                return ResourceManager.GetString("UI_Chart_resyncDiffAtTrailPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync Chart at Trail Points.
+        /// </summary>
+        internal static string UI_Chart_syncChartAtTrailPoints {
+            get {
+                return ResourceManager.GetString("UI_Chart_syncChartAtTrailPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Radius.
         /// </summary>
         internal static string UI_Settings_DefaultRadius {

@@ -39,6 +39,8 @@
             this.diffTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.syncChartAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,6 +100,8 @@
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem,
             this.toolStripSeparator3,
+            this.resyncDiffAtTrailPointsToolStripMenuItem,
+            this.syncChartAtTrailPointsToolStripMenuItem,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
             this.detailMenu.Size = new System.Drawing.Size(199, 258);
@@ -207,6 +211,20 @@
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(195, 6);
+            // 
+            // resyncDiffAtTrailToolStripMenuItem
+            // 
+            this.resyncDiffAtTrailPointsToolStripMenuItem.Name = "resyncDiffAtTrailToolStripMenuItem";
+            this.resyncDiffAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.resyncDiffAtTrailPointsToolStripMenuItem.Text = "resyncDiffAtTrailPoints";
+            this.resyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.resyncDiffAtTrailPointsToolStripMenuItem_Click);
+            // 
+            // syncChartAtTrailPointsToolStripMenuItem
+            // 
+            this.syncChartAtTrailPointsToolStripMenuItem.Name = "syncChartAtTrailPointsToolStripMenuItem";
+            this.syncChartAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.syncChartAtTrailPointsToolStripMenuItem.Text = "syncChartAtTrailPoints";
+            this.syncChartAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.syncChartAtTrailPointsToolStripMenuItem_Click);
             // 
             // showToolBarMenuItem
             // 
@@ -499,23 +517,28 @@
         private TrailLineChart diffTimeChart;
         private TrailLineChart diffDistChart;
         private TrailLineChart powerChart;
+
+        private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem speedPaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem elevationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem heartRateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cadenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
+
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem diffTimeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem diffDistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem diffDistTimeToolStripMenuItem;
 
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem timeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem gradeStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem paceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem speedPaceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem resyncDiffAtTrailPointsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem syncChartAtTrailPointsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
     }
 }

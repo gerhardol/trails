@@ -143,6 +143,8 @@ namespace TrailsPlugin.UI.Activity {
             this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
+            this.resyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_resyncDiffAtTrailPoints;
+            this.syncChartAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_syncChartAtTrailPoints;
 
             this.timeToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Time);
             this.distanceToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Distance);
@@ -407,6 +409,8 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             }
+            resyncDiffAtTrailPointsToolStripMenuItem.Checked = Data.Settings.ResyncDiffAtTrailPoints;
+            syncChartAtTrailPointsToolStripMenuItem.Checked = Data.Settings.SyncChartAtTrailPoints;
 
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;
             distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Distance;
@@ -549,6 +553,18 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChart(XAxisValue.Time);
         }
 
+        private void resyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Data.Settings.ResyncDiffAtTrailPoints = !Data.Settings.ResyncDiffAtTrailPoints;
+            RefreshChartMenu();
+            m_page.RefreshData();
+        }        
+        private void syncChartAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Data.Settings.SyncChartAtTrailPoints = !Data.Settings.SyncChartAtTrailPoints;
+            RefreshChartMenu();
+            m_page.RefreshChart();
+        }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.ShowChartToolBar = !Data.Settings.ShowChartToolBar;

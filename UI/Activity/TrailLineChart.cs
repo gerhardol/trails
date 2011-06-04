@@ -56,7 +56,6 @@ namespace TrailsPlugin.UI.Activity {
         private ITheme m_visualTheme;
         private ActivityDetailPageControl m_page;
         private MultiChartsControl m_multiple;
-        private bool m_resyncAtTrailPoints = false;
         private bool m_selectDataHandler = true; //Event handler is enabled by default
 
         public TrailLineChart()
@@ -654,10 +653,13 @@ namespace TrailsPlugin.UI.Activity {
                                     //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
                                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
                                     //or cut (elapsed is higher than next limit, then decreases at trail point)  
-                                    float nextXvalue;
-                                    xvalue += GetResyncOffset(XAxisReferential, false, tr, xvalue, out nextXvalue);
+                                    float nextXvalue = float.MaxValue;
+                                    if (Data.Settings.SyncChartAtTrailPoints)
+                                    {
+                                        xvalue += GetResyncOffset(XAxisReferential, false, tr, xvalue, out nextXvalue);
+                                    }
                                     if (oldElapsedSeconds < elapsedSeconds &&
-                                        (!m_resyncAtTrailPoints ||
+                                        (!Data.Settings.SyncChartAtTrailPoints ||
                                         oldXvalue < xvalue && xvalue < nextXvalue))
                                     {
                                         ITimeValueEntry<float> valEntry;
@@ -690,7 +692,7 @@ namespace TrailsPlugin.UI.Activity {
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = ReferenceTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
-                if (!m_resyncAtTrailPoints && m_trailResults.Count == 1 ||
+                if (!Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count == 1 ||
                     m_trailResults.Count > 0 && trailPointResult == null)
                 {
                     trailPointResult = m_trailResults[0];
@@ -765,7 +767,7 @@ namespace TrailsPlugin.UI.Activity {
             IList<double> refElapsed;
             float offset = 0;
             nextElapsed = float.MaxValue;
-            if (m_resyncAtTrailPoints)
+            if (Data.Settings.SyncChartAtTrailPoints)
             {
                 if (XAxisReferential == XAxisValue.Time)
                 {
@@ -797,7 +799,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         currOffsetIndex++;
                     }
-                    if (currOffsetIndex < refElapsed.Count -1)
+                    if (currOffsetIndex < refElapsed.Count - 1)
                     {
                         nextElapsed = (float)refElapsed[currOffsetIndex + 1];
                     }
@@ -816,12 +818,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 if (currOffsetIndex < refElapsed.Count)
                 {
-                    offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex])+startOffset);
+                    offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]) + startOffset);
                 }
             }
             return offset;
         }
 
+        /*********************************************/
         private void SetupAxes()
         {
             if (m_visible && ReferenceTrailResult != null)
@@ -1135,7 +1138,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.T)
             {
-                m_resyncAtTrailPoints = (e.Modifiers != Keys.Shift);
+                Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
                 refreshData = false;
             }
 
@@ -1211,6 +1214,7 @@ namespace TrailsPlugin.UI.Activity {
                     t.Clear(true);
                 }
             }
+            m_page.RefreshControlState(); 
             m_page.RefreshChart();
             foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
             {

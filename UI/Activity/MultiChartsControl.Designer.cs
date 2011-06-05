@@ -40,6 +40,7 @@
             this.diffDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.syncChartAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,6 +102,7 @@
             this.timeToolStripMenuItem,
             this.toolStripSeparator3,
             this.resyncDiffAtTrailPointsToolStripMenuItem,
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem,
             this.syncChartAtTrailPointsToolStripMenuItem,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
@@ -218,6 +220,13 @@
             this.resyncDiffAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = "resyncDiffAtTrailPoints";
             this.resyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.resyncDiffAtTrailPointsToolStripMenuItem_Click);
+            // 
+            // adjustResyncDiffAtTrailPointsToolStripMenuItem
+            // 
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Name = "adjustResyncDiffAtTrailPointsToolStripMenuItem";
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Text = "adjustResyncDiffAtTrailPoints";
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.adjustResyncDiffAtTrailPointsToolStripMenuItem_Click);
             // 
             // syncChartAtTrailPointsToolStripMenuItem
             // 
@@ -538,6 +547,7 @@
 
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem resyncDiffAtTrailPointsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem adjustResyncDiffAtTrailPointsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem syncChartAtTrailPointsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
     }

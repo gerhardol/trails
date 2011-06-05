@@ -1158,14 +1158,16 @@ namespace TrailsPlugin.Data {
             if (m_DiffTimeTrack0 == null && DistanceMetersTrack.Count > 0)
             {
                 m_DiffTimeTrack0 = new NumericTimeDataSeries();
-                float oldElapsed = float.MinValue;
+                float prevElapsed = float.MinValue;
                 float lastValue = 0;
                 int dateTrailPointIndex = -1;
                 float refOffset = 0;
+                float refPrevElapsed = float.MinValue;
+                double diffOffset = 0;
                 foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                 {
                     float elapsed = t.ElapsedSeconds;
-                    if (elapsed > oldElapsed && m_cacheTrackRef != null &&
+                    if (elapsed > prevElapsed && m_cacheTrackRef != null &&
                         elapsed <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                     {
                         DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
@@ -1182,18 +1184,27 @@ namespace TrailsPlugin.Data {
                             {
                                 refOffset = m_cacheTrackRef.getDistResult(m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex]) -
                                    this.getDistResult(this.TrailPointDateTime[dateTrailPointIndex]);
+                                if (Settings.AdjustResyncDiffAtTrailPoints)
+                                {
+                                    //diffdist over time will normally "jump" at each trail point
+                                    //I.e. if the reference is behind, the distance suddenly gained must be subtracted
+                                    double refElapsedP = m_cacheTrackRef.getElapsedResult(m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex]);
+                                    double elapsedP = this.getElapsedResult(this.TrailPointDateTime[dateTrailPointIndex]);
+                                    diffOffset += (float)(refElapsedP - refPrevElapsed - (elapsedP - prevElapsed));
+                                }
                             }
                         }
                         DateTime d2 = getDateTimeFromTrack(m_cacheTrackRef.DistanceMetersTrack, t.Value + refOffset);
-                        lastValue = (float)(-getElapsedResult(d1) + m_cacheTrackRef.getElapsedResult(d2));
+                        lastValue = (float)(-this.getElapsedResult(d1) + m_cacheTrackRef.getElapsedResult(d2) + diffOffset);
                         m_DiffTimeTrack0.Add(d1, lastValue);
-                        oldElapsed = elapsed;
+                        prevElapsed = elapsed;
+                        refPrevElapsed = (float)m_cacheTrackRef.getElapsedResult(d2);
                     }
                 }
                 //Add a point last in the track, to show the complete dist in the chart
                 //Alternatively use speed to extrapolate difference
                 ITimeValueEntry<float> last = DistanceMetersTrack[DistanceMetersTrack.Count - 1];
-                if (oldElapsed < last.ElapsedSeconds)
+                if (prevElapsed < last.ElapsedSeconds)
                 {
                     DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, last);
                     m_DiffTimeTrack0.Add(d1, lastValue);
@@ -1243,18 +1254,21 @@ namespace TrailsPlugin.Data {
                             {
                                 refOffset = (int)(m_cacheTrackRef.getElapsedResult(m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex]) -
                                    this.getElapsedResult(this.TrailPointDateTime[dateTrailPointIndex]));
-                                //diffdist over time will normally "jump" at each trail point
-                                //I.e. if the reference is behind, the distance suddenly gained must be subtracted
-                                int status2;
-                                double refDistP = getDistFromTrackTime(m_cacheTrackRef.DistanceMetersTrack,
-                                    m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex], out status2);
-                                if (status2 == 0)
+                                if (Settings.AdjustResyncDiffAtTrailPoints)
                                 {
-                                    double distP = getDistFromTrackTime(this.DistanceMetersTrack,
-                                        this.TrailPointDateTime[dateTrailPointIndex], out status2);
+                                    //diffdist over time will normally "jump" at each trail point
+                                    //I.e. if the reference is behind, the distance suddenly gained must be subtracted
+                                    int status2;
+                                    double refDistP = getDistFromTrackTime(m_cacheTrackRef.DistanceMetersTrack,
+                                        m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex], out status2);
                                     if (status2 == 0)
                                     {
-                                        diffOffset = (float)(refDistP - prevRefDist - (distP - prevDist));
+                                        double distP = getDistFromTrackTime(this.DistanceMetersTrack,
+                                            this.TrailPointDateTime[dateTrailPointIndex], out status2);
+                                        if (status2 == 0)
+                                        {
+                                            diffOffset += (float)(refDistP - prevRefDist - (distP - prevDist));
+                                        }
                                     }
                                 }
                             }

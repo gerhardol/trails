@@ -51,9 +51,10 @@
             this.SummaryPanel.Location = new System.Drawing.Point(0, 0);
             this.SummaryPanel.Margin = new System.Windows.Forms.Padding(0);
             this.SummaryPanel.Name = "SummaryPanel";
-            this.SummaryPanel.Size = new System.Drawing.Size(400, 300);
+            this.SummaryPanel.Size = new System.Drawing.Size(400, 80);
             this.SummaryPanel.TabIndex = 1;
             this.SummaryPanel.SizeChanged += new System.EventHandler(SummaryPanel_SizeChanged);
+            //this.SummaryPanel.HandleCreated += new System.EventHandler(SummaryPanel_HandleCreated);
             // 
             // summaryList
             // 

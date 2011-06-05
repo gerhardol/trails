@@ -144,6 +144,7 @@ namespace TrailsPlugin.UI.Activity {
             //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_resyncDiffAtTrailPoints;
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_adjustResyncDiffAtTrailPoints;
             this.syncChartAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_syncChartAtTrailPoints;
 
             this.timeToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Time);
@@ -215,7 +216,7 @@ namespace TrailsPlugin.UI.Activity {
             for (int i = 0; i < m_lineCharts.Count; i++)
             {
                 ChartPanel.RowStyles[i+1].SizeType = SizeType.Absolute;
-                if (m_lineCharts[i].ShowPage)
+                if (m_lineCharts[i].ShowPage && height > 0)
                 {
                     ChartPanel.RowStyles[i+1].Height = height;
                 }
@@ -410,6 +411,8 @@ namespace TrailsPlugin.UI.Activity {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             }
             resyncDiffAtTrailPointsToolStripMenuItem.Checked = Data.Settings.ResyncDiffAtTrailPoints;
+            adjustResyncDiffAtTrailPointsToolStripMenuItem.Enabled = resyncDiffAtTrailPointsToolStripMenuItem.Checked;
+            adjustResyncDiffAtTrailPointsToolStripMenuItem.Checked = Data.Settings.AdjustResyncDiffAtTrailPoints;
             syncChartAtTrailPointsToolStripMenuItem.Checked = Data.Settings.SyncChartAtTrailPoints;
 
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;
@@ -558,7 +561,13 @@ namespace TrailsPlugin.UI.Activity {
             Data.Settings.ResyncDiffAtTrailPoints = !Data.Settings.ResyncDiffAtTrailPoints;
             RefreshChartMenu();
             m_page.RefreshData();
-        }        
+        }
+        private void adjustResyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Data.Settings.AdjustResyncDiffAtTrailPoints = !Data.Settings.AdjustResyncDiffAtTrailPoints;
+            RefreshChartMenu();
+            m_page.RefreshData();
+        }
         private void syncChartAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.SyncChartAtTrailPoints = !Data.Settings.SyncChartAtTrailPoints;

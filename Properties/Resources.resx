@@ -346,4 +346,7 @@ Make sure that {1} is installed.</value>
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
     <value>Sync Chart at Trail Points</value>
   </data>
+  <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Adjust Resync Diff at Trail Points</value>
+  </data>
 </root>

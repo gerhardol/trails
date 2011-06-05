@@ -582,6 +582,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adjust Resync Diff at Trail Points.
+        /// </summary>
+        internal static string UI_Chart_adjustResyncDiffAtTrailPoints {
+            get {
+                return ResourceManager.GetString("UI_Chart_adjustResyncDiffAtTrailPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resync Diff at Trail Points.
         /// </summary>
         internal static string UI_Chart_resyncDiffAtTrailPoints {

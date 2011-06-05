@@ -190,27 +190,44 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
             }
-            //Set size, to not waste chart
-            const int minRows = 4;
-            const int maxRows = 8;
-            int resRows = minRows; 
-            if (summaryList.RowData != null)
-            {
-                resRows = Math.Max(maxRows, ((IList<TrailResultWrapper>)summaryList.RowData).Count);
-            }
-            int currRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
-            //Change size if much too small/big only
-            if (resRows >= maxRows && currRows <= minRows || 
-                resRows <= minRows && currRows >= maxRows)
-            {
-                m_page.SetResultListHeight = this.summaryList.HeaderRowHeight + 16 +
-                    cResultListHeight * resRows;
-            }
 
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;
+            SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
-        private const int cResultListHeight = 17;//Should be possible to read out
+        private const int cResultListHeight = 17;//Should be possible to read out from list...
+        private static bool changedSizeAfterCreation = false;
+        void SummaryPanel_HandleCreated(object sender, System.EventArgs e)
+        {
+            if (m_page != null)
+            {
+                //Set size, to not waste chart
+                const int minRows = 2;
+                const int maxRows = 8;
+                int resRows = minRows;
+                int setRows = minRows;
+                if (summaryList.RowData != null)
+                {
+                    resRows = ((IList<TrailResultWrapper>)summaryList.RowData).Count;
+                }
+                if (summaryList.HorizontalScroll.Enabled)
+                {
+                    resRows++;
+                }
+                setRows = Math.Max(minRows, resRows);
+                setRows = Math.Min(maxRows, setRows);
+                int currRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
+                //Change size if much too small/big only
+                if (resRows + 1 < currRows && setRows < currRows || //wasted space
+                    resRows > currRows && currRows <= maxRows //Too small, increase
+                    )
+                {
+                    m_page.SetResultListHeight = this.summaryList.HeaderRowHeight + 16 +
+                        cResultListHeight * setRows;
+                }
+            }
+        }
+
 
         //Wrapper for ST2
         private System.Collections.IList SelectedItemsRaw
@@ -822,10 +839,11 @@ namespace TrailsPlugin.UI.Activity {
 
         void SummaryPanel_SizeChanged(object sender, System.EventArgs e)
         {
-            if (SummaryPanel.Size.Width > summaryList.Size.Width)
+            if (!changedSizeAfterCreation)
             {
-                //No longer necessary
-                //summaryList.Size = new System.Drawing.Size(SummaryPanel.Size.Width, summaryList.Size.Height);
+                //By default, list is too big, even if set when activities are updated
+                changedSizeAfterCreation = true;
+                SummaryPanel_HandleCreated(sender, e);
             }
         }
 

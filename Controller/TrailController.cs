@@ -391,7 +391,10 @@ namespace TrailsPlugin.Controller
 		public bool UpdateTrail(Data.Trail trail) {
 			if (Plugin.Data.UpdateTrail(trail)) {
                 m_CurrentOrderedTrails = null;
-				m_currentActivityTrail = null;
+                if (m_currentActivityTrail != null)
+                {
+                    m_currentActivityTrail.Reset();
+                }
                 m_lastTrailId = trail.Id;
                 return true;
 			} else {

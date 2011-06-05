@@ -48,6 +48,7 @@ namespace TrailsPlugin.Data {
             m_MaxAutoCalcResults = 800;
             m_restIsPause = false;
             m_resyncDiffAtTrailPoints = true;
+            m_adjustResyncDiffAtTrailPoints = true;
             m_syncChartAtTrailPoints = false;
         }
         private static IList<string> m_activityPageColumns;
@@ -66,6 +67,7 @@ namespace TrailsPlugin.Data {
         private static int m_MaxAutoCalcResults;
         private static bool m_restIsPause;
         private static bool m_resyncDiffAtTrailPoints;
+        private static bool m_adjustResyncDiffAtTrailPoints;
         private static bool m_syncChartAtTrailPoints;
 
         //Note: The data structures need restructuring...
@@ -224,6 +226,11 @@ namespace TrailsPlugin.Data {
             get { return m_resyncDiffAtTrailPoints; }
             set { m_resyncDiffAtTrailPoints = value; }
         }
+        public static bool AdjustResyncDiffAtTrailPoints
+        {
+            get { return m_adjustResyncDiffAtTrailPoints; }
+            set { m_adjustResyncDiffAtTrailPoints = value; }
+        }
         public static bool SyncChartAtTrailPoints
         {
             get { return m_syncChartAtTrailPoints; }
@@ -272,6 +279,8 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { RestIsPause = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ResyncDiffAtTrailPoints);
             if (attr.Length > 0) { ResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints);
+            if (attr.Length > 0) { AdjustResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.SyncChartAtTrailPoints);
             if (attr.Length > 0) { SyncChartAtTrailPoints = XmlConvert.ToBoolean(attr); }
 
@@ -351,6 +360,7 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
             pluginNode.SetAttribute(xmlTags.RestIsPause, XmlConvert.ToString(m_restIsPause));
             pluginNode.SetAttribute(xmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_resyncDiffAtTrailPoints));
+            pluginNode.SetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints, XmlConvert.ToString(m_adjustResyncDiffAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.SyncChartAtTrailPoints, XmlConvert.ToString(m_syncChartAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
@@ -396,7 +406,8 @@ namespace TrailsPlugin.Data {
             public const string MaxAutoCalcResults = "MaxAutoCalcResults";
             public const string SetNameAtImport = "SetNameAtImport";
             public const string RestIsPause = "RestIsPause";
-            public const string ResyncDiffAtTrailPoints = "ResyncDiffAtTrail";
+            public const string ResyncDiffAtTrailPoints = "ResyncDiffAtTrailPoints";
+            public const string AdjustResyncDiffAtTrailPoints = "AdjustResyncDiffAtTrailPoints";
             public const string SyncChartAtTrailPoints = "SyncChartAtTrailPoints";
             public const string sColumns = "sColumns";
         }

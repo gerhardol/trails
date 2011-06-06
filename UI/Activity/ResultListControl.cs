@@ -839,12 +839,13 @@ namespace TrailsPlugin.UI.Activity {
 
         void SummaryPanel_SizeChanged(object sender, System.EventArgs e)
         {
-            if (!changedSizeAfterCreation)
-            {
-                //By default, list is too big, even if set when activities are updated
-                changedSizeAfterCreation = true;
-                SummaryPanel_HandleCreated(sender, e);
-            }
+            //Not working
+            //if (!changedSizeAfterCreation && m_page != null)
+            //{
+            //    //By default, list is too big, even if set when activities are updated
+            //    changedSizeAfterCreation = true;
+            //    SummaryPanel_HandleCreated(sender, e);
+            //}
         }
 
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;

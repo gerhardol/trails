@@ -58,6 +58,8 @@ namespace TrailsPlugin.UI.Activity {
         private MultiChartsControl m_multiple;
         private bool m_selectDataHandler = true; //Event handler is enabled by default
 
+        const int MaxSelectedSeries = 5;
+
         public TrailLineChart()
         {
             InitializeComponent();
@@ -253,7 +255,6 @@ namespace TrailsPlugin.UI.Activity {
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     m_selectDataHandler = false;
 
-                    const int MaxSelectedSeries = 5;
                     bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                     //Mark route track, but not chart
                     m_page.MarkTrack(results, false);
@@ -345,38 +346,52 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Set the matching time distance for the activity
-                for (int i = 0; i < m_trailResults.Count; i++)
+                //Note: Time/dist need the Trailresult related to the current results...
+                //With single results, this can be done, but for mult results per activity this can be incorrect
+                IList<float[]> l = null;
+                foreach(TrailResult tr in TrailResultWrapper.GetTrailResults(Controller.TrailController.Instance.CurrentActivityTrail.ResultTreeList)
                 {
-                        MainChart.DataSeries[i].ClearSelectedRegions();
-                        //MainChart.DataSeries[i].SetSelectedRange(0, 0);
-                        //The "fill" chart is 0, line is 1
-                        if (i == 0 && m_trailResults.Count == 1 &&
-                                    MainChart.DataSeries.Count > 1)
-                        {
-                             MainChart.DataSeries[1].ClearSelectedRegions();
-                        }
-                    IList<float[]> l = GetResultSelectionFromActivity(i, sel);
-                    if (l != null && l.Count > 0)
+                    if (tr.Activity == sel.Activity)
                     {
-                        //Only one range can be selected
-                        float x1 = l[0][0];
-                        float x2 = l[l.Count - 1][1];
-                        //MainChart.DataSeries[i].ClearSelectedRegions();
-                        ////The "fill" chart is 0, line is 1
-                        //if (i == 0 && m_trailResults.Count == 1 &&
-                        //    MainChart.DataSeries.Count > 1)
-                        //{
-                        //    MainChart.DataSeries[1].ClearSelectedRegions();
-                        //}
-                        //Ignore ranges outside current range and malformed scales
-                        if (x1 < MainChart.XAxis.MaxOriginFarValue &&
-                            MainChart.XAxis.MinOriginValue > float.MinValue &&
-                            x2 > MainChart.XAxis.MinOriginValue &&
-                            MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                        l = GetResultSelectionFromActivity(tr, sel);
+                    }
+                }
+                //update the result
+                if (l != null && l.Count > 0)
+                {
+                    for (int i = 0; i < m_trailResults.Count; i++)
+                    {
+                        if (m_trailResults[i].Activity == sel.Activity || 
+                            m_trailResults.Count < MaxSelectedSeries)
                         {
-                            x1 = Math.Max(x1, (float)MainChart.XAxis.MinOriginValue);
-                            x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
-                            MainChart.DataSeries[i].SetSelectedRange(x1, x2);
+                            MainChart.DataSeries[i].ClearSelectedRegions();
+                            //MainChart.DataSeries[i].SetSelectedRange(0, 0);
+                            //The "fill" chart is 0, line is 1
+                            if (i == 0 && m_trailResults.Count == 1 &&
+                                        MainChart.DataSeries.Count > 1)
+                            {
+                                MainChart.DataSeries[1].ClearSelectedRegions();
+                            }
+                            //Only one range can be selected
+                            float x1 = l[0][0];
+                            float x2 = l[l.Count - 1][1];
+                            //MainChart.DataSeries[i].ClearSelectedRegions();
+                            ////The "fill" chart is 0, line is 1
+                            //if (i == 0 && m_trailResults.Count == 1 &&
+                            //    MainChart.DataSeries.Count > 1)
+                            //{
+                            //    MainChart.DataSeries[1].ClearSelectedRegions();
+                            //}
+                            //Ignore ranges outside current range and malformed scales
+                            if (x1 < MainChart.XAxis.MaxOriginFarValue &&
+                                MainChart.XAxis.MinOriginValue > float.MinValue &&
+                                x2 > MainChart.XAxis.MinOriginValue &&
+                                MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                            {
+                                x1 = Math.Max(x1, (float)MainChart.XAxis.MinOriginValue);
+                                x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
+                                MainChart.DataSeries[i].SetSelectedRange(x1, x2);
+                            }
                         }
                     }
                 }
@@ -402,7 +417,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrailResult tr = m_trailResults[i];
                         if (trm.trailResult == tr)
                         {
-                            foreach (float[] ax in GetResultSelectionFromActivity(i, trm.selInfo))
+                            foreach (float[] ax in GetResultSelectionFromActivity(m_trailResults[i], trm.selInfo))
                             {
                                 //Ignore ranges outside current range and malformed scales
                                 if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
@@ -470,11 +485,10 @@ namespace TrailsPlugin.UI.Activity {
             return new float[] { x1, x2 };
         }
 
-        private IList<float[]> GetResultSelectionFromActivity(int i, IItemTrackSelectionInfo sel)
+        private IList<float[]> GetResultSelectionFromActivity(TrailResult tr, IItemTrackSelectionInfo sel)
         {
             IList<float[]> result = new List<float[]>();
 
-            TrailResult tr = m_trailResults[i]; 
             //Currently only one range but several regions in the chart can be selected
             //Only use one of the selections
             if (sel.MarkedTimes != null)

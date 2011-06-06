@@ -48,7 +48,7 @@ namespace TrailsPlugin.Data {
             m_MaxAutoCalcResults = 800;
             m_restIsPause = false;
             m_resyncDiffAtTrailPoints = true;
-            m_adjustResyncDiffAtTrailPoints = true;
+            m_adjustResyncDiffAtTrailPoints = false;
             m_syncChartAtTrailPoints = false;
         }
         private static IList<string> m_activityPageColumns;

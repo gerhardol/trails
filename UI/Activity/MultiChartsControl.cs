@@ -88,6 +88,8 @@ namespace TrailsPlugin.UI.Activity {
             this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
             //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
 
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Visible = false;
+
             //The panels and charts should probably be created manually instead
             m_lineCharts = new List<TrailLineChart>();
             foreach (Control t in this.ChartPanel.Controls)

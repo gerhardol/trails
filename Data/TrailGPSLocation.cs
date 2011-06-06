@@ -250,7 +250,7 @@ namespace TrailsPlugin.Data {
                 {
                     pos = float.NaN;
                 }
-                if (float.NaN == pos
+                if (!float.IsNaN(pos)
                     || subItemSelected == 1 && 90 < Math.Abs(pos)
                     || subItemSelected == 2 && 180 < Math.Abs(pos)
                     )

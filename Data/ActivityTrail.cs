@@ -236,6 +236,7 @@ namespace TrailsPlugin.Data
                                 int maxRequiredMisses = m_trail.MaxRequiredMisses;
                                 int currRequiredMisses = 0;
                                 int prevMatchIndex = -1;
+                                int prevReqMatchIndex = -1;
                                 IDistanceDataTrack dTrack = null;
                                 //Ignore short legs
                                 if (this.Trail.MinDistance > 0)
@@ -464,14 +465,16 @@ namespace TrailsPlugin.Data
                                     bool automaticMatch = false;
                                     if (matchIndex < 0 && routeIndex >= activity.GPSRoute.Count - 1 &&
                                         (!required || currRequiredMisses < maxRequiredMisses))
-                                    {
-                                        automaticMatch = true;
-                                        if (required)
                                         {
-                                            currRequiredMisses++;
-                                        }
+                                            //OK to miss this point. Set automatic match to start looking at prev match
+                                            automaticMatch = true;
+                                            if (required && !(resultInfo.Points.Count == 1 && !trailgps[0].Required))
+                                            {
+                                                currRequiredMisses++;
+                                            }
                                     }
 
+                                    ////////////////////////////
                                     //Ignore short legs
                                     if (this.Trail.MinDistance > 0 && matchIndex >= 0 && resultInfo.Count > 0 &&
                                         prevMatchIndex >= 0 && dTrack != null &&
@@ -499,7 +502,7 @@ namespace TrailsPlugin.Data
                                             }
                                         }
                                         prevMatchIndex = matchIndex;
-                                        resultInfo.Points.Add(new TrailResultPoint((DateTime)matchTime, 
+                                        resultInfo.Points.Add(new TrailResultPoint((DateTime)matchTime,
                                             trailgps[TrailIndex(trailgps, resultInfo.Count)].Name));
                                         trailDistDiff += matchDist;
 
@@ -581,7 +584,43 @@ namespace TrailsPlugin.Data
                                         prevRouteIndex = routeIndex;
                                         prevDistToPoint = routeDist;
                                     }
-                                }
+
+                                    ////////////////////////////////////
+                                    //All GPS points tested but search should maybe restart
+                                    //Note: If current point was not required, the point match "automatically"
+                                    //This will handle when (at least one) non required matches, then 
+                                    if (routeIndex >= activity.GPSRoute.Count - 1 &&
+                                        matchIndex < 0 && !automaticMatch)
+                                    {
+                                        bool isMatch = true;
+                                        int currMatches = resultInfo.Points.Count;
+                                        for (int i = 0; i < currMatches; i++)
+                                        {
+                                            if (trailgps[TrailIndex(trailgps, resultInfo.Points.Count)].Required)
+                                            {
+                                                isMatch = false;
+                                                break;
+                                            }
+                                        }
+                                        if (isMatch)
+                                        {
+                                            //Last point and all previous non-required - restart at prev required match
+                                            resultInfo.Points.Clear();
+                                            for (int i = 0; i < currMatches; i++)
+                                            {
+                                                resultInfo.Points.Add(new TrailResultPoint(DateTime.MinValue,
+                                                trailgps[TrailIndex(trailgps, resultInfo.Points.Count)].Name));
+                                            }
+                                            routeIndex = prevReqMatchIndex;//xxx
+                                            prevRouteIndex = -1;
+                                            prevDistToPoint = float.MaxValue;
+                                            prevStartPointIndex = -1;
+                                        }
+                                    }
+
+                                    ///////////////////////////////////////
+                                } //foreach gps point
+
                                 //Update "no result counters"
                                 if (resultInfo.Count > 0)
                                 {
@@ -792,7 +831,12 @@ namespace TrailsPlugin.Data
                 }
                 else if (this.Trail.Generated != to2.Trail.Generated)
                 {
-                    return (this.Trail.Generated) ? 1 : -1; ;
+                    return (this.Trail.Generated) ? 1 : -1;
+                }
+                else if (this.Trail.TrailLocations.Count != to2.Trail.TrailLocations.Count &&
+                    (this.Trail.TrailLocations.Count==1 || to2.Trail.TrailLocations.Count==1))
+                {
+                    return (this.Trail.TrailLocations.Count < to2.Trail.TrailLocations.Count) ? 1 : -1;
                 }
                 //else if (activityTrail.Results.Count != to2.activityTrail.Results.Count)
                 //{

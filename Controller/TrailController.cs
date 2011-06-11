@@ -373,14 +373,20 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        private void NewTrail(Data.Trail trail)
+        {
+            m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);
+            m_currentActivityTrail.CalcResults();
+            m_CurrentOrderedTrails.Add(m_currentActivityTrail);
+            m_lastTrailId = trail.Id;
+        }
+
         public bool AddTrail(Data.Trail trail)
         {
 			if (Plugin.Data.InsertTrail(trail))
             {
-                m_CurrentOrderedTrails = null;
-				m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);
-				m_lastTrailId = trail.Id;
-				return true;
+                NewTrail(trail);
+                return true;
 			} 
             else
             {
@@ -388,26 +394,32 @@ namespace TrailsPlugin.Controller
 			}
 		}
 
-		public bool UpdateTrail(Data.Trail trail) {
-			if (Plugin.Data.UpdateTrail(trail)) {
-                m_CurrentOrderedTrails = null;
+		public bool UpdateTrail(Data.Trail trail)
+        {
+            if (Plugin.Data.UpdateTrail(trail))
+            {
                 if (m_currentActivityTrail != null)
                 {
-                    m_currentActivityTrail.Reset();
+                    m_CurrentOrderedTrails.Remove(m_currentActivityTrail);
                 }
-                m_lastTrailId = trail.Id;
+                NewTrail(trail);
                 return true;
-			} else {
-				return false;
-			}
+            }
+            else
+            {
+                return false;
+            }
 		}
 
 		public bool DeleteCurrentTrail() {
             if (m_currentActivityTrail != null &&
                 Plugin.Data.DeleteTrail(m_currentActivityTrail.Trail))
             {
-                m_CurrentOrderedTrails = null;
-				m_currentActivityTrail = null;
+                if (m_currentActivityTrail != null)
+                {
+                    m_CurrentOrderedTrails.Remove(m_currentActivityTrail);
+                }
+                m_currentActivityTrail = null;
 				m_lastTrailId = null;
 				return true;
 			} else {

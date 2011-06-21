@@ -46,8 +46,8 @@ namespace TrailsPlugin.Data {
         public TrailResultInfo CopySlice(int i, int j)
         {
             TrailResultInfo result = new TrailResultInfo(this.Activity);
-            result.Points.Add(new TrailResultPoint(Points[i].Time, Points[i].Name));
-            result.Points.Add(new TrailResultPoint(Points[j].Time, Points[j].Name));
+            result.Points.Add(new TrailResultPoint(Points[i]));
+            result.Points.Add(new TrailResultPoint(Points[j]));
             return result;
         }
         public IList<DateTime> CopyTime()
@@ -83,8 +83,13 @@ namespace TrailsPlugin.Data {
     {
         public TrailResultPoint(DateTime time, string name)
         {
-            this.m_name = name;
             this.m_time = time;
+            this.m_name = name;
+        }
+        public TrailResultPoint(TrailResultPoint t)
+        {
+            this.m_time = t.Time;
+            this.m_name = t.Name;
         }
 
         public override string ToString()
@@ -92,18 +97,6 @@ namespace TrailsPlugin.Data {
             return m_name + " " + m_time;
         }
 
-        private string m_name;
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                this.m_name = value;
-            }
-        }
         private DateTime m_time;
         public DateTime Time
         {
@@ -116,6 +109,17 @@ namespace TrailsPlugin.Data {
                 this.m_time = value;
             }
         }
-
-	}
+        private string m_name;
+        public string Name
+        {
+            get
+            {
+                return m_name;
+            }
+            set
+            {
+                this.m_name = value;
+            }
+        }
+    }
 }

@@ -658,16 +658,28 @@ namespace GpsRunningPlugin.Util
             {
                 return ToString(p, DefFmt);
             }
+            public static string ToString(double p, string fmt, bool convert)
+            {
+                return ToString(p, Unit, fmt, convert);
+            }
             public static string ToString(double p, string fmt)
             {
                 return ToString(p, Unit, fmt);
             }
             public static string ToString(double p, Length.Units unit, string fmt)
             {
+                return ToString(p, unit, fmt, true);
+            }
+            public static string ToString(double p, Length.Units unit, string fmt, bool convert)
+            {
                 //The source is in system format (meter), but should be converted
                 //defFmt should not be required, but ST applies it automatically if "u" is added
                 if (fmt.ToLower().Equals("u")) { fmt = defFmt(unit) + fmt; }
-                return Length.ToString(ConvertFrom(p, unit), unit, fmt);
+                if (convert)
+                {
+                    p = ConvertFrom(p, unit);
+                }
+                return Length.ToString(p, unit, fmt);
             }
             public static string ToString(double p, IActivity activity, string fmt)
             {

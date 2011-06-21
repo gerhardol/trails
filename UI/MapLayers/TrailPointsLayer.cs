@@ -196,11 +196,11 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
-        //public void Refresh()
-        //{
-        //    //Should not be necessary in ST3, updated when needed
-        //    RefreshOverlays(); 
-        //}
+        public void Refresh()
+        {
+            //Should not be necessary in ST3, updated when needed
+            RefreshOverlays();
+        }
         public bool HidePage()
         {
             m_showPage = false;

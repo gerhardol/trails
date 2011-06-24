@@ -577,10 +577,20 @@ namespace TrailsPlugin.Data
                                                 }
                                                 TrailResultInfo resultInfo = new TrailResultInfo(activity);
                                                 float distDiff = 0;
-                                                foreach (TrailResultPointMeta t in resultPoints)
+                                                for (int i = 0; i < resultPoints.Count; i++)
                                                 {
-                                                    resultInfo.Points.Add(t);
-                                                    distDiff += t.trailDistDiff;
+                                                    TrailResultPointMeta point = resultPoints[i];
+                                                    //Include the point if not restart
+                                                    if (point.restart)
+                                                    //Something like the following could be used to recover previous points, but 
+                                                    //i+1 must be the firstrequired point with one non required in between (the last non required is always "bad")
+                                                    //i < resultPoints.Count - 1 && !resultPoints[i + 1].restart &&
+                                                    //point.Time > DateTime.MinValue && point.Time <= resultPoints[i + 1].Time)
+                                                    {
+                                                        point.Time = DateTime.MinValue;
+                                                    }
+                                                    resultInfo.Points.Add(point);
+                                                    distDiff += point.trailDistDiff;
                                                 }
                                                 TrailResultWrapper result = new TrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo,
                                                     distDiff);

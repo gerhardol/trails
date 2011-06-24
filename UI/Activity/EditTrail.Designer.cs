@@ -89,6 +89,7 @@
             // 
             // Panel
             // 
+            this.Panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -116,7 +117,7 @@
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.Panel.Size = new System.Drawing.Size(350, 271);
+            this.Panel.Size = new System.Drawing.Size(390, 271);
             this.Panel.TabIndex = 9;
             // 
             // Radius
@@ -174,6 +175,7 @@
             this.TrailName.Size = new System.Drawing.Size(149, 19);
             this.TrailName.TabIndex = 1;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.TrailName.LostFocus += new System.EventHandler(TrailName_LostFocus);
             // 
             // EList
             // 
@@ -181,6 +183,7 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.EList.AutoScroll = true;
+            this.EList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.EList.BackColor = System.Drawing.Color.Transparent;
             this.EList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
             this.EList.CheckBoxes = false;
@@ -228,8 +231,8 @@
             this.editBox.TabIndex = 2;
             this.editBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.editBox.Visible = false;
-            this.editBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EditOver);
-            this.editBox.LostFocus += new System.EventHandler(this.FocusOver);
+            this.editBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.editBox_KeyDown);
+            this.editBox.LostFocus += new System.EventHandler(this.editBox_LostFocus);
             // 
             // lblRadius
             // 
@@ -409,7 +412,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(381, 328);
+            this.ClientSize = new System.Drawing.Size(421, 328);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.btnCancel);

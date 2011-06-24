@@ -196,7 +196,7 @@ namespace TrailsPlugin.UI.Activity {
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
         private const int cResultListHeight = 17;//Should be possible to read out from list...
-        private static bool changedSizeAfterCreation = false;
+        //private static bool changedSizeAfterCreation = false;
         void SummaryPanel_HandleCreated(object sender, System.EventArgs e)
         {
             if (m_page != null)

@@ -39,6 +39,7 @@
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="DataImport\ExtendDataImporters.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
+    <Compile Include="Data\EditTrailLabelProvider.cs" />
     <Compile Include="Data\LineChartUtil.cs" />
     <Compile Include="Data\TrailResultInfo.cs" />
     <Compile Include="Data\TrailsActivityInfoOptions.cs" />

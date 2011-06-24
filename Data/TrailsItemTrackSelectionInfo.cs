@@ -74,6 +74,16 @@ namespace TrailsPlugin.Data
             set { m_Activity = value; }
         }
 
+        //Note: ST sets null selections occasionally
+        //This checks common situations
+        public static bool ContainsData(IList<IItemTrackSelectionInfo> selectedGPS)
+        {
+            int countGPS = selectedGPS.Count;
+            return countGPS > 0 && 
+                !(countGPS == 1 && 
+                selectedGPS[0].ItemReferenceId == "" && selectedGPS[0].MarkedDistances == null);
+        }
+
         public void SetFromSelection(IItemTrackSelectionInfo t, IActivity activity)
         {
             // Set from activity: this.ItemReferenceId = t.ItemReferenceId;

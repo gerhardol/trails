@@ -145,7 +145,6 @@ namespace TrailsPlugin.UI.Activity {
 		private void btnAdd_Click(object sender, EventArgs e)
         {
             //single activity use
-            int countGPS = 0;
 #if ST_2_1
 			IMapControl mapControl = m_layer.MapControl;
 			ICollection<IMapControlObject> selectedGPS = null;
@@ -153,8 +152,8 @@ namespace TrailsPlugin.UI.Activity {
 #else
             IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities);
 #endif
-            countGPS = selectedGPS.Count;
-            if (countGPS > 0)
+
+            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
             {
 #if ST_2_1
                 m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
@@ -162,7 +161,9 @@ namespace TrailsPlugin.UI.Activity {
 #else
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
-            } else {
+            }
+            else
+            {
 #if ST_2_1
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError_ST2, 
 #else
@@ -180,8 +181,8 @@ namespace TrailsPlugin.UI.Activity {
         //    return s;
         //}
 
-        private void btnEdit_Click(object sender, EventArgs e) {
-            int countGPS = 0;
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
 #if ST_2_1
 			IMapControl mapControl = m_layer.MapControl;
             ICollection<IMapControlObject> selectedGPS = null;
@@ -190,8 +191,8 @@ namespace TrailsPlugin.UI.Activity {
             IList<IItemTrackSelectionInfo> selectedGPS = (IList<IItemTrackSelectionInfo>)
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities);
 #endif
-            countGPS = selectedGPS.Count;
-            if (countGPS > 0 && !m_controller.CurrentActivityTrail.Trail.Generated)
+
+            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) && !m_controller.CurrentActivityTrail.Trail.Generated)
             {
 #if ST_2_1
 				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
@@ -200,7 +201,7 @@ namespace TrailsPlugin.UI.Activity {
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
             } else {
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false, m_controller.ReferenceTrailResult);
                 if (dialog.ShowDialog() == DialogResult.OK) {
 					m_page.RefreshControlState();
 					m_page.RefreshData();
@@ -332,7 +333,7 @@ namespace TrailsPlugin.UI.Activity {
                     addCurrent = true;
                 }
             }
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent);
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent, m_controller.ReferenceTrailResult);
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 if (addCurrent)
@@ -362,7 +363,7 @@ namespace TrailsPlugin.UI.Activity {
 			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false);
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false, m_controller.ReferenceTrailResult);
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {

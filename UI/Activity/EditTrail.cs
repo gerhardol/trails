@@ -22,6 +22,7 @@ using System.Drawing;
 using System;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.GPS;
@@ -34,12 +35,13 @@ namespace TrailsPlugin.UI.Activity {
 
 		protected ITheme m_visualTheme;
 		protected bool m_addMode;
-		protected Data.Trail m_TrailToEdit;
+		protected Data.Trail m_TrailToEdit; //Scratch, the copy of the trail add or newly created
 #if ST_2_1
         private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
 #else
         private TrailPointsLayer m_layer;
 #endif
+        private TrailResult m_trailResult;
 
         private EditTrail(bool addMode)
         {
@@ -75,7 +77,8 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, Object view, bool addMode)
 #else
-        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, bool addMode)
+        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, 
+            bool addMode, TrailResult tr)
 #endif
             : this (addMode)
         {
@@ -84,6 +87,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             ThemeChanged(visualTheme);
             UICultureChanged(culture);
+            m_trailResult = tr;
         }
 
         void InitControls()
@@ -115,6 +119,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             this.EList.SelectedItemsChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #endif
+            this.EList.LabelProvider = new EditTrailLabelProvider();
         }
         
         public virtual void ThemeChanged(ITheme visualTheme) {
@@ -147,7 +152,11 @@ namespace TrailsPlugin.UI.Activity {
 				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
 				return;
 			}
-			Data.Trail trail = null;
+            //m_TrailToEdit contains the scratchpad of trail.
+            //However TrailPoints uses the row (with meta data, could be separate cache)
+            m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+            
+            Data.Trail trail = null;
             if (m_addMode && Plugin.Data.NameExists(TrailName.Text) ||
                 !m_addMode && Plugin.Data.AllTrails.TryGetValue(TrailName.Text, out trail) &&
                 trail != m_TrailToEdit)
@@ -155,9 +164,6 @@ namespace TrailsPlugin.UI.Activity {
                 MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
                 return;
             }
-			string oldTrailName = m_TrailToEdit.Name;
-			m_TrailToEdit.Name = TrailName.Text;
-            //Radius handled on LostFocus
             if (m_addMode && !Controller.TrailController.Instance.AddTrail(m_TrailToEdit) ||
                 !m_addMode && !Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit))
             {
@@ -184,17 +190,42 @@ namespace TrailsPlugin.UI.Activity {
                 "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 DateTime startTime = DateTime.Now;
-                IActivity activity = Plugin.GetApplication().Logbook.Activities.Add(startTime);
-                activity.GPSRoute = new GPSRoute();
-                activity.Name = m_TrailToEdit.Name;
-                activity.Notes += "Radius: " + m_TrailToEdit.Radius + "m";
-                const int lapLength = 60; //A constant time between points
-                for (int i = 0; i < m_TrailToEdit.TrailLocations.Count; i++)
+                IActivity activity;
+                bool hasGps = m_trailResult != null && m_trailResult.GPSRoute != null;
+                if (hasGps)
                 {
-                    activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(m_TrailToEdit.TrailLocations[i].LatitudeDegrees, m_TrailToEdit.TrailLocations[i].LongitudeDegrees, 0));
-                    activity.Laps.Add(startTime.AddSeconds(i * lapLength), TimeSpan.FromSeconds(lapLength));
-                    activity.Laps[i].Rest = !m_TrailToEdit.TrailLocations[i].Required;
-                    activity.Laps[i].Notes = m_TrailToEdit.TrailLocations[i].Name;
+                    activity = m_trailResult.CopyToActivity();
+                    activity.Laps.Clear();
+                }
+                else
+                {
+                    activity = Plugin.GetApplication().Logbook.Activities.Add(startTime);
+                    activity.GPSRoute = new GPSRoute();
+                }
+                activity.Name = TrailName.Text;
+                activity.Notes += "Radius: " + UnitUtil.Elevation.ToString(m_TrailToEdit.Radius, "u");
+                const int lapLength = 60; //A constant time between points
+                IList<TrailGPSLocation> trailLoc = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+                for (int i = 0; i < trailLoc.Count - 1; i++)
+                {
+                    if (hasGps)
+                    {
+                        activity.Laps.Add(m_trailResult.TrailPointDateTime[i],
+                           TimeSpan.FromSeconds(m_trailResult.TrailPointTime0(m_trailResult)[i + 1] -
+                           m_trailResult.TrailPointTime0(m_trailResult)[i]));
+                    }
+                    else
+                    {
+                        activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(trailLoc[i].LatitudeDegrees, trailLoc[i].LongitudeDegrees, 0));
+                        activity.Laps.Add(startTime.AddSeconds(i * lapLength), TimeSpan.FromSeconds(lapLength));
+                    }
+                    activity.Laps[i].Rest = !trailLoc[i].Required;
+                    activity.Laps[i].Notes = trailLoc[i].Name;
+                }
+                if (!hasGps)
+                {
+                    int i = trailLoc.Count - 1;
+                    activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(trailLoc[i].LatitudeDegrees, trailLoc[i].LongitudeDegrees, 0));
                 }
             }
         }
@@ -215,10 +246,11 @@ namespace TrailsPlugin.UI.Activity {
 			Utils.Dialog.DrawButtonRowBackground(e.Graphics, ClientRectangle, m_visualTheme);
 		}
 
-        private MouseEventArgs lastMouseArg = null;
-        private string subItemText;
-        private int rowSelected = 0;
-        private int subItemSelected = 0;
+        private MouseEventArgs m_lastMouseArg = null;
+        private string m_subItemText;
+        private int m_rowDoubleClickSelected = 0;
+        private int m_subItemSelected = 0;
+
         private void EditTrail_Shown(object sender, System.EventArgs e)
         {
             TrailName.Text = m_TrailToEdit.Name;
@@ -227,14 +259,16 @@ namespace TrailsPlugin.UI.Activity {
             EList.Columns.Clear();
             EList.CheckBoxes = true;
             EList.Columns.Add(new TreeList.Column("Required", Properties.Resources.Required, 20, StringAlignment.Near));
-            EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 80, StringAlignment.Near));
-            EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 80, StringAlignment.Near));
-            EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 120, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 70, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 70, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 80, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("Distance", CommonResources.Text.LabelDistance, 60, StringAlignment.Near));
+            EList.Columns.Add(new TreeList.Column("Time", CommonResources.Text.LabelTime, 60, StringAlignment.Near));
 
-            EList.RowData = m_TrailToEdit.TrailLocations;
-            for (int i = 0; i < m_TrailToEdit.TrailLocations.Count; i++)
+            EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
+            foreach(EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
             {
-                EList.SetChecked(m_TrailToEdit.TrailLocations[i], m_TrailToEdit.TrailLocations[i].Required);
+                EList.SetChecked(t, t.TrailGPS.Required);
             }
 
             EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
@@ -243,70 +277,79 @@ namespace TrailsPlugin.UI.Activity {
             EList.CheckedChanged += new TreeList.ItemEventHandler(EList_CheckedChanged);
         }
 
-        private void EList_DeleteRow()
+        private int EList_SelectedRow()
         {
-            if (EList.Selected.Count > 0)
+            int result = -1;
+            if (EList.Selected.Count > 0 && ((IList<EditTrailRow>)EList.RowData).Count>0)
             {
                 IList selected = EList.Selected;
-                IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
                 if (selected != null && selected.Count > 0)
                 {
-                    for (int j = selected.Count - 1; j >= 0 ; j--)
+                    for (int j = selected.Count - 1; j >= 0; j--)
                     {
-                        for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
+                        IList<EditTrailRow> list = ((IList<EditTrailRow>)EList.RowData);
+                        for (int i = 0; i < list.Count; i++)
                         {
-                            //Only first selected removed now
-                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
-                            if (selected[j].Equals(r))
+                            //Only first selected
+                            if (selected[j].Equals(list[i]))
                             {
-                                result.RemoveAt(i);
+                                result = i;
                                 break;
                             }
                         }
                     }
-                    EList.RowData = result;
                 }
             }
+            return result;
+        }
+
+        private void EList_DeleteRow()
+        {
+            int i = EList_SelectedRow();
+            if(i>=0)
+            {
+                ((IList<EditTrailRow>)EList.RowData).RemoveAt(i);
+                EList.RowData = (IList<EditTrailRow>)EList.RowData;
+
+            }
+            EList.Refresh();
         }
 
         private void EList_AddRow()
         {
-            IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
-            int selectRow = result.Count-1;
-            if (EList.Selected.Count > 0)
+            int i = EList_SelectedRow();
+            if (i < 0)
             {
-                IList t = EList.Selected;
-                if (t != null && t.Count > 0)
+                if (((IList<EditTrailRow>)EList.RowData).Count > 0)
                 {
-                    for (int j = 0; j < t.Count; j++)
-                    {
-                        for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
-                        {
-                            //Only first selected removed now
-                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
-                            if (t[j].Equals(r))
-                            {
-                                selectRow = i;
-                                break;
-                            }
-                        }
-                    }
+                    i = ((IList<EditTrailRow>)EList.RowData).Count;
+                }
+                else
+                {
+                    i = 0;
                 }
             }
-            TrailGPSLocation add = new TrailGPSLocation(result[selectRow].LatitudeDegrees + 0.01F, result[selectRow].LongitudeDegrees + 0.01F, result[selectRow].Name +
-                " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew, result[selectRow].Required);
-            result.Insert(selectRow+1, add);
-            EList.RowData = result;
+            TrailGPSLocation sel = ((IList<EditTrailRow>)EList.RowData)[i].TrailGPS;
+            TrailGPSLocation add = new TrailGPSLocation(sel.LatitudeDegrees + 0.01F, sel.LongitudeDegrees + 0.01F, sel.Name +
+                " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew, sel.Required);
+            ((IList<EditTrailRow>)EList.RowData).Insert(i+1, new EditTrailRow(add));
+            EList.RowData = (IList<EditTrailRow>)EList.RowData;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
+            m_layer.Refresh();
         }
 
         void EList_CheckedChanged(object sender, TreeList.ItemEventArgs e)
         {
-            if (e.Item is TrailGPSLocation)
+            if (e.Item is EditTrailRow)
             {
-                TrailGPSLocation t = e.Item as TrailGPSLocation;
-                t.Required = !t.Required;
+                EditTrailRow t = e.Item as EditTrailRow;
+                t.TrailGPS.Required = !t.TrailGPS.Required;
             }
+        }
+
+        void TrailName_LostFocus(object sender, System.EventArgs e)
+        {
+            m_TrailToEdit.Name = TrailName.Text;
         }
 
         private void presentRadius()
@@ -330,27 +373,30 @@ namespace TrailsPlugin.UI.Activity {
 
         private void ValidateEdit()
         {
-            IList<TrailGPSLocation> t = (IList<TrailGPSLocation>)EList.RowData;
-            t[rowSelected]=
-                ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].setField(subItemSelected, editBox.Text);
+            IList<EditTrailRow> t = (IList<EditTrailRow>)EList.RowData;
+            t[m_rowDoubleClickSelected].TrailGPS=
+                ((IList<EditTrailRow>)EList.RowData)[m_rowDoubleClickSelected].TrailGPS.setField(m_subItemSelected, editBox.Text);
             EList.RowData = t;
-            m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
-            m_layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[rowSelected]};
+            m_layer.TrailPoints = //m_TrailToEdit.TrailLocations;
+            m_layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[m_rowDoubleClickSelected].TrailGPS};
+            m_layer.Refresh();
         }
-        private void EditOver(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void editBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyChar == 13)
+            if (e.KeyCode == Keys.Tab || e.KeyCode == Keys.Return)
             {
                 ValidateEdit();
                 editBox.Visible = false;
+                e.Handled = true;
             }
-            if (e.KeyChar == 27) //Escape
+            if (e.KeyCode == Keys.Escape)
             {
                 editBox.Visible = false;
+                e.Handled = true;
             }
         }
 
-        private void FocusOver(object sender, System.EventArgs e)
+        private void editBox_LostFocus(object sender, System.EventArgs e)
         {
             ValidateEdit();
             editBox.Visible = false;
@@ -358,21 +404,22 @@ namespace TrailsPlugin.UI.Activity {
         public void SMKDoubleClick(object sender, System.EventArgs e)
         {
             TreeList.RowHitState hitState = TreeList.RowHitState.Nothing;
-            TrailGPSLocation t = (TrailGPSLocation)EList.RowHitTest(new Point(lastMouseArg.X, lastMouseArg.Y), out hitState);
+            EditTrailRow t = (EditTrailRow)EList.RowHitTest(new Point(m_lastMouseArg.X, m_lastMouseArg.Y), out hitState);
 
             if (t != null && hitState != TreeList.RowHitState.Nothing)
             {
-                for (int i = 0; i < ((IList<TrailGPSLocation>)EList.RowData).Count; i++)
+                for (int i = 0; i < ((IList<EditTrailRow>)EList.RowData).Count; i++)
                 {
-                    TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                    EditTrailRow r = (EditTrailRow)((IList<EditTrailRow>)EList.RowData)[i];
                     if (t.Equals(r))
                     {
-                        rowSelected = i;
+                        m_rowDoubleClickSelected = i;
                         break;
                     }
                 }
                 // Check the subitem clicked
-                int nStart = lastMouseArg.X;
+                //TODO: Not handling resize (scrolling) correctly
+                int nStart = EList.PointToScreen(m_lastMouseArg.Location).X;
                 int spos = EList.Location.X;
                 int epos = spos;
                 for (int i = 0; i < EList.Columns.Count; i++)
@@ -380,36 +427,41 @@ namespace TrailsPlugin.UI.Activity {
                     epos += EList.Columns[i].Width;
                     if (nStart > spos && nStart < epos)
                     {
-                        subItemSelected = i;
+                        m_subItemSelected = i;
                         break;
                     }
 
                     spos = epos;
                 }
-                subItemText = ((IList<TrailGPSLocation>)EList.RowData)[rowSelected].getField(subItemSelected);
-                ///The positioning is incorrect, set at header
-                int rowHeight = EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
-                int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
-                editBox.Size = new System.Drawing.Size(epos - spos, rowHeight);
-                editBox.Location = new System.Drawing.Point(spos-1, yTop);
-                editBox.Text = subItemText;
-                editBox.Visible = true;
-                editBox.SelectAll();
-                editBox.Focus();
+                //Only edit first rows
+                if (m_subItemSelected < 4)
+                {
+                    m_subItemText = ((IList<EditTrailRow>)EList.RowData)[m_rowDoubleClickSelected].TrailGPS.getField(m_subItemSelected);
+                    ///The positioning is incorrect, set at header
+                    int rowHeight = EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
+                    int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
+                    editBox.Size = new System.Drawing.Size(epos - spos, rowHeight);
+                    editBox.Location = new System.Drawing.Point(spos - 1, yTop);
+                    editBox.Text = m_subItemText;
+                    editBox.Visible = true;
+                    editBox.SelectAll();
+                    editBox.Focus();
+                }
             }
 
         }
         
         public void SMKMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-             lastMouseArg = e;
+             m_lastMouseArg = e;
         }
 
         void EList_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyValue == 46)
+            if (e.KeyCode == Keys.Delete)
             {
                 EList_DeleteRow();
+                e.Handled = true;
             }
         }
         private void btnDelete_Click(object sender, EventArgs e)
@@ -436,14 +488,14 @@ namespace TrailsPlugin.UI.Activity {
             if (EList.Selected.Count == 1)
             {
                 IList selected = EList.Selected;
-                IList<TrailGPSLocation> result = (IList<TrailGPSLocation>)EList.RowData;
+                IList<EditTrailRow> result = (IList<EditTrailRow>)EList.RowData;
                 if (selected != null && selected.Count > 0)
                 {
                     for (int j = selected.Count - 1; j >= 0; j--)
                     {
                         for (int i = result.Count - 1; i >= 0; i--)
                         {
-                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                            EditTrailRow r = (EditTrailRow)((IList<EditTrailRow>)EList.RowData)[i];
                             if ((isUp < 0 && i-isUp<result.Count ||
                                 isUp > 0 && i-isUp>=0) &&
                                 selected[j].Equals(r))
@@ -464,7 +516,7 @@ namespace TrailsPlugin.UI.Activity {
         }
         void EList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
-            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
+            IList<EditTrailRow> result = new List<EditTrailRow>();
             if (EList.Selected.Count == 1)
             {
                 btnDelete.Enabled = true;
@@ -484,9 +536,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     for (int j = 0; j < selected.Count; j++)
                     {
-                        for (int i = ((IList<TrailGPSLocation>)EList.RowData).Count - 1; i >= 0; i--)
+                        for (int i = ((IList<EditTrailRow>)EList.RowData).Count - 1; i >= 0; i--)
                         {
-                            TrailGPSLocation r = (TrailGPSLocation)((IList<TrailGPSLocation>)EList.RowData)[i];
+                            EditTrailRow r = (EditTrailRow)((IList<EditTrailRow>)EList.RowData)[i];
                             if (selected[j].Equals(r))
                             {
                                 result.Add(r);
@@ -495,7 +547,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            m_layer.SelectedTrailPoints = result;
+            m_layer.SelectedTrailPoints = EditTrailRow.getTrailGPSLocation(result);
         }
     }
 }

@@ -155,11 +155,11 @@ namespace TrailsPlugin.Data {
                             }
                         }
                         if (this.m_childrenInfo.Count > i && 
-                            this.m_childrenInfo.Count >= j)
+                            this.m_childrenInfo.Count > j)
                         {
                             if (m_childrenInfo.Points[j].Time != DateTime.MinValue)
                             {
-                                TrailResultInfo t = m_childrenInfo.CopySlice(i,j);
+                                TrailResultInfo t = m_childrenInfo.CopySlice(i, j);
                                 TrailResult tr = new TrailResult(m_activityTrail, this, i+1, t, m_distDiff);
                                 tr.m_parentResult = this;
                                 //if (aActivities.Count > 1)
@@ -257,19 +257,19 @@ namespace TrailsPlugin.Data {
                 return (DateTime)m_startTime;
             }
         }
-        //StartDateTime used in tracks
+        //StartDateTime used in tracks, truncating milliseconds
         private DateTime StartDateTime2
         {
             get
             {
-                return StartDateTime.AddMilliseconds(StartDateTime.Millisecond);
+                return StartDateTime.AddMilliseconds(-StartDateTime.Millisecond);
             }
         }
         private DateTime EndDateTime2
         {
             get
             {
-                return EndDateTime.AddMilliseconds(EndDateTime.Millisecond);
+                return EndDateTime.AddMilliseconds(-EndDateTime.Millisecond);
             }
         }
         public DateTime EndDateTime
@@ -424,7 +424,7 @@ namespace TrailsPlugin.Data {
         }
         public DateTime getDateTimeFromElapsedResult(float t)
         {
-            return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(StartDateTime2/*xxx*/, TimeSpan.FromSeconds(t), Pauses);
+            return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(StartDateTime2, TimeSpan.FromSeconds(t), Pauses);
         }
         private static DateTime getDateTimeFromTrack(IDistanceDataTrack distTrack, float t)
         {
@@ -507,7 +507,7 @@ namespace TrailsPlugin.Data {
             return includeStopped;
         }
 
-        IValueRangeSeries<DateTime> Pauses
+        public IValueRangeSeries<DateTime> Pauses
         {
             get
             {
@@ -584,8 +584,9 @@ namespace TrailsPlugin.Data {
         private void getDistanceTrack()
         {
             if (null == m_distanceMetersTrack)
-            {
+            { 
                 m_distanceMetersTrack = new DistanceDataTrack();
+                m_distanceMetersTrack.AllowMultipleAtSameTime = false;
                 //m_activityDistanceMetersTrackPause = new DistanceDataTrack();
                 if (includeStopped())
                 {
@@ -595,6 +596,7 @@ namespace TrailsPlugin.Data {
                 {
                     m_activityDistanceMetersTrack = Info.MovingDistanceMetersTrack;
                 }
+                m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
                 if (m_activityDistanceMetersTrack != null)
                 {
                     //Insert points around pauses and points
@@ -1233,7 +1235,7 @@ namespace TrailsPlugin.Data {
                             {
                                 refOffset = m_cacheTrackRef.getDistResult(m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex]) -
                                    this.getDistResult(this.TrailPointDateTime[dateTrailPointIndex]);
-                                if (Settings.AdjustResyncDiffAtTrailPoints)
+                                if (!Settings.AdjustResyncDiffAtTrailPoints)
                                 {
                                     //diffdist over time will normally "jump" at each trail point
                                     //I.e. if the reference is behind, the distance suddenly gained must be subtracted
@@ -1774,6 +1776,22 @@ namespace TrailsPlugin.Data {
             s_activities.Clear();
         }
         #endregion
+
+        //Create a copy of this result as an activity
+        //Incomplete right now, used to create trails from results
+        public IActivity CopyToActivity()
+        {
+            IActivity activity = Plugin.GetApplication().Logbook.Activities.Add(this.StartDateTime);
+            activity.Category = this.Activity.Category;
+            activity.GPSRoute = this.GPSRoute;
+            activity.TimeZoneUtcOffset = this.Activity.TimeZoneUtcOffset;
+            activity.TimerPauses.Clear();
+            foreach (IValueRange<DateTime> t in this.Pauses)
+            {
+                activity.TimerPauses.Add(t);
+            }
+            return activity;
+        }
 
         #region Implementation of ITrailResult
 

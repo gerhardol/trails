@@ -23,8 +23,10 @@ using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 
-namespace TrailsPlugin.Data {
-	public class TrailResultInfo {
+namespace TrailsPlugin.Data
+{
+	public class TrailResultInfo
+    {
         public IList<TrailResultPoint> Points;
         public IActivity Activity;
 

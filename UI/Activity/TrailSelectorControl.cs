@@ -162,6 +162,12 @@ namespace TrailsPlugin.UI.Activity {
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
             }
+            else if (this.m_controller.CurrentActivityTrailDisplayed != null &&
+                this.m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
+            {
+                //Just for conveience (the popup text next contradicts this currently)
+                btnEdit_Click(sender, e);
+            }
             else
             {
 #if ST_2_1
@@ -192,7 +198,8 @@ namespace TrailsPlugin.UI.Activity {
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities);
 #endif
 
-            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) && !m_controller.CurrentActivityTrail.Trail.Generated)
+            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) && 
+                !m_controller.CurrentActivityTrail.Trail.Generated)
             {
 #if ST_2_1
 				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);

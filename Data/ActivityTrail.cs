@@ -100,9 +100,11 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (Status == TrailOrderStatus.NoInfo || Trail.IsReference && Status == TrailOrderStatus.MatchNoCalc)
+                if (Status == TrailOrderStatus.NoInfo || 
+                    m_trail.IsReference && Status == TrailOrderStatus.MatchNoCalc)
                 {
-                    if (m_trail.IsInBounds(m_controller.Activities))
+                    if (m_trail.IsInBounds(m_controller.Activities) || 
+                        m_trail.IsReference && m_trail.ReferenceActivity == null)
                     {
                         //Do not downgrade MatchNoCalc here
                         Status = TrailOrderStatus.InBoundNoCalc;
@@ -311,7 +313,7 @@ namespace TrailsPlugin.Data
                                     int matchIndex = -1;
                                     float matchDist = float.MaxValue; //distance at matchtime
                                     DateTime? matchTime = null; //Time for match or DateTime.Min for inserted
-                                    //latest match - not necessarily the best match
+                                    //latest match - not necessarily the best match but needed for 
                                     int lastMatchInRadiusIndex = -1;
                                     int lastMatchPassByIndex = -1;
 
@@ -438,8 +440,11 @@ namespace TrailsPlugin.Data
                                     } //if (dist < radius)
 
                                     ///////////
-                                    //Check for pass-by - ignore if previous was match for single point trails
-                                    else if (trailgps.Count > 1 || resultPoints.Count > 0)
+                                    //Check for pass-by
+                                    //Setting a limit here like (routeDist < 10*this.Trail.Radius) will improve detection very slightly
+                                    //This handling is very sensitive, especially for single point trails
+                                    //The second point was previously ignored here if (trailgps.Count > 1 || resultPoints.Count > 0)
+                                    else
                                     {
                                         if (prevPoint.index < 0 || routeIndex - prevPoint.index != 1)
                                         {
@@ -963,10 +968,10 @@ namespace TrailsPlugin.Data
         public System.Drawing.Image GetImage(object element, TreeList.Column column)
         {
             ActivityTrail t = (ActivityTrail)element;
-            //if (t.ActivityCount == 0)
-            //{
-            //    return Properties.Resources.square_blue;
-            //}
+            if (t.ActivityCount == 0)
+            {
+                return Properties.Resources.square_blue;
+            }
             switch (t.Status)
             {
                 case TrailOrderStatus.Match:

@@ -197,7 +197,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\delta.png" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project=".\Common\Common-Files.csproj" />
 </Project>

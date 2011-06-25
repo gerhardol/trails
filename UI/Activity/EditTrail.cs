@@ -117,7 +117,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             btnExport.Text = "";
             btnExport.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Export16;
-            btnExport.Visible = true;
+            btnRefresh.Text = "";
+            btnRefresh.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Refresh16;
 #if ST_2_1
             this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #else
@@ -232,6 +233,11 @@ namespace TrailsPlugin.UI.Activity {
                     activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(trailLoc[i].LatitudeDegrees, trailLoc[i].LongitudeDegrees, 0));
                 }
             }
+        }
+
+        void btnRefresh_Click(object sender, System.EventArgs e)
+        {
+            RefreshResult();
         }
 
         private void EditTrail_Activated(object sender, System.EventArgs e)
@@ -452,9 +458,30 @@ namespace TrailsPlugin.UI.Activity {
                     editBox.Focus();
                 }
             }
-
         }
-        
+
+        private void RefreshResult()
+        {
+            if (Controller.TrailController.Instance.ReferenceActivity != null)
+            {
+                m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+                ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
+                at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity });
+                if (at.Results.Count > 0)
+                {
+                    m_trailResult = at.Results[0];
+                }
+                else
+                {
+                    m_trailResult = null;
+                }
+                EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
+                foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+                {
+                    EList.SetChecked(t, t.TrailGPS.Required);
+                }
+            }
+        }
         public void SMKMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
              m_lastMouseArg = e;
@@ -465,6 +492,11 @@ namespace TrailsPlugin.UI.Activity {
             if (e.KeyCode == Keys.Delete)
             {
                 EList_DeleteRow();
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.R)
+            {
+                RefreshResult();
                 e.Handled = true;
             }
         }

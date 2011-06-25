@@ -41,6 +41,7 @@
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnRefresh = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel.SuspendLayout();
             this.EList.SuspendLayout();
             this.SuspendLayout();
@@ -406,6 +407,29 @@
             this.btnExport.TextRightMargin = 2;
             this.btnExport.Click += new System.EventHandler(btnExport_Click);
             // 
+            // btnRefresh
+            // 
+            this.btnRefresh.BackColor = System.Drawing.Color.Transparent;
+            this.btnRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnRefresh.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnRefresh.CenterImage = null;
+            this.btnRefresh.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnRefresh.HyperlinkStyle = false;
+            this.btnRefresh.ImageMargin = 2;
+            this.btnRefresh.LeftImage = null;
+            this.btnRefresh.Location = new System.Drawing.Point(86, 303);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Padding = new System.Windows.Forms.Padding(2);
+            this.btnRefresh.PushStyle = true;
+            this.btnRefresh.RightImage = null;
+            this.btnRefresh.Size = new System.Drawing.Size(19, 19);
+            this.btnRefresh.TabIndex = 24;
+            this.btnRefresh.Text = "R";
+            this.btnRefresh.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnRefresh.TextLeftMargin = 2;
+            this.btnRefresh.TextRightMargin = 2;
+            this.btnRefresh.Click += new System.EventHandler(btnRefresh_Click);
+            // 
             // EditTrail
             // 
             this.AcceptButton = this.btnOk;
@@ -414,6 +438,7 @@
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(421, 328);
             this.Controls.Add(this.btnExport);
+            this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCopy);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
@@ -451,6 +476,7 @@
         private ZoneFiveSoftware.Common.Visuals.Button btnDown;
         private ZoneFiveSoftware.Common.Visuals.Button btnCopy;
         private ZoneFiveSoftware.Common.Visuals.Button btnExport;
+        private ZoneFiveSoftware.Common.Visuals.Button btnRefresh;
 
 	}
 }

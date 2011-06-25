@@ -188,6 +188,10 @@ namespace TrailsPlugin.Data
 
         public void CalcResults()
         {
+            CalcResults(m_controller.Activities);
+        }
+        public void CalcResults(IList<IActivity> activities)
+        {
             if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
             {
                 m_resultsListWrapper = new List<TrailResultWrapper>();
@@ -212,7 +216,7 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    foreach (IActivity activity in m_controller.Activities)
+                    foreach (IActivity activity in activities)
                     {
                         if (m_trail.MatchAll)
                         {

@@ -44,6 +44,7 @@ namespace TrailsPlugin.Data {
             m_ShowChartToolBar = true;
             m_SetNameAtImport = true;
             m_SelectSimilarResults = false;
+            m_addCurrentCategory = false;
             m_MaxAutoCalcActivitiesTrails = 500;
             m_MaxAutoCalcResults = 800;
             m_restIsPause = false;
@@ -60,6 +61,7 @@ namespace TrailsPlugin.Data {
         private static IList<LineChartTypes> m_MultiGraphTypes;
         private static bool m_ShowChartToolBar;
         private static bool m_SelectSimilarResults;
+        private static bool m_addCurrentCategory;
         private static string m_summaryViewSortColumn;
         private static ListSortDirection m_summaryViewSortDirection;
         private static bool m_SetNameAtImport;
@@ -189,6 +191,17 @@ namespace TrailsPlugin.Data {
                 m_SelectSimilarResults = value;
             }
         }
+        public static bool AddCurrentCategory
+        {
+            get
+            {
+                return m_addCurrentCategory;
+            }
+            set
+            {
+                m_addCurrentCategory = value;
+            }
+        }
 
         public static string SummaryViewSortColumn
         {
@@ -261,6 +274,8 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
             attr = pluginNode.GetAttribute(xmlTags.SelectSimilarResults);
             if (attr.Length > 0) { m_SelectSimilarResults = XmlConvert.ToBoolean(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
+            if (attr.Length > 0) { m_addCurrentCategory = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
             if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
@@ -357,6 +372,7 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
             pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
             pluginNode.SetAttribute(xmlTags.SelectSimilarResults, XmlConvert.ToString(m_SelectSimilarResults));
+            pluginNode.SetAttribute(xmlTags.AddCurrentActivity, XmlConvert.ToString(m_addCurrentCategory));
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
             pluginNode.SetAttribute(xmlTags.RestIsPause, XmlConvert.ToString(m_restIsPause));
             pluginNode.SetAttribute(xmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_resyncDiffAtTrailPoints));
@@ -402,6 +418,7 @@ namespace TrailsPlugin.Data {
             public const string summaryViewSortDirection = "summaryViewSortDirection";
             public const string ShowChartToolBar = "ShowChartToolBar";
             public const string SelectSimilarResults = "SelectSimilarResults";
+            public const string AddCurrentActivity = "AddCurrentActivity";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
             public const string MaxAutoCalcResults = "MaxAutoCalcResults";
             public const string SetNameAtImport = "SetNameAtImport";

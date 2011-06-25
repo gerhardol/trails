@@ -206,6 +206,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -- Select Trail in List --.
         /// </summary>
         internal static string Trail_NoTrailSelected {
@@ -373,6 +382,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_EditTrail_UpdateFailed {
             get {
                 return ResourceManager.GetString("UI_Activity_EditTrail_UpdateFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activities with Current Reference Category.
+        /// </summary>
+        internal static string UI_Activity_List_AddCurrentCategory {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_AddCurrentCategory", resourceCulture);
             }
         }
         

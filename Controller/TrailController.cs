@@ -377,6 +377,10 @@ namespace TrailsPlugin.Controller
         {
             m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);
             m_currentActivityTrail.CalcResults();
+            if (m_CurrentOrderedTrails == null)
+            {
+                getTrails();
+            }
             m_CurrentOrderedTrails.Add(m_currentActivityTrail);
             m_lastTrailId = trail.Id;
         }

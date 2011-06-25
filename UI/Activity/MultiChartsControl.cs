@@ -146,7 +146,7 @@ namespace TrailsPlugin.UI.Activity {
             //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_resyncDiffAtTrailPoints;
-            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_adjustResyncDiffAtTrailPoints;
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Text = " "+Properties.Resources.UI_Chart_adjustResyncDiffAtTrailPoints;
             this.syncChartAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_syncChartAtTrailPoints;
 
             this.timeToolStripMenuItem.Text = LineChartUtil.XAxisValueString(XAxisValue.Time);

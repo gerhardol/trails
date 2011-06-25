@@ -104,6 +104,7 @@ namespace TrailsPlugin.UI.Activity {
             this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
             this.markCommonStretchesMenuItem.Text = Properties.Resources.UI_Activity_List_URCommon;
             this.addInBoundActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddInBound;
+            this.addCurrentCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddCurrentCategory;
             this.RefreshColumns();
         }
 
@@ -165,6 +166,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             limitActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
             selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
+            addCurrentCategoryMenuItem.Checked = Data.Settings.AddCurrentCategory;
         }
         
         public void RefreshList()
@@ -185,7 +187,6 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                 this.summaryList.SelectedChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #else
-                //summaryList.SelectedItems = currSelected;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
@@ -195,14 +196,14 @@ namespace TrailsPlugin.UI.Activity {
             SelectedItemsWrapper = null;
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
+
         private const int cResultListHeight = 17;//Should be possible to read out from list...
-        //private static bool changedSizeAfterCreation = false;
         void SummaryPanel_HandleCreated(object sender, System.EventArgs e)
         {
             if (m_page != null)
             {
                 //Set size, to not waste chart
-                const int minRows = 2;
+                int minRows = 2;
                 const int maxRows = 8;
                 int resRows = minRows;
                 int setRows = minRows;
@@ -212,7 +213,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 if (summaryList.HorizontalScroll.Enabled)
                 {
-                    resRows++;
+                    minRows++;
                 }
                 setRows = Math.Max(minRows, resRows);
                 setRows = Math.Min(maxRows, setRows);
@@ -739,6 +740,15 @@ namespace TrailsPlugin.UI.Activity {
             return IsCurrentCategory(activityCat.Parent, filterCat);
         }
 
+        public void addCurrentCategoryCheck()
+        {
+            if (this.addCurrentCategoryMenuItem.Checked &&
+                m_controller.ReferenceTrailResult != null)
+            {
+                addCurrentCategory(false);
+            }
+        }
+
         void addCurrentCategory(bool addAll)
         {
             IList<IActivity> allActivities = new List<IActivity>();
@@ -1005,6 +1015,17 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshControlState();
             }
         }
+
+       void addCurrentCategoryMenuItem_Click(object sender, System.EventArgs e)
+       {
+           if (sender is ToolStripMenuItem)
+           {
+               ToolStripMenuItem addCurrent = (ToolStripMenuItem)sender; //addCurrentCategoryMenuItem
+               addCurrent.Checked = !addCurrent.Checked;
+               Data.Settings.AddCurrentCategory = addCurrent.Checked;
+               addCurrentCategoryCheck();
+           }
+       }
 
         void limitURMenuItem_Click(object sender, System.EventArgs e)
         {

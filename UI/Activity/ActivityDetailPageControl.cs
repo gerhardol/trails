@@ -135,6 +135,10 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 RefreshData();
                 RefreshControlState();
+                if (value != null && value.Count == 1)
+                {
+                    this.ResultList.addCurrentCategoryCheck();
+                }
             }
         }
 

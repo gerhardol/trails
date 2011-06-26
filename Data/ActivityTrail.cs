@@ -32,7 +32,9 @@ namespace TrailsPlugin.Data
 		private Data.Trail m_trail;
         private IList<Data.TrailResultWrapper> m_resultsListWrapper = null;
         private TrailOrderStatus m_status;
-        private IActivity m_resultActivity = null;
+        private IActivity m_resultActivity = null; //Used for ReferenceActivity results only
+
+        private IList<IncompleteTrailResult> m_partialResuls;
         //Counter for "no results"
         public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
         private IList<IActivity> m_inBound = new List<IActivity>();
@@ -126,13 +128,6 @@ namespace TrailsPlugin.Data
                 return (Status == TrailOrderStatus.MatchNoCalc || Status == TrailOrderStatus.InBoundNoCalc);
             }
         }
-        public IList<TrailResult> Results
-        {
-            get
-            {
-                return TrailResultWrapper.GetTrailResults(ResultTreeList);
-            }
-        }
 
         public void Reset()
         {
@@ -148,6 +143,15 @@ namespace TrailsPlugin.Data
                 }
             }
         }
+
+        public IList<TrailResult> Results
+        {
+            get
+            {
+                return TrailResultWrapper.GetTrailResults(ResultTreeList);
+            }
+        }
+
         public IList<TrailResultWrapper> ResultTreeList
         {
             get
@@ -188,13 +192,15 @@ namespace TrailsPlugin.Data
 
         public void CalcResults()
         {
-            CalcResults(m_controller.Activities);
+            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses);
         }
-        public void CalcResults(IList<IActivity> activities)
+        public void CalcResults(IList<IActivity> activities, int MaxRequiredMisses)
         {
             if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
             {
                 m_resultsListWrapper = new List<TrailResultWrapper>();
+                m_partialResuls = new List<IncompleteTrailResult>();
+
                 m_resultActivity = m_trail.ReferenceActivity;
 
                 IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
@@ -487,6 +493,12 @@ namespace TrailsPlugin.Data
                                         {
                                             automaticMatch = true;
                                         }
+                                        else if (currRequiredMisses < MaxRequiredMisses)
+                                        {
+                                            automaticMatch = true;
+                                            //OK to miss this point. Set automatic match to start looking at prev match
+                                            currRequiredMisses++;
+                                        }
                                         else
                                         {
                                             ////////////////////////////////////
@@ -515,22 +527,12 @@ namespace TrailsPlugin.Data
                                                     routeIndex = Math.Max(prevActivityMatchIndex, prevReqMatchIndex);
                                                     prevPoint.index = -1;
                                                 }
-                                                else
-                                                {
-                                                    if (currRequiredMisses < m_trail.MaxRequiredMisses)
-                                                    {
-                                                        //OK to miss this point. Set automatic match to start looking at prev match
-                                                        automaticMatch = true;
-                                                        currRequiredMisses++;
-                                                    }
-                                                }
                                             }
                                         }
                                         if (automaticMatch)
                                         {
                                             matchTime = DateTime.MinValue;
                                             matchDist = this.Trail.Radius * 2;
-
                                         }
                                     }
 
@@ -604,9 +606,19 @@ namespace TrailsPlugin.Data
                                                 TrailResultWrapper result = new TrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo,
                                                     distDiff);
                                                 m_resultsListWrapper.Add(result);
+
+                                                //Save latest match info, routeIndex should not be lower than this
+                                                prevActivityMatchIndex = getPrevMatchIndex(resultPoints);
                                             }
-                                            //Save latest match info, routeIndex should not be lower than this
-                                            prevActivityMatchIndex = getPrevMatchIndex(resultPoints);
+                                            else
+                                            {
+                                                IncompleteTrailResult result = new IncompleteTrailResult(activity, resultPoints);
+                                                m_partialResuls.Add(result);
+
+                                                //While there could be more single point matches, they should not be interesting
+                                                //In that case, special care must be set where next result starts
+                                                prevActivityMatchIndex = activity.GPSRoute.Count;
+                                            }
        
                                             currRequiredMisses = 0;
                                             resultPoints.Clear();
@@ -668,6 +680,9 @@ namespace TrailsPlugin.Data
                                 //InBoundMatchPartial updated for all incomplete results
                                 if (resultPoints.Count > 0)
                                 {
+                                    IncompleteTrailResult result = new IncompleteTrailResult(activity, resultPoints);
+                                    m_partialResuls.Add(result);
+
                                     TrailOrderStatus t = TrailOrderStatus.InBoundMatchPartial;
                                     if (!m_noResCount.ContainsKey(t))
                                     {
@@ -703,65 +718,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public void Remove(IList<TrailResultWrapper> atr, bool invertSelection)
-        {
-            if (this.m_resultsListWrapper != null)
-            {
-                IList<TrailResultWrapper> selected = atr;
-                if (invertSelection)
-                {
-                    selected = new List<TrailResultWrapper>();
-                    foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
-                    {
-                        if (!atr.Contains(tr))
-                        {
-                            selected.Add(tr);
-                        }
-                    }
-                    //Exclude parents to selected
-                    foreach (TrailResultWrapper tr in atr)
-                    {
-                        if (tr.Parent != null)
-                        {
-                            TrailResultWrapper tr2 = tr.Parent as TrailResultWrapper;
-                            if (selected.Contains(tr2))
-                            {
-                                selected.Remove(tr2);
-                            }
-                        }
-                    }
-
-                }
-                if (invertSelection && selected.Count == m_resultsListWrapper.Count)
-                {
-                    //Must keep at least one in "inverted"
-                    return;
-                }
-                //Needed?
-                //foreach (TrailResult trr in m_resultsList)
-                //{
-                //    trr.RemoveChildren(atr[0].Result);
-                //}
-                //This will not have any effect with invertSelection, as 'selected' contains
-                //complement to parents only
-                foreach (TrailResultWrapper trr in m_resultsListWrapper)
-                {
-                    trr.RemoveChildren(selected, invertSelection);
-                }
-                foreach (TrailResultWrapper tr in selected)
-                {
-                    if (Results.Contains(tr.Result))
-                    {
-                        Results.Remove(tr.Result);
-                    }
-                    if (ResultTreeList.Contains(tr))
-                    {
-                        ResultTreeList.Remove(tr);
-                    }
-                }
-            }
-        }
-
+        ////////////////////////////
         private static int getPrevMatchIndex(IList<TrailResultPointMeta> resultPoints)
         {
             int currMatches = resultPoints.Count;
@@ -850,6 +807,96 @@ namespace TrailsPlugin.Data
                 noOfTrailPoints == trailgps.Count));
         }
 
+        ///////////////////////////////////////////
+        public void Remove(IList<TrailResultWrapper> atr, bool invertSelection)
+        {
+            if (this.m_resultsListWrapper != null)
+            {
+                IList<TrailResultWrapper> selected = atr;
+                if (invertSelection)
+                {
+                    selected = new List<TrailResultWrapper>();
+                    foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
+                    {
+                        if (!atr.Contains(tr))
+                        {
+                            selected.Add(tr);
+                        }
+                    }
+                    //Exclude parents to selected
+                    foreach (TrailResultWrapper tr in atr)
+                    {
+                        if (tr.Parent != null)
+                        {
+                            TrailResultWrapper tr2 = tr.Parent as TrailResultWrapper;
+                            if (selected.Contains(tr2))
+                            {
+                                selected.Remove(tr2);
+                            }
+                        }
+                    }
+
+                }
+                if (invertSelection && selected.Count == m_resultsListWrapper.Count)
+                {
+                    //Must keep at least one in "inverted"
+                    return;
+                }
+                //Needed?
+                //foreach (TrailResult trr in m_resultsList)
+                //{
+                //    trr.RemoveChildren(atr[0].Result);
+                //}
+                //This will not have any effect with invertSelection, as 'selected' contains
+                //complement to parents only
+                foreach (TrailResultWrapper trr in m_resultsListWrapper)
+                {
+                    trr.RemoveChildren(selected, invertSelection);
+                }
+                foreach (TrailResultWrapper tr in selected)
+                {
+                    if (Results.Contains(tr.Result))
+                    {
+                        Results.Remove(tr.Result);
+                    }
+                    if (ResultTreeList.Contains(tr))
+                    {
+                        ResultTreeList.Remove(tr);
+                    }
+                }
+            }
+        }
+
+        ///////////////
+        public IList<TrailResult> PartialResults
+        {
+            get
+            {
+                IList<TrailResult> result = new List<TrailResult>();
+                foreach (IncompleteTrailResult t in m_partialResuls)
+                {
+                    TrailResultInfo resultInfo = new TrailResultInfo(t.Activity);
+                    float distDiff = 0;
+                    for (int i = 0; i < t.Points.Count; i++)
+                    {
+                        TrailResultPointMeta point = t.Points[i];
+                        //For incomplete, do not care if restart points were used or not
+                        resultInfo.Points.Add(point);
+                        distDiff += point.trailDistDiff;
+                    }
+                    for (int i = t.Points.Count; i < m_trail.TrailLocations.Count; i++)
+                    {
+                        resultInfo.Points.Add(new TrailResultPoint(DateTime.MinValue, m_trail.TrailLocations[i].Name));
+                    }
+                    TrailResult tr = new TrailResult(this, m_resultsListWrapper.Count + 1, resultInfo,
+                        distDiff);
+                    result.Add(tr);
+                }
+                return result;
+            }
+        }
+
+        /////////////////
         //Some syntethic value to sort
         private float? sortValue;
         private float SortValue
@@ -945,6 +992,16 @@ namespace TrailsPlugin.Data
             public float dist;
         }
 
+        class IncompleteTrailResult
+        {
+            public IncompleteTrailResult(IActivity activity, IList<TrailResultPointMeta> Points)
+            {
+                this.Activity = activity;
+                this.Points = Points;
+            }
+            public IList<TrailResultPointMeta> Points;
+            public IActivity Activity;
+        }
         class TrailResultPointMeta : TrailResultPoint
         {
             public TrailResultPointMeta(DateTime time, string name,

@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
 using GpsRunningPlugin.Util;
@@ -46,9 +47,22 @@ namespace TrailsPlugin.Data
         public static IList<EditTrailRow> getEditTrailRows(IList<TrailGPSLocation> tgps, TrailResult tr)
         {
             IList<EditTrailRow> result = new List<EditTrailRow>();
-            foreach(TrailGPSLocation t in tgps)
+            bool firstValid = false;
+            foreach (TrailGPSLocation t in tgps)
             {
                 result.Add(new EditTrailRow(t, tr, result.Count));
+                if (!firstValid && tr != null &&
+                    tr.TrailPointDateTime[result.Count - 1] > DateTime.MinValue)
+                {
+                    firstValid = true;
+                    try
+                    {
+                        ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[result.Count - 1]);
+                        result[result.Count - 1].m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
+                        result[result.Count - 1].m_time = entry.ElapsedSeconds;
+                    }
+                    catch { }
+                }
             }
             return result;
         }

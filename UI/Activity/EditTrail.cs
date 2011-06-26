@@ -145,7 +145,62 @@ namespace TrailsPlugin.UI.Activity {
             presentRadius();
         }
 
-		private void btnCancel_Click(object sender, System.EventArgs e)
+        public Data.Trail Trail
+        {
+            get
+            {
+                return m_TrailToEdit;
+            }
+        }
+
+        private void RefreshResult(bool recalculate)
+        {
+            if (Controller.TrailController.Instance.ReferenceActivity != null)
+            {
+                if (recalculate)
+                {
+                    m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+                }
+                if (recalculate || m_trailResult == null)
+                {
+                    ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
+                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses);
+                    if (at.Results.Count > 0)
+                    {
+                        m_trailResult = at.Results[0];
+                    }
+                    else
+                    {
+                        at.Reset();
+                        at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99);
+                        if (at.Results.Count > 0)
+                        {
+                            m_trailResult = at.Results[0];
+                        }
+                        else
+                        {
+                            if (at.PartialResults.Count > 0)
+                            {
+                                m_trailResult = at.PartialResults[0];
+                            }
+                            else
+                            {
+                                m_trailResult = null;
+                            }
+                        }
+                    }
+                    at.Reset();
+                }
+                EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
+                foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+                {
+                    EList.SetChecked(t, t.TrailGPS.Required);
+                }
+            }
+        }
+        
+        ///////////////////////////
+        private void btnCancel_Click(object sender, System.EventArgs e)
         {
 			this.DialogResult = DialogResult.Cancel;
 			Close();
@@ -237,18 +292,12 @@ namespace TrailsPlugin.UI.Activity {
 
         void btnRefresh_Click(object sender, System.EventArgs e)
         {
-            RefreshResult();
+            RefreshResult(true);
         }
 
         private void EditTrail_Activated(object sender, System.EventArgs e)
         {
 			TrailName.Focus();
-		}
-
-		public Data.Trail Trail {
-			get {
-				return m_TrailToEdit;
-			}
 		}
 
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
@@ -275,11 +324,7 @@ namespace TrailsPlugin.UI.Activity {
             EList.Columns.Add(new TreeList.Column("Distance", CommonResources.Text.LabelDistance, 60, StringAlignment.Near));
             EList.Columns.Add(new TreeList.Column("Time", CommonResources.Text.LabelTime, 60, StringAlignment.Near));
 
-            EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
-            foreach(EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
-            {
-                EList.SetChecked(t, t.TrailGPS.Required);
-            }
+            RefreshResult(false);
 
             EList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SMKMouseDown);
             EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
@@ -460,28 +505,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private void RefreshResult()
-        {
-            if (Controller.TrailController.Instance.ReferenceActivity != null)
-            {
-                m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
-                ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
-                at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity });
-                if (at.Results.Count > 0)
-                {
-                    m_trailResult = at.Results[0];
-                }
-                else
-                {
-                    m_trailResult = null;
-                }
-                EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
-                foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
-                {
-                    EList.SetChecked(t, t.TrailGPS.Required);
-                }
-            }
-        }
         public void SMKMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
              m_lastMouseArg = e;
@@ -496,7 +519,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
-                RefreshResult();
+                RefreshResult(true);
                 e.Handled = true;
             }
         }

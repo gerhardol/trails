@@ -312,6 +312,15 @@ namespace TrailsPlugin.Controller
                 }
             }
 
+            //check that the ref is for current results
+            if (m_currentActivityTrail != null)
+            {
+                if(!m_currentActivityTrail.Results.Contains(m_referenceTrailResult))
+                {
+                    m_referenceTrailResult = null;
+                }
+            }
+
             //If the reference result is not set, try a result for current activity
             if (m_referenceTrailResult == null &&
                 m_referenceActivity != null &&

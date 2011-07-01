@@ -499,36 +499,6 @@ namespace TrailsPlugin.Data
                                             //OK to miss this point. Set automatic match to start looking at prev match
                                             currRequiredMisses++;
                                         }
-                                        else
-                                        {
-                                            ////////////////////////////////////
-                                            //If this point is required but there are prev points that are not, try dropping non-required
-                                            if (resultPoints.Count > 0 &&
-                                                !resultPoints[resultPoints.Count - 1].restart)
-                                            {
-                                                int prevReqMatchIndex = -1; //Last req index that match for this activity
-                                                bool matchNoReqToIgnore = false;
-                                                for (int i = resultPoints.Count - 1; i >= 0; i--)
-                                                {
-                                                    if (trailgps[TrailIndex(trailgps, i)].Required)
-                                                    {
-                                                        prevReqMatchIndex = resultPoints[i].index;
-                                                        break;
-                                                    }
-                                                    else if (!resultPoints[i].restart)
-                                                    {
-                                                        //Hide the non-required point
-                                                        resultPoints[i].restart = true;
-                                                        matchNoReqToIgnore = true;
-                                                    }
-                                                }
-                                                if (matchNoReqToIgnore)
-                                                {
-                                                    routeIndex = Math.Max(prevActivityMatchIndex, prevReqMatchIndex);
-                                                    prevPoint.index = -1;
-                                                }
-                                            }
-                                        }
                                         if (automaticMatch)
                                         {
                                             matchTime = DateTime.MinValue;
@@ -623,46 +593,6 @@ namespace TrailsPlugin.Data
                                             currRequiredMisses = 0;
                                             resultPoints.Clear();
                                         }
-
-                                        //Determine where to start from
-                                        if (automaticMatch)
-                                        {
-                                            //If this was an automatic match, start at prev match
-                                            //Make sure to not restart if this was the end and there were not enough matches
-                                            //if (currRequiredMisses <= m_trail.MaxRequiredMisses &&
-                                            //    (resultPoints.Count > 0 || noMatches >= 2))
-                                            {
-                                                routeIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(resultPoints));
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (resultPoints.Count == 0)
-                                            {
-                                                //End point, try this point again as start
-                                                routeIndex = matchIndex - 1;
-                                            }
-                                            else
-                                            {
-                                                //Not yet a result, but at least one point match
-                                                Status = TrailOrderStatus.InBoundMatchPartial;
-
-                                                //For single point trail, we need to start after current radius to not get immediate match
-                                                //For two point trails the result is unexpected if the first/last points completely overlap
-                                                //For trails with more points, assume that all points do not overlap
-                                                if (2 >= trailgps.Count)
-                                                {
-                                                    //One of these must have been a match
-                                                    int last = Math.Max(lastMatchInRadiusIndex, lastMatchPassByIndex);
-                                                    routeIndex = last;
-                                                }
-                                                else
-                                                {
-                                                    //Start search for next point after this match even if they overlap
-                                                    routeIndex = matchIndex;
-                                                }
-                                            }
-                                        }
                                         //Clear cache, dist unknown
                                         prevPoint.index = -1;
                                     }
@@ -673,6 +603,78 @@ namespace TrailsPlugin.Data
                                         prevPoint.dist = routeDist;
                                     }
 
+                                    ////////////////////////////////////
+                                    //Determine where to start from
+                                    //The normal case at no match is to continue with next routePoint
+                                    //At matches and end points, the match should maybe restart
+                                    if (automaticMatch)
+                                    {
+                                        //If this was an automatic match, start at prev match
+                                        //Make sure to not restart if this was the end and there were not enough matches
+                                        //if (currRequiredMisses <= m_trail.MaxRequiredMisses &&
+                                        //    (resultPoints.Count > 0 || noMatches >= 2))
+                                        {
+                                            routeIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(resultPoints));
+                                        }
+                                    }
+                                    else if (routeIndex >= activity.GPSRoute.Count - 1 &&
+                                             resultPoints.Count > 0 &&
+                                            !resultPoints[resultPoints.Count - 1].restart)
+                                    {
+                                        ////////////////////////////////////
+                                        //Maybe restart, also at matches (except end)
+                                        //If this point is required but there are prev points that are not, try dropping non-required
+                                        int prevReqMatchIndex = -1; //Last req index that match for this activity
+                                        bool matchNoReqToIgnore = false;
+                                        for (int i = resultPoints.Count - 1; i >= 0; i--)
+                                        {
+                                            if (trailgps[TrailIndex(trailgps, i)].Required)
+                                            {
+                                                prevReqMatchIndex = resultPoints[i].index;
+                                                break;
+                                            }
+                                            else if (!resultPoints[i].restart)
+                                            {
+                                                //Hide the non-required point
+                                                resultPoints[i].restart = true;
+                                                matchNoReqToIgnore = true;
+                                            }
+                                        }
+                                        if (matchNoReqToIgnore)
+                                        {
+                                            routeIndex = Math.Max(prevActivityMatchIndex, prevReqMatchIndex);
+                                            prevPoint.index = -1;
+                                        }
+                                    }
+                                    else if (matchTime != null)
+                                    {
+                                        if (resultPoints.Count == 0)
+                                        {
+                                            //End point, try this point again as start
+                                            routeIndex = matchIndex - 1;
+                                        }
+                                        else
+                                        {
+                                            //Not yet a result, but at least one point match
+                                            Status = TrailOrderStatus.InBoundMatchPartial;
+
+                                            //For single point trail, we need to start after current radius to not get immediate match
+                                            //For two point trails the result is unexpected if the first/last points completely overlap
+                                            //For trails with more points, assume that all points do not overlap
+                                            if (2 >= trailgps.Count)
+                                            {
+                                                //One of these must have been a match
+                                                int last = Math.Max(lastMatchInRadiusIndex, lastMatchPassByIndex);
+                                                routeIndex = last;
+                                            }
+                                            else
+                                            {
+                                                //Start search for next point after this match even if they overlap
+                                                routeIndex = matchIndex;
+                                            }
+                                        }
+                                    }
+     
                                     ///////////////////////////////////////
                                 } //foreach gps point
 

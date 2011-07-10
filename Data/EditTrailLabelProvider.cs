@@ -27,8 +27,11 @@ namespace TrailsPlugin.Data
     class EditTrailRow
     {
         private TrailGPSLocation m_gpsLoc;
+        private int m_trailPointIndex;
+        public DateTime? m_date;
         public double? m_distance;
         public double? m_time;
+        public bool m_firstRow = false;
         
         public EditTrailRow(TrailGPSLocation loc)
         {
@@ -37,12 +40,15 @@ namespace TrailsPlugin.Data
         private EditTrailRow(TrailGPSLocation loc, TrailResult tr, int i)
             : this(loc)
         {
+            m_trailPointIndex = i;
             if (tr != null && tr.TrailPointDateTime != null && 
                 tr.TrailPointDateTime.Count > i && tr.TrailPointDateTime[i] > DateTime.MinValue)
             {
+                m_date = tr.TrailPointDateTime[i];
                 m_distance = tr.TrailPointDist0(tr)[i];
                 m_time = tr.TrailPointTime0(tr)[i];
             }
+            m_firstRow = false;
         }
         public static IList<EditTrailRow> getEditTrailRows(IList<TrailGPSLocation> tgps, TrailResult tr)
         {
@@ -50,16 +56,18 @@ namespace TrailsPlugin.Data
             bool firstValid = false;
             foreach (TrailGPSLocation t in tgps)
             {
-                result.Add(new EditTrailRow(t, tr, result.Count));
+                EditTrailRow row = new EditTrailRow(t, tr, result.Count);
+                result.Add(row);
                 if (!firstValid && tr != null &&
                     tr.TrailPointDateTime[result.Count - 1] > DateTime.MinValue)
                 {
                     firstValid = true;
+                    row.m_firstRow = true;
                     try
                     {
                         ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[result.Count - 1]);
-                        result[result.Count - 1].m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
-                        result[result.Count - 1].m_time = entry.ElapsedSeconds;
+                        row.m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
+                        row.m_time = entry.ElapsedSeconds;
                     }
                     catch { }
                 }

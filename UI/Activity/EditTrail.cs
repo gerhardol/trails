@@ -502,6 +502,44 @@ namespace TrailsPlugin.UI.Activity {
                     editBox.SelectAll();
                     editBox.Focus();
                 }
+                else if (m_subItemSelected > 99)
+                {
+                    //xxx disabled, not working yet
+                    if (t.m_time != null && !t.m_firstRow && m_trailResult.Activity != null &&
+                        m_trailResult.Activity.GPSRoute != null)
+                    {
+                        for (int i = m_rowDoubleClickSelected - 1; i >= 0; i--)
+                        {
+                            if (((IList<EditTrailRow>)EList.RowData)[i].m_time != null)
+                            {
+                                IGPSRoute route = new GPSRoute();
+                                DateTime startTime = (DateTime)((IList<EditTrailRow>)EList.RowData)[i].m_date;
+                                DateTime endTime = (DateTime)t.m_date;
+                                ITimeValueEntry<float> startDist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime);
+                                ITimeValueEntry<float> endDist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(endTime);
+                                double speed = (endDist.Value - startDist.Value) /
+                                    (m_trailResult.getElapsedResult(endTime) - m_trailResult.getElapsedResult(startTime));
+                                for (int j = 0; j < m_trailResult.Activity.GPSRoute.Count; j++)
+                                {
+                                    ITimeValueEntry<IGPSPoint> g = m_trailResult.Activity.GPSRoute[j];
+                                    DateTime date = m_trailResult.Activity.GPSRoute.EntryDateTime(g);
+                                    if (date < endTime && date > startTime)
+                                    {
+                                        ITimeValueEntry<float> dist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(date);
+                                        uint s = (uint)((dist.Value-startDist.Value)/speed)+startDist.ElapsedSeconds;
+                                        g = new TimeValueEntry<IGPSPoint>(s, g.Value);
+                                        date = m_trailResult.Activity.GPSRoute.EntryDateTime(g);
+                                        //date = startTime+TimeSpan.FromSeconds(s);
+                                    }
+                                    route.Add(date, g.Value);
+                                }
+                                m_trailResult.Activity.GPSRoute = route;
+                                break;
+                            }
+                        }
+                    }
+                }
+
             }
         }
 

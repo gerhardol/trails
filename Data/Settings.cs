@@ -51,6 +51,7 @@ namespace TrailsPlugin.Data {
             m_resyncDiffAtTrailPoints = true;
             m_adjustResyncDiffAtTrailPoints = false;
             m_syncChartAtTrailPoints = false;
+            m_onlyReferenceRight = false;
         }
         private static IList<string> m_activityPageColumns;
         private static int m_activityPageNumFixedColumns;
@@ -71,6 +72,7 @@ namespace TrailsPlugin.Data {
         private static bool m_resyncDiffAtTrailPoints;
         private static bool m_adjustResyncDiffAtTrailPoints;
         private static bool m_syncChartAtTrailPoints;
+        private static bool m_onlyReferenceRight;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -249,6 +251,11 @@ namespace TrailsPlugin.Data {
             get { return m_syncChartAtTrailPoints; }
             set { m_syncChartAtTrailPoints = value; }
         }
+        public static bool OnlyReferenceRight
+        {
+            get { return m_onlyReferenceRight; }
+            set { m_onlyReferenceRight = value; }
+        }
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
@@ -298,6 +305,8 @@ namespace TrailsPlugin.Data {
             if (attr.Length > 0) { AdjustResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.SyncChartAtTrailPoints);
             if (attr.Length > 0) { SyncChartAtTrailPoints = XmlConvert.ToBoolean(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.OnlyReferenceRight);
+            if (attr.Length > 0) { OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
 
             attr = pluginNode.GetAttribute(xmlTags.sColumns);
             if (attr.Length > 0)
@@ -378,6 +387,8 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_resyncDiffAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints, XmlConvert.ToString(m_adjustResyncDiffAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.SyncChartAtTrailPoints, XmlConvert.ToString(m_syncChartAtTrailPoints));
+            pluginNode.SetAttribute(xmlTags.OnlyReferenceRight, XmlConvert.ToString(m_onlyReferenceRight));
+
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
 
@@ -426,6 +437,8 @@ namespace TrailsPlugin.Data {
             public const string ResyncDiffAtTrailPoints = "ResyncDiffAtTrailPoints";
             public const string AdjustResyncDiffAtTrailPoints = "AdjustResyncDiffAtTrailPoints";
             public const string SyncChartAtTrailPoints = "SyncChartAtTrailPoints";
+            public const string OnlyReferenceRight = "OnlyReferenceRight";
+
             public const string sColumns = "sColumns";
         }
 

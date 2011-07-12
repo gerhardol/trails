@@ -598,7 +598,19 @@ namespace TrailsPlugin.UI.Activity {
                     for (int i = 0; i < m_trailResults.Count; i++)
                     {
                         TrailResult tr = m_trailResults[i];
-                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
+                        INumericTimeDataSeries graphPoints;
+
+                        //Hide right column graph in some situations
+                        if (1 >= m_trailResults.Count || !Data.Settings.OnlyReferenceRight ||
+                           m_axis.ContainsKey(yaxis) && !(m_axis[yaxis] is RightVerticalAxis) || 
+                           tr == m_refTrailResult || null == m_refTrailResult)
+                        {
+                            graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
+                        }
+                        else
+                        {
+                            graphPoints = new NumericTimeDataSeries();
+                        }
 
                         if (graphPoints.Count <= 1)
                         {
@@ -1149,6 +1161,10 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.P)
             {
                 selectedTypes = LineChartTypes.Power;
+            }
+            else if (e.KeyCode == Keys.R)
+            {
+                Data.Settings.OnlyReferenceRight = !(e.Modifiers == Keys.Shift);
             }
             else if (e.KeyCode == Keys.S)
             {

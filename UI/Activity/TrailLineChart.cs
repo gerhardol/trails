@@ -624,7 +624,8 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             Color chartLineColor;
                             Color chartSelectedColor;
-                            if (m_trailResults.Count <= 1)
+                            if (m_trailResults.Count <= 1 ||
+                                Data.Settings.OnlyReferenceRight && tr == m_refTrailResult && (m_axis[yaxis] is RightVerticalAxis))
                             {
                                 chartLineColor = LineChartUtil.ChartColor[yaxis];
                                 chartSelectedColor = ControlPaint.Dark(LineChartUtil.ChartColor[yaxis], 0.01F);

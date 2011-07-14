@@ -31,7 +31,7 @@ namespace TrailsPlugin.Data
         public DateTime? m_date;
         public double? m_distance;
         public double? m_time;
-        public bool m_firstRow = false;
+        //public bool m_firstRow = false;
         
         public EditTrailRow(TrailGPSLocation loc)
         {
@@ -45,32 +45,39 @@ namespace TrailsPlugin.Data
                 tr.TrailPointDateTime.Count > i && tr.TrailPointDateTime[i] > DateTime.MinValue)
             {
                 m_date = tr.TrailPointDateTime[i];
-                m_distance = tr.TrailPointDist0(tr)[i];
-                m_time = tr.TrailPointTime0(tr)[i];
+                //m_distance = tr.TrailPointDist0(tr)[i];
+                //m_time = tr.TrailPointTime0(tr)[i];
+                try
+                {
+                    ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[i]);
+                    m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
+                    m_time = entry.ElapsedSeconds;
+                }
+                catch { }
             }
-            m_firstRow = false;
+            //m_firstRow = false;
         }
         public static IList<EditTrailRow> getEditTrailRows(IList<TrailGPSLocation> tgps, TrailResult tr)
         {
             IList<EditTrailRow> result = new List<EditTrailRow>();
-            bool firstValid = false;
+            //bool firstValid = false;
             foreach (TrailGPSLocation t in tgps)
             {
                 EditTrailRow row = new EditTrailRow(t, tr, result.Count);
                 result.Add(row);
-                if (!firstValid && tr != null &&
-                    tr.TrailPointDateTime[result.Count - 1] > DateTime.MinValue)
-                {
-                    firstValid = true;
-                    row.m_firstRow = true;
-                    try
-                    {
-                        ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[result.Count - 1]);
-                        row.m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
-                        row.m_time = entry.ElapsedSeconds;
-                    }
-                    catch { }
-                }
+                //if (!firstValid && tr != null &&
+                //    tr.TrailPointDateTime[result.Count - 1] > DateTime.MinValue)
+                //{
+                //    firstValid = true;
+                //    row.m_firstRow = true;
+                //    try
+                //    {
+                //        ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[result.Count - 1]);
+                //        row.m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
+                //        row.m_time = entry.ElapsedSeconds;
+                //    }
+                //    catch { }
+                //}
             }
             return result;
         }

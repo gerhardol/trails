@@ -505,7 +505,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (m_subItemSelected > 99)
                 {
                     //xxx disabled, not working yet
-                    if (t.m_time != null && !t.m_firstRow && m_trailResult.Activity != null &&
+                    if (t.m_time != null && m_trailResult.Activity != null && //!t.m_firstRow && 
                         m_trailResult.Activity.GPSRoute != null)
                     {
                         for (int i = m_rowDoubleClickSelected - 1; i >= 0; i--)

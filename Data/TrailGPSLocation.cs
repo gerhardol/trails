@@ -17,24 +17,43 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 //Used in both Trails and Matrix plugin
 
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using System.Xml;
 using System;
 using System.Collections.Generic;
 
-namespace TrailsPlugin.Data {
-	public class TrailGPSLocation {
+namespace TrailsPlugin.Data
+{
+	public class TrailGPSLocation
+    {
+        //If this is related from a track, save the time
+        DateTime? m_dateTime;
+
+        public TrailGPSLocation(DateTime time, ITimeValueEntry<IGPSPoint> t, String name, bool required)
+            : this(t.Value.LatitudeDegrees, t.Value.LongitudeDegrees, name, true)
+        {
+            m_dateTime = time;
+        }
         public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name)
             : this(latitudeDegrees, longitudeDegrees, name, true)
         {
         }
-		public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name, bool required)
+        public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name, bool required)
         {
             this._gpsLocation = new GPSLocation(latitudeDegrees, longitudeDegrees);
             this._name = name;
             this._required = required;
         }
 
+        public TrailGPSLocation Copy(float LatitudeDegrees, float LongitudeDegrees)
+        {
+            return new TrailGPSLocation(LatitudeDegrees, LongitudeDegrees, this.Name, this.Required);
+        }
+        public TrailGPSLocation Copy()
+        {
+            return Copy(this.LatitudeDegrees, this.LongitudeDegrees);
+        }
         public override string ToString()
         {
             return _name + " " + _required + " " + _gpsLocation;
@@ -86,7 +105,13 @@ namespace TrailsPlugin.Data {
                 this._required = value;
             }
         }
-
+        public DateTime? DateTime
+        {
+            get
+            {
+                return m_dateTime;
+            }
+        }
         //This code is shared in other plugins
 #if TRAILSPLUGIN
         static public TrailGPSLocation FromXml(XmlNode node)

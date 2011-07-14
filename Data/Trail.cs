@@ -89,7 +89,7 @@ namespace TrailsPlugin.Data {
             {
                 foreach (TrailGPSLocation t in this.TrailLocations)
                 {
-                    result.m_trailLocations.Add(new TrailGPSLocation(t.LatitudeDegrees, t.LongitudeDegrees, t.Name, t.Required));
+                    result.m_trailLocations.Add(t.Copy());
                 }
             }
             return result;
@@ -319,8 +319,7 @@ namespace TrailsPlugin.Data {
                     {
                         ITimeValueEntry<IGPSPoint> g = activity.GPSRoute.GetInterpolatedValue(p.Time);
                         results.Add(new Data.TrailGPSLocation(
-                          g.Value.LatitudeDegrees, g.Value.LongitudeDegrees,
-                          p.Name, lapActive[i]));
+                          p.Time, g, p.Name, lapActive[i]));
                     }
                     catch { }
                 }

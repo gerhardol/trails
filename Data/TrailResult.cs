@@ -416,17 +416,28 @@ namespace TrailsPlugin.Data {
         //}
 
         //Result to activity 
-        private static DateTime getDateTimeFromElapsedResult(INumericTimeDataSeries series, ITimeValueEntry<float> t)
+        private DateTime getDateTimeFromElapsedResult(ITimeValueEntry<float> t)
         {
             //TODO: Not really the DateTime but the DateTime in the track, without pauses?
             //return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(StartDateTime, TimeSpan.FromSeconds(t.Value), Pauses);
-            return series.EntryDateTime(t);
+            return getDateTimeFromElapsed(DistanceMetersTrack, t);
         }
         public DateTime getDateTimeFromElapsedResult(float t)
         {
             return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(StartDateTime2, TimeSpan.FromSeconds(t), Pauses);
         }
-        private static DateTime getDateTimeFromTrack(IDistanceDataTrack distTrack, float t)
+        public DateTime getDateTimeFromElapsedActivity(float t)
+        {
+            return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(ActivityDistanceMetersTrack.StartTime, TimeSpan.FromSeconds(t), Pauses);
+        }
+
+        private static DateTime getDateTimeFromElapsed(INumericTimeDataSeries series, ITimeValueEntry<float> t)
+        {
+            //TODO: Not really the DateTime but the DateTime in the track, without pauses?
+            //return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(StartDateTime, TimeSpan.FromSeconds(t.Value), Pauses);
+            return series.EntryDateTime(t);
+        }
+        public static DateTime getDateTimeFromTrack(IDistanceDataTrack distTrack, float t)
         {
             DateTime res = DateTime.MinValue;
             if (t >= distTrack.Max && distTrack.Count > 0)
@@ -854,7 +865,7 @@ namespace TrailsPlugin.Data {
                         float elapsed = this.DistanceMetersTrack[i].ElapsedSeconds;
                         if (elapsed > oldElapsed)
                         {
-                            DateTime time = getDateTimeFromElapsedResult(this.DistanceMetersTrack, this.DistanceMetersTrack[i]);
+                            DateTime time = getDateTimeFromElapsedResult(this.DistanceMetersTrack[i]);
                             ITimeValueEntry<float> entry = Info.SmoothedSpeedTrack.GetInterpolatedValue(time);
                             if (entry != null)
                             {
@@ -1221,7 +1232,7 @@ namespace TrailsPlugin.Data {
                     if (elapsed > prevElapsed && m_cacheTrackRef != null &&
                         elapsed <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                     {
-                        DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
+                        DateTime d1 = getDateTimeFromElapsedResult(t);
                         while (Settings.ResyncDiffAtTrailPoints &&
                             (dateTrailPointIndex == -1 ||
                             dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
@@ -1267,7 +1278,7 @@ namespace TrailsPlugin.Data {
                 ITimeValueEntry<float> last = DistanceMetersTrack[DistanceMetersTrack.Count - 1];
                 if (prevElapsed < last.ElapsedSeconds)
                 {
-                    DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, last);
+                    DateTime d1 = getDateTimeFromElapsedResult(last);
                     m_DiffTimeTrack0.Add(d1, lastValue);
                 }
             }
@@ -1301,7 +1312,7 @@ namespace TrailsPlugin.Data {
                     float elapsed = t.ElapsedSeconds;
                     if (elapsed > oldElapsed && elapsed <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                     {
-                        DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, t);
+                        DateTime d1 = getDateTimeFromElapsedResult(t);
                         while (Settings.ResyncDiffAtTrailPoints &&
                             (dateTrailPointIndex == -1 ||
                             dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
@@ -1336,7 +1347,7 @@ namespace TrailsPlugin.Data {
                             }
                         }
 
-                        DateTime d2 = getDateTimeFromElapsedResult(m_cacheTrackRef.DistanceMetersTrack, getValueEntryOffset(t, refOffset));
+                        DateTime d2 = m_cacheTrackRef.getDateTimeFromElapsedResult(getValueEntryOffset(t, refOffset));
                         int status;
                         double refDist = getDistFromTrackTime(m_cacheTrackRef.DistanceMetersTrack, d2, out status);
                         if (status == 0)
@@ -1355,7 +1366,7 @@ namespace TrailsPlugin.Data {
                 ITimeValueEntry<float> last = DistanceMetersTrack[DistanceMetersTrack.Count - 1];
                 if (oldElapsed < last.ElapsedSeconds)
                 {
-                    DateTime d1 = getDateTimeFromElapsedResult(this.DistanceMetersTrack, last);
+                    DateTime d1 = getDateTimeFromElapsedResult(last);
                     m_DiffDistTrack0.Add(d1, lastValue);
                 }
             }

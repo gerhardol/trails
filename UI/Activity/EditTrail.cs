@@ -42,6 +42,8 @@ namespace TrailsPlugin.UI.Activity {
         private TrailPointsLayer m_layer;
 #endif
         private TrailResult m_trailResult;
+        private /*readonly*/ int cDistCol;
+        private /*readonly*/ int cTimeCol;
 
         private EditTrail(bool addMode)
         {
@@ -213,7 +215,7 @@ namespace TrailsPlugin.UI.Activity {
 				return;
 			}
             //m_TrailToEdit contains the scratchpad of trail.
-            //However TrailPoints uses the row (with meta data, could be separate cache)
+            //However TrailPoints uses the row (with meta data, could be a separate cache)
             m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
             
             Data.Trail trail = null;
@@ -321,7 +323,9 @@ namespace TrailsPlugin.UI.Activity {
             EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 70, StringAlignment.Near));
             EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 70, StringAlignment.Near));
             EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 80, StringAlignment.Near));
+            cDistCol = EList.Columns.Count;
             EList.Columns.Add(new TreeList.Column("Distance", CommonResources.Text.LabelDistance, 60, StringAlignment.Near));
+            cTimeCol = EList.Columns.Count;
             EList.Columns.Add(new TreeList.Column("Time", CommonResources.Text.LabelTime, 60, StringAlignment.Near));
 
             RefreshResult(false);
@@ -377,7 +381,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (((IList<EditTrailRow>)EList.RowData).Count > 0)
                 {
-                    i = ((IList<EditTrailRow>)EList.RowData).Count;
+                    i = ((IList<EditTrailRow>)EList.RowData).Count-1;
                 }
                 else
                 {
@@ -385,8 +389,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             TrailGPSLocation sel = ((IList<EditTrailRow>)EList.RowData)[i].TrailGPS;
-            TrailGPSLocation add = new TrailGPSLocation(sel.LatitudeDegrees + 0.01F, sel.LongitudeDegrees + 0.01F, sel.Name +
-                " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew, sel.Required);
+            TrailGPSLocation add = sel.Copy(sel.LatitudeDegrees + 0.01F, sel.LongitudeDegrees + 0.01F);
+                add.Name +=
+                " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
             ((IList<EditTrailRow>)EList.RowData).Insert(i+1, new EditTrailRow(add));
             EList.RowData = (IList<EditTrailRow>)EList.RowData;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
@@ -429,13 +434,39 @@ namespace TrailsPlugin.UI.Activity {
         private void ValidateEdit()
         {
             IList<EditTrailRow> t = (IList<EditTrailRow>)EList.RowData;
-            t[m_rowDoubleClickSelected].TrailGPS=
-                ((IList<EditTrailRow>)EList.RowData)[m_rowDoubleClickSelected].TrailGPS.setField(m_subItemSelected, editBox.Text);
+            if (m_subItemSelected == cDistCol)
+            {
+                try
+                {
+                    double dist = UnitUtil.Distance.Parse(editBox.Text);
+                    DateTime d1 = m_trailResult.getDateTimeFromDistActivity((float)dist);
+                    t[m_rowDoubleClickSelected].UpdateRow(m_trailResult, d1);
+                }
+                catch { }
+            }
+            else if (m_subItemSelected == cTimeCol)
+            {
+                try
+                {
+                    double time = UnitUtil.Time.Parse(editBox.Text);
+                    DateTime d1 = m_trailResult.getDateTimeFromElapsedActivity((float)time);
+                    t[m_rowDoubleClickSelected].UpdateRow(m_trailResult, d1);
+                }
+                catch { }
+            }
+            else
+            {
+                //Note: result need to be recalculated to be accurate. However, the recalc could find other results,
+                //let the user do this manually
+                t[m_rowDoubleClickSelected].UpdateRow(m_trailResult,
+                    t[m_rowDoubleClickSelected].TrailGPS.setField(m_subItemSelected, editBox.Text));
+            }
             EList.RowData = t;
-            m_layer.TrailPoints = //m_TrailToEdit.TrailLocations;
+            m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation>{t[m_rowDoubleClickSelected].TrailGPS};
             m_layer.Refresh();
         }
+
         private void editBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Tab || e.KeyCode == Keys.Return)
@@ -456,6 +487,7 @@ namespace TrailsPlugin.UI.Activity {
             ValidateEdit();
             editBox.Visible = false;
         }
+
         public void SMKDoubleClick(object sender, System.EventArgs e)
         {
             TreeList.RowHitState hitState = TreeList.RowHitState.Nothing;
@@ -474,13 +506,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 // Check the subitem clicked
                 //TODO: Not handling resize (scrolling) correctly
-                int nStart = EList.PointToScreen(m_lastMouseArg.Location).X;
+                int nStart = m_lastMouseArg.Location.X;// EList.PointToScreen(m_lastMouseArg.Location).X;
                 int spos = EList.Location.X;
                 int epos = spos;
                 for (int i = 0; i < EList.Columns.Count; i++)
                 {
                     epos += EList.Columns[i].Width;
-                    if (nStart > spos && nStart < epos)
+                    if (nStart >= spos && nStart < epos)
                     {
                         m_subItemSelected = i;
                         break;
@@ -489,9 +521,9 @@ namespace TrailsPlugin.UI.Activity {
                     spos = epos;
                 }
                 //Only edit first rows
-                if (m_subItemSelected < 4)
+                if (m_subItemSelected <= cTimeCol)
                 {
-                    m_subItemText = ((IList<EditTrailRow>)EList.RowData)[m_rowDoubleClickSelected].TrailGPS.getField(m_subItemSelected);
+                    m_subItemText = (new EditTrailLabelProvider()).GetText(t, EList.Columns[m_subItemSelected]);
                     ///The positioning is incorrect, set at header
                     int rowHeight = EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
                     int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
@@ -502,43 +534,43 @@ namespace TrailsPlugin.UI.Activity {
                     editBox.SelectAll();
                     editBox.Focus();
                 }
-                else if (m_subItemSelected > 99)
-                {
-                    //xxx disabled, not working yet
-                    if (t.m_time != null && m_trailResult.Activity != null && //!t.m_firstRow && 
-                        m_trailResult.Activity.GPSRoute != null)
-                    {
-                        for (int i = m_rowDoubleClickSelected - 1; i >= 0; i--)
-                        {
-                            if (((IList<EditTrailRow>)EList.RowData)[i].m_time != null)
-                            {
-                                IGPSRoute route = new GPSRoute();
-                                DateTime startTime = (DateTime)((IList<EditTrailRow>)EList.RowData)[i].m_date;
-                                DateTime endTime = (DateTime)t.m_date;
-                                ITimeValueEntry<float> startDist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime);
-                                ITimeValueEntry<float> endDist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(endTime);
-                                double speed = (endDist.Value - startDist.Value) /
-                                    (m_trailResult.getElapsedResult(endTime) - m_trailResult.getElapsedResult(startTime));
-                                for (int j = 0; j < m_trailResult.Activity.GPSRoute.Count; j++)
-                                {
-                                    ITimeValueEntry<IGPSPoint> g = m_trailResult.Activity.GPSRoute[j];
-                                    DateTime date = m_trailResult.Activity.GPSRoute.EntryDateTime(g);
-                                    if (date < endTime && date > startTime)
-                                    {
-                                        ITimeValueEntry<float> dist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(date);
-                                        uint s = (uint)((dist.Value-startDist.Value)/speed)+startDist.ElapsedSeconds;
-                                        g = new TimeValueEntry<IGPSPoint>(s, g.Value);
-                                        date = m_trailResult.Activity.GPSRoute.EntryDateTime(g);
-                                        //date = startTime+TimeSpan.FromSeconds(s);
-                                    }
-                                    route.Add(date, g.Value);
-                                }
-                                m_trailResult.Activity.GPSRoute = route;
-                                break;
-                            }
-                        }
-                    }
-                }
+                //else if (m_subItemSelected > 99)
+                //{
+                //    //xxx disabled, not working yet
+                //    if (t.m_time != null && m_trailResult.Activity != null && //!t.m_firstRow && 
+                //        m_trailResult.Activity.GPSRoute != null)
+                //    {
+                //        for (int i = m_rowDoubleClickSelected - 1; i >= 0; i--)
+                //        {
+                //            if (((IList<EditTrailRow>)EList.RowData)[i].m_time != null)
+                //            {
+                //                IGPSRoute route = new GPSRoute();
+                //                DateTime startTime = (DateTime)((IList<EditTrailRow>)EList.RowData)[i].m_date;
+                //                DateTime endTime = (DateTime)t.m_date;
+                //                ITimeValueEntry<float> startDist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime);
+                //                ITimeValueEntry<float> endDist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(endTime);
+                //                double speed = (endDist.Value - startDist.Value) /
+                //                    (m_trailResult.getElapsedResult(endTime) - m_trailResult.getElapsedResult(startTime));
+                //                for (int j = 0; j < m_trailResult.Activity.GPSRoute.Count; j++)
+                //                {
+                //                    ITimeValueEntry<IGPSPoint> g = m_trailResult.Activity.GPSRoute[j];
+                //                    DateTime date = m_trailResult.Activity.GPSRoute.EntryDateTime(g);
+                //                    if (date < endTime && date > startTime)
+                //                    {
+                //                        ITimeValueEntry<float> dist = m_trailResult.ActivityDistanceMetersTrack.GetInterpolatedValue(date);
+                //                        uint s = (uint)((dist.Value-startDist.Value)/speed)+startDist.ElapsedSeconds;
+                //                        g = new TimeValueEntry<IGPSPoint>(s, g.Value);
+                //                        date = m_trailResult.Activity.GPSRoute.EntryDateTime(g);
+                //                        //date = startTime+TimeSpan.FromSeconds(s);
+                //                    }
+                //                    route.Add(date, g.Value);
+                //                }
+                //                m_trailResult.Activity.GPSRoute = route;
+                //                break;
+                //            }
+                //        }
+                //    }
+                //}
 
             }
         }

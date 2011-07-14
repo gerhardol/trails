@@ -231,6 +231,7 @@ namespace TrailsPlugin.UI.Activity {
         IList<TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
+            DateTime d = DateTime.MaxValue;
             ITimeValueEntry<IGPSPoint> p = null;
 
             IActivity activity = null;
@@ -245,7 +246,6 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (null != activity && null != activity.GPSRoute)
             {
-                DateTime d = DateTime.MaxValue;
                 if (null != ts)
                 {
                     d = ts.Lower;
@@ -267,7 +267,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (null != p)
             {
-                result.Add(new TrailGPSLocation(p.Value.LatitudeDegrees, p.Value.LongitudeDegrees, ""));
+                result.Add(new TrailGPSLocation(d, p, "", true));
             }
             return result;
         }

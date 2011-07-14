@@ -18,6 +18,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
 using GpsRunningPlugin.Util;
@@ -28,10 +29,9 @@ namespace TrailsPlugin.Data
     {
         private TrailGPSLocation m_gpsLoc;
         private int m_trailPointIndex;
-        public DateTime? m_date;
+        //public DateTime? m_date;
         public double? m_distance;
         public double? m_time;
-        //public bool m_firstRow = false;
         
         public EditTrailRow(TrailGPSLocation loc)
         {
@@ -41,43 +41,63 @@ namespace TrailsPlugin.Data
             : this(loc)
         {
             m_trailPointIndex = i;
-            if (tr != null && tr.TrailPointDateTime != null && 
-                tr.TrailPointDateTime.Count > i && tr.TrailPointDateTime[i] > DateTime.MinValue)
+            if (tr != null)
             {
-                m_date = tr.TrailPointDateTime[i];
-                //m_distance = tr.TrailPointDist0(tr)[i];
-                //m_time = tr.TrailPointTime0(tr)[i];
+                DateTime d = DateTime.MinValue;
+                if (tr.TrailPointDateTime != null &&
+                tr.TrailPointDateTime.Count > i)
+                {
+                    d = tr.TrailPointDateTime[i];
+                }
+                SetDistance(tr, d);
+            }
+        }
+
+        private void SetDistance(TrailResult tr, DateTime d1)
+        {
+            if (DateTime.MinValue == d1)
+            {
+                //Try get the value from the track
+                if (null != this.TrailGPS.DateTime)
+                {
+                    d1 = (DateTime)this.TrailGPS.DateTime;
+                }
+            }
+            if (DateTime.MinValue != d1)
+            {
                 try
                 {
-                    ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[i]);
+                    ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(d1);
                     m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
                     m_time = entry.ElapsedSeconds;
                 }
                 catch { }
             }
-            //m_firstRow = false;
         }
+        public void UpdateRow(TrailResult tr, DateTime d1)//xxx
+        {
+            ITimeValueEntry<IGPSPoint> entry = tr.Activity.GPSRoute.GetInterpolatedValue(d1);
+            if (entry != null)
+            {
+                this.TrailGPS = this.TrailGPS.Copy(
+                    entry.Value.LatitudeDegrees,
+                    entry.Value.LongitudeDegrees);
+            }
+            SetDistance(tr, d1);
+        }
+        public void UpdateRow(TrailResult tr, TrailGPSLocation t)
+        {
+            this.TrailGPS = t;
+            SetDistance(tr, tr.TrailPointDateTime[m_trailPointIndex]);
+        }
+
         public static IList<EditTrailRow> getEditTrailRows(IList<TrailGPSLocation> tgps, TrailResult tr)
         {
             IList<EditTrailRow> result = new List<EditTrailRow>();
-            //bool firstValid = false;
             foreach (TrailGPSLocation t in tgps)
             {
                 EditTrailRow row = new EditTrailRow(t, tr, result.Count);
                 result.Add(row);
-                //if (!firstValid && tr != null &&
-                //    tr.TrailPointDateTime[result.Count - 1] > DateTime.MinValue)
-                //{
-                //    firstValid = true;
-                //    row.m_firstRow = true;
-                //    try
-                //    {
-                //        ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(tr.TrailPointDateTime[result.Count - 1]);
-                //        row.m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
-                //        row.m_time = entry.ElapsedSeconds;
-                //    }
-                //    catch { }
-                //}
             }
             return result;
         }

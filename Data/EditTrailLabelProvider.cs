@@ -74,7 +74,8 @@ namespace TrailsPlugin.Data
                 catch { }
             }
         }
-        public void UpdateRow(TrailResult tr, DateTime d1)//xxx
+
+        public void UpdateRow(TrailResult tr, DateTime d1)
         {
             ITimeValueEntry<IGPSPoint> entry = tr.Activity.GPSRoute.GetInterpolatedValue(d1);
             if (entry != null)

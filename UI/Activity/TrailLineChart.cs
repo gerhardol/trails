@@ -665,11 +665,11 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 dataPoints = m_trailResults[i].DistanceMetersTrack0(ReferenceTrailResult);
                             }
-                            float oldElapsedSeconds = float.MinValue;
+                            int oldElapsedSeconds = int.MinValue;
                             float oldXvalue = float.MinValue;
                             foreach (ITimeValueEntry<float> entry in dataPoints)
                             {
-                                float elapsedSeconds = entry.ElapsedSeconds;
+                                uint elapsedSeconds = entry.ElapsedSeconds;
                                 if (XAxisReferential == XAxisValue.Time || elapsedSeconds <= graphPoints.TotalElapsedSeconds)
                                 {
                                     float xvalue;
@@ -711,7 +711,7 @@ namespace TrailsPlugin.UI.Activity {
                                             }
                                             dataLine.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
                                         }
-                                        oldElapsedSeconds = elapsedSeconds;
+                                        oldElapsedSeconds = (int)elapsedSeconds;
                                         oldXvalue = xvalue;
                                     }
                                 }

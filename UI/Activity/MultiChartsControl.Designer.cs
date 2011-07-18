@@ -97,12 +97,12 @@
             this.diffTimeToolStripMenuItem,
             this.diffDistToolStripMenuItem,
             this.diffDistTimeToolStripMenuItem,
+            this.resyncDiffAtTrailPointsToolStripMenuItem,
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem,
             this.toolStripSeparator2,
             this.distanceToolStripMenuItem,
             this.timeToolStripMenuItem,
             this.toolStripSeparator3,
-            this.resyncDiffAtTrailPointsToolStripMenuItem,
-            this.adjustResyncDiffAtTrailPointsToolStripMenuItem,
             this.syncChartAtTrailPointsToolStripMenuItem,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";

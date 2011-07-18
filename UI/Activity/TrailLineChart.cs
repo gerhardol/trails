@@ -376,9 +376,24 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 MainChart.DataSeries[1].ClearSelectedRegions();
                             }
-                            //Only one range can be selected
-                            float x1 = l[0][0];
-                            float x2 = l[l.Count - 1][1];
+
+                            //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
+                            float offset = 0;
+                            if (m_trailResults[i].ParentResult != null)
+                            {
+                                if (XAxisReferential == XAxisValue.Time)
+                                {
+                                    offset = (float)(m_trailResults[i].StartDateTime - m_trailResults[i].ParentResult.StartDateTime).TotalSeconds;
+                                }
+                                else
+                                {
+                                    offset = (float)TrailResult.DistanceConvertFrom(m_trailResults[i].StartDist - m_trailResults[i].ParentResult.StartDist, m_refTrailResult);
+                                }
+                            }
+
+                            //Only one range can be selected - select all
+                            float x1 = l[0][0] - offset;
+                            float x2 = l[l.Count - 1][1] - offset;
                             //MainChart.DataSeries[i].ClearSelectedRegions();
                             ////The "fill" chart is 0, line is 1
                             //if (i == 0 && m_trailResults.Count == 1 &&
@@ -386,6 +401,7 @@ namespace TrailsPlugin.UI.Activity {
                             //{
                             //    MainChart.DataSeries[1].ClearSelectedRegions();
                             //}
+
                             //Ignore ranges outside current range and malformed scales
                             if (x1 < MainChart.XAxis.MaxOriginFarValue &&
                                 MainChart.XAxis.MinOriginValue > float.MinValue &&
@@ -569,7 +585,7 @@ namespace TrailsPlugin.UI.Activity {
                         //As this value is cached, it is no extra to request and drop it
                         INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
 
-                        if (graphPoints.Count > 1)
+                        if (graphPoints != null && graphPoints.Count > 1)
                         {
                             m_hasValues[yaxis] = true;
                             break;
@@ -665,17 +681,18 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 dataPoints = m_trailResults[i].DistanceMetersTrack0(ReferenceTrailResult);
                             }
-                            int oldElapsedSeconds = int.MinValue;
+                            int oldElapsedEntry = int.MinValue;
                             float oldXvalue = float.MinValue;
                             foreach (ITimeValueEntry<float> entry in dataPoints)
                             {
-                                uint elapsedSeconds = entry.ElapsedSeconds;
-                                if (XAxisReferential == XAxisValue.Time || elapsedSeconds <= graphPoints.TotalElapsedSeconds)
+                                uint elapsedEntry = entry.ElapsedSeconds;
+                                if (XAxisReferential == XAxisValue.Time || elapsedEntry <= graphPoints.TotalElapsedSeconds)
                                 {
+                                    //The x value in the graph, the actual time or distance
                                     float xvalue;
                                     if (XAxisReferential == XAxisValue.Time)
                                     {
-                                        xvalue = elapsedSeconds;
+                                        xvalue = (float)m_trailResults[i].getElapsedResult(dataPoints.EntryDateTime(entry));
                                     }
                                     else
                                     {
@@ -689,7 +706,7 @@ namespace TrailsPlugin.UI.Activity {
                                     {
                                         xvalue += GetResyncOffset(XAxisReferential, false, tr, xvalue, out nextXvalue);
                                     }
-                                    if (oldElapsedSeconds < elapsedSeconds &&
+                                    if (oldElapsedEntry < elapsedEntry &&
                                         (!Data.Settings.SyncChartAtTrailPoints ||
                                         oldXvalue < xvalue && xvalue < nextXvalue))
                                     {
@@ -700,18 +717,19 @@ namespace TrailsPlugin.UI.Activity {
                                         }
                                         else
                                         {
-                                            valEntry = graphPoints.GetInterpolatedValue(graphPoints.EntryDateTime(entry));
+                                            //xxx Note: entry is for graphpoints here, but the entries covers the same points
+                                            valEntry = graphPoints.GetInterpolatedValue(dataPoints.EntryDateTime(entry));
                                         }
                                         if (valEntry != null)
                                         {
-                                            float yvalue = valEntry.Value;
+                                            PointF point = new PointF(xvalue, valEntry.Value);
                                             if (null != dataFill)
                                             {
-                                                dataFill.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
+                                                dataFill.Points.Add(elapsedEntry, point);
                                             }
-                                            dataLine.Points.Add(elapsedSeconds, new PointF(xvalue, yvalue));
+                                            dataLine.Points.Add(elapsedEntry, point);
                                         }
-                                        oldElapsedSeconds = (int)elapsedSeconds;
+                                        oldElapsedEntry = (int)elapsedEntry;
                                         oldXvalue = xvalue;
                                     }
                                 }
@@ -826,7 +844,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    while (currOffsetIndex < trElapsed.Count - 1 && elapsed >= trElapsed[currOffsetIndex + 1])
+                    while (currOffsetIndex < trElapsed.Count - 1 &&
+                        //compare must be using same type here to avoid end effects
+                        elapsed > (float)trElapsed[currOffsetIndex + 1])
                     {
                         currOffsetIndex++;
                     }

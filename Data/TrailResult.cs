@@ -1491,8 +1491,8 @@ namespace TrailsPlugin.Data {
             if (t.MarkedTimes != null && t.MarkedTimes.Count > 0)
             {
                 if (t.MarkedTimes.Count == 1 &&
-                    t.MarkedTimes[0].Lower == StartDateTime &&
-                    t.MarkedTimes[0].Upper == EndDateTime)
+                    t.MarkedTimes[0].Lower <= StartDateTime &&
+                    t.MarkedTimes[0].Upper >= EndDateTime)
                 {
                     //Use cache
                     return this.GpsPoints();

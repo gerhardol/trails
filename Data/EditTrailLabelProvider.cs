@@ -105,9 +105,12 @@ namespace TrailsPlugin.Data
         public static IList<TrailGPSLocation> getTrailGPSLocation(IList<EditTrailRow> rowData)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
-            foreach (EditTrailRow t in rowData)
+            if (rowData != null)
             {
-                result.Add(t.m_gpsLoc);
+                foreach (EditTrailRow t in rowData)
+                {
+                    result.Add(t.m_gpsLoc);
+                }
             }
             return result;
         }

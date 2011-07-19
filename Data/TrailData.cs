@@ -22,61 +22,62 @@ using System.Xml;
 using System.Xml.Serialization;
 using ZoneFiveSoftware.Common.Data.GPS;
 
-namespace TrailsPlugin.Data {
-	public class TrailData 
+namespace TrailsPlugin.Data
+{
+	public static class TrailData 
     {
-        private static Data.Trail m_referenceTrail_Activity = null;
-        private static SortedList<string, Data.Trail> m_AllTrails;
+        private static SortedList<string, Data.Trail> m_AllTrails = defaultTrails();
         
-        public TrailData()
+        private static SortedList<string, Data.Trail> defaultTrails()
         {
-            defaults();
-        }
-        private static void defaults()
-        {
-            m_AllTrails = new SortedList<string, Data.Trail>();
+            SortedList<string, Data.Trail> allTrails = new SortedList<string, Data.Trail>();
+            //GUIDs could be dynamic or constants too
 
             //Splits Trail
             Data.Trail trail = new Data.Trail();
-            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Id = "30681520-b220-11e0-a00b-0800200c9a66";
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.Generated = true;
             trail.MatchAll = true;
-            m_AllTrails.Add(trail.Id, trail);
+            allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
             trail = new Data.Trail();
-            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Id = "30681521-b220-11e0-a00b-0800200c9a66";
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.Generated = true;
             trail.IsReference = true;
-            m_AllTrails.Add(trail.Id, trail);
-            m_referenceTrail_Activity = trail;
+            allTrails.Add(trail.Id, trail);
 
             //HighScore Trail
             trail = new Data.Trail();
-            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Id = "30681522-b220-11e0-a00b-0800200c9a66";
             trail.Name = Properties.Resources.HighScore_Trail;
             trail.Generated = true;
             trail.HighScore = 1;
-            m_AllTrails.Add(trail.Id, trail);
+            allTrails.Add(trail.Id, trail);
+
+            return allTrails;
         }
 
-		public SortedList<string, Data.Trail> AllTrails {
-			get {
+		public static SortedList<string, Data.Trail> AllTrails
+        {
+			get
+            {
 				return m_AllTrails;
 			}
 		}
 
-        public Data.Trail ReferenceTrail_Activity
-        {
-            get
-            {
-                return m_referenceTrail_Activity;
-            }
-        }
+        //A separate cache will require that m_AllTrails/m_referenceTrail_Activity is init in the same structure
+        //public static Data.Trail ReferenceTrail_Activity
+        //{
+        //    get
+        //    {
+        //        return m_referenceTrail_Activity;
+        //    }
+        //}
 
-        public bool NameExists(string trailName)
+        public static bool NameExists(string trailName)
         {
             foreach (Trail t in m_AllTrails.Values)
             {
@@ -88,7 +89,7 @@ namespace TrailsPlugin.Data {
             return false;
         }
 
-        public bool InsertTrail(Data.Trail trail)
+        public static bool InsertTrail(Data.Trail trail)
         {
             foreach (Trail t in m_AllTrails.Values)
             {
@@ -103,7 +104,8 @@ namespace TrailsPlugin.Data {
             return true;
         }
 
-		public bool UpdateTrail(Data.Trail trail) {
+        public static bool UpdateTrail(Data.Trail trail)
+        {
 			foreach (Trail t in m_AllTrails.Values) {
 				if (t.Name == trail.Name && t.Id != trail.Id) {
 					return false;
@@ -119,7 +121,8 @@ namespace TrailsPlugin.Data {
 				return false;
 			}
 		}
-		public bool DeleteTrail(Data.Trail trail) {
+        public static bool DeleteTrail(Data.Trail trail)
+        {
 			if (m_AllTrails.ContainsKey(trail.Id)) {
 				m_AllTrails.Remove(trail.Id);
 				Plugin.WriteExtensionData();
@@ -130,7 +133,6 @@ namespace TrailsPlugin.Data {
 		}
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            defaults();
             String attr;
             attr = pluginNode.GetAttribute(xmlTags.tTrails);
             XmlDocument doc = new XmlDocument();
@@ -150,7 +152,7 @@ namespace TrailsPlugin.Data {
         public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
         {
             XmlNode trails = doc.CreateElement("Trails");
-            foreach (Data.Trail trail in Plugin.Data.AllTrails.Values)
+            foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
             {
                 if (!trail.Generated)
                 {
@@ -160,29 +162,30 @@ namespace TrailsPlugin.Data {
             pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
 
         }
-        private class xmlTags
+        private static class xmlTags
         {
             public const string tTrails = "tTrails";
         }
 
         //Old version, read from logbook
-        public void FromXml(XmlNode pluginNode)
+        public static void FromXml(XmlNode pluginNode)
         {
-            defaults();
-			foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail")) {
-				Data.Trail trail = Data.Trail.FromXml(node);
-				m_AllTrails.Add(trail.Id, trail);
-			}
+            //foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail")) {
+            //    Data.Trail trail = Data.Trail.FromXml(node);
+            //    m_AllTrails.Add(trail.Id, trail);
+            //}
 
 		}
 
         //This is not called by default
-		public XmlNode ToXml(XmlDocument doc) {
-			XmlNode trails = doc.CreateElement("Trails");
-			foreach (Data.Trail trail in Plugin.Data.AllTrails.Values) {
-				trails.AppendChild(trail.ToXml(doc));
-			}
-			return trails;
+        public static XmlNode ToXml(XmlDocument doc)
+        {
+            XmlNode trails = doc.CreateElement("Trails");
+            //foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
+            //{
+            //    trails.AppendChild(trail.ToXml(doc));
+            //}
+            return trails;
 		}
 
         //Matrix integration, old call path

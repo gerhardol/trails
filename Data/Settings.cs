@@ -22,57 +22,30 @@ using System.Globalization;
 using System.ComponentModel;
 using TrailsPlugin.UI.Activity;
 
-namespace TrailsPlugin.Data {
-	class Settings {
-
-        public Settings()
-        {
-            defaults();
-        }
-        private static void defaults()
-        {
-            m_activityPageNumFixedColumns = 1;
-            m_defaultRadius = 20;
-            m_xAxisValue = XAxisValue.Distance;
-            m_chartType = LineChartTypes.SpeedPace;
-            m_MultiChartTypes = LineChartUtil.DefaultLineChartTypes();
-            m_MultiGraphTypes = LineChartUtil.DefaultLineChartTypes();
-
-            m_activityPageColumns = TrailResultColumnIds.DefaultColumns();
-            m_summaryViewSortColumn = TrailResultColumnIds.Order;
-            m_summaryViewSortDirection = ListSortDirection.Ascending;
-            m_ShowChartToolBar = true;
-            m_SetNameAtImport = true;
-            m_SelectSimilarResults = false;
-            m_addCurrentCategory = false;
-            m_MaxAutoCalcActivitiesTrails = 500;
-            m_MaxAutoCalcResults = 800;
-            m_restIsPause = false;
-            m_resyncDiffAtTrailPoints = true;
-            m_adjustResyncDiffAtTrailPoints = false;
-            m_syncChartAtTrailPoints = false;
-            m_onlyReferenceRight = false;
-        }
-        private static IList<string> m_activityPageColumns;
-        private static int m_activityPageNumFixedColumns;
-        private static float m_defaultRadius;
-        private static XAxisValue m_xAxisValue;
-        private static LineChartTypes m_chartType;
-        private static IList<LineChartTypes> m_MultiChartTypes;
-        private static IList<LineChartTypes> m_MultiGraphTypes;
-        private static bool m_ShowChartToolBar;
-        private static bool m_SelectSimilarResults;
-        private static bool m_addCurrentCategory;
-        private static string m_summaryViewSortColumn;
-        private static ListSortDirection m_summaryViewSortDirection;
-        private static bool m_SetNameAtImport;
-        private static int m_MaxAutoCalcActivitiesTrails;
-        private static int m_MaxAutoCalcResults;
-        private static bool m_restIsPause;
-        private static bool m_resyncDiffAtTrailPoints;
-        private static bool m_adjustResyncDiffAtTrailPoints;
-        private static bool m_syncChartAtTrailPoints;
-        private static bool m_onlyReferenceRight;
+namespace TrailsPlugin.Data
+{
+	static class Settings
+    {
+        private static IList<string> m_activityPageColumns = TrailResultColumnIds.DefaultColumns();
+        private static int m_activityPageNumFixedColumns = 0;
+        private static float m_defaultRadius = 30;
+        private static XAxisValue m_xAxisValue = XAxisValue.Distance;
+        private static LineChartTypes m_chartType = LineChartTypes.SpeedPace;
+        private static IList<LineChartTypes> m_MultiChartTypes = LineChartUtil.DefaultLineChartTypes();
+        private static IList<LineChartTypes> m_MultiGraphTypes = LineChartUtil.DefaultLineChartTypes();
+        private static bool m_ShowChartToolBar = true;
+        private static bool m_SelectSimilarResults = false;
+        private static bool m_addCurrentCategory = false;
+        private static string m_summaryViewSortColumn = TrailResultColumnIds.Order;
+        private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Ascending;
+        private static bool m_SetNameAtImport = true;
+        private static int m_MaxAutoCalcActivitiesTrails = 500;
+        private static int m_MaxAutoCalcResults = 800;
+        private static bool m_restIsPause = false;
+        private static bool m_resyncDiffAtTrailPoints = true;
+        private static bool m_adjustResyncDiffAtTrailPoints = false;
+        private static bool m_syncChartAtTrailPoints = false;
+        private static bool m_onlyReferenceRight = false;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -259,8 +232,6 @@ namespace TrailsPlugin.Data {
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            defaults();
-
             String attr;
             attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
             if (attr.Length > 0) { m_defaultRadius = Settings.parseFloat(attr); }
@@ -368,11 +339,6 @@ namespace TrailsPlugin.Data {
 
         public static void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
         {
-            if (null == m_activityPageColumns)
-            {
-                //This can occur if the logbook was not loaded when exiting
-                defaults();
-            }
             pluginNode.SetAttribute(xmlTags.sDefaultRadius, XmlConvert.ToString(m_defaultRadius));
             pluginNode.SetAttribute(xmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
             pluginNode.SetAttribute(xmlTags.sXAxis, m_xAxisValue.ToString());

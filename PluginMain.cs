@@ -62,60 +62,54 @@ namespace TrailsPlugin {
             if (attr.Length > 0) { Verbose = XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.settingsVersion);
             if (attr.Length > 0) { settingsVersion = (Int16)XmlConvert.ToInt16(attr); }
-            //If not found (or version lower), settings will be loaded dynamically (from logbook)
+            //If not found (or version lower), default settings are used
             if (settingsVersionCurrent <= settingsVersion)
             {
-                settingsVersion = settingsVersionCurrent;
-                //m_settings = new TrailsPlugin.Data.Settings();
-                m_data = new TrailsPlugin.Data.TrailData();
+                //m_data = new TrailsPlugin.Data.TrailData();
                 TrailsPlugin.Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
                 TrailsPlugin.Data.TrailData.ReadOptions(xmlDoc, nsmgr, pluginNode);
             }
-            //Set version so Preferences are loaded next time
-            if (0 == settingsVersion)
-            {
-                settingsVersion = settingsVersionCurrent;
-            }
         }
 
-		public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode) {
+        public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
+        {
+            //Set version so Preferences are loaded next time
+            settingsVersion = settingsVersionCurrent;
+
             pluginNode.SetAttribute(xmlTags.Verbose, XmlConvert.ToString(Verbose));
             pluginNode.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(settingsVersion));
             TrailsPlugin.Data.Settings.WriteOptions(xmlDoc, pluginNode);
             TrailsPlugin.Data.TrailData.WriteOptions(xmlDoc, pluginNode);
         }
-
 		#endregion
 
         public static void ReadExtensionData()
         {
-            m_data = new TrailsPlugin.Data.TrailData();
-            //m_settings = new TrailsPlugin.Data.Settings();
+        //    m_data = new TrailsPlugin.Data.TrailData();
 
-            XmlDocument doc = new XmlDocument();
-            string xml = Plugin.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
-            if (xml == "")
-            {
-                xml = "<TrailsPlugin/>";
-            }
-            doc.LoadXml(xml);
-            m_data.FromXml(doc.DocumentElement);
-            //m_settings.FromXml(doc.DocumentElement);
+        //    XmlDocument doc = new XmlDocument();
+        //    string xml = Plugin.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
+        //    if (xml == "")
+        //    {
+        //        xml = "<TrailsPlugin/>";
+        //    }
+        //    doc.LoadXml(xml);
+        //    m_data.FromXml(doc.DocumentElement);
         }
 
-		public static void WriteExtensionData() 
+        public static void WriteExtensionData() 
         {
-            //Normally not used
-            if (settingsVersionCurrent > settingsVersion)
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml("<TrailsPlugin/>");
-                doc.DocumentElement.AppendChild(m_data.ToXml(doc));
-                //doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
-                Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
-                Plugin.GetApplication().Logbook.Modified = true;
-            }
-		}
+        //    //Normally not used
+        //    if (settingsVersionCurrent > settingsVersion)
+        //    {
+        //        XmlDocument doc = new XmlDocument();
+        //        doc.LoadXml("<TrailsPlugin/>");
+        //        doc.DocumentElement.AppendChild(m_data.ToXml(doc));
+        //        //doc.DocumentElement.AppendChild(m_settings.ToXml(doc));
+        //        Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
+        //        Plugin.GetApplication().Logbook.Modified = true;
+        //    }
+        }
 
 		public static IApplication GetApplication() {
 			return m_App;
@@ -127,8 +121,7 @@ namespace TrailsPlugin {
             {
                 if (settingsVersionCurrent > settingsVersion)
                 {
-                    //m_settings = null;
-                    m_data = null;
+                    //m_data = null;
                 }
 
                 // Register our filter criteria provider
@@ -143,34 +136,25 @@ namespace TrailsPlugin {
         }
 
 		private static IApplication m_App = null;
-		private static Data.TrailData m_data = null;
-		//private static Data.Settings m_settings = null;
-		public static Data.TrailData Data {
-			get {
-				if (m_data == null) {
-                    if (null == Plugin.GetApplication().Logbook)
-                    {
-                        //logbook is null if it could not be loaded, to avoid an exception that occurs at exit
-                        //m_settings = new TrailsPlugin.Data.Settings();
-                        m_data = new TrailsPlugin.Data.TrailData();
-                    }
-                    else
-                    {
-                        Plugin.ReadExtensionData();
-                    }
-				}
-				return m_data;
-			}
-		}
-
-        //public static Data.Settings Settings {
+		//private static Data.TrailData m_data = null;
+        //public static Data.TrailData Data {
         //    get {
-        //        if (m_settings == null) {
-        //            PluginMain.ReadExtensionData();
-        //        }
-        //        return m_settings;
+        //        //if (m_data == null) {
+        //        //    if (null == Plugin.GetApplication().Logbook)
+        //        //    {
+        //        //        //logbook is null if it could not be loaded, to avoid an exception that occurs at exit
+        //        //        //m_settings = new TrailsPlugin.Data.Settings();
+        //        //        m_data = new TrailsPlugin.Data.TrailData();
+        //        //    }
+        //        //    else
+        //        //    {
+        //        //        Plugin.ReadExtensionData();
+        //        //    }
+        //        //}
+        //        //return m_data;
         //    }
         //}
+
         private class xmlTags
         {
             public const string settingsVersion = "settingsVersion";

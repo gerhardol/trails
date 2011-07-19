@@ -29,7 +29,7 @@ namespace TrailsPlugin.Export
         {
             var results = new Dictionary<string, List<ITrailResult>>();
 
-            foreach (Trail trail in Plugin.Data.AllTrails.Values)
+            foreach (Trail trail in Data.TrailData.AllTrails.Values)
             {
                 Controller.TrailController controller = Controller.TrailController.Instance;
                 controller.Activities = activities;
@@ -57,7 +57,7 @@ namespace TrailsPlugin.Export
         public static IList<IList<string[]>> ListTrails()
         {
             IList<IList<string[]>> result = new List<IList<string[]>>();
-            foreach (Data.Trail trail in Plugin.Data.AllTrails.Values)
+            foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
             {
                 if (!trail.Generated)
                 {

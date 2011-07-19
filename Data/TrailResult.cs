@@ -73,7 +73,7 @@ namespace TrailsPlugin.Data {
         IList<double> m_trailPointDist0;
 
         private IGPSRoute m_gpsTrack;
-        private IList<IGPSPoint> m_gpsPoints;
+        private IList<IList<IGPSPoint>> m_gpsPoints;
         private static ActivityInfoOptions m_TrailActivityInfoOptions;
 
         public static ActivityInfoOptions TrailActivityInfoOptions
@@ -199,10 +199,6 @@ namespace TrailsPlugin.Data {
         {
             get
             {
-                if (DistanceMetersTrack == null || DistanceMetersTrack.Count == 0)
-                {
-                    return Info.Time;
-                }
                 return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
                    StartDateTime, EndDateTime, Pauses);
             }
@@ -213,7 +209,7 @@ namespace TrailsPlugin.Data {
             {
                 if (DistanceMetersTrack == null || DistanceMetersTrack.Count == 0)
                 {
-                    return Info.DistanceMeters;
+                    return 0;
                 }
                 return DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value;
             }
@@ -390,21 +386,6 @@ namespace TrailsPlugin.Data {
                 this.DistanceMetersTrack.StartTime, entryTime, Pauses);
             return elapsed;
         }
-        //private TimeSpan getElapsedTimeSpanResult(IDistanceDataTrack dataSeries, ITimeValueEntry<float> time)
-        //{
-        //    DateTime entryTime = dataSeries.EntryDateTime(time);//TODO: Use here is correct, but depends on source. To clarify
-        //    return getElapsedTimeSpanResult(entryTime);
-        //}
-        //private TimeSpan getElapsedWithoutPauses(IGPSRoute dataSeries, ITimeValueEntry<IGPSPoint> time)
-        //{
-        //    DateTime entryTime = dataSeries.EntryDateTime(time);
-        //    return getElapsedWithoutPauses(entryTime);
-        //}
-        //private TimeSpan getElapsedWithoutPauses(INumericTimeDataSeries dataSeries, ITimeValueEntry<float> time)
-        //{
-        //    DateTime entryTime = dataSeries.EntryDateTime(time);
-        //    return getElapsedWithoutPauses(entryTime);
-        //}
 
         //(Distance) Result to activity 
         public DateTime getDateTimeFromElapsedResult(float t)
@@ -563,20 +544,43 @@ namespace TrailsPlugin.Data {
                                 ILapInfo lap = Activity.Laps[i];
                                 if (lap.Rest)
                                 {
-                                    DateTime endTime;
+                                    DateTime upper;
                                     if (i < Activity.Laps.Count - 1)
                                     {
-                                        endTime = Activity.Laps[i + 1].StartTime;
+                                        upper = Activity.Laps[i + 1].StartTime;
                                         if (!Activity.Laps[i + 1].Rest)
                                         {
-                                            endTime -= TimeSpan.FromSeconds(1);
+                                            upper -= TimeSpan.FromSeconds(1);
                                         }
                                     }
                                     else
                                     {
-                                        endTime = Info.EndTime;
+                                        upper = Info.EndTime;
                                     }
-                                    m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, endTime));
+                                    m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, upper));
+                                }
+                            }
+                            //TODO: Add setting for non-required is pause
+                            if (true)
+                            {
+                                for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
+                                {
+                                    if (!m_activityTrail.Trail.TrailLocations[i].Required &&
+                                        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                    {
+                                        DateTime lower = this.TrailPointDateTime[i];
+                                        DateTime upper = this.EndDateTime;
+                                        while (!m_activityTrail.Trail.TrailLocations[i].Required &&
+                                        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                        {
+                                            i++;
+                                        }
+                                        if (i < this.TrailPointDateTime.Count)
+                                        {
+                                            upper = this.TrailPointDateTime[i];
+                                        }
+                                        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                                    }
                                 }
                             }
                         }
@@ -624,8 +628,9 @@ namespace TrailsPlugin.Data {
                     m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
                     if (m_activityDistanceMetersTrack != null)
                     {
-                        //insert points at borders
-                      (new InsertValues<float>(this)).insertValues(m_activityDistanceMetersTrack);
+                        //insert points at borders in m_activityDistanceMetersTrack
+                        m_activityDistanceMetersTrack = (DistanceDataTrack)(new InsertValues<float>(this, m_activityDistanceMetersTrack, m_activityDistanceMetersTrack)).
+                            insertValues();
                     }
                 }
                 if (m_activityDistanceMetersTrack != null)
@@ -911,54 +916,60 @@ namespace TrailsPlugin.Data {
         internal class InsertValues<T>
         {
             TrailResult result;
-            public InsertValues(TrailResult t)
+            ITimeDataSeries<T> track;
+            ITimeDataSeries<T> source;
+
+            public InsertValues(TrailResult t, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
             {
                 this.result = t;
+                this.track = track;
+                this.source = source;
             }
-            public void insertValues(ITimeDataSeries<T> track, DateTime atime)
+            private void insertValues(DateTime atime)
             {
                 //atime -= TimeSpan.FromMilliseconds(atime.Millisecond);
                 if (atime >= result.StartDateTime_0 && atime <= result.EndDateTime_0 &&
                     !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, result.Pauses))
                 {
-                    ITimeValueEntry<T> interpolatedP = track.GetInterpolatedValue(atime);
+                    ITimeValueEntry<T> interpolatedP = this.source.GetInterpolatedValue(atime);
                     if (interpolatedP != null)
                     {
                         try
                         {
-                            track.Add(atime, interpolatedP.Value);
+                            this.track.Add(atime, interpolatedP.Value);
                         }
                         catch { }
                     }
                 }
             }
-            public void insertValues(ITimeDataSeries<T> track)
+            public ITimeDataSeries<T> insertValues()
             {
                 //Insert points around pauses and points
                 //This is needed to get the track match the cut-up activity
                 //(otherwise for instance start point need to be added)
 
                 //start/end should be included from points, but prepare for changes...
-                insertValues(track, result.StartDateTime_0);
-                insertValues(track, result.EndDateTime_0);
+                insertValues(result.StartDateTime_0);
+                insertValues(result.EndDateTime_0);
                 foreach (IValueRange<DateTime> p in result.Pauses)
                 {
                     if (p.Lower > DateTime.MinValue)
                     {
-                        insertValues(track, p.Lower.AddSeconds(-1));
+                        insertValues(p.Lower.AddSeconds(-1));
                     }
-                    insertValues(track, p.Upper.AddSeconds(1));
+                    insertValues(p.Upper.AddSeconds(1));
                 }
                 foreach (TrailResultPoint t in result.m_childrenInfo.Points)
                 {
                     DateTime time = t.Time;
                     if (time > DateTime.MinValue)
                     {
-                        insertValues(track, time.Subtract(TimeSpan.FromSeconds(1)));
-                        insertValues(track, time);
+                        insertValues(time.Subtract(TimeSpan.FromSeconds(1)));
+                        insertValues(time);
                     }
                 }
-
+                //Return the original track, the typecasting must work
+                return this.track;
             }
         }
 
@@ -1010,7 +1021,7 @@ namespace TrailsPlugin.Data {
                 if (insert)
                 {
                     //Insert values around borders, to limit effects when track is chopped
-                    (new InsertValues<float>(this)).insertValues(track);
+                    track = (INumericTimeDataSeries)(new InsertValues<float>(this, track, source)).insertValues();
                 }
                 if (smooth > 0)
                 {
@@ -1404,11 +1415,10 @@ namespace TrailsPlugin.Data {
         }
 
         /****************************************************************/
-        private void getGps()
+        private IGPSRoute getGps()
         {
-            m_gpsTrack = new GPSRoute();
-            m_gpsTrack.AllowMultipleAtSameTime = false;
-            m_gpsPoints = null;
+            IGPSRoute gpsTrack = new GPSRoute();
+            gpsTrack.AllowMultipleAtSameTime = false;
             if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
                 StartDateTime_sec != DateTime.MinValue && EndDateTime_sec != DateTime.MinValue)
             {
@@ -1425,12 +1435,30 @@ namespace TrailsPlugin.Data {
                     IGPSPoint point = m_activity.GPSRoute[i].Value;
                     if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
                     {
-                        m_gpsTrack.Add(time, point);
+                        gpsTrack.Add(time, point);
                     }
                     i++;
                 }
-                (new InsertValues<IGPSPoint>(this)).insertValues(m_gpsTrack);
+                //Insert values at borders in m_gpsTrack
+                gpsTrack = (GPSRoute)(new InsertValues<IGPSPoint>(this, gpsTrack, m_activity.GPSRoute)).insertValues();
+
+                //AllowMultipleAtSameTime=false does not seem to work for GPSRoute...
+                IGPSRoute gpsTrack2 = new GPSRoute();
+                SortedDictionary<uint, ITimeValueEntry<IGPSPoint>> dic = new SortedDictionary<uint, ITimeValueEntry<IGPSPoint>>();
+                foreach (ITimeValueEntry<IGPSPoint> g in gpsTrack)
+                {
+                    if(!dic.ContainsKey(g.ElapsedSeconds))
+                    {
+                    dic.Add(g.ElapsedSeconds, g);
+                    }
+                }
+                foreach (KeyValuePair<uint, ITimeValueEntry<IGPSPoint>> g in dic)
+                {
+                    gpsTrack2.Add(gpsTrack.EntryDateTime(g.Value), g.Value.Value);
+                }
+                gpsTrack = gpsTrack2;
             }
+            return gpsTrack;
         }
 
         public IGPSRoute GPSRoute
@@ -1439,27 +1467,20 @@ namespace TrailsPlugin.Data {
             {
                 if (m_gpsTrack == null)
                 {
-                    getGps();
+                    m_gpsTrack = getGps();
+                    m_gpsPoints = null;
                 }
                 return m_gpsTrack;
             }
         }
 
-        public IList<IGPSPoint> GpsPoints()
+        public IList<IList<IGPSPoint>> GpsPoints()
         {
-            if (m_gpsTrack == null || m_gpsPoints == null)
+            if (m_gpsPoints == null)
             {
                 IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
                 t.Add(new ValueRange<DateTime>(StartDateTime, EndDateTime));
-                IList<IList<IGPSPoint>> list = GpsPoints(t);
-                if (list != null && list.Count > 0)
-                {
-                    m_gpsPoints = list[0];
-                }
-                else
-                {
-                    m_gpsPoints = new List<IGPSPoint>();
-                }
+                m_gpsPoints = GpsPoints(t);
             }
             return m_gpsPoints;
         }
@@ -1474,132 +1495,63 @@ namespace TrailsPlugin.Data {
                     t.MarkedTimes[0].Upper == EndDateTime)
                 {
                     //Use cache
-                    return new List<IList<IGPSPoint>> { this.GpsPoints() };
+                    return this.GpsPoints();
                 }
                 return GpsPoints(t.MarkedTimes);
             }
-            //else if (t.MarkedDistances != null && t.MarkedDistances.Count > 0)
-            //{
-            //    return GpsPoints(t.MarkedDistances);
-            //}
             return new List<IList<IGPSPoint>>();
         }
 
         private IList<IList<IGPSPoint>> GpsPoints(IValueRangeSeries<DateTime> t)
         {
             IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
+            bool newTrackAtPause = false;
+            int pauseIndex = 0;
+            int prevPauseIndex = pauseIndex;
 
-                foreach (IValueRange<DateTime> r in t)
+            foreach (IValueRange<DateTime> r in t)
+            {
+                IList<IGPSPoint> track = new List<IGPSPoint>();
+                foreach (ITimeValueEntry<IGPSPoint> entry in this.GPSRoute)
                 {
-                    //IGPSRoute GpsTrack = Activity.GPSRoute;
-                    IList<IGPSPoint> track = new List<IGPSPoint>();
-                    foreach(ITimeValueEntry<IGPSPoint> entry in this.GPSRoute)
+                    DateTime time = this.GPSRoute.EntryDateTime(entry);
+                    bool isPause = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses);
+
+                    //Add new track around pauses
+                    if (!isPause)
                     {
-                        DateTime time = this.GPSRoute.EntryDateTime(entry);
-                        if (r.Lower <= time && time <= r.Upper &&
-                            !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
+                        while (pauseIndex < Pauses.Count && Pauses[pauseIndex].Lower < time)
                         {
-                            track.Add(entry.Value);
+                            pauseIndex++;
                         }
                     }
-                    //if (Activity.GPSRoute != null)
-                    //{
-                    //int i = 0;
-                    //while (i < GpsTrack.Count &&
-                    //    0 < r.Lower.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
-                    //{
-                    //    i++;
-                    //}
-                    //if (i < GpsTrack.Count &&
-                    //    0 > r.Lower.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
-                    //{
-                    //    //Insert start point
-                    //    ITimeValueEntry<IGPSPoint> interpolatedP = GpsTrack.GetInterpolatedValue(r.Lower);
-                    //    if (interpolatedP != null)
-                    //    {
-                    //        track.Add(interpolatedP.Value);
-                    //    }
-                    //}
-                    //ITimeValueEntry<IGPSPoint> entry = null;
-                    //while (i < GpsTrack.Count &&
-                    //    0 <= r.Upper.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
-                    //{
-                    //    entry = GpsTrack[i];
-                    //    track.Add(entry.Value);
-                    //    i++;
-                    //}
-                    //if (entry!= null &&
-                    //    0 > r.Upper.CompareTo(GpsTrack.EntryDateTime(entry)))
-                    //{
-                    //    ITimeValueEntry<IGPSPoint> interpolatedP = GpsTrack.GetInterpolatedValue(r.Upper);
-                    //    if (interpolatedP != null)
-                    //    {
-                    //        track.Add(interpolatedP.Value);
-                    //    }
-                    //}
-                    result.Add(track);
-                //}
-            }
 
+                    if (newTrackAtPause && (isPause || prevPauseIndex != pauseIndex))
+                    {
+                        result.Add(track);
+                        track = new List<IGPSPoint>();
+                        newTrackAtPause = false;
+                    }
+                    prevPauseIndex = pauseIndex;
+
+                    if (r.Lower <= time && time <= r.Upper && !isPause)
+                    {
+                        track.Add(entry.Value);
+                        //If there is a a pause, add new track
+                        newTrackAtPause = true;
+                    }
+                    if (time > r.Upper)
+                    {
+                        break;
+                    }
+                }
+                if (track.Count > 0)
+                {
+                    result.Add(track);
+                }
+            }
             return result;
         }
-
-        //Note: IItemTrackSelectionInfo uses Activity distance
-        //private IList<IList<IGPSPoint>> GpsPoints(IValueRangeSeries<double> t)
-        //{
-        //    IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
-        //    if (Activity.GPSRoute != null)
-        //    {
-        //        IGPSRoute GpsTrack = Activity.GPSRoute;
-        //        IDistanceDataTrack DistanceMetersTrack = ActivityDistanceMetersTrack;
-
-        //        foreach (IValueRange<double> r in t)
-        //        {
-        //            IList<IGPSPoint> track = new List<IGPSPoint>();
-        //            int i = 0;
-        //            while (i < ActivityDistanceMetersTrack.Count &&
-        //                getDistResultFromDistActivity(r.Lower) > ActivityDistanceMetersTrack[i].Value)
-        //            {
-        //                i++;
-        //            }
-        //            DateTime time = getDateTimeFromDistActivity(r.Lower);
-        //            if (i < GpsTrack.Count &&
-        //                0 > time.CompareTo(GpsTrack.EntryDateTime(GpsTrack[i])))
-        //            {
-        //                //Insert start point
-        //                ITimeValueEntry<IGPSPoint> interpolatedP = GpsTrack.GetInterpolatedValue(time);
-        //                if (interpolatedP != null)
-        //                {
-        //                    track.Add(interpolatedP.Value);
-        //                }
-        //            }
-        //            ITimeValueEntry<IGPSPoint> entry = null;
-        //            while (i < ActivityDistanceMetersTrack.Count &&
-        //                getDistResultFromDistActivity(r.Upper) >= ActivityDistanceMetersTrack[i].Value)
-        //            {
-        //                time = ActivityDistanceMetersTrack.EntryDateTime(ActivityDistanceMetersTrack[i]);
-        //                entry = GpsTrack.GetInterpolatedValue(time);
-        //                if (entry != null)
-        //                {
-        //                    track.Add(entry.Value);
-        //                }
-        //                i++;
-        //            }
-        //            time = getDateTimeFromDistActivity(r.Upper);
-        //            if (entry != null &&
-        //                0 > time.CompareTo(GpsTrack.EntryDateTime(entry)))
-        //            {
-        //                ITimeValueEntry<IGPSPoint> interpolatedP = GpsTrack.GetInterpolatedValue(time);
-        //                if (interpolatedP != null)
-        //                {
-        //                    track.Add(interpolatedP.Value);
-        //                }
-        //            }
-        //            result.Add(track);
-        //        }
-        //    }
-        //    return result;
-        //}
 
         /*************************************************/
         #region Color

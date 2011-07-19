@@ -36,24 +36,33 @@ namespace TrailsPlugin.UI.MapLayers
 {
     public class TrailMapPolyline : MapPolyline
     {
+        //Separate parts of the key - parsing should be done internally
+        private static string cSeparator = ":";
+
         private TrailResult m_trailResult;
         private string m_key;
         private TrailMapPolyline(IList<IGPSPoint> g, int w, Color c, TrailResult tr)
             : base(g, w, c)
         {
             m_trailResult = tr;
-            m_key = tr.Activity + ":" + tr.Order;
+            m_key = tr.Activity + cSeparator + tr.Order;
         }
         private TrailMapPolyline(IList<IGPSPoint> g, int w, Color c, TrailResult tr, string tkey)
             : this(g, w, c, tr)
         {
-            m_key += tkey;
+            m_key += cSeparator + tkey;
         }
 
-        //Complete trail
-        public TrailMapPolyline(TrailResult tr)
-            : this(tr.GpsPoints(), UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr)
-        { }
+        //A trail consisting of several parts (due to pauses)
+        public static IList<TrailMapPolyline> GetTrailMapPolyline(TrailResult tr)
+        {
+            IList<TrailMapPolyline> results = new List<TrailMapPolyline>();
+            foreach (IList<IGPSPoint> gp in tr.GpsPoints())
+            {
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr, "r" + cSeparator + results.Count));
+            }
+            return results;
+        }
 
         //Marked part of a track
         public static IList<TrailMapPolyline> GetTrailMapPolyline(TrailResult tr, TrailsItemTrackSelectionInfo sel)
@@ -61,7 +70,7 @@ namespace TrailsPlugin.UI.MapLayers
             IList<TrailMapPolyline> results = new List<TrailMapPolyline>();
             foreach (IList<IGPSPoint> gp in tr.GpsPoints(sel))
             {
-                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth * 2, MarkedColor(tr.TrailColor), tr, "m" + results.Count));
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth * 2, MarkedColor(tr.TrailColor), tr, "m" + cSeparator + results.Count));
             }
             return results;
         }

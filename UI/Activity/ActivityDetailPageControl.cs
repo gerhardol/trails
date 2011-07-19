@@ -232,10 +232,12 @@ namespace TrailsPlugin.UI.Activity {
                         //Do not map activities displayed already
                         if (!ViewSingleActivity(tr.Activity))
                         {
-                            //Possibly limit no of Trails shown, it slows down Gmaps
-                            TrailMapPolyline m = new TrailMapPolyline(tr);
-                            m.Click += new MouseEventHandler(mapPoly_Click);
-                            routes.Add(m.key, m);
+                            //Note: Possibly limit no of Trails shown, it slows down Gmaps
+                            foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
+                            {
+                                m.Click += new MouseEventHandler(mapPoly_Click);
+                                routes.Add(m.key, m);
+                            }
                         }
                     }
                     m_layer.TrailRoutes = routes;

@@ -570,7 +570,8 @@ namespace TrailsPlugin.Data {
                                     {
                                         DateTime lower = this.TrailPointDateTime[i];
                                         DateTime upper = this.EndDateTime;
-                                        while (!m_activityTrail.Trail.TrailLocations[i].Required &&
+                                        while (i < this.TrailPointDateTime.Count &&
+                                            !m_activityTrail.Trail.TrailLocations[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                         {
                                             i++;

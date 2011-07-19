@@ -68,9 +68,22 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(p).ToString((fmt));
             }
 
+            public static double ConvertFrom(double value, IActivity activity)
+            {
+                return ConvertFrom(value);
+            }
             public static double ConvertFrom(double p)
             {
                 return p;
+            }
+
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return value;
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return value;
             }
 
             public static double Parse(string p)
@@ -127,9 +140,22 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(p).ToString((fmt));
             }
 
+            public static double ConvertFrom(double value, IActivity activity)
+            {
+                return ConvertFrom(value);
+            }
             public static double ConvertFrom(double p)
             {
                 return p;
+            }
+
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return value;
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return value;
             }
 
             private static double Parse(string p)
@@ -186,9 +212,22 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(p).ToString((fmt));
             }
 
+            public static double ConvertFrom(double value, IActivity activity)
+            {
+                return ConvertFrom(value);
+            }
             public static double ConvertFrom(double p)
             {
                 return p;
+            }
+
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return value;
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return value;
             }
 
             public static double Parse(string p)
@@ -457,6 +496,15 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(value, GetUnit(activity));
             }
 
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return Length.Convert(value, du, Length.Units.Meter);
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return ConvertTo(value, GetUnit(activity));
+            }
+
             public static double Parse(string p)
             {
                 Length.Units unit = Unit;
@@ -520,9 +568,22 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(p).ToString((fmt));
             }
 
+            public static double ConvertFrom(double p, IActivity activity)
+            {
+                return ConvertFrom(p);
+            }
             public static double ConvertFrom(double p)
             {
-                return p;
+                return p * 100;
+            }
+
+            public static double ConvertTo(double value, Length.Units du)
+            {
+                return ConvertTo(value, null);
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return value / 100;
             }
 
             public static double Parse(string p)

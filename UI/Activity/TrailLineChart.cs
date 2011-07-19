@@ -688,15 +688,17 @@ namespace TrailsPlugin.UI.Activity {
                                 uint elapsedEntry = entry.ElapsedSeconds;
                                 if (XAxisReferential == XAxisValue.Time || elapsedEntry <= graphPoints.TotalElapsedSeconds)
                                 {
+                                    //The time is required to get the xvalue(time) or yvalue(dist)
+                                    DateTime time = dataPoints.EntryDateTime(entry);
                                     //The x value in the graph, the actual time or distance
-                                    float xvalue;
+                                    float xValue;
                                     if (XAxisReferential == XAxisValue.Time)
                                     {
-                                        xvalue = (float)m_trailResults[i].getElapsedResult(dataPoints.EntryDateTime(entry));
+                                        xValue = (float)m_trailResults[i].getElapsedResult(time);
                                     }
                                     else
                                     {
-                                        xvalue = entry.Value;
+                                        xValue = entry.Value;
                                     }
                                     //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
                                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
@@ -704,25 +706,24 @@ namespace TrailsPlugin.UI.Activity {
                                     float nextXvalue = float.MaxValue;
                                     if (Data.Settings.SyncChartAtTrailPoints)
                                     {
-                                        xvalue += GetResyncOffset(XAxisReferential, false, tr, xvalue, out nextXvalue);
+                                        xValue += GetResyncOffset(XAxisReferential, false, tr, xValue, out nextXvalue);
                                     }
                                     if (oldElapsedEntry < elapsedEntry &&
                                         (!Data.Settings.SyncChartAtTrailPoints ||
-                                        oldXvalue < xvalue && xvalue < nextXvalue))
+                                        oldXvalue < xValue && xValue < nextXvalue))
                                     {
-                                        ITimeValueEntry<float> valEntry;
+                                        ITimeValueEntry<float> yValueEntry;
                                         if (XAxisReferential == XAxisValue.Time)
                                         {
-                                            valEntry = entry;
+                                            yValueEntry = entry;
                                         }
                                         else
                                         {
-                                            //xxx Note: entry is for graphpoints here, but the entries covers the same points
-                                            valEntry = graphPoints.GetInterpolatedValue(dataPoints.EntryDateTime(entry));
+                                            yValueEntry = graphPoints.GetInterpolatedValue(time);
                                         }
-                                        if (valEntry != null)
+                                        if (yValueEntry != null)
                                         {
-                                            PointF point = new PointF(xvalue, valEntry.Value);
+                                            PointF point = new PointF(xValue, yValueEntry.Value);
                                             if (null != dataFill)
                                             {
                                                 dataFill.Points.Add(elapsedEntry, point);
@@ -730,7 +731,7 @@ namespace TrailsPlugin.UI.Activity {
                                             dataLine.Points.Add(elapsedEntry, point);
                                         }
                                         oldElapsedEntry = (int)elapsedEntry;
-                                        oldXvalue = xvalue;
+                                        oldXvalue = xValue;
                                     }
                                 }
                             }

@@ -1059,6 +1059,16 @@ namespace TrailsPlugin.Data
         {
             ActivityTrail t = (ActivityTrail)element;
             string name = t.Trail.Name;
+            if (t.Trail.IsReference && null != t.Trail.ReferenceActivityNoCalc)
+            {
+                DateTime time = ActivityInfoCache.Instance.GetInfo(t.Trail.ReferenceActivityNoCalc).ActualTrackStart;
+                if (DateTime.MinValue == time)
+                {
+                    time = t.Trail.ReferenceActivityNoCalc.StartTime;
+                }
+                name += " " + time.ToLocalTime().ToString();
+            }
+
             if (t.Status == TrailOrderStatus.Match ||
                 t.Status == TrailOrderStatus.MatchPartial)
             {

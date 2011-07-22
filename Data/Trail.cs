@@ -280,7 +280,7 @@ namespace TrailsPlugin.Data {
             bool lastIsRestlap = false;
             if (null == activity.Laps || 0 == activity.Laps.Count)
             {
-                IDistanceDataTrack track= ActivityInfoCache.Instance.GetInfo(activity).MovingDistanceMetersTrack;
+                IDistanceDataTrack track = ActivityInfoCache.Instance.GetInfo(activity).MovingDistanceMetersTrack;
                 if (track != null && track.Max > 0)
                 {
                     //Create some kind of points - could be dependent on length

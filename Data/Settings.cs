@@ -40,7 +40,7 @@ namespace TrailsPlugin.Data
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Ascending;
         private static bool m_SetNameAtImport = true;
         private static int m_MaxAutoCalcActivitiesTrails = 500;
-        //private static int m_MaxAutoCalcResults = 800;
+        private static int m_MaxAutoCalcActivitiesSingleTrail = 200;
         private static bool m_restIsPause = false;
         private static bool m_resyncDiffAtTrailPoints = true;
         private static bool m_adjustResyncDiffAtTrailPoints = false;
@@ -200,11 +200,11 @@ namespace TrailsPlugin.Data
             get { return m_MaxAutoCalcActivitiesTrails; }
             set { m_MaxAutoCalcActivitiesTrails = value; }
         }
-        //public static int MaxAutoCalcResults
-        //{
-        //    get { return m_MaxAutoCalcResults; }
-        //    set { m_MaxAutoCalcResults = value; }
-        //}
+        public static int MaxAutoCalcActitiesSingleTrail
+        {
+            get { return m_MaxAutoCalcActivitiesSingleTrail; }
+            set { m_MaxAutoCalcActivitiesSingleTrail = value; }
+        }
         public static bool RestIsPause
         {
             get { return m_restIsPause; }
@@ -262,16 +262,6 @@ namespace TrailsPlugin.Data
             if (attr.Length > 0) { m_addCurrentCategory = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
             if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
-            if (attr.Length > 0) { 
-                //TODO: Changed secret setting, too low default
-                if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcActivitiesTrails)
-                    m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcResults);
-            //if (attr.Length > 0) {
-            //    //TODO: Changed secret setting, too low default
-            //    if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcResults)
-            //        m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
             if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.RestIsPause);
@@ -286,6 +276,10 @@ namespace TrailsPlugin.Data
             if (attr.Length > 0) { OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
             if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
+            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
+            if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
+            if (attr.Length > 0) { m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr); }
 
             attr = pluginNode.GetAttribute(xmlTags.sColumns);
             if (attr.Length > 0)
@@ -365,7 +359,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
-            //pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
+            pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
 
             String colText = null;
             foreach (String column in m_activityPageColumns)
@@ -406,7 +400,7 @@ namespace TrailsPlugin.Data
             public const string SelectSimilarResults = "SelectSimilarResults";
             public const string AddCurrentActivity = "AddCurrentActivity";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
-            public const string MaxAutoCalcResults = "MaxAutoCalcResults";
+            public const string MaxAutoCalcActivitiesSingleTrail = "MaxAutoCalcActivitiesSingleTrail";
             public const string SetNameAtImport = "SetNameAtImport";
             public const string RestIsPause = "RestIsPause";
             public const string ResyncDiffAtTrailPoints = "ResyncDiffAtTrailPoints";

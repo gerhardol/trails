@@ -59,7 +59,7 @@ namespace TrailsPlugin.Data
                     m_status = TrailOrderStatus.MatchNoCalc;
                 }
             }
-            else if (Trail.MatchAll || Trail.IsReference)
+            else if (Trail.IsSplits || Trail.IsReference)
             {
                 // Let Reference always match, to trigger possible recalc after
                 m_status = TrailOrderStatus.MatchNoCalc;
@@ -224,7 +224,7 @@ namespace TrailsPlugin.Data
                 {
                     foreach (IActivity activity in activities)
                     {
-                        if (m_trail.MatchAll)
+                        if (m_trail.IsSplits)
                         {
                             this.Status = TrailOrderStatus.Match;
                             TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
@@ -933,9 +933,9 @@ namespace TrailsPlugin.Data
             }
             else if (Status == TrailOrderStatus.Match)
             {
-                if (this.Trail.MatchAll != to2.Trail.MatchAll)
+                if (this.Trail.IsSplits != to2.Trail.IsSplits)
                 {
-                    return (this.Trail.MatchAll) ? 1 : -1;
+                    return (this.Trail.IsSplits) ? 1 : -1;
                 }
                 else if (this.Trail.Generated != to2.Trail.Generated)
                 {
@@ -1066,7 +1066,7 @@ namespace TrailsPlugin.Data
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
-                if (t.Trail.MatchAll)
+                if (t.Trail.IsSplits)
                 {
                     name += " (" + t.ActivityCount + ")";
                 }

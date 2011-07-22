@@ -38,7 +38,7 @@ namespace TrailsPlugin.Data
             trail.Id = "30681520-b220-11e0-a00b-0800200c9a66";
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.Generated = true;
-            trail.MatchAll = true;
+            trail.IsSplits = true;
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail

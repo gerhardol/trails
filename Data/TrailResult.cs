@@ -248,6 +248,10 @@ namespace TrailsPlugin.Data {
                     if (m_startTime == DateTime.MinValue)
                     {
                         m_startTime = Info.ActualTrackStart;
+                        if (m_startTime == DateTime.MinValue)
+                        {
+                            m_startTime = this.Activity.StartTime;
+                        }
                     }
                 }
                 return (DateTime)m_startTime;
@@ -270,6 +274,10 @@ namespace TrailsPlugin.Data {
                     if (m_endTime == DateTime.MinValue)
                     {
                         m_endTime = Info.ActualTrackEnd;
+                        if (m_endTime == DateTime.MinValue)
+                        {
+                            m_endTime = Info.EndTime;
+                        }
                     }
                 }
                 return (DateTime)m_endTime;
@@ -591,20 +599,19 @@ namespace TrailsPlugin.Data {
                                 for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
                                 {
                                     IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                                    if ((trailLocations == null || trailLocations.Count == 0) &&
-                                        m_activityTrail.Trail.MatchAll)
+                                    if (m_activityTrail.Trail.IsSplits)
                                     {
                                         trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
                                     }
                                     if (i < trailLocations.Count &&
-                                        !m_activityTrail.Trail.TrailLocations[i].Required &&
+                                        !trailLocations[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                     {
                                         DateTime lower = this.TrailPointDateTime[i];
                                         DateTime upper = this.EndDateTime;
                                         while (i < this.TrailPointDateTime.Count &&
                                             i < trailLocations.Count &&
-                                            !m_activityTrail.Trail.TrailLocations[i].Required &&
+                                            !trailLocations[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                         {
                                             i++;
@@ -826,20 +833,41 @@ namespace TrailsPlugin.Data {
 			}
 		}
 		public float AvgHR {
-			get {
-                return HeartRatePerMinuteTrack0(m_cacheTrackRef).Avg;
-			}
+            get
+            {
+                INumericTimeDataSeries track = HeartRatePerMinuteTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return Info.AverageHeartRate;
+                }
+                return track.Avg;
+            }
 		}
 		public float MaxHR {
 			get {
-				return HeartRatePerMinuteTrack0(m_cacheTrackRef).Max;
+                INumericTimeDataSeries track = HeartRatePerMinuteTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return Info.MaximumHeartRate;
+                }
+                return track.Max;
 			}
 		}
 		public float AvgPower {
-			get {
-                return (float)UnitUtil.Power.ConvertTo(PowerWattsTrack0(m_cacheTrackRef).Avg,
-                    m_cacheTrackRef.Activity);
-			}
+            get
+            {
+                float result;
+                INumericTimeDataSeries track = PowerWattsTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    result = Info.AveragePower;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)UnitUtil.Power.ConvertTo(result, m_cacheTrackRef.Activity);
+            }
 		}
 		public float AvgGrade {
 			get {

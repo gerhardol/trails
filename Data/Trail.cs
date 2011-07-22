@@ -78,7 +78,7 @@ namespace TrailsPlugin.Data {
             result.m_radius = this.m_radius;
             result.m_minDistance = this.m_minDistance;
             result.m_maxRequiredMisses = this.m_maxRequiredMisses;
-            if (this.MatchAll && activity != null && this.TrailLocations.Count == 0)
+            if (this.IsSplits && activity != null && this.TrailLocations.Count == 0)
             {
                 //get all points
                 TrailResultInfo indexes;
@@ -151,7 +151,7 @@ namespace TrailsPlugin.Data {
                 m_maxRequiredMisses = value;
             }
         }
-        public bool MatchAll
+        public bool IsSplits
         {
             get
             {
@@ -349,7 +349,7 @@ namespace TrailsPlugin.Data {
             //Hidden possibility to get trails matching everything while activities are seen
             if (trail.Name.EndsWith("MatchAll"))
             {
-                trail.MatchAll = true;
+                trail.IsSplits = true;
             }
             if (node.Attributes[xmlTags.sRadius] != null)
             {

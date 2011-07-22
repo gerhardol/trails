@@ -315,7 +315,8 @@ namespace TrailsPlugin.Controller
             //check that the ref is for current results
             if (m_currentActivityTrail != null)
             {
-                if(!m_currentActivityTrail.Results.Contains(m_referenceTrailResult))
+                if(m_currentActivityTrail.Status == TrailOrderStatus.Match &&
+                    !m_currentActivityTrail.Results.Contains(m_referenceTrailResult))
                 {
                     m_referenceTrailResult = null;
                 }
@@ -382,6 +383,16 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        public void Clear()
+        {
+            if (m_CurrentOrderedTrails != null)
+            {
+                foreach (ActivityTrail t in m_CurrentOrderedTrails)
+                {
+                    t.Clear();
+                }
+            }
+        }
         private void NewTrail(Data.Trail trail)
         {
             m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);

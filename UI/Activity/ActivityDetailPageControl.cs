@@ -183,10 +183,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool showPage = m_showPage;
             HidePage(); //defer updates
-            if (m_controller.CurrentActivityTrailDisplayed != null)
-            {
-                m_controller.CurrentActivityTrailDisplayed.Clear();
-            }
+            m_controller.Clear();
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
             RefreshRoute(); 
@@ -223,7 +220,7 @@ namespace TrailsPlugin.UI.Activity {
                     points.Add(point);
                 }
                 //check for TrailOrdered - displayed status
-                if (m_controller.CurrentActivityTrailDisplayed!=null)
+                if (m_controller.CurrentActivityTrailDisplayed != null)
                 {
                     IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();

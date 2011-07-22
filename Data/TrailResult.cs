@@ -333,6 +333,10 @@ namespace TrailsPlugin.Data {
                 if (float.IsNaN(m_startDistance))
                 {
                     getDistanceTrack();
+                    if (float.IsNaN(m_startDistance))
+                    {
+                        m_startDistance = 0;
+                    }
                 }
                 return m_startDistance;
             }

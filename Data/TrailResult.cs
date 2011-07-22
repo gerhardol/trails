@@ -490,6 +490,27 @@ namespace TrailsPlugin.Data {
             }
             return time;
         }
+        bool isIncludeStoppedCategory(IActivityCategory category)
+        {
+            if (category == null || Settings.ExcludeStoppedCategory == null || Settings.ExcludeStoppedCategory == "")
+            {
+                return true;
+            }
+            else
+            {
+                String[] values = category.Name.Split(';');
+                foreach (String name in values)
+                {
+
+                    if (name.Contains(Settings.ExcludeStoppedCategory))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return isIncludeStoppedCategory(category.Parent);
+        }
+        
         /*********************************************/
         private bool includeStopped()
         {
@@ -503,6 +524,10 @@ namespace TrailsPlugin.Data {
 #else
             includeStopped = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
 #endif
+            if (!includeStopped)
+            {
+                includeStopped = isIncludeStoppedCategory(this.Activity.Category);
+            }
             return includeStopped;
         }
 
@@ -565,12 +590,20 @@ namespace TrailsPlugin.Data {
                             {
                                 for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
                                 {
-                                    if (!m_activityTrail.Trail.TrailLocations[i].Required &&
+                                    IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
+                                    if ((trailLocations == null || trailLocations.Count == 0) &&
+                                        m_activityTrail.Trail.MatchAll)
+                                    {
+                                        trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
+                                    }
+                                    if (i < trailLocations.Count &&
+                                        !m_activityTrail.Trail.TrailLocations[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                     {
                                         DateTime lower = this.TrailPointDateTime[i];
                                         DateTime upper = this.EndDateTime;
                                         while (i < this.TrailPointDateTime.Count &&
+                                            i < trailLocations.Count &&
                                             !m_activityTrail.Trail.TrailLocations[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                         {

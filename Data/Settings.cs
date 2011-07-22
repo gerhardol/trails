@@ -40,12 +40,13 @@ namespace TrailsPlugin.Data
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Ascending;
         private static bool m_SetNameAtImport = true;
         private static int m_MaxAutoCalcActivitiesTrails = 500;
-        private static int m_MaxAutoCalcResults = 800;
+        //private static int m_MaxAutoCalcResults = 800;
         private static bool m_restIsPause = false;
         private static bool m_resyncDiffAtTrailPoints = true;
         private static bool m_adjustResyncDiffAtTrailPoints = false;
         private static bool m_syncChartAtTrailPoints = false;
         private static bool m_onlyReferenceRight = false;
+        private static string m_excludeStoppedCategory = "";
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -199,11 +200,11 @@ namespace TrailsPlugin.Data
             get { return m_MaxAutoCalcActivitiesTrails; }
             set { m_MaxAutoCalcActivitiesTrails = value; }
         }
-        public static int MaxAutoCalcResults
-        {
-            get { return m_MaxAutoCalcResults; }
-            set { m_MaxAutoCalcResults = value; }
-        }
+        //public static int MaxAutoCalcResults
+        //{
+        //    get { return m_MaxAutoCalcResults; }
+        //    set { m_MaxAutoCalcResults = value; }
+        //}
         public static bool RestIsPause
         {
             get { return m_restIsPause; }
@@ -228,6 +229,11 @@ namespace TrailsPlugin.Data
         {
             get { return m_onlyReferenceRight; }
             set { m_onlyReferenceRight = value; }
+        }
+        public static string ExcludeStoppedCategory
+        {
+            get { return m_excludeStoppedCategory; }
+            set { m_excludeStoppedCategory = value; }
         }
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
@@ -262,10 +268,10 @@ namespace TrailsPlugin.Data
                 if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcActivitiesTrails)
                     m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcResults);
-            if (attr.Length > 0) {
-                //TODO: Changed secret setting, too low default
-                if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcResults)
-                    m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
+            //if (attr.Length > 0) {
+            //    //TODO: Changed secret setting, too low default
+            //    if((Int16)XmlConvert.ToInt16(attr) > m_MaxAutoCalcResults)
+            //        m_MaxAutoCalcResults = (Int16)XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
             if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.RestIsPause);
@@ -278,6 +284,8 @@ namespace TrailsPlugin.Data
             if (attr.Length > 0) { SyncChartAtTrailPoints = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.OnlyReferenceRight);
             if (attr.Length > 0) { OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
+            if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
 
             attr = pluginNode.GetAttribute(xmlTags.sColumns);
             if (attr.Length > 0)
@@ -354,9 +362,10 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints, XmlConvert.ToString(m_adjustResyncDiffAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.SyncChartAtTrailPoints, XmlConvert.ToString(m_syncChartAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.OnlyReferenceRight, XmlConvert.ToString(m_onlyReferenceRight));
+            pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
-            pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
+            //pluginNode.SetAttribute(xmlTags.MaxAutoCalcResults, XmlConvert.ToString(m_MaxAutoCalcResults));
 
             String colText = null;
             foreach (String column in m_activityPageColumns)
@@ -404,7 +413,8 @@ namespace TrailsPlugin.Data
             public const string AdjustResyncDiffAtTrailPoints = "AdjustResyncDiffAtTrailPoints";
             public const string SyncChartAtTrailPoints = "SyncChartAtTrailPoints";
             public const string OnlyReferenceRight = "OnlyReferenceRight";
-
+            public const string ExcludeStoppedCategory = "ExcludeStoppedCategory";
+ 
             public const string sColumns = "sColumns";
         }
 

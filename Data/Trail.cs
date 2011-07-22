@@ -277,10 +277,28 @@ namespace TrailsPlugin.Data {
             indexes = new TrailResultInfo(activity);
             IList<bool> lapActive = new List<bool>();
 
+            bool lastIsRestlap = false;
             if (null == activity.Laps || 0 == activity.Laps.Count)
             {
-                indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart, activity.Name));
-                lapActive.Add(true);
+                IDistanceDataTrack track= ActivityInfoCache.Instance.GetInfo(activity).MovingDistanceMetersTrack;
+                if (track != null && track.Max > 0)
+                {
+                    //Create some kind of points - could be dependent on length
+                    const float cDist = 1000;
+                    float dist = 0;
+                    while (dist < track.Max)
+                    {
+                        DateTime time = track.GetTimeAtDistanceMeters(dist);
+                        indexes.Points.Add(new TrailResultPoint(time,""));
+                        lapActive.Add(true);
+                        dist = Math.Min(track.Max, dist + cDist);
+                    }
+                }
+                else
+                {
+                    indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart, activity.Name));
+                    lapActive.Add(true);
+                }
             }
             else
             {
@@ -293,17 +311,11 @@ namespace TrailsPlugin.Data {
                         lapActive.Add(!l.Rest);
                     }
                 }
+                lastIsRestlap = activity.Laps[activity.Laps.Count - 1].Rest;
             }
 
-            bool lastIsRestlap = false;
-            if (null == activity.Laps || 
-                0 == activity.Laps.Count ||
-                activity.Laps[activity.Laps.Count-1].Rest)
-            {
-                lastIsRestlap = true;
-            }
-            if (indexes.Count == 0 || 
-                (!onlyActiveLaps || !lastIsRestlap))
+            //Add end point, except if last is a rest lap (where last already is added)
+            if (!onlyActiveLaps || !lastIsRestlap)
             {
                 indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd, activity.Name));
                 lapActive.Add(!lastIsRestlap);
@@ -347,10 +359,10 @@ namespace TrailsPlugin.Data {
 			}
             trail.Name = node.Attributes[xmlTags.sName].Value;
             //Hidden possibility to get trails matching everything while activities are seen
-            if (trail.Name.EndsWith("MatchAll"))
-            {
-                trail.IsSplits = true;
-            }
+            //if (trail.Name.EndsWith("MatchAll"))
+            //{
+            //    trail.IsSplits = true;
+            //}
             if (node.Attributes[xmlTags.sRadius] != null)
             {
                 trail.Radius = Settings.parseFloat(node.Attributes[xmlTags.sRadius].Value);

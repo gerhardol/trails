@@ -286,18 +286,31 @@ namespace TrailsPlugin.Data {
 
         //StartDateTime used in tracks, truncating milliseconds
         //Truncating is no longer needed, just an alias
+        private DateTime DateTime_sec(DateTime date)
+        {
+            int ms = date.Millisecond;
+            if (ms < 500)
+            {
+                ms = -ms;
+            }
+            else
+            {
+                ms = 1000 - ms;
+            }
+            return date.AddMilliseconds(ms);
+        }
         private DateTime StartDateTime_sec
         {
             get
             {
-                return StartDateTime;
+                return DateTime_sec(StartDateTime);
             }
         }
         private DateTime EndDateTime_sec
         {
             get
             {
-                return EndDateTime;
+                return DateTime_sec(EndDateTime);
             }
         }
 
@@ -600,13 +613,13 @@ namespace TrailsPlugin.Data {
                             //TODO: Add setting for non-required is pause
                             if (true)
                             {
+                                IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
+                                if (m_activityTrail.Trail.IsSplits)
+                                {
+                                    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
+                                }
                                 for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
                                 {
-                                    IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                                    if (m_activityTrail.Trail.IsSplits)
-                                    {
-                                        trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
-                                    }
                                     if (i < trailLocations.Count &&
                                         !trailLocations[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)

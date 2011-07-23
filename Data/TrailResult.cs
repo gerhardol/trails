@@ -339,16 +339,50 @@ namespace TrailsPlugin.Data {
             t.Add(new ValueRange<DateTime>(this.StartDateTime, this.EndDateTime));
             return t;
         }
+
         public double StartDist
         {
             get
             {
-                if (float.IsNaN(m_startDistance))
+                if (Settings.StartDistOffsetFromStartPoint &&
+                    this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 0)
                 {
-                    getDistanceTrack();
+                    //Get offset from start point, regardless of if there is a pause
+                    DateTime startTime = StartDateTime;
+                    int i = -1;
+                    for (int k = 0; k < this.TrailPointDateTime.Count; k++)
+                    {
+                        if (this.TrailPointDateTime[k] > DateTime.MinValue)
+                        {
+                            //The used start time for the point, disregarding pauses
+                            startTime = getFirstUnpausedTime(this.TrailPointDateTime[k], new ValueRangeSeries<DateTime>(), true);
+                            i=k;
+                            break;
+                        }
+                    }
+                    //Alternative, get time on track
+                    //startDistance = this.ActivityDistanceMetersTrack.GetInterpolatedValue(StartDateTime).Value -
+                    //    this.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime).Value;
+                    float startDistance = -1000; //Negative to see it in list
+                    if (i >= 0 && i < this.m_activityTrail.Trail.TrailLocations.Count)
+                    {
+                        ITimeValueEntry<IGPSPoint> entry = this.Activity.GPSRoute.GetInterpolatedValue(StartDateTime_sec);
+                        if (entry != null)
+                        {
+                            startDistance = this.m_activityTrail.Trail.TrailLocations[i].DistanceMetersToPoint(entry.Value);
+                        }
+                    }
+                    return startDistance;
+                }
+                else
+                {
                     if (float.IsNaN(m_startDistance))
                     {
-                        m_startDistance = 0;
+                        getDistanceTrack();
+                        if (float.IsNaN(m_startDistance))
+                        {
+                            m_startDistance = 0;
+                        }
                     }
                 }
                 return m_startDistance;
@@ -1549,18 +1583,26 @@ namespace TrailsPlugin.Data {
             IGPSRoute gpsTrack = new GPSRoute();
             gpsTrack.AllowMultipleAtSameTime = false;
             if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
-                StartDateTime_sec != DateTime.MinValue && EndDateTime_sec != DateTime.MinValue)
+                StartDateTime != DateTime.MinValue && EndDateTime != DateTime.MinValue)
             {
                 int i = 0;
-                while (i < m_activity.GPSRoute.Count &&
-                       StartDateTime_sec > m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]))
-                {
-                    i++;
-                }
-                while (i < m_activity.GPSRoute.Count &&
-                       m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]) < this.EndDateTime_sec)
+                while (i < m_activity.GPSRoute.Count)
                 {
                     DateTime time = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
+                    if (StartDateTime_sec <= time)
+                    {
+                        break;
+                    }
+                    i++;
+                }
+                while (i < m_activity.GPSRoute.Count)
+                {
+                    DateTime time = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
+                    if (time > this.EndDateTime_sec)
+                    {
+                        break;
+                    }
+
                     IGPSPoint point = m_activity.GPSRoute[i].Value;
                     if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
                     {

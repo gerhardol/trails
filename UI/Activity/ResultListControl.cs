@@ -818,6 +818,18 @@ namespace TrailsPlugin.UI.Activity {
             {
                 addCurrentCategory(e.Modifiers == Keys.Shift);
             }
+            else if (e.KeyCode == Keys.O)
+            {
+                if (e.Modifiers == Keys.Shift)
+                {
+                    TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = false;
+                }
+                else
+                {
+                    TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = true;
+                }
+                //Only in table, no need to refresh
+            }
             else if (e.KeyCode == Keys.R)
             {
                 //m_controller.Reset();

@@ -47,6 +47,7 @@ namespace TrailsPlugin.Data
         private static bool m_syncChartAtTrailPoints = false;
         private static bool m_onlyReferenceRight = false;
         private static string m_excludeStoppedCategory = "";
+        private static bool m_startDistOffsetFromStartPoint = false; //Not in xml right now
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -234,6 +235,11 @@ namespace TrailsPlugin.Data
         {
             get { return m_excludeStoppedCategory; }
             set { m_excludeStoppedCategory = value; }
+        }
+        public static bool StartDistOffsetFromStartPoint
+        {
+            get { return m_startDistOffsetFromStartPoint; }
+            set { m_startDistOffsetFromStartPoint = value; }
         }
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)

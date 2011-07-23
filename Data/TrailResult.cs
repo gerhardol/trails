@@ -1052,31 +1052,34 @@ namespace TrailsPlugin.Data {
                     }
                 }
 
-                //AllowMultipleAtSameTime=false does not work in 3.0.4205
-                bool reSort = false;
-                for (int i = noPoints; i < track.Count; i++)
+                if (noPoints > 0)
                 {
-                    if (track[noPoints].ElapsedSeconds > track[i].ElapsedSeconds)
+                    //AllowMultipleAtSameTime=false does not work in 3.0.4205
+                    bool reSort = false;
+                    for (int i = noPoints; i < track.Count; i++)
                     {
-                        reSort = true;
-                        break;
-                    }
-                }
-                if (reSort)
-                {
-                    SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
-                    foreach (ITimeValueEntry<T> g in track)
-                    {
-                        if (!dic.ContainsKey(g.ElapsedSeconds))
+                        if (track[noPoints-1].ElapsedSeconds > track[i].ElapsedSeconds)
                         {
-                            dic.Add(g.ElapsedSeconds, g);
+                            reSort = true;
+                            break;
                         }
                     }
-                    DateTime startTime = track.StartTime;
-                    track.Clear();
-                    foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
+                    if (reSort)
                     {
-                        track.Add(startTime.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
+                        SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
+                        foreach (ITimeValueEntry<T> g in track)
+                        {
+                            if (!dic.ContainsKey(g.ElapsedSeconds))
+                            {
+                                dic.Add(g.ElapsedSeconds, g);
+                            }
+                        }
+                        DateTime startTime = track.StartTime;
+                        track.Clear();
+                        foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
+                        {
+                            track.Add(startTime.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
+                        }
                     }
                 }
                 //Return the original track, the typecasting must work

@@ -533,7 +533,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 IList<TrailResultMarked> aTrm = new List<TrailResultMarked>();
-                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = UniqueRoutes.GetCommonStretchesForActivity(m_controller.ReferenceActivity, activities, null);
+                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = TrailResult.CommonStretches(m_controller.ReferenceActivity, activities, null);
                 if (commonStretches != null && commonStretches.Count > 0)
                 {
                     foreach (TrailResult tr in this.SelectedItems)

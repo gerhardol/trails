@@ -74,6 +74,11 @@ namespace TrailsPlugin.Data {
 
         private IGPSRoute m_gpsTrack;
         private IList<IList<IGPSPoint>> m_gpsPoints;
+
+        //common for all - UR uses activities and this is a cache for resultList too
+        //This could well be moved to another cache
+        private static IActivity m_cacheTrackActivity;
+        private static IDictionary<IActivity, IItemTrackSelectionInfo[]> m_commonStretches;
         private static ActivityInfoOptions m_TrailActivityInfoOptions;
 
         public static ActivityInfoOptions TrailActivityInfoOptions
@@ -1026,6 +1031,18 @@ namespace TrailsPlugin.Data {
             return false;
         }
 
+        private static bool checkCacheAct(IActivity refRes)
+        {
+            if (refRes == null || refRes != m_cacheTrackActivity)
+            {
+                m_cacheTrackActivity = refRes;
+                m_commonStretches = null;
+
+                return true;
+            }
+            return false;
+        }
+
         internal class InsertValues<T>
         {
             TrailResult result;
@@ -1279,11 +1296,47 @@ namespace TrailsPlugin.Data {
         }
 
         /********************************************************************/
+        static bool diffUsingCommonStretches = true;
+        public static  IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
+        {
+            checkCacheAct(refAct);
+            if (null == m_commonStretches)
+            {
+                m_commonStretches = new Dictionary<IActivity, IItemTrackSelectionInfo[]>();
+            }
+            IList<IActivity> acts2 = new List<IActivity>();
+            foreach (IActivity act in acts)
+            {
+                if (!m_commonStretches.ContainsKey(act))
+                {
+                    acts2.Add(act);
+                }
+            }
+            if (acts2.Count > 0)
+            {
+                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches =
+                    TrailsPlugin.Integration.UniqueRoutes.GetCommonStretchesForActivity(refAct, acts2, null);
+                foreach (IActivity act in acts2)
+                {
+                    m_commonStretches.Add(act, commonStretches[act]);
+                }
+            }
+            //Return all...
+            return m_commonStretches;
+        }
+
+        /********************************************************************/
+
         public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
             if (m_DiffTimeTrack0 == null)
             {
+                //IItemTrackSelectionInfo[] commonStretches = null;
+                //if (diffUsingCommonStretches && refRes != null && refRes.Activity != null)
+                //{
+                //    commonStretches = CommonStretches(refRes.Activity, new List<IActivity> {this.Activity}, null)[this.Activity].;
+                //}
                 m_DiffTimeTrack0 = new NumericTimeDataSeries();
                 if (this.DistanceMetersTrack.Count > 0 && m_cacheTrackRef != null)
                 {

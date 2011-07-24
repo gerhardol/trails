@@ -197,7 +197,7 @@ Asegurese de que {1} esté instalado.</value>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Detecteda la versión {0} de {1}.</value>
+    <value>Detectada la versión {0} de {1}.</value>
   </data>
   <data name="UI_Activity_List_Advanced" xml:space="preserve">
     <value>Avanzado</value>
@@ -249,5 +249,14 @@ Asegurese de que {1} esté instalado.</value>
   </data>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
     <value>Añadir actividades de entrada como resultados</value>
+  </data>
+  <data name="UI_Chart_resyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Resincroniza diff en puntos de trail</value>
+  </data>
+  <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
+    <value>Sincroniza Gráfica con puntos de trail</value>
+  </data>
+  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
+    <value>Añadir Actividades con la categoría de referencia</value>
   </data>
 </root>

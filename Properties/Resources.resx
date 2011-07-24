@@ -348,11 +348,9 @@ Make sure that {1} is installed.</value>
   </data>
   <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
     <value>Adjust Resync Diff at Trail Points</value>
-  </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+    <comment>unused</comment>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Activities with Current Reference Category</value>
+    <value>Add Activities with Current Reference Category</value>
   </data>
 </root>

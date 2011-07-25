@@ -349,7 +349,8 @@ namespace TrailsPlugin.UI.Activity {
                 //Note: Time/dist need the Trailresult related to the current results...
                 //With single results, this can be done, but for mult results per activity this can be incorrect
                 IList<float[]> l = null;
-                foreach(TrailResult tr in TrailResultWrapper.GetTrailResults(Controller.TrailController.Instance.CurrentActivityTrail.ResultTreeList))
+                IList<TrailResult> t = TrailResultWrapper.GetTrailResults(Controller.TrailController.Instance.CurrentActivityTrail.ResultTreeList);
+                foreach(TrailResult tr in t)
                 {
                     if (tr.Activity == sel.Activity)
                     {
@@ -369,7 +370,6 @@ namespace TrailsPlugin.UI.Activity {
                             m_trailResults.Count < MaxSelectedSeries)
                         {
                             MainChart.DataSeries[i].ClearSelectedRegions();
-                            //MainChart.DataSeries[i].SetSelectedRange(0, 0);
                             //The "fill" chart is 0, line is 1
                             if (i == 0 && m_trailResults.Count == 1 &&
                                         MainChart.DataSeries.Count > 1)
@@ -394,13 +394,6 @@ namespace TrailsPlugin.UI.Activity {
                             //Only one range can be selected - select all
                             float x1 = l[0][0] - offset;
                             float x2 = l[l.Count - 1][1] - offset;
-                            //MainChart.DataSeries[i].ClearSelectedRegions();
-                            ////The "fill" chart is 0, line is 1
-                            //if (i == 0 && m_trailResults.Count == 1 &&
-                            //    MainChart.DataSeries.Count > 1)
-                            //{
-                            //    MainChart.DataSeries[1].ClearSelectedRegions();
-                            //}
 
                             //Ignore ranges outside current range and malformed scales
                             if (x1 < MainChart.XAxis.MaxOriginFarValue &&
@@ -411,6 +404,12 @@ namespace TrailsPlugin.UI.Activity {
                                 x1 = Math.Max(x1, (float)MainChart.XAxis.MinOriginValue);
                                 x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
                                 MainChart.DataSeries[i].SetSelectedRange(x1, x2);
+                                //For line/fill graph, only the first - comment out
+                                //if (i == 0 && m_trailResults.Count == 1 &&
+                                //            MainChart.DataSeries.Count > 1)
+                                //{
+                                //    MainChart.DataSeries[1].SetSelectedRange(x1, x2);
+                                //}
                             }
                         }
                     }
@@ -437,7 +436,8 @@ namespace TrailsPlugin.UI.Activity {
                         TrailResult tr = m_trailResults[i];
                         if (trm.trailResult == tr)
                         {
-                            foreach (float[] ax in GetResultSelectionFromActivity(m_trailResults[i], trm.selInfo))
+                            IList<float[]> t = GetResultSelectionFromActivity(m_trailResults[i], trm.selInfo);
+                            foreach (float[] ax in t)
                             {
                                 //Ignore ranges outside current range and malformed scales
                                 if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
@@ -447,7 +447,14 @@ namespace TrailsPlugin.UI.Activity {
                                 {
                                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
+
                                     MainChart.DataSeries[i].AddSelecedRegion(ax[0], ax[1]);
+                                    //For fill/line, only select first - comment out
+                                    //if (i == 0 && m_trailResults.Count == 1 &&
+                                    //            MainChart.DataSeries.Count > 1)
+                                    //{
+                                    //    MainChart.DataSeries[1].AddSelecedRegion(ax[0], ax[1]);
+                                    //}
                                 }
                             }
                         }
@@ -545,6 +552,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     for (int i = 0; i < MainChart.DataSeries.Count; i++)
                     {
+                        //Clear all series, no line/fill check
                         MainChart.DataSeries[i].ClearSelectedRegions();
                         //For "single result" only select first series
                         if (i < m_trailResults.Count &&

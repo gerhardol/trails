@@ -812,7 +812,15 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.C)
             {
-                markCommonStretches();
+                if (e.Modifiers == Keys.Shift)
+                {
+                    TrailsPlugin.Data.Settings.DiffUsingCommonStretches = !TrailsPlugin.Data.Settings.DiffUsingCommonStretches;
+                    m_page.RefreshData();
+                }
+                else
+                {
+                    markCommonStretches();
+                }
             }
             else if (e.KeyCode == Keys.I)
             {

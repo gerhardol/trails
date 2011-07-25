@@ -1296,7 +1296,6 @@ namespace TrailsPlugin.Data {
         }
 
         /********************************************************************/
-        static bool diffUsingCommonStretches = true;
         public static  IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
         {
             checkCacheAct(refAct);
@@ -1332,11 +1331,6 @@ namespace TrailsPlugin.Data {
             checkCacheRef(refRes);
             if (m_DiffTimeTrack0 == null)
             {
-                //IItemTrackSelectionInfo[] commonStretches = null;
-                //if (diffUsingCommonStretches && refRes != null && refRes.Activity != null)
-                //{
-                //    commonStretches = CommonStretches(refRes.Activity, new List<IActivity> {this.Activity}, null)[this.Activity].;
-                //}
                 m_DiffTimeTrack0 = new NumericTimeDataSeries();
                 if (this.DistanceMetersTrack.Count > 0 && m_cacheTrackRef != null)
                 {
@@ -1346,13 +1340,24 @@ namespace TrailsPlugin.Data {
                     float refOffset = 0;
                     float refPrevElapsedSec = 0;
                     float diffOffset = 0;
+
+                    IValueRangeSeries<DateTime> commonStretches = null;
+                    if (Settings.DiffUsingCommonStretches && refRes != null && refRes.Activity != null)
+                    {
+                        commonStretches = CommonStretches(refRes.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
+                        m_DiffTimeTrack0.Add(StartDateTime, 0);
+                    }
+
                     foreach (ITimeValueEntry<float> t in DistanceMetersTrack)
                     {
                         uint elapsed = t.ElapsedSeconds;
                         if (elapsed > oldElapsed)
                         {
                             DateTime d1 = this.DistanceMetersTrack.EntryDateTime(t);
-                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses) &&
+                                (!Settings.DiffUsingCommonStretches || 
+                                //IsPaused is in the series here...
+                                ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches)))
                             {
                                 while (Settings.ResyncDiffAtTrailPoints &&
                                     (dateTrailPointIndex == -1 ||
@@ -1442,13 +1447,24 @@ namespace TrailsPlugin.Data {
                     float diffOffset = 0;
                     double prevDist = 0;
                     double prevRefDist = 0;
+
+                    IValueRangeSeries<DateTime> commonStretches = null;
+                    if (Settings.DiffUsingCommonStretches && refRes != null && refRes.Activity != null)
+                    {
+                        commonStretches = CommonStretches(refRes.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
+                        m_DiffDistTrack0.Add(StartDateTime, 0);
+                    }
+
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         uint elapsed = t.ElapsedSeconds;
                         if (elapsed > oldElapsed)
                         {
                             DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
-                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses) &&
+                                (!Settings.DiffUsingCommonStretches ||
+                                //IsPaused is in the series here...
+                                ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches)))
                             {
                                 while (Settings.ResyncDiffAtTrailPoints &&
                                     (dateTrailPointIndex == -1 ||

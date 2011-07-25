@@ -1296,35 +1296,6 @@ namespace TrailsPlugin.Data {
         }
 
         /********************************************************************/
-        public static  IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
-        {
-            checkCacheAct(refAct);
-            if (null == m_commonStretches)
-            {
-                m_commonStretches = new Dictionary<IActivity, IItemTrackSelectionInfo[]>();
-            }
-            IList<IActivity> acts2 = new List<IActivity>();
-            foreach (IActivity act in acts)
-            {
-                if (!m_commonStretches.ContainsKey(act))
-                {
-                    acts2.Add(act);
-                }
-            }
-            if (acts2.Count > 0)
-            {
-                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches =
-                    TrailsPlugin.Integration.UniqueRoutes.GetCommonStretchesForActivity(refAct, acts2, null);
-                foreach (IActivity act in acts2)
-                {
-                    m_commonStretches.Add(act, commonStretches[act]);
-                }
-            }
-            //Return all...
-            return m_commonStretches;
-        }
-
-        /********************************************************************/
 
         public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
         {
@@ -1341,9 +1312,11 @@ namespace TrailsPlugin.Data {
                     float refPrevElapsedSec = 0;
                     float diffOffset = 0;
 
+                    bool prevCommonStreches = false;
                     IValueRangeSeries<DateTime> commonStretches = null;
                     if (Settings.DiffUsingCommonStretches && refRes != null && refRes.Activity != null)
                     {
+                        //TODO: Use reference stretch too
                         commonStretches = CommonStretches(refRes.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
                         m_DiffTimeTrack0.Add(StartDateTime, 0);
                     }
@@ -1354,12 +1327,9 @@ namespace TrailsPlugin.Data {
                         if (elapsed > oldElapsed)
                         {
                             DateTime d1 = this.DistanceMetersTrack.EntryDateTime(t);
-                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses) &&
-                                (!Settings.DiffUsingCommonStretches || 
-                                //IsPaused is in the series here...
-                                ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches)))
+                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
-                                while (Settings.ResyncDiffAtTrailPoints &&
+                                while (!Settings.DiffUsingCommonStretches && Settings.ResyncDiffAtTrailPoints &&
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
                                     d1 > this.TrailPointDateTime[dateTrailPointIndex + 1]))
@@ -1385,28 +1355,42 @@ namespace TrailsPlugin.Data {
                                     }
                                 }
 
-                                //elapsed (entry) is elapsed in the series, not elapsed seconds....
-                                float elapsedSec = (float)this.getElapsedResult(d1);
-                                float? refElapsedSec = null;
-                                if (m_cacheTrackRef == this)
+                                if (Settings.DiffUsingCommonStretches &&
+                                    //IsPaused is in the series here...
+                                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches))
                                 {
-                                    //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
-                                    refElapsedSec = elapsedSec;
+                                    prevCommonStreches = true;
                                 }
                                 else
                                 {
-                                    if (t.Value + refOffset <= m_cacheTrackRef.DistanceMetersTrack.Max)
+                                    //elapsed (entry) is elapsed in the series, not elapsed seconds....
+                                    float elapsedSec = (float)this.getElapsedResult(d1);
+                                    float? refElapsedSec = null;
+                                    if (m_cacheTrackRef == this)
                                     {
-                                        DateTime d2 = TrailResult.getDateTimeFromTrackDist(m_cacheTrackRef.DistanceMetersTrack, t.Value + refOffset);
-                                        refElapsedSec = (float)m_cacheTrackRef.getElapsedResult(d2);
+                                        //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
+                                        refElapsedSec = elapsedSec;
                                     }
-                                }
-                                if (refElapsedSec != null)
-                                {
-                                    lastValue = (float)refElapsedSec - elapsedSec + diffOffset;
-                                    m_DiffTimeTrack0.Add(d1, lastValue);
-                                    oldElapsed = (int)elapsed;
-                                    refPrevElapsedSec = (float)refElapsedSec;
+                                    else
+                                    {
+                                        if (t.Value + refOffset <= m_cacheTrackRef.DistanceMetersTrack.Max)
+                                        {
+                                            DateTime d2 = TrailResult.getDateTimeFromTrackDist(m_cacheTrackRef.DistanceMetersTrack, t.Value + refOffset);
+                                            refElapsedSec = (float)m_cacheTrackRef.getElapsedResult(d2);
+                                        }
+                                    }
+                                    if (refElapsedSec != null)
+                                    {
+                                        if (Settings.DiffUsingCommonStretches && prevCommonStreches)
+                                        {
+                                            diffOffset += elapsedSec - (float)refElapsedSec;
+                                            prevCommonStreches = false;
+                                        }
+                                        lastValue = (float)refElapsedSec - elapsedSec + diffOffset;
+                                        m_DiffTimeTrack0.Add(d1, lastValue);
+                                        oldElapsed = (int)elapsed;
+                                        refPrevElapsedSec = (float)refElapsedSec;
+                                    }
                                 }
                             }
                         }
@@ -1844,6 +1828,35 @@ namespace TrailsPlugin.Data {
         #endregion
 
         #region Activity caches
+
+        /********************************************************************/
+        public static IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
+        {
+            checkCacheAct(refAct);
+            if (null == m_commonStretches)
+            {
+                m_commonStretches = new Dictionary<IActivity, IItemTrackSelectionInfo[]>();
+            }
+            IList<IActivity> acts2 = new List<IActivity>();
+            foreach (IActivity act in acts)
+            {
+                if (!m_commonStretches.ContainsKey(act))
+                {
+                    acts2.Add(act);
+                }
+            }
+            if (acts2.Count > 0)
+            {
+                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches =
+                    TrailsPlugin.Integration.UniqueRoutes.GetCommonStretchesForActivity(refAct, acts2, null);
+                foreach (IActivity act in acts2)
+                {
+                    m_commonStretches.Add(act, commonStretches[act]);
+                }
+            }
+            //Return all...
+            return m_commonStretches;
+        }
 
         ActivityInfo m_ActivityInfo = null;
         ActivityInfo Info

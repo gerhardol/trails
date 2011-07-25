@@ -162,11 +162,11 @@
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
+    -->
     <EmbeddedResource Include="Properties\Resources.fr.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Resources.resx</DependentUpon>
     </EmbeddedResource>
-    -->
     <EmbeddedResource Include="UI\Activity\ActivityDetailPageControl.resx">
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
       <SubType>Designer</SubType>

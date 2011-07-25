@@ -312,11 +312,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     if (regions != null && regions.Count > 0)
                     {
-                        //foreach (float[] at in regions)
-                        //{
-                        //    //s.AddSelecedRegion(at[0], at[1]);
-                        //}
-                        //Separate ranges cannot be selected
                         MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
                     }
                 }
@@ -405,11 +400,6 @@ namespace TrailsPlugin.UI.Activity {
                                 x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
                                 MainChart.DataSeries[i].SetSelectedRange(x1, x2);
                                 //For line/fill graph, only the first - comment out
-                                //if (i == 0 && m_trailResults.Count == 1 &&
-                                //            MainChart.DataSeries.Count > 1)
-                                //{
-                                //    MainChart.DataSeries[1].SetSelectedRange(x1, x2);
-                                //}
                             }
                         }
                     }
@@ -450,11 +440,6 @@ namespace TrailsPlugin.UI.Activity {
 
                                     MainChart.DataSeries[i].AddSelecedRegion(ax[0], ax[1]);
                                     //For fill/line, only select first - comment out
-                                    //if (i == 0 && m_trailResults.Count == 1 &&
-                                    //            MainChart.DataSeries.Count > 1)
-                                    //{
-                                    //    MainChart.DataSeries[1].AddSelecedRegion(ax[0], ax[1]);
-                                    //}
                                 }
                             }
                         }

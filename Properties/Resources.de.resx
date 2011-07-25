@@ -64,196 +64,164 @@
     <value>Trails</value>
   </data>
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
-    <value>Ajouter un Trail</value>
+    <value>Trail hinzufügen</value>
   </data>
   <data name="UI_Activity_EditTrail_EditTrail" xml:space="preserve">
-    <value>Editer Trail</value>
+    <value>Trail bearbeiten</value>
   </data>
   <data name="UI_Activity_EditTrail_InsertFailed" xml:space="preserve">
-    <value>Insertion en erreur</value>
+    <value>Einfügen fehlgeschlagen</value>
   </data>
   <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
-    <value>Latitude</value>
+    <value>Länge</value>
   </data>
   <data name="UI_Activity_EditTrail_Longitude" xml:space="preserve">
-    <value>Longitude</value>
+    <value>Breite</value>
   </data>
   <data name="UI_Activity_EditTrail_Radius" xml:space="preserve">
-    <value>Rayon</value>
+    <value>Radius</value>
   </data>
   <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
-    <value>Le rayon doit être numérique</value>
+    <value>Der Radius muss eine Zahl sein.</value>
   </data>
   <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
-    <value>Le nom du Trail est requis.</value>
+    <value>Der Name des Trails ist erforderlich.</value>
   </data>
   <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
-    <value>Un nom unique pour le Trail est requis.</value>
+    <value>Der Name des Trails muss eindeutig sein.</value>
   </data>
   <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
-    <value>Mise à jour en erreur</value>
+    <value>Aktualisierung fehlgeschlagen</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Ajouter un nouveau trail ou les points sélectionnés au trail en cours. (Sélectionner les points sur la carte avant de presser ce bouton).</value>
+    <value>Füge neuen Trail hinzu, oder ausgewählte Punkte zum aktuellen Trail (Wählen Sie Punkte auf der Karte aus, bevor Sie diese Schaltfläche betätigen).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
-    <value>Êtes-vous certain de vouloir supprimer ce trail ?</value>
+    <value>Wollen Sie diesen Trail wirklich löschen?</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
-    <value>Supprimer ce trail.</value>
+    <value>Diesen Trail löschen.</value>
   </data>
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
-    <value>Editer ce trail. (Sélectionner les points du trail sur la carte avant de presser ce bouton).</value>
-  </data>
-  <data name="UI_Activity_List_ListSettings" xml:space="preserve">
-    <comment>STcore</comment>
-    <value>Réglages de la liste...</value>
-  </data>
-  <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
-    <comment>ST2 only</comment>
-    <value>Vous devez sélectionner un point sur la carte.
-
-Pour sélectionner un point, cliquer simplement sur le tracé.
-Ajouter de nouveaux points en pressant le bouton Ajouter.
-
-Pour sélectionner un second point, rester sur la touche CTRL, et cliquer sur un autre endroit du tracé.
-Sélectionner autant de points nécessaires pour faire de ce trail un trail unique par rapport aux autres.
-
-Pour faire une copie de l'activité de référence en cours, sélectionner le trail {0}, puis presser le bouton Editer.
-</value>
+    <value>Diesen Trail bearbeiten (Wählen Sie die Trailpunkte auf der Karte aus, bevor Sie diese Schaltfläche betätigen).</value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
-    <value>Voulez vous mettre à jour les localisations GPS du trail avec les points sélectionnés en cours ?</value>
+    <value>Wollen Sie die GPS-Punkte des Trails
+zu den derzeit ausgewählten Punkten
+aktualisieren?</value>
   </data>
   <data name="UI_Settings_DefaultRadius" xml:space="preserve">
-    <value>Add new points by pressing the Add button.</value>
+    <value>Default-Radius</value>
   </data>
   <data name="UI_Settings_DefaultRadius_ToolTip" xml:space="preserve">
-    <value>Rayon par défaut pour les points de Trail quand il y a ajout de nouveaux trails.
-Changer cette valeur n'affectera pas les trails existants.</value>
+    <value>Default-Radius für Trail-Punkte beim Hinzufügen neuer Trails.
+Vorhandene Trails werden durch eine Änderung dieses Werts
+nicht beeinflusst.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
-    <value>Presser {0} pour ajouter les points sélectionnés au trail en cours, {1} pour ajouter un nouveau trail.</value>
+    <value>Drücken Sie {0}, um die ausgewählten Punkte zum aktuellen Trail hinzuzufügen, {1} um einen neuen Trail anzulegen.</value>
   </data>
   <data name="TrailPointsControlLayer" xml:space="preserve">
-    <value>Points de Trail</value>
+    <value>Trailpunkte</value>
   </data>
   <data name="TrailChartsName" xml:space="preserve">
-    <value>Graphique Trail</value>
-  </data>
-  <data name="TrailName" xml:space="preserve">
-    <value>Trail</value>
-  </data>
-  <data name="ApplicationName" xml:space="preserve">
-    <comment>Name of application, displayed in GUI</comment>
-    <value>Plug-in Trails</value>
+    <value>Trail-Diagramme</value>
   </data>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <comment>unused</comment>
-    <value>Masquer les outils graphiques</value>
+    <value>Diagrammwerkzeuge ausblenden</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <comment>Same as STcore </comment>
-    <value>Afficher les outils graphiques</value>
+    <value>Diagrammwerkzeuge anzeigen</value>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
-    <value>Double cliquer la table pour modifier les valeurs.</value>
+    <value>Mit Doppelklick in der Tabelle können Sie Werte bearbeiten.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
     <comment>unused</comment>
-    <value>Aucun point sélectionné sur la carte.
+    <value>Kein Punkt auf der Karte augewählt.
 
-Presser {0} pour utiliser les points du tour, {1} pour abandonner et sélectionner les points sur le tracé GPS.</value>
+Drücken Sie {0}, um Zwischenzeiten zu verwenden, {1} um abzubrechen und Punkte auf dem GPS-Track auszuwählen.</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
-    <value>Limiter les activités aux activités sélectionnées de la liste</value>
+    <value>Aktivitäten auf die in der Liste ausgewählten beschränken</value>
   </data>
   <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
-    <value>Régler le résultat de référence ({0}, Current : {1})</value>
+    <value>Setze Referenzeregebnis ({0}, Aktuell: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
-    <value>Marquer les autres Trails ou intervalles dans la liste</value>
+    <value>Markiere in der Liste andere Sub-Trails oder Zwischenzeiten</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>Limiter les activités avec Unique Route du résultat de réference {0}</value>
+    <value>Aktivitäten mittels Unique Routes anhand des Referenzergebnisses {0} einschränken</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
-    <value>Activité de la référence</value>
+    <value>Referenz-Aktivität</value>
   </data>
   <data name="Trail_NoTrailSelected" xml:space="preserve">
-    <value>-- Sélectionner Trail dans la liste --</value>
+    <value>-- Trail in der Liste auswählen --</value>
   </data>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
-    <value>Vous devez sélectionner un point sur la carte.
+    <value>Sie müssen einen Punkt auf der Karte auswählen.
 
-Pour sélectionner un point, cliquer simplement sur le tracé.
-Ajouter de nouveaux points en pressant le bouton Ajouter.
+Um einen Punkt auszuwählen, einfach auf den Track klicken.
+Um neue Punkte hinzuzufügen, Schaltfläche &quot;Hinzufügen&quot; drücken.
 
-Pour faire une copie de l'activité de référence en cours, sélectionner Trail {0}, puis presser le bouton Editer.
-</value>
+Um die aktuelle Referenzaktivität zu kopieren, Trail {0} auswählen,
+dann die Schaltfläche &quot;Bearbeiten&quot; betätigen.</value>
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Problème de communication avec {0}.
-Vérifiez que {1} soit installé.</value>
+    <value>Problem bei der Kommunikation mit {0}.
+Stellen Sie sicher, dass {1} installiert ist.</value>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Détection de la version {0} de {1}.</value>
+    <value>Version {0} von {1} erkannt.</value>
   </data>
   <data name="UI_Activity_List_Advanced" xml:space="preserve">
-    <value>Avancé</value>
+    <value>Fortgeschritten</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Ajouter des activités similaires avec Unique Route du résultat de réference {0}</value>
+    <value>Ähnliche Aktivitäten mittels Unique Routes anhand des Referenzergebnisses {0} hinzufügen</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Les activités peuvent être filtrées en utilisant Unique Routes.</value>
-  </data>
-  <data name="UniqueRoutesPluginName" xml:space="preserve">
-    <comment>Matrix</comment>
-    <value>plug-in Unique Routes</value>
+    <value>Aktivitäten können mit Hilfe des Unique Routes-Plugins gefiltert werden</value>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Installer au moins la version {0} de {1} pour filtrer les activités en utilisant Unique Routes.</value>
+    <value>Installieren Sie mindestens Version {0} von {1}, um Aktivitäten mit dem Unique Routes-Plugin zu filtern.</value>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
-    <value>Exclure le résultat de la liste</value>
+    <value>Ergebnis aus der Liste ausschließen</value>
   </data>
   <data name="SetNameAtImport" xml:space="preserve">
-    <value>Définir le nom à l'importation</value>
-  </data>
-  <data name="UI_Activity_List_URCommon" xml:space="preserve">
-    <value>Marquer les extensions communes de Unique Route
-</value>
+    <value>Name beim Import setzen</value>
   </data>
   <data name="HighScoreCompatible" xml:space="preserve">
-    <value>Un Trail HighScore peut être généré</value>
+    <value>Ein HighScore-Trail kann erzeugt werden.</value>
   </data>
   <data name="HighScorePluginName" xml:space="preserve">
-    <value>Plug-in HighScore</value>
+    <value>HighScore-Plugin</value>
   </data>
   <data name="HighScoreToInstall" xml:space="preserve">
-    <value>Installer au moins la version {0} de {1} pour avoir un Trail HighScore</value>
+    <value>Installieren Sie mindestens Version {0} von {1}, um einen HighScore-Trail zu erhalten.</value>
   </data>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>
   </data>
   <data name="Required" xml:space="preserve">
-    <value>Requis</value>
+    <value>Erforderlich</value>
   </data>
   <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
-    <value>Editer une copie du Trail ?</value>
+    <value>Eine Kopie des Trails bearbeiten?</value>
   </data>
   <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
-    <value>Exporter le Trail comme une activité ?</value>
-  </data>
-  <data name="UI_Activity_List_AddInBound" xml:space="preserve">
-    <value>Ajouter des activités entrantes comme résultats</value>
+    <value>Trail als Aktivität exportieren?</value>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Ajouter des activités avec la catégorie de référence actuelle</value>
+    <value>Aktivitäten mit der aktuellen Referenz-Kategorie einfügen</value>
   </data>
 </root>

@@ -293,16 +293,16 @@ namespace TrailsPlugin.Data {
         //Truncating is no longer needed, just an alias
         private DateTime DateTime_sec(DateTime date)
         {
-            int ms = date.Millisecond;
-            if (ms < 500)
-            {
-                ms = -ms;
-            }
-            else
-            {
-                ms = 1000 - ms;
-            }
-            return date.AddMilliseconds(ms);
+            //int ms = date.Millisecond;
+            //if (ms < 500)
+            //{
+            //    ms = -ms;
+            //}
+            //else
+            //{
+            //    ms = 1000 - ms;
+            //}
+            return date;//.AddMilliseconds(ms);
         }
         private DateTime StartDateTime_sec
         {
@@ -1383,7 +1383,7 @@ namespace TrailsPlugin.Data {
                                     {
                                         if (Settings.DiffUsingCommonStretches && prevCommonStreches)
                                         {
-                                            //diffOffset += elapsedSec - (float)refElapsedSec;
+                                            diffOffset = elapsedSec - (float)refElapsedSec;
                                             prevCommonStreches = false;
                                         }
                                         lastValue = (float)refElapsedSec - elapsedSec + diffOffset;
@@ -1499,7 +1499,7 @@ namespace TrailsPlugin.Data {
                                         {
                                             if (Settings.DiffUsingCommonStretches && prevCommonStreches)
                                             {
-                                                //diffOffset += (float)refDist - t.Value;
+                                                diffOffset = (float)refDist - t.Value;
                                                 prevCommonStreches = false;
                                             }
                                             //Only add if valid estimation

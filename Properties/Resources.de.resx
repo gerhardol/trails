@@ -105,6 +105,10 @@
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
     <value>Diesen Trail bearbeiten (Wählen Sie die Trailpunkte auf der Karte aus, bevor Sie diese Schaltfläche betätigen).</value>
   </data>
+  <data name="UI_Activity_List_ListSettings" xml:space="preserve">
+    <comment>STcore</comment>
+    <value>Listeneinstellungen</value>
+  </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Wollen Sie die GPS-Punkte des Trails
 zu den derzeit ausgewählten Punkten
@@ -220,6 +224,12 @@ Stellen Sie sicher, dass {1} installiert ist.</value>
   </data>
   <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
     <value>Trail als Aktivität exportieren?</value>
+  </data>
+  <data name="UI_Chart_resyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Differenz synchronisieren am Trailpunkt</value>
+  </data>
+  <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
+    <value>Chart synchronisieren am Trailpunkt</value>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
     <value>Aktivitäten mit der aktuellen Referenz-Kategorie einfügen</value>

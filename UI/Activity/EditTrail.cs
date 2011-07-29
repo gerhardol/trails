@@ -84,12 +84,12 @@ namespace TrailsPlugin.UI.Activity {
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, Object view, bool addMode)
 #else
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, 
-            bool addMode, TrailResult tr)
+            TrailPointsLayer layer, bool addMode, TrailResult tr)
 #endif
             : this (addMode)
         {
 #if !ST_2_1
-            m_layer = TrailPointsLayer.Instance(view);
+            m_layer = layer;
 #endif
             ThemeChanged(visualTheme);
             UICultureChanged(culture);

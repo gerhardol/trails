@@ -208,7 +208,7 @@ namespace TrailsPlugin.UI.Activity {
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
             } else {
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, false, m_controller.ReferenceTrailResult);
                 if (dialog.ShowDialog() == DialogResult.OK) {
 					m_page.RefreshControlState();
 					m_page.RefreshData();
@@ -340,7 +340,7 @@ namespace TrailsPlugin.UI.Activity {
                     addCurrent = true;
                 }
             }
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, !addCurrent, m_controller.ReferenceTrailResult);
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, !addCurrent, m_controller.ReferenceTrailResult);
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 if (addCurrent)
@@ -370,7 +370,7 @@ namespace TrailsPlugin.UI.Activity {
 			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, false, m_controller.ReferenceTrailResult);
+            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, false, m_controller.ReferenceTrailResult);
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {

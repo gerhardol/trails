@@ -318,10 +318,12 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //For activities drawn by default, use common marking
                     IList<TrailResultMarked> atr2 = new List<TrailResultMarked>();
+                    IActivity activity = null;
                     foreach (TrailResultMarked trm in atr)
                     {
                         if (ViewSingleActivity(trm.trailResult.Activity))
                         {
+                            activity = trm.trailResult.Activity;
                             atr2.Add(trm);
                         }
                     }
@@ -331,7 +333,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     //Only one activity, OK to merge selections on one track
                     TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atr2);
-                    m_view.RouteSelectionProvider.SelectedItems = new IItemTrackSelectionInfo[] { result };
+                    m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, new List<IActivity> { activity }, false);
                     if (atr != null && atr.Count > 0)
                     {
                         m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
@@ -468,7 +470,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null && selected.SelectedItems != null)
                 {
                     MultiCharts.SetSelectedRange(
-                      TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities));
+                      TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities, true));
                 }
             }
         }

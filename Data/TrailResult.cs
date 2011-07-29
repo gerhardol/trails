@@ -1368,8 +1368,10 @@ namespace TrailsPlugin.Data {
                                     float? refElapsedSec = null;
                                     if (m_cacheTrackRef == this)
                                     {
-                                        //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
-                                        refElapsedSec = elapsedSec;
+                                        ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
+                                        //refElapsedSec = elapsedSec;
+                                        //get diff from average
+                                        refElapsedSec = this.getDistResult(d1)/this.AvgSpeed;
                                     }
                                     else
                                     {
@@ -1492,9 +1494,19 @@ namespace TrailsPlugin.Data {
                                 {
                                     if (t.ElapsedSeconds + refOffset <= m_cacheTrackRef.DistanceMetersTrack.TotalElapsedSeconds)
                                     {
-                                        DateTime d2 = m_cacheTrackRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refOffset));
                                         int status;
-                                        double refDist = getDistFromTrackTime(m_cacheTrackRef.DistanceMetersTrack, d2, out status);
+                                        double refDist;
+                                        if (refRes == m_cacheTrackRef)
+                                        {
+                                            //get diff from average
+                                            refDist = this.getElapsedResult(d1) * this.AvgSpeed;
+                                            status = 0;
+                                        }
+                                        else
+                                        {
+                                            DateTime d2 = m_cacheTrackRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refOffset));
+                                            refDist = getDistFromTrackTime(m_cacheTrackRef.DistanceMetersTrack, d2, out status);
+                                        }
                                         if (status == 0)
                                         {
                                             if (Settings.DiffUsingCommonStretches && prevCommonStreches)

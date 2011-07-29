@@ -568,9 +568,10 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_hasValues.Add(yaxis, false);
                 //A diff to itself is not a value - enable replacing
-                if (!(m_trailResults == null || m_refTrailResult == null ||
-                    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
-                    m_trailResults.Count == 1 && m_trailResults[0] == m_refTrailResult))
+                //TODO: Change diff to self to show diff to average
+                //if (!(m_trailResults == null || m_refTrailResult == null ||
+                //    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
+                //    m_trailResults.Count == 1 && m_trailResults[0] == m_refTrailResult))
                 {
                     for (int i = 0; i < m_trailResults.Count; i++)
                     {

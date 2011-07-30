@@ -39,18 +39,31 @@ namespace TrailsPlugin.UI.MapLayers
         {
             get
             {
-                return new IRouteControlLayerProvider[] { new TrailPointsProvider() };
+                //One layer for normal tracks, another for marked tracks (should be above tracks)
+                return new IRouteControlLayerProvider[]
+                { 
+                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderBase), 
+                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderMarked)
+                };
             }
         }
     }
     class TrailPointsProvider : IRouteControlLayerProvider
     {
+        public const int TrailsLayerZOrderBase = 1;
+        public const int TrailsLayerZOrderMarked = 5;
+        private int m_zorder = TrailsLayerZOrderBase;
+
+        public TrailPointsProvider(int zorder)
+        {
+            m_zorder = zorder;
+        }
         private IRouteControlLayer m_layer = null;
         public IRouteControlLayer CreateControlLayer(IRouteControl control)
         {
             if (m_layer == null)
             {
-                m_layer = new TrailPointsLayer(this,control);
+                m_layer = new TrailPointsLayer(this, control, m_zorder);
             }
             return m_layer;
         }

@@ -267,7 +267,7 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         //Assumes that not single results are set
-                        m_multiple.SetSelectedResultRange(i, regions);
+                        m_multiple.SetSeriesSelectedResultRange(i, regions);
                     }
                     this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     m_selectDataHandler = true;
@@ -281,14 +281,15 @@ namespace TrailsPlugin.UI.Activity {
             {
                 MainChart.DataSeries[i].ClearSelectedRegions();
                 //Do not mark the line chart related to fill chart
-                if (!(i==1 && MainChart.DataSeries[0].ChartType == ChartDataSeries.Type.Fill))
+                if (!(MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill))
                 {
-                    SetSelectedResultRange(i, false, regions);
+                    SetSeriesSelectedResultRange(i, false, regions);
                 }
             }
         }
 
-        public void SetSelectedResultRange(int i, bool clearAll, IList<float[]> regions)
+        //Mark a specific series
+        public void SetSeriesSelectedResultRange(int i, bool clearAll, IList<float[]> regions)
         {
             if (ShowPage)
             {
@@ -366,8 +367,8 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             MainChart.DataSeries[i].ClearSelectedRegions();
                             //The "fill" chart is 0, line is 1
-                            if (i == 0 && m_trailResults.Count == 1 &&
-                                        MainChart.DataSeries.Count > 1)
+                            if (i == 0 && MainChart.DataSeries.Count > 1 &&
+                                MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill)
                             {
                                 MainChart.DataSeries[1].ClearSelectedRegions();
                             }
@@ -398,8 +399,16 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 x1 = Math.Max(x1, (float)MainChart.XAxis.MinOriginValue);
                                 x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
-                                MainChart.DataSeries[i].SetSelectedRange(x1, x2);
-                                //For line/fill graph, only the first - comment out
+
+                                int index = i;
+                                if (i == 0 && MainChart.DataSeries.Count > 1 &&
+                                    MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill)
+                                {
+                                    //For line/fill graph
+                                    index = 1;
+                                }
+
+                                MainChart.DataSeries[index].SetSelectedRange(x1, x2);
                             }
                         }
                     }
@@ -438,8 +447,14 @@ namespace TrailsPlugin.UI.Activity {
                                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
-                                    MainChart.DataSeries[i].AddSelecedRegion(ax[0], ax[1]);
-                                    //For fill/line, only select first - comment out
+                                    int index = i;
+                                    if (i == 0 && MainChart.DataSeries.Count > 1 &&
+                                        MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill)
+                                    {
+                                        //For line/fill graph
+                                        index = 1;
+                                    }
+                                    MainChart.DataSeries[index].AddSelecedRegion(ax[0], ax[1]);
                                 }
                             }
                         }
@@ -542,7 +557,7 @@ namespace TrailsPlugin.UI.Activity {
                         //For "single result" only select first series
                         if (i < m_trailResults.Count &&
                             m_trailResults[i].Equals(tr) &&
-                            (m_trailResults.Count > 1 || i == 0))
+                            MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
                         {
                             MainChart.DataSeries[i].AddSelecedRegion(
                                 MainChart.DataSeries[i].XMin, MainChart.DataSeries[i].XMax);

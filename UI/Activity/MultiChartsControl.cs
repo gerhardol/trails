@@ -467,11 +467,12 @@ namespace TrailsPlugin.UI.Activity {
                 chart.SetSelectedResultRange(regions);
             }
         }
-        public void SetSelectedResultRange(int i, IList<float[]> regions)
+        //Update a specific dataseries, called from one TrailLineChart to all other
+        public void SetSeriesSelectedResultRange(int i, IList<float[]> regions)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRange(i, true, regions);
+                chart.SetSeriesSelectedResultRange(i, true, regions);
             }
         }
         public void EnsureVisible(IList<TrailResult> atr)

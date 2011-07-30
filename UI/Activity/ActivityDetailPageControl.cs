@@ -71,7 +71,8 @@ namespace TrailsPlugin.UI.Activity {
 #else
         private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
-        private TrailPointsLayer m_layer = null;
+        private TrailPointsLayer m_layerBase = null;
+        private TrailPointsLayer m_layerMarked = null;
 #endif
 
 #if ST_2_1
@@ -82,7 +83,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_DetailPage = detailPage;
             m_view = view;
-            m_layer = TrailPointsLayer.Instance(m_view);
+            m_layerBase = TrailPointsLayer.Instance(m_view);
+            m_layerMarked = TrailPointsLayer.InstanceMarked(m_view);
 #endif
             m_controller = Controller.TrailController.Instance;
 
@@ -96,7 +98,7 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = true;
 #endif
 
-            TrailSelector.SetControl(this, m_controller, m_view, m_layer);
+            TrailSelector.SetControl(this, m_controller, m_view, m_layerBase);
             ResultList.SetControl(this, m_controller, m_view);
             MultiCharts.SetControl(this, m_controller, m_view);
 #if ST_2_1
@@ -131,7 +133,8 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_controller.Activities = value;
 #if !ST_2_1
-                m_layer.ClearOverlays();
+                m_layerBase.ClearOverlays();
+                m_layerMarked.ClearOverlays();
 #endif
                 RefreshData();
                 RefreshControlState();
@@ -149,7 +152,8 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 #endif
-            m_layer.HidePage();
+            m_layerBase.HidePage();
+            m_layerMarked.HidePage();
             TrailSelector.ShowPage = false;
             ResultList.ShowPage = false;
             MultiCharts.ShowPage = false;
@@ -160,7 +164,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool showPage = m_showPage;
             m_showPage = true;
-            m_layer.ShowPage(bookmark);
+            m_layerBase.ShowPage(bookmark);
+            m_layerMarked.ShowPage(bookmark);
             TrailSelector.ShowPage = true;
             ResultList.ShowPage = true;
             MultiCharts.ShowPage = true;
@@ -211,7 +216,7 @@ namespace TrailsPlugin.UI.Activity {
             if((! m_isExpanded || isReportView)
                 && m_controller.CurrentActivityTrail != null)
             {
-                m_layer.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                m_layerBase.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
                 //route
@@ -226,10 +231,10 @@ namespace TrailsPlugin.UI.Activity {
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
-                        //Do not map activities displayed already
+                        //Do not map activities displayed already by ST
                         if (!ViewSingleActivity(tr.Activity))
                         {
-                            //Note: Possibly limit no of Trails shown, it slows down Gmaps
+                            //Note: Possibly limit no of Trails shown, it slows down Gmaps some
                             foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
                             {
                                 m.Click += new MouseEventHandler(mapPoly_Click);
@@ -237,14 +242,15 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    m_layer.TrailRoutes = routes;
+                    m_layerBase.TrailRoutes = routes;
                 }
                 else
                 {
-                    m_layer.TrailRoutes = new Dictionary<string, MapPolyline>();
+                    m_layerBase.TrailRoutes = new Dictionary<string, MapPolyline>();
                 }
-                m_layer.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-                m_layer.TrailPoints = points;
+                m_layerBase.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                m_layerBase.TrailPoints = points;
+                m_layerMarked.ClearOverlays();
             }
         }
 
@@ -313,52 +319,55 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             if (m_showPage)
             {
-                if (m_view != null &&
-                    m_view.RouteSelectionProvider != null)
-                {
-                    //For activities drawn by default, use common marking
-                    IList<TrailResultMarked> atr2 = new List<TrailResultMarked>();
-                    IActivity activity = null;
-                    foreach (TrailResultMarked trm in atr)
-                    {
-                        if (ViewSingleActivity(trm.trailResult.Activity))
-                        {
-                            activity = trm.trailResult.Activity;
-                            atr2.Add(trm);
-                        }
-                    }
-                    if (!markChart)
-                    {
-                        m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                    }
-                    //Only one activity, OK to merge selections on one track
-                    TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atr2);
-                    m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, new List<IActivity> { activity }, false);
-                    if (atr != null && atr.Count > 0)
-                    {
-                        m_layer.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
-                    }
-                    if (!markChart)
-                    {
-                        m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                    }
-                }
+                    IList<TrailResultMarked> atrST = new List<TrailResultMarked>();
                 IDictionary<string, MapPolyline> mresult = new Dictionary<string, MapPolyline>();
                 foreach (TrailResultMarked trm in atr)
                 {
-                    foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
+                    if (m_view != null &&
+                      m_view.RouteSelectionProvider != null &&
+                      ViewSingleActivity(trm.trailResult.Activity))
                     {
-                        if (!ViewSingleActivity(trm.trailResult.Activity))
+                        //Use ST standard display of track where possible
+                        atrST.Add(trm);
+                    }
+                    else
+                    {
+                        //Trails internal display of tracks
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                         {
-                            m.Click += new MouseEventHandler(mapPoly_Click);
-                            if(!mresult.ContainsKey(m.key))
+                            if (!mresult.ContainsKey(m.key))
                             {
+                                m.Click += new MouseEventHandler(mapPoly_Click);
                                 mresult.Add(m.key, m);
                             }
                         }
                     }
                 }
-                m_layer.MarkedTrailRoutes = mresult;
+                //Trails track display update
+                m_layerMarked.MarkedTrailRoutes = mresult;
+
+                //ST internal marking, use common marking
+                if (atrST.Count > 0)
+                {
+                    IActivity activity = atrST[0].trailResult.Activity;
+                    //Deactivate ST callback
+                    m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                    //Only one activity, OK to merge selections on one track
+                    TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atrST);
+                    m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, new List<IActivity> { activity }, false);
+                    if (atr != null && atr.Count > 0)
+                    {
+                        //It does not matter what layer is zoomed here
+                        m_layerBase.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
+                    }
+                    m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                }
+
+                //Mark chart
+                if (markChart)
+                {
+                    MultiCharts.SetSelectedRegions(atr);
+                }
             }
 #endif
         }

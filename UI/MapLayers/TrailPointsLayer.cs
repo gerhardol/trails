@@ -37,17 +37,18 @@ namespace TrailsPlugin.UI.MapLayers
 {
     public class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
-        public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control)
-            : base(provider, control, 1)
+        public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control, int zorder)
+            : base(provider, control, zorder)
         {
             Guid currentView = UnitUtil.GetApplication().ActiveView.Id;
-            if (m_layers.ContainsKey(currentView))
+            string key = currentView.ToString()+zorder;
+            if (m_layers.ContainsKey(key))
             {
-                m_layers[currentView].m_extraMapLayer = this;
+                m_layers[key].m_extraMapLayer = this;
             }
             else
             {
-                m_layers[currentView] = this;
+                m_layers[key] = this;
             }
         }
 
@@ -55,10 +56,19 @@ namespace TrailsPlugin.UI.MapLayers
         //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
         public static TrailPointsLayer Instance(IView view)
         {
+            return TrailPointsLayer.InstanceBase(view, TrailPointsProvider.TrailsLayerZOrderBase);
+        }
+        public static TrailPointsLayer InstanceMarked(IView view)
+        {
+            return TrailPointsLayer.InstanceBase(view, TrailPointsProvider.TrailsLayerZOrderMarked);
+        }
+        private static TrailPointsLayer InstanceBase(IView view, int zorder)
+        {
             TrailPointsLayer result = null;
-            if (view != null && m_layers != null && m_layers.ContainsKey(view.Id))
+            string key = view.Id.ToString()+zorder;
+            if (view != null && m_layers != null && m_layers.ContainsKey(key))
             {
-                result = m_layers[view.Id];
+                result = m_layers[key];
             }
             else if (m_layers.Count > 0)
             {
@@ -419,7 +429,10 @@ namespace TrailsPlugin.UI.MapLayers
             if (0 == visibleLocations.Count && 0 == visibleRoutes.Count) return;
 
             m_scalingChanged = false;
-            ClearOverlays();
+            if (!clear && !MapControlChanged)
+            {
+                ClearOverlays();
+            }
             MapControl.AddOverlays(addedOverlays);
             m_pointOverlays = newPointOverlays;
             m_routeOverlays = newRouteOverlays;
@@ -460,7 +473,7 @@ namespace TrailsPlugin.UI.MapLayers
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
         private float m_highlightRadius;
         private bool m_showPage;
-        private static IDictionary<Guid, TrailPointsLayer> m_layers = new Dictionary<Guid, TrailPointsLayer>();
+        private static IDictionary<string, TrailPointsLayer> m_layers = new Dictionary<string, TrailPointsLayer>();
         private TrailPointsLayer m_extraMapLayer = null;
     }
 }

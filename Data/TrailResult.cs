@@ -562,11 +562,11 @@ namespace TrailsPlugin.Data {
             }
             else
             {
-                String[] values = category.Name.Split(';');
+                String[] values = Settings.ExcludeStoppedCategory.Split(';');
                 foreach (String name in values)
                 {
 
-                    if (name.Contains(Settings.ExcludeStoppedCategory))
+                    if (name.Contains(category.Name))
                     {
                         return false;
                     }
@@ -574,26 +574,32 @@ namespace TrailsPlugin.Data {
             }
             return isIncludeStoppedCategory(category.Parent);
         }
-        
-        /*********************************************/
-        private bool includeStopped()
+        private bool? m_includeStopped;
+        private bool IncludeStopped
         {
-            bool includeStopped = true;
+            get
+            {
+                if (m_includeStopped == null)
+                {
 #if ST_2_1
             // If UseEnteredData is set, exclude Stopped
             if (info.Activity.UseEnteredData == false && info.Time.Equals(info.ActualTrackTime))
             {
-                includeStopped = true;
+                m_includeStopped = true;
             }
 #else
-            includeStopped = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
+                    m_includeStopped = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
 #endif
-            if (!includeStopped)
-            {
-                includeStopped = isIncludeStoppedCategory(this.Activity.Category);
+                    if ((bool)m_includeStopped)
+                    {
+                        m_includeStopped = isIncludeStoppedCategory(this.Activity.Category);
+                    }
+                }
+                return (bool)m_includeStopped;
             }
-            return includeStopped;
         }
+
+        /*********************************************/
 
         public IValueRangeSeries<DateTime> Pauses
         {
@@ -613,7 +619,7 @@ namespace TrailsPlugin.Data {
                     else
                     {
                         IValueRangeSeries<DateTime> actPause;
-                        if (includeStopped())
+                        if (IncludeStopped)
                         {
                             actPause = Activity.TimerPauses;
                         }
@@ -672,7 +678,8 @@ namespace TrailsPlugin.Data {
                                         {
                                             i++;
                                         }
-                                        if (i < this.TrailPointDateTime.Count)
+                                        if (i < this.TrailPointDateTime.Count &&
+                                            this.TrailPointDateTime[i] > DateTime.MinValue)
                                         {
                                             upper = this.TrailPointDateTime[i];
                                         }
@@ -714,7 +721,7 @@ namespace TrailsPlugin.Data {
                 }
                 else
                 {
-                    if (includeStopped())
+                    if (IncludeStopped)
                     {
                         m_activityDistanceMetersTrack = Info.ActualDistanceMetersTrack;
                     }
@@ -988,13 +995,14 @@ namespace TrailsPlugin.Data {
             m_DiffDistTrack0 = null;
             m_trailPointTime0 = null;
             m_trailPointDist0 = null;
+            m_includeStopped = null;
+            m_pauses = null;
 
             //smoothing control
             //m_TrailActivityInfoOptions = null;
 
             if (!onlyDisplay)
             {
-                m_pauses = null;
                 m_startTime = null;
                 m_endTime = null;
 
@@ -1897,7 +1905,7 @@ namespace TrailsPlugin.Data {
                 if (m_ActivityInfo == null)
                 {
                     ActivityInfoCache c = new ActivityInfoCache();
-                    ActivityInfoOptions t = new ActivityInfoOptions(false);
+                    ActivityInfoOptions t = new ActivityInfoOptions(false, IncludeStopped);
                     c.Options = t;
                     IActivity activity = this.Activity;
                     //if (this.Pauses != activity.TimerPauses)

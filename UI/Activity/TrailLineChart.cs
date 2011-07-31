@@ -1215,7 +1215,7 @@ namespace TrailsPlugin.UI.Activity {
                     int val = TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds;
                     if (reset)
                     {
-                        val = (new ActivityInfoOptions(true)).CadenceSmoothingSeconds;
+                        val = TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds;
                     }
                     TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds =
                         MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
@@ -1227,7 +1227,7 @@ namespace TrailsPlugin.UI.Activity {
                     int val = TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds;
                     if (reset)
                     {
-                        val = (new ActivityInfoOptions(true)).ElevationSmoothingSeconds;
+                        val = TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds;
                     }
                     chartTypes.Add(LineChartTypes.Grade);
                     TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds =
@@ -1239,7 +1239,7 @@ namespace TrailsPlugin.UI.Activity {
                     int val = TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds;
                     if (reset)
                     {
-                        val = (new ActivityInfoOptions(true)).HeartRateSmoothingSeconds;
+                        val = TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds;
                     }
                     TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds =
                         MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
@@ -1250,7 +1250,7 @@ namespace TrailsPlugin.UI.Activity {
                     int val = TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds;
                     if (reset)
                     {
-                        val = (new ActivityInfoOptions(true)).PowerSmoothingSeconds;
+                        val = TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds;
                     }
                     TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds =
                         MainChart_KeyDown_Smooth(val, chartTypes, increase, reset, zero);
@@ -1262,7 +1262,7 @@ namespace TrailsPlugin.UI.Activity {
                     int val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
                     if (reset)
                     {
-                        val = (new ActivityInfoOptions(true)).SpeedSmoothingSeconds;
+                        val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
                     }
                     chartTypes.Add(LineChartTypes.Pace);
                     //chartTypes.Add(LineChartTypes.SpeedPace);

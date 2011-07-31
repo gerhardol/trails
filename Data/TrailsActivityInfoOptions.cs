@@ -30,6 +30,11 @@ using ITrailExport;
 namespace TrailsPlugin.Data {
     public class ActivityInfoOptions : IActivityInfoOptions
     {
+        public ActivityInfoOptions(bool defaultSmoothing, bool includeStopped)
+            : this(defaultSmoothing)
+        {
+            m_IncludeStopped = includeStopped;
+        }
         public ActivityInfoOptions(bool defaultSmoothing)
             : base()
         {

@@ -99,6 +99,10 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Pace.ToString(row.AvgSpeed);
                 case TrailResultColumnIds.FastestPace:
                     return UnitUtil.Pace.ToString(row.FastestPace);
+                case TrailResultColumnIds.AvgSpeedPace:
+                    return UnitUtil.PaceOrSpeed.ToString(!row.Activity.Category.SpeedUnits.Equals(ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed), row.AvgSpeed);
+                case TrailResultColumnIds.FastestSpeedPace:
+                    return UnitUtil.PaceOrSpeed.ToString(!row.Activity.Category.SpeedUnits.Equals(ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed), row.FastestPace);
                 case TrailResultColumnIds.Name:
                     return row.Name;
                 default:

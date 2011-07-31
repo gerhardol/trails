@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.ComponentModel;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using ZoneFiveSoftware.Common.Data.Measurement;
 
 #if ST_2_1
 //IListItem
@@ -104,6 +105,8 @@ namespace TrailsPlugin.Data {
         public const string FastestSpeed = "FastestSpeed";
         public const string AvgPace = "AvgPace";
         public const string FastestPace = "FastestPace";
+        public const string AvgSpeedPace = "AvgSpeedPace";
+        public const string FastestSpeedPace = "FastestSpeedPace";
         public const string Name = "Name";
         public const string Location = "Location";
         public const string Category = "Category";
@@ -115,7 +118,7 @@ namespace TrailsPlugin.Data {
             activityPageColumns.Add(TrailResultColumnIds.StartTime);
             activityPageColumns.Add(TrailResultColumnIds.Duration);
             activityPageColumns.Add(TrailResultColumnIds.AvgHR);
-            activityPageColumns.Add(TrailResultColumnIds.AvgCadence);
+            activityPageColumns.Add(TrailResultColumnIds.AvgSpeedPace);
             return activityPageColumns;
         }
 #if ST_2_1
@@ -145,10 +148,24 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgGrade, CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
+
+            int speedIndex = columnDefs.Count;
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + UnitUtil.Speed.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeed, CommonResources.Text.LabelFastestSpeed + " (" + UnitUtil.Speed.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
+            int paceIndex = columnDefs.Count;
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
+            
+            //SpeedPace columns are handled as Speed, except that the headline differs
+            //(the headline is likely to narrow, but Speed should be visible)
+            IListColumnDefinition col = columnDefs[speedIndex];
+            string text = columnDefs[speedIndex].Text(columnDefs[speedIndex].Id) + " / " + columnDefs[paceIndex].Text(columnDefs[paceIndex].Id);
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeedPace, text, col.GroupName, col.Width, col.Align));
+            speedIndex++; paceIndex++;
+            col = columnDefs[speedIndex];
+            text = columnDefs[speedIndex].Text(columnDefs[speedIndex].Id) + " / " + columnDefs[paceIndex].Text(columnDefs[paceIndex].Id);
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeedPace, text, col.GroupName, col.Width, col.Align));
+
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, "", 70, StringAlignment.Near));
@@ -215,13 +232,14 @@ namespace TrailsPlugin.Data {
                     return x.AvgPower;
                 case TrailResultColumnIds.AvgPace:
                 case TrailResultColumnIds.AvgSpeed:
+                case TrailResultColumnIds.AvgSpeedPace:
                     return x.AvgSpeed;
+                case TrailResultColumnIds.FastestPace:
+                case TrailResultColumnIds.FastestSpeed:
+                case TrailResultColumnIds.FastestSpeedPace:
+                    return x.FastestSpeed;
                 case TrailResultColumnIds.ElevChg:
                     return x.ElevChg;
-                case TrailResultColumnIds.FastestPace:
-                    return -x.FastestPace;
-                case TrailResultColumnIds.FastestSpeed:
-                    return x.FastestSpeed;
                 case TrailResultColumnIds.MaxHR:
                     return x.MaxHR;
                 default:

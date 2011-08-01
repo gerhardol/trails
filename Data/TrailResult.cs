@@ -619,14 +619,7 @@ namespace TrailsPlugin.Data {
                     else
                     {
                         IValueRangeSeries<DateTime> actPause;
-                        if (IncludeStopped)
-                        {
-                            actPause = Activity.TimerPauses;
-                        }
-                        else
-                        {
-                            actPause = Info.NonMovingTimes;
-                        }
+                        actPause = Info.NonMovingTimes;
                         foreach (ValueRange<DateTime> t in actPause)
                         {
                             m_pauses.Add(t);
@@ -721,14 +714,7 @@ namespace TrailsPlugin.Data {
                 }
                 else
                 {
-                    if (IncludeStopped)
-                    {
-                        m_activityDistanceMetersTrack = Info.ActualDistanceMetersTrack;
-                    }
-                    else
-                    {
-                        m_activityDistanceMetersTrack = Info.MovingDistanceMetersTrack;
-                    }
+                    m_activityDistanceMetersTrack = Info.MovingDistanceMetersTrack;
                     m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
                     if (m_activityDistanceMetersTrack != null)
                     {
@@ -995,8 +981,6 @@ namespace TrailsPlugin.Data {
             m_DiffDistTrack0 = null;
             m_trailPointTime0 = null;
             m_trailPointDist0 = null;
-            m_includeStopped = null;
-            m_pauses = null;
 
             //smoothing control
             //m_TrailActivityInfoOptions = null;
@@ -1005,18 +989,12 @@ namespace TrailsPlugin.Data {
             {
                 m_startTime = null;
                 m_endTime = null;
+                m_includeStopped = null;
+                m_pauses = null;
 
-                //m_ActivityInfo = null;
+                m_ActivityInfo = null;
                 m_distanceMetersTrack = null;
                 m_activityDistanceMetersTrack = null;
-                //m_elevationMetersTrack = null;
-                //m_cadencePerMinuteTrack = null;
-                //m_heartRatePerMinuteTrack = null;
-                //m_powerWattsTrack = null;
-                //m_speedTrack = null;
-                ////m_paceTrack = null;
-                //m_gradeTrack = null;
-
                 m_gpsPoints = null;
                 m_gpsTrack = null;
             }
@@ -1026,13 +1004,14 @@ namespace TrailsPlugin.Data {
         {
             if (refRes == null || refRes != m_cacheTrackRef)
             {
+                //Clear cache where ref (possibly null) has been used
+                Clear(true);
                 m_cacheTrackRef = refRes;
                 if (m_cacheTrackRef == null)
                 {
                     //A reference is needed to set for instance display format
                     m_cacheTrackRef = this;
                 }
-                Clear(true);
 
                 return true;
             }
@@ -1582,6 +1561,7 @@ namespace TrailsPlugin.Data {
                         val = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
                                 StartDateTime, t1, Pauses).TotalSeconds;
                         //Offset time from detected to actual start
+                        //NonMovingTimes here instead?
                         val1 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
                                 this.TrailPointDateTime[k], t1, Activity.TimerPauses).TotalSeconds;
                     }
@@ -1720,7 +1700,7 @@ namespace TrailsPlugin.Data {
             {
                 IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
                 t.Add(new ValueRange<DateTime>(StartDateTime, EndDateTime));
-                m_gpsPoints = GpsPoints(t);
+                m_gpsPoints = this.GpsPoints(t);
             }
             return m_gpsPoints;
         }
@@ -1737,60 +1717,13 @@ namespace TrailsPlugin.Data {
                     //Use cache
                     return this.GpsPoints();
                 }
-                return GpsPoints(t.MarkedTimes);
+                return this.GpsPoints(t.MarkedTimes);
             }
             return new List<IList<IGPSPoint>>();
         }
-
         private IList<IList<IGPSPoint>> GpsPoints(IValueRangeSeries<DateTime> t)
         {
-            IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
-            bool newTrackAtPause = false;
-            int pauseIndex = 0;
-            int prevPauseIndex = pauseIndex;
-
-            foreach (IValueRange<DateTime> r in t)
-            {
-                IList<IGPSPoint> track = new List<IGPSPoint>();
-                foreach (ITimeValueEntry<IGPSPoint> entry in this.GPSRoute)
-                {
-                    DateTime time = this.GPSRoute.EntryDateTime(entry);
-                    bool isPause = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses);
-
-                    //Add new track around pauses
-                    if (!isPause)
-                    {
-                        while (pauseIndex < Pauses.Count && Pauses[pauseIndex].Lower < time)
-                        {
-                            pauseIndex++;
-                        }
-                    }
-
-                    if (newTrackAtPause && (isPause || prevPauseIndex != pauseIndex))
-                    {
-                        result.Add(track);
-                        track = new List<IGPSPoint>();
-                        newTrackAtPause = false;
-                    }
-                    prevPauseIndex = pauseIndex;
-
-                    if (r.Lower <= time && time <= r.Upper && !isPause)
-                    {
-                        track.Add(entry.Value);
-                        //If there is a a pause, add new track
-                        newTrackAtPause = true;
-                    }
-                    if (time > r.Upper)
-                    {
-                        break;
-                    }
-                }
-                if (track.Count > 0)
-                {
-                    result.Add(track);
-                }
-            }
-            return result;
+            return TrailsItemTrackSelectionInfo.GpsPoints(this.GPSRoute, this.Pauses, t);
         }
 
         /*************************************************/

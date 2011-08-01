@@ -7,4 +7,4 @@ Upload to Google Code:
 p=
 s="Updated German translation"
 
-util/googlecode_upload.py -p gps-running -u gerhard.nospam -l Featured -w $p -s "$s" `ls -rt *plugin| tail -1`
+util/googlecode_upload.py -p trails -u gerhard.nospam -l Featured -w $p -s "$s" `ls -rt *plugin| tail -1`

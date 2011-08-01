@@ -56,7 +56,7 @@ namespace TrailsPlugin.Data {
             //getSplits();
         }
 
-        //Create from HighScore, add the first and last time stamps
+        //Create from HighScore, add the first and last time stamps in MarkedTimes
         public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
             : base(null, null)
         {

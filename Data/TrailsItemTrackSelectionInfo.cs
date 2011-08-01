@@ -118,19 +118,48 @@ namespace TrailsPlugin.Data
                 }
                 if (activity != null)
                 {
-                    IDistanceDataTrack m_activityUnpausedDistanceMetersTrack =
+                        //The distance is in unstopped/unpaused format
+                    IDistanceDataTrack activityUnpausedDistanceMetersTrack =
                         ActivityInfoCache.Instance.GetInfo(activity).ActualDistanceMetersTrack;
                     TrailsItemTrackSelectionInfo tmpSel = new TrailsItemTrackSelectionInfo();
                     tmpSel.SetFromSelection(selected[i], activity);
+
                     if (fromST)
                     {
-                        if (selected[i].SelectedDistance != null)
+                        //Set MarkedTimes, used internally
+                        if (selected[i].MarkedDistances != null && selected[i].MarkedTimes == null)
                         {
                             try
                             {
-                                tmpSel.SelectedTime = new ValueRange<DateTime>(
-                                    m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
-                                    m_activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper));
+                                tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
+                                foreach (ValueRange<double> t in selected[i].MarkedDistances)
+                                {
+                                    tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(
+                                            activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Lower),
+                                            activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper)));
+                                }
+                                tmpSel.MarkedDistances = null;
+                            }
+                            catch { }
+                        }
+                        if (selected[i].SelectedTime != null && selected[i].MarkedTimes == null)
+                        {
+                            try
+                            {
+                                tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
+                                tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(selected[i].SelectedTime.Lower, selected[i].SelectedTime.Upper));
+                                tmpSel.SelectedTime = null;
+                            }
+                            catch { }
+                        }
+                        if (selected[i].SelectedDistance != null && selected[i].MarkedTimes == null)
+                        {
+                            tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
+                            try
+                            {
+                                tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(
+                                    activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
+                                    activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper)));
                                 tmpSel.SelectedDistance = null;
                             }
                             catch { }
@@ -139,7 +168,7 @@ namespace TrailsPlugin.Data
                     else
                     {
                         //The standard in the plugin to standard in ST core and omb's Track Coloring
-                        if (selected[i].SelectedDistance == null && selected[i].MarkedDistances == null &&
+                        if (selected[i].MarkedDistances == null &&
                             selected[i].MarkedTimes != null && selected[i].MarkedTimes.Count > 0)
                         {
                             try
@@ -148,10 +177,22 @@ namespace TrailsPlugin.Data
                                 foreach (ValueRange<DateTime> t in selected[i].MarkedTimes)
                                 {
                                     tmpSel.MarkedDistances.Add(new ValueRange<double>(
-                                            m_activityUnpausedDistanceMetersTrack.GetInterpolatedValue(selected[i].MarkedTimes[0].Lower).Value,
-                                            m_activityUnpausedDistanceMetersTrack.GetInterpolatedValue(selected[i].MarkedTimes[0].Upper).Value));
+                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Lower).Value,
+                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Upper).Value));
                                 }
                                 tmpSel.MarkedTimes = null;
+                            }
+                            catch { }
+                        }
+                        if (selected[i].SelectedDistance == null &&
+                            selected[i].SelectedTime != null)
+                        {
+                            try
+                            {
+                                tmpSel.SelectedDistance = new ValueRange<double>(
+                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(selected[i].SelectedTime.Lower).Value,
+                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(selected[i].SelectedTime.Upper).Value);
+                                tmpSel.SelectedTime = null;
                             }
                             catch { }
                         }
@@ -160,6 +201,60 @@ namespace TrailsPlugin.Data
                 }
             }
             return selected;
+        }
+
+        public static IList<IList<IGPSPoint>> GpsPoints(IGPSRoute gpsRoute, IValueRangeSeries<DateTime> pauses, IValueRangeSeries<DateTime> t)
+        {
+            IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
+            bool newTrackAtPause = false;
+            int pauseIndex = 0;
+            int prevPauseIndex = pauseIndex;
+
+            if (t != null)
+            {
+                foreach (IValueRange<DateTime> r in t)
+                {
+                    IList<IGPSPoint> track = new List<IGPSPoint>();
+                    foreach (ITimeValueEntry<IGPSPoint> entry in gpsRoute)
+                    {
+                        DateTime time = gpsRoute.EntryDateTime(entry);
+                        bool isPause = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, pauses);
+
+                        //Add new track around pauses
+                        if (!isPause)
+                        {
+                            while (pauseIndex < pauses.Count && pauses[pauseIndex].Lower < time)
+                            {
+                                pauseIndex++;
+                            }
+                        }
+
+                        if (newTrackAtPause && (isPause || prevPauseIndex != pauseIndex))
+                        {
+                            result.Add(track);
+                            track = new List<IGPSPoint>();
+                            newTrackAtPause = false;
+                        }
+                        prevPauseIndex = pauseIndex;
+
+                        if (r.Lower <= time && time <= r.Upper && !isPause)
+                        {
+                            track.Add(entry.Value);
+                            //If there is a a pause, add new track
+                            newTrackAtPause = true;
+                        }
+                        if (time > r.Upper)
+                        {
+                            break;
+                        }
+                    }
+                    if (track.Count > 0)
+                    {
+                        result.Add(track);
+                    }
+                }
+            }
+            return result;
         }
 
         public override string ToString()

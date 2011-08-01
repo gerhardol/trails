@@ -280,6 +280,7 @@ namespace TrailsPlugin.Data {
             bool lastIsRestlap = false;
             if (null == activity.Laps || 0 == activity.Laps.Count)
             {
+                //Use MovingDistanceMetersTrack rather than ActualDistanceMetersTrack, assume similar activities have similar pauses/slow parts
                 IDistanceDataTrack track = ActivityInfoCache.Instance.GetInfo(activity).MovingDistanceMetersTrack;
                 if (track != null && track.Max > 0)
                 {

@@ -42,8 +42,10 @@ namespace TrailsPlugin.UI.MapLayers
                 //One layer for normal tracks, another for marked tracks (should be above tracks)
                 return new IRouteControlLayerProvider[]
                 { 
-                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderBase), 
-                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderMarked)
+                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderBase)
+#if !(GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY||GPSRUNNING_HIGHSCORE||GPSRUNNING_PERFORMANCEPREDICTOR||MATRIXPLUGIN)
+                    , new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderMarked)
+#endif
                 };
             }
         }

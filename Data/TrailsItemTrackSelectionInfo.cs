@@ -107,13 +107,23 @@ namespace TrailsPlugin.Data
             for(int i = 0; i < selected.Count; i++)
             {
                 IActivity activity = null;
-                foreach(IActivity a in activities)
+                if (fromST)
                 {
-                    //In ST3.0.4068 (at least) only one activity is selected
-                    if (a != null && selected[i].ItemReferenceId == a.ReferenceId)
+                    foreach (IActivity a in activities)
                     {
-                        activity = a;
-                        break;
+                        //In ST3.0.4068 (at least) only one activity is selected
+                        if (a != null && selected[i].ItemReferenceId == a.ReferenceId)
+                        {
+                            activity = a;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if (selected[i] is TrailsItemTrackSelectionInfo)
+                    {
+                        activity = ((TrailsItemTrackSelectionInfo)selected[i]).Activity;
                     }
                 }
                 if (activity != null)

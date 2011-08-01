@@ -324,7 +324,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultMarked trm in atr)
                 {
                     if (m_view != null &&
-                      m_view.RouteSelectionProvider != null &&
+                      //m_view.RouteSelectionProvider != null &&
                       ViewSingleActivity(trm.trailResult.Activity))
                     {
                         //Use ST standard display of track where possible

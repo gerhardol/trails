@@ -319,7 +319,7 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             if (m_showPage)
             {
-                    IList<TrailResultMarked> atrST = new List<TrailResultMarked>();
+                IList<TrailResultMarked> atrST = new List<TrailResultMarked>();
                 IDictionary<string, MapPolyline> mresult = new Dictionary<string, MapPolyline>();
                 foreach (TrailResultMarked trm in atr)
                 {
@@ -349,18 +349,18 @@ namespace TrailsPlugin.UI.Activity {
                 //ST internal marking, use common marking
                 if (atrST.Count > 0)
                 {
-                    IActivity activity = atrST[0].trailResult.Activity;
                     //Deactivate ST callback
                     m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
                     //Only one activity, OK to merge selections on one track
                     TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atrST);
                     m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, null, false);
-                    if (atr != null && atr.Count > 0)
-                    {
-                        //It does not matter what layer is zoomed here
-                        m_layerBase.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(result)));
-                    }
                     m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                }
+
+                if (atr != null && atr.Count > 0)
+                {
+                    //It does not matter what layer is zoomed here
+                    m_layerBase.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
                 }
 
                 //Mark chart

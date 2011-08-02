@@ -666,8 +666,8 @@ namespace TrailsPlugin.Data {
                                         DateTime upper = this.EndDateTime;
                                         while (i < this.TrailPointDateTime.Count &&
                                             i < trailLocations.Count &&
-                                            !trailLocations[i].Required &&
-                                        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                            (!trailLocations[i].Required ||
+                                            this.TrailPointDateTime[i] == DateTime.MinValue))
                                         {
                                             i++;
                                         }
@@ -751,6 +751,7 @@ namespace TrailsPlugin.Data {
                             float actDist = timeValue.Value;
                             if (!float.IsNaN(prevDist))
                             {
+                                //TODO: Get the offsets at boundaries, to minimize cumulative errors
                                 distance += actDist - prevDist;
                             }
                             m_distanceMetersTrack.Add(time, distance);
@@ -1301,10 +1302,10 @@ namespace TrailsPlugin.Data {
 
                     bool prevCommonStreches = false;
                     IValueRangeSeries<DateTime> commonStretches = null;
-                    if (Settings.DiffUsingCommonStretches && refRes != null && refRes.Activity != null)
+                    if (Settings.DiffUsingCommonStretches && m_cacheTrackRef.Activity != null)
                     {
                         //TODO: Use reference stretch too
-                        commonStretches = CommonStretches(refRes.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
+                        commonStretches = CommonStretches(m_cacheTrackRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
                         m_DiffTimeTrack0.Add(StartDateTime, 0);
                     }
 
@@ -1358,7 +1359,7 @@ namespace TrailsPlugin.Data {
                                         ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
                                         //refElapsedSec = elapsedSec;
                                         //get diff from average
-                                        refElapsedSec = this.getDistResult(d1)/this.AvgSpeed;
+                                        refElapsedSec = this.getDistResult(d1) / this.AvgSpeed;
                                     }
                                     else
                                     {
@@ -1385,9 +1386,17 @@ namespace TrailsPlugin.Data {
                         }
                     }
                     //Add a point last in the track, to show the complete dist in the chart
-                    //Alternative would be to use speed to extrapolate difference
-                    if (oldElapsed < DistanceMetersTrack.TotalElapsedSeconds)
+                    //Alternative use lastvalue
+                    dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
+                    if (m_cacheTrackRef != this &&
+                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndDateTime, Pauses) &&
+                        (Settings.ResyncDiffAtTrailPoints || this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated) &&
+                            dateTrailPointIndex > 0 &&
+                        dateTrailPointIndex == m_cacheTrackRef.TrailPointDateTime.Count - 1 &&
+                                this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
+                                m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                     {
+                        lastValue = (float)(this.m_cacheTrackRef.TrailPointTime0(m_cacheTrackRef)[dateTrailPointIndex] - this.TrailPointTime0(m_cacheTrackRef)[dateTrailPointIndex] + diffOffset);
                         m_DiffTimeTrack0.Add(EndDateTime, lastValue);
                     }
                 }
@@ -1423,9 +1432,9 @@ namespace TrailsPlugin.Data {
 
                     bool prevCommonStreches = false;
                     IValueRangeSeries<DateTime> commonStretches = null;
-                    if (Settings.DiffUsingCommonStretches && refRes != null && refRes.Activity != null)
+                    if (Settings.DiffUsingCommonStretches && m_cacheTrackRef.Activity != null)
                     {
-                        commonStretches = CommonStretches(refRes.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
+                        commonStretches = CommonStretches(m_cacheTrackRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
                         m_DiffDistTrack0.Add(StartDateTime, 0);
                     }
 
@@ -1502,7 +1511,8 @@ namespace TrailsPlugin.Data {
                                                 prevCommonStreches = false;
                                             }
                                             //Only add if valid estimation
-                                            lastValue = (float)UnitUtil.Distance.ConvertFrom(t.Value - refDist + diffOffset, m_cacheTrackRef.Activity);
+                                            double diff = t.Value - refDist + diffOffset;
+                                            lastValue = (float)UnitUtil.Distance.ConvertFrom(diff, m_cacheTrackRef.Activity);
                                             m_DiffDistTrack0.Add(d1, lastValue);
                                             oldElapsed = (int)elapsed;
                                             prevDist = t.Value;
@@ -1514,9 +1524,17 @@ namespace TrailsPlugin.Data {
                         }
                     }
                     //Add a point last in the track, to show the complete dist in the chart
-                    //Alternatively use speed to extrapolate difference
-                    if (oldElapsed < this.DistanceMetersTrack.TotalElapsedSeconds)
+                    //Alternatively use lastvalue
+                    dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
+                    if (m_cacheTrackRef != this &&
+                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndDateTime, Pauses) &&
+                        (Settings.ResyncDiffAtTrailPoints || this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated) &&
+                            dateTrailPointIndex > 0 &&
+                        dateTrailPointIndex == m_cacheTrackRef.TrailPointDateTime.Count - 1 &&
+                                this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
+                                m_cacheTrackRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                     {
+                        lastValue = (float)(this.m_cacheTrackRef.TrailPointDist0(m_cacheTrackRef)[dateTrailPointIndex] - this.TrailPointDist0(m_cacheTrackRef)[dateTrailPointIndex] + diffOffset);
                         m_DiffDistTrack0.Add(EndDateTime, lastValue);
                     }
                 }

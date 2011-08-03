@@ -364,12 +364,26 @@ namespace TrailsPlugin.UI.Activity {
 
         private void EList_DeleteRow()
         {
-            int i = EList_SelectedRow();
-            if(i>=0)
+            if (EList.Selected.Count > 0 && ((IList<EditTrailRow>)EList.RowData).Count > 0)
             {
-                ((IList<EditTrailRow>)EList.RowData).RemoveAt(i);
-                EList.RowData = (IList<EditTrailRow>)EList.RowData;
-
+                IList selected = EList.Selected;
+                if (selected != null && selected.Count > 0)
+                {
+                    for (int j = selected.Count - 1; j >= 0; j--)
+                    {
+                        IList<EditTrailRow> list = ((IList<EditTrailRow>)EList.RowData);
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            //Only first selected
+                            if (selected[j].Equals(list[i]))
+                            {
+                                ((IList<EditTrailRow>)EList.RowData).RemoveAt(i);
+                                EList.RowData = (IList<EditTrailRow>)EList.RowData;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             EList.Refresh();
         }
@@ -648,13 +662,11 @@ namespace TrailsPlugin.UI.Activity {
             IList<EditTrailRow> result = new List<EditTrailRow>();
             if (EList.Selected.Count == 1)
             {
-                btnDelete.Enabled = true;
                 btnUp.Enabled = true;
                 btnDown.Enabled = true;
             }
             else
             {
-                btnDelete.Enabled = false;
                 btnUp.Enabled = false;
                 btnDown.Enabled = false;
             }
@@ -675,6 +687,11 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
+                btnDelete.Enabled = true;
+            }
+            else
+            {
+                btnDelete.Enabled = false;
             }
             m_layer.SelectedTrailPoints = EditTrailRow.getTrailGPSLocation(result);
         }

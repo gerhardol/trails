@@ -105,6 +105,12 @@ namespace TrailsPlugin.UI.Activity {
             btnDelete.BackgroundImage = CommonIcons.Delete;
             btnDelete.Text = "";
             btnDelete.Enabled = false;
+            btnZUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.ZoomOut16;
+            btnZUp.Text = "";
+            //btnZUp.Enabled = false;
+            btnZDown.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.ZoomIn16;
+            btnZDown.Text = "";
+            //btnZDown.Enabled = false;
             btnUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
             btnUp.Text = "";
             btnUp.Enabled = false;
@@ -141,7 +147,7 @@ namespace TrailsPlugin.UI.Activity {
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             this.lblTrail.Text = Properties.Resources.TrailName;
-            lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + " :";
+            lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + ":";
             this.btnOk.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
             this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
             presentRadius();
@@ -617,6 +623,15 @@ namespace TrailsPlugin.UI.Activity {
             MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_EditRow);
         }
 
+        private void btnZUp_Click(object sender, EventArgs e)
+        {
+            m_layer.ZoomOut();
+        }
+
+        private void btnZDown_Click(object sender, EventArgs e)
+        {
+            m_layer.ZoomIn();
+        }
         private void btnUp_Click(object sender, EventArgs e)
         {
             moveRow(1);

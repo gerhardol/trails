@@ -194,6 +194,15 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
+        public void ZoomIn()
+        {
+            this.MapControl.ZoomIn();
+        }
+        public void ZoomOut()
+        {
+            this.MapControl.ZoomOut();
+        }
+
         public float HighlightRadius
         {
             set

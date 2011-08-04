@@ -90,17 +90,17 @@
             // 
             // Panel
             // 
-            this.Panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Panel.ColumnCount = 6;
             this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.Controls.Add(this.Radius, 1, 1);
             this.Panel.Controls.Add(this.lblTrail, 0, 0);
             this.Panel.Controls.Add(this.TrailName, 1, 0);
@@ -118,6 +118,7 @@
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.Panel.Size = new System.Drawing.Size(390, 271);
             this.Panel.TabIndex = 9;
             // 
@@ -139,7 +140,7 @@
             this.Radius.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.Radius.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.Radius.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.Radius.Size = new System.Drawing.Size(149, 19);
+            this.Radius.Size = new System.Drawing.Size(199, 19);
             this.Radius.TabIndex = 20;
             this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.Radius.LostFocus += new System.EventHandler(this.Radius_LostFocus);
@@ -173,18 +174,14 @@
             this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TrailName.Size = new System.Drawing.Size(149, 19);
+            this.TrailName.Size = new System.Drawing.Size(199, 19);
             this.TrailName.TabIndex = 1;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.TrailName.LostFocus += new System.EventHandler(TrailName_LostFocus);
+            this.TrailName.LostFocus += new System.EventHandler(this.TrailName_LostFocus);
             // 
             // EList
             // 
-            this.EList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.EList.AutoScroll = true;
-            this.EList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.EList.BackColor = System.Drawing.Color.Transparent;
             this.EList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
             this.EList.CheckBoxes = false;
@@ -192,6 +189,7 @@
             this.EList.Controls.Add(this.editBox);
             this.EList.DefaultIndent = 15;
             this.EList.DefaultRowHeight = -1;
+            this.EList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.EList.HeaderRowHeight = 21;
             this.EList.Location = new System.Drawing.Point(3, 53);
             this.EList.MultiSelect = true;
@@ -207,7 +205,7 @@
             this.EList.RowSeparatorLines = true;
             this.EList.ShowLines = false;
             this.EList.ShowPlusMinus = false;
-            this.EList.Size = new System.Drawing.Size(344, 218);
+            this.EList.Size = new System.Drawing.Size(384, 218);
             this.EList.TabIndex = 11;
             this.EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
             this.EList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EList_KeyDown);
@@ -256,7 +254,7 @@
             this.btnAdd.HyperlinkStyle = false;
             this.btnAdd.ImageMargin = 2;
             this.btnAdd.LeftImage = null;
-            this.btnAdd.Location = new System.Drawing.Point(268, 3);
+            this.btnAdd.Location = new System.Drawing.Point(318, 3);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
             this.btnAdd.PushStyle = true;
@@ -279,7 +277,7 @@
             this.btnEdit.HyperlinkStyle = false;
             this.btnEdit.ImageMargin = 2;
             this.btnEdit.LeftImage = null;
-            this.btnEdit.Location = new System.Drawing.Point(293, 3);
+            this.btnEdit.Location = new System.Drawing.Point(343, 3);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
             this.btnEdit.PushStyle = true;
@@ -302,12 +300,12 @@
             this.btnDelete.HyperlinkStyle = false;
             this.btnDelete.ImageMargin = 2;
             this.btnDelete.LeftImage = null;
-            this.btnDelete.Location = new System.Drawing.Point(318, 3);
+            this.btnDelete.Location = new System.Drawing.Point(368, 3);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
             this.btnDelete.PushStyle = true;
             this.btnDelete.RightImage = null;
-            this.btnDelete.Size = new System.Drawing.Size(20, 19);
+            this.btnDelete.Size = new System.Drawing.Size(19, 19);
             this.btnDelete.TabIndex = 13;
             this.btnDelete.Text = "D";
             this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
@@ -325,7 +323,7 @@
             this.btnUp.HyperlinkStyle = false;
             this.btnUp.ImageMargin = 2;
             this.btnUp.LeftImage = null;
-            this.btnUp.Location = new System.Drawing.Point(293, 28);
+            this.btnUp.Location = new System.Drawing.Point(343, 28);
             this.btnUp.Name = "btnUp";
             this.btnUp.Padding = new System.Windows.Forms.Padding(2);
             this.btnUp.PushStyle = true;
@@ -348,7 +346,7 @@
             this.btnDown.HyperlinkStyle = false;
             this.btnDown.ImageMargin = 2;
             this.btnDown.LeftImage = null;
-            this.btnDown.Location = new System.Drawing.Point(318, 28);
+            this.btnDown.Location = new System.Drawing.Point(368, 28);
             this.btnDown.Name = "btnDown";
             this.btnDown.Padding = new System.Windows.Forms.Padding(2);
             this.btnDown.PushStyle = true;
@@ -382,7 +380,7 @@
             this.btnCopy.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnCopy.TextLeftMargin = 2;
             this.btnCopy.TextRightMargin = 2;
-            this.btnCopy.Click += new System.EventHandler(btnCopy_Click);
+            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
             // 
             // btnExport
             // 
@@ -405,7 +403,7 @@
             this.btnExport.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnExport.TextLeftMargin = 2;
             this.btnExport.TextRightMargin = 2;
-            this.btnExport.Click += new System.EventHandler(btnExport_Click);
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // btnRefresh
             // 
@@ -428,7 +426,7 @@
             this.btnRefresh.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnRefresh.TextLeftMargin = 2;
             this.btnRefresh.TextRightMargin = 2;
-            this.btnRefresh.Click += new System.EventHandler(btnRefresh_Click);
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // EditTrail
             // 

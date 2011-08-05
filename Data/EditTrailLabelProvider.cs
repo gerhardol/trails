@@ -41,13 +41,17 @@ namespace TrailsPlugin.Data
             : this(loc)
         {
             m_trailPointIndex = i;
-            if (tr != null)
+            if (tr != null && tr.TrailPointDateTime.Count>0)
             {
+                if (tr.Reverse)
+                {
+                    m_trailPointIndex = tr.TrailPointDateTime.Count - 1 - m_trailPointIndex;
+                }
                 DateTime d = DateTime.MinValue;
                 if (tr.TrailPointDateTime != null &&
-                tr.TrailPointDateTime.Count > i)
+                tr.TrailPointDateTime.Count > m_trailPointIndex && m_trailPointIndex >= 0)
                 {
-                    d = tr.TrailPointDateTime[i];
+                    d = tr.TrailPointDateTime[m_trailPointIndex];
                 }
                 SetDistance(tr, d);
             }

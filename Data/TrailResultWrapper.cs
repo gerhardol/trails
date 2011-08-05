@@ -30,14 +30,14 @@ using ITrailExport;
 namespace TrailsPlugin.Data {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
-        public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
-            : this(activityTrail, null, order, indexes, distDiff)
+        public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
+            : this(activityTrail, null, order, indexes, distDiff, reverse)
         { }
 
-        private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff)
+        private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : base(par, null)
         {
-            base.Element = new TrailResult(activityTrail, order, indexes, distDiff);
+            base.Element = new TrailResult(activityTrail, order, indexes, distDiff, reverse);
             if (par == null)
             {
                 //Children are not created by default

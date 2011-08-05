@@ -391,6 +391,7 @@ namespace TrailsPlugin.Controller
                     t.Clear();
                 }
             }
+            m_referenceTrailResult = null;
         }
         private void NewTrail(Data.Trail trail)
         {

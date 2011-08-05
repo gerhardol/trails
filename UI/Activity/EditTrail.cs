@@ -172,7 +172,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (recalculate || m_trailResult == null)
                 {
                     ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
-                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses);
+                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses, true);
                     if (at.Results.Count > 0)
                     {
                         m_trailResult = at.Results[0];
@@ -180,7 +180,7 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         at.Reset();
-                        at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99);
+                        at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true);
                         if (at.Results.Count > 0)
                         {
                             m_trailResult = at.Results[0];
@@ -200,8 +200,9 @@ namespace TrailsPlugin.UI.Activity {
                     at.Reset();
                 }
                 EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
-                foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+                foreach(EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
                 {
+                    //Note: For reverse results, this is incorrect
                     EList.SetChecked(t, t.TrailGPS.Required);
                 }
             }

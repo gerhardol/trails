@@ -30,6 +30,7 @@ namespace TrailsPlugin.Data {
         private float m_radius;
         private float m_minDistance = 0;
         private int m_maxRequiredMisses = 0;
+        private bool m_biDirectional = false;
 
         private bool m_matchAll = false;
         private bool m_generated = false;
@@ -149,6 +150,18 @@ namespace TrailsPlugin.Data {
             set
             {
                 m_maxRequiredMisses = value;
+            }
+        }
+        //This property is not visible in the GUI
+        public bool Bidirectional
+        {
+            get
+            {
+                return m_biDirectional;
+            }
+            set
+            {
+                m_biDirectional = value;
             }
         }
         public bool IsSplits
@@ -376,6 +389,10 @@ namespace TrailsPlugin.Data {
             {
                 trail.MaxRequiredMisses = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMaxRequiredMisses].Value);
             }
+            if (node.Attributes[xmlTags.sBidirectional] != null)
+            {
+                trail.Bidirectional = XmlConvert.ToBoolean(node.Attributes[xmlTags.sBidirectional].Value);
+            }
             trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
@@ -415,6 +432,12 @@ namespace TrailsPlugin.Data {
                 a.Value = this.MaxRequiredMisses.ToString();
                 trailNode.Attributes.Append(a);
             }
+            if (this.Bidirectional)
+            {
+                a = doc.CreateAttribute(xmlTags.sBidirectional);
+                a.Value = this.Bidirectional.ToString();
+                trailNode.Attributes.Append(a);
+            }
             foreach (TrailGPSLocation point in this.TrailLocations)
             {
                 trailNode.AppendChild(point.ToXml(doc));
@@ -430,6 +453,7 @@ namespace TrailsPlugin.Data {
             public const string sRadius = "radius";
             public const string sMinDistance = "minDistance";
             public const string sMaxRequiredMisses = "maxRequiredMisses";
+            public const string sBidirectional = "bidirectional";
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }
 

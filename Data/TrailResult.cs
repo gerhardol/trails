@@ -35,6 +35,7 @@ namespace TrailsPlugin.Data {
 		private IActivity m_activity;
 		private int m_order;
         private string m_name;
+        private bool m_reverse;
 
         private TrailResult m_parentResult;
         private TrailResultInfo m_childrenInfo;
@@ -97,6 +98,12 @@ namespace TrailsPlugin.Data {
             }
         }
 
+        //reverse not used yet
+        public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
+            : this(activityTrail, null, order, indexes, distDiff)
+        {
+            this.m_reverse = reverse;
+        }
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
             : this(activityTrail, null, order, indexes, distDiff)
         {
@@ -198,7 +205,13 @@ namespace TrailsPlugin.Data {
 				return m_order;
 			}
 		}
-
+        public bool Reverse
+        {
+            get
+            {
+                return m_reverse;
+            }
+        }
         /****************************************************************/
         public TimeSpan Duration
         {

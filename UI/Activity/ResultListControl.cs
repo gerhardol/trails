@@ -863,6 +863,18 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 m_page.RefreshData();
+
+                if (e.Modifiers == Keys.Shift)
+                {
+                    //Test trail detection - not documented
+                    foreach (ActivityTrail to in m_controller.OrderedTrails)
+                    {
+                        if (to.IsInBounds && !to.Trail.Generated)
+                        {
+                            to.CalcResults();
+                        }
+                    }
+                }
             }
             else if (e.KeyCode == Keys.S)
             {

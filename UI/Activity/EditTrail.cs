@@ -183,12 +183,31 @@ namespace TrailsPlugin.UI.Activity {
                         at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true);
                         if (at.Results.Count > 0)
                         {
-                            m_trailResult = at.Results[0];
+                            //The best result is the result with most matches
+                            //forward may be better than reverse, but those should be sorted first anyway
+                            int currMaxRes=-1;
+                            foreach (TrailResult tr in at.Results)
+                            {
+                                int res = 0;
+                                foreach (DateTime d in tr.TrailPointDateTime)
+                                {
+                                    if (d > DateTime.MinValue)
+                                    {
+                                        res++;
+                                    }
+                                }
+                                if (res > currMaxRes)
+                                {
+                                    currMaxRes = res;
+                                    m_trailResult = tr;
+                                }
+                            }
                         }
                         else
                         {
                             if (at.PartialResults.Count > 0)
                             {
+                                //Result is already sorted after no of matches
                                 m_trailResult = at.PartialResults[0];
                             }
                             else

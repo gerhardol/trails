@@ -210,6 +210,10 @@ namespace TrailsPlugin.Data
             {
                 return null;
             }
+            if (radius < 100 && radius > 0)
+            {
+                radius = 100;
+            }
             //Get approx degrees for the radius offset increasing/(decreasing) the bounds
             //The magic numbers are size of a degree at the equator
             //latitude increases about 1% at the poles

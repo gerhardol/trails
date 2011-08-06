@@ -582,8 +582,7 @@ namespace TrailsPlugin.UI.Activity {
             if(!m_hasValues.ContainsKey(yaxis))
             {
                 m_hasValues.Add(yaxis, false);
-                //A diff to itself is not a value - enable replacing
-                //TODO: Change diff to self to show diff to average
+                //Previous check when a diff to itself is not a value - enable replacing
                 //if (!(m_trailResults == null || m_refTrailResult == null ||
                 //    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
                 //    m_trailResults.Count == 1 && m_trailResults[0] == m_refTrailResult))

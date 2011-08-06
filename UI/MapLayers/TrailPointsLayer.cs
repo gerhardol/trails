@@ -107,7 +107,7 @@ namespace TrailsPlugin.UI.MapLayers
                 //Set selected area to include selected points, including radius and some more
                 if (value.Count > 0)
                 {
-                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, 2*this.m_highlightRadius);
+                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, 4*this.m_highlightRadius);
                     this.DoZoom(area);
                     m_SelectedTrailPoints = value;
                 }

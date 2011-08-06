@@ -321,7 +321,12 @@ namespace TrailsPlugin.Data {
                     ILapInfo l = activity.Laps[j];
                     if (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest)
                     {
-                        indexes.Points.Add(new TrailResultPoint(l.StartTime, l.Notes));
+                        string name = l.Notes;
+                        if (string.IsNullOrEmpty(name))
+                        {
+                            name = "#" + (indexes.Points.Count + 1);
+                        }
+                        indexes.Points.Add(new TrailResultPoint(l.StartTime, name));
                         lapActive.Add(!l.Rest);
                     }
                 }
@@ -396,8 +401,7 @@ namespace TrailsPlugin.Data {
             trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
-                if (null == trail.TrailLocations[trail.TrailLocations.Count-1].Name
-                    || trail.TrailLocations[trail.TrailLocations.Count-1].Name.Equals(""))
+                if (string.IsNullOrEmpty(trail.TrailLocations[trail.TrailLocations.Count-1].Name))
                 {
                     //Name the trail points
                     trail.TrailLocations[trail.TrailLocations.Count-1].Name =

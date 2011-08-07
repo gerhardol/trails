@@ -104,8 +104,8 @@
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
             this.LowerSplitContainer.Panel2MinSize = 0;
             this.LowerSplitContainer.Size = new System.Drawing.Size(400, 273);
-            this.LowerSplitContainer.SplitterDistance = 100;
-            this.LowerSplitContainer.SplitterWidth = 1;
+            this.LowerSplitContainer.SplitterDistance = 80;
+            this.LowerSplitContainer.SplitterWidth = 4;
             this.LowerSplitContainer.TabIndex = 18;
             // 
             // ExpandSplitContainer

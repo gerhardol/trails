@@ -206,22 +206,24 @@ namespace TrailsPlugin.UI.Activity {
                 //Set size, to not waste chart
                 int minRows = 2;
                 const int maxRows = 8;
-                int resRows = minRows;
-                int setRows = minRows;
+                int listRows = minRows;
                 if (summaryList.RowData != null)
                 {
-                    resRows = ((IList<TrailResultWrapper>)summaryList.RowData).Count;
+                    listRows = ((IList<TrailResultWrapper>)summaryList.RowData).Count;
                 }
+                int setRows = Math.Max(minRows, listRows);
+                setRows = Math.Min(maxRows, setRows);
+                int displayRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
                 if (summaryList.HorizontalScroll.Enabled)
                 {
-                    minRows++;
+                    //About one row hidden
+                    displayRows--; 
+                    setRows++;
                 }
-                setRows = Math.Max(minRows, resRows);
-                setRows = Math.Min(maxRows, setRows);
-                int currRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
+
                 //Change size if much too small/big only
-                if (resRows + 1 < currRows && setRows < currRows || //wasted space
-                    resRows > currRows && currRows <= maxRows //Too small, increase
+                if (//listRows + 1 < displayRows && setRows < displayRows || //wasted space //disabled decreasing
+                    listRows > displayRows && displayRows <= maxRows //Too small, increase
                     )
                 {
                     m_page.SetResultListHeight = this.summaryList.HeaderRowHeight + 16 +

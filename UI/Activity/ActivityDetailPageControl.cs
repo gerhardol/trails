@@ -138,6 +138,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 RefreshData();
                 RefreshControlState();
+                //RefreshChart();
                 if (value != null && value.Count == 1)
                 {
                     this.ResultList.addCurrentCategoryCheck();
@@ -189,15 +190,22 @@ namespace TrailsPlugin.UI.Activity {
             bool showPage = m_showPage;
             HidePage(); //defer updates
             m_controller.Clear();
+
+            //Initial calculation, to get progressbar
+            System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
+            IList<ActivityTrail> temp = m_controller.GetOrderedTrails(progressBar, false);
+            this.StopProgressBar();
+
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();
-            RefreshRoute(); 
+            RefreshRoute();
             //Charts are refreshed when list is changed, no need for RefreshChart();
             if (showPage)
             {
                 ShowPage("");
             }
         }
+
         public void RefreshChart()
         {
             MultiCharts.RefreshChart();
@@ -209,6 +217,15 @@ namespace TrailsPlugin.UI.Activity {
                 return this.ResultList.SelectedItems;
             }
             //set { this.ResultList.SelectedItems = value; }
+        }
+
+        public System.Windows.Forms.ProgressBar StartProgressBar(int val)
+        {
+            return ResultList.StartProgressBar(val);
+        }
+        public void StopProgressBar()
+        {
+            ResultList.StopProgressBar();
         }
 
         private void RefreshRoute()

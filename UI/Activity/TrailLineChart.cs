@@ -1032,9 +1032,9 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_YAxisReferentials = value;
                 m_axis = new Dictionary<LineChartTypes, IAxis>();
-
             }
         }
+
         public bool MultipleCharts
         {
             get

@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             this.SummaryPanel = new System.Windows.Forms.Panel();
             this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,6 +49,7 @@
             this.SummaryPanel.AutoSize = true;
             this.SummaryPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.SummaryPanel.Controls.Add(this.summaryList);
+            this.SummaryPanel.Controls.Add(this.progressBar);
             this.SummaryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SummaryPanel.Location = new System.Drawing.Point(0, 0);
             this.SummaryPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -93,6 +95,16 @@
             //this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.summaryList_MouseDoubleClick);
             this.summaryList.MouseMove +=new System.Windows.Forms.MouseEventHandler(summaryList_MouseMove);
             this.summaryList.KeyDown +=new System.Windows.Forms.KeyEventHandler(summaryList_KeyDown);
+            // 
+            // progressBar
+            // 
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar.Location = new System.Drawing.Point(0, 0);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(391, 24);
+            this.progressBar.TabIndex = 2;
+            this.progressBar.Visible = false;
             // 
             // listMenu
             // 
@@ -216,7 +228,8 @@
 
         private System.Windows.Forms.Panel SummaryPanel;
 		private ZoneFiveSoftware.Common.Visuals.TreeList summaryList;
-		private System.Windows.Forms.ContextMenuStrip listMenu;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.ContextMenuStrip listMenu;
         private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;
         private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;

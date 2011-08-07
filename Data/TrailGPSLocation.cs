@@ -288,7 +288,7 @@ namespace TrailsPlugin.Data
                 }
             }
 
-            if (valid > 0)
+            if (valid == 0)
             {
                 switch (subItemSelected)
                 {

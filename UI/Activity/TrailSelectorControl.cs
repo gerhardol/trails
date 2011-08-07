@@ -42,8 +42,10 @@ using TrailsPlugin.UI.MapLayers;
 using TrailsPlugin.Data;
 using TrailsPlugin.Controller;
 
-namespace TrailsPlugin.UI.Activity {
-	public partial class TrailSelectorControl : UserControl {
+namespace TrailsPlugin.UI.Activity
+{
+	public partial class TrailSelectorControl : UserControl
+    {
 
         private ITheme m_visualTheme;
         private CultureInfo m_culture;
@@ -431,20 +433,14 @@ namespace TrailsPlugin.UI.Activity {
             treeListPopup.ThemeChanged(m_visualTheme);
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-            treeListPopup.Tree.RowData = m_controller.OrderedTrails;
+            System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
+            treeListPopup.Tree.RowData = m_controller.GetOrderedTrails(progressBar, false);
+            m_page.StopProgressBar();
             //Note: Just checking for current trail could modify the ordered list, so do this first
             System.Collections.IList currSel = null;
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 currSel = new object[] { m_controller.CurrentActivityTrailDisplayed };
-            //    foreach (TrailOrdered to in m_controller.OrderedTrails)
-            //    {
-            //        if (m_controller.CurrentActivityTrail.Equals(to.activityTrail))
-            //        {
-            //            currSel = new object[] { to };
-            //            break;
-            //        }
-            //    }
             }
 #if ST_2_1
             treeListPopup.Tree.Selected = currSel;
@@ -459,13 +455,16 @@ namespace TrailsPlugin.UI.Activity {
 
         /*******************************************************/
 
-		private void TrailName_ItemSelected(object sender, EventArgs e) {
+		private void TrailName_ItemSelected(object sender, EventArgs e)
+        {
             ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
             if(sender is TreeListPopup)
             {
                 ((TreeListPopup)sender).Hide();
             }
-			m_controller.CurrentActivityTrail = t;
+            System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
+            m_controller.SetCurrentActivityTrail(t, progressBar);
+            m_page.StopProgressBar();
             m_page.RefreshData();
             m_page.RefreshControlState();
 

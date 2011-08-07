@@ -164,7 +164,7 @@ namespace TrailsPlugin.Data
                     }
                 default:
                     {
-                        Debug.Assert(false);
+                        //Debug.Assert(false);
                         break;
                     }
             }

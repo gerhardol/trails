@@ -27,7 +27,8 @@ using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
 
-namespace TrailsPlugin.Data {
+namespace TrailsPlugin.Data
+{
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
         public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
@@ -192,5 +193,10 @@ namespace TrailsPlugin.Data {
             }
         }
         #endregion
+
+        public override string ToString()
+        {
+            return (this.Result != null ? this.Result.ToString() : "");
+        }
     }
 }

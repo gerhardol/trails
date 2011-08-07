@@ -84,6 +84,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             summaryList.LabelProvider = new TrailResultLabelProvider();
+            this.progressBar.Visible = false;
 
             this.selectWithURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
@@ -286,7 +287,8 @@ namespace TrailsPlugin.UI.Activity {
 
         public IList<TrailResult> SelectedItems
         {
-            get {
+            get
+            {
                 return TrailResultWrapper.GetTrailResults(SelectedItemsWrapper);
             }
         }
@@ -302,6 +304,23 @@ namespace TrailsPlugin.UI.Activity {
                 summaryList.EnsureVisible(atr[0]);
             }
         }
+
+        public System.Windows.Forms.ProgressBar StartProgressBar(int val)
+        {
+            this.summaryList.Visible = false;
+            this.progressBar.Value = 0;
+            this.progressBar.Minimum = 0;
+            this.progressBar.Maximum = val;
+            this.progressBar.Visible = true;
+            this.progressBar.BringToFront();
+            return this.progressBar;
+        }
+        public void StopProgressBar()
+        {
+            this.summaryList.Visible = true;
+            this.progressBar.Visible = false;
+        }
+
         /*********************************************************/
         public static TrailResult getTrailResultRow(object element)
         {
@@ -482,17 +501,19 @@ namespace TrailsPlugin.UI.Activity {
                 try
                 {
                     IList<IActivity> similarActivities = null;
+                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(1); 
                     if (m_controller.ReferenceTrailResult != null &&
                         m_controller.ReferenceTrailResult.GPSRoute != null)
                     {
                         similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                           m_controller.ReferenceTrailResult.GPSRoute, null, null);
+                           m_controller.ReferenceTrailResult.GPSRoute, null, progressBar);
                     }
                     else if (m_controller.ReferenceActivity != null)
                     {
                         similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                           m_controller.ReferenceActivity.GPSRoute, null, null);
+                           m_controller.ReferenceActivity.GPSRoute, null, progressBar);
                     }
+                    StopProgressBar();
                     if (similarActivities != null)
                     {
                         IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
@@ -532,8 +553,9 @@ namespace TrailsPlugin.UI.Activity {
                         activities.Add(t.Result.Activity);
                     }
                 }
+                System.Windows.Forms.ProgressBar progressBar = StartProgressBar(activities.Count);
                 IList<TrailResultMarked> aTrm = new List<TrailResultMarked>();
-                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = TrailResult.CommonStretches(m_controller.ReferenceActivity, activities, null);
+                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches = TrailResult.CommonStretches(m_controller.ReferenceActivity, activities, progressBar);
                 if (commonStretches != null && commonStretches.Count > 0)
                 {
                     foreach (TrailResult tr in this.SelectedItems)
@@ -546,6 +568,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
+                StopProgressBar();
                 m_page.MarkTrack(aTrm);
                 m_page.SetSelectedRegions(aTrm);
             }
@@ -854,26 +877,18 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
-                //m_controller.Reset();
-                if (m_controller.OrderedTrails != null)
-                {
-                    foreach (ActivityTrail t in m_controller.OrderedTrails)
-                    {
-                        t.Reset();
-                    }
-                }
-                m_page.RefreshData();
+                m_controller.Reset(false);
 
-                if (e.Modifiers == Keys.Shift)
+                if (e.Modifiers != Keys.Shift)
                 {
+                    m_page.RefreshData();
+                }
+                else
+                {
+                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
                     //Test trail detection - not documented
-                    foreach (ActivityTrail to in m_controller.OrderedTrails)
-                    {
-                        if (to.IsInBounds && !to.Trail.Generated)
-                        {
-                            to.CalcResults();
-                        }
-                    }
+                    IList<ActivityTrail> temp = m_controller.GetOrderedTrails(progressBar, true);
+                    StopProgressBar();
                 }
             }
             else if (e.KeyCode == Keys.S)
@@ -1056,9 +1071,11 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_controller.CurrentActivityTrail != null)
             {
-                m_controller.CurrentActivityTrail.AddInBoundResult();
+                System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(1);
+                m_controller.CurrentActivityTrail.AddInBoundResult(progressBar);
                 m_page.RefreshData();
                 m_page.RefreshControlState();
+                this.StopProgressBar();
             }
         }
 
@@ -1078,9 +1095,10 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             try
             {
+                System.Windows.Forms.ProgressBar progressBar = StartProgressBar(1);
                 IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                    m_controller.ReferenceActivity, m_controller.Activities, null);
-
+                    m_controller.ReferenceActivity, m_controller.Activities, progressBar);
+                StopProgressBar();
                 if (similarActivities != null)
                 {
                     IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };

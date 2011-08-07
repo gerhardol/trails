@@ -1898,13 +1898,14 @@ namespace TrailsPlugin.Data {
             public IList<TrailResult> res = new List<TrailResult>();
             public Color activityColor = getColor(0);
         }
+
         private static IDictionary<IActivity, trActivityInfo> s_activities = new Dictionary<IActivity, trActivityInfo>();
-        public static IList<TrailResult> TrailResultList(IActivity activity)
-        {
-            trActivityInfo t = new trActivityInfo();
-            s_activities.TryGetValue(activity, out t);
-            return t.res;
-        }
+        //public static IList<TrailResult> TrailResultList(IActivity activity)
+        //{
+        //    trActivityInfo t = new trActivityInfo();
+        //    s_activities.TryGetValue(activity, out t);
+        //    return t.res;
+        //}
         public static void Reset()
         {
             nextTrailColor = 1;
@@ -2087,5 +2088,10 @@ namespace TrailsPlugin.Data {
             return TrailResultColumnIds.Compare(this, other);
         }
         #endregion
+
+        public override string ToString()
+        {
+            return (this.m_startTime != null ? m_startTime.ToString() : "") + " " + this.TrailPointDateTime[0].ToShortTimeString() + " " + this.TrailPointDateTime.Count;
+        }
     }
 }

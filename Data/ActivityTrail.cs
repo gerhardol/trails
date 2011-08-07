@@ -34,7 +34,7 @@ namespace TrailsPlugin.Data
         private TrailOrderStatus m_status;
         private IActivity m_resultActivity = null; //Used for ReferenceActivity results only
 
-        private IList<IncompleteTrailResult> m_partialResults;
+        private IList<IncompleteTrailResult> m_incompleteResults;
         //Counter for "no results"
         public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
         private IList<IActivity> m_inBound = new List<IActivity>();
@@ -176,10 +176,15 @@ namespace TrailsPlugin.Data
                 return m_canAddInbound;
             }
         }
-        public void AddInBoundResult()
+        public void AddInBoundResult(System.Windows.Forms.ProgressBar progressBar)
         {
-            CalcResults();
+            CalcResults(progressBar);
             m_canAddInbound = false;
+            if (null != progressBar)
+            {
+                progressBar.Value = 0;
+                progressBar.Maximum = m_inBound.Count;
+            }
             foreach (IActivity activity in m_inBound)
             {
                 //No GPS check: Must have been done when adding to inbound list
@@ -187,19 +192,27 @@ namespace TrailsPlugin.Data
                 m_resultsListWrapper.Add(result);
                 //add children
                 result.getSplits();
+                if (null != progressBar)
+                {
+                    progressBar.Value++;
+                }
             }
         }
 
         public void CalcResults()
         {
-            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional);
+            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional, null);
         }
-        public void CalcResults(IList<IActivity> activities, int MaxRequiredMisses, bool bidirectional)
+        public void CalcResults(System.Windows.Forms.ProgressBar progressBar)
+        {
+            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional, progressBar);
+        }
+        public void CalcResults(IList<IActivity> activities, int MaxRequiredMisses, bool bidirectional, System.Windows.Forms.ProgressBar progressBar)
         {
             if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
             {
                 m_resultsListWrapper = new List<TrailResultWrapper>();
-                m_partialResults = new List<IncompleteTrailResult>();
+                m_incompleteResults = new List<IncompleteTrailResult>();
 
                 m_resultActivity = m_trail.ReferenceActivity;
 
@@ -207,15 +220,28 @@ namespace TrailsPlugin.Data
                 {
                     if (Integration.HighScore.HighScoreIntegrationEnabled)
                     {
-                        IList<Integration.HighScore.HighScoreResult> res = Integration.HighScore.GetHighScoreForActivity(activities, null);
+                        int HighScoreProgressVal = 0;
+                        int HighScoreProgressMax = 0;
+                        if (null != progressBar)
+                        {
+                            //Set by HighScore before 2.0.327
+                            HighScoreProgressVal = progressBar.Value;
+                            HighScoreProgressMax = progressBar.Maximum;
+                        }
+                        IList<Integration.HighScore.HighScoreResult> res = Integration.HighScore.GetHighScoreForActivity(activities, progressBar);
                         if (res != null && res.Count > 0)
                         {
-                            foreach (Integration.HighScore.HighScoreResult h in Integration.HighScore.GetHighScoreForActivity(activities, null))
+                            foreach (Integration.HighScore.HighScoreResult h in res)
                             {
                                 this.Status = TrailOrderStatus.Match;
                                 TrailResultWrapper result = new TrailResultWrapper(this, h.activity, h.selInfo, h.tooltip, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
                             }
+                        }
+                        if (null != progressBar)
+                        {
+                            progressBar.Maximum = HighScoreProgressMax;
+                            progressBar.Value = HighScoreProgressVal + activities.Count;
                         }
                     }
                 }
@@ -244,7 +270,7 @@ namespace TrailsPlugin.Data
                                 //As this is currently used when adding is used only for EditTrail, no concern
                                 if((inBound || MaxRequiredMisses>0) && activity.GPSRoute != null)
                                 {
-                                    CalcInboundResults(activity,  trailgps, MaxRequiredMisses, false);
+                                    CalcInboundResults(activity,  trailgps, MaxRequiredMisses, false, progressBar);
                                     if (bidirectional)
                                     {
                                         IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
@@ -252,11 +278,15 @@ namespace TrailsPlugin.Data
                                         {
                                             trailgpsReverse.Add(trailgps[i]);
                                         }
-                                        CalcInboundResults(activity, trailgpsReverse, MaxRequiredMisses, true);
+                                        CalcInboundResults(activity, trailgpsReverse, MaxRequiredMisses, true, progressBar);
                                     }
                                 }
                                 //NotInBound is pruned prior to this
                             }
+                        }
+                        if (null != progressBar)
+                        {
+                            progressBar.Value++;
                         }
                     }
                     //children
@@ -274,7 +304,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        private void CalcInboundResults(IActivity activity, IList<TrailGPSLocation> trailgps, int MaxRequiredMisses, bool reverse)
+        private void CalcInboundResults(IActivity activity, IList<TrailGPSLocation> trailgps, int MaxRequiredMisses, bool reverse, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<TrailResultPointMeta> resultPoints = new List<TrailResultPointMeta>();
 
@@ -382,9 +412,11 @@ namespace TrailsPlugin.Data
                 {
                     matchIndex = routeIndex;
                     matchDist = routeDist;
+                    //Get best matching point
                     {
-                        //This is a match, but points following may be better
+                        //matchIndex is a match, but points following may be better
                         //Go thourough the points while we are in the radius
+                        //(for last point we break, next may follow directly) 
                         float prevRouteDist = routeDist;
                         float distHysteresis = Math.Max(this.Trail.Radius / 30, 5);
                         float localMaxDist = 0;
@@ -453,7 +485,9 @@ namespace TrailsPlugin.Data
                         }
                     }
 
+                    //The last indexes matching in radius
                     lastMatchInRadiusIndex = routeIndex;
+                    lastMatchPassByIndex = routeIndex + 1;
 
                     //Get the time closest to the track
                     float factor1 = -1, factor2 = -1;
@@ -500,10 +534,9 @@ out dist2);
 
                 ///////////
                 //Check for pass-by
-                //Setting a limit here like (routeDist < 10*this.Trail.Radius) will improve detection very slightly
-                //This handling is very sensitive, especially for single point trails
-                //The second point was previously ignored here if (trailgps.Count > 1 || resultPoints.Count > 0)
-                else
+                //Setting a limit here like (routeDist < 10*this.Trail.Radius) will improve detection time very slightly
+                //This handling is very sensitive, especially for single point trails, the reason for the check
+                else if (trailgps.Count > 1 || resultPoints.Count == 0 || routeIndex > resultPoints[resultPoints.Count - 1].matchPassBy)
                 {
                     if (prevPoint.index < 0 || routeIndex - prevPoint.index != 1)
                     {
@@ -634,9 +667,9 @@ out dist2);
                         }
                         else if (!reverse && noOfMatches > 0)
                         {
-                            //Reverse matches with one point will be the same as forward match
+                            //Reverse matches with one point will be the same as forward match, ignore
                             IncompleteTrailResult result = new IncompleteTrailResult(activity, resultPoints, reverse);
-                            m_partialResults.Add(result);
+                            m_incompleteResults.Add(result);
                             prevActivityMatchIndex = getPrevMatchIndex(resultPoints);
                         }
                         else
@@ -649,7 +682,7 @@ out dist2);
                         currRequiredMisses = 0;
                         resultPoints.Clear();
                     }
-                    else if (matchTime != null)
+                    else if (matchTime != DateTime.MinValue)
                     {
                         //Not end point, but at least one point match
                         Status = TrailOrderStatus.InBoundMatchPartial;
@@ -732,6 +765,7 @@ out dist2);
                 ///////////////////////////////////////
             } //foreach gps point
 
+            ///////////////////////////////////////
             //Update "no result counters"
             {
                 //InBoundMatchPartial updated for all incomplete results
@@ -748,7 +782,7 @@ out dist2);
                 if (noOfMatches > 0 && !reverse || noOfMatches > 1)
                 {
                     IncompleteTrailResult result = new IncompleteTrailResult(activity, resultPoints, reverse);
-                    m_partialResults.Add(result);
+                    m_incompleteResults.Add(result);
 
                     newStatus = TrailOrderStatus.InBoundMatchPartial;
                 }
@@ -918,13 +952,13 @@ out dist2);
         }
 
         ///////////////
-        public IList<TrailResult> PartialResults
+        public IList<TrailResult> IncompleteResults
         {
             get
             {
                 IList<TrailResult> result = new List<TrailResult>();
-                ((List<IncompleteTrailResult>)m_partialResults).Sort();
-                foreach (IncompleteTrailResult t in m_partialResults)
+                ((List<IncompleteTrailResult>)m_incompleteResults).Sort();
+                foreach (IncompleteTrailResult t in m_incompleteResults)
                 {
                     TrailResultInfo resultInfo = new TrailResultInfo(t.Activity);
                     float distDiff = 0;
@@ -1009,7 +1043,7 @@ out dist2);
             {
                 //Sort generated trails as Reference, Splits, HighScore
                 //If this is changed, consider changing checkCurrentTrailOrdered() so not the trail always follows the generated trail
-                //(Splits could be before Ref but his will increase resonse time with many activities)
+                //(Splits could be before Ref but his will increase response time with many activities)
                 if (this.Trail.IsReference)
                 {
                     return -1;
@@ -1033,7 +1067,7 @@ out dist2);
         }
         #endregion
 
-        class PointInfo
+        internal class PointInfo
         {
             public PointInfo(int index, float dist)
             {
@@ -1044,7 +1078,7 @@ out dist2);
             public float dist;
         }
 
-        class IncompleteTrailResult : IComparable
+        internal class IncompleteTrailResult : IComparable
         {
             //Save some info for incomplete matches, calculate TrailResults if needed
             public IncompleteTrailResult(IActivity activity, IList<TrailResultPointMeta> Points, bool reverse)
@@ -1079,7 +1113,7 @@ out dist2);
                 return 0;
             }
         }
-        class TrailResultPointMeta : TrailResultPoint
+        internal class TrailResultPointMeta : TrailResultPoint
         {
             public TrailResultPointMeta(DateTime time, string name,
                 int index, int lastMatchInRadius, int lastMatchPassBy, float trailDist) :
@@ -1095,6 +1129,11 @@ out dist2);
             public int matchPassBy;
             public bool restart;
             public float trailDistDiff;
+        }
+
+        public override string ToString()
+        {
+            return (new TrailDropdownLabelProvider()).GetText(this, null) + ": " + this.Status.ToString();
         }
     }
 

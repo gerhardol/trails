@@ -250,6 +250,8 @@ namespace TrailsPlugin.UI.Activity {
                     diffYaxis = LineChartTypes.DiffTime;
                 }
 
+                bool isData = m_controller.CurrentActivityTrailDisplayed != null;
+
                 m_multiChart.YAxisReferentials=new List<LineChartTypes>();
                 multiChart.ShowPage = false;
                 //TODO: Temporary handling. Cleanup and decide multiple graphs and charts
@@ -264,7 +266,10 @@ namespace TrailsPlugin.UI.Activity {
                     //m_multiChart.ShowPage = false;
                     m_multiChart.XAxisReferential = Data.Settings.XAxisValue;
                     IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                    m_multiChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                    if (isData)
+                    {
+                        m_multiChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
+                    }
                     m_multiChart.TrailResults = list;
                     foreach (LineChartTypes t in Data.Settings.MultiChartType)
                     {
@@ -320,7 +325,7 @@ namespace TrailsPlugin.UI.Activity {
                         updateChart = chart;
                         updateChart.BeginUpdate();
                         chart.ShowPage = false;
-                        if (visible)
+                        if (visible && isData)
                         {
                             updateChart.XAxisReferential = Data.Settings.XAxisValue;
                             IList<Data.TrailResult> list = this.m_page.SelectedItems;

@@ -172,7 +172,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (recalculate || m_trailResult == null)
                 {
                     ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
-                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses, true);
+                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses, true, null);
                     if (at.Results.Count > 0)
                     {
                         m_trailResult = at.Results[0];
@@ -180,7 +180,7 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         at.Reset();
-                        at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true);
+                        at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true, null);
                         if (at.Results.Count > 0)
                         {
                             //The best result is the result with most matches
@@ -205,10 +205,10 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            if (at.PartialResults.Count > 0)
+                            if (at.IncompleteResults.Count > 0)
                             {
                                 //Result is already sorted after no of matches
-                                m_trailResult = at.PartialResults[0];
+                                m_trailResult = at.IncompleteResults[0];
                             }
                             else
                             {

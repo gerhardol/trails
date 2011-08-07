@@ -513,6 +513,10 @@ namespace TrailsPlugin.Data {
             }
             return a2.Contains(this.GpsBounds);
 		}
+        public override string ToString()
+        {
+            return this.Name.ToString() + " " + this.m_gpsBounds + " " + this.m_trailLocations.Count;
+        }
 	}
 }
 

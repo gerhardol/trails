@@ -126,7 +126,11 @@ namespace TrailsPlugin.Controller
                 {
                     m_currentActivityTrail = to;
                     //Trigger result recalculation if needed
-                    progressBar.Maximum = progressBar.Value + this.Activities.Count;
+                    if (progressBar != null)
+                    {
+                        progressBar.Value = 0;
+                        progressBar.Maximum = this.Activities.Count;
+                    }
                     to.CalcResults(progressBar);
                     break;
                 }

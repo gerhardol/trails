@@ -216,6 +216,10 @@ namespace TrailsPlugin.Data
 
                 m_resultActivity = m_trail.ReferenceActivity;
 
+                if (null != progressBar && progressBar.Maximum < progressBar.Value + activities.Count)
+                {
+                    progressBar.Maximum = activities.Count + progressBar.Value;
+                }
                 if (m_trail.HighScore > 0)
                 {
                     if (Integration.HighScore.HighScoreIntegrationEnabled)
@@ -264,7 +268,10 @@ namespace TrailsPlugin.Data
                                 if (m_trail.IsInBounds(new List<IActivity> { activity }))
                                 {
                                     inBound = true;
-                                    m_inBound.Add(activity);
+                                    if (!m_inBound.Contains(activity))
+                                    {
+                                        m_inBound.Add(activity);
+                                    }
                                 }
                                 //TODO: optimize prune (Intersect()) if MaxReq is set, to see that at least one point matches
                                 //As this is currently used when adding is used only for EditTrail, no concern

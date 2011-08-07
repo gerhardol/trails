@@ -185,7 +185,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             //The best result is the result with most matches
                             //forward may be better than reverse, but those should be sorted first anyway
-                            int currMaxRes=-1;
+                            int currMaxRes = -1;
                             foreach (TrailResult tr in at.Results)
                             {
                                 int res = 0;
@@ -218,15 +218,14 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     at.Reset();
                 }
-                EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
-                foreach(EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
-                {
-                    //Note: For reverse results, this is incorrect
-                    EList.SetChecked(t, t.TrailGPS.Required);
-                }
             }
-        }
-        
+            EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
+            foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+            {
+                //Note: For reverse results, this is incorrect
+                EList.SetChecked(t, t.TrailGPS.Required);
+            }
+        }        
         ///////////////////////////
         private void btnCancel_Click(object sender, System.EventArgs e)
         {

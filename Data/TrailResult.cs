@@ -661,36 +661,35 @@ namespace TrailsPlugin.Data {
                                     m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, upper));
                                 }
                             }
-                            //TODO: Add setting for non-required is pause
-                            if (true)
+                        }
+                        if (Settings.RestIsPause)
+                        {
+                            IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
+                            if (m_activityTrail.Trail.IsSplits)
                             {
-                                IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                                if (m_activityTrail.Trail.IsSplits)
+                                trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
+                            }
+                            for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
+                            {
+                                if (i < trailLocations.Count &&
+                                    !trailLocations[i].Required &&
+                                    this.TrailPointDateTime[i] > DateTime.MinValue)
                                 {
-                                    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
-                                }
-                                for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
-                                {
-                                    if (i < trailLocations.Count &&
-                                        !trailLocations[i].Required &&
+                                    DateTime lower = this.TrailPointDateTime[i];
+                                    DateTime upper = this.EndDateTime;
+                                    while (i < this.TrailPointDateTime.Count &&
+                                        i < trailLocations.Count &&
+                                        (!trailLocations[i].Required ||
+                                        this.TrailPointDateTime[i] == DateTime.MinValue))
+                                    {
+                                        i++;
+                                    }
+                                    if (i < this.TrailPointDateTime.Count &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                     {
-                                        DateTime lower = this.TrailPointDateTime[i];
-                                        DateTime upper = this.EndDateTime;
-                                        while (i < this.TrailPointDateTime.Count &&
-                                            i < trailLocations.Count &&
-                                            (!trailLocations[i].Required ||
-                                            this.TrailPointDateTime[i] == DateTime.MinValue))
-                                        {
-                                            i++;
-                                        }
-                                        if (i < this.TrailPointDateTime.Count &&
-                                            this.TrailPointDateTime[i] > DateTime.MinValue)
-                                        {
-                                            upper = this.TrailPointDateTime[i];
-                                        }
-                                        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                                        upper = this.TrailPointDateTime[i];
                                     }
+                                    m_pauses.Add(new ValueRange<DateTime>(lower, upper));
                                 }
                             }
                         }

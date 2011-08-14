@@ -832,7 +832,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     selectAll();
                 }
-                else 
+                else
                 {
                     if (e.Modifiers == Keys.Shift)
                     {
@@ -864,6 +864,18 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.I)
             {
                 addCurrentCategory(e.Modifiers == Keys.Shift);
+            }
+            else if (e.KeyCode == Keys.N)
+            {
+                if (e.Modifiers == Keys.Shift)
+                {
+                    TrailsPlugin.Data.Settings.NonReqIsPause = false;
+                }
+                else
+                {
+                    TrailsPlugin.Data.Settings.NonReqIsPause = true;
+                }
+                m_page.RefreshData();
             }
             else if (e.KeyCode == Keys.O)
             {

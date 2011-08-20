@@ -217,7 +217,6 @@ namespace TrailsPlugin.Data
         public static IList<IList<IGPSPoint>> GpsPoints(IGPSRoute gpsRoute, IValueRangeSeries<DateTime> pauses, IValueRangeSeries<DateTime> t)
         {
             IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
-            bool newTrackAtPause = false;
             int pauseIndex = 0;
             int prevPauseIndex = pauseIndex;
 
@@ -225,7 +224,7 @@ namespace TrailsPlugin.Data
             {
                 foreach (IValueRange<DateTime> r in t)
                 {
-                    IList<IGPSPoint> track = new List<IGPSPoint>();
+                    IList<IGPSPoint> track = null;
                     foreach (ITimeValueEntry<IGPSPoint> entry in gpsRoute)
                     {
                         DateTime time = gpsRoute.EntryDateTime(entry);
@@ -240,27 +239,41 @@ namespace TrailsPlugin.Data
                             }
                         }
 
-                        if (newTrackAtPause && (isPause || prevPauseIndex != pauseIndex))
+                        if (track!=null && (isPause || prevPauseIndex != pauseIndex))
                         {
+                            if (r.Upper >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Upper <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]))
+                            {
+                                track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
+                            }
                             result.Add(track);
-                            track = new List<IGPSPoint>();
-                            newTrackAtPause = false;
+                            track = null;
                         }
                         prevPauseIndex = pauseIndex;
 
                         if (r.Lower <= time && time <= r.Upper && !isPause)
                         {
+                            if (track == null)
+                            {
+                                track = new List<IGPSPoint>();
+                                if (r.Lower >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Lower <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]))
+                                {
+                                    track.Add(gpsRoute.GetInterpolatedValue(r.Lower).Value);
+                                }
+                            }
                             track.Add(entry.Value);
-                            //If there is a a pause, add new track
-                            newTrackAtPause = true;
+                            //If there is a pause, add new track
                         }
                         if (time > r.Upper)
                         {
                             break;
                         }
                     }
-                    if (track.Count > 0)
+                    if (track!=null)
                     {
+                        if (r.Upper >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Upper <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]))
+                        {
+                            track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
+                        }
                         result.Add(track);
                     }
                 }

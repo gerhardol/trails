@@ -217,11 +217,12 @@ namespace TrailsPlugin.Data
         public static IList<IList<IGPSPoint>> GpsPoints(IGPSRoute gpsRoute, IValueRangeSeries<DateTime> pauses, IValueRangeSeries<DateTime> t)
         {
             IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
-            int pauseIndex = 0;
-            int prevPauseIndex = pauseIndex;
 
             if (t != null)
             {
+                int pauseIndex = 0;
+                int prevPauseIndex = -1;
+
                 foreach (IValueRange<DateTime> r in t)
                 {
                     IList<IGPSPoint> track = null;
@@ -241,23 +242,25 @@ namespace TrailsPlugin.Data
 
                         if (track!=null && (isPause || prevPauseIndex != pauseIndex))
                         {
+                            //previous point was the end of a track
                             if (r.Upper >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Upper <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]))
                             {
-                                track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
+                                //track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
                             }
                             result.Add(track);
                             track = null;
                         }
-                        prevPauseIndex = pauseIndex;
 
-                        if (r.Lower <= time && time <= r.Upper && !isPause)
+                        if (!isPause && r.Lower <= time && time <= r.Upper)
                         {
                             if (track == null)
                             {
                                 track = new List<IGPSPoint>();
-                                if (r.Lower >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Lower <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]))
+                                if (prevPauseIndex != pauseIndex && r.Lower != time &&
+                                    (r.Lower >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Lower <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1])))
                                 {
-                                    track.Add(gpsRoute.GetInterpolatedValue(r.Lower).Value);
+                                    //This it not always correct, the point can be added twice. Should be pause or time...
+                                    //track.Add(gpsRoute.GetInterpolatedValue(r.Lower).Value);
                                 }
                             }
                             track.Add(entry.Value);
@@ -267,12 +270,13 @@ namespace TrailsPlugin.Data
                         {
                             break;
                         }
+                        prevPauseIndex = pauseIndex;
                     }
                     if (track!=null)
                     {
                         if (r.Upper >= gpsRoute.EntryDateTime(gpsRoute[0]) && r.Upper <= gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]))
                         {
-                            track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
+                            //track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
                         }
                         result.Add(track);
                     }

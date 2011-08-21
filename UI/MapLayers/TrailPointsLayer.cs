@@ -65,12 +65,15 @@ namespace TrailsPlugin.UI.MapLayers
         private static TrailPointsLayer InstanceBase(IView view, int zorder)
         {
             TrailPointsLayer result = null;
-            string key = view.Id.ToString()+zorder;
-            if (view != null && m_layers != null && m_layers.ContainsKey(key))
+            if (view != null && m_layers != null)
             {
-                result = m_layers[key];
+                string key = view.Id.ToString() + zorder;
+                if (m_layers.ContainsKey(key))
+                {
+                    result = m_layers[key];
+                }
             }
-            else if (m_layers.Count > 0)
+            if (result == null && m_layers.Count > 0)
             {
                 foreach (TrailPointsLayer l in m_layers.Values)
                 {

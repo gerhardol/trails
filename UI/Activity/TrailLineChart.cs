@@ -840,45 +840,48 @@ namespace TrailsPlugin.UI.Activity {
                     refElapsed = ReferenceTrailResult.TrailPointDist0(ReferenceTrailResult);
                 }
 
-                if (elapsedIsRef)
+                if (trElapsed.Count == refElapsed.Count)
                 {
-                    while (currOffsetIndex < refElapsed.Count - 1 && elapsed >= refElapsed[currOffsetIndex + 1])
+                    if (elapsedIsRef)
                     {
-                        currOffsetIndex++;
+                        while (currOffsetIndex < refElapsed.Count - 1 && elapsed >= refElapsed[currOffsetIndex + 1])
+                        {
+                            currOffsetIndex++;
+                        }
+                        if (currOffsetIndex < trElapsed.Count - 1)
+                        {
+                            nextElapsed = (float)trElapsed[currOffsetIndex + 1];
+                        }
                     }
-                    if (currOffsetIndex < trElapsed.Count - 1)
+                    else
                     {
-                        nextElapsed = (float)trElapsed[currOffsetIndex + 1];
+                        while (currOffsetIndex < trElapsed.Count - 1 &&
+                            //compare must be using same type here to avoid end effects
+                            elapsed > (float)trElapsed[currOffsetIndex + 1])
+                        {
+                            currOffsetIndex++;
+                        }
+                        if (currOffsetIndex < refElapsed.Count - 1)
+                        {
+                            nextElapsed = (float)refElapsed[currOffsetIndex + 1];
+                        }
                     }
-                }
-                else
-                {
-                    while (currOffsetIndex < trElapsed.Count - 1 &&
-                        //compare must be using same type here to avoid end effects
-                        elapsed > (float)trElapsed[currOffsetIndex + 1])
+                    if (currOffsetIndex > 1)
                     {
-                        currOffsetIndex++;
                     }
-                    if (currOffsetIndex < refElapsed.Count - 1)
+                    float startOffset;
+                    if (currOffsetIndex < trOffset.Count)
                     {
-                        nextElapsed = (float)refElapsed[currOffsetIndex + 1];
+                        startOffset = (float)trOffset[currOffsetIndex];
                     }
-                }
-                if (currOffsetIndex > 1)
-                {
-                }
-                float startOffset;
-                if (currOffsetIndex < trOffset.Count)
-                {
-                    startOffset = (float)trOffset[currOffsetIndex];
-                }
-                else
-                {
-                    startOffset = 0;
-                }
-                if (currOffsetIndex < refElapsed.Count)
-                {
-                    offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]) + startOffset);
+                    else
+                    {
+                        startOffset = 0;
+                    }
+                    if (currOffsetIndex < refElapsed.Count)
+                    {
+                        offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]) + startOffset);
+                    }
                 }
             }
             return offset;

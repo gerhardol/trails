@@ -733,8 +733,11 @@ namespace TrailsPlugin.Data {
                         i++;
                     }
                     //Set real last distance, even if elapsedSec is not matching
-                    distance += TrailResult.getDistFromTrackTime(this.m_activityDistanceMetersTrack, EndDateTime) -prevDist;
-                    m_distanceMetersTrack.Add(EndDateTime, distance);
+                    if (prevDist != float.NaN)
+                    {
+                        distance += TrailResult.getDistFromTrackTime(this.m_activityDistanceMetersTrack, EndDateTime) - prevDist;
+                        m_distanceMetersTrack.Add(EndDateTime, distance);
+                    }
                 }
             }
         }
@@ -1314,6 +1317,7 @@ namespace TrailsPlugin.Data {
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
                                 while (Settings.ResyncDiffAtTrailPoints &&
+                                    this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
                                     d1 > this.TrailPointDateTime[dateTrailPointIndex + 1]))
@@ -1387,7 +1391,8 @@ namespace TrailsPlugin.Data {
                     if (trRef != this &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndDateTime, Pauses) &&
                         (Settings.ResyncDiffAtTrailPoints || this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated) &&
-                            dateTrailPointIndex > 0 &&
+                        this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
+                        dateTrailPointIndex > 0 &&
                         dateTrailPointIndex == trRef.TrailPointDateTime.Count - 1 &&
                                 this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
                                 trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
@@ -1444,6 +1449,7 @@ namespace TrailsPlugin.Data {
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
                                 while (Settings.ResyncDiffAtTrailPoints &&
+                                    this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
                                     d1 > this.TrailPointDateTime[dateTrailPointIndex + 1]))
@@ -1526,7 +1532,8 @@ namespace TrailsPlugin.Data {
                     if (trRef != this &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndDateTime, Pauses) &&
                         (Settings.ResyncDiffAtTrailPoints || this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated) &&
-                            dateTrailPointIndex > 0 &&
+                        this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
+                        dateTrailPointIndex > 0 &&
                         dateTrailPointIndex == trRef.TrailPointDateTime.Count - 1 &&
                                 this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
                                 trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)

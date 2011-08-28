@@ -495,11 +495,13 @@ namespace TrailsPlugin.Data {
         //Chart and Result must have the same understanding of Distance
         public static double DistanceConvertTo(double t, TrailResult refRes)
         {
-            return UnitUtil.Distance.ConvertTo(t, refRes.Activity);
+            IActivity activity = refRes == null ? null : refRes.Activity;
+            return UnitUtil.Distance.ConvertTo(t, activity);
         }
         public static double DistanceConvertFrom(double t, TrailResult refRes)
         {
-            return UnitUtil.Distance.ConvertFrom(t, refRes.Activity);
+            IActivity activity = refRes == null ? null : refRes.Activity;
+            return UnitUtil.Distance.ConvertFrom(t, activity);
         }
                                 
         /***************************************************/
@@ -1508,7 +1510,7 @@ namespace TrailsPlugin.Data {
                                     {
                                         int status;
                                         double refDist;
-                                        if (refRes == trRef)
+                                        if (this == trRef)
                                         {
                                             //get diff from average
                                             refDist = this.getElapsedResult(d1) * this.AvgSpeed;

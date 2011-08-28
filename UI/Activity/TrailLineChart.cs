@@ -57,6 +57,7 @@ namespace TrailsPlugin.UI.Activity {
         private ActivityDetailPageControl m_page;
         private MultiChartsControl m_multiple;
         private bool m_selectDataHandler = true; //Event handler is enabled by default
+        private bool m_showTrailPoints = true;
 
         const int MaxSelectedSeries = 5;
 
@@ -756,7 +757,7 @@ namespace TrailsPlugin.UI.Activity {
                     trailPointResult = m_trailResults[0];
                 }
 
-                if (trailPointResult != null)
+                if (m_showTrailPoints && trailPointResult != null)
                 {
                     Image icon =
 #if ST_2_1
@@ -1190,6 +1191,11 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.H)
             {
                 selectedTypes = LineChartTypes.HeartRateBPM;
+            }
+            else if (e.KeyCode == Keys.L)
+            {
+                m_showTrailPoints = (e.Modifiers == Keys.Shift);
+                refreshData = false;
             }
             else if (e.KeyCode == Keys.P)
             {

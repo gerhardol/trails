@@ -595,25 +595,38 @@ namespace TrailsPlugin.Data {
 
                     if (Settings.RestIsPause)
                     {
-                        for (int i = 0; i < Activity.Laps.Count; i++)
+                        //Check for active laps first
+                        bool isActive = false;
+                        foreach(ILapInfo lap in Activity.Laps)
                         {
-                            ILapInfo lap = Activity.Laps[i];
-                            if (lap.Rest)
+                            if (!lap.Rest)
                             {
-                                DateTime upper;
-                                if (i < Activity.Laps.Count - 1)
+                                isActive = true;
+                                break;
+                            }
+                        }
+                        if (isActive)
+                        {
+                            for (int i = 0; i < Activity.Laps.Count; i++)
+                            {
+                                ILapInfo lap = Activity.Laps[i];
+                                if (lap.Rest)
                                 {
-                                    upper = Activity.Laps[i + 1].StartTime;
-                                    if (!Activity.Laps[i + 1].Rest)
+                                    DateTime upper;
+                                    if (i < Activity.Laps.Count - 1)
                                     {
-                                        upper -= TimeSpan.FromSeconds(1);
+                                        upper = Activity.Laps[i + 1].StartTime;
+                                        if (!Activity.Laps[i + 1].Rest)
+                                        {
+                                            upper -= TimeSpan.FromSeconds(1);
+                                        }
                                     }
+                                    else
+                                    {
+                                        upper = Info.EndTime;
+                                    }
+                                    m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, upper));
                                 }
-                                else
-                                {
-                                    upper = Info.EndTime;
-                                }
-                                m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, upper));
                             }
                         }
                     }
@@ -694,18 +707,18 @@ namespace TrailsPlugin.Data {
                 {
                     int i = 0;
                     float distance = 0;
-                    int oldElapsed = int.MinValue;
                     //Start(end) should always be inserted - it the base for StartTime in track
                     m_distanceMetersTrack.Add(StartDateTime, distance);
                     m_startDistance = TrailResult.getDistFromTrackTime(m_activityDistanceMetersTrack, StartDateTime);
                     float prevDist = m_startDistance;
+                    int oldElapsed = 0;
 
                     while (i < m_activityDistanceMetersTrack.Count &&
-                        StartDateTime.AddSeconds(1) >= (m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])))
+                        StartDateTime.AddSeconds(1) > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
                     {
                         i++;
                     }
-                    
+
                     while (i < m_activityDistanceMetersTrack.Count &&
                         EndDateTime > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
                     {

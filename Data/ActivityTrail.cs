@@ -59,10 +59,22 @@ namespace TrailsPlugin.Data
                     m_status = TrailOrderStatus.MatchNoCalc;
                 }
             }
-            else if (Trail.IsSplits || Trail.IsReference)
+            else if (Trail.IsSplits)
             {
-                // Let Reference always match, to trigger possible recalc after
+                //By default, always match
                 m_status = TrailOrderStatus.MatchNoCalc;
+            }
+            else if (Trail.IsReference)
+            {
+                if (trail.ReferenceActivity != null && trail.ReferenceActivity.GPSRoute != null)
+                {
+                    // Let Reference always match, to trigger possible recalc after
+                    m_status = TrailOrderStatus.MatchNoCalc;
+                }
+                else
+                {
+                    m_status = TrailOrderStatus.NotInBound;
+                }
             }
             else if (Trail.TrailLocations.Count == 0)
             {
@@ -1105,13 +1117,9 @@ out dist2);
                     return -1;
                 }
                 IncompleteTrailResult o2 = (IncompleteTrailResult)obj;
-                if (this.Points.Count > o2.Points.Count)
+                if (this.Points.Count != o2.Points.Count)
                 {
-                    return 1;
-                }
-                if (this.Points.Count < o2.Points.Count)
-                {
-                    return 1;
+                    return this.Points.Count > o2.Points.Count ? 1 : -1;
                 }
                 if (this.Reverse != o2.Reverse)
                 {

@@ -238,7 +238,7 @@ namespace TrailsPlugin.Data {
                 {
                     return 0;
                 }
-                return DistanceMetersTrack[DistanceMetersTrack.Count - 1].Value;
+                return DistanceMetersTrack.Max;
             }
         }
 
@@ -748,7 +748,7 @@ namespace TrailsPlugin.Data {
                         i++;
                     }
                     //Set real last distance, even if elapsedSec is not matching
-                    if (prevDist != float.NaN)
+                    if (! float.IsNaN(prevDist))
                     {
                         distance += TrailResult.getDistFromTrackTime(this.m_activityDistanceMetersTrack, EndDateTime) - prevDist;
                         m_distanceMetersTrack.Add(EndDateTime, distance);
@@ -867,8 +867,12 @@ namespace TrailsPlugin.Data {
         
 		public float AvgCadence {
 			get {
-                return (float)UnitUtil.Power.ConvertTo(CadencePerMinuteTrack0(m_cacheTrackRef).Avg,
-                    m_cacheTrackRef.Activity);
+                INumericTimeDataSeries track = CadencePerMinuteTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return Info.AverageCadence;
+                }
+                return track.Avg;
 			}
 		}
 		public float AvgHR {

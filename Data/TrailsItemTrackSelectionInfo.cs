@@ -145,9 +145,13 @@ namespace TrailsPlugin.Data
                                 tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
                                 foreach (ValueRange<double> t in selected[i].MarkedDistances)
                                 {
-                                    tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(
-                                            activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Lower),
-                                            activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper)));
+                                    DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Lower);
+                                    DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper);
+                                    if (d2 - d1 < TimeSpan.FromSeconds(1))
+                                    {
+                                        d2 += TimeSpan.FromSeconds(1);
+                                    }
+                                    tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(d1, d2));
                                 }
                                 tmpSel.MarkedDistances = null;
                             }
@@ -168,9 +172,13 @@ namespace TrailsPlugin.Data
                             tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
                             try
                             {
-                                tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(
-                                    activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower),
-                                    activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper)));
+                                DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower);
+                                DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper);
+                                if (d2 - d1 < TimeSpan.FromSeconds(1))
+                                {
+                                    d2 += TimeSpan.FromSeconds(1);
+                                }
+                                tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(d1, d2));
                                 tmpSel.SelectedDistance = null;
                             }
                             catch { }

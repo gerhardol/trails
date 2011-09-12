@@ -437,8 +437,7 @@ namespace TrailsPlugin.Data
                         //Go thourough the points while we are in the radius
                         //(for last point we break, next may follow directly) 
                         float prevRouteDist = routeDist;
-                        float distHysteresis = Math.Max(this.Trail.Radius / 30, 5);
-                        float localMaxDist = 0;
+                        float distHysteresis = Math.Max(this.Trail.Radius / 30, 3);
                         while (routeIndex < activity.GPSRoute.Count - 1)
                         {
                             routeIndex++;
@@ -449,6 +448,41 @@ namespace TrailsPlugin.Data
                                 //As we peeked on next, we have to set back the index
                                 routeIndex--;
                                 routeDist = prevRouteDist;
+
+                                if (resultPoints.Count == 0)
+                                {
+                                    //Backtrack from last point to get to best match
+                                    int index = routeIndex;
+                                    int firstIndex = matchIndex;
+                                    //assume last in radius is best now
+                                    matchIndex = routeIndex;
+                                    matchDist = routeDist;
+
+                                    while (index > firstIndex)
+                                    {
+                                        prevRouteDist = routeDist;
+                                        index--;
+                                        routeDist = distanceTrailToRoute(activity, trailgps, resultPoints.Count, index);
+                                        if (prevRouteDist < matchDist &&
+                                            prevRouteDist < routeDist)
+                                        {
+                                            //Leaving middle and prev was best
+                                            matchIndex = index - 1;
+                                            matchDist = prevRouteDist;
+                                        }
+                                        else if (routeDist < matchDist)
+                                        {
+                                            //Better, still closing in
+                                            matchIndex = index;
+                                            matchDist = routeDist;
+                                        }
+                                        if (routeDist > matchDist + distHysteresis)
+                                        {
+                                            //Leaving middle for last point - no more checks
+                                            break;
+                                        }
+                                    }
+                                }
                                 break;
                             }
                             //still in radius
@@ -456,15 +490,7 @@ namespace TrailsPlugin.Data
                             if (resultPoints.Count == 0)
                             {
                                 //start point
-                                if (routeDist + distHysteresis < matchDist
-                                    || routeDist < matchDist && routeDist < prevRouteDist
-                                    || routeDist + distHysteresis < localMaxDist)
-                                {
-                                    //Closing in - this is a potential point "closest before start leaving"
-                                    matchIndex = routeIndex;
-                                    matchDist = routeDist;
-                                    localMaxDist = routeDist;
-                                }
+                                //Just cycle through the points, to prepare for back track to first (matchIndex)
                             }
                             else if (isEndTrailPoint(trailgps, resultPoints.Count + 1))
                             {
@@ -500,7 +526,6 @@ namespace TrailsPlugin.Data
                             }
 
                             prevRouteDist = routeDist;
-                            localMaxDist = Math.Max(localMaxDist, routeDist);
                         }
                     }
 

@@ -202,7 +202,8 @@ namespace TrailsPlugin.Controller
                     //Precalculate results if not too heavy
                     //Ref trail may require recalc, only recalc when requested
                     if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                        Activities.Count <= TrailsPlugin.Data.Settings.MaxAutoCalcActitiesSingleTrail)
+                        Activities.Count <= TrailsPlugin.Data.Settings.MaxAutoCalcActitiesSingleTrail &&
+                        m_currentActivityTrail.Status >= TrailOrderStatus.MatchNoCalc)
                     {
                         m_currentActivityTrail.CalcResults();
                     }

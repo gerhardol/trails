@@ -325,19 +325,30 @@ namespace TrailsPlugin.Data
 
         private class pInfo
         {
-            public pInfo(int index, float dist, float prevDist)//, float closeDist, float closeFactor)
+            public pInfo(int index, float dist, float prevDist)
             {
                 this.index = index;
                 this.dist = dist;
                 this.prevDist = prevDist;
-                //this.closeDist = closeDist;
-                //this.closeFactor = closeFactor;
+            }
+            public float checkPass(ActivityTrail trail, IActivity activity, TrailGPSLocation trailp, ref float closeDist)
+            {
+                double dist;
+                float routeFactor = ActivityTrail.checkPass(trail.Trail.Radius,
+                  routePoint(activity, this.index - 1), this.prevDist,
+                  routePoint(activity, this.index), this.dist,
+                  trailp,
+                    /* dTrack[routeIndex].Value - dTrack[prevRouteIndex].Value, */
+                  out dist);
+                if (routeFactor > 0)
+                {
+                    closeDist = (float)dist;
+                }
+                return routeFactor;
             }
             public int index;
             public float dist;
             public float prevDist;
-            //public float closeDist;
-            //public float closeFactor;
         }
 
         private void CalcInboundResults(IActivity activity, IList<TrailGPSLocation> trailgps, int MaxRequiredMisses, bool reverse, System.Windows.Forms.ProgressBar progressBar)
@@ -470,11 +481,12 @@ namespace TrailsPlugin.Data
                         }
                         firstPoint = false;
 
+                        pInfo pointInfo = new pInfo(routeIndex, routeDist, prevRouteDist);
                         if (resultPoints.Count == 0)
                         {
                             //start point
                             //Just cycle through the points, to prepare for back track to first (matchIndex)
-                            info.Push(new pInfo(routeIndex, routeDist, prevRouteDist));
+                            info.Push(pointInfo);
                         }
                         else
                         {
@@ -483,18 +495,8 @@ namespace TrailsPlugin.Data
                             if (routeIndex > 0)
                             {
                                 //Check closest point for first in the 
-                                double dist;
-
-                                routeFactor = checkPass(this.Trail.Radius,
-                                   routePoint(activity, routeIndex - 1), prevRouteDist,
-                                   routePoint(activity, routeIndex), routeDist,
-                                   trailgps[TrailIndex(trailgps, resultPoints.Count)],
-                                    /* dTrack[routeIndex].Value - dTrack[prevRouteIndex].Value, */
-                                   out dist);
-                                if (routeFactor > 0)
-                                {
-                                    closeDist = (float)dist;
-                                }
+                                routeFactor = pointInfo.checkPass(this, activity, 
+                                   trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
                             }
 
                             if (closeDist < matchDist)
@@ -530,19 +532,8 @@ namespace TrailsPlugin.Data
                                     float closeDist = p.dist;
                                     if (routeIndex > 0)
                                     {
-                                        //Check closest point for first in the 
-                                        double dist;
-
-                                        routeFactor = checkPass(this.Trail.Radius,
-                                           routePoint(activity, p.index - 1), p.prevDist,
-                                           routePoint(activity, p.index), p.dist,
-                                           trailgps[TrailIndex(trailgps, resultPoints.Count)],
-                                            /* dTrack[routeIndex].Value - dTrack[prevRouteIndex].Value, */
-                                           out dist);
-                                        if (routeFactor > 0)
-                                        {
-                                            closeDist = (float)dist;
-                                        }
+                                        routeFactor = pointInfo.checkPass(this, activity,
+                                           trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
                                     }
 
                                     if (closeDist < matchDist)

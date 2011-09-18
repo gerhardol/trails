@@ -491,7 +491,7 @@ namespace TrailsPlugin.Data
                         else
                         {
                             float routeFactor = -1;
-                            float closeDist = routeDist;
+                            float closeDist = pointInfo.dist;
                             if (routeIndex > 0)
                             {
                                 //Check closest point for first in the 
@@ -502,12 +502,12 @@ namespace TrailsPlugin.Data
                             if (closeDist < matchDist)
                             {
                                 //Better, still closing in
-                                matchIndex = routeIndex;
+                                matchIndex = pointInfo.index;
                                 matchDist = closeDist;
                                 matchFactor = routeFactor;
                             }
-                            if (isEndTrailPoint(trailgps, resultPoints.Count + 1) && 
-                                routeDist > matchDist + distHysteresis)
+                            if (isEndTrailPoint(trailgps, resultPoints.Count + 1) &&
+                                pointInfo.dist > matchDist + distHysteresis)
                             {
                                 //Leaving middle for last point - no more checks
                                 break;

@@ -27,7 +27,9 @@ REM $(TargetDir)
 SET TargetDir=%6
 REM $(ConfigurationType)
 SET ConfigurationType=%7
-REM Environment variable: stPlgoutdir
+
+REM To move a .stplugin to common area, create environment variable (or set it below)
+REM set stPlgoutdir=g:\Users\go\dev\web
 
 REM Set the plugin GUID in the main PropertyGroup for the plugin
 IF "%guid%"=="" GOTO END
@@ -47,12 +49,10 @@ set cygwin=nodosfilewarning
 set tempfile=%temp%\%ProjectName%-stpluginversion.tmp
 %perl% -ne "if(/^^\[assembly: AssemblyVersion\(.([\.\d]*)(\.\*)*.\)\]/){print $1;}" %ProjectDir%\Properties\AssemblyInfo.cs > %tempfile%
 set /p PluginVersion= < %tempfile%
-rem DEL %tempfile%
+DEL %tempfile%
 :endversion
 
 set stPlgFile=%ProjectDir%%ProjectName%-%PluginVersion%.st%StPluginVersion%plugin
-REM To move a .stplugin to common area, create environment variable (or set it below)
-REM set stPlgoutdir=g:\Users\go\dev\web
 
 REM Vista+ / XP compatibility
 set C_APPDATA=%PROGRAMDATA%

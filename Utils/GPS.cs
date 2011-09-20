@@ -26,9 +26,9 @@ namespace TrailsPlugin.Utils {
 			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, 0);
 		}
 
-		public static IGPSLocation PointToLocation(IGPSPoint point) {
-			return new GPSLocation(point.LatitudeDegrees, point.LongitudeDegrees);
-		}
+		//public static IGPSLocation PointToLocation(IGPSPoint point) {
+		//	return new GPSLocation(point.LatitudeDegrees, point.LongitudeDegrees);
+		//}
 
 #if !ST_2_1
         public static IGPSBounds GetBounds(IList<IList<IGPSPoint>> trks)

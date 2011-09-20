@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         private static string m_summaryViewSortColumn = TrailResultColumnIds.Order;
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Ascending;
         private static bool m_SetNameAtImport = true;
-        private static int m_MaxAutoCalcActivitiesTrails = 500;
+        private static int m_MaxAutoCalcActivitiesTrails = 10000;
         private static int m_MaxAutoCalcActivitiesSingleTrail = 200;
         private static bool m_restLapIsPause = false;
         private static bool m_nonReqIsPause = false;
@@ -297,7 +297,10 @@ namespace TrailsPlugin.Data
             attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
             if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
-            if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); }
+            if (attr.Length > 0) { m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); 
+            //Change defaults without version number
+            if (m_MaxAutoCalcActivitiesTrails == 500) { m_MaxAutoCalcActivitiesTrails = 10000; }
+            }
             attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
             if (attr.Length > 0) { m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr); }
 

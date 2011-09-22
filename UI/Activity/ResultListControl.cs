@@ -90,6 +90,8 @@ namespace TrailsPlugin.UI.Activity {
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.summaryListToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
+
+            ((TrailResultLabelProvider)summaryList.LabelProvider).Controller = m_controller;
         }
 
         public void UICultureChanged(CultureInfo culture)

@@ -27,10 +27,19 @@ namespace TrailsPlugin.Data
     {
 
         private bool m_multiple = false;
+        private Controller.TrailController m_controller;
+
+        public Controller.TrailController Controller
+        {
+            set { m_controller = value; }
+        }
+
+
         public bool MultipleActivities
         {
             set { m_multiple = value; }
         }
+
         #region ILabelProvider Members
 
         public override Image GetImage(object element, TreeList.Column column)
@@ -78,7 +87,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Duration:
                     return UnitUtil.Time.ToString(row.Duration);
                 case TrailResultColumnIds.Distance:
-                    return UnitUtil.Distance.ToString(row.Distance, "");
+                    return UnitUtil.Distance.ToString(row.Distance, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.AvgCadence:
                     return UnitUtil.Cadence.ToString(row.AvgCadence);
                 case TrailResultColumnIds.AvgHR:
@@ -92,17 +101,17 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.AvgGrade:
                     return (row.AvgGrade).ToString("0.0%");
                 case TrailResultColumnIds.AvgSpeed:
-                    return UnitUtil.Speed.ToString(row.AvgSpeed);
+                    return UnitUtil.Speed.ToString(row.AvgSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.FastestSpeed:
-                    return UnitUtil.Speed.ToString(row.FastestSpeed);
+                    return UnitUtil.Speed.ToString(row.FastestSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.AvgPace:
-                    return UnitUtil.Pace.ToString(row.AvgSpeed);
+                    return UnitUtil.Pace.ToString(row.AvgSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.FastestPace:
-                    return UnitUtil.Pace.ToString(row.FastestPace);
+                    return UnitUtil.Pace.ToString(row.FastestSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.AvgSpeedPace:
-                    return UnitUtil.PaceOrSpeed.ToString(!row.Activity.Category.SpeedUnits.Equals(ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed), row.AvgSpeed);
+                    return UnitUtil.PaceOrSpeed.ToString(row.AvgSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.FastestSpeedPace:
-                    return UnitUtil.PaceOrSpeed.ToString(!row.Activity.Category.SpeedUnits.Equals(ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed), row.FastestPace);
+                    return UnitUtil.PaceOrSpeed.ToString(row.FastestSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.Name:
                     return row.Name;
                 default:

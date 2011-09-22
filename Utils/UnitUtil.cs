@@ -1017,6 +1017,10 @@ namespace GpsRunningPlugin.Util
                 {
                     str = "-" + str;
                 }
+                else if (speedMS < 60)
+                {
+                    str = Time.ToString(pace) + str;
+                }
                 else
                 {
                     str = new TimeSpan(0, 0, (int)Math.Round(pace)).ToString() + str;
@@ -1234,6 +1238,15 @@ namespace GpsRunningPlugin.Util
                 }
                 return Speed.DefaultDecimalPrecision;
             }
+            public static bool IsPace(IActivity activity)
+            {
+                if (activity != null)
+                {
+                    return !activity.Category.SpeedUnits.Equals(ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Speed);
+                }
+                return false;
+            }
+
             public static String ToString(bool isPace, double speedMS)
             {
                 if (isPace)
@@ -1249,6 +1262,14 @@ namespace GpsRunningPlugin.Util
                     return Pace.ToString(speedMS, fmt);
                 }
                 return Speed.ToString(speedMS, fmt);
+            }
+            public static String ToString(double speedMS, IActivity activity, string fmt)
+            {
+                if (IsPace(activity))
+                {
+                    return Pace.ToString(speedMS, activity, fmt);
+                }
+                return Speed.ToString(speedMS, activity, fmt);
             }
             public static double ConvertFrom(bool isPace, double speedMS)
             {

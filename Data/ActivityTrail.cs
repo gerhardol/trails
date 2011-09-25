@@ -698,6 +698,8 @@ namespace TrailsPlugin.Data
                             else
                             {
                                 Status = TrailOrderStatus.Match;
+                                //OK to reset misses only at match
+                                currRequiredMisses = 0;
                             }
                             TrailResultInfo resultInfo = new TrailResultInfo(activity);
                             float distDiff = 0;
@@ -737,7 +739,6 @@ namespace TrailsPlugin.Data
                         }
 
                         //Reset matches for trail detection
-                        currRequiredMisses = 0;
                         resultPoints.Clear();
                     }
                     else if (matchTime != DateTime.MinValue)

@@ -278,6 +278,7 @@ namespace TrailsPlugin.UI.MapLayers
 
             if (waypoint != null)
             {
+                //Start - offset saved separately
                 this._selectedWaypointOriginalLocation = waypoint.Location;
 
                 _selectedWaypointMoving = waypoint;
@@ -286,6 +287,7 @@ namespace TrailsPlugin.UI.MapLayers
             }
             else
             {
+                //End or cancel
                 _selectedWaypointMoving = null;
                 this._selectedWaypointOriginalLocation = null;
                 MapControl.CanMouseDrag = true;
@@ -300,6 +302,9 @@ namespace TrailsPlugin.UI.MapLayers
             {
                 WaypointMapMarker selectedWaypoint = sender as WaypointMapMarker;
                 SetMovingWaypoint(selectedWaypoint);
+                Point midPoint = MapControl.MapProjection.GPSToPixel(MapControl.MapBounds.NorthWest,
+                    MapControl.Zoom, selectedWaypoint.Location);
+                m_clickToCenterOffset = new Point(midPoint.X - e.Location.X, midPoint.Y - e.Location.Y);
             }
         }
 
@@ -320,13 +325,13 @@ namespace TrailsPlugin.UI.MapLayers
 
         protected override void OnMapControlMouseMove(object sender, MouseEventArgs e)
         {
-
             if (this._selectedWaypointMoving != null)
             {
                 if (_selectedWaypointMoving != null)
                 {
                     //MapControl.RemoveOverlay(_selectedWaypointMoving);
-                    IGPSLocation newGpsLocation = MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, e.Location);
+                    Point p = new Point(m_clickToCenterOffset.X + e.Location.X, m_clickToCenterOffset.Y + e.Location.Y);
+                    IGPSLocation newGpsLocation = MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p);
                     _selectedWaypointMoving.Waypoint.GpsLocation = newGpsLocation;
                     //pages[this].UpdateWaypointFromMap(_selectedWaypointMoving.Waypoint);
 
@@ -597,6 +602,7 @@ namespace TrailsPlugin.UI.MapLayers
         private TrailPointsLayer m_extraMapLayer = null;
         private WaypointMapMarker _selectedWaypointMoving = null;
         private IGPSPoint _selectedWaypointOriginalLocation = null;
+        private Point m_clickToCenterOffset = Point.Empty;
     }
 }
 #endif

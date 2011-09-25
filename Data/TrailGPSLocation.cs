@@ -59,12 +59,16 @@ namespace TrailsPlugin.Data
             return _name + " " + _required + " " + _gpsLocation;
         }
 
-        private GPSLocation _gpsLocation;
-        public GPSLocation GpsLocation
+        private IGPSLocation _gpsLocation;
+        public IGPSLocation GpsLocation
         {
             get
             {
                 return _gpsLocation;
+            }
+            set
+            {
+                _gpsLocation = value;
             }
         }
         public float LatitudeDegrees
@@ -181,8 +185,8 @@ namespace TrailsPlugin.Data
         }
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius, bool requiredCheck)
         {
-            float north = -90;
-            float south = +90;
+            float north = -85; //Limit in ST - No GPS outside
+            float south = +85;
             float east = -180;
             float west = 180;
             int noRequired = 0;
@@ -280,7 +284,7 @@ namespace TrailsPlugin.Data
                     pos = float.NaN;
                 }
                 if (!float.IsNaN(pos)
-                    || subItemSelected == 1 && 90 < Math.Abs(pos)
+                    || subItemSelected == 1 && 85 < Math.Abs(pos)
                     || subItemSelected == 2 && 180 < Math.Abs(pos)
                     )
                 {

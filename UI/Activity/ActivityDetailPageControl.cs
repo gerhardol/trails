@@ -71,7 +71,8 @@ namespace TrailsPlugin.UI.Activity {
 #else
         private IDetailPage m_DetailPage = null;
         private IDailyActivityView m_view = null;
-        private TrailPointsLayer m_layerBase = null;
+        private TrailPointsLayer m_layerPoints = null;
+        private TrailPointsLayer m_layerRoutes = null;
         private TrailPointsLayer m_layerMarked = null;
 #endif
 
@@ -83,7 +84,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_DetailPage = detailPage;
             m_view = view;
-            m_layerBase = TrailPointsLayer.Instance(m_view);
+            m_layerPoints = TrailPointsLayer.InstancePoints(m_view);
+            m_layerRoutes = TrailPointsLayer.InstanceRoutes(m_view);
             m_layerMarked = TrailPointsLayer.InstanceMarked(m_view);
 #endif
             m_controller = Controller.TrailController.Instance;
@@ -98,7 +100,7 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = true;
 #endif
 
-            TrailSelector.SetControl(this, m_controller, m_view, m_layerBase);
+            TrailSelector.SetControl(this, m_controller, m_view, m_layerPoints);
             ResultList.SetControl(this, m_controller, m_view);
             MultiCharts.SetControl(this, m_controller, m_view);
 #if ST_2_1
@@ -133,7 +135,8 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_controller.Activities = value;
 #if !ST_2_1
-                m_layerBase.ClearOverlays();
+                m_layerPoints.ClearOverlays();
+                m_layerRoutes.ClearOverlays();
                 m_layerMarked.ClearOverlays();
 #endif
                 RefreshData();
@@ -153,7 +156,8 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 #endif
-            m_layerBase.HidePage();
+            m_layerPoints.HidePage();
+            m_layerRoutes.HidePage();
             m_layerMarked.HidePage();
             TrailSelector.ShowPage = false;
             ResultList.ShowPage = false;
@@ -165,7 +169,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool showPage = m_showPage;
             m_showPage = true;
-            m_layerBase.ShowPage(bookmark);
+            m_layerPoints.ShowPage(bookmark);
+            m_layerRoutes.ShowPage(bookmark);
             m_layerMarked.ShowPage(bookmark);
             TrailSelector.ShowPage = true;
             ResultList.ShowPage = true;
@@ -233,7 +238,7 @@ namespace TrailsPlugin.UI.Activity {
             if((! m_isExpanded || isReportView)
                 && m_controller.CurrentActivityTrail != null)
             {
-                m_layerBase.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
                 //route
@@ -241,6 +246,8 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     points.Add(point);
                 }
+                m_layerPoints.TrailPoints = points;
+
                 //check for TrailOrdered - displayed status
                 if (m_controller.CurrentActivityTrailDisplayed != null)
                 {
@@ -259,14 +266,13 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    m_layerBase.TrailRoutes = routes;
+                    m_layerRoutes.TrailRoutes = routes;
                 }
                 else
                 {
-                    m_layerBase.TrailRoutes = new Dictionary<string, MapPolyline>();
+                    m_layerRoutes.TrailRoutes = new Dictionary<string, MapPolyline>();
                 }
-                m_layerBase.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-                m_layerBase.TrailPoints = points;
+                m_layerRoutes.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 m_layerMarked.ClearOverlays();
             }
         }
@@ -377,7 +383,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (atr != null && atr.Count > 0)
                 {
                     //It does not matter what layer is zoomed here
-                    m_layerBase.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
+                    m_layerPoints.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
                 }
 
                 //Mark chart

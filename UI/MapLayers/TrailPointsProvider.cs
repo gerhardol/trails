@@ -42,8 +42,9 @@ namespace TrailsPlugin.UI.MapLayers
                 //One layer for normal tracks, another for marked tracks (should be above tracks)
                 return new IRouteControlLayerProvider[]
                 { 
-                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderBase)
+                    new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderRoutes)
 #if !(GPSRUNNING_UNIQUEROUTES||GPSRUNNING_OVERLAY||GPSRUNNING_HIGHSCORE||GPSRUNNING_PERFORMANCEPREDICTOR||MATRIXPLUGIN)
+                    , new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderPoints)
                     , new TrailPointsProvider(TrailPointsProvider.TrailsLayerZOrderMarked)
 #endif
                 };
@@ -52,9 +53,10 @@ namespace TrailsPlugin.UI.MapLayers
     }
     class TrailPointsProvider : IRouteControlLayerProvider
     {
-        public const int TrailsLayerZOrderBase = 1;
+        public const int TrailsLayerZOrderRoutes = 1;
+        public const int TrailsLayerZOrderPoints = 3;
         public const int TrailsLayerZOrderMarked = 5;
-        private int m_zorder = TrailsLayerZOrderBase;
+        private int m_zorder = TrailsLayerZOrderRoutes;
 
         public TrailPointsProvider(int zorder)
         {
@@ -65,7 +67,12 @@ namespace TrailsPlugin.UI.MapLayers
         {
             if (m_layer == null)
             {
-                m_layer = new TrailPointsLayer(this, control, m_zorder);
+                bool mouseEvents = false;
+                if (m_zorder == TrailPointsProvider.TrailsLayerZOrderPoints)
+                {
+                    mouseEvents = true;
+                }
+                m_layer = new TrailPointsLayer(this, control, m_zorder, mouseEvents);
             }
             return m_layer;
         }

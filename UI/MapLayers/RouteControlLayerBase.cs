@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals.Mapping;
@@ -32,12 +33,13 @@ namespace TrailsPlugin.UI.MapLayers
 {
     public class RouteControlLayerBase
     {
-        public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder)
+        public RouteControlLayerBase(IRouteControlLayerProvider provider, IRouteControl control, int zOrder, bool mouseEvents)
         {
             this.provider = provider;
             this.control = control;
             this.zOrder = zOrder;
             this.mapControl = control.MapControl;
+            this.mouseEvents = mouseEvents;
             //AddMapControlEventHandlers();
             control.Resize += new EventHandler(OnRouteControlResize);
             control.VisibleChanged += new EventHandler(OnRouteControlVisibleChanged);
@@ -63,6 +65,11 @@ namespace TrailsPlugin.UI.MapLayers
         public int ZOrder
         {
             get { return zOrder; }
+        }
+
+        public bool MouseEvents
+        {
+            get { return mouseEvents; }
         }
 
         protected IRouteControl RouteControl
@@ -114,6 +121,14 @@ namespace TrailsPlugin.UI.MapLayers
         {
         }
 
+        protected virtual void OnMapControlMouseMove(object sender, MouseEventArgs e)
+        {
+        }
+
+        protected virtual void OnMapControlMouseLeave(object sender, EventArgs e)
+        {
+        }
+
         protected virtual void OnRouteControlResize(object sender, EventArgs e)
         {
         }
@@ -153,18 +168,29 @@ namespace TrailsPlugin.UI.MapLayers
         {
             mapControl.ZoomChanged += new EventHandler(OnMapControlZoomChanged);
             mapControl.CenterMoveEnd += new EventHandler(OnMapControlCenterMoveEnd);
+            if (mouseEvents)
+            {
+                mapControl.MouseMove += new MouseEventHandler(OnMapControlMouseMove);
+                mapControl.MouseLeave += new EventHandler(OnMapControlMouseLeave);
+            }
         }
 
         protected virtual void RemoveMapControlEventHandlers()
         {
             mapControl.ZoomChanged -= new EventHandler(OnMapControlZoomChanged);
             mapControl.CenterMoveEnd -= new EventHandler(OnMapControlCenterMoveEnd);
+            if (mouseEvents)
+            {
+                mapControl.MouseMove -= new MouseEventHandler(OnMapControlMouseMove);
+                mapControl.MouseLeave -= new EventHandler(OnMapControlMouseLeave);
+            }
         }
 
         private IRouteControlLayerProvider provider;
         private IRouteControl control;
         private int zOrder = 0;
         private IMapControl mapControl;
+        bool mouseEvents;
     }
 }
 #endif

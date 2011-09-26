@@ -189,19 +189,27 @@ namespace TrailsPlugin.Data
             float south = +85;
             float east = -180;
             float west = 180;
-            int noRequired = 0;
-            const int minRequired = 1; //list.Count-trail.MaxRequiredMisses
-            foreach (TrailGPSLocation g in list)
+            bool enoughRequired = true;
+            if (requiredCheck)
             {
-                //Check if there are too few required - then all points must be considered
-                if (g.Required)
+                int noRequired = 0;
+                const int minRequired = 1; //list.Count-trail.MaxRequiredMisses
+                foreach (TrailGPSLocation g in list)
                 {
-                    noRequired++;
+                    //Check if there are too few required - then all points must be considered
+                    if (g.Required)
+                    {
+                        noRequired++;
+                    }
+                }
+                if (noRequired < minRequired)
+                {
+                    enoughRequired = false;
                 }
             }
             foreach (TrailGPSLocation g in list)
             {
-                if (g.Required || !requiredCheck || noRequired < minRequired)
+                if (g.Required || !requiredCheck || !enoughRequired)
                 {
                     north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
                     south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
@@ -214,6 +222,7 @@ namespace TrailsPlugin.Data
             {
                 return null;
             }
+            //Radius could be less than 0, to get smaller bounds than actual
             if (radius < 100 && radius > 0)
             {
                 radius = 100;
@@ -230,13 +239,13 @@ namespace TrailsPlugin.Data
             west -= lng;
             //if radius is negative, area may have to be adjusted
             //With no required points, use center of trail
-            if (north < south || noRequired < minRequired)
+            if (north < south || requiredCheck && !enoughRequired)
             {
                 float tmp = (north+south)/2;
                 north = tmp;
                 south = tmp;
             }
-            if (east < west || noRequired < minRequired)
+            if (east < west || requiredCheck && !enoughRequired)
             {
                 float tmp = (west+east)/2;
                 west = tmp;

@@ -383,7 +383,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (atr != null && atr.Count > 0)
                 {
                     //It does not matter what layer is zoomed here
-                    m_layerPoints.DoZoom(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
+                    m_layerPoints.SetLocation(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
                 }
 
                 //Mark chart

@@ -94,6 +94,34 @@ namespace TrailsPlugin.UI.MapLayers
             AddMapControlEventHandlers();
         }
 
+        public void SetLocation(IGPSBounds area)
+        {
+            if (area != null)
+            {
+                double zoom = this.MapControl.Zoom;
+                if (!this.MapControl.MapBounds.Contains(area))
+                {
+                    zoom = Math.Max(zoom, this.MapControl.ComputeZoomToFit(area));
+                }
+                this.MapControl.SetLocation(area.Center, zoom);
+            }
+        }
+
+        public IGPSLocation GetCenterMap()
+        {
+            IGPSLocation centerLocation = MapControl.MapProjection.PixelToGPS(MapControl.Center, MapControl.Zoom, new Point(0, 0));
+            return centerLocation;
+        }
+
+        public void DoZoom(IGPSBounds area)
+        {
+            if (area != null)
+            {
+                this.MapControl.SetLocation(area.Center,
+                this.MapControl.ComputeZoomToFit(area));
+            }
+        }
+
         protected IGPSBounds MapControlBounds
         {
             get

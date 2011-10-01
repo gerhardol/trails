@@ -137,7 +137,7 @@ namespace TrailsPlugin.UI.MapLayers
                 if (value.Count > 0)
                 {
                     GPSBounds area = TrailGPSLocation.getGPSBounds(value, 4*this.m_highlightRadius);
-                    this.DoZoom(area);
+                    this.SetLocation(area);
                     m_SelectedTrailPoints = value;
                 }
             }
@@ -173,7 +173,7 @@ namespace TrailsPlugin.UI.MapLayers
                     if (value.Count > 0)
                     {
                         IGPSBounds area = TrailMapPolyline.getGPSBounds(value);
-                        DoZoom(area);
+                        SetLocation(area);
                     }
                     RefreshOverlays(true);
                 }
@@ -197,6 +197,18 @@ namespace TrailsPlugin.UI.MapLayers
             return area1;
         }
 
+        public new void SetLocation(IGPSBounds area)
+        {
+            if (m_showPage)
+            {
+                base.SetLocation(area);
+                if (m_extraMapLayer != null)
+                {
+                    m_extraMapLayer.SetLocation(area);
+                }
+            }
+        }
+
         //Zoom to "relevant" contents (normally done when activities are updated)
         public void DoZoom()
         {
@@ -206,19 +218,14 @@ namespace TrailsPlugin.UI.MapLayers
             DoZoom(area1);
         }
 
-        public void DoZoom(IGPSBounds area)
+        public new void DoZoom(IGPSBounds area)
         {
             if (m_showPage)
             {
-                if (area != null)
+                base.DoZoom(area);
+                if (m_extraMapLayer != null)
                 {
-                    this.MapControl.SetLocation(area.Center,
-                    this.MapControl.ComputeZoomToFit(area));
-                    if (m_extraMapLayer != null)
-                    {
-                        m_extraMapLayer.MapControl.SetLocation(area.Center,
-                        m_extraMapLayer.MapControl.ComputeZoomToFit(area));
-                    }
+                    m_extraMapLayer.DoZoom(area);
                 }
             }
         }

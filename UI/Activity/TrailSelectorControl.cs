@@ -469,7 +469,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshControlState();
 
            GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3*t.Trail.Radius);
-            m_layer.DoZoom(area);
+            m_layer.SetLocation(area);
 		}
 
         private void TrailSelectorPanel_SizeChanged(object sender, EventArgs e) {

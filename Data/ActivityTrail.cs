@@ -497,36 +497,38 @@ namespace TrailsPlugin.Data
                             }
                             firstPoint = false;
 
-                            pInfo pointInfo = new pInfo(routeIndex, routeDist, prevRouteDist);
-                            if (resultPoints.Count == 0)
                             {
-                                //start point
-                                //Just cycle through the points, to prepare for back track to first (matchIndex)
-                                info.Push(pointInfo);
-                            }
-                            else
-                            {
-                                float routeFactor = -1;
-                                float closeDist = pointInfo.dist;
-                                if (routeIndex > 0)
+                                pInfo pointInfo = new pInfo(routeIndex, routeDist, prevRouteDist);
+                                if (resultPoints.Count == 0)
                                 {
-                                    //Check closest point for first in the 
-                                    routeFactor = pointInfo.checkPass(this, activity,
-                                       trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
+                                    //start point
+                                    //Just cycle through the points, to prepare for back track to first (matchIndex)
+                                    info.Push(pointInfo);
                                 }
+                                else
+                                {
+                                    float routeFactor = -1;
+                                    float closeDist = pointInfo.dist;
+                                    if (routeIndex > 0)
+                                    {
+                                        //Check closest point for first in the 
+                                        routeFactor = pointInfo.checkPass(this, activity,
+                                           trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
+                                    }
 
-                                if (closeDist < matchDist)
-                                {
-                                    //Better, still closing in
-                                    matchIndex = pointInfo.index;
-                                    matchDist = closeDist;
-                                    matchFactor = routeFactor;
-                                }
-                                if (isEndTrailPoint(trailgps, resultPoints.Count + 1) &&
-                                    pointInfo.dist > matchDist + distHysteresis)
-                                {
-                                    //Leaving middle for last point - no more checks
-                                    break;
+                                    if (closeDist < matchDist)
+                                    {
+                                        //Better, still closing in
+                                        matchIndex = pointInfo.index;
+                                        matchDist = closeDist;
+                                        matchFactor = routeFactor;
+                                    }
+                                    if (isEndTrailPoint(trailgps, resultPoints.Count + 1) &&
+                                        routeFactor > 0 || pointInfo.dist > matchDist + distHysteresis)
+                                    {
+                                        //Leaving middle for last point - no more checks
+                                        break;
+                                    }
                                 }
                             }
 
@@ -548,7 +550,7 @@ namespace TrailsPlugin.Data
                                         float closeDist = p.dist;
                                         if (routeIndex > 0)
                                         {
-                                            routeFactor = pointInfo.checkPass(this, activity,
+                                            routeFactor = p.checkPass(this, activity,
                                                trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
                                         }
 
@@ -559,7 +561,7 @@ namespace TrailsPlugin.Data
                                             matchDist = closeDist;
                                             matchFactor = routeFactor;
                                         }
-                                        if (p.prevDist > matchDist + distHysteresis)
+                                        if (routeFactor > 0 || p.prevDist > matchDist + distHysteresis)
                                         {
                                             //Leaving middle for last point - no more checks
                                             break;

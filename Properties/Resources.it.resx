@@ -256,4 +256,13 @@ Assicurarsi che {1} sia installato.</value>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
     <value>Aggiungere le attività nella zona come risultati</value>
   </data>
+  <data name="UI_Chart_resyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Risincronizzare la differenza nei punti Trail</value>
+  </data>
+  <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
+    <value>Sincronizzare il grafico nei punti Trail</value>
+  </data>
+  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
+    <value>Aggiungere attività con l'attuale Categoria di Riferimento</value>
+  </data>
 </root>

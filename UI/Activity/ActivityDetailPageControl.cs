@@ -84,9 +84,9 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_DetailPage = detailPage;
             m_view = view;
-            m_layerPoints = TrailPointsLayer.InstancePoints(m_view);
-            m_layerRoutes = TrailPointsLayer.InstanceRoutes(m_view);
-            m_layerMarked = TrailPointsLayer.InstanceMarked(m_view);
+            m_layerPoints = TrailPointsLayer.InstancePoints(this, m_view);
+            m_layerRoutes = TrailPointsLayer.InstanceRoutes(this, m_view);
+            m_layerMarked = TrailPointsLayer.InstanceMarked(this, m_view);
 #endif
             m_controller = Controller.TrailController.Instance;
 
@@ -184,6 +184,13 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
+        //Point selected/updated on map, Notify those interested
+        //Could use listeners...
+        public void UpdatePointFromMap(TrailGPSLocation point)
+        {
+            TrailSelector.UpdatePointFromMap(point);
+        }
+
         public void RefreshControlState() 
         {
             ResultList.RefreshControlState();
@@ -238,7 +245,7 @@ namespace TrailsPlugin.UI.Activity {
             if((! m_isExpanded || isReportView)
                 && m_controller.CurrentActivityTrail != null)
             {
-                m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
                 //route

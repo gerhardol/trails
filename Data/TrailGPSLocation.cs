@@ -45,10 +45,15 @@ namespace TrailsPlugin.Data
             this._name = name;
             this._required = required;
         }
+        public TrailGPSLocation(float latitudeDegrees, float longitudeDegrees, string name, bool required, float radius)
+            : this(latitudeDegrees, longitudeDegrees, name, required)
+        {
+            this._radius = radius;
+        }
 
         public TrailGPSLocation Copy(float LatitudeDegrees, float LongitudeDegrees)
         {
-            return new TrailGPSLocation(LatitudeDegrees, LongitudeDegrees, this.Name, this.Required);
+            return new TrailGPSLocation(LatitudeDegrees, LongitudeDegrees, this.Name, this.Required, this._radius);
         }
         public TrailGPSLocation Copy()
         {
@@ -57,6 +62,19 @@ namespace TrailsPlugin.Data
         public override string ToString()
         {
             return _name + " " + _required + " " + _gpsLocation;
+        }
+
+        private float _radius = 25;
+        public float Radius
+        {
+            get
+            {
+                return this._radius;
+            }
+            set
+            {
+                this._radius = value;
+            }
         }
 
         private IGPSLocation _gpsLocation;

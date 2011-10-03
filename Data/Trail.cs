@@ -110,6 +110,11 @@ namespace TrailsPlugin.Data {
                         m_trailLocations = TrailGpsPointsFromSplits(m_referenceActivity);
                     }
                 }
+                //TODO: Review radius handling
+                foreach (TrailGPSLocation t in this.m_trailLocations)
+                {
+                    t.Radius = this.m_radius;
+                }
                 return m_trailLocations;
             }
             set
@@ -126,6 +131,10 @@ namespace TrailsPlugin.Data {
 			set {
 				m_radius = value;
                 m_gpsBounds = null;
+                foreach (TrailGPSLocation t in this.m_trailLocations)
+                {
+                    t.Radius=value;
+                }
             }
 		}
         //This property is not visible in the GUI

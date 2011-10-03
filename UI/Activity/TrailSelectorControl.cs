@@ -59,6 +59,7 @@ namespace TrailsPlugin.UI.Activity
 #endif
 
         ActivityDetailPageControl m_page;
+        private EditTrail m_editTrail = null;
 
         public TrailSelectorControl()
         {
@@ -118,27 +119,35 @@ namespace TrailsPlugin.UI.Activity
             }
         }
 
-		public void RefreshControlState() 
+        public void UpdatePointFromMap(TrailGPSLocation point)
+        {
+            if (this.m_editTrail != null)
+            {
+                this.m_editTrail.UpdatePointFromMap(point);
+            }
+        }
+
+        public void RefreshControlState() 
         {
             bool enabled = true;//Enabled also when no trails/activities (m_controller.ReferenceActivity != null);
+            enabled = (m_editTrail == null);
+
             btnAdd.Enabled = enabled;
             TrailName.Enabled = enabled;
 
-            enabled = true;//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
+            enabled = (m_editTrail == null);//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
 
-            if (enabled && null != m_controller.CurrentActivityTrailDisplayed)
+            if (null != m_controller.CurrentActivityTrailDisplayed)
             {
                 TrailName.Text = m_controller.CurrentActivityTrailDisplayed.Trail.Name;
+                TrailName.Enabled = (m_editTrail == null);
             }
             else
             {
                 TrailName.Text = Properties.Resources.Trail_NoTrailSelected;
             }
-            enabled = (m_controller.CurrentActivityTrailDisplayed != null) && m_controller.CurrentActivityTrailDisplayed.Trail.Generated;
-            btnDelete.Enabled = enabled;
-
-            enabled = (m_controller.CurrentActivityTrailDisplayed == null) || !m_controller.CurrentActivityTrailDisplayed.Trail.Generated;
+            enabled = enabled && ((m_controller.CurrentActivityTrailDisplayed == null) || !m_controller.CurrentActivityTrailDisplayed.Trail.Generated);
             btnDelete.Enabled = enabled;
         }
 
@@ -164,8 +173,8 @@ namespace TrailsPlugin.UI.Activity
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
             }
-            else if (this.m_controller.CurrentActivityTrailDisplayed != null &&
-                this.m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
+            else if ((m_editTrail == null) && this.m_controller.CurrentActivityTrailDisplayed != null &&
+               this.m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
             {
                 //Just for conveience (the popup text next contradicts this currently)
                 btnEdit_Click(sender, e);
@@ -177,7 +186,7 @@ namespace TrailsPlugin.UI.Activity
 #else
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,
 #endif
-                  Properties.Resources.Trail_Reference_Name);
+ Properties.Resources.Trail_Reference_Name);
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
             }
  		}
@@ -209,18 +218,38 @@ namespace TrailsPlugin.UI.Activity
 #else
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
-            } else {
+            }
+            else
+            {
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, false, m_controller.ReferenceTrailResult);
-                if (dialog.ShowDialog() == DialogResult.OK) {
-					m_page.RefreshControlState();
-					m_page.RefreshData();
-				}
+                showEditDialog(dialog);
 			}
 		}
+        private void showEditDialog(EditTrail dialog)
+        {
+            m_editTrail = dialog;
+            m_layer.editTrail = dialog;
+            m_page.RefreshControlState(); 
+            
+            dialog.TopMost = true;
+            dialog.FormClosed += new FormClosedEventHandler(popupForm_FormClosed);
+            dialog.Show();
+        }
 
-		private void btnDelete_Click(object sender, EventArgs e) {
+        void popupForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            m_editTrail = null;
+            m_layer.editTrail = null;
+
+            m_page.RefreshControlState();
+            m_page.RefreshData();
+        }
+
+		private void btnDelete_Click(object sender, EventArgs e)
+        {
 			if (MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
-                == DialogResult.Yes) {
+                == DialogResult.Yes)
+            {
 				m_controller.DeleteCurrentTrail();
 				m_page.RefreshControlState();
 				m_page.RefreshData();
@@ -230,13 +259,13 @@ namespace TrailsPlugin.UI.Activity
         /*************************************************************************************************************/
 //ST3
         //TODO: Rewrite, using IItemTrackSelectionInfo help functions
-        IList<TrailGPSLocation> getGPS(IValueRange<DateTime> ts, IValueRange<double> di, string id)
+        static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             DateTime d = DateTime.MaxValue;
 
             IActivity activity = null;
-            foreach (IActivity a in m_page.ViewActivities)
+            foreach (IActivity a in activities)
             {
                 //In ST3.0.4068 only one activity here 
                 if (id == a.ReferenceId)
@@ -290,7 +319,7 @@ namespace TrailsPlugin.UI.Activity
             return result;
         }
 
-        IList<TrailGPSLocation> getGPS(IList<IItemTrackSelectionInfo> aSelectGPS)
+        public static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities,  IList<IItemTrackSelectionInfo> aSelectGPS)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             for (int i = 0; i < aSelectGPS.Count; i++)
@@ -304,7 +333,7 @@ namespace TrailsPlugin.UI.Activity
                 {
                     foreach (IValueRange<DateTime> ts in tm)
                     {
-                        result2 = Trail.MergeTrailLocations(result2, getGPS(ts, null, aSelectGPS[i].ItemReferenceId));
+                        result2 = Trail.MergeTrailLocations(result2, getGPS(trail, activities, ts, null, aSelectGPS[i].ItemReferenceId));
                     }
                 }
                 //Should not be needed, MarkedTimes are set at import
@@ -371,12 +400,9 @@ namespace TrailsPlugin.UI.Activity
                     dialog.Trail.TrailLocations.Clear();
                 }
             }
-            dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(selectedGPS));
+            dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
 
-			if (dialog.ShowDialog() == DialogResult.OK) {
-				m_page.RefreshControlState();
-				m_page.RefreshData();
-			}
+            showEditDialog(dialog);
 		}
 
 
@@ -394,7 +420,7 @@ namespace TrailsPlugin.UI.Activity
             bool selectionIsDifferent = selectedGPS.Count != dialog.Trail.TrailLocations.Count;
             if (!selectionIsDifferent)
             {
-                IList<TrailGPSLocation> loc = getGPS(selectedGPS);
+                IList<TrailGPSLocation> loc = getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS);
                 if (loc.Count == selectedGPS.Count)
                 {
                     for (int i = 0; i < loc.Count; i++)
@@ -415,15 +441,11 @@ namespace TrailsPlugin.UI.Activity
             {
                 if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    dialog.Trail.TrailLocations = getGPS(selectedGPS);
+                    dialog.Trail.TrailLocations = getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS);
                 }
             }
 
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                m_page.RefreshControlState();
-                m_page.RefreshData();
-            }
+            showEditDialog(dialog);
         }
 
 
@@ -484,7 +506,5 @@ namespace TrailsPlugin.UI.Activity
 			this.TrailSelectorPanel.ColumnStyles[1].SizeType = SizeType.Absolute;
             this.TrailSelectorPanel.ColumnStyles[1].Width = this.TrailSelectorPanel.Width - width;
 		}
-
-        
     }
 }

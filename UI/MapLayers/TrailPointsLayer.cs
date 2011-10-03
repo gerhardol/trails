@@ -31,31 +31,32 @@ using ZoneFiveSoftware.Common.Visuals.Mapping;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using TrailsPlugin.Data;
+using TrailsPlugin.UI.Activity;
 using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.MapLayers
 {
     public class TrailPointsLayer : RouteControlLayerBase, IRouteControlLayer
     {
-        class WaypointMapMarker : MapMarker
+        class PointMapMarker : MapMarker
         {
-            private TrailGPSLocation waypoint;
-            public WaypointMapMarker(IGPSPoint location, MapIcon icon, bool clickable, TrailGPSLocation Wp)
+            private TrailGPSLocation trailPoint;
+            public PointMapMarker(IGPSPoint location, MapIcon icon, bool clickable, TrailGPSLocation Wp)
                 : base(location, icon, clickable)
             {
-                waypoint = Wp;
+                trailPoint = Wp;
             }
 
-            public TrailGPSLocation Waypoint
+            public TrailGPSLocation TrailPoint
             {
                 get
                 {
-                    return waypoint;
+                    return trailPoint;
                 }
             }
             public override string ToString()
             {
-                return waypoint.ToString();
+                return trailPoint.ToString();
             }
         }
 
@@ -76,19 +77,19 @@ namespace TrailsPlugin.UI.MapLayers
 
         //Note: There is an assumption of the relation between view and route control/layer
         //See the following: http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?t=9465
-        public static TrailPointsLayer InstanceRoutes(IView view)
+        public static TrailPointsLayer InstanceRoutes(ActivityDetailPageControl page, IView view)
         {
-            return TrailPointsLayer.InstanceBase(view, TrailPointsProvider.TrailsLayerZOrderRoutes);
+            return TrailPointsLayer.InstanceBase(page, view, TrailPointsProvider.TrailsLayerZOrderRoutes);
         }
-        public static TrailPointsLayer InstancePoints(IView view)
+        public static TrailPointsLayer InstancePoints(ActivityDetailPageControl page, IView view)
         {
-            return TrailPointsLayer.InstanceBase(view, TrailPointsProvider.TrailsLayerZOrderPoints);
+            return TrailPointsLayer.InstanceBase(page, view, TrailPointsProvider.TrailsLayerZOrderPoints);
         }
-        public static TrailPointsLayer InstanceMarked(IView view)
+        public static TrailPointsLayer InstanceMarked(ActivityDetailPageControl page, IView view)
         {
-            return TrailPointsLayer.InstanceBase(view, TrailPointsProvider.TrailsLayerZOrderMarked);
+            return TrailPointsLayer.InstanceBase(page, view, TrailPointsProvider.TrailsLayerZOrderMarked);
         }
-        private static TrailPointsLayer InstanceBase(IView view, int zorder)
+        private static TrailPointsLayer InstanceBase(ActivityDetailPageControl page, IView view, int zorder)
         {
             TrailPointsLayer result = null;
             if (view != null && m_layers != null)
@@ -108,6 +109,10 @@ namespace TrailsPlugin.UI.MapLayers
                     break;
                 }
             }
+            //if (!pages.ContainsKey(result))
+            //{
+            //    pages[result] = page;
+            //}
             return result;
         }
 
@@ -119,10 +124,10 @@ namespace TrailsPlugin.UI.MapLayers
             //}
             set
             {
-                bool changed = false;
-                if (!value.Equals(m_TrailPoints)) { changed = true; }
                 m_TrailPoints = value;
-                if (changed) { RefreshOverlays(true); }
+                //Change scaling, if radius changes
+                m_scalingChanged = true;
+                RefreshOverlays(true);
             }
         }
         public IList<TrailGPSLocation> SelectedTrailPoints
@@ -136,9 +141,11 @@ namespace TrailsPlugin.UI.MapLayers
                 //Set selected area to include selected points, including radius and some more
                 if (value.Count > 0)
                 {
-                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, 4*this.m_highlightRadius);
+                    //Assume all points have the same radius
+                    float highlightRadius = value[0].Radius;
+                    GPSBounds area = TrailGPSLocation.getGPSBounds(value, 4 * highlightRadius);
                     this.SetLocation(area);
-                    m_SelectedTrailPoints = value;
+                    //m_SelectedTrailPoints = value;
                 }
             }
         }
@@ -212,10 +219,18 @@ namespace TrailsPlugin.UI.MapLayers
         //Zoom to "relevant" contents (normally done when activities are updated)
         public void DoZoom()
         {
-            IGPSBounds area1 = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
-            IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * this.m_highlightRadius);
-            area1 = Union(area1, area2);
-            DoZoom(area1);
+            if (m_TrailRoutes.Count > 0)
+            {
+                IGPSBounds area1 = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
+                if (m_TrailPoints.Count > 0)
+                {
+                    //All points currently have the same radius
+                    float highlightRadius = m_TrailPoints[0].Radius;
+                    IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * highlightRadius);
+                    area1 = Union(area1, area2);
+                }
+                DoZoom(area1);
+            }
         }
 
         public new void DoZoom(IGPSBounds area)
@@ -239,17 +254,17 @@ namespace TrailsPlugin.UI.MapLayers
             this.MapControl.ZoomOut();
         }
 
-        public float HighlightRadius
-        {
-            set
-            {
-                if (m_highlightRadius != value)
-                {
-                    m_scalingChanged = true;
-                }
-                m_highlightRadius = value;
-            }
-        }
+        //public float HighlightRadius
+        //{
+        //    set
+        //    {
+        //        if (m_highlightRadius != value)
+        //        {
+        //            m_scalingChanged = true;
+        //        }
+        //        m_highlightRadius = value;
+        //    }
+        //}
 
         public void Refresh()
         {
@@ -270,44 +285,56 @@ namespace TrailsPlugin.UI.MapLayers
             AddMapControlEventHandlers();
         }
 
-        private void SetMovingWaypoint(WaypointMapMarker waypoint)
+        public EditTrail editTrail
         {
-            if (_selectedWaypointMoving != null)
+            set
             {
-                if (this._selectedWaypointMoving != null &&
-                    this._selectedWaypointOriginalLocation != null)
+                this.m_editTrail = value;
+            }
+        }
+        private void SetMovingWaypoint(PointMapMarker waypoint)
+        {
+            if (this.m_editTrail != null)
+            {
+                if (_selectedPointMoving != null)
                 {
-                    //New selection before old finished - set old location back
-                    this._selectedWaypointMoving.Waypoint.GpsLocation = this._selectedWaypointOriginalLocation;
-                    //pages[this].UpdateWaypointFromMap(_selectedWaypointMoving.Waypoint);
+                    if (this._selectedPointMoving != null &&
+                        this._selectedWaypointOriginalLocation != null)
+                    {
+                        //New selection before old finished - set old location back
+                        this._selectedPointMoving.TrailPoint.GpsLocation = this._selectedWaypointOriginalLocation;
+                        this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                        //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                    }
                 }
-            }
 
-            if (waypoint != null)
-            {
-                //Start - offset saved separately
-                this._selectedWaypointOriginalLocation = waypoint.Location;
+                if (waypoint != null)
+                {
+                    //Start - offset saved separately
+                    this._selectedWaypointOriginalLocation = waypoint.Location;
 
-                _selectedWaypointMoving = waypoint;
-                //pages[this].UpdateWaypointFromMap(_selectedWaypointMoving.Waypoint);
-                MapControl.CanMouseDrag = false;
-            }
-            else
-            {
-                //End or cancel
-                _selectedWaypointMoving = null;
-                this._selectedWaypointOriginalLocation = null;
-                MapControl.CanMouseDrag = true;
-                RefreshOverlays(true);
+                    _selectedPointMoving = waypoint;
+                    this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                    //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                    MapControl.CanMouseDrag = false;
+                }
+                else
+                {
+                    //End or cancel
+                    _selectedPointMoving = null;
+                    this._selectedWaypointOriginalLocation = null;
+                    MapControl.CanMouseDrag = true;
+                    RefreshOverlays(true);
+                }
             }
         }
 
         /*************************************************************/
         private void pointOverlay_MouseDown(object sender, MouseEventArgs e)
         {
-            if (sender is WaypointMapMarker && e.Button == MouseButtons.Left)
+            if (sender is PointMapMarker && e.Button == MouseButtons.Left)
             {
-                WaypointMapMarker selectedWaypoint = sender as WaypointMapMarker;
+                PointMapMarker selectedWaypoint = sender as PointMapMarker;
                 SetMovingWaypoint(selectedWaypoint);
                 Point midPoint = MapControl.MapProjection.GPSToPixel(MapControl.MapBounds.NorthWest,
                     MapControl.Zoom, selectedWaypoint.Location);
@@ -317,7 +344,7 @@ namespace TrailsPlugin.UI.MapLayers
 
         private void pointOverlay_MouseUp(object sender, MouseEventArgs e)
         {
-            if (this._selectedWaypointMoving != null)
+            if (this._selectedPointMoving != null)
             {
                 //Clear original location - no cancel
                 this._selectedWaypointOriginalLocation = null;
@@ -332,15 +359,16 @@ namespace TrailsPlugin.UI.MapLayers
 
         protected override void OnMapControlMouseMove(object sender, MouseEventArgs e)
         {
-            if (this._selectedWaypointMoving != null)
+            if (this._selectedPointMoving != null)
             {
-                if (_selectedWaypointMoving != null)
+                if (_selectedPointMoving != null)
                 {
                     //MapControl.RemoveOverlay(_selectedWaypointMoving);
                     Point p = new Point(m_clickToCenterOffset.X + e.Location.X, m_clickToCenterOffset.Y + e.Location.Y);
                     IGPSLocation newGpsLocation = MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p);
-                    _selectedWaypointMoving.Waypoint.GpsLocation = newGpsLocation;
-                    //pages[this].UpdateWaypointFromMap(_selectedWaypointMoving.Waypoint);
+                    _selectedPointMoving.TrailPoint.GpsLocation = newGpsLocation;
+                    this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                    //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
 
                     //Refresh this point. Only seem to be possible with refreshing all
                     RefreshOverlays(true);
@@ -524,34 +552,25 @@ namespace TrailsPlugin.UI.MapLayers
             }
 
             //TrailPoints
-            if (m_scalingChanged || null == m_icon)
+            if ((m_scalingChanged || null == m_icon) && m_TrailPoints.Count > 0)
             {
-                m_icon = getCircle(this.MapControl, m_highlightRadius);
+                //All points have the same radius, at least now
+                float highlightRadius = m_TrailPoints[0].Radius;
+                m_icon = getCircle(this.MapControl, highlightRadius);
             }
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             foreach (TrailGPSLocation location in m_TrailPoints)
             {
-                //xxx
                 IGPSPoint point = Utils.GPS.LocationToPoint(location.GpsLocation);
-                if ((!m_scalingChanged) && m_pointOverlays.ContainsKey(point))
+                PointMapMarker pointOverlay = new PointMapMarker(point, m_icon, MouseEvents, location);
+                if (MouseEvents)
                 {
-                    //No need to refresh this point
-                    newPointOverlays.Add(point, m_pointOverlays[point]);
-                    m_pointOverlays.Remove(point);
+                    pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
+                    pointOverlay.MouseUp += new MouseEventHandler(pointOverlay_MouseUp);
                 }
-                else
-                {
-                    WaypointMapMarker pointOverlay = new WaypointMapMarker(point, m_icon, MouseEvents, location);
-                    if (MouseEvents)
-                    {
-                        pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
-                        pointOverlay.MouseUp += new MouseEventHandler(pointOverlay_MouseUp);
-                    }
-                    newPointOverlays.Add(point, pointOverlay);
-                    addedOverlays.Add(pointOverlay);
-                }
+                newPointOverlays.Add(point, pointOverlay);
+                addedOverlays.Add(pointOverlay);
             }
-
             // Draw overlay
             if (0 == newPointOverlays.Count && 0 == visibleRoutes.Count) return;
 
@@ -577,7 +596,7 @@ namespace TrailsPlugin.UI.MapLayers
 
         public void ClearOverlays()
         {
-            foreach (WaypointMapMarker w in this.m_pointOverlays.Values)
+            foreach (PointMapMarker w in this.m_pointOverlays.Values)
             {
                 w.MouseDown -= new MouseEventHandler(pointOverlay_MouseDown);
                 w.MouseUp -= new MouseEventHandler(pointOverlay_MouseUp);
@@ -600,16 +619,18 @@ namespace TrailsPlugin.UI.MapLayers
         //private RouteItemsDataChangeListener listener;
 
         private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();
-        private IList<TrailGPSLocation> m_SelectedTrailPoints = new List<TrailGPSLocation>();
+        //private IList<TrailGPSLocation> m_SelectedTrailPoints = new List<TrailGPSLocation>();
         private IDictionary<string, MapPolyline> m_TrailRoutes = new Dictionary<string, MapPolyline>();
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-        private float m_highlightRadius;
+        //private float m_highlightRadius;
         private bool m_showPage;
         private static IDictionary<string, TrailPointsLayer> m_layers = new Dictionary<string, TrailPointsLayer>();
         private TrailPointsLayer m_extraMapLayer = null;
-        private WaypointMapMarker _selectedWaypointMoving = null;
+        //private static IDictionary<TrailPointsLayer, ActivityDetailPageControl> pages = new Dictionary<TrailPointsLayer, ActivityDetailPageControl>();
+        private PointMapMarker _selectedPointMoving = null;
         private IGPSPoint _selectedWaypointOriginalLocation = null;
         private Point m_clickToCenterOffset = Point.Empty;
+        private EditTrail m_editTrail = null;
     }
 }
 #endif

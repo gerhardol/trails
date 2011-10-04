@@ -117,9 +117,11 @@ namespace TrailsPlugin.UI.Activity {
             btnZUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.ZoomOut16;
             btnZUp.Text = "";
             //btnZUp.Enabled = false;
+            btnZUp.Visible = false;
             btnZDown.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.ZoomIn16;
             btnZDown.Text = "";
             //btnZDown.Enabled = false;
+            btnZDown.Visible = false;
             btnUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
             btnUp.Text = "";
             btnUp.Enabled = false;
@@ -173,7 +175,7 @@ namespace TrailsPlugin.UI.Activity {
                     m_updatingFromMap = true;
                     this.EList.SelectedItems = new object[] { list[i] };
                     m_updatingFromMap = false;
-                    EList.RefreshElements(new object[] { list[i] });//xxxx fler: editmode
+                    EList.RefreshElements(this.EList.SelectedItems);
                     break;
                 }
             }
@@ -191,10 +193,10 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (Controller.TrailController.Instance.ReferenceActivity != null)
             {
-                if (recalculate)
-                {
-                    m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
-                }
+                //if (recalculate)
+                //{
+                //    m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+                //}
                 if (recalculate || m_trailResult == null)
                 {
                     ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
@@ -248,7 +250,7 @@ namespace TrailsPlugin.UI.Activity {
             EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
             foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
             {
-                //Note: For reverse results, this is incorrect
+                //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
                 EList.SetChecked(t, t.TrailGPS.Required);
             }
         }
@@ -268,7 +270,7 @@ namespace TrailsPlugin.UI.Activity {
 			}
             //m_TrailToEdit contains the scratchpad of trail.
             //However TrailPoints uses the row (with meta data, could be a separate cache)
-            m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+            //m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
             
             Data.Trail trail = null;
             if (m_addMode && Data.TrailData.NameExists(TrailName.Text) ||
@@ -319,8 +321,8 @@ namespace TrailsPlugin.UI.Activity {
                 activity.Name = TrailName.Text;
                 activity.Notes += "Radius: " + UnitUtil.Elevation.ToString(m_TrailToEdit.Radius, "u");
                 const int lapLength = 60; //A constant time between points
-                IList<TrailGPSLocation> trailLoc = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
-                for (int i = 0; i < trailLoc.Count - 1; i++)
+                IList<EditTrailRow> list = (IList<EditTrailRow>)EList.RowData;
+                for (int i = 0; i < list.Count - 1; i++)
                 {
                     if (hasGps)
                     {
@@ -330,16 +332,17 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(trailLoc[i].LatitudeDegrees, trailLoc[i].LongitudeDegrees, 0));
+                        activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), 
+                            new GPSPoint(list[i].TrailGPS.LatitudeDegrees, list[i].TrailGPS.LongitudeDegrees, 0));
                         activity.Laps.Add(startTime.AddSeconds(i * lapLength), TimeSpan.FromSeconds(lapLength));
                     }
-                    activity.Laps[i].Rest = !trailLoc[i].Required;
-                    activity.Laps[i].Notes = trailLoc[i].Name;
+                    activity.Laps[i].Rest = !list[i].TrailGPS.Required;
+                    activity.Laps[i].Notes = list[i].TrailGPS.Name;
                 }
                 if (!hasGps)
                 {
-                    int i = trailLoc.Count - 1;
-                    activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(trailLoc[i].LatitudeDegrees, trailLoc[i].LongitudeDegrees, 0));
+                    int i = list.Count - 1;
+                    activity.GPSRoute.Add(startTime.AddSeconds(i * lapLength), new GPSPoint(list[i].TrailGPS.LatitudeDegrees, list[i].TrailGPS.LongitudeDegrees, 0));
                 }
             }
         }
@@ -425,7 +428,8 @@ namespace TrailsPlugin.UI.Activity {
                             if (selected[j].Equals(list[i]))
                             {
                                 ((IList<EditTrailRow>)EList.RowData).RemoveAt(i);
-                                EList.RowData = (IList<EditTrailRow>)EList.RowData;
+                                //Required to make ST see the update, Refresh() is not enough?
+                                EList.RowData = ((IList<EditTrailRow>)EList.RowData);
                                 m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
                                 m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
                                 break;
@@ -468,7 +472,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             ((IList<EditTrailRow>)EList.RowData).Insert(i+1, new EditTrailRow(add));
-            EList.RowData = (IList<EditTrailRow>)EList.RowData;
+            //Make ST see the update
+            EList.RowData = ((IList<EditTrailRow>)EList.RowData);
+            EList.Refresh();
             m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
             m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
@@ -615,7 +621,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 //else if (m_subItemSelected > 99)
                 //{
-                //    //xxx disabled, not working yet
+                //    //TODO: disabled, not working yet
                 //    if (t.m_time != null && m_trailResult.Activity != null && //!t.m_firstRow && 
                 //        m_trailResult.Activity.GPSRoute != null)
                 //    {

@@ -112,6 +112,10 @@ namespace TrailsPlugin.UI.Activity
             set
             {
                 m_showPage = value;
+                if (!this.m_showPage && this.m_editTrail != null)
+                {
+                    this.m_editTrail.Close();
+                }
                 //if (_showPage)
                 //{
                 //    RefreshControlState();

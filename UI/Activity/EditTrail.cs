@@ -455,7 +455,15 @@ namespace TrailsPlugin.UI.Activity {
                     i = 0;
                 }
             }
-            TrailGPSLocation sel = ((IList<EditTrailRow>)EList.RowData)[i].TrailGPS;
+            TrailGPSLocation sel;
+            if (((IList<EditTrailRow>)EList.RowData).Count >0)
+            {
+                sel = ((IList<EditTrailRow>)EList.RowData)[i].TrailGPS;
+            }
+            else
+            {
+                sel = new TrailGPSLocation(0,0,"");
+            }
             TrailGPSLocation add = sel.Copy();
                 add.Name +=
                 " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
@@ -471,7 +479,14 @@ namespace TrailsPlugin.UI.Activity {
                     add.GpsLocation = loc[0].GpsLocation;
                 }
             }
-            ((IList<EditTrailRow>)EList.RowData).Insert(i+1, new EditTrailRow(add));
+            if (((IList<EditTrailRow>)EList.RowData).Count > 0)
+            {
+                ((IList<EditTrailRow>)EList.RowData).Insert(i + 1, new EditTrailRow(add));
+            }
+            else
+            {
+                EList.RowData = new List<EditTrailRow> { new EditTrailRow(add) };
+            }
             //Make ST see the update
             EList.RowData = ((IList<EditTrailRow>)EList.RowData);
             EList.Refresh();
@@ -730,6 +745,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                     EList.RowData = result;
+                    m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
                 }
             }
         }

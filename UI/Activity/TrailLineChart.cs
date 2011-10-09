@@ -58,6 +58,7 @@ namespace TrailsPlugin.UI.Activity {
         private MultiChartsControl m_multiple;
         private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
+        private bool refIsSelf = false;
 
         const int MaxSelectedSeries = 5;
 
@@ -630,7 +631,14 @@ namespace TrailsPlugin.UI.Activity {
                            m_axis.ContainsKey(yaxis) && !(m_axis[yaxis] is RightVerticalAxis) || 
                            tr == m_refTrailResult || null == m_refTrailResult)
                         {
-                            graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
+                            if (refIsSelf)
+                            {
+                                graphPoints = GetSmoothedActivityTrack(tr, yaxis, tr);
+                            }
+                            else
+                            {
+                                graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
+                            }
                         }
                         else
                         {
@@ -1203,7 +1211,14 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
-                Data.Settings.OnlyReferenceRight = !(e.Modifiers == Keys.Shift);
+                if (e.Modifiers == Keys.Shift)
+                {
+                    refIsSelf = !refIsSelf;
+                }
+                else
+                {
+                    Data.Settings.OnlyReferenceRight = !(e.Modifiers == Keys.Shift);
+                }
             }
             else if (e.KeyCode == Keys.S)
             {

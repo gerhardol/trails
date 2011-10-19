@@ -1013,6 +1013,15 @@ namespace TrailsPlugin.UI.Activity {
             }
             this.referenceResultMenuItem.Text = string.Format(
                 Properties.Resources.UI_Activity_List_ReferenceResult, currRes, refRes);
+            if (currRes == refRes)
+            {
+                //Instead of a special text
+                this.referenceResultMenuItem.Enabled = false;
+            }
+            else
+            {
+                this.referenceResultMenuItem.Enabled = true;
+            }
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 this.addInBoundActivitiesMenuItem.Enabled = m_controller.CurrentActivityTrailDisplayed.CanAddInbound;

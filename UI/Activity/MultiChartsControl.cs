@@ -24,6 +24,7 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 #if !ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using TrailsPlugin.UI.MapLayers;
 #endif
 using TrailsPlugin.Data;
 
@@ -54,7 +55,7 @@ namespace TrailsPlugin.UI.Activity {
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
         {
 #else
-        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view, TrailPointsLayer layer)
         {
             m_view = view;
 #endif
@@ -62,7 +63,7 @@ namespace TrailsPlugin.UI.Activity {
             m_controller = controller;
             foreach (TrailLineChart t in m_lineCharts)
             {
-                t.SetControl(m_page, this);
+                t.SetControl(m_page, this, layer);
             }
         }
 

@@ -36,6 +36,7 @@ using TrailsPlugin.Data;
 #else
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Forms;
+using TrailsPlugin.UI.MapLayers;
 #endif
 using TrailsPlugin.Data;
 using GpsRunningPlugin.Util;
@@ -59,6 +60,7 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
+        private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
 
@@ -95,10 +97,11 @@ namespace TrailsPlugin.UI.Activity {
             fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
         }
 
-        public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple)
+        public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple, TrailPointsLayer layer)
         {
             m_page = page;
             m_multiple = multiple;
+            m_layer = layer;
         }
 
         public void ThemeChanged(ITheme visualTheme)
@@ -1217,7 +1220,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    Data.Settings.OnlyReferenceRight = !(e.Modifiers == Keys.Shift);
+                    Data.Settings.OnlyReferenceRight = !Data.Settings.OnlyReferenceRight;
                 }
             }
             else if (e.KeyCode == Keys.S)
@@ -1228,6 +1231,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
                 refreshData = false;
+            }
+            else if (e.KeyCode == Keys.Z)
+            {
+                //Should also zoom chart
+                this.m_layer.DoZoomMarkedTracks();
             }
 
             IList<LineChartTypes> chartTypes = new List<LineChartTypes> { selectedTypes };

@@ -62,7 +62,7 @@ namespace TrailsPlugin.UI.Activity
             this.chartTablePanel.RowCount = 2;
             this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.chartTablePanel.Size = new System.Drawing.Size(400, 100);
+            this.chartTablePanel.Size = new System.Drawing.Size(400, 31);
             this.chartTablePanel.TabIndex = 0;
             // 
             // ButtonPanel
@@ -186,14 +186,13 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainChart.Location = new System.Drawing.Point(3, 28);
             this.MainChart.Name = "MainChart";
-            this.MainChart.Padding = new System.Windows.Forms.Padding(0);
-            this.MainChart.Size = new System.Drawing.Size(394, 69);
+            this.MainChart.Size = new System.Drawing.Size(394, 1);
             this.MainChart.TabIndex = 0;
-            this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-            this.MainChart.SelectingData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectingData);
-            this.MainChart.KeyDown += new System.Windows.Forms.KeyEventHandler(MainChart_KeyDown);
-            this.MainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(MainChart_MouseMove);
-            this.MainChart.SelectAxisLabel += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectAxisLabelHandler(MainChart_SelectAxisLabel);
+            this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(this.MainChart_SelectData);
+            this.MainChart.SelectingData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(this.MainChart_SelectingData);
+            this.MainChart.SelectAxisLabel += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectAxisLabelHandler(this.MainChart_SelectAxisLabel);
+            this.MainChart.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainChart_KeyDown);
+            this.MainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseMove);
             // 
             // chartContextMenu
             // 
@@ -210,7 +209,6 @@ namespace TrailsPlugin.UI.Activity
             this.copyChartMenuItem.Name = "copyChartMenuItem";
             this.copyChartMenuItem.Size = new System.Drawing.Size(162, 22);
             this.copyChartMenuItem.Text = "<Copy>";
-            //this.copyChartMenuItem.Click += new System.EventHandler(this.copyChartMenuItem_Click);
             // 
             // selectChartsMenuItem
             // 
@@ -241,9 +239,8 @@ namespace TrailsPlugin.UI.Activity
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.chartTablePanel);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.MinimumSize = new System.Drawing.Size(0, 0);
             this.Name = "TrailLineChart";
-            this.Size = new System.Drawing.Size(400, 100);
+            this.Size = new System.Drawing.Size(400, 31);
             this.chartTablePanel.ResumeLayout(false);
             this.chartTablePanel.PerformLayout();
             this.ButtonPanel.ResumeLayout(false);

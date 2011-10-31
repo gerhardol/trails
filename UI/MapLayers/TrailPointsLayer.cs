@@ -245,6 +245,12 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
+        public void DoZoomMarkedTracks()
+        {
+            IGPSBounds area = TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes);
+            DoZoom(area);
+        }
+
         public void ZoomIn()
         {
             this.MapControl.ZoomIn();
@@ -332,13 +338,25 @@ namespace TrailsPlugin.UI.MapLayers
         /*************************************************************/
         private void pointOverlay_MouseDown(object sender, MouseEventArgs e)
         {
-            if (sender is PointMapMarker && e.Button == MouseButtons.Left)
+            if (sender is PointMapMarker)
             {
-                PointMapMarker selectedWaypoint = sender as PointMapMarker;
-                SetMovingWaypoint(selectedWaypoint);
-                Point midPoint = MapControl.MapProjection.GPSToPixel(MapControl.MapBounds.NorthWest,
-                    MapControl.Zoom, selectedWaypoint.Location);
-                m_clickToCenterOffset = new Point(midPoint.X - e.Location.X, midPoint.Y - e.Location.Y);
+                PointMapMarker selectedPoint = sender as PointMapMarker;
+                if (this.m_editTrail != null)
+                {
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        SetMovingWaypoint(selectedPoint);
+                        Point midPoint = MapControl.MapProjection.GPSToPixel(MapControl.MapBounds.NorthWest,
+                            MapControl.Zoom, selectedPoint.Location);
+                        m_clickToCenterOffset = new Point(midPoint.X - e.Location.X, midPoint.Y - e.Location.Y);
+                    }
+                }
+                else
+                {
+                    //TODO: Not working
+                    //toolTip.ShowAlways = true;
+                    //this.toolTip.Show(selectedPoint.TrailPoint.Name,MapControl.Control.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent.Parent, 2000);
+                }
             }
         }
 

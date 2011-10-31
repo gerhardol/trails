@@ -818,6 +818,37 @@ namespace TrailsPlugin.UI.Activity {
             m_page.RefreshControlState();
         }
 
+        void addCurrentTime()
+        {
+            IList<IActivity> allActivities = new List<IActivity>();
+            foreach (IActivity activity in m_controller.Activities)
+            {
+                allActivities.Add(activity);
+            }
+            if (m_controller.ReferenceActivity != null)
+            {
+                //Not always true or set...
+                DateTime start = m_controller.ReferenceActivity.StartTime;
+                foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
+                {
+                    if (!m_controller.Activities.Contains(activity) &&
+                        Math.Abs((activity.StartTime - start).TotalSeconds) < 180)
+                    {
+                        //Insert after the current activities, then the order is normally OK
+                        allActivities.Insert(m_controller.Activities.Count, activity);
+                    }
+                }
+            }
+            ActivityTrail t = m_controller.CurrentActivityTrail;
+            m_controller.Activities = allActivities;
+            if (m_controller.CurrentActivityTrailDisplayed != t)
+            {
+                m_controller.CurrentActivityTrail = t;
+            }
+            m_page.RefreshData();
+            m_page.RefreshControlState();
+
+        }
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -916,6 +947,17 @@ namespace TrailsPlugin.UI.Activity {
                 else
                 {
                     m_page.SetResultListHeight += cResultListHeight;
+                }
+            }
+            else if (e.KeyCode == Keys.T)
+            {
+                if (e.Modifiers == Keys.Shift)
+                {
+                    addCurrentTime();
+                }
+                else if (e.Modifiers == Keys.Control)
+                {
+                    TrailResult.m_diffOnDateTime = !TrailResult.m_diffOnDateTime;
                 }
             }
             else if (e.KeyCode == Keys.U)

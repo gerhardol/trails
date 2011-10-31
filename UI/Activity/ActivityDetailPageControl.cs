@@ -102,7 +102,7 @@ namespace TrailsPlugin.UI.Activity {
 
             TrailSelector.SetControl(this, m_controller, m_view, m_layerPoints);
             ResultList.SetControl(this, m_controller, m_view);
-            MultiCharts.SetControl(this, m_controller, m_view);
+            MultiCharts.SetControl(this, m_controller, m_view, m_layerMarked);
 #if ST_2_1
 			SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
@@ -359,6 +359,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Use ST standard display of track where possible
                         atrST.Add(trm);
+                        //xxx add to marked, too
                     }
                     else
                     {

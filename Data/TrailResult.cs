@@ -47,6 +47,8 @@ namespace TrailsPlugin.Data {
         private float m_totalDistDiff; //to give quality of results
         private Color m_trailColor = getColor(nextTrailColor++);
         private string m_toolTip;
+        //Temporary?
+        public static bool m_diffOnDateTime = false;
 
         private IValueRangeSeries<DateTime> m_pauses;
         private IDistanceDataTrack m_distanceMetersTrack;
@@ -540,7 +542,6 @@ namespace TrailsPlugin.Data {
                 String[] values = Settings.ExcludeStoppedCategory.Split(';');
                 foreach (String name in values)
                 {
-
                     if (name.Contains(category.Name))
                     {
                         return false;
@@ -860,7 +861,7 @@ namespace TrailsPlugin.Data {
                 }
                 else
                 {
-                    return Activity.StartTime + " " + Activity.Name;
+                    return  string.Format("{0} {1} {2} {3}", Activity.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0,Math.Min(Activity.Notes.Length,40)), Activity.Metadata.Source);
                 }
             }
         }
@@ -1434,6 +1435,7 @@ namespace TrailsPlugin.Data {
             return new TimeValueEntry<float>(refElapsed, t.Value);
         }
 
+        private enum DiffMode { ActivityStart, AbsoluteTime } //TODO:, TimeOfDay }
         public INumericTimeDataSeries DiffDistTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1458,7 +1460,14 @@ namespace TrailsPlugin.Data {
                         commonStretches = CommonStretches(trRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
                         m_DiffDistTrack0.Add(StartDateTime, 0);
                     }
-
+                    DiffMode diffMode = DiffMode.ActivityStart;
+                    if (m_diffOnDateTime && (
+                        this.StartDateTime >= trRef.StartDateTime && this.StartDateTime <= trRef.EndDateTime ||
+                        this.EndDateTime >= trRef.StartDateTime && this.EndDateTime <= trRef.EndDateTime))
+                    {
+                        //TODO: Implement
+                        diffMode = DiffMode.AbsoluteTime;
+                    }
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         uint elapsed = t.ElapsedSeconds;
@@ -1467,7 +1476,7 @@ namespace TrailsPlugin.Data {
                             DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
-                                while (Settings.ResyncDiffAtTrailPoints &&
+                                while (diffMode == DiffMode.ActivityStart && Settings.ResyncDiffAtTrailPoints &&
                                     this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
@@ -1522,7 +1531,15 @@ namespace TrailsPlugin.Data {
                                         }
                                         else
                                         {
-                                            DateTime d2 = trRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refOffset));
+                                            DateTime d2;
+                                            if (diffMode == DiffMode.ActivityStart)
+                                            {
+                                                d2 = trRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refOffset));
+                                            }
+                                            else
+                                            {
+                                                d2 = d1;
+                                            }
                                             refDist = getDistFromTrackTime(trRef.DistanceMetersTrack, d2, out status);
                                         }
                                         if (status == 0)

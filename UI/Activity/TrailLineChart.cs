@@ -60,6 +60,7 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
+        private bool m_zoomToContent = false;
         private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
@@ -257,13 +258,23 @@ namespace TrailsPlugin.UI.Activity {
                         t.Add(new ValueRange<DateTime>(d1, d2));
                     }
                     results.Add(new Data.TrailResultMarked(tr, t));
+                    if (m_zoomToContent)
+                    {
+                        //TODO: Add other series
+                    }
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     m_selectDataHandler = false;
 
-                    bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
+                    bool markAll = m_zoomToContent || (MainChart.DataSeries.Count <= MaxSelectedSeries);
                     //Mark route track, but not chart
                     m_page.MarkTrack(results, false);
                     m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
+
+                    if (m_zoomToContent)
+                    {
+                        //TODO: Should also zoom chart
+                        this.m_layer.DoZoomMarkedTracks();
+                    }
 
                     if (markAll)
                     {
@@ -1218,7 +1229,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     refIsSelf = !refIsSelf;
                 }
-                else
+                else if (e.Modifiers == Keys.Control)
                 {
                     Data.Settings.OnlyReferenceRight = !Data.Settings.OnlyReferenceRight;
                 }
@@ -1232,10 +1243,9 @@ namespace TrailsPlugin.UI.Activity {
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
                 refreshData = false;
             }
-            else if (e.KeyCode == Keys.Z)
+            else if (e.KeyCode == Keys.Z && e.Modifiers == Keys.Control)
             {
-                //Should also zoom chart
-                this.m_layer.DoZoomMarkedTracks();
+                m_zoomToContent = !m_zoomToContent;
             }
 
             IList<LineChartTypes> chartTypes = new List<LineChartTypes> { selectedTypes };

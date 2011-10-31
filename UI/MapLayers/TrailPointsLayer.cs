@@ -187,6 +187,15 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
+        public IDictionary<string, MapPolyline> MarkedTrailRoutesNoShow
+        {
+            set
+            {
+                m_MarkedTrailRoutesNoShow = value;
+                //Zooming done within ST
+            }
+        }
+
         public IGPSBounds Union(IGPSBounds area1, IGPSBounds area2)
         {
             if (area1 != null && area2 != null)
@@ -247,7 +256,8 @@ namespace TrailsPlugin.UI.MapLayers
 
         public void DoZoomMarkedTracks()
         {
-            IGPSBounds area = TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes);
+            IGPSBounds area = Union(TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes),
+                TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
             DoZoom(area);
         }
 
@@ -640,6 +650,8 @@ namespace TrailsPlugin.UI.MapLayers
         //private IList<TrailGPSLocation> m_SelectedTrailPoints = new List<TrailGPSLocation>();
         private IDictionary<string, MapPolyline> m_TrailRoutes = new Dictionary<string, MapPolyline>();
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+        //Rendered w standard ST ovelay, needed here when zooming
+        private IDictionary<string, MapPolyline> m_MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
         //private float m_highlightRadius;
         private bool m_showPage;
         private static IDictionary<string, TrailPointsLayer> m_layers = new Dictionary<string, TrailPointsLayer>();

@@ -360,6 +360,16 @@ namespace TrailsPlugin.UI.Activity {
                         //Use ST standard display of track where possible
                         atrST.Add(trm);
                         //xxx add to marked, too
+                        IDictionary<string, MapPolyline> marked = new Dictionary<string, MapPolyline>();
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
+                        {
+                            if (!mresult.ContainsKey(m.key))
+                            {
+                                marked.Add(m.key, m);
+                            }
+                        }
+
+                        m_layerMarked.MarkedTrailRoutesNoShow = marked;
                     }
                     else
                     {

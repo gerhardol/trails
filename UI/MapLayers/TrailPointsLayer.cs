@@ -260,6 +260,12 @@ namespace TrailsPlugin.UI.MapLayers
                 TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
             DoZoom(area);
         }
+        public void SetLocationMarkedTracks()
+        {
+            IGPSBounds area = Union(TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes),
+                TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
+            SetLocation(area);
+        }
 
         public void ZoomIn()
         {

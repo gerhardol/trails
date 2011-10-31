@@ -235,32 +235,29 @@ namespace TrailsPlugin.UI.Activity {
 
                     //Results must be added in order, so they can be resolved to result here
                     TrailResult tr = m_trailResults[i % this.TrailResults.Count];
+                    IList<TrailResult> markResults = new List<TrailResult>();
+                    if (m_zoomToContent)
+                    {
+                        markResults = new List<TrailResult>();
+                        foreach (TrailResult tr2 in this.m_trailResults)
+                        {
+                            markResults.Add(tr2);
+                        }
+                    }
+                    else
+                    {
+                        markResults = new List<TrailResult> { tr };
+                    }
                     IList<float[]> regions;
                     e.DataSeries.GetSelectedRegions(out regions);
 
                     IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
-                    IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-                    foreach (float[] at in regions)
+                    foreach (TrailResult tr2 in markResults)
                     {
-                        DateTime d1;
-                        DateTime d2;
-                        if (XAxisReferential == XAxisValue.Time)
-                        {
-                            d1 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[0]));
-                            d2 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[1]));
-                        }
-                        else
-                        {
-                            
-                            d1 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[0]), ReferenceTrailResult));
-                            d2 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[1]), ReferenceTrailResult));
-                        }
-                        t.Add(new ValueRange<DateTime>(d1, d2));
-                    }
-                    results.Add(new Data.TrailResultMarked(tr, t));
-                    if (m_zoomToContent)
-                    {
-                        //TODO: Add other series
+                        IList<float[]> regions2;
+                        e.DataSeries.GetSelectedRegions(out regions2);
+                        IValueRangeSeries<DateTime> t2 = GetResultRegions(tr2, regions2);
+                        results.Add(new Data.TrailResultMarked(tr2, t2));
                     }
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     m_selectDataHandler = false;
@@ -473,6 +470,29 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+        }
+
+        IValueRangeSeries<DateTime> GetResultRegions(TrailResult tr, IList<float[]> regions)
+        {
+            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+            foreach (float[] at in regions)
+            {
+                DateTime d1;
+                DateTime d2;
+                if (XAxisReferential == XAxisValue.Time)
+                {
+                    d1 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[0]));
+                    d2 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[1]));
+                }
+                else
+                {
+
+                    d1 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[0]), ReferenceTrailResult));
+                    d2 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[1]), ReferenceTrailResult));
+                }
+                t.Add(new ValueRange<DateTime>(d1, d2));
+            }
+            return t;
         }
 
         float[] GetSingleSelection(TrailResult tr, IValueRange<DateTime> v)

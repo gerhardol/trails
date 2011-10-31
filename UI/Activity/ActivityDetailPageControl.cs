@@ -354,7 +354,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultMarked trm in atr)
                 {
                     if (m_view != null &&
-                      //m_view.RouteSelectionProvider != null &&
+                        //m_view.RouteSelectionProvider != null &&
                       ViewSingleActivity(trm.trailResult.Activity))
                     {
                         //Use ST standard display of track where possible
@@ -367,7 +367,6 @@ namespace TrailsPlugin.UI.Activity {
                                 marked.Add(m.key, m);
                             }
                         }
-
                         m_layerMarked.MarkedTrailRoutesNoShow = marked;
                     }
                     else
@@ -387,17 +386,14 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerMarked.MarkedTrailRoutes = mresult;
 
                 //ST internal marking, use common marking
-                if (atrST.Count > 0)
-                {
-                    //Deactivate ST callback
-                    m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                    //Only one activity, OK to merge selections on one track
-                    TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atrST);
-                    m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, null, false);
-                    m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-                }
+                //Only one activity, OK to merge selections on one track
+                TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atrST);
+                //Deactivate ST callback
+                m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, null, false);
+                m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 
-                if (atr != null && atr.Count > 0)
+                if (atr != null && atr.Count > 0 || atrST.Count > 0)
                 {
                     if (zoom)
                     {
@@ -406,7 +402,7 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         //It does not matter what layer is zoomed here
-                        this.m_layerMarked.SetLocation(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
+                        this.m_layerMarked.SetLocationMarkedTracks();
                     }
                 }
 

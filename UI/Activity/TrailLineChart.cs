@@ -267,14 +267,10 @@ namespace TrailsPlugin.UI.Activity {
 
                     bool markAll = m_zoomToContent || (MainChart.DataSeries.Count <= MaxSelectedSeries);
                     //Mark route track, but not chart
-                    m_page.MarkTrack(results, false);
+                    m_page.MarkTrack(results, false, m_zoomToContent);
                     m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
-                    if (m_zoomToContent)
-                    {
-                        //TODO: Should also zoom chart
-                        this.m_layer.DoZoomMarkedTracks();
-                    }
+                    //TODO: Should also zoom chart
 
                     if (markAll)
                     {

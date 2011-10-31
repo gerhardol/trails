@@ -341,10 +341,10 @@ namespace TrailsPlugin.UI.Activity {
         
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
-            MarkTrack(atr, true);
+            MarkTrack(atr, true, false);
         }
 
-        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart)
+        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart, bool zoom)
         {
 #if !ST_2_1
             if (m_showPage)
@@ -359,7 +359,6 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Use ST standard display of track where possible
                         atrST.Add(trm);
-                        //xxx add to marked, too
                         IDictionary<string, MapPolyline> marked = new Dictionary<string, MapPolyline>();
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                         {
@@ -400,8 +399,15 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (atr != null && atr.Count > 0)
                 {
-                    //It does not matter what layer is zoomed here
-                    m_layerPoints.SetLocation(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
+                    if (zoom)
+                    {
+                        this.m_layerMarked.DoZoomMarkedTracks();
+                    }
+                    else
+                    {
+                        //It does not matter what layer is zoomed here
+                        this.m_layerMarked.SetLocation(GPS.GetBounds(atr[0].trailResult.GpsPoints(TrailResultMarked.SelInfoUnion(atr))));
+                    }
                 }
 
                 //Mark chart

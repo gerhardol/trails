@@ -964,6 +964,10 @@ namespace TrailsPlugin.UI.Activity {
             {
                 selectWithUR();
             }
+            else if (e.KeyCode == Keys.Z && e.Modifiers == Keys.Control)
+            {
+                Data.Settings.ZoomToSelection = !Data.Settings.ZoomToSelection;
+            }
         }
 
         void SummaryPanel_SizeChanged(object sender, System.EventArgs e)

@@ -341,10 +341,10 @@ namespace TrailsPlugin.UI.Activity {
         
         public void MarkTrack(IList<TrailResultMarked> atr)
         {
-            MarkTrack(atr, true, false);
+            MarkTrack(atr, true);
         }
 
-        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart, bool zoom)
+        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart)
         {
 #if !ST_2_1
             if (m_showPage)
@@ -395,13 +395,12 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (atr != null && atr.Count > 0 || atrST.Count > 0)
                 {
-                    if (zoom)
+                    if (Data.Settings.ZoomToSelection)
                     {
                         this.m_layerMarked.DoZoomMarkedTracks();
                     }
                     else
                     {
-                        //It does not matter what layer is zoomed here
                         this.m_layerMarked.SetLocationMarkedTracks();
                     }
                 }

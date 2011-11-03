@@ -60,7 +60,6 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
-        private bool m_zoomToContent = false;
         private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
@@ -236,7 +235,8 @@ namespace TrailsPlugin.UI.Activity {
                     //Results must be added in order, so they can be resolved to result here
                     TrailResult tr = m_trailResults[i % this.TrailResults.Count];
                     IList<TrailResult> markResults = new List<TrailResult>();
-                    if (m_zoomToContent)
+                    //Reuse ZoomToSelection setting
+                    if (Data.Settings.ZoomToSelection)
                     {
                         markResults = new List<TrailResult>();
                         foreach (TrailResult tr2 in this.m_trailResults)
@@ -262,9 +262,9 @@ namespace TrailsPlugin.UI.Activity {
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     m_selectDataHandler = false;
 
-                    bool markAll = m_zoomToContent || (MainChart.DataSeries.Count <= MaxSelectedSeries);
+                    bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                     //Mark route track, but not chart
-                    m_page.MarkTrack(results, false, m_zoomToContent);
+                    m_page.MarkTrack(results, false);
                     m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
                     //TODO: Should also zoom chart
@@ -1258,10 +1258,6 @@ namespace TrailsPlugin.UI.Activity {
             {
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
                 refreshData = false;
-            }
-            else if (e.KeyCode == Keys.Z && e.Modifiers == Keys.Control)
-            {
-                m_zoomToContent = !m_zoomToContent;
             }
 
             IList<LineChartTypes> chartTypes = new List<LineChartTypes> { selectedTypes };

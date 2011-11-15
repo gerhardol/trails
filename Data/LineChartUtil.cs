@@ -52,6 +52,7 @@ namespace TrailsPlugin.Data
         DiffTime,
         DiffDist,
         DiffDistTime,
+        DiffDevice,
         DiffHeartRateBPM, //NotUsedInTrails
         Time, //NotUsedInTrails
         Distance //NotUsedInTrails
@@ -76,6 +77,7 @@ namespace TrailsPlugin.Data
                         xAxisLabel = CommonResources.Text.LabelTime;
                         break;
                     }
+                    //TODO: DateTime
                 default:
                     {
                         Debug.Assert(false);
@@ -160,6 +162,11 @@ namespace TrailsPlugin.Data
                 case LineChartTypes.DiffDistTime:
                     {
                         yAxisLabel = CommonResources.Text.LabelDistance + CommonResources.Text.LabelTime;
+                        break;
+                    }
+                case LineChartTypes.DiffDevice:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelDevice;
                         break;
                     }
                 default:
@@ -259,6 +266,7 @@ namespace TrailsPlugin.Data
                     }
                 case LineChartTypes.DiffDist:
                 case LineChartTypes.Distance:
+                case LineChartTypes.DiffDevice:
                     {
                         axis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
                         axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Distance.LabelAbbrAct2(activity);
@@ -284,7 +292,8 @@ namespace TrailsPlugin.Data
                 {LineChartTypes.Power, Color.FromArgb(92, 53, 102)},
                 //Private
                 {LineChartTypes.DiffTime, Color.DarkCyan},
-                {LineChartTypes.DiffDist, Color.CornflowerBlue}
+                {LineChartTypes.DiffDist, Color.CornflowerBlue},
+                {LineChartTypes.DiffDevice, Color.LawnGreen}
             };
     }
 }

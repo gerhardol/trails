@@ -72,6 +72,7 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries m_powerWattsTrack0;
         private INumericTimeDataSeries m_speedTrack0;
         private INumericTimeDataSeries m_paceTrack0;
+        private INumericTimeDataSeries m_diffDeviceTrack0;
         private INumericTimeDataSeries m_DiffTimeTrack0;
         private INumericTimeDataSeries m_DiffDistTrack0;
         IList<double> m_trailPointTime0;
@@ -994,6 +995,7 @@ namespace TrailsPlugin.Data
             m_cadencePerMinuteTrack0 = null;
             m_speedTrack0 = null;
             m_paceTrack0 = null;
+            m_diffDeviceTrack0 = null;
             m_DiffTimeTrack0 = null;
             m_DiffDistTrack0 = null;
             m_trailPointTime0 = null;
@@ -1254,7 +1256,7 @@ namespace TrailsPlugin.Data
             if (m_cadencePerMinuteTrack0 == null)
             {
                 m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
-                    new Convert(UnitUtil.Cadence.ConvertFrom), refRes);
+                     new Convert(UnitUtil.Cadence.ConvertFrom), refRes);
             }
             return m_cadencePerMinuteTrack0;
         }
@@ -1303,6 +1305,34 @@ namespace TrailsPlugin.Data
             return m_paceTrack0;
         }
 
+        public INumericTimeDataSeries DiffDeviceTrack0(TrailResult refRes)
+        {
+            //checkCacheRef(refRes);
+            if (m_diffDeviceTrack0 == null)
+            {
+                m_diffDeviceTrack0 = new NumericTimeDataSeries();
+                if (this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
+                {
+                    double start = this.StartDist;
+                    double? start2 = null;
+                    foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
+                    {
+                        DateTime time = this.DistanceMetersTrack.EntryDateTime(t);
+                        ITimeValueEntry<float> t2 = this.Activity.DistanceMetersTrack.GetInterpolatedValue(time);
+                        if (t2 != null)
+                        {
+                            if (start2 == null)
+                            {
+                                start2 = t2.Value;
+                            }
+                            float val = (float)UnitUtil.Elevation.ConvertFrom(t.Value + start - t2.Value -(double)start2);
+                            m_diffDeviceTrack0.Add(time, val);
+                        }
+                    }
+                }
+            }
+            return m_diffDeviceTrack0;
+        }
         /********************************************************************/
 
         private TrailResult getRefSub(TrailResult parRes)

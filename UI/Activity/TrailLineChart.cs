@@ -1030,6 +1030,11 @@ namespace TrailsPlugin.UI.Activity {
                         track = result.DiffDistTrack0(refRes);
                         break;
                     }
+                case LineChartTypes.DiffDevice:
+                    {
+                        track = result.DiffDeviceTrack0(refRes);
+                        break;
+                    }
 
                 default:
                     {
@@ -1072,7 +1077,20 @@ namespace TrailsPlugin.UI.Activity {
             }
             set
             {
+                bool diffDev = false;
+                if (m_YAxisReferentials.Contains(LineChartTypes.DiffDevice))
+                {
+                    diffDev = true;
+                }
                 m_YAxisReferentials = value;
+                if (diffDev)
+                {
+                    if (m_YAxisReferentials == null)
+                    {
+                        m_YAxisReferentials = new List<LineChartTypes>();
+                    }
+                    m_YAxisReferentials.Add(LineChartTypes.DiffDevice);
+                }
                 m_axis = new Dictionary<LineChartTypes, IAxis>();
             }
         }
@@ -1221,6 +1239,21 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.C)
             {
                 selectedTypes = LineChartTypes.Cadence;
+            }
+            else if (e.KeyCode == Keys.D && e.Modifiers == Keys.Control)
+            {
+                if (m_YAxisReferentials == null)
+                {
+                    m_YAxisReferentials = new List<LineChartTypes>();
+                }
+                if (m_YAxisReferentials.Contains(LineChartTypes.DiffDevice))
+                {
+                    m_YAxisReferentials.Remove(LineChartTypes.DiffDevice);
+                }
+                else
+                {
+                    m_YAxisReferentials.Add(LineChartTypes.DiffDevice);
+                }
             }
             else if (e.KeyCode == Keys.E)
             {

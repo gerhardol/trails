@@ -60,6 +60,7 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
+        private bool m_diffDeviceDist = false;
         private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
@@ -940,6 +941,10 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     CreateAxis(yaxis, m_axis.Count==0);
                 }
+                if(m_diffDeviceDist)
+                {
+                    CreateAxis(LineChartTypes.DiffDevice, m_axis.Count == 0);
+                }
             }
         }
         
@@ -1077,20 +1082,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             set
             {
-                bool diffDev = false;
-                if (m_YAxisReferentials.Contains(LineChartTypes.DiffDevice))
-                {
-                    diffDev = true;
-                }
                 m_YAxisReferentials = value;
-                if (diffDev)
-                {
-                    if (m_YAxisReferentials == null)
-                    {
-                        m_YAxisReferentials = new List<LineChartTypes>();
-                    }
-                    m_YAxisReferentials.Add(LineChartTypes.DiffDevice);
-                }
                 m_axis = new Dictionary<LineChartTypes, IAxis>();
             }
         }
@@ -1242,18 +1234,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.D && e.Modifiers == Keys.Control)
             {
-                if (m_YAxisReferentials == null)
-                {
-                    m_YAxisReferentials = new List<LineChartTypes>();
-                }
-                if (m_YAxisReferentials.Contains(LineChartTypes.DiffDevice))
-                {
-                    m_YAxisReferentials.Remove(LineChartTypes.DiffDevice);
-                }
-                else
-                {
-                    m_YAxisReferentials.Add(LineChartTypes.DiffDevice);
-                }
+                m_diffDeviceDist = !m_diffDeviceDist;
             }
             else if (e.KeyCode == Keys.E)
             {

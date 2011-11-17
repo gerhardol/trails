@@ -279,6 +279,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     m_layerRoutes.TrailRoutes = new Dictionary<string, MapPolyline>();
                 }
+                m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
                 m_layerRoutes.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 m_layerMarked.ClearOverlays();
             }
@@ -351,6 +352,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 IList<TrailResultMarked> atrST = new List<TrailResultMarked>();
                 IDictionary<string, MapPolyline> mresult = new Dictionary<string, MapPolyline>();
+                IDictionary<string, MapPolyline> marked = new Dictionary<string, MapPolyline>();
                 foreach (TrailResultMarked trm in atr)
                 {
                     if (m_view != null &&
@@ -359,7 +361,6 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Use ST standard display of track where possible
                         atrST.Add(trm);
-                        IDictionary<string, MapPolyline> marked = new Dictionary<string, MapPolyline>();
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                         {
                             if (!mresult.ContainsKey(m.key))
@@ -367,7 +368,6 @@ namespace TrailsPlugin.UI.Activity {
                                 marked.Add(m.key, m);
                             }
                         }
-                        m_layerMarked.MarkedTrailRoutesNoShow = marked;
                     }
                     else
                     {
@@ -383,6 +383,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 //Trails track display update
+                m_layerMarked.MarkedTrailRoutesNoShow = marked;
                 m_layerMarked.MarkedTrailRoutes = mresult;
 
                 //ST internal marking, use common marking

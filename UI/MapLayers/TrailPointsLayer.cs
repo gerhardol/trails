@@ -173,11 +173,11 @@ namespace TrailsPlugin.UI.MapLayers
             set
             {
                 m_MarkedTrailRoutes = value;
-                if (value.Count > 0)
-                {
-                    IGPSBounds area = TrailMapPolyline.getGPSBounds(value);
-                    SetLocation(area);
-                }
+                //if (value.Count > 0)
+                //{
+                //    IGPSBounds area = TrailMapPolyline.getGPSBounds(value);
+                //    SetLocation(area);
+                //}
                 RefreshOverlays(true);
             }
         }

@@ -1313,7 +1313,6 @@ namespace TrailsPlugin.Data
                 m_diffDeviceTrack0 = new NumericTimeDataSeries();
                 if (this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
-                    double start = this.StartDist;
                     double? start2 = null;
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
@@ -1325,7 +1324,7 @@ namespace TrailsPlugin.Data
                             {
                                 start2 = t2.Value;
                             }
-                            float val = (float)UnitUtil.Elevation.ConvertFrom(t.Value + start - t2.Value -(double)start2);
+                            float val = (float)UnitUtil.Elevation.ConvertFrom(t.Value - t2.Value + (double)start2);
                             m_diffDeviceTrack0.Add(time, val);
                         }
                     }
@@ -1516,7 +1515,7 @@ namespace TrailsPlugin.Data
                     DiffMode diffMode = DiffMode.ActivityStart;
                     if (m_diffOnDateTime && (
                         this.StartDateTime >= trRef.StartDateTime && this.StartDateTime <= trRef.EndDateTime ||
-                        this.EndDateTime >= trRef.StartDateTime && this.EndDateTime <= trRef.EndDateTime))
+                        trRef.StartDateTime >= this.StartDateTime && trRef.StartDateTime <= this.EndDateTime))
                     {
                         //TODO: Implement
                         diffMode = DiffMode.AbsoluteTime;

@@ -829,10 +829,14 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //Not always true or set...
                 DateTime start = m_controller.ReferenceActivity.StartTime;
+                DateTime end = ActivityInfoCache.Instance.GetInfo(m_controller.ReferenceActivity).EndTime;
                 foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                 {
+                    //aprox end
+                    DateTime end2 = activity.StartTime + activity.TotalTimeEntered;
                     if (!m_controller.Activities.Contains(activity) &&
-                        Math.Abs((activity.StartTime - start).TotalSeconds) < 180)
+                        (activity.StartTime >= start && activity.StartTime <= end ||
+                        start >= activity.StartTime && start <= end2))
                     {
                         //Insert after the current activities, then the order is normally OK
                         allActivities.Insert(m_controller.Activities.Count, activity);

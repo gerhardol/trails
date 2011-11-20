@@ -145,6 +145,7 @@ namespace TrailsPlugin.Data
         {
             m_resultsListWrapper = null;
         }
+
         public void Clear()
         {
             if (m_resultsListWrapper != null)
@@ -172,6 +173,29 @@ namespace TrailsPlugin.Data
                 return m_resultsListWrapper;
             }
         }
+
+        public IList<TrailResultWrapper> ResultTreeListRows(IList<TrailResultWrapper> selected)
+        {
+            IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
+            results.Add(this.Summary(selected));
+            foreach (TrailResultWrapper t in ResultTreeList)
+            {
+                results.Add(t);
+            }
+            return results;
+        }
+
+        private TrailResultWrapper Summary(IList<TrailResultWrapper> selected)
+        {
+            if (selected == null || selected.Count==0)
+            {
+                selected = m_resultsListWrapper;
+            }
+            TrailResultWrapper result = new TrailResultWrapper(this, selected);
+            //TODO: Splits
+            return result;
+        }
+
         public void Sort()
         {
             ((List<TrailResultWrapper>)ResultTreeList).Sort();
@@ -188,6 +212,7 @@ namespace TrailsPlugin.Data
                 return m_canAddInbound;
             }
         }
+
         public void AddInBoundResult(System.Windows.Forms.ProgressBar progressBar)
         {
             CalcResults(progressBar);
@@ -215,10 +240,12 @@ namespace TrailsPlugin.Data
         {
             CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional, null);
         }
+
         public void CalcResults(System.Windows.Forms.ProgressBar progressBar)
         {
             CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional, progressBar);
         }
+
         public void CalcResults(IList<IActivity> activities, int MaxRequiredMisses, bool bidirectional, System.Windows.Forms.ProgressBar progressBar)
         {
             if (m_resultsListWrapper == null || m_trail.TrailChanged(m_resultActivity))
@@ -932,6 +959,7 @@ namespace TrailsPlugin.Data
             }
             return activity.GPSRoute[index].Value;
         }
+
         private static int TrailIndex(IList<TrailGPSLocation> trailgps, int trailIndex)
         {
             //Single point trails (and wraparound if implemented) have special handling
@@ -945,6 +973,7 @@ namespace TrailsPlugin.Data
         {
             return trailgps[TrailIndex(trailgps, trailIndex)].DistanceMetersToPoint(routePoint(activity, routeIndex));
         }
+
         private static bool isEndTrailPoint(IList<TrailGPSLocation> trailgps, int noOfTrailPoints)
         {
             //Special handling for single point trails (and wraparound if implemented)
@@ -1171,6 +1200,7 @@ namespace TrailsPlugin.Data
                 return 0;
             }
         }
+
         internal class TrailResultPointMeta : TrailResultPoint
         {
             public TrailResultPointMeta(DateTime time, string name,

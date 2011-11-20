@@ -110,7 +110,6 @@ namespace TrailsPlugin.Data {
                         m_trailLocations = TrailGpsPointsFromSplits(m_referenceActivity);
                     }
                 }
-                //TODO: Review radius handling
                 foreach (TrailGPSLocation t in this.m_trailLocations)
                 {
                     t.Radius = this.m_radius;
@@ -281,6 +280,15 @@ namespace TrailsPlugin.Data {
         public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
             out TrailResultInfo indexes, bool onlyActiveLaps)
         {
+
+            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
+            indexes = new TrailResultInfo(activity);
+            if (activity == null)
+            {
+                //summary result
+                return results;
+            }
+
             //Get around a problem with only Rest laps
             if (onlyActiveLaps)
             {
@@ -294,9 +302,6 @@ namespace TrailsPlugin.Data {
                 }
             }
 
-            System.Diagnostics.Debug.Assert(null != activity);
-
-            indexes = new TrailResultInfo(activity);
             IList<bool> lapActive = new List<bool>();
 
             bool lastIsRestlap = false;
@@ -349,7 +354,6 @@ namespace TrailsPlugin.Data {
                 lapActive.Add(!lastIsRestlap);
             }
 
-            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
             if (null != activity.GPSRoute && 0 < activity.GPSRoute.Count)
             {
                 for (int i = 0; i < indexes.Points.Count; i++)

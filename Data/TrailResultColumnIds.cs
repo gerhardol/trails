@@ -190,6 +190,15 @@ namespace TrailsPlugin.Data {
 
         public static int Compare(TrailResult x, TrailResult y)
         {
+            if (x.Activity == null)
+            {
+                //Summary
+                return 1;
+            }
+            if (y.Activity == null)
+            {
+                return -1;
+            }
             int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
 
             if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Name)
@@ -210,6 +219,7 @@ namespace TrailsPlugin.Data {
             }            
             return result;
         }
+
         //Helper function to get numerical value used in comparison
         private static double getCompareField(TrailResult x, string id)
         {

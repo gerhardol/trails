@@ -109,6 +109,7 @@ namespace TrailsPlugin.Data
         {
             this.m_reverse = reverse;
         }
+
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
             : this(activityTrail, null, order, indexes, distDiff)
         {
@@ -133,6 +134,14 @@ namespace TrailsPlugin.Data
             createTrailResult(activityTrail, null, order, indexes, float.MaxValue);
         }
 
+        //Summary result
+        public TrailResult(ActivityTrail activityTrail, int order)
+        {
+            createTrailResult(activityTrail, null,  order, new TrailResultInfo(null), 0);
+            m_toolTip = "";
+            m_trailColor = Color.Black;
+        }
+
         private void createTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff)
         {
             m_activityTrail = activityTrail;
@@ -145,12 +154,15 @@ namespace TrailsPlugin.Data
 
             if (par == null)
             {
-                if (!s_activities.ContainsKey(m_activity))
+                if (m_activity != null)
                 {
-                    s_activities.Add(m_activity, new trActivityInfo());
-                    //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
+                    if (!s_activities.ContainsKey(m_activity))
+                    {
+                        s_activities.Add(m_activity, new trActivityInfo());
+                        //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
+                    }
+                    s_activities[m_activity].res.Add(this);
                 }
-                s_activities[m_activity].res.Add(this);
             }
             else
             {
@@ -227,7 +239,7 @@ namespace TrailsPlugin.Data
             }
         }
         /****************************************************************/
-        public TimeSpan Duration
+        public virtual TimeSpan Duration
         {
             get
             {
@@ -235,7 +247,7 @@ namespace TrailsPlugin.Data
                    StartDateTime, EndDateTime, Pauses);
             }
         }
-        public double Distance
+        public virtual double Distance
         {
             get
             {
@@ -269,20 +281,27 @@ namespace TrailsPlugin.Data
             {
                 if (m_startTime == null)
                 {
-                    DateTime startTime = m_childrenInfo.Points[0].Time;
-                    DateTime endTime = m_childrenInfo.Points[m_childrenInfo.Points.Count - 1].Time;
-                    m_startTime = getFirstUnpausedTime(startTime, Pauses, true);
-                    if (endTime.CompareTo((DateTime)m_startTime) <= 0)
+                    if (m_childrenInfo.Points.Count == 0)
                     {
-                        //Trail (or subtrail) is completely paused. Use all
-                        m_startTime = startTime;
+                        m_startTime = DateTime.MinValue;
                     }
-                    if (m_startTime == DateTime.MinValue)
+                    else
                     {
-                        m_startTime = Info.ActualTrackStart;
+                        DateTime startTime = m_childrenInfo.Points[0].Time;
+                        DateTime endTime = m_childrenInfo.Points[m_childrenInfo.Points.Count - 1].Time;
+                        m_startTime = getFirstUnpausedTime(startTime, Pauses, true);
+                        if (endTime.CompareTo((DateTime)m_startTime) <= 0)
+                        {
+                            //Trail (or subtrail) is completely paused. Use all
+                            m_startTime = startTime;
+                        }
                         if (m_startTime == DateTime.MinValue)
                         {
-                            m_startTime = this.Activity.StartTime;
+                            m_startTime = Info.ActualTrackStart;
+                            if (m_startTime == DateTime.MinValue)
+                            {
+                                m_startTime = this.Activity.StartTime;
+                            }
                         }
                     }
                 }
@@ -295,20 +314,27 @@ namespace TrailsPlugin.Data
             {
                 if (m_endTime == null)
                 {
-                    DateTime startTime = m_childrenInfo.Points[0].Time;
-                    DateTime endTime = m_childrenInfo.Points[m_childrenInfo.Points.Count - 1].Time;
-                    m_endTime = getFirstUnpausedTime(endTime, Pauses, false);
-                    if (startTime.CompareTo((DateTime)m_endTime) >= 0)
+                    if (m_childrenInfo.Points.Count == 0)
                     {
-                        //Trail (or subtrail) is completely paused. Use all
-                        m_endTime = endTime;
+                        m_endTime = DateTime.MinValue;
                     }
-                    if (m_endTime == DateTime.MinValue)
+                    else
                     {
-                        m_endTime = Info.ActualTrackEnd;
+                        DateTime startTime = m_childrenInfo.Points[0].Time;
+                        DateTime endTime = m_childrenInfo.Points[m_childrenInfo.Points.Count - 1].Time;
+                        m_endTime = getFirstUnpausedTime(endTime, Pauses, false);
+                        if (startTime.CompareTo((DateTime)m_endTime) >= 0)
+                        {
+                            //Trail (or subtrail) is completely paused. Use all
+                            m_endTime = endTime;
+                        }
                         if (m_endTime == DateTime.MinValue)
                         {
-                            m_endTime = Info.EndTime;
+                            m_endTime = Info.ActualTrackEnd;
+                            if (m_endTime == DateTime.MinValue)
+                            {
+                                m_endTime = Info.EndTime;
+                            }
                         }
                     }
                 }
@@ -325,7 +351,7 @@ namespace TrailsPlugin.Data
             return t;
         }
 
-        public double StartDist
+        public virtual double StartDist
         {
             get
             {
@@ -571,7 +597,7 @@ namespace TrailsPlugin.Data
 #endif
                     if ((bool)m_includeStopped)
                     {
-                        m_includeStopped = isIncludeStoppedCategory(this.Activity.Category);
+                        m_includeStopped = isIncludeStoppedCategory(this.Category);
                     }
                 }
                 return (bool)m_includeStopped;
@@ -862,7 +888,7 @@ namespace TrailsPlugin.Data
                 {
                     return m_toolTip;
                 }
-                else
+                else if (this.Activity != null)
                 {
                     string s = string.Format("{0} {1} {2}", Activity.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
                     if (m_diffOnDateTime)
@@ -871,10 +897,11 @@ namespace TrailsPlugin.Data
                     }
                     return s;
                 }
+                return "";
             }
         }
 
-        public float AvgCadence
+        public virtual float AvgCadence
         {
             get
             {
@@ -886,7 +913,8 @@ namespace TrailsPlugin.Data
                 return track.Avg;
             }
         }
-        public float AvgHR
+
+        public virtual float AvgHR
         {
             get
             {
@@ -898,7 +926,8 @@ namespace TrailsPlugin.Data
                 return track.Avg;
             }
         }
-        public float MaxHR
+
+        public virtual float MaxHR
         {
             get
             {
@@ -910,7 +939,8 @@ namespace TrailsPlugin.Data
                 return track.Max;
             }
         }
-        public float AvgPower
+
+        public virtual float AvgPower
         {
             get
             {
@@ -927,21 +957,24 @@ namespace TrailsPlugin.Data
                 return (float)UnitUtil.Power.ConvertTo(result, m_cacheTrackRef.Activity);
             }
         }
-        public float AvgGrade
+
+        public virtual float AvgGrade
         {
             get
             {
                 return GradeTrack0(m_cacheTrackRef).Avg;
             }
         }
-        public float AvgSpeed
+
+        public virtual float AvgSpeed
         {
             get
             {
                 return (float)(this.Distance / this.Duration.TotalSeconds);
             }
         }
-        public float FastestSpeed
+
+        public virtual float FastestSpeed
         {
             get
             {
@@ -949,8 +982,9 @@ namespace TrailsPlugin.Data
                 return (float)UnitUtil.Speed.ConvertTo(this.SpeedTrack0(m_cacheTrackRef).Max, m_cacheTrackRef.Activity);
             }
         }
+
         //Smoothing could differ speed/pace, why this is separate
-        public double FastestPace
+        public virtual double FastestPace
         {
             get
             {
@@ -958,7 +992,8 @@ namespace TrailsPlugin.Data
                 return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity);
             }
         }
-        public double ElevChg
+
+        public virtual double ElevChg
         {
             get
             {
@@ -979,6 +1014,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (m_activity == null)
+                {
+                    return null;
+                }
                 return m_activity.Category;
             }
         }
@@ -1758,7 +1797,7 @@ namespace TrailsPlugin.Data
         {
             IGPSRoute gpsTrack = new GPSRoute();
             gpsTrack.AllowMultipleAtSameTime = false;
-            if (m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
+            if (m_activity != null && m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
                 StartDateTime != DateTime.MinValue && EndDateTime != DateTime.MinValue)
             {
                 //Insert values at borders in m_gpsTrack
@@ -1968,7 +2007,15 @@ namespace TrailsPlugin.Data
                     //        activity.Category = activity.Category.SubCategories[0];
                     //    }
                     //}
-                    m_ActivityInfo = c.GetInfo(activity);
+                    if (activity != null)
+                    {
+                        m_ActivityInfo = c.GetInfo(activity);
+                    }
+                    else
+                    {
+                        //TODO: This data should not be used, just return any activity
+                        m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
+                    }
                 }
                 return m_ActivityInfo;
             }
@@ -2174,6 +2221,11 @@ namespace TrailsPlugin.Data
 
         public override string ToString()
         {
+            if (this.Activity == null)
+            {
+                //Summary
+                return "";
+            }
             return (this.m_startTime != null ? m_startTime.ToString() : "") + " " + this.TrailPointDateTime[0].ToShortTimeString() + " " + this.TrailPointDateTime.Count;
         }
     }

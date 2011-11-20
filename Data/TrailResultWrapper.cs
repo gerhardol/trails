@@ -70,6 +70,15 @@ namespace TrailsPlugin.Data
             }
             //No Children
         }
+
+        //Summary line
+        public TrailResultWrapper(ActivityTrail activityTrail, IList<TrailResultWrapper> rows)
+            : base(null, null)
+        {
+            m_isSummary = true;
+            base.Element = new SummaryTrailResult(activityTrail, GetTrailResults(rows));
+        }
+
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
             : base(par, ele) { }
 
@@ -80,7 +89,12 @@ namespace TrailsPlugin.Data
                 return (TrailResult)this.Element;
             }
         }
-        
+
+        public bool IsSummary
+        {
+            get { return m_isSummary; }
+        }
+
         public void Sort()
         {
             if (m_children.Count > 0)
@@ -118,6 +132,7 @@ namespace TrailsPlugin.Data
                 }
             }
         }
+
         public bool RemoveChildren(IList<TrailResultWrapper> tn, bool invertSelection)
         {
             bool result = true;
@@ -134,6 +149,7 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
+
         public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn)
         {
             IList<TrailResult> result = new List<TrailResult>();
@@ -180,6 +196,9 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
+
+        private bool m_isSummary = false;
+
         #region IComparable<Product> Members
         public int CompareTo(object obj)
         {

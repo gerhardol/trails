@@ -67,6 +67,7 @@ namespace TrailsPlugin.Data
         public override string GetText(object element, TreeList.Column column)
         {
             Data.TrailResult row = TrailsPlugin.UI.Activity.ResultListControl.getTrailResultRow(element);
+
             switch (column.Id)
             {
                 case TrailResultColumnIds.Order:
@@ -74,6 +75,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Color:
                     return null;
                 case TrailResultColumnIds.StartTime:
+                    if (row.Activity == null) return null;
                     string date = "";
                     if (m_multiple)
                     {
@@ -83,6 +85,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.StartDistance:
                     return UnitUtil.Distance.ToString(row.StartDist, "");
                 case TrailResultColumnIds.EndTime:
+                    if (row.Activity == null) return null;
                     return row.EndTime.ToString();
                 case TrailResultColumnIds.Duration:
                     return UnitUtil.Time.ToString(row.Duration);
@@ -115,6 +118,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Name:
                     return row.Name;
                 default:
+                    if (row.Activity == null) return null;
                     return base.GetText(row.Activity, column);
             }
         }

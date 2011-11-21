@@ -237,7 +237,7 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResult tr = m_trailResults[i % this.TrailResults.Count];
                     if (tr is SummaryTrailResult)
                     {
-                        //Select on time over distance could be implemented
+                        //TODO: Select on time over distance could be implemented
                         return;
                     }
                     IList<TrailResult> markResults = new List<TrailResult>();

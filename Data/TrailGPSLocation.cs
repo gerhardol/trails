@@ -318,6 +318,10 @@ namespace TrailsPlugin.Data
                     valid = 0;
                 }
             }
+            else if (subItemSelected == 3)
+            {
+                valid = 0;
+            }
 
             if (valid == 0)
             {

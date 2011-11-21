@@ -317,7 +317,7 @@ namespace TrailsPlugin.Controller
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
             {
-                if (TrailResultWrapper.SelectedItems(m_currentActivityTrail.ResultTreeList, 
+                if (TrailResultWrapper.SelectedItems(m_currentActivityTrail, 
                     new List<TrailResult>{m_referenceTrailResult}).Count==0)
                 {
                     m_referenceTrailResult = null;

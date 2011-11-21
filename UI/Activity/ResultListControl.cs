@@ -176,9 +176,6 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshList()
         {
-            System.Collections.IList currSelected = summaryList.SelectedItems;
-            summaryList.RowData = null;
-
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 RefreshColumns();
@@ -195,6 +192,10 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #endif
                 ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
+            }
+            else
+            {
+                summaryList.RowData = null;
             }
 
             //By setting to null, the last used is selected, or some defaults
@@ -243,19 +244,17 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
 #if ST_2_1
-                    summaryList.Selected
+                    summaryList.Selected  = value;
 #else
-                summaryList.SelectedItems
+                summaryList.SelectedItems = value;
 #endif
- = value;
             }
             get
             {
-                return
 #if ST_2_1
-                  summaryList.Selected;
+                return summaryList.Selected;
 #else
- summaryList.SelectedItems;
+                return summaryList.SelectedItems;
 #endif
             }
         }
@@ -269,13 +268,12 @@ namespace TrailsPlugin.UI.Activity {
                 IList<TrailResultWrapper> setValue = value;
                 if (null == setValue || !setValue.Equals(m_prevSelectedItems))
                 {
-                    if (setValue == null || setValue.Count == 0)
+                    if ((setValue == null || setValue.Count == 0))
                     {
                         //Get all current values in prev selection
                         setValue = TrailResultWrapper.SelectedItems(
-                            m_controller.CurrentActivityTrailDisplayed.ResultTreeList,
-                    //(IList<TrailResultWrapper>)summaryList.RowData,
-                    TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems, m_controller.CurrentActivityTrailDisplayed.ResultTreeList)));//(IList<TrailResultWrapper>)this.summaryList.RowData)));
+                            m_controller.CurrentActivityTrailDisplayed,
+                    TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems)));
                         if ((null == setValue || setValue.Count == 0) &&
                             null != m_controller.CurrentActivityTrailDisplayed.ResultTreeList && m_controller.CurrentActivityTrailDisplayed.ResultTreeList.Count > 0)
                         {
@@ -289,7 +287,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             get
             {
-                return getTrailResultWrapperSelection(this.SelectedItemsRaw, m_controller.CurrentActivityTrailDisplayed.ResultTreeList);
+                return getTrailResultWrapperSelection(this.SelectedItemsRaw);
             }
         }
 
@@ -304,7 +302,7 @@ namespace TrailsPlugin.UI.Activity {
         public void EnsureVisible(IList<TrailResult> atr)
         {
             EnsureVisible(TrailResultWrapper.SelectedItems
-                    (m_controller.CurrentActivityTrailDisplayed.ResultTreeList, atr));
+                    (m_controller.CurrentActivityTrailDisplayed, atr));
         }
         public void EnsureVisible(IList<TrailResultWrapper> atr)
         {
@@ -348,7 +346,7 @@ namespace TrailsPlugin.UI.Activity {
             return result.Result;
         }
 
-        public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist, IList<TrailResultWrapper> rowData)
+        public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist)
         {
             IList<TrailResultWrapper> aTr = new List<TrailResultWrapper>();
             if (tlist != null)
@@ -357,15 +355,6 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (t != null)
                     {
-                        if (((TrailResultWrapper)t).IsSummary && rowData != null)
-                        {
-                            List<TrailResultWrapper> alist = new List<TrailResultWrapper>();
-                            foreach (TrailResultWrapper t2 in rowData)
-                            {
-                                alist.Add(t2);
-                            }
-                            return alist;
-                        }
                         aTr.Add(((TrailResultWrapper)t));
                     }
                 }
@@ -378,7 +367,8 @@ namespace TrailsPlugin.UI.Activity {
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 m_controller.CurrentActivityTrailDisplayed.Sort();
-                summaryList.RowData = m_controller.CurrentActivityTrailDisplayed.ResultTreeListRows(this.SelectedItemsWrapper);
+                summaryList.RowData = m_controller.CurrentActivityTrailDisplayed.ResultTreeListRows();
+                m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
                 summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
             }
@@ -445,12 +435,12 @@ namespace TrailsPlugin.UI.Activity {
                             IList<TrailResultWrapper> atrp;
                             if (this.m_controller.ReferenceTrailResult.ParentResult == null)
                             {
-                                atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail.ResultTreeList,
+                                atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail,
                                     new List<TrailResult> { this.m_controller.ReferenceTrailResult });
                             }
                             else
                             {
-                                atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail.ResultTreeList,
+                                atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail,
                                     new List<TrailResult> { this.m_controller.ReferenceTrailResult.ParentResult });
                             }
                             if (atrp != null && atrp.Count > 0)
@@ -491,6 +481,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshControlState();
             }
         }
+
         void selectAll()
         {
             System.Collections.IList all = new List<TrailResultWrapper>();
@@ -503,6 +494,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             this.SelectedItemsRaw = all;
         }
+
         void copyTable()
         {
             summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
@@ -760,6 +752,14 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
+            if (m_controller.CurrentActivityTrailDisplayed != null)
+            {
+                TrailResultWrapper t = m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
+                if (t != null)
+                {
+                    summaryList.RefreshElements(new List<TrailResultWrapper>{t});
+                }
+            }
             if (Data.Settings.SelectSimilarResults)
             {
                 selectSimilarSplits();
@@ -769,7 +769,6 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshChart();
             }
             m_prevSelectedItems = summaryList.SelectedItems;
-            summaryList.RowData = m_controller.CurrentActivityTrailDisplayed.ResultTreeListRows(this.SelectedItemsWrapper);
         }
 
         bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)

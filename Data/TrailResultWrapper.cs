@@ -72,11 +72,15 @@ namespace TrailsPlugin.Data
         }
 
         //Summary line
-        public TrailResultWrapper(ActivityTrail activityTrail, IList<TrailResultWrapper> rows)
+        public TrailResultWrapper(ActivityTrail activityTrail)
             : base(null, null)
         {
             m_isSummary = true;
-            base.Element = new SummaryTrailResult(activityTrail, GetTrailResults(rows));
+            base.Element = new SummaryTrailResult(activityTrail);
+        }
+        public void SetSummary(IList<TrailResultWrapper> rows)
+        {
+            ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows));
         }
 
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
@@ -171,14 +175,14 @@ namespace TrailsPlugin.Data
         }
 
         //Get all TrailResultWrapper (including children) for the provided TrailResult in the list
-        public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> tn, IList<TrailResult> tr)
+        public static IList<TrailResultWrapper> SelectedItems(ActivityTrail at, IList<TrailResult> tr)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
-            if (tn != null && tr != null)
+            if (at != null && at.ResultTreeList != null && tr != null)
             {
                 foreach (TrailResult trr in tr)
                 {
-                    foreach (TrailResultWrapper tnp in tn)
+                    foreach (TrailResultWrapper tnp in at.ResultTreeList)
                     {
                         if (tnp.Result.Equals(trr))
                         {

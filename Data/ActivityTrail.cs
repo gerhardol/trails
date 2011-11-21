@@ -174,26 +174,37 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public IList<TrailResultWrapper> ResultTreeListRows(IList<TrailResultWrapper> selected)
+        private TrailResultWrapper m_summary;
+        public IList<TrailResultWrapper> ResultTreeListRows()
         {
             IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
-            results.Add(this.Summary(selected));
             foreach (TrailResultWrapper t in ResultTreeList)
             {
                 results.Add(t);
             }
+            if (results.Count > 1)
+            {
+                if (m_summary == null)
+                {
+                    m_summary = new TrailResultWrapper(this);
+                }
+                results.Insert(0, m_summary);
+            }
             return results;
         }
 
-        private TrailResultWrapper Summary(IList<TrailResultWrapper> selected)
+        public TrailResultWrapper SetSummary(IList<TrailResultWrapper> selected)
         {
-            if (selected == null || selected.Count==0)
+            if (m_summary != null)
             {
-                selected = m_resultsListWrapper;
+                if (selected == null || selected.Count == 0)
+                {
+                    selected = m_resultsListWrapper;
+                }
+                m_summary.SetSummary(selected);
+                //TODO: Splits
             }
-            TrailResultWrapper result = new TrailResultWrapper(this, selected);
-            //TODO: Splits
-            return result;
+            return m_summary;
         }
 
         public void Sort()

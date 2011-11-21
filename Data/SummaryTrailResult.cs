@@ -32,10 +32,22 @@ namespace TrailsPlugin.Data
 {
     public class SummaryTrailResult : TrailResult
     {
-        public SummaryTrailResult(ActivityTrail activityTrail, IList<TrailResult> list) :
-            base(activityTrail, list.Count)
+        public SummaryTrailResult(ActivityTrail activityTrail) :
+            base(activityTrail)
         {
-            results = list;
+        }
+
+        public void SetSummary(IList<TrailResult> list) 
+        {
+            results = new List<TrailResult>();
+            foreach (TrailResult tr in list)
+            {
+                if (tr != this)
+                {
+                    results.Add(tr);
+                }
+            }
+            this.m_order = list.Count;
         }
 
         public override double StartDist

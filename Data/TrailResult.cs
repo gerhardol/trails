@@ -34,7 +34,7 @@ namespace TrailsPlugin.Data
     {
         private ActivityTrail m_activityTrail;
         private IActivity m_activity;
-        private int m_order;
+        protected int m_order;
         private string m_name;
         private bool m_reverse;
 
@@ -135,9 +135,9 @@ namespace TrailsPlugin.Data
         }
 
         //Summary result
-        public TrailResult(ActivityTrail activityTrail, int order)
+        public TrailResult(ActivityTrail activityTrail)
         {
-            createTrailResult(activityTrail, null,  order, new TrailResultInfo(null), 0);
+            createTrailResult(activityTrail, null, 0, new TrailResultInfo(null), 0);
             m_toolTip = "";
             m_trailColor = Color.Black;
         }
@@ -1350,7 +1350,7 @@ namespace TrailsPlugin.Data
             if (m_diffDeviceTrack0 == null)
             {
                 m_diffDeviceTrack0 = new NumericTimeDataSeries();
-                if (this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
+                if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
                     double? start2 = null;
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)

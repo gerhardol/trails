@@ -355,7 +355,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Note: Time/dist need the Trailresult related to the current results...
                 //With single results, this can be done, but for mult results per activity this can be incorrect
                 IList<float[]> l = null;
-                IList<TrailResult> t = TrailResultWrapper.GetTrailResults(Controller.TrailController.Instance.CurrentActivityTrail.ResultTreeList);
+                IList<TrailResult> t = Controller.TrailController.Instance.CurrentActivityTrail.Results;
                 foreach(TrailResult tr in t)
                 {
                     if (tr.Activity == sel.Activity)

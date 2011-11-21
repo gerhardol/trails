@@ -39,6 +39,7 @@ namespace TrailsPlugin.Data
         public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
         private IList<IActivity> m_inBound = new List<IActivity>();
         private bool m_canAddInbound = true;
+        private TrailResultWrapper m_summary;
 
         public ActivityTrail(Controller.TrailController controller, Data.Trail trail)
         {
@@ -80,6 +81,7 @@ namespace TrailsPlugin.Data
             {
                 m_status = TrailOrderStatus.NotInBound;
             }
+            m_summary = new TrailResultWrapper(this);
         }
 
 		public Data.Trail Trail {
@@ -174,7 +176,6 @@ namespace TrailsPlugin.Data
             }
         }
 
-        private TrailResultWrapper m_summary;
         public IList<TrailResultWrapper> ResultTreeListRows()
         {
             IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
@@ -184,10 +185,7 @@ namespace TrailsPlugin.Data
             }
             if (results.Count > 1)
             {
-                if (m_summary == null)
-                {
-                    m_summary = new TrailResultWrapper(this);
-                }
+                //On top
                 results.Insert(0, m_summary);
             }
             return results;
@@ -195,15 +193,23 @@ namespace TrailsPlugin.Data
 
         public TrailResultWrapper SetSummary(IList<TrailResultWrapper> selected)
         {
-            if (m_summary != null)
+            IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
+            if (selected != null)
             {
-                if (selected == null || selected.Count == 0)
+                foreach (TrailResultWrapper t in selected)
                 {
-                    selected = m_resultsListWrapper;
+                    if (!t.IsSummary)
+                    {
+                        selected2.Add(t);
+                    }
                 }
-                m_summary.SetSummary(selected);
-                //TODO: Splits
             }
+            if (selected2.Count == 0)
+            {
+                selected2 = m_resultsListWrapper;
+            }
+            m_summary.SetSummary(selected2);
+            //TODO: Splits
             return m_summary;
         }
 

@@ -39,14 +39,7 @@ namespace TrailsPlugin.Data
 
         public void SetSummary(IList<TrailResult> list) 
         {
-            results = new List<TrailResult>();
-            foreach (TrailResult tr in list)
-            {
-                if (tr != this)
-                {
-                    results.Add(tr);
-                }
-            }
+            results = list; //must not be summary...
             this.m_order = list.Count;
         }
 

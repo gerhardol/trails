@@ -368,7 +368,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_controller.CurrentActivityTrailDisplayed.Sort();
                 summaryList.RowData = m_controller.CurrentActivityTrailDisplayed.ResultTreeListRows();
-                m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
+                //xxx m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
                 summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
             }

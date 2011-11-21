@@ -35,6 +35,7 @@ namespace TrailsPlugin.Data
         public SummaryTrailResult(ActivityTrail activityTrail) :
             base(activityTrail)
         {
+            results = new List<TrailResult>();
         }
 
         public void SetSummary(IList<TrailResult> list) 
@@ -180,7 +181,32 @@ namespace TrailsPlugin.Data
             }
         }
 
-        IList<TrailResult> results;
+        public override double FastestPace
+        {
+            get
+            {
+                double tot = 0;
+                foreach (TrailResult t in results)
+                {
+                    tot += t.FastestPace;
+                }
+                return tot / NoOfResults(0);
+            }
+        }
+
+        public override float FastestSpeed
+        {
+            get
+            {
+                float tot = 0;
+                foreach (TrailResult t in results)
+                {
+                    tot += t.FastestSpeed;
+                }
+                return tot / NoOfResults(0);
+            }
+        }
+
         private int NoOfResults(int skip)
         {
             //convenience to avoid null checks...
@@ -188,7 +214,27 @@ namespace TrailsPlugin.Data
             {
                 return 1;
             }
-            return results.Count;
+            return results.Count - skip;
+        }
+
+        public IList<TrailResult> Results
+        {
+            get
+            {
+                IList<TrailResult> res = new List<TrailResult>();
+                foreach (TrailResult t in this.results)
+                {
+                    res.Add(t);
+                }
+                return res;
+            }
+        }
+
+        private IList<TrailResult> results;
+
+        public override string ToString()
+        {
+            return "Summary:" + results.Count;
         }
     }
 }

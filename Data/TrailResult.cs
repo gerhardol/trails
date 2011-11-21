@@ -880,6 +880,7 @@ namespace TrailsPlugin.Data
                 return m_name;
             }
         }
+
         public string ToolTip
         {
             get
@@ -2221,11 +2222,6 @@ namespace TrailsPlugin.Data
 
         public override string ToString()
         {
-            if (this.Activity == null)
-            {
-                //Summary
-                return "";
-            }
             return (this.m_startTime != null ? m_startTime.ToString() : "") + " " + this.TrailPointDateTime[0].ToShortTimeString() + " " + this.TrailPointDateTime.Count;
         }
     }

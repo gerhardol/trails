@@ -235,6 +235,11 @@ namespace TrailsPlugin.UI.Activity {
 
                     //Results must be added in order, so they can be resolved to result here
                     TrailResult tr = m_trailResults[i % this.TrailResults.Count];
+                    if (tr is SummaryTrailResult)
+                    {
+                        //Select on time over distance could be implemented
+                        return;
+                    }
                     IList<TrailResult> markResults = new List<TrailResult>();
                     //Reuse ZoomToSelection setting
                     if (Data.Settings.ZoomToSelection)
@@ -255,9 +260,7 @@ namespace TrailsPlugin.UI.Activity {
                     IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
                     foreach (TrailResult tr2 in markResults)
                     {
-                        IList<float[]> regions2;
-                        e.DataSeries.GetSelectedRegions(out regions2);
-                        IValueRangeSeries<DateTime> t2 = GetResultRegions(tr2, regions2);
+                        IValueRangeSeries<DateTime> t2 = GetResultRegions(tr2, regions);
                         results.Add(new Data.TrailResultMarked(tr2, t2));
                     }
                     this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
@@ -633,6 +636,10 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
+                if (!m_hasValues[yaxis] && m_trailResults.Count == 1 &&(m_trailResults[0] is SummaryTrailResult))
+                {
+                    m_hasValues[yaxis] = true;
+                }
             }
             return m_hasValues[yaxis];
         }
@@ -645,22 +652,34 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_hasValues = null;
 
+                IList<TrailResult> results = m_trailResults;
+                IDictionary<LineChartTypes, ChartDataSeries> summaryCharts = new Dictionary<LineChartTypes, ChartDataSeries>();
+                bool onlySummary = false;
+                if (m_trailResults != null && m_trailResults.Count == 1 &&
+                    (m_trailResults[0] is SummaryTrailResult))
+                {
+                    //special fix - avoid separate handling
+                    onlySummary = true;
+                    results = (m_trailResults[0] as SummaryTrailResult).Results;
+                    results.Add(m_trailResults[0]);
+                }
+
                 // Add main data. We must use 2 separate data series to overcome the display
                 //  bug in fill mode.  The main data series is normally rendered but the copy
                 //  is set in Line mode to be displayed over the fill
                 //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
                 foreach (LineChartTypes yaxis in m_axis.Keys)
                 {
-
-                    for (int i = 0; i < m_trailResults.Count; i++)
+                    for (int i = 0; i < results.Count; i++)
                     {
-                        TrailResult tr = m_trailResults[i];
+                        TrailResult tr = results[i];
                         INumericTimeDataSeries graphPoints;
 
                         //Hide right column graph in some situations
-                        if (1 >= m_trailResults.Count || !Data.Settings.OnlyReferenceRight ||
+                        if ((1 >= m_trailResults.Count || !Data.Settings.OnlyReferenceRight ||
                            m_axis.ContainsKey(yaxis) && !(m_axis[yaxis] is RightVerticalAxis) || 
-                           tr == m_refTrailResult || null == m_refTrailResult)
+                           tr == m_refTrailResult || null == m_refTrailResult) &&
+                            !(tr is SummaryTrailResult))
                         {
                             if (refIsSelf)
                             {
@@ -673,16 +692,23 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
+                            //No data or summary
                             graphPoints = new NumericTimeDataSeries();
                         }
 
                         if (graphPoints.Count <= 1)
                         {
-                            if (m_trailResults.Count > 1)
+                            //Add empty, Dataseries index must match results
+                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
+                            dataLine.ChartType = ChartDataSeries.Type.Line;
+                            dataLine.LineColor = tr.TrailColor;
+                            dataLine.SelectedColor = tr.TrailColor;
+                            if (tr is SummaryTrailResult && !summaryCharts.ContainsKey(yaxis))
                             {
-                                //Add empty, Dataseries index must match results 
-                                MainChart.DataSeries.Add(new ChartDataSeries(MainChart, m_axis[yaxis]));
+                                dataLine.LineWidth *= 2;
+                                summaryCharts.Add(yaxis, dataLine);
                             }
+                            MainChart.DataSeries.Add(dataLine);
                         }
                         else
                         {
@@ -696,7 +722,7 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             else
                             {
-                                chartLineColor = m_trailResults[i].TrailColor;
+                                chartLineColor = tr.TrailColor;
                                 chartSelectedColor = chartLineColor;
                             }
                             Color chartFillColor = chartLineColor;
@@ -720,70 +746,50 @@ namespace TrailsPlugin.UI.Activity {
                             dataLine.LineColor = chartLineColor;
                             dataLine.SelectedColor = chartSelectedColor;
 
-                            INumericTimeDataSeries dataPoints;
-                            if (XAxisReferential == XAxisValue.Time)
+                            GetDataLine(tr, graphPoints, dataLine, dataFill);
+                        }
+                    }
+                }
+
+                //Summary
+                for (int i = 0; i < m_trailResults.Count; i++)
+                {
+                    TrailResult tr = m_trailResults[i];
+
+                    //Hide right column graph in some situations
+                    if ((tr is SummaryTrailResult) && MainChart.DataSeries.Count > m_axis.Count)
+                    {
+                        foreach (LineChartTypes yaxis in m_axis.Keys)
+                        {
+                            if (summaryCharts.ContainsKey(yaxis))
                             {
-                                dataPoints = graphPoints;
-                            }
-                            else
-                            {
-                                dataPoints = m_trailResults[i].DistanceMetersTrack0(ReferenceTrailResult);
-                            }
-                            int oldElapsedEntry = int.MinValue;
-                            float oldXvalue = float.MinValue;
-                            foreach (ITimeValueEntry<float> entry in dataPoints)
-                            {
-                                uint elapsedEntry = entry.ElapsedSeconds;
-                                if (XAxisReferential == XAxisValue.Time || elapsedEntry <= graphPoints.TotalElapsedSeconds)
+                                IList<ChartDataSeries> lists = new List<ChartDataSeries>();
+                                foreach (ChartDataSeries c in MainChart.DataSeries)
                                 {
-                                    //The time is required to get the xvalue(time) or yvalue(dist)
-                                    DateTime time = dataPoints.EntryDateTime(entry);
-                                    //The x value in the graph, the actual time or distance
-                                    float xValue;
-                                    if (XAxisReferential == XAxisValue.Time)
+                                    if (c.ValueAxis == m_axis[yaxis])
                                     {
-                                        xValue = (float)m_trailResults[i].getElapsedResult(time);
-                                    }
-                                    else
-                                    {
-                                        xValue = entry.Value;
-                                    }
-                                    //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
-                                    //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
-                                    //or cut (elapsed is higher than next limit, then decreases at trail point)  
-                                    float nextXvalue = float.MaxValue;
-                                    if (Data.Settings.SyncChartAtTrailPoints)
-                                    {
-                                        xValue += GetResyncOffset(XAxisReferential, false, tr, xValue, out nextXvalue);
-                                    }
-                                    if (oldElapsedEntry < elapsedEntry &&
-                                        (!Data.Settings.SyncChartAtTrailPoints ||
-                                        oldXvalue < xValue && xValue < nextXvalue))
-                                    {
-                                        ITimeValueEntry<float> yValueEntry;
-                                        if (XAxisReferential == XAxisValue.Time)
+                                        if (c.ChartType == ChartDataSeries.Type.Line &&
+                                            c.Points.Count > 0)
                                         {
-                                            yValueEntry = entry;
+                                            lists.Add(c);
                                         }
-                                        else
-                                        {
-                                            yValueEntry = graphPoints.GetInterpolatedValue(time);
-                                        }
-                                        if (yValueEntry != null)
-                                        {
-                                            PointF point = new PointF(xValue, yValueEntry.Value);
-                                            if (null != dataFill)
-                                            {
-                                                dataFill.Points.Add(elapsedEntry, point);
-                                            }
-                                            dataLine.Points.Add(elapsedEntry, point);
-                                        }
-                                        oldElapsedEntry = (int)elapsedEntry;
-                                        oldXvalue = xValue;
                                     }
+                                }
+                                if (lists.Count > 1)
+                                {
+                                    this.getCategoryAverage(summaryCharts[yaxis], lists);
                                 }
                             }
                         }
+                    }
+                }
+
+                if (onlySummary)
+                {
+                    MainChart.DataSeries.Clear();
+                    foreach (ChartDataSeries c in summaryCharts.Values)
+                    {
+                        MainChart.DataSeries.Add(c);
                     }
                 }
 
@@ -829,6 +835,112 @@ namespace TrailsPlugin.UI.Activity {
                 ZoomToData();
             }
 		}
+
+        private void GetDataLine(TrailResult tr, INumericTimeDataSeries graphPoints, 
+            ChartDataSeries dataLine, ChartDataSeries dataFill)
+        {
+            INumericTimeDataSeries dataPoints;
+            if (XAxisReferential == XAxisValue.Time)
+            {
+                dataPoints = graphPoints;
+            }
+            else
+            {
+                dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
+            }
+            int oldElapsedEntry = int.MinValue;
+            float oldXvalue = float.MinValue;
+            foreach (ITimeValueEntry<float> entry in dataPoints)
+            {
+                uint elapsedEntry = entry.ElapsedSeconds;
+                if (XAxisReferential == XAxisValue.Time || elapsedEntry <= graphPoints.TotalElapsedSeconds)
+                {
+                    //The time is required to get the xvalue(time) or yvalue(dist)
+                    DateTime time = dataPoints.EntryDateTime(entry);
+                    //The x value in the graph, the actual time or distance
+                    float xValue;
+                    if (XAxisReferential == XAxisValue.Time)
+                    {
+                        xValue = (float)tr.getElapsedResult(time);
+                    }
+                    else
+                    {
+                        xValue = entry.Value;
+                    }
+                    //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
+                    //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
+                    //or cut (elapsed is higher than next limit, then decreases at trail point)  
+                    float nextXvalue = float.MaxValue;
+                    if (Data.Settings.SyncChartAtTrailPoints)
+                    {
+                        xValue += GetResyncOffset(XAxisReferential, false, tr, xValue, out nextXvalue);
+                    }
+                    if (oldElapsedEntry < elapsedEntry &&
+                        (!Data.Settings.SyncChartAtTrailPoints ||
+                        oldXvalue < xValue && xValue < nextXvalue))
+                    {
+                        ITimeValueEntry<float> yValueEntry;
+                        if (XAxisReferential == XAxisValue.Time)
+                        {
+                            yValueEntry = entry;
+                        }
+                        else
+                        {
+                            yValueEntry = graphPoints.GetInterpolatedValue(time);
+                        }
+                        if (yValueEntry != null)
+                        {
+                            PointF point = new PointF(xValue, yValueEntry.Value);
+                            if (null != dataFill)
+                            {
+                                dataFill.Points.Add(elapsedEntry, point);
+                            }
+                            dataLine.Points.Add(elapsedEntry, point);
+                        }
+                        oldElapsedEntry = (int)elapsedEntry;
+                        oldXvalue = xValue;
+                    }
+                }
+            }
+        }
+
+        //From Overlay plugin
+        private ChartDataSeries getCategoryAverage(ChartDataSeries average,
+                  IList<ChartDataSeries> list)
+        {
+            SortedList<float, bool> xs = new SortedList<float, bool>();
+            foreach (ChartDataSeries series in list)
+            {
+                foreach (PointF point in series.Points.Values)
+                {
+                    if (!xs.ContainsKey(point.X))
+                    {
+                        xs.Add(point.X, true);
+                    }
+                }
+            }
+            foreach (float x in xs.Keys)
+            {
+                int seen = 0;
+                float y = 0;
+                foreach (ChartDataSeries series in list)
+                {
+                    float theX = x;
+                    float theY = series.GetYValueAtX(ref theX);
+                    if (!theY.Equals(float.NaN))
+                    {
+                        y += theY;
+                        seen++;
+                    }
+                }
+                if (seen > 1 &&
+                    average.Points.IndexOfKey(x) == -1)
+                {
+                    average.Points.Add(x, new PointF(x, y / seen));
+                }
+            }
+            return average;
+        }
 
         //From a value in the chart, get "real" elapsed
         //TODO: incorrect around trail points

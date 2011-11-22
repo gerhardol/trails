@@ -234,18 +234,14 @@ namespace TrailsPlugin.UI.Activity {
                     }
 
                     //Results must be added in order, so they can be resolved to result here
-                    TrailResult tr = m_trailResults[i % this.TrailResults.Count];
-                    if (tr is SummaryTrailResult)
-                    {
-                        //TODO: Select on time over distance could be implemented
-                        return;
-                    }
+                    TrailResult tr = m_trailResults[i % this.m_trailResults.Count];
+
                     IList<TrailResult> markResults = new List<TrailResult>();
-                    //Reuse ZoomToSelection setting
-                    if (Data.Settings.ZoomToSelection)
+                    //Reuse ZoomToSelection setting, to select all results
+                    if (Data.Settings.ZoomToSelection || tr is SummaryTrailResult)
                     {
                         markResults = new List<TrailResult>();
-                        foreach (TrailResult tr2 in this.m_trailResults)
+                        foreach (TrailResult tr2 in this.TrailResults)
                         {
                             markResults.Add(tr2);
                         }
@@ -396,7 +392,7 @@ namespace TrailsPlugin.UI.Activity {
                                 }
                                 else
                                 {
-                                    offset = (float)TrailResult.DistanceConvertFrom(m_trailResults[i].StartDist - m_trailResults[i].ParentResult.StartDist, m_refTrailResult);
+                                    offset = (float)TrailResult.DistanceConvertFrom(m_trailResults[i].StartDist - m_trailResults[i].ParentResult.StartDist, ReferenceTrailResult);
                                 }
                             }
 
@@ -623,10 +619,11 @@ namespace TrailsPlugin.UI.Activity {
                 //    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
                 //    m_trailResults.Count == 1 && m_trailResults[0] == m_refTrailResult))
                 {
-                    for (int i = 0; i < m_trailResults.Count; i++)
+                    IList<TrailResult> results = this.TrailResults;
+                    for (int i = 0; i < this.TrailResults.Count; i++)
                     {
-                        TrailResult tr = m_trailResults[i];
-                        //As this value is cached, it is no extra to request and drop it
+                        TrailResult tr = results[i];
+                        //The track is mostly cached in result, it is not much extra to request and drop it
                         INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
 
                         if (graphPoints != null && graphPoints.Count > 1)
@@ -635,10 +632,6 @@ namespace TrailsPlugin.UI.Activity {
                             break;
                         }
                     }
-                }
-                if (!m_hasValues[yaxis] && m_trailResults.Count == 1 &&(m_trailResults[0] is SummaryTrailResult))
-                {
-                    m_hasValues[yaxis] = true;
                 }
             }
             return m_hasValues[yaxis];
@@ -650,23 +643,35 @@ namespace TrailsPlugin.UI.Activity {
             MainChart.XAxis.Markers.Clear();
             if (m_visible)
             {
-                m_hasValues = null;
+                //m_hasValues = null;
 
                 IList<TrailResult> results = m_trailResults;
                 IDictionary<LineChartTypes, ChartDataSeries> summaryCharts = new Dictionary<LineChartTypes, ChartDataSeries>();
                 bool onlySummary = false;
-                if (m_trailResults != null && m_trailResults.Count == 1 &&
-                    (m_trailResults[0] is SummaryTrailResult))
+                if (m_trailResults.Count == 2 && (m_trailResults[0] is SummaryTrailResult || m_trailResults[1] is SummaryTrailResult))
                 {
-                    //special fix - avoid separate handling
+                    //One of the results is a summary (that should be ignored in that case)
+                    results = this.TrailResults;
+                }
+                else if (m_trailResults.Count == 1 && (m_trailResults[0] is SummaryTrailResult))
+                {
+                    //Get results as if all results selected - avoid separate handling
                     onlySummary = true;
                     results = (m_trailResults[0] as SummaryTrailResult).Results;
                     results.Add(m_trailResults[0]);
                 }
 
-                // Add main data. We must use 2 separate data series to overcome the display
-                //  bug in fill mode.  The main data series is normally rendered but the copy
-                //  is set in Line mode to be displayed over the fill
+                //Find if ReferenceTrailResult is in the results - needed when displaying data
+                TrailResult leftRefTr = results[0];
+                for (int i = 0; i < results.Count; i++)
+                {
+                    if (results[i] == ReferenceTrailResult)
+                    {
+                        leftRefTr = ReferenceTrailResult;
+                        break;
+                    }
+                }
+
                 //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
                 foreach (LineChartTypes yaxis in m_axis.Keys)
                 {
@@ -676,19 +681,19 @@ namespace TrailsPlugin.UI.Activity {
                         INumericTimeDataSeries graphPoints;
 
                         //Hide right column graph in some situations
-                        if ((1 >= m_trailResults.Count || !Data.Settings.OnlyReferenceRight ||
-                           m_axis.ContainsKey(yaxis) && !(m_axis[yaxis] is RightVerticalAxis) || 
-                           tr == m_refTrailResult || null == m_refTrailResult) &&
+                        //Note that the results may be needed if only refright alsooo should show average...
+                        if ((1 >= results.Count || onlySummary ||
+                            !Data.Settings.OnlyReferenceRight ||
+                            !(m_axis[yaxis] is RightVerticalAxis) ||
+                            tr == leftRefTr) &&
                             !(tr is SummaryTrailResult))
                         {
-                            if (refIsSelf)
+                            TrailResult refTr = ReferenceTrailResult;
+                            if (refIsSelf && !onlySummary || null == ReferenceTrailResult)
                             {
-                                graphPoints = GetSmoothedActivityTrack(tr, yaxis, tr);
+                                refTr = tr;
                             }
-                            else
-                            {
-                                graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
-                            }
+                            graphPoints = GetSmoothedActivityTrack(tr, yaxis, refTr);
                         }
                         else
                         {
@@ -696,96 +701,86 @@ namespace TrailsPlugin.UI.Activity {
                             graphPoints = new NumericTimeDataSeries();
                         }
 
-                        if (graphPoints.Count <= 1)
+                        Color chartLineColor;
+                        //Color for the graph - keep standard color if only one graph for the axis
+                        if (results.Count <= 1 || onlySummary ||
+                            Data.Settings.OnlyReferenceRight && (m_axis[yaxis] is RightVerticalAxis))
                         {
-                            //Add empty, Dataseries index must match results
-                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
-                            dataLine.ChartType = ChartDataSeries.Type.Line;
-                            dataLine.LineColor = tr.TrailColor;
-                            dataLine.SelectedColor = tr.TrailColor;
-                            if (tr is SummaryTrailResult && !summaryCharts.ContainsKey(yaxis))
-                            {
-                                dataLine.LineWidth *= 2;
-                                summaryCharts.Add(yaxis, dataLine);
-                            }
-                            MainChart.DataSeries.Add(dataLine);
+                            chartLineColor = LineChartUtil.ChartColor[yaxis];
                         }
                         else
                         {
-                            Color chartLineColor;
-                            Color chartSelectedColor;
-                            if (m_trailResults.Count <= 1 ||
-                                Data.Settings.OnlyReferenceRight && tr == m_refTrailResult && (m_axis[yaxis] is RightVerticalAxis))
-                            {
-                                chartLineColor = LineChartUtil.ChartColor[yaxis];
-                                chartSelectedColor = ControlPaint.Dark(LineChartUtil.ChartColor[yaxis], 0.01F);
-                            }
-                            else
-                            {
-                                chartLineColor = tr.TrailColor;
-                                chartSelectedColor = chartLineColor;
-                            }
-                            Color chartFillColor = chartLineColor;
+                            chartLineColor = tr.TrailColor;
+                        }
 
+                        //Add empty Dataseries even if no graphpoints. index must match results
+                        ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
+                        MainChart.DataSeries.Add(dataLine);
+
+                        dataLine.ChartType = ChartDataSeries.Type.Line;
+                        dataLine.LineColor = chartLineColor;
+                        dataLine.SelectedColor = ControlPaint.Dark(chartLineColor, 0.01F);
+                        if (tr is SummaryTrailResult)
+                        {
+                            if (!summaryCharts.ContainsKey(yaxis))
+                            {
+                                summaryCharts.Add(yaxis, dataLine);
+                            }
+                            if (!onlySummary)
+                            {
+                                dataLine.LineWidth *= 2;
+                            }
+                        }
+
+                        if (graphPoints.Count > 1)
+                        {
+                            Color chartFillColor = chartLineColor;
                             ChartDataSeries dataFill = null;
 
-                            if (m_trailResults.Count == 1 && m_axis[yaxis] is LeftVerticalAxis)
+                            if (results.Count == 1 && m_axis[yaxis] is LeftVerticalAxis)
                             {
+                                // We must use 2 separate data series to overcome the display
+                                //  bug in fill mode.  The main data series is normally rendered but the copy
+                                //  is set in Line mode to be displayed over the fill
                                 dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
                                 MainChart.DataSeries.Add(dataFill);
 
                                 dataFill.ChartType = ChartDataSeries.Type.Fill;
-                                dataFill.LineColor = chartLineColor;
-                                dataFill.SelectedColor = chartSelectedColor;
+                                dataFill.LineColor = dataLine.LineColor;
+                                dataFill.SelectedColor = dataLine.SelectedColor;
                                 dataFill.FillColor = Color.WhiteSmoke;
                             }
-                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
-                            MainChart.DataSeries.Add(dataLine);
 
-                            dataLine.ChartType = ChartDataSeries.Type.Line;
-                            dataLine.LineColor = chartLineColor;
-                            dataLine.SelectedColor = chartSelectedColor;
-
+                            //Get the actual graph
                             GetDataLine(tr, graphPoints, dataLine, dataFill);
                         }
                     }
                 }
 
-                //Summary
-                for (int i = 0; i < m_trailResults.Count; i++)
+                //Create list summary from resulting datalines
+                foreach (KeyValuePair<LineChartTypes, ChartDataSeries> pair in summaryCharts)
                 {
-                    TrailResult tr = m_trailResults[i];
-
-                    //Hide right column graph in some situations
-                    if ((tr is SummaryTrailResult) && MainChart.DataSeries.Count > m_axis.Count)
+                    IList<ChartDataSeries> lists = new List<ChartDataSeries>();
+                    foreach (ChartDataSeries c in MainChart.DataSeries)
                     {
-                        foreach (LineChartTypes yaxis in m_axis.Keys)
+                        if (c.ValueAxis == m_axis[pair.Key])
                         {
-                            if (summaryCharts.ContainsKey(yaxis))
+                            if (c.ChartType == ChartDataSeries.Type.Line &&
+                                c.Points.Count > 1)
                             {
-                                IList<ChartDataSeries> lists = new List<ChartDataSeries>();
-                                foreach (ChartDataSeries c in MainChart.DataSeries)
-                                {
-                                    if (c.ValueAxis == m_axis[yaxis])
-                                    {
-                                        if (c.ChartType == ChartDataSeries.Type.Line &&
-                                            c.Points.Count > 0)
-                                        {
-                                            lists.Add(c);
-                                        }
-                                    }
-                                }
-                                if (lists.Count > 1)
-                                {
-                                    this.getCategoryAverage(summaryCharts[yaxis], lists);
-                                }
+                                lists.Add(c);
                             }
                         }
                     }
+                    if (lists.Count > 1)
+                    {
+                        //Only add if more than one one result
+                        this.getCategoryAverage(pair.Value, lists);
+                    }
                 }
-
                 if (onlySummary)
                 {
+                    //All individual graphs were just temporary
                     MainChart.DataSeries.Clear();
                     foreach (ChartDataSeries c in summaryCharts.Values)
                     {
@@ -1063,8 +1058,7 @@ namespace TrailsPlugin.UI.Activity {
         private void CreateAxis(LineChartTypes axisType, bool left)
         {
             if ((m_trailResults == null || ReferenceTrailResult == null ||
-                (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist) &&
-                m_trailResults.Count == 1 && m_trailResults == ReferenceTrailResult))
+                (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist)))
             {
                 return;
             }
@@ -1232,7 +1226,32 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                return m_trailResults;
+                //TODO: cache?
+                IList<TrailResult> results = m_trailResults;
+                if (m_trailResults.Count == 1 && (m_trailResults[0] is SummaryTrailResult))
+                {
+                    results = (m_trailResults[0] as SummaryTrailResult).Results;
+                }
+                else if (m_trailResults.Count == 2 && (m_trailResults[1] is SummaryTrailResult))
+                {
+                    results = new List<TrailResult> { m_trailResults[0] };
+                }
+                else if (m_trailResults.Count == 2 && (m_trailResults[0] is SummaryTrailResult))
+                {
+                    results = new List<TrailResult> { m_trailResults[1] };
+                }
+                else
+                {
+                    results = new List<TrailResult>();
+                    foreach (TrailResult tr in m_trailResults)
+                    {
+                        if (!(tr is SummaryTrailResult))
+                        {
+                            results.Add(tr);
+                        }
+                    }
+                }
+                return results;
             }
             set
             {

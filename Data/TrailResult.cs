@@ -963,6 +963,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                //This should be calculated from Ascent/Descent instead, this is confusing
                 return GradeTrack0(m_cacheTrackRef).Avg;
             }
         }

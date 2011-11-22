@@ -1093,7 +1093,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.addInBoundActivitiesMenuItem.Enabled = m_controller.CurrentActivityTrailDisplayed.CanAddInbound;
             }
-            if (tr.Activity == null)
+            if (tr == null || tr.Activity == null)
             {
                 //Summary result
                 this.referenceResultMenuItem.Enabled = false;

@@ -1058,7 +1058,8 @@ namespace TrailsPlugin.UI.Activity {
         private void CreateAxis(LineChartTypes axisType, bool left)
         {
             if ((m_trailResults == null || ReferenceTrailResult == null ||
-                (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist)))
+                (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist) &&
+                m_trailResults.Count == 1 && m_trailResults == ReferenceTrailResult))
             {
                 return;
             }

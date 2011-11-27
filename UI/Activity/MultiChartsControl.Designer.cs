@@ -40,6 +40,7 @@
             this.diffDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.diffDeviceDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.syncChartAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -98,6 +99,7 @@
             this.diffDistToolStripMenuItem,
             this.diffDistTimeToolStripMenuItem,
             this.resyncDiffAtTrailPointsToolStripMenuItem,
+            this.diffDeviceDistToolStripMenuItem,
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem,
             this.toolStripSeparator2,
             this.distanceToolStripMenuItem,
@@ -189,6 +191,13 @@
             this.diffDistTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.diffDistTimeToolStripMenuItem.Text = "diffDistTime";
             this.diffDistTimeToolStripMenuItem.Click += new System.EventHandler(this.diffDistTimeToolStripMenuItem_Click);
+            // 
+            // diffDeviceDistToolStripMenuItem
+            // 
+            this.diffDeviceDistToolStripMenuItem.Name = "diffDeviceDistToolStripMenuItem";
+            this.diffDeviceDistToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.diffDeviceDistToolStripMenuItem.Text = "diffDeviceDist";
+            this.diffDeviceDistToolStripMenuItem.Click += new System.EventHandler(this.diffDeviceDistToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -540,6 +549,7 @@
         private System.Windows.Forms.ToolStripMenuItem diffTimeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem diffDistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem diffDistTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem diffDeviceDistToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;

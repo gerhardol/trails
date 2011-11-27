@@ -60,7 +60,6 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
-        private bool m_diffDeviceDist = false;
         private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
@@ -662,13 +661,17 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Find if ReferenceTrailResult is in the results - needed when displaying data
-                TrailResult leftRefTr = results[0];
-                for (int i = 0; i < results.Count; i++)
+                TrailResult leftRefTr = null;
+                if (results.Count > 0)
                 {
-                    if (results[i] == ReferenceTrailResult)
+                    leftRefTr = results[0];
+                    for (int i = 0; i < results.Count; i++)
                     {
-                        leftRefTr = ReferenceTrailResult;
-                        break;
+                        if (results[i] == ReferenceTrailResult)
+                        {
+                            leftRefTr = ReferenceTrailResult;
+                            break;
+                        }
                     }
                 }
 
@@ -1048,10 +1051,6 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     CreateAxis(yaxis, m_axis.Count==0);
                 }
-                if(m_diffDeviceDist)
-                {
-                    CreateAxis(LineChartTypes.DiffDevice, m_axis.Count == 0);
-                }
             }
         }
         
@@ -1363,10 +1362,6 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.C)
             {
                 selectedTypes = LineChartTypes.Cadence;
-            }
-            else if (e.KeyCode == Keys.D && e.Modifiers == Keys.Control)
-            {
-                m_diffDeviceDist = !m_diffDeviceDist;
             }
             else if (e.KeyCode == Keys.E)
             {

@@ -80,6 +80,7 @@ namespace TrailsPlugin.UI.Activity {
             this.powerToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
 
             this.diffDistTimeToolStripMenuItem.Image = Properties.Resources.delta;
+            this.diffDeviceDistToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffTimeToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffDistToolStripMenuItem.Image = Properties.Resources.delta;
             this.diffTimeToolStripMenuItem.Visible = false;
@@ -144,6 +145,7 @@ namespace TrailsPlugin.UI.Activity {
 
             this.diffTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
             this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
+            this.diffDeviceDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDevice);
             //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_resyncDiffAtTrailPoints;
@@ -410,6 +412,7 @@ namespace TrailsPlugin.UI.Activity {
             diffTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffTime);
             diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
             diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
+            diffDeviceDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDevice);
             if (Data.Settings.XAxisValue == XAxisValue.Distance)
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
@@ -553,6 +556,10 @@ namespace TrailsPlugin.UI.Activity {
         private void diffDistTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DiffDistTime);
+        }
+        private void diffDeviceDistToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshChart(LineChartTypes.DiffDevice);
         }
 
         private void distanceToolStripMenuItem_Click(object sender, EventArgs e)

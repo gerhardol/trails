@@ -275,7 +275,9 @@ namespace TrailsPlugin.UI.Activity {
                             m_controller.CurrentActivityTrailDisplayed,
                     TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems)));
                         if ((null == setValue || setValue.Count == 0) &&
-                            null != m_controller.CurrentActivityTrailDisplayed.ResultTreeList && m_controller.CurrentActivityTrailDisplayed.ResultTreeList.Count > 0)
+                            null != m_controller.CurrentActivityTrailDisplayed && 
+                            null != m_controller.CurrentActivityTrailDisplayed.ResultTreeList &&
+                            m_controller.CurrentActivityTrailDisplayed.ResultTreeList.Count > 0)
                         {
                             setValue = new List<TrailResultWrapper> {
                            m_controller.CurrentActivityTrailDisplayed.ResultTreeList[0] };

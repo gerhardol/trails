@@ -183,7 +183,8 @@ namespace TrailsPlugin.Data
             {
                 results.Add(t);
             }
-            if (results.Count > 1)
+            //Add summary for single results too - compare splits
+            if (results.Count > 0)
             {
                 //On top
                 results.Insert(0, m_summary);

@@ -376,7 +376,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void selectSimilarSplits()
+        bool selectSimilarSplits()
         {
             bool isChange = false;
 #if ST_2_1
@@ -466,10 +466,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
-            if (isChange)
-            {
-                this.m_page.RefreshChart();
-            }
+            return isChange;
         }
 
         void excludeSelectedResults(bool invertSelection)
@@ -505,7 +502,10 @@ namespace TrailsPlugin.UI.Activity {
         void selectSimilarSplitsChanged()
         {
             TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
-            selectSimilarSplits();
+            if (selectSimilarSplits())
+            {
+                this.m_page.RefreshChart();
+            }
             RefreshControlState();
         }
 
@@ -754,6 +754,16 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
+            bool isChange;
+            if (Data.Settings.SelectSimilarResults)
+            {
+                isChange = selectSimilarSplits();
+            }
+            else
+            {
+                //Always assume change
+                isChange = true;
+            }
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
                 TrailResultWrapper t = m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
@@ -762,11 +772,7 @@ namespace TrailsPlugin.UI.Activity {
                     summaryList.RefreshElements(new List<TrailResultWrapper>{t});
                 }
             }
-            if (Data.Settings.SelectSimilarResults)
-            {
-                selectSimilarSplits();
-            }
-            else
+            if (isChange)
             {
                 m_page.RefreshChart();
             }

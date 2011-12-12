@@ -242,7 +242,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshRoute()
         {
-            if((! m_isExpanded || isReportView)
+            if ((!m_isExpanded || isReportView)
                 && m_controller.CurrentActivityTrail != null)
             {
                 //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
@@ -259,17 +259,39 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_controller.CurrentActivityTrailDisplayed != null)
                 {
                     IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
+                    bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
+                    if (!showAll)
+                    {
+                        if (this.ResultList.SelectedItems == null)
+                        {
+                            showAll = true;
+                        }
+                        else
+                        {
+                            foreach (TrailResult tr in this.ResultList.SelectedItems)
+                            {
+                                if (tr is SummaryTrailResult)
+                                {
+                                    showAll = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
-                        //Do not map activities displayed already by ST
-                        if (!ViewSingleActivity(tr.Activity))
+                        if (showAll || this.ResultList.SelectedItems.Contains(tr))
                         {
-                            //Note: Possibly limit no of Trails shown, it slows down Gmaps some
-                            foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
+                            //Do not map activities displayed already by ST
+                            if (!ViewSingleActivity(tr.Activity))
                             {
-                                m.Click += new MouseEventHandler(mapPoly_Click);
-                                routes.Add(m.key, m);
+                                //Note: Possibly limit no of Trails shown, it slows down Gmaps some
+                                foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
+                                {
+                                    m.Click += new MouseEventHandler(mapPoly_Click);
+                                    routes.Add(m.key, m);
+                                }
                             }
                         }
                     }
@@ -383,6 +405,10 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 //Trails track display update
+                if (Data.Settings.ShowOnlyMarkedOnRoute)
+                {
+                    this.RefreshRoute();
+                }
                 m_layerMarked.MarkedTrailRoutesNoShow = marked;
                 m_layerMarked.MarkedTrailRoutes = mresult;
 

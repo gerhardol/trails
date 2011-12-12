@@ -993,9 +993,17 @@ namespace TrailsPlugin.UI.Activity {
             {
                 selectWithUR();
             }
-            else if (e.KeyCode == Keys.Z && e.Modifiers == Keys.Control)
+            else if (e.KeyCode == Keys.Z)
             {
-                Data.Settings.ZoomToSelection = !Data.Settings.ZoomToSelection;
+                if (e.Modifiers == Keys.Control)
+                {
+                    Data.Settings.ZoomToSelection = !Data.Settings.ZoomToSelection;
+                }
+                if (e.Modifiers == Keys.Shift)
+                {
+                    Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
+                    m_page.RefreshData();
+                }
             }
         }
 

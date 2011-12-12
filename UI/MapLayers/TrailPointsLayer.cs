@@ -168,7 +168,16 @@ namespace TrailsPlugin.UI.MapLayers
         {
             //get
             //{
-            //    return m_MarkedTrailRoutes;
+            //    IDictionary<string, MapPolyline> result = new Dictionary<string, MapPolyline>();
+            //    foreach (KeyValuePair<string, MapPolyline> t in m_MarkedTrailRoutes)
+            //    {
+            //        result.Add(t);
+            //    }
+            //    foreach (KeyValuePair<string, MapPolyline> t in m_MarkedTrailRoutesNoShow)
+            //    {
+            //        result.Add(t);
+            //    }
+            //    return result;
             //}
             set
             {

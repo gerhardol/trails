@@ -48,6 +48,7 @@ namespace TrailsPlugin.Data
         private static bool m_syncChartAtTrailPoints = false;
         private static bool m_onlyReferenceRight = false;
         private static bool m_zoomToSelection = false;
+        private static bool m_showOnlyMarkedOnRoute = false;
         private static string m_excludeStoppedCategory = "";
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         static bool m_diffUsingCommonStretches = false; //Not in xml
@@ -259,6 +260,11 @@ namespace TrailsPlugin.Data
             get { return m_zoomToSelection; }
             set { m_zoomToSelection = value; }
         }
+        public static bool ShowOnlyMarkedOnRoute
+        {
+            get { return m_showOnlyMarkedOnRoute; }
+            set { m_showOnlyMarkedOnRoute = value; }
+        }
         
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
@@ -302,6 +308,8 @@ namespace TrailsPlugin.Data
             if (attr.Length > 0) { OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ZoomToSelection);
             if (attr.Length > 0) { ZoomToSelection = XmlConvert.ToBoolean(attr); }
+            attr = pluginNode.GetAttribute(xmlTags.ShowOnlyMarkedOnRoute);
+            if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
             attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
             if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
 
@@ -392,6 +400,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.SyncChartAtTrailPoints, XmlConvert.ToString(m_syncChartAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.OnlyReferenceRight, XmlConvert.ToString(m_onlyReferenceRight));
             pluginNode.SetAttribute(xmlTags.ZoomToSelection, XmlConvert.ToString(m_zoomToSelection));
+            pluginNode.SetAttribute(xmlTags.ShowOnlyMarkedOnRoute, XmlConvert.ToString(m_showOnlyMarkedOnRoute));
             pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
@@ -445,6 +454,7 @@ namespace TrailsPlugin.Data
             public const string SyncChartAtTrailPoints = "SyncChartAtTrailPoints";
             public const string OnlyReferenceRight = "OnlyReferenceRight";
             public const string ZoomToSelection = "ZoomToSelection";
+            public const string ShowOnlyMarkedOnRoute = "ShowOnlyMarkedOnRoute";
             public const string ExcludeStoppedCategory = "ExcludeStoppedCategory";
  
             public const string sColumns = "sColumns";

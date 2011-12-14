@@ -987,6 +987,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == Keys.Control)
                 {
                     TrailResult.m_diffOnDateTime = !TrailResult.m_diffOnDateTime;
+                    m_page.RefreshData();
                 }
             }
             else if (e.KeyCode == Keys.U)

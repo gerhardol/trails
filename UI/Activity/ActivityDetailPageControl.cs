@@ -255,6 +255,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 m_layerPoints.TrailPoints = points;
 
+                IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                 //check for TrailOrdered - displayed status
                 if (m_controller.CurrentActivityTrailDisplayed != null)
                 {
@@ -278,7 +279,6 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                     foreach (TrailResult tr in results)
                     {
                         if (showAll || this.ResultList.SelectedItems.Contains(tr))
@@ -295,15 +295,11 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    m_layerRoutes.TrailRoutes = routes;
-                }
-                else
-                {
-                    m_layerRoutes.TrailRoutes = new Dictionary<string, MapPolyline>();
                 }
                 m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
-                m_layerRoutes.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 m_layerMarked.ClearOverlays();
+                m_layerRoutes.TrailRoutes = routes;
             }
         }
 
@@ -420,7 +416,9 @@ namespace TrailsPlugin.UI.Activity {
                 m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, null, false);
                 m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 
-                if (atr != null && atr.Count > 0 || atrST.Count > 0)
+                if (marked != null && marked.Count > 0 || 
+                    mresult != null && mresult.Count > 0)
+                //if (atr != null && atr.Count > 0 || atrST.Count > 0)
                 {
                     if (Data.Settings.ZoomToSelection)
                     {
@@ -430,6 +428,14 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         this.m_layerMarked.SetLocationMarkedTracks();
                     }
+                }
+                else if (Data.Settings.ShowOnlyMarkedOnRoute)
+                {
+                    this.m_layerRoutes.DoZoom();
+                }
+                else if (!markChart)
+                {
+                    this.m_layerPoints.DoZoom();
                 }
 
                 //Mark chart

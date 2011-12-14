@@ -769,7 +769,10 @@ namespace TrailsPlugin.UI.Activity {
                         if (c.ValueAxis == m_axis[pair.Key])
                         {
                             if (c.ChartType == ChartDataSeries.Type.Line &&
-                                c.Points.Count > 1)
+                                c.Points.Count > 1 //&&
+                                //Ignore ref for diff time/dist graphs
+                                //(pair.Key != LineChartTypes.DiffDist || pair.Key != LineChartTypes.DiffTime ||
+                                )
                             {
                                 lists.Add(c);
                             }
@@ -794,8 +797,9 @@ namespace TrailsPlugin.UI.Activity {
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = ReferenceTrailResult;
                 //If only one result is used, it can be confusing if the trail points are set for ref
-                if (!Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count == 1 ||
-                    m_trailResults.Count > 0 && trailPointResult == null)
+                if ((!Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count == 1 ||
+                    m_trailResults.Count > 0 && trailPointResult == null) &&
+                    !(m_trailResults[0] is SummaryTrailResult))
                 {
                     trailPointResult = m_trailResults[0];
                 }

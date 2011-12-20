@@ -137,6 +137,32 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public override double Ascent
+        {
+            get
+            {
+                double tot = 0;
+                foreach (TrailResult t in results)
+                {
+                    tot += t.Ascent;
+                }
+                return tot / NoOfResults(0);
+            }
+        }
+
+        public override double Descent
+        {
+            get
+            {
+                double tot = 0;
+                foreach (TrailResult t in results)
+                {
+                    tot += t.Descent;
+                }
+                return tot / NoOfResults(0);
+            }
+        }
+
         public override double ElevChg
         {
             get

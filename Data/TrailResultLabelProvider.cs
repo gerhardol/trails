@@ -97,6 +97,10 @@ namespace TrailsPlugin.Data
                     return UnitUtil.HeartRate.ToString(row.AvgHR);
                 case TrailResultColumnIds.MaxHR:
                     return UnitUtil.HeartRate.ToString(row.MaxHR);
+                case TrailResultColumnIds.Ascent:
+                    return UnitUtil.Elevation.ToString(row.Ascent);
+                case TrailResultColumnIds.Descent:
+                    return UnitUtil.Elevation.ToString(row.Descent);
                 case TrailResultColumnIds.ElevChg:
                     return (row.ElevChg > 0 ? "+" : "") + UnitUtil.Elevation.ToString(row.ElevChg, "");
                 case TrailResultColumnIds.AvgPower:

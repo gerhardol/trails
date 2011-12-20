@@ -995,6 +995,62 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public virtual double Ascent
+        {
+            get
+            {
+                INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return Info.TotalAscendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                }
+                return GetTotalClimbValue(true, track);
+            }
+        }
+
+        public virtual double Descent
+        {
+            get
+            {
+                INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return Info.TotalDescendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                }
+                return GetTotalClimbValue(false, track);
+            }
+        }
+
+        public double GetTotalClimbValue(bool ascent, INumericTimeDataSeries track)
+        {
+            //ActivityInfoCache.Instance.GetInfo(this.Activity).SmoothedGradeTrack;// 
+            double total = 0;
+            if (track.Count > 0)
+            {
+                //Note: Using Trails Info inflates the values slightly, also standard Info does a little (due to points added)
+                //Attempt to adjust factor, may need tuning
+                ActivityInfo info = this.Info;
+                ZoneCategoryInfo categoryInfo = ZoneCategoryInfo.Calculate(info, Plugin.GetApplication().DisplayOptions.SelectedClimbZone, track, 0.8f);
+
+                // Remove totals row
+                categoryInfo.Zones.RemoveAt(categoryInfo.Zones.Count - 1);
+
+                foreach (ZoneInfo zoneInfo in categoryInfo.Zones)
+                {
+                    if (ascent && zoneInfo.Zone.Low > 0 && zoneInfo.ElevationChangeMeters > 0 ||
+                        !ascent && zoneInfo.Zone.High < 0 && zoneInfo.ElevationChangeMeters < 0)
+                    {
+                        total += zoneInfo.ElevationChangeMeters;
+                    }
+                    if (total < 0)
+                    { }
+                }
+
+            }
+
+            return total;
+        }
+
         public virtual double ElevChg
         {
             get
@@ -1569,7 +1625,7 @@ namespace TrailsPlugin.Data
                             DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
-                                while (diffMode == DiffMode.ActivityStart && Settings.ResyncDiffAtTrailPoints &&
+                                while (/*xxxdiffMode == DiffMode.ActivityStart && */Settings.ResyncDiffAtTrailPoints &&
                                     this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
@@ -1991,7 +2047,7 @@ namespace TrailsPlugin.Data
                 if (m_ActivityInfo == null)
                 {
                     ActivityInfoCache c = new ActivityInfoCache();
-                    ActivityInfoOptions t = new ActivityInfoOptions(false, IncludeStopped);
+                    ActivityInfoOptions t = new ActivityInfoOptions(false, this.IncludeStopped);
                     c.Options = t;
                     IActivity activity = this.Activity;
                     //if (this.Pauses != activity.TimerPauses)
@@ -2015,7 +2071,7 @@ namespace TrailsPlugin.Data
                     }
                     else
                     {
-                        //TODO: This data should not be used, just return any activity
+                        //TODO: This data should not be used, just return any activity to avoid exceptions
                         m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
                     }
                 }

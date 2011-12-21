@@ -106,7 +106,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.AvgPower:
                     return UnitUtil.Power.ToString(row.AvgPower);
                 case TrailResultColumnIds.AvgGrade:
-                    return (row.AvgGrade/100.0).ToString("0.0%");
+                    return (row.AvgGrade).ToString("0.0%");
                 case TrailResultColumnIds.AvgSpeed:
                     return UnitUtil.Speed.ToString(row.AvgSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.FastestSpeed:

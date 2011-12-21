@@ -963,8 +963,8 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                //This should be calculated from Ascent/Descent instead, this is confusing
-                return GradeTrack0(m_cacheTrackRef).Avg;
+                //Just Ascending instead of track average, more useful
+                return (float)(this.Ascent/this.Distance);
             }
         }
 
@@ -2125,7 +2125,7 @@ namespace TrailsPlugin.Data
 
         float ITrailResult.AvgGrade
         {
-            get { return AvgGrade; }
+            get { return 100*AvgGrade; }
         }
 
         float ITrailResult.AvgHR

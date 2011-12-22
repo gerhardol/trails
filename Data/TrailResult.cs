@@ -77,6 +77,8 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries m_DiffDistTrack0;
         IList<double> m_trailPointTime0;
         IList<double> m_trailPointDist0;
+        private double? m_ascent;
+        private double? m_descent;
 
         private IGPSRoute m_gpsTrack;
         private IList<IList<IGPSPoint>> m_gpsPoints;
@@ -999,12 +1001,11 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
-                if (track == null || track.Count == 0)
+                if (m_ascent == null)
                 {
-                    return Info.TotalAscendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                    GetTotalClimbValue();
                 }
-                return GetTotalClimbValue(true, track);
+                return (double)m_ascent;
             }
         }
 
@@ -1012,21 +1013,28 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
-                if (track == null || track.Count == 0)
+                if (m_descent == null)
                 {
-                    return Info.TotalDescendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                    GetTotalClimbValue();
                 }
-                return GetTotalClimbValue(false, track);
+                return (double)m_descent;
             }
         }
 
-        public double GetTotalClimbValue(bool ascent, INumericTimeDataSeries track)
+        //Calculate ascent/descent for the trail
+        public void GetTotalClimbValue()
         {
             //ActivityInfoCache.Instance.GetInfo(this.Activity).SmoothedGradeTrack;// 
-            double total = 0;
-            if (track.Count > 0)
+            INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
+            if (track == null || track.Count == 0)
             {
+                m_ascent = Info.TotalAscendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                m_descent = Info.TotalDescendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+            }
+            else
+            {
+                m_ascent = 0;
+                m_descent = 0;
                 //Note: Using Trails Info inflates the values slightly, also standard Info does a little (due to points added)
                 //Attempt to adjust factor, may need tuning
                 ActivityInfo info = this.Info;
@@ -1037,18 +1045,16 @@ namespace TrailsPlugin.Data
 
                 foreach (ZoneInfo zoneInfo in categoryInfo.Zones)
                 {
-                    if (ascent && zoneInfo.Zone.Low > 0 && zoneInfo.ElevationChangeMeters > 0 ||
-                        !ascent && zoneInfo.Zone.High < 0 && zoneInfo.ElevationChangeMeters < 0)
+                    if (zoneInfo.Zone.Low > 0 && zoneInfo.ElevationChangeMeters > 0)
                     {
-                        total += zoneInfo.ElevationChangeMeters;
+                        m_ascent += zoneInfo.ElevationChangeMeters;
                     }
-                    if (total < 0)
-                    { }
+                    if (zoneInfo.Zone.High < 0 && zoneInfo.ElevationChangeMeters < 0)
+                    {
+                        m_descent += zoneInfo.ElevationChangeMeters;
+                    }
                 }
-
             }
-
-            return total;
         }
 
         public virtual double ElevChg
@@ -1097,6 +1103,8 @@ namespace TrailsPlugin.Data
             m_DiffDistTrack0 = null;
             m_trailPointTime0 = null;
             m_trailPointDist0 = null;
+            m_ascent = null;
+            m_descent = null;
 
             //smoothing control
             //m_TrailActivityInfoOptions = null;

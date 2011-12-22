@@ -913,11 +913,20 @@ namespace TrailsPlugin.UI.Activity {
             SortedList<float, bool> xs = new SortedList<float, bool>();
             foreach (ChartDataSeries series in list)
             {
+                //Average graph is very slow with many points, limit them somehow
+                //A reasonable value is close to the averaging time
+                float xref = 15;
+                if (XAxisReferential != XAxisValue.Time)
+                {
+                    //In distance mode, use points corresponding to time intervall at 5min/km
+                    xref = (float)UnitUtil.Distance.ConvertFrom(xref*1000.0/300.0);
+                }
                 foreach (PointF point in series.Points.Values)
                 {
-                    if (!xs.ContainsKey(point.X))
+                    float x = (float)(Math.Round(point.X / xref) * xref);
+                    if (!xs.ContainsKey(x))
                     {
-                        xs.Add(point.X, true);
+                        xs.Add(x, true);
                     }
                 }
             }

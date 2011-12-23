@@ -1068,14 +1068,14 @@ namespace GpsRunningPlugin.Util
                     }
                     //This seem to be a regular time span, use standard metod
                     TimeSpan ts = TimeSpan.Parse(p);
-                    seconds = ts.TotalMilliseconds / 1000;
+                    seconds = ts.TotalSeconds;
                 }
                 else
                 {
                     seconds = 60 * double.Parse(p);
                 }
 
-                return seconds;
+                return ConvertTo(seconds);
             }
 
             private static String getLabel()

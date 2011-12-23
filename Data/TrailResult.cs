@@ -961,12 +961,20 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public virtual float AvgGrade
+        public virtual float AscAvgGrade
         {
             get
             {
                 //Just Ascending instead of track average, more useful
-                return (float)(this.Ascent/this.Distance);
+                return (float)(this.Ascent / this.Distance);
+            }
+        }
+
+        public virtual float DescAvgGrade
+        {
+            get
+            {
+                return (float)(this.Descent / this.Distance);
             }
         }
 
@@ -2133,7 +2141,7 @@ namespace TrailsPlugin.Data
 
         float ITrailResult.AvgGrade
         {
-            get { return 100*AvgGrade; }
+            get { return 100*AscAvgGrade; }
         }
 
         float ITrailResult.AvgHR

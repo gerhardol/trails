@@ -103,7 +103,8 @@ namespace TrailsPlugin.Data {
         public const string Descent = "Descent";
         public const string ElevChg = "ElevChg";
 		public const string AvgPower = "AvgPower";
-		public const string AvgGrade = "AvgGrade";
+        public const string AscAvgGrade = "AscAvgGrade";
+        public const string DescAvgGrade = "DescAvgGrade";
         public const string AvgSpeed = "AvgSpeed";
         public const string FastestSpeed = "FastestSpeed";
         public const string AvgPace = "AvgPace";
@@ -152,7 +153,8 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Descent, CommonResources.Text.LabelDescending + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 60, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
 			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Near));
-			columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgGrade, CommonResources.Text.LabelAscending + " " + CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscAvgGrade, CommonResources.Text.LabelAscending + " " + CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.DescAvgGrade, CommonResources.Text.LabelDescending + " " + CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Near));
 
             int speedIndex = columnDefs.Count;
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + UnitUtil.Speed.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Near));
@@ -247,8 +249,10 @@ namespace TrailsPlugin.Data {
                     return x.Distance;
                 case TrailResultColumnIds.AvgCadence:
                     return x.AvgCadence;
-                case TrailResultColumnIds.AvgGrade:
-                    return x.AvgGrade;
+                case TrailResultColumnIds.AscAvgGrade:
+                    return x.AscAvgGrade;
+                case TrailResultColumnIds.DescAvgGrade:
+                    return x.DescAvgGrade;
                 case TrailResultColumnIds.AvgHR:
                     return x.AvgHR;
                 case TrailResultColumnIds.AvgPower:

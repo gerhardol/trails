@@ -194,14 +194,27 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public override float AvgGrade
+        public override float AscAvgGrade
         {
             get
             {
                 float tot = 0;
                 foreach (TrailResult t in results)
                 {
-                    tot += t.AvgGrade;
+                    tot += t.AscAvgGrade;
+                }
+                return tot / NoOfResults(0);
+            }
+        }
+
+        public override float DescAvgGrade
+        {
+            get
+            {
+                float tot = 0;
+                foreach (TrailResult t in results)
+                {
+                    tot += t.DescAvgGrade;
                 }
                 return tot / NoOfResults(0);
             }

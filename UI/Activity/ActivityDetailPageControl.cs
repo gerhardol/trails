@@ -242,6 +242,8 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshRoute()
         {
+            //Refreh map when visibe
+            //for reports view, also the separate Map could be updated
             if ((!m_isExpanded || isReportView)
                 && m_controller.CurrentActivityTrail != null)
             {
@@ -336,7 +338,8 @@ namespace TrailsPlugin.UI.Activity {
             {
             bool result = false;
 #if !ST_2_1
-            if (m_view.Id == GUIDs.ReportView)
+            if (m_view.GetType().Name == "ActivityReportDetailsPage")
+            //if (m_view.Id == GUIDs.ReportView)
             { 
                 result = true;
             }

@@ -29,11 +29,12 @@ namespace TrailsPlugin {
         public static readonly Guid Settings = new Guid("c5d04e80-6108-11df-a08a-0800200c9a66");
         public static readonly Guid Activity = new Guid("0af379d0-5ebe-11df-a08a-0800200c9a66");
 
-        //ST standard views
+        //ST standard views - same for ST3, ST3.1
         public static readonly Guid DailyActivityView = new Guid("1dc82ca0-88aa-45a5-a6c6-c25f56ad1fc3");
         //public static readonly Guid EquipmentView = new Guid("92e1a9b4-de58-11db-9705-00e08161165f");
         //public static readonly Guid AthleteView = new Guid("709e607b-cb51-431c-ba3f-197ab4df3de0");
-        public static readonly Guid ReportView = new Guid("99498256-cf51-11db-9705-005056c00008");
+        //public static readonly Guid ReportView = new Guid("99498256-cf51-11db-9705-005056c00008");
+
         //public static readonly Guid SettingsView = new Guid("df106ae5-c497-11db-96fe-005056c00008");
         //public static readonly Guid RoutesView = new Guid("e9a99ef8-c497-11db-96fe-005056c00008");
         //public static readonly Guid OnlineView = new Guid("f8a828fc-c497-11db-96fe-005056c00008");

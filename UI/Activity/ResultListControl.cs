@@ -969,13 +969,21 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.S)
             {
-                if (e.Modifiers == Keys.Shift)
+                if (e.Modifiers == Keys.Control)
                 {
-                    m_page.SetResultListHeight -= cResultListHeight;
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice = !TrailsPlugin.Data.Settings.ResultSummaryIsDevice;
+                    m_page.RefreshData();
                 }
                 else
                 {
-                    m_page.SetResultListHeight += cResultListHeight;
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        m_page.SetResultListHeight -= cResultListHeight;
+                    }
+                    else
+                    {
+                        m_page.SetResultListHeight += cResultListHeight;
+                    }
                 }
             }
             else if (e.KeyCode == Keys.T)

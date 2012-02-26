@@ -49,6 +49,7 @@ namespace TrailsPlugin.Data
         private static bool m_onlyReferenceRight = false;
         private static bool m_zoomToSelection = false;
         private static bool m_showOnlyMarkedOnRoute = false;
+        private static bool m_resultSummaryIsDevice = false;
         private static string m_excludeStoppedCategory = "";
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         static bool m_diffUsingCommonStretches = false; //Not in xml
@@ -264,6 +265,14 @@ namespace TrailsPlugin.Data
         {
             get { return m_showOnlyMarkedOnRoute; }
             set { m_showOnlyMarkedOnRoute = value; }
+        }
+        /// <summary>
+        /// Show the summary from the device, instead of the track summaries
+        /// </summary>
+        public static bool ResultSummaryIsDevice
+        {
+            get { return m_resultSummaryIsDevice; }
+            set { m_resultSummaryIsDevice = value; }
         }
         
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)

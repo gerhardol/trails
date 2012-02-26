@@ -245,6 +245,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.TotalTimeEntered;
+                }
                 return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
                    StartDateTime, EndDateTime, Pauses);
             }
@@ -253,6 +259,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.TotalDistanceMetersEntered;
+                }
                 if (DistanceMetersTrack == null || DistanceMetersTrack.Count == 0)
                 {
                     return 0;
@@ -265,6 +277,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.StartTime.ToLocalTime().TimeOfDay;
+                }
                 return StartDateTime.ToLocalTime().TimeOfDay;
             }
         }
@@ -908,6 +926,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.AverageCadencePerMinuteEntered;
+                }
                 INumericTimeDataSeries track = CadencePerMinuteTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
@@ -921,6 +945,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.AverageHeartRatePerMinuteEntered;
+                }
                 INumericTimeDataSeries track = HeartRatePerMinuteTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
@@ -934,6 +964,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.MaximumHeartRatePerMinuteEntered;
+                }
                 INumericTimeDataSeries track = HeartRatePerMinuteTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
@@ -947,6 +983,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.AveragePowerWattsEntered;
+                }
                 float result;
                 INumericTimeDataSeries track = PowerWattsTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
@@ -965,6 +1007,13 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null &&
+                    this.Activity.TotalDistanceMetersEntered > 0)
+                {
+                    return this.Activity.TotalAscendMetersEntered / this.Activity.TotalDistanceMetersEntered;
+                }
                 //Just Ascending instead of track average, more useful
                 return (float)(this.Ascent / this.Distance);
             }
@@ -974,6 +1023,13 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null &&
+                    this.Activity.TotalDistanceMetersEntered > 0)
+                {
+                    return this.Activity.TotalDescendMetersEntered / this.Activity.TotalDistanceMetersEntered;
+                }
                 return (float)(this.Descent / this.Distance);
             }
         }
@@ -982,6 +1038,13 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null &&
+                    this.Activity.TotalTimeEntered.TotalSeconds > 0)
+                {
+                    return (float)(this.Activity.TotalDistanceMetersEntered / this.Activity.TotalTimeEntered.TotalSeconds);
+                }
                 return (float)(this.Distance / this.Duration.TotalSeconds);
             }
         }
@@ -1009,6 +1072,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.TotalAscendMetersEntered;
+                }
                 if (m_ascent == null)
                 {
                     GetTotalClimbValue();
@@ -1021,6 +1090,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.ParentResult == null &&
+                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    this.Activity != null)
+                {
+                    return this.Activity.TotalDescendMetersEntered;
+                }
                 if (m_descent == null)
                 {
                     GetTotalClimbValue();

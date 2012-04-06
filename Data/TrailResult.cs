@@ -154,25 +154,25 @@ namespace TrailsPlugin.Data
             m_childrenInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
 
-            if (par == null)
-            {
-                if (m_activity != null)
-                {
-                    if (!s_activities.ContainsKey(m_activity))
-                    {
-                        s_activities.Add(m_activity, new trActivityInfo());
-                        //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
-                    }
-                    s_activities[m_activity].res.Add(this);
-                }
-            }
-            else
+            if (par != null)
             {
                 if (par.m_childrenResults == null)
                 {
                     par.m_childrenResults = new List<TrailResult>();
                 }
                 par.m_childrenResults.Add(this);
+            }
+            if (m_activity != null)
+            {
+                //Add activity listener if not already existing
+                if (!s_activities.ContainsKey(m_activity))
+                {
+                    s_activities.Add(m_activity, new trActivityInfo());
+                    m_activity.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
+                    //Note: Remove listener when all results using it are removed only
+                    //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
+                }
+                s_activities[m_activity].res.Add(this);
             }
         }
 
@@ -2187,8 +2187,35 @@ namespace TrailsPlugin.Data
         {
             nextTrailColor = 1;
             //nextActivityColor = 1;
+            foreach (KeyValuePair<IActivity, trActivityInfo> a in s_activities)
+            {
+               TrailResult.Activity_PropertyChanged(a.Key, null);
+                a.Key.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
+            }
+
             s_activities.Clear();
         }
+
+        static void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            //e is null at reset. For other this is called multiple times - only run once
+            if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
+            {
+                IActivity a = sender as IActivity;
+                if (s_activities != null && s_activities.ContainsKey(a) && s_activities[a].res != null)
+                {
+                    foreach (TrailResult tr in s_activities[a].res)
+                    {
+                        if (tr != null)
+                        {
+                            tr.Clear(false);
+                            //Charts cannot be updated from here, listener must be changed for that
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
         //Create a copy of this result as an activity

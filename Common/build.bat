@@ -3,7 +3,7 @@ REM
 REM This library is free software; you can redistribute it and/or
 REM modify it under the terms of the GNU Lesser General Public
 REM License as published by the Free Software Foundation; either
-REM version 3 of the License, or (at your option) any later version.
+REM version 2 of the License, or (at your option) any later version.
 REM
 REM This library is distributed in the hope that it will be useful,
 REM but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,14 +28,11 @@ SET TargetDir=%6
 REM $(ConfigurationType)
 SET ConfigurationType=%7
 
-REM To move a .stplugin to common area, create environment variable (or set it below)
-REM set stPlgoutdir=g:\Users\go\dev\web
-
 REM Set the plugin GUID in the main PropertyGroup for the plugin
 IF "%guid%"=="" GOTO END
 
 REM ST version, for plugin.xml file
-SET StVersion=3.0.4205
+SET StVersion=3.1.4415
 IF "%StPluginVersion%"=="2" SET StVersion=2.1.3478
 
 REM 7-zip must be configured, hardcoded path used
@@ -49,10 +46,13 @@ set cygwin=nodosfilewarning
 set tempfile=%temp%\%ProjectName%-stpluginversion.tmp
 %perl% -ne "if(/^^\[assembly: AssemblyVersion\(.([\.\d]*)(\.\*)*.\)\]/){print $1;}" %ProjectDir%\Properties\AssemblyInfo.cs > %tempfile%
 set /p PluginVersion= < %tempfile%
-DEL %tempfile%
+rem DEL %tempfile%
 :endversion
 
 set stPlgFile=%ProjectDir%%ProjectName%-%PluginVersion%.st%StPluginVersion%plugin
+IF NOT "%ConfigurationType%"=="Release" set stPlgFile="%ProjectDir%%ProjectName%-%PluginVersion%-%ConfigurationType%.st%StPluginVersion%plugin"
+REM To move a .stplugin to common area, create environment variable (or set it below)
+REM set stPlgoutdir=g:\Users\go\dev\web
 
 REM Vista+ / XP compatibility
 set C_APPDATA=%PROGRAMDATA%
@@ -71,23 +71,23 @@ REM generate the plugin.xml file
 ECHO ^<?xml version="1.0" encoding="utf-8" ?^> >  "%TargetDir%plugin.xml"
 ECHO ^<plugin id="%guid%" minimumCommonVersion="%StVersion%" /^> >> "%TargetDir%plugin.xml"
 
-rem IF "%ConfigurationType%"=="Debug" GOTO DebugPluginPackage
-
 DEL "%stPlgFile%"
 IF NOT EXIST "%programfiles%\7-zip\7z.exe" GOTO END
+
+REM Include pdb for now also in release builds - helpful.
+REM IF NOT "%ConfigurationType%"=="Release" GOTO DebugPluginPackage
+
+:DebugPluginPackage
+REM Create debug package, with pdb
 "%programfiles%\7-zip\7z" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml
-rem "%programfiles%\7-zip\7z" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.pdb -x!*.locked -x!%ProjectName%.xml
+GOTO end
+
+:ReleasePluginPackage
+"%programfiles%\7-zip\7z" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml -x!*.pdb
 
 IF "%stPlgoutdir%"=="" GOTO END
 IF not EXIST "%stPlgoutdir%" GOTO END
 COPY "%stPlgFile%" "%stPlgoutdir%"
 GOTO end
-
-:DebugPluginPackage
-GOTO end
-REM Create debug package
-DEL "%stPlgFile%"
-IF NOT EXIST "%programfiles%\7-zip\7z.exe" GOTO END
-"%programfiles%\7-zip\7z" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml
 
 :END

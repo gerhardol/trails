@@ -12,7 +12,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>false</BootstrapperEnabled>
   </PropertyGroup>
- 
+
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -65,14 +65,14 @@
     <DefineConstants>$(DefineConstants);TRACE;ST_3_0</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ST3.0Debug|AnyCPU' ">
     <DefineConstants>$(DefineConstants);TRACE;DEBUG;ST_3_0</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
 
@@ -96,12 +96,14 @@
   <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
     <Reference Include="Common.Data, Version=3.0.4068.25375, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
+      <HintPath Condition="'$(Platform)' == 'x64' and Exists('$(ProgramFiles) (x86)')">$(ProgramFiles) (x86)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
+      <HintPath Condition="'$(HintPath)' == '' ">$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Common.Visuals, Version=3.0.4068.25368, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
+      <HintPath Condition="'$(Platform)' == 'x64' and Exists('$(ProgramFiles) (x86)')">$(ProgramFiles) (x86)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
+      <HintPath Condition="'$(HintPath)' == '' ">$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

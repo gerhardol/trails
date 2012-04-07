@@ -29,16 +29,20 @@ namespace TrailsPlugin.Data
     {
         public IList<TrailResultPoint> Points;
         public IActivity Activity;
+        public float DistDiff;
+        public bool Reverse;
 
-        public TrailResultInfo(IActivity activity)
+        public TrailResultInfo(IActivity activity, bool reverse)
         {
-            Activity = activity;
-            Points = new List<TrailResultPoint>();
+            this.Activity = activity;
+            this.Points = new List<TrailResultPoint>();
+            this.DistDiff = 0;
+            this.Reverse = reverse;
         }
         //Hide the handling slightly
         public TrailResultInfo Copy()
         {
-            TrailResultInfo result = new TrailResultInfo(this.Activity);
+            TrailResultInfo result = new TrailResultInfo(this.Activity, this.Reverse);
             foreach (TrailResultPoint p in Points)
             {
                 result.Points.Add(p);
@@ -47,7 +51,7 @@ namespace TrailsPlugin.Data
         }
         public TrailResultInfo CopySlice(int i, int j)
         {
-            TrailResultInfo result = new TrailResultInfo(this.Activity);
+            TrailResultInfo result = new TrailResultInfo(this.Activity, this.Reverse);
             result.Points.Add(new TrailResultPoint(Points[i]));
             result.Points.Add(new TrailResultPoint(Points[j]));
             return result;

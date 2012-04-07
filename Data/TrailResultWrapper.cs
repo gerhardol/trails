@@ -31,8 +31,8 @@ namespace TrailsPlugin.Data
 {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
-        public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
-            : this(activityTrail, null, order, indexes, distDiff, reverse)
+        public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes)
+            : this(activityTrail, null, order, indexes, indexes.DistDiff, indexes.Reverse)
         { }
 
         private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff, bool reverse)
@@ -61,7 +61,7 @@ namespace TrailsPlugin.Data
         public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
             : base(null, null)
         {
-            TrailResultInfo indexes = new TrailResultInfo(activity);
+            TrailResultInfo indexes = new TrailResultInfo(activity, false);
             indexes.Points.Add(new TrailResultPoint(selInfo.MarkedTimes[0].Lower, ""));
             indexes.Points.Add(new TrailResultPoint(selInfo.MarkedTimes[0].Upper, ""));
             if (indexes.Count >= 2)

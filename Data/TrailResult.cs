@@ -139,7 +139,7 @@ namespace TrailsPlugin.Data
         //Summary result
         public TrailResult(ActivityTrail activityTrail)
         {
-            createTrailResult(activityTrail, null, 0, new TrailResultInfo(null), 0);
+            createTrailResult(activityTrail, null, 0, new TrailResultInfo(null, false), 0);
             m_toolTip = "";
             m_trailColor = Color.Black;
         }

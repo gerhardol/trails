@@ -97,6 +97,16 @@ namespace TrailsPlugin.Data
             }
         }
 
+        private static TrailOrderStatus BestCalcStatus(TrailOrderStatus current, TrailOrderStatus upd)
+        {
+            //Set "better" status only
+            if (upd < current)
+            {
+                return upd;
+            }
+            return current;
+        }
+
         public TrailOrderStatus Status
         {
             get
@@ -105,11 +115,7 @@ namespace TrailsPlugin.Data
             }
             set
             {
-                //Set "better" status only
-                if (value < m_status)
-                {
-                    m_status = value;
-                }
+                m_status = BestCalcStatus(m_status, value);
             }
         }
         public bool IsInBounds
@@ -349,6 +355,11 @@ namespace TrailsPlugin.Data
                                 //As this is currently used when adding is used only for EditTrail, no concern
                                 if ((inBound || MaxRequiredMisses > 0) && activity.GPSRoute != null)
                                 {
+                                    //Status is at least inbound (even if this is a "downgrade")
+                                    if (m_status == TrailOrderStatus.InBoundNoCalc)
+                                    {
+                                        m_status = TrailOrderStatus.InBound;
+                                    }
                                     CalcInboundResults(activity, trailgps, locationBounds, MaxRequiredMisses, false, progressBar);
                                     if (bidirectional)
                                     {
@@ -370,14 +381,14 @@ namespace TrailsPlugin.Data
                             progressBar.Value++;
                         }
                     }
-                    //children
+                    //Always set InBound count, used in some displays
+                    m_noResCount[TrailOrderStatus.InBound] = m_inBound.Count;
                     foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
                     {
                         tr.getSplits();
                     }
                 }
-                if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound &&
-                    (m_status == TrailOrderStatus.InBoundNoCalc || m_status == TrailOrderStatus.MatchNoCalc))
+                if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
                 {
                     //Downgrade status from "speculative match"
                     m_status = TrailOrderStatus.InBound;
@@ -393,10 +404,10 @@ namespace TrailsPlugin.Data
                 this.dist = dist;
                 this.prevDist = prevDist;
             }
-            public float checkPass(ActivityTrail trail, IActivity activity, TrailGPSLocation trailp, ref float closeDist)
+            public float checkPass(IActivity activity, TrailGPSLocation trailp, float radius, ref float closeDist)
             {
                 double dist;
-                float routeFactor = ActivityTrail.checkPass(trail.Trail.Radius,
+                float routeFactor = ActivityTrail.checkPass(radius,
                   routePoint(activity, this.index - 1), this.prevDist,
                   routePoint(activity, this.index), this.dist,
                   trailp,
@@ -415,7 +426,62 @@ namespace TrailsPlugin.Data
 
         private void CalcInboundResults(IActivity activity, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, int MaxRequiredMisses, bool reverse, System.Windows.Forms.ProgressBar progressBar)
         {
-            IList<TrailResultPointMeta> resultPoints = new List<TrailResultPointMeta>();
+            IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
+            TrailOrderStatus status = CalcTrail(activity, trailgps, locationBounds, this.Trail.Radius, this.Trail.MinDistance, MaxRequiredMisses, reverse, trailResults, m_incompleteResults, progressBar);
+
+            foreach (TrailResultInfo resultInfo in trailResults)
+            {
+                TrailResultWrapper result = new TrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo);
+                m_resultsListWrapper.Add(result);
+            }
+
+            if (status != TrailOrderStatus.Match)
+            {
+                if (!m_noResCount.ContainsKey(status))
+                {
+                    m_noResCount[status] = 0;
+                }
+                m_noResCount[status]++;
+            }
+            //Update accumulated status
+            Status = status;
+
+        }
+
+        internal static TrailOrderStatus CalcTrail(IActivity activity, IList<TrailGPSLocation> trailgps,
+            float radius, bool reverse, IList<TrailResultInfo> trailResults)
+        {
+            IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>(); //unused
+            IList<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds> locationBounds = new List<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds>();
+            foreach (TrailGPSLocation l in trailgps)
+            {
+                locationBounds.Add(TrailGPSLocation.getGPSBounds(new List<TrailGPSLocation> { l }, 10 * radius));
+            }
+
+            return CalcTrail(activity, trailgps, locationBounds, 
+                radius, 0, 0, reverse, trailResults, incompleteResults, null);
+        }
+
+        /// <summary>
+        /// Calculate trail result points for a certain set of points (Trail)
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <param name="trailgps"></param>
+        /// <param name="locationBounds"></param>
+        /// <param name="radius"></param>
+        /// <param name="minDistance"></param>
+        /// <param name="MaxRequiredMisses"></param>
+        /// <param name="reverse"></param>
+        /// <param name="trailResults"></param>
+        /// <param name="incompleteResults"></param>
+        /// <param name="progressBar"></param>
+        /// <returns></returns>
+        private static TrailOrderStatus CalcTrail(IActivity activity, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, 
+            float radius, float minDistance, int MaxRequiredMisses, bool reverse, 
+            IList<TrailResultInfo> trailResults, IList<IncompleteTrailResult> incompleteResults, System.Windows.Forms.ProgressBar progressBar)
+        {
+            TrailOrderStatus status = TrailOrderStatus.NoInfo;
+            IList<TrailResultPointMeta> currResultPoints = new List<TrailResultPointMeta>();
 
             //Cache information about previous distances
             PointInfo prevPoint = new PointInfo(-1, 0);
@@ -426,7 +492,7 @@ namespace TrailsPlugin.Data
             int currRequiredMisses = 0;
             //Ignore short legs - undocumented feature
             IDistanceDataTrack dTrack = null;
-            if (this.Trail.MinDistance > 0)
+            if (minDistance > 0)
             {
                 //Must use the distance track related to the GPS track here, not the (potentially optimized) InfoCache track
                 dTrack = activity.GPSRoute.GetDistanceMetersTrack();
@@ -458,17 +524,17 @@ namespace TrailsPlugin.Data
                 //}
                 //Special case of the algorithm above, restarting if the first point is seen again.
                 //So A1-A2-B1-C1 is reduced to A2-B1-C1
-                if (trailgps.Count > 1 && resultPoints.Count == 1 &&
-                    !resultPoints[0].restart &&
-                    resultPoints[0].Time > DateTime.MinValue &&
-                    routeIndex > 1 + Math.Max(resultPoints[0].index, Math.Max(resultPoints[0].matchInRadius,
-                    resultPoints[0].matchPassBy)) &&
+                if (trailgps.Count > 1 && currResultPoints.Count == 1 &&
+                    !currResultPoints[0].restart &&
+                    currResultPoints[0].Time > DateTime.MinValue &&
+                    routeIndex > 1 + Math.Max(currResultPoints[0].index, Math.Max(currResultPoints[0].matchInRadius,
+                    currResultPoints[0].matchPassBy)) &&
                     locationBounds[0].Contains((IGPSLocation)(activity.GPSRoute[routeIndex].Value)))
                 {
                     PointInfo startPoint = new PointInfo(routeIndex,
                          distanceTrailToRoute(activity, trailgps, 0, routeIndex));
                     bool match = false;
-                    if (startPoint.dist < this.m_trail.Radius)
+                    if (startPoint.dist < radius)
                     {
                         match = true;
                     }
@@ -481,7 +547,7 @@ namespace TrailsPlugin.Data
                             prevStartPoint.dist = distanceTrailToRoute(activity, trailgps, 0, prevStartPoint.index);
                         }
                         double d;
-                        if (0 < checkPass(this.Trail.Radius,
+                        if (0 < checkPass(radius,
                     routePoint(activity, prevStartPoint.index), prevStartPoint.dist,
                     routePoint(activity, startPoint.index), startPoint.dist,
                     trailgps[TrailIndex(trailgps, 0)]/*, dTrack[routeIndex].Value - dTrack[prevStartPointIndex].Value*/,
@@ -493,7 +559,7 @@ namespace TrailsPlugin.Data
                     if (match)
                     {
                         //Start over if we pass first point before all were found
-                        resultPoints.Clear();
+                        currResultPoints.Clear();
                     }
                     prevStartPoint = startPoint;
                 }
@@ -510,23 +576,23 @@ namespace TrailsPlugin.Data
                 int lastMatchPassByIndex = -1;
 
                 //Check if the point is in bounds, the distance to point is the heaviest calculation per point
-                //location bounds is aproximate, should cover the apopriate "checkPass" area
-                if (locationBounds[trailgps.Count==1 ? 0:resultPoints.Count].Contains((IGPSLocation)(activity.GPSRoute[routeIndex].Value)))
+                //location bounds is aproximate, should cover the aproximate "checkPass" area
+                if (locationBounds[trailgps.Count==1 ? 0 : currResultPoints.Count].Contains((IGPSLocation)(activity.GPSRoute[routeIndex].Value)))
                 {
-                    routeDist = distanceTrailToRoute(activity, trailgps, resultPoints.Count, routeIndex);
+                    routeDist = distanceTrailToRoute(activity, trailgps, currResultPoints.Count, routeIndex);
                     if (routeIndex > 0 && (prevPoint.index < 0 || routeIndex - prevPoint.index != 1 || prevPoint.dist == float.MaxValue))
                     {
                         prevPoint.index = routeIndex - 1;
-                        prevPoint.dist = distanceTrailToRoute(activity, trailgps, resultPoints.Count, prevPoint.index);
+                        prevPoint.dist = distanceTrailToRoute(activity, trailgps, currResultPoints.Count, prevPoint.index);
                     }
 
                     //////////////////////////////////////
                     //Find the best GPS point for this result
-                    if (routeDist < this.Trail.Radius)
+                    if (routeDist < radius)
                     {
                         bool firstPoint = true;
                         float prevRouteDist = prevPoint.dist;
-                        float distHysteresis = Math.Max(this.Trail.Radius / 30, 5);
+                        float distHysteresis = Math.Max(radius / 30, 5);
                         Stack<pInfo> info = new Stack<pInfo>();
                         float matchFactor = -1;
 
@@ -538,13 +604,13 @@ namespace TrailsPlugin.Data
                             if (!firstPoint)
                             {
                                 //avoid calculations...
-                                routeDist = distanceTrailToRoute(activity, trailgps, resultPoints.Count, routeIndex);
+                                routeDist = distanceTrailToRoute(activity, trailgps, currResultPoints.Count, routeIndex);
                             }
                             firstPoint = false;
 
                             {
                                 pInfo pointInfo = new pInfo(routeIndex, routeDist, prevRouteDist);
-                                if (resultPoints.Count == 0)
+                                if (currResultPoints.Count == 0)
                                 {
                                     //start point
                                     //Just cycle through the points, to prepare for back track to first (matchIndex)
@@ -556,9 +622,9 @@ namespace TrailsPlugin.Data
                                     float closeDist = pointInfo.dist;
                                     if (routeIndex > 0)
                                     {
-                                        //Check closest point for first in the 
-                                        routeFactor = pointInfo.checkPass(this, activity,
-                                           trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
+                                        //Check closest point
+                                        routeFactor = pointInfo.checkPass(activity,
+                                           trailgps[TrailIndex(trailgps, currResultPoints.Count)], radius, ref closeDist);
                                     }
 
                                     if (closeDist < matchDist)
@@ -568,18 +634,18 @@ namespace TrailsPlugin.Data
                                         matchDist = closeDist;
                                         matchFactor = routeFactor;
                                     }
-                                    if (isEndTrailPoint(trailgps, resultPoints.Count + 1) &&
+                                    if (isEndTrailPoint(trailgps, currResultPoints.Count + 1) &&
                                         routeFactor > 0 || pointInfo.dist > matchDist + distHysteresis)
                                     {
-                                        //Leaving middle for last point - no more checks
+                                        //Leaving center for last point - no more checks
                                         break;
                                     }
                                 }
                             }
 
-                            if (routeDist >= this.Trail.Radius || routeIndex >= activity.GPSRoute.Count - 1)
+                            if (routeDist >= radius || routeIndex >= activity.GPSRoute.Count - 1)
                             {
-                                if (routeDist >= this.Trail.Radius)
+                                if (routeDist >= radius)
                                 {
                                     //No longer in radius, we have the best match
                                     //As we peeked on next, we have to set back the index
@@ -587,7 +653,7 @@ namespace TrailsPlugin.Data
                                     routeDist = prevRouteDist;
                                 }
 
-                                if (resultPoints.Count == 0)
+                                if (currResultPoints.Count == 0)
                                 {
                                     foreach (pInfo p in info)
                                     {
@@ -595,8 +661,8 @@ namespace TrailsPlugin.Data
                                         float closeDist = p.dist;
                                         if (routeIndex > 0)
                                         {
-                                            routeFactor = p.checkPass(this, activity,
-                                               trailgps[TrailIndex(trailgps, resultPoints.Count)], ref closeDist);
+                                            routeFactor = p.checkPass(activity,
+                                               trailgps[TrailIndex(trailgps, currResultPoints.Count)], radius, ref closeDist);
                                         }
 
                                         if (closeDist < matchDist)
@@ -642,15 +708,15 @@ namespace TrailsPlugin.Data
 
                     ///////////
                     //Check for pass-by
-                    //Setting a limit here like (routeDist < 10*this.Trail.Radius) will improve detection time very slightly
+                    //Setting a limit here like (routeDist < 10*radius) will improve detection time very slightly
                     //This handling is very sensitive, especially for single point trails, the reason for the check
-                    else if (trailgps.Count > 1 || resultPoints.Count == 0 || routeIndex > resultPoints[resultPoints.Count - 1].matchPassBy)
+                    else if (trailgps.Count > 1 || currResultPoints.Count == 0 || routeIndex > currResultPoints[currResultPoints.Count - 1].matchPassBy)
                     {
                         double d;
-                        float factor = checkPass(this.Trail.Radius,
+                        float factor = checkPass(radius,
                             routePoint(activity, prevPoint.index), prevPoint.dist,
                             routePoint(activity, routeIndex), routeDist,
-                            trailgps[TrailIndex(trailgps, resultPoints.Count)],
+                            trailgps[TrailIndex(trailgps, currResultPoints.Count)],
                             /*, dTrack[routeIndex].Value - dTrack[prevRouteIndex].Value*/
                             out d);
                         if (0 < factor)
@@ -672,7 +738,7 @@ namespace TrailsPlugin.Data
                 bool automaticMatch = false;
                 if (matchTime == null && routeIndex >= activity.GPSRoute.Count - 1)
                 {
-                    bool required = trailgps[TrailIndex(trailgps, resultPoints.Count)].Required;
+                    bool required = trailgps[TrailIndex(trailgps, currResultPoints.Count)].Required;
 
                     ///////////////////
                     //Last point check for non required points - automatic match, so search can restart
@@ -689,18 +755,18 @@ namespace TrailsPlugin.Data
                     if (automaticMatch)
                     {
                         matchTime = DateTime.MinValue;
-                        matchDist = this.Trail.Radius * 2;
+                        matchDist = radius * 2;
                     }
                 }
 
                 ////////////////////////////
                 //Ignore short legs
-                if (this.Trail.MinDistance > 0 && resultPoints.Count > 0 &&
+                if (minDistance > 0 && currResultPoints.Count > 0 &&
                     matchTime != null && !automaticMatch)
                 {
-                    int prevMatchIndex = getPrevMatchIndex(resultPoints);
+                    int prevMatchIndex = getPrevMatchIndex(currResultPoints);
                     if (dTrack != null && prevMatchIndex >= 0 &&
-                    this.Trail.MinDistance > (dTrack[matchIndex].Value - dTrack[prevMatchIndex].Value))
+                    minDistance > (dTrack[matchIndex].Value - dTrack[prevMatchIndex].Value))
                     {
                         //matchIndex = -1;
                         matchTime = null;
@@ -711,19 +777,19 @@ namespace TrailsPlugin.Data
                 //Add found match to result 
                 if (matchTime != null)
                 {
-                    resultPoints.Add(new TrailResultPointMeta((DateTime)matchTime,
-                        trailgps[TrailIndex(trailgps, resultPoints.Count)].Name,
+                    currResultPoints.Add(new TrailResultPointMeta((DateTime)matchTime,
+                        trailgps[TrailIndex(trailgps, currResultPoints.Count)].Name,
                         matchIndex, lastMatchInRadiusIndex, lastMatchPassByIndex, matchDist));
 
                     //Clear cache, dist unknown to next point
                     prevPoint.index = -1;
 
-                    if (isEndTrailPoint(trailgps, resultPoints.Count))
+                    if (isEndTrailPoint(trailgps, currResultPoints.Count))
                     {
                         //Check if this is a partial match, also used for automatic matches
                         bool isPartial = false;
                         int noOfMatches = 0;
-                        foreach (TrailResultPointMeta i in resultPoints)
+                        foreach (TrailResultPointMeta i in currResultPoints)
                         {
                             if (i.Time != DateTime.MinValue)
                             {
@@ -740,19 +806,18 @@ namespace TrailsPlugin.Data
                         {
                             if (isPartial)
                             {
-                                Status = TrailOrderStatus.MatchPartial;
+                                status = BestCalcStatus(status, TrailOrderStatus.MatchPartial);
                             }
                             else
                             {
-                                Status = TrailOrderStatus.Match;
+                                status = BestCalcStatus(status, TrailOrderStatus.Match);
                                 //OK to reset misses only at match
                                 currRequiredMisses = 0;
                             }
-                            TrailResultInfo resultInfo = new TrailResultInfo(activity);
-                            float distDiff = 0;
-                            for (int i = 0; i < resultPoints.Count; i++)
+                            TrailResultInfo resultInfo = new TrailResultInfo(activity, reverse);
+                            for (int i = 0; i < currResultPoints.Count; i++)
                             {
-                                TrailResultPointMeta point = resultPoints[i];
+                                TrailResultPointMeta point = currResultPoints[i];
                                 //Include the point if not restart
                                 if (point.restart)
                                 //Something like the following could be used to recover previous points, but 
@@ -763,21 +828,19 @@ namespace TrailsPlugin.Data
                                     point.Time = DateTime.MinValue;
                                 }
                                 resultInfo.Points.Add(point);
-                                distDiff += point.trailDistDiff;
+                                resultInfo.DistDiff += point.trailDistDiff;
                             }
-                            TrailResultWrapper result = new TrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo,
-                                distDiff, reverse);
-                            m_resultsListWrapper.Add(result);
+                            trailResults.Add(resultInfo);
 
                             //Save latest match info, routeIndex should not be lower than this
-                            prevActivityMatchIndex = getPrevMatchIndex(resultPoints);
+                            prevActivityMatchIndex = getPrevMatchIndex(currResultPoints);
                         }
                         else if (!reverse && noOfMatches > 0)
                         {
                             //Reverse matches with one point will be the same as forward match, ignore
-                            IncompleteTrailResult result = new IncompleteTrailResult(activity, resultPoints, reverse);
-                            m_incompleteResults.Add(result);
-                            prevActivityMatchIndex = getPrevMatchIndex(resultPoints);
+                            IncompleteTrailResult result = new IncompleteTrailResult(activity, currResultPoints, reverse);
+                            incompleteResults.Add(result);
+                            prevActivityMatchIndex = getPrevMatchIndex(currResultPoints);
                         }
                         else
                         {
@@ -786,12 +849,12 @@ namespace TrailsPlugin.Data
                         }
 
                         //Reset matches for trail detection
-                        resultPoints.Clear();
+                        currResultPoints.Clear();
                     }
                     else if (matchTime != DateTime.MinValue)
                     {
                         //Not end point, but at least one point match
-                        Status = TrailOrderStatus.InBoundMatchPartial;
+                        status = BestCalcStatus(status, TrailOrderStatus.InBoundMatchPartial);
                     }
                 }
                 else
@@ -808,11 +871,11 @@ namespace TrailsPlugin.Data
                 if (automaticMatch)
                 {
                     //If this was an automatic match, start at prev match
-                    routeIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(resultPoints));
+                    routeIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(currResultPoints));
                 }
                 else if (matchTime != null)
                 {
-                    if (resultPoints.Count == 0)
+                    if (currResultPoints.Count == 0)
                     {
                         //End point, try this point again as start
                         routeIndex = matchIndex - 1;
@@ -837,8 +900,8 @@ namespace TrailsPlugin.Data
                 }
                 //Reached the end with no match (point or automatic)
                 else if (routeIndex >= activity.GPSRoute.Count - 1 &&
-                         resultPoints.Count > 0 &&
-                        !resultPoints[resultPoints.Count - 1].restart)
+                         currResultPoints.Count > 0 &&
+                        !currResultPoints[currResultPoints.Count - 1].restart)
                 {
                     ////////////////////////////////////
                     //We have reached the end without a match
@@ -847,17 +910,17 @@ namespace TrailsPlugin.Data
                     //Last req index that match for this activity
                     int prevReqMatchIndex = -1;
                     bool matchNoReqToIgnore = false;
-                    for (int i = resultPoints.Count - 1; i >= 0; i--)
+                    for (int i = currResultPoints.Count - 1; i >= 0; i--)
                     {
                         if (trailgps[TrailIndex(trailgps, i)].Required)
                         {
-                            prevReqMatchIndex = resultPoints[i].index;
+                            prevReqMatchIndex = currResultPoints[i].index;
                             break;
                         }
-                        else if (!resultPoints[i].restart)
+                        else if (!currResultPoints[i].restart)
                         {
                             //Hide the non-required point
-                            resultPoints[i].restart = true;
+                            currResultPoints[i].restart = true;
                             matchNoReqToIgnore = true;
                         }
                     }
@@ -872,11 +935,11 @@ namespace TrailsPlugin.Data
             } //foreach gps point
 
             ///////////////////////////////////////
-            //Update "no result counters"
+            //Possible last incomple result
             {
                 //InBoundMatchPartial updated for all incomplete results
                 int noOfMatches = 0;
-                foreach (TrailResultPointMeta i in resultPoints)
+                foreach (TrailResultPointMeta i in currResultPoints)
                 {
                     if (i.Time != DateTime.MinValue)
                     {
@@ -884,28 +947,14 @@ namespace TrailsPlugin.Data
                     }
                 }
 
-                TrailOrderStatus? newStatus = null; 
                 if (noOfMatches > 0 && !reverse || noOfMatches > 1)
                 {
-                    IncompleteTrailResult result = new IncompleteTrailResult(activity, resultPoints, reverse);
-                    m_incompleteResults.Add(result);
-
-                    newStatus = TrailOrderStatus.InBoundMatchPartial;
-                }
-                else if (m_status >= TrailOrderStatus.InBoundNoCalc)
-                {
-                    newStatus = TrailOrderStatus.InBound;
-                }
-
-                if (newStatus != null)
-                {
-                    if (!m_noResCount.ContainsKey((TrailOrderStatus)newStatus))
-                    {
-                        m_noResCount[(TrailOrderStatus)newStatus] = 0;
-                    }
-                    m_noResCount[(TrailOrderStatus)newStatus]++;
+                    IncompleteTrailResult incompleteResult = new IncompleteTrailResult(activity, currResultPoints, reverse);
+                    incompleteResults.Add(incompleteResult);
                 }
             }
+
+            return status;
         }
 
         ////////////////////////////
@@ -1069,7 +1118,7 @@ namespace TrailsPlugin.Data
                 ((List<IncompleteTrailResult>)m_incompleteResults).Sort();
                 foreach (IncompleteTrailResult t in m_incompleteResults)
                 {
-                    TrailResultInfo resultInfo = new TrailResultInfo(t.Activity);
+                    TrailResultInfo resultInfo = new TrailResultInfo(t.Activity, t.Reverse);
                     float distDiff = 0;
                     for (int i = 0; i < t.Points.Count; i++)
                     {
@@ -1325,6 +1374,8 @@ namespace TrailsPlugin.Data
     {
         //<= InBound is inbound
         //InBoundNoCalc is better than InBound, as it may be Match
+        //MatchPartial is when all match, but some with "wildcards"
+        //InBoundMatchPartial is when there is at least one match, but not for all points
         Match, MatchPartial, MatchNoCalc, InBoundMatchPartial, InBoundNoCalc, InBound, NotInBound, NoInfo
     }
 }

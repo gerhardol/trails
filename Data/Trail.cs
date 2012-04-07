@@ -264,25 +264,36 @@ namespace TrailsPlugin.Data {
             return m_isReference && activity != m_referenceActivity && checkReferenceChanged();
         }
 
-        public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity)
+        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps)
+        {
+            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
+            foreach (IGPSLocation g in gps)
+            {
+                results.Add(new TrailGPSLocation(g.LatitudeDegrees, g.LongitudeDegrees, ""));
+            }
+            return results;
+        }
+
+        public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity)
         {
             TrailResultInfo indexes;
 
             return TrailGpsPointsFromSplits(activity, out indexes);
         }
-        public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
+
+        public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
             out TrailResultInfo indexes)
         {
             //Add start indexes for active laps and for first point for rest following active
             //A pause at the end of the lap is not considered
             return TrailGpsPointsFromSplits(activity, out indexes, true);
         }
-        public static IList<Data.TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
+
+        public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
             out TrailResultInfo indexes, bool onlyActiveLaps)
         {
-
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
-            indexes = new TrailResultInfo(activity);
+            indexes = new TrailResultInfo(activity, false);
             if (activity == null)
             {
                 //summary result

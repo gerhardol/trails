@@ -47,6 +47,7 @@ namespace TrailsPlugin.UI.MapLayers
             m_trailResult = tr;
             m_key = tr.Activity + cSeparator + tr.Order;
         }
+
         private TrailMapPolyline(IList<IGPSPoint> g, int w, Color c, TrailResult tr, string tkey)
             : this(g, w, c, tr)
         {
@@ -105,6 +106,6 @@ namespace TrailsPlugin.UI.MapLayers
                 }
             }
             return area;
-        }            
+        }
     }
 }

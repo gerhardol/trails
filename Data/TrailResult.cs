@@ -1429,7 +1429,7 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries GradeTrack0(TrailResult refRes)
         {
-            //checkCacheRef(refRes);
+            checkCacheRef(refRes);
             if (m_gradeTrack0 == null)
             {
                 m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
@@ -1440,7 +1440,7 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries CadencePerMinuteTrack0(TrailResult refRes)
         {
-            //checkCacheRef(refRes);
+            checkCacheRef(refRes);
             if (m_cadencePerMinuteTrack0 == null)
             {
                 m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
@@ -1451,7 +1451,7 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries HeartRatePerMinuteTrack0(TrailResult refRes)
         {
-            //checkCacheRef(refRes);
+            checkCacheRef(refRes);
             if (m_heartRatePerMinuteTrack0 == null)
             {
                 m_heartRatePerMinuteTrack0 = copySmoothTrack(this.HeartRatePerMinuteTrack, true, TrailActivityInfoOptions.HeartRateSmoothingSeconds,
@@ -1462,7 +1462,7 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries PowerWattsTrack0(TrailResult refRes)
         {
-            //checkCacheRef(refRes);
+            checkCacheRef(refRes);
             if (m_powerWattsTrack0 == null)
             {
                 m_powerWattsTrack0 = copySmoothTrack(this.PowerWattsTrack, true, TrailActivityInfoOptions.PowerSmoothingSeconds,
@@ -1495,7 +1495,7 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries DiffDeviceTrack0(TrailResult refRes)
         {
-            //checkCacheRef(refRes);
+            checkCacheRef(refRes);
             if (m_diffDeviceTrack0 == null)
             {
                 m_diffDeviceTrack0 = new NumericTimeDataSeries();
@@ -1845,7 +1845,7 @@ namespace TrailsPlugin.Data
         }
         public IList<double> TrailPointTime0(TrailResult refRes)
         {
-            //checkCacheRef(refRes);
+            checkCacheRef(refRes);
             if (m_trailPointTime0 == null || m_trailPointTimeOffset == null)
             {
                 m_trailPointTime0 = new List<double>();

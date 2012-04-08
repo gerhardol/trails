@@ -53,9 +53,9 @@ namespace TrailsPlugin.UI.MapLayers
     }
     class TrailPointsProvider : IRouteControlLayerProvider
     {
-        public const int TrailsLayerZOrderRoutes = 1;
+        public const int TrailsLayerZOrderRoutes = 5;
         public const int TrailsLayerZOrderPoints = 3;
-        public const int TrailsLayerZOrderMarked = 5;
+        public const int TrailsLayerZOrderMarked = 7;
         private int m_zorder = TrailsLayerZOrderRoutes;
 
         public TrailPointsProvider(int zorder)

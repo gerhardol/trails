@@ -380,11 +380,12 @@ namespace TrailsPlugin.UI.Activity {
                         //m_view.RouteSelectionProvider != null &&
                       ViewSingleActivity(trm.trailResult.Activity))
                     {
+                        //One ST activity is drawn with standard methods
                         //Use ST standard display of track where possible
                         atrST.Add(trm);
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                         {
-                            if (!mresult.ContainsKey(m.key))
+                            if (!marked.ContainsKey(m.key))
                             {
                                 marked.Add(m.key, m);
                             }
@@ -450,12 +451,71 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
+        private TrailResult m_currentSelectedMapResult = null;
+        private MouseEventArgs m_currentSelectedMapLocation = null;
+        private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>();
         void mapPoly_Click(object sender, MouseEventArgs e)
         {
             if (sender is TrailMapPolyline)
             {
-                IList<TrailResult> result = new List<TrailResult>{(sender as TrailMapPolyline).TrailRes};
-                this.EnsureVisible(result, true);
+                TrailMapPolyline m = sender as TrailMapPolyline;
+                if (m_currentSelectedMapResult == m.TrailRes)
+                {
+                    if (m_currentSelectedMapLocation == null)
+                    {
+                        m_currentSelectedMapLocation = e;
+                    }
+                    else
+                    {
+                        IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
+                        IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<ZoneFiveSoftware.Common.Data.GPS.IGPSLocation>{
+                        m_layerRoutes.GetGps(m_currentSelectedMapLocation.Location),
+                        m_layerRoutes.GetGps(e.Location)});
+                        float radius = 25; //TBD Base on zoom level? Affets pass-by trail detection
+                        TrailOrderStatus status;
+                        status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
+
+                        if (status != TrailOrderStatus.Match)
+                        {
+                            //xxx
+                        }
+                        if (status == TrailOrderStatus.Match)
+                        {
+                            DateTime t1 = trailResults[0].Points[0].Time;
+                            DateTime t2 = trailResults[0].Points[1].Time;
+                            if (t1 > t2)
+                            {
+                                DateTime t3 = t1;
+                                t1 = t2;
+                                t2 = t3;
+                            }
+                            ZoneFiveSoftware.Common.Data.ValueRange<DateTime> time = new ZoneFiveSoftware.Common.Data.ValueRange<DateTime>(t1, t2);
+                            if (m_currentSelectedMapRanges.Count == 0)
+                            {
+                                ZoneFiveSoftware.Common.Data.IValueRangeSeries<DateTime> t = new ZoneFiveSoftware.Common.Data.ValueRangeSeries<DateTime>();
+                                t.Add(time);
+                                TrailResultMarked trm = new TrailResultMarked(m.TrailRes, t);
+                                m_currentSelectedMapRanges.Add(trm);
+                            }
+                            else
+                            {
+                                m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
+                            }
+                            MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo>{ m_currentSelectedMapRanges[0].selInfo });
+                            MarkTrack(m_currentSelectedMapRanges, true);
+                        }
+                        m_currentSelectedMapLocation = null;
+                    }
+                }
+                else
+                {
+                    IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
+                    this.EnsureVisible(result, true);
+                    //Could be new selection start
+                    m_currentSelectedMapLocation = e;
+                    m_currentSelectedMapRanges.Clear();
+                }
+                m_currentSelectedMapResult = m.TrailRes;
             }
         }
 
@@ -552,6 +612,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (sender is ISelectionProvider<IItemTrackSelectionInfo>)
             {
+                m_currentSelectedMapResult = null; //new result set
                 //m_view.RouteSelectionProvider.SelectedItems
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null)

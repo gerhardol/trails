@@ -280,6 +280,10 @@ namespace TrailsPlugin.UI.MapLayers
             this.MapControl.ZoomOut();
         }
 
+        public IGPSLocation GetGps(Point p)
+        {
+            return this.MapControl.MapProjection.PixelToGPS(this.MapControl.MapBounds.NorthWest, this.MapControl.Zoom, p);
+        }
         //public float HighlightRadius
         //{
         //    set

@@ -322,6 +322,7 @@ namespace TrailsPlugin.UI.Activity {
                     if (regions != null && regions.Count > 0)
                     {
                         MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
+                        MainChart.DataSeries[i].EnsureSelectedRangeVisible(); //Not working?
                     }
                 }
                 if (m_selectDataHandler)

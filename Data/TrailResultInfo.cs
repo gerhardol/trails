@@ -25,7 +25,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Data
 {
-	public class TrailResultInfo
+	public class TrailResultInfo : IComparable
     {
         public IList<TrailResultPoint> Points;
         public IActivity Activity;
@@ -82,6 +82,20 @@ namespace TrailsPlugin.Data
             {
                 return Points.Count;
             }
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is TrailResultInfo)
+            {
+                TrailResultInfo t = obj as TrailResultInfo;
+                if (this.DistDiff == t.DistDiff)
+                {
+                    return 0;
+                }
+                return this.DistDiff < t.DistDiff ? -1 : 1;
+            }
+            return -1;
         }
     }
 

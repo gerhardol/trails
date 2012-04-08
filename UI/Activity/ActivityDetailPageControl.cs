@@ -464,6 +464,8 @@ namespace TrailsPlugin.UI.Activity {
                     if (m_currentSelectedMapLocation == null)
                     {
                         m_currentSelectedMapLocation = e;
+                        //TODO get position, mark on chart. Cache position?
+                        //MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo });
                     }
                     else
                     {
@@ -475,10 +477,6 @@ namespace TrailsPlugin.UI.Activity {
                         TrailOrderStatus status;
                         status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
 
-                        if (status != TrailOrderStatus.Match)
-                        {
-                            //xxx
-                        }
                         if (status == TrailOrderStatus.Match)
                         {
                             DateTime t1 = trailResults[0].Points[0].Time;

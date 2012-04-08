@@ -851,6 +851,7 @@ namespace TrailsPlugin.Data
                             //To avoid "loops", the potential start for next trail must be after 
                             //prev possible match for the first point
                             //Start search for next point after this match even if they overlap
+                            //There must be some matches here
                             routeIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
 
                             //Save latest match info, routeIndex should not be lower than this at automatic matches
@@ -996,8 +997,10 @@ namespace TrailsPlugin.Data
             }
             if (prevMatchIndex < 0)
             {
-                //xxx max;
+                //Should not happen, only safety
+                prevMatchIndex = int.MaxValue;
             }
+
             return prevMatchIndex;
         }
 

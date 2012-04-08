@@ -1716,7 +1716,8 @@ namespace TrailsPlugin.Data
                             DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
-                                while (/*xxxdiffMode == DiffMode.ActivityStart && */Settings.ResyncDiffAtTrailPoints &&
+                                //TODO ActivityStart
+                                while (/*diffMode == DiffMode.ActivityStart && */Settings.ResyncDiffAtTrailPoints &&
                                     this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&

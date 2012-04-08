@@ -464,16 +464,24 @@ namespace TrailsPlugin.UI.Activity {
                     if (m_currentSelectedMapLocation == null)
                     {
                         m_currentSelectedMapLocation = e;
-                        //TODO get position, mark on chart. Cache position?
-                        //MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo });
+                        float radius = 15;
+                        TrailResultPoint t = ActivityTrail.GetClosestMatch(m.TrailRes.Activity, m_layerRoutes.GetGps(e.Location), radius);
+                        if (t != null)
+                        {
+                            //TODO get position, mark on chart. Cache position?
+                            TrailsItemTrackSelectionInfo sel = new TrailsItemTrackSelectionInfo();
+                            sel.SelectedTime = new ZoneFiveSoftware.Common.Data.ValueRange<DateTime>(t.Time, t.Time);
+                            sel.Activity = m.TrailRes.Activity;
+                            MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { sel });
+                        }
                     }
                     else
                     {
                         IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
                         IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<ZoneFiveSoftware.Common.Data.GPS.IGPSLocation>{
-                        m_layerRoutes.GetGps(m_currentSelectedMapLocation.Location),
-                        m_layerRoutes.GetGps(e.Location)});
-                        float radius = 25; //TBD Base on zoom level? Affets pass-by trail detection
+                           m_layerRoutes.GetGps(m_currentSelectedMapLocation.Location),
+                           m_layerRoutes.GetGps(e.Location)});
+                        float radius = 15; //TBD Base on zoom level? Affets pass-by trail detection
                         TrailOrderStatus status;
                         status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
 

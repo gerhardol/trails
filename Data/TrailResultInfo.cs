@@ -29,16 +29,33 @@ namespace TrailsPlugin.Data
     {
         public IList<TrailResultPoint> Points;
         public IActivity Activity;
-        public float DistDiff;
+        public float? m_DistDiff;
         public bool Reverse;
 
         public TrailResultInfo(IActivity activity, bool reverse)
         {
             this.Activity = activity;
             this.Points = new List<TrailResultPoint>();
-            this.DistDiff = 0;
+            this.m_DistDiff = null;
             this.Reverse = reverse;
         }
+
+        public float DistDiff
+        {
+            get
+            {
+                if (m_DistDiff == null)
+                {
+                    m_DistDiff = 0;
+                    foreach (TrailResultPoint t in this.Points)
+                    {
+                        m_DistDiff = t.DistDiff + (float)m_DistDiff;
+                    }
+                }
+                return (float)m_DistDiff;
+            }
+        }
+
         //Hide the handling slightly
         public TrailResultInfo Copy()
         {
@@ -99,17 +116,23 @@ namespace TrailsPlugin.Data
         }
     }
 
-    public class TrailResultPoint
+    public class TrailResultPoint : IComparable
     {
-        public TrailResultPoint(DateTime time, string name)
+        public TrailResultPoint(DateTime time, string name, float distDiff)
         {
             this.m_time = time;
             this.m_name = name;
+            this.DistDiff = distDiff;
+        }
+        public TrailResultPoint(DateTime time, string name)
+            : this(time, name, 0)
+        {
         }
         public TrailResultPoint(TrailResultPoint t)
         {
             this.m_time = t.Time;
             this.m_name = t.Name;
+            this.DistDiff = t.DistDiff;
         }
 
         public override string ToString()
@@ -140,6 +163,23 @@ namespace TrailsPlugin.Data
             {
                 this.m_name = value;
             }
+        }
+        public float DistDiff = 0;
+        //Just a high number, affects sorting
+        public const float DiffDistMax = 0xffff;
+
+        public int CompareTo(object obj)
+        {
+            if (obj is TrailResultPoint)
+            {
+                TrailResultPoint t = obj as TrailResultPoint;
+                if (this.DistDiff == t.DistDiff)
+                {
+                    return this.Time < t.Time ? -1 : 1;
+                }
+                return this.DistDiff < t.DistDiff ? -1 : 1;
+            }
+            return -1;
         }
     }
 }

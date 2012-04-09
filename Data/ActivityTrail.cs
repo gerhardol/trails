@@ -484,10 +484,11 @@ namespace TrailsPlugin.Data
             return points[0];
         }
 
-        internal static TrailOrderStatus GetTrailResultInfo(IActivity activity, IList<TrailGPSLocation> trailgps,
+        internal static TrailOrderStatus GetTrailResultInfo(IActivity activity, IList<IGPSLocation> gpsLoc,
             float radius, bool bidirectional, IList<TrailResultInfo> trailResults)
         {
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>(); //unused
+            IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(gpsLoc);
 
             return GetTrailResultInfo(activity, trailgps, radius, bidirectional, trailResults, incompleteResults);
         }
@@ -851,11 +852,6 @@ namespace TrailsPlugin.Data
                     {
                         //Save latest match info, next match cannot be lower than this
                         prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(currResultPoints));
-                        if (trailgps.Count == 1)
-                        {
-                            //For one point trail, the same applies to the second match as for the end point
-                            prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
-                        }
                     }
 
                     //////////////////////////////
@@ -935,6 +931,11 @@ namespace TrailsPlugin.Data
                         {
                             //At least one point match
                             status = BestCalcStatus(status, TrailOrderStatus.InBoundMatchPartial);
+                        }
+                        if (trailgps.Count == 1)
+                        {
+                            //For one point trail, the same applies to the second match as for the end point
+                            prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
                         }
                     }
                 }

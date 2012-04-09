@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Globalization;
 
+using ZoneFiveSoftware.Common.Data;
+using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
@@ -470,7 +472,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             //TODO get position, mark on chart. Cache position?
                             TrailsItemTrackSelectionInfo sel = new TrailsItemTrackSelectionInfo();
-                            sel.SelectedTime = new ZoneFiveSoftware.Common.Data.ValueRange<DateTime>(t.Time, t.Time);
+                            sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time);
                             sel.Activity = m.TrailRes.Activity;
                             MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { sel });
                         }
@@ -478,9 +480,9 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
-                        IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<ZoneFiveSoftware.Common.Data.GPS.IGPSLocation>{
+                        IList<IGPSLocation> trailgps = new List<IGPSLocation>{
                            m_layerRoutes.GetGps(m_currentSelectedMapLocation.Location),
-                           m_layerRoutes.GetGps(e.Location)});
+                           m_layerRoutes.GetGps(e.Location)};
                         float radius = 15; //TBD Base on zoom level? Affets pass-by trail detection
                         TrailOrderStatus status;
                         status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
@@ -495,10 +497,10 @@ namespace TrailsPlugin.UI.Activity {
                                 t1 = t2;
                                 t2 = t3;
                             }
-                            ZoneFiveSoftware.Common.Data.ValueRange<DateTime> time = new ZoneFiveSoftware.Common.Data.ValueRange<DateTime>(t1, t2);
+                            ValueRange<DateTime> time = new ValueRange<DateTime>(t1, t2);
                             if (m_currentSelectedMapRanges.Count == 0)
                             {
-                                ZoneFiveSoftware.Common.Data.IValueRangeSeries<DateTime> t = new ZoneFiveSoftware.Common.Data.ValueRangeSeries<DateTime>();
+                                IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
                                 t.Add(time);
                                 TrailResultMarked trm = new TrailResultMarked(m.TrailRes, t);
                                 m_currentSelectedMapRanges.Add(trm);

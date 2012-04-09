@@ -549,8 +549,8 @@ namespace TrailsPlugin.Data
             //Cache information about previous distances
             PointInfo prevPoint = new PointInfo(-1, 0);
             PointInfo prevStartPoint = new PointInfo(-1, 0);
-            int prevActivityMatchIndex = -1; //Last index that match for this activity
-
+            int prevActivityMatchIndex = -1; //Next match cannot be lower than this
+            
             //Required points misses - undocumented feature
             int currRequiredMisses = 0;
             //Ignore short legs - undocumented feature
@@ -831,7 +831,6 @@ namespace TrailsPlugin.Data
                     if (dTrack != null && prevMatchIndex >= 0 &&
                     minDistance > (dTrack[matchIndex].Value - dTrack[prevMatchIndex].Value))
                     {
-                        //matchIndex = -1;
                         matchTime = null;
                     }
                 }
@@ -847,9 +846,23 @@ namespace TrailsPlugin.Data
                     //Clear cache, dist unknown to next point
                     prevPoint.index = -1;
 
+                    //Lowest value for next start point, updated at OK matches
+                    if (matchTime != DateTime.MinValue)
+                    {
+                        //Save latest match info, next match cannot be lower than this
+                        prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(currResultPoints));
+                        if (trailgps.Count == 1)
+                        {
+                            //For one point trail, the same applies to the second match as for the end point
+                            prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
+                        }
+                    }
+
+                    //////////////////////////////
+                    //End point
                     if (isEndTrailPoint(trailgps, currResultPoints.Count))
                     {
-                        //Check if this is a partial/incomplete match
+                        //Check if this is a partial or incomplete trail match
                         int noOfMatches = 0;
                         foreach (TrailResultPointMeta i in currResultPoints)
                         {
@@ -890,14 +903,13 @@ namespace TrailsPlugin.Data
                             }
                             trailResults.Add(resultInfo);
 
-                            //To avoid "loops", the potential start for next trail must be after 
-                            //prev possible match for the first point
-                            //Start search for next point after this match even if they overlap
-                            //There must be some matches here
-                            routeIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
+                            //To avoid "detection loops", the potential start for next trail must be after 
+                            //the first possible match for the first trail point
+                            //There must be some matches in the current result points
+                            prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
 
-                            //Save latest match info, routeIndex should not be lower than this at automatic matches
-                            prevActivityMatchIndex = Math.Max(routeIndex, getPrevMatchIndex(currResultPoints));
+                            //Actually, prevActivityMatchIndex could be set to getFirstMatchRadius() to allow overlapping results
+                            //Will decrease trail detection time slightly
                         }
                         else
                         {
@@ -910,8 +922,7 @@ namespace TrailsPlugin.Data
                                 //prevActivityMatchIndex = getPrevMatchIndex(currResultPoints);
                             }
                             //Abort further matches
-                            routeIndex = activity.GPSRoute.Count;
-                            //prevActivityMatchIndex = activity.GPSRoute.Count;
+                            prevActivityMatchIndex = activity.GPSRoute.Count;
                         }
 
                         //Reset matches for trail detection
@@ -924,22 +935,6 @@ namespace TrailsPlugin.Data
                         {
                             //At least one point match
                             status = BestCalcStatus(status, TrailOrderStatus.InBoundMatchPartial);
-
-                            if (trailgps.Count == 1)
-                            {
-                                //Same rule as for endpoints
-                                routeIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
-                            }
-                            else
-                            {
-                                //Start search for next point after this match also if they overlap
-                                routeIndex = matchIndex;
-                            }
-                        }
-                        else
-                        {
-                            //This was an automatic match, start at prev match
-                            routeIndex = Math.Max(prevActivityMatchIndex, getPrevMatchIndex(currResultPoints));
                         }
                     }
                 }
@@ -983,10 +978,13 @@ namespace TrailsPlugin.Data
                     }
                     if (matchNoReqToIgnore)
                     {
-                        routeIndex = Math.Max(prevActivityMatchIndex, prevReqMatchIndex);
+                        routeIndex = prevReqMatchIndex;
                         prevPoint.index = -1;
                     }
                 }
+
+                //Route index cannot be lower than latest match
+                routeIndex = Math.Max(routeIndex, prevActivityMatchIndex);
 
                 ///////////////////////////////////////
             } //foreach gps point

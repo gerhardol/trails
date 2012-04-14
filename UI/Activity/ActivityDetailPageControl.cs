@@ -531,7 +531,7 @@ namespace TrailsPlugin.UI.Activity {
 
                         //get position, set a 1s range, mark on chart
                         TrailsItemTrackSelectionInfo sel = new TrailsItemTrackSelectionInfo();
-                        sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time.AddSeconds(1));
+                        sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time);
                         sel.Activity = m.TrailRes.Activity;
                         MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { sel });
                     }

@@ -105,6 +105,9 @@ namespace TrailsPlugin.Data
                 //Do not adjust selection
                 return selected;
             }
+            bool singleSelection = selected.Count == 0 || selected.Count == 1 && ! ( 
+                selected[0].MarkedDistances != null && selected[0].MarkedDistances.Count > 1 ||
+                selected[0].MarkedTimes != null && selected[0].MarkedTimes.Count > 1);
             for(int i = 0; i < selected.Count; i++)
             {
                 IActivity activity = null;
@@ -137,21 +140,17 @@ namespace TrailsPlugin.Data
 
                     if (fromST)
                     {
-                        //Set MarkedTimes, used internally
-                        if (selected[i].MarkedDistances != null && selected[i].MarkedTimes == null)
+                        //Set MarkedTimes (or SelectedTime), used internally
+                        if (selected[i].MarkedDistances != null && selected[i].MarkedDistances.Count > 0 && 
+                            (selected[i].MarkedTimes == null || selected[i].MarkedTimes.Count == 0))
                         {
                             try
                             {
-                                tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
                                 foreach (ValueRange<double> t in selected[i].MarkedDistances)
                                 {
                                     DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Lower);
                                     DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper);
-                                    if (d2 - d1 < TimeSpan.FromSeconds(1))
-                                    {
-                                        d2 += TimeSpan.FromSeconds(1);
-                                    }
-                                    tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(d1, d2));
+                                    AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
                                 }
                                 tmpSel.MarkedDistances = null;
                             }
@@ -161,8 +160,8 @@ namespace TrailsPlugin.Data
                         {
                             try
                             {
-                                tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
-                                tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(selected[i].SelectedTime.Lower, selected[i].SelectedTime.Upper));
+                                AddMarkedOrSelectedTime(tmpSel, singleSelection, selected[i].SelectedTime.Lower, selected[i].SelectedTime.Upper);
+
                                 tmpSel.SelectedTime = null;
                             }
                             catch { }
@@ -174,11 +173,7 @@ namespace TrailsPlugin.Data
                             {
                                 DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower);
                                 DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper);
-                                if (d2 - d1 < TimeSpan.FromSeconds(1))
-                                {
-                                    d2 += TimeSpan.FromSeconds(1);
-                                }
-                                tmpSel.MarkedTimes.Add(new ValueRange<DateTime>(d1, d2));
+                                AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
                                 tmpSel.SelectedDistance = null;
                             }
                             catch { }
@@ -186,7 +181,7 @@ namespace TrailsPlugin.Data
                     }
                     else
                     {
-                        //The standard in the plugin to standard in ST core and omb's Track Coloring
+                        //The standard in the plugin(time) to standard in ST core and omb's Track Coloring (unpaused distance)
                         if (selected[i].MarkedDistances == null &&
                             selected[i].MarkedTimes != null && selected[i].MarkedTimes.Count > 0)
                         {
@@ -195,9 +190,9 @@ namespace TrailsPlugin.Data
                                 tmpSel.MarkedDistances = new ValueRangeSeries<double>();
                                 foreach (ValueRange<DateTime> t in selected[i].MarkedTimes)
                                 {
-                                    tmpSel.MarkedDistances.Add(new ValueRange<double>(
-                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Lower).Value,
-                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Upper).Value));
+                                    double d1 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Lower).Value;
+                                    double d2 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Upper).Value;
+                                    AddMarkedOrSelectedDistance(tmpSel, singleSelection, d1, d2);
                                 }
                                 tmpSel.MarkedTimes = null;
                             }
@@ -220,6 +215,63 @@ namespace TrailsPlugin.Data
                 }
             }
             return selected;
+        }
+
+        private static void AddMarkedOrSelectedTime(TrailsItemTrackSelectionInfo tmpSel, bool singleSelection, DateTime d1, DateTime d2)
+        {
+            //Use SelectedTime with only one selection and 0 span - valueRanges will not handle it
+            IValueRange<DateTime> vd = new ValueRange<DateTime>(d1, d2);
+            if (tmpSel.MarkedTimes == null)
+            {
+                tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
+            }
+            int currAdd = tmpSel.MarkedTimes.Count;
+            tmpSel.MarkedTimes.Add(vd);
+            if(tmpSel.MarkedTimes.Count == currAdd)
+            {
+                //Could not add to ranges, add Selected
+                if (singleSelection && tmpSel.MarkedTimes.Count == 0)
+                {
+                    //Could add to selected
+                    tmpSel.SelectedTime = vd;
+                    tmpSel.MarkedTimes = null;
+                }
+                else
+                {
+                    //fake, add second
+                    vd = new ValueRange<DateTime>(vd.Lower, vd.Upper.AddSeconds(1));
+                    tmpSel.MarkedTimes.Add(vd);
+                }
+            }
+        }
+
+        private static void AddMarkedOrSelectedDistance(TrailsItemTrackSelectionInfo tmpSel, bool singleSelection, double d1, double d2)
+        {
+            //Use SelectedTime with only one selection and 0 span - valueRanges will not handle it
+            //Add 1s if not possible
+            IValueRange<double> vd = new ValueRange<double>(d1, d2);
+            if (tmpSel.MarkedDistances == null)
+            {
+                tmpSel.MarkedDistances = new ValueRangeSeries<double>();
+            }
+            int currAdd = tmpSel.MarkedDistances.Count;
+            tmpSel.MarkedDistances.Add(vd);
+            if (tmpSel.MarkedDistances.Count == currAdd)
+            {
+                //Could not add to ranges, add Selected
+                if (singleSelection && tmpSel.MarkedDistances.Count == 0)
+                {
+                    //Could add to selected
+                    tmpSel.SelectedDistance = vd;
+                    tmpSel.MarkedDistances = null;
+                }
+                else
+                {
+                    //fake, add second
+                    vd = new ValueRange<double>(vd.Lower, vd.Upper + 1);
+                    tmpSel.MarkedDistances.Add(vd);
+                }
+            }
         }
 
         public static IList<IList<IGPSPoint>> GpsPoints(IGPSRoute gpsRoute, IValueRangeSeries<DateTime> pauses, IValueRangeSeries<DateTime> t)

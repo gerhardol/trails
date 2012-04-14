@@ -454,76 +454,94 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         private TrailResult m_currentSelectedMapResult = null;
-        private MouseEventArgs m_currentSelectedMapLocation = null;
+        private IGPSLocation m_currentSelectedMapLocation = null;
         private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>();
         void mapPoly_Click(object sender, MouseEventArgs e)
         {
             if (sender is TrailMapPolyline)
             {
                 TrailMapPolyline m = sender as TrailMapPolyline;
-                if (m_currentSelectedMapResult == m.TrailRes)
+                if (m_currentSelectedMapResult != m.TrailRes)
                 {
-                    if (m_currentSelectedMapLocation == null)
+                    IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
+                    this.EnsureVisible(result, false);
+                    //Could be new selection start
+                    m_currentSelectedMapLocation = null;
+                    m_currentSelectedMapRanges.Clear();
+                    m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                }
+                m_currentSelectedMapResult = m.TrailRes;
+
+                bool sectionFound = false;
+                //Use pixels to get radius from zoom level, to get click limit. (Tests indicate the limit is about 7 pixels.) Affects pass-by trail detection too
+                float radius = Math.Max(15, m_layerMarked.getRadius(10));
+                IGPSLocation egps = m_layerRoutes.GetGps(e.Location);
+
+                if (m_currentSelectedMapLocation != null)
+                {
+                    IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
+                    IList<IGPSLocation> trailgps = new List<IGPSLocation>{ m_currentSelectedMapLocation, egps };
+                    TrailOrderStatus status;
+                    status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
+
+                    if (status == TrailOrderStatus.Match)
                     {
-                        m_currentSelectedMapLocation = e;
-                        float radius = 15;
-                        TrailResultPoint t = ActivityTrail.GetClosestMatch(m.TrailRes.Activity, m_layerRoutes.GetGps(e.Location), radius);
-                        if (t != null)
+                        DateTime t1 = trailResults[0].Points[0].Time;
+                        DateTime t2 = trailResults[0].Points[1].Time;
+                        if (t1 > t2)
                         {
-                            //TODO get position, mark on chart. Cache position?
-                            TrailsItemTrackSelectionInfo sel = new TrailsItemTrackSelectionInfo();
-                            sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time);
-                            sel.Activity = m.TrailRes.Activity;
-                            MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { sel });
+                            DateTime t3 = t1;
+                            t1 = t2;
+                            t2 = t3;
                         }
+                        ValueRange<DateTime> time = new ValueRange<DateTime>(t1, t2);
+                        if (m_currentSelectedMapRanges.Count == 0)
+                        {
+                            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+                            t.Add(time);
+                            TrailResultMarked trm = new TrailResultMarked(m.TrailRes, t);
+                            m_currentSelectedMapRanges.Add(trm);
+                        }
+                        else
+                        {
+                            m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
+                        }
+                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo });
+                        MarkTrack(m_currentSelectedMapRanges, true);
+                        sectionFound = true;
+                        m_currentSelectedMapLocation = null;
                     }
                     else
                     {
-                        IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
-                        IList<IGPSLocation> trailgps = new List<IGPSLocation>{
-                           m_layerRoutes.GetGps(m_currentSelectedMapLocation.Location),
-                           m_layerRoutes.GetGps(e.Location)};
-                        float radius = 15; //TBD Base on zoom level? Affets pass-by trail detection
-                        TrailOrderStatus status;
-                        status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
-
-                        if (status == TrailOrderStatus.Match)
-                        {
-                            DateTime t1 = trailResults[0].Points[0].Time;
-                            DateTime t2 = trailResults[0].Points[1].Time;
-                            if (t1 > t2)
-                            {
-                                DateTime t3 = t1;
-                                t1 = t2;
-                                t2 = t3;
-                            }
-                            ValueRange<DateTime> time = new ValueRange<DateTime>(t1, t2);
-                            if (m_currentSelectedMapRanges.Count == 0)
-                            {
-                                IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-                                t.Add(time);
-                                TrailResultMarked trm = new TrailResultMarked(m.TrailRes, t);
-                                m_currentSelectedMapRanges.Add(trm);
-                            }
-                            else
-                            {
-                                m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
-                            }
-                            MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo>{ m_currentSelectedMapRanges[0].selInfo });
-                            MarkTrack(m_currentSelectedMapRanges, true);
-                        }
-                        m_currentSelectedMapLocation = null;
+                        //Should be status message somehow here
+                        //Debug where points are clicked
+                        m_layerPoints.TrailPoints = Trail.TrailGpsPointsFromGps(trailgps);
                     }
                 }
-                else
+
+                //Show position on chart at "first click" or section not found
+                if (!sectionFound)
                 {
-                    IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
-                    this.EnsureVisible(result, true);
-                    //Could be new selection start
-                    m_currentSelectedMapLocation = e;
-                    m_currentSelectedMapRanges.Clear();
+                    TrailResultPoint t = ActivityTrail.GetClosestMatch(m.TrailRes.Activity, egps, radius);
+                    if (t != null)
+                    {
+                        //Use new section only when match found
+                        //if point was found first time but no "trail" with two points, still replace to not "get lost in bad point"
+                        m_currentSelectedMapLocation = egps;
+
+                        //get position, set a 1s range, mark on chart
+                        TrailsItemTrackSelectionInfo sel = new TrailsItemTrackSelectionInfo();
+                        sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time.AddSeconds(1));
+                        sel.Activity = m.TrailRes.Activity;
+                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { sel });
+                    }
+                    else
+                    {
+                        //Should be status message somehow here
+                        //Debug where points are clicked
+                        m_layerPoints.TrailPoints = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { egps });
+                    }
                 }
-                m_currentSelectedMapResult = m.TrailRes;
             }
         }
 
@@ -621,6 +639,7 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is ISelectionProvider<IItemTrackSelectionInfo>)
             {
                 m_currentSelectedMapResult = null; //new result set
+                m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 //m_view.RouteSelectionProvider.SelectedItems
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
                 if (selected != null && selected.SelectedItems != null)

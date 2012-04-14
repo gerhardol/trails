@@ -490,6 +490,24 @@ namespace TrailsPlugin.UI.MapLayers
         //    }
         //}
 
+        /// <summary>
+        /// Get a radius for a trail matching a minimum number of pixels
+        /// </summary>
+        /// <param name="minPixels"></param>
+        /// <returns></returns>
+        public float getRadius(int minPixels)
+        {
+            const int circlePixelSize = 1000;
+            IGPSPoint point0 = Utils.GPS.LocationToPoint(this.MapControl.MapProjection.PixelToGPS(this.MapControl.Center, this.MapControl.Zoom,
+                new Point(0, 0)));
+            IGPSPoint pointX = Utils.GPS.LocationToPoint(this.MapControl.MapProjection.PixelToGPS(this.MapControl.Center, this.MapControl.Zoom,
+                new Point(circlePixelSize / 2, 0)));
+            IGPSPoint pointY = Utils.GPS.LocationToPoint(this.MapControl.MapProjection.PixelToGPS(this.MapControl.Center, this.MapControl.Zoom,
+                new Point(0, circlePixelSize / 2)));
+            float radius = minPixels * Math.Max(point0.DistanceMetersToPoint(pointX), point0.DistanceMetersToPoint(pointY)) / (float)circlePixelSize;
+            return radius;
+        }
+
         private static MapIcon getCircle(IMapControl mapControl, float radius)
         {
             //Get pixel Size for icon - can differ X and Y

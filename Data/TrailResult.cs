@@ -559,7 +559,11 @@ namespace TrailsPlugin.Data
 
         private static DateTime getFirstUnpausedTime(DateTime time, IValueRangeSeries<DateTime> pauses, bool next)
         {
-            if (ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, pauses))
+            return getFirstUnpausedTime(time, ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, pauses), pauses, next);
+        }
+        internal static DateTime getFirstUnpausedTime(DateTime time, bool isPause, IValueRangeSeries<DateTime> pauses, bool next)
+        {
+            if (isPause)
             {
                 foreach (IValueRange<DateTime> pause in pauses)
                 {
@@ -580,6 +584,7 @@ namespace TrailsPlugin.Data
             }
             return time;
         }
+
         bool isIncludeStoppedCategory(IActivityCategory category)
         {
             if (category == null || Settings.ExcludeStoppedCategory == null || Settings.ExcludeStoppedCategory == "")
@@ -1241,6 +1246,8 @@ namespace TrailsPlugin.Data
             return false;
         }
 
+        //Insert points at start/end and pauses
+        //Not exactly necessary, but improves averages etc
         internal class InsertValues<T>
         {
             TrailResult result;
@@ -1295,7 +1302,7 @@ namespace TrailsPlugin.Data
                     DateTime time = t.Time;
                     if (time > DateTime.MinValue)
                     {
-                        insertValues(time.Subtract(TimeSpan.FromSeconds(1)));
+                        insertValues(time.AddSeconds(-1));
                         insertValues(time);
                     }
                 }
@@ -1978,6 +1985,10 @@ namespace TrailsPlugin.Data
                     }
                     i++;
                 }
+            }
+            else
+            {
+                //debug
             }
             return gpsTrack;
         }

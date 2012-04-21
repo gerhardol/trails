@@ -274,14 +274,33 @@ namespace TrailsPlugin.Data
             }
         }
 
+        //ST IsPaused reports no pause if time matches, this also checks borders
+        private static bool IsPause(DateTime time, IValueRangeSeries<DateTime> pauses)
+        {
+            bool res = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, pauses);
+            if (!res)
+            {
+                foreach (IValueRange<DateTime> pause in pauses)
+                {
+                    if (time.CompareTo(pause.Lower) >= 0 &&
+                        time.CompareTo(pause.Upper) <= 0)
+                    {
+                        res = true;
+                        break;
+                    }
+                }
+            }
+            return res;
+        }
+
+        //Note: if returning a GPSRoute instead of GPSPoints, some care have to be taken for every second
         public static IList<IList<IGPSPoint>> GpsPoints(IGPSRoute gpsRoute, IValueRangeSeries<DateTime> pauses, IValueRangeSeries<DateTime> t)
         {
             IList<IList<IGPSPoint>> result = new List<IList<IGPSPoint>>();
 
-            if (t != null)
+            if (t != null && gpsRoute != null && gpsRoute.Count > 1)
             {
                 int pauseIndex = 0;
-                int prevPauseIndex = -1;
                 DateTime firstGpsTime = gpsRoute.EntryDateTime(gpsRoute[0]);
                 DateTime lastGpsTime = gpsRoute.EntryDateTime(gpsRoute[gpsRoute.Count - 1]);
 
@@ -290,74 +309,108 @@ namespace TrailsPlugin.Data
                     IList<IGPSPoint> track = null;
                     DateTime prevMatchTime = DateTime.MinValue;
 
+                    //First time, also if it is interpolated
+                    {
+                        DateTime pt = TrailResult.getFirstUnpausedTime(r.Lower, IsPause(r.Lower, pauses), pauses, true);
+                        if (pt < r.Upper && pt >= firstGpsTime && pt <= lastGpsTime)
+                        {
+                            track = new List<IGPSPoint>();
+                            track.Add(gpsRoute.GetInterpolatedValue(pt).Value);
+                            prevMatchTime = pt;
+                        }
+                    }
+
                     foreach (ITimeValueEntry<IGPSPoint> entry in gpsRoute)
                     {
                         DateTime time = gpsRoute.EntryDateTime(entry);
-                        bool isPause = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, pauses);
+
+                        if (time < r.Lower)
+                        {
+                            continue;
+                        }
+                        bool isPause = IsPause(time, pauses);
+                        bool newPauseIndex = false;
 
                         //Add new track around pauses
                         if (!isPause)
                         {
-                            while (pauseIndex < pauses.Count && pauses[pauseIndex].Lower < time)
+                            while (pauseIndex < pauses.Count && time < pauses[pauseIndex].Upper)
                             {
                                 pauseIndex++;
+                                newPauseIndex = true;
                             }
                         }
 
-                        if (track != null && (isPause || prevPauseIndex != pauseIndex))
+                        if (track != null && (isPause || newPauseIndex))
                         {
-                            //previous point was the end of a track
-                            //Add endpoint if not on the same second
-                            if (prevMatchTime != DateTime.MinValue
-                                && prevMatchTime.AddMilliseconds(-prevMatchTime.Millisecond) < r.Upper.AddMilliseconds(-r.Upper.Millisecond)
-                                && r.Upper >= firstGpsTime && r.Upper <= lastGpsTime)
+                            //TBD Not necessarily the last endpoint, if there are more pauses than points
+                            if (isPause)
                             {
-                                track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
-                                prevMatchTime = r.Upper;
+                                //previous point was the end of a track
+                                DateTime pt = TrailResult.getFirstUnpausedTime(time, isPause, pauses, false);
+                                if (prevMatchTime < pt && pt >= firstGpsTime && pt <= lastGpsTime)
+                                {
+                                    track.Add(gpsRoute.GetInterpolatedValue(pt).Value);
+                                }
+                            }
+                            else if (newPauseIndex && 0 < pauseIndex && pauseIndex <= pauses.Count)
+                            {
+                                DateTime pt = TrailResult.getFirstUnpausedTime(pauses[pauseIndex-1].Lower, true, pauses, false);
+                                if (prevMatchTime < pt && pt >= firstGpsTime && pt <= lastGpsTime)
+                                {
+                                    track.Add(gpsRoute.GetInterpolatedValue(pt).Value);
+                                }
                             }
                             result.Add(track);
                             prevMatchTime = DateTime.MinValue;
                             track = null;
                         }
 
-                        if (!isPause && r.Lower <= time && time <= r.Upper)
-                        {
-                            //Point is in the range add it
-                            if (track == null)
-                            {
-                                //First point ot previous was a pause, add new track
-                                track = new List<IGPSPoint>();
-                                //Add startpoint if not on the same second as current point
-                                if (time.AddMilliseconds(-time.Millisecond) > r.Lower.AddMilliseconds(-r.Lower.Millisecond)
-                                    && r.Lower >= firstGpsTime && r.Lower <= lastGpsTime)
-                                {
-                                    track.Add(gpsRoute.GetInterpolatedValue(r.Lower).Value);
-                                    prevMatchTime = r.Lower;
-                                }
-                            }
-                            track.Add(entry.Value);
-                            prevMatchTime = time;
-                        }
                         if (time > r.Upper)
                         {
                             break;
                         }
-                        prevPauseIndex = pauseIndex;
+                        if (!isPause)
+                        {
+                            //Point is in the range, add it
+                            if (track == null)
+                            {
+                                //First point or previous was a pause, add new track
+                                track = new List<IGPSPoint>();
+                                DateTime pt = TrailResult.getFirstUnpausedTime(time, isPause, pauses, true);
+                                if (prevMatchTime < pt && pt >= firstGpsTime && pt <= lastGpsTime)
+                                {
+                                    track.Add(gpsRoute.GetInterpolatedValue(pt).Value);
+                                    prevMatchTime = pt;
+                                }
+                            }
+                            if (prevMatchTime < time)
+                            {
+                                track.Add(entry.Value);
+                                prevMatchTime = time;
+                            }
+                        }
                     }
 
                     //Add point after last track point?
-                    if (track!=null)
+                    if (track != null)
                     {
+                        DateTime pt = TrailResult.getFirstUnpausedTime(r.Upper, IsPause(r.Upper, pauses), pauses, false);
                         if (prevMatchTime != DateTime.MinValue
-                            && prevMatchTime.AddMilliseconds(-prevMatchTime.Millisecond) < r.Upper.AddMilliseconds(-r.Upper.Millisecond)
-                            && r.Upper >= firstGpsTime && r.Upper <= lastGpsTime)
+                            && prevMatchTime < pt && pt >= firstGpsTime && pt <= lastGpsTime)
                         {
-                            track.Add(gpsRoute.GetInterpolatedValue(r.Upper).Value);
-                            prevMatchTime = r.Upper;
+                            track.Add(gpsRoute.GetInterpolatedValue(pt).Value);
                         }
+
                         result.Add(track);
+                        prevMatchTime = DateTime.MinValue;
+                        track = null;
                     }
                 }
+            }
+            else
+            {
+                //Debug
             }
             return result;
         }

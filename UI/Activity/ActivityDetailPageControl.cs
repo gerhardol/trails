@@ -474,7 +474,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 bool sectionFound = false;
                 //Use pixels to get radius from zoom level, to get click limit. (Tests indicate the limit is about 7 pixels.) Affects pass-by trail detection too
-                float radius = Math.Max(15, m_layerMarked.getRadius(10));
+                float radius = Math.Max(1, m_layerMarked.getRadius(10));
                 IGPSLocation egps = m_layerRoutes.GetGps(e.Location);
 
                 if (m_currentSelectedMapLocation != null)

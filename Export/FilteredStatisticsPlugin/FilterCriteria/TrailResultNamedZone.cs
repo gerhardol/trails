@@ -117,14 +117,14 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
                 if (m_TrailResult != null)
                 {
-                    m_ValidTimes = m_TrailResult.getSelInfo();
+                    m_ValidTimes = m_TrailResult.getSelInfo(false);
                 }
                 else if (m_Activity != null)
                 {
                     TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
                     foreach (TrailsPlugin.Data.TrailResult tr in m_Trail.Results)
                     {
-                        foreach(IValueRange<DateTime> t in tr.getSelInfo())
+                        foreach(IValueRange<DateTime> t in tr.getSelInfo(false))
                         {
                             m_ValidTimes.Add(t);
                         }

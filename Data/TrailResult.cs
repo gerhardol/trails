@@ -362,12 +362,30 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //All of result including pauses/stopped
-        //This is how FilteredStatistics want the info
-        public IValueRangeSeries<DateTime> getSelInfo()
+        //All of result including pauses/stopped is how FilteredStatistics want the info
+        public IValueRangeSeries<DateTime> getSelInfo(bool excludePauses)
         {
             IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-            t.Add(new ValueRange<DateTime>(this.StartDateTime, this.EndDateTime));
+            DateTime? s1 = this.StartDateTime;
+            if (excludePauses)
+            {
+                foreach (ValueRange<DateTime> p in this.Pauses)
+                {
+                    if (s1 != null && p.Lower > (DateTime)s1 && p.Lower < this.EndDateTime)
+                    {
+                        t.Add(new ValueRange<DateTime>((DateTime)s1, p.Lower));
+                        s1 = null;
+                    }
+                    if (p.Upper > this.StartDateTime && p.Upper < this.EndDateTime)
+                    {
+                        s1 = p.Upper;
+                    }
+                }
+            }
+            if (s1 != null)
+            {
+                t.Add(new ValueRange<DateTime>((DateTime)s1, this.EndDateTime));
+            }
             return t;
         }
 
@@ -677,6 +695,12 @@ namespace TrailsPlugin.Data
                                         {
                                             upper -= TimeSpan.FromSeconds(1);
                                         }
+                                        //Fix: Lap start time is in seconds, precision could be lost
+                                        DateTime upper2 = lap.StartTime.Add(lap.TotalTime);
+                                        if (upper.Millisecond == 0 &&  Math.Abs((upper2 - upper).TotalSeconds) < 2)
+                                        {
+                                            upper = upper2;
+                                        }
                                     }
                                     else
                                     {
@@ -756,8 +780,8 @@ namespace TrailsPlugin.Data
                     if (m_activityDistanceMetersTrack != null)
                     {
                         //insert points at borders in m_activityDistanceMetersTrack
-                        m_activityDistanceMetersTrack = (DistanceDataTrack)(new InsertValues<float>(this, m_activityDistanceMetersTrack, m_activityDistanceMetersTrack)).
-                            insertValues();
+                        //m_activityDistanceMetersTrack = (DistanceDataTrack)(new InsertValues<float>(this, m_activityDistanceMetersTrack, m_activityDistanceMetersTrack)).
+                            //insertValues();
                     }
                 }
                 if (m_activityDistanceMetersTrack != null)
@@ -1372,7 +1396,7 @@ namespace TrailsPlugin.Data
                 {
                     //Insert values around borders, to limit effects when track is chopped
                     //Do this before other additions, so start is StartTime for track
-                    track = (INumericTimeDataSeries)(new InsertValues<float>(this, track, source)).insertValues();
+                    //track = (INumericTimeDataSeries)(new InsertValues<float>(this, track, source)).insertValues();
                 }
                 int oldElapsed = int.MinValue;
                 foreach (ITimeValueEntry<float> t in source)
@@ -1958,7 +1982,7 @@ namespace TrailsPlugin.Data
                 StartDateTime != DateTime.MinValue && EndDateTime != DateTime.MinValue)
             {
                 //Insert values at borders in m_gpsTrack
-                gpsTrack = (GPSRoute)(new InsertValues<IGPSPoint>(this, gpsTrack, m_activity.GPSRoute)).insertValues();
+                //gpsTrack = (GPSRoute)(new InsertValues<IGPSPoint>(this, gpsTrack, m_activity.GPSRoute)).insertValues();
 
                 int i = 0;
                 while (i < m_activity.GPSRoute.Count)

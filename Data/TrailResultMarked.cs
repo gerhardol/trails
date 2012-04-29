@@ -27,7 +27,7 @@ namespace TrailsPlugin.Data {
         public TrailResultMarked(TrailResult tr)
         {
             trailResult = tr;
-            selInfo.MarkedTimes = tr.getSelInfo();
+            selInfo.MarkedTimes = tr.getSelInfo(true);
             selInfo.Activity = tr.Activity;
         }
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)

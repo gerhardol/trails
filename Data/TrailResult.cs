@@ -672,12 +672,15 @@ namespace TrailsPlugin.Data
                     {
                         //Check for active laps first
                         bool isActive = false;
-                        foreach (ILapInfo lap in Activity.Laps)
+                        if (this.Activity != null && this.Activity.Laps != null)
                         {
-                            if (!lap.Rest)
+                            foreach (ILapInfo lap in Activity.Laps)
                             {
-                                isActive = true;
-                                break;
+                                if (!lap.Rest)
+                                {
+                                    isActive = true;
+                                    break;
+                                }
                             }
                         }
                         if (isActive)

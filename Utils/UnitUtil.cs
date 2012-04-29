@@ -626,7 +626,7 @@ namespace GpsRunningPlugin.Util
         {
             //This class handles Time as in "Time for activities" rather than "Time of day"
             public static int DefaultDecimalPrecision { get { return 1; } } //Unly used for time less than a minute
-            private static string DefFmt { get { return ""; } }
+            private static string DefFmt { get { return "d.hh:mm:ss"; } }
 
             public static string ToString(double p)
             {
@@ -634,7 +634,7 @@ namespace GpsRunningPlugin.Util
             }
             public static String ToString(double sec, string fmt)
             {
-                return ToString(new TimeSpan(0, 0, 0, 0, (int)(sec * 1000)), fmt);
+                return ToString(TimeSpan.FromSeconds(sec), fmt);
             }
             public static string ToString(TimeSpan p)
             {
@@ -645,6 +645,8 @@ namespace GpsRunningPlugin.Util
                 string str = "";
                 if (fmt.EndsWith("U")) { fmt = fmt.Remove(fmt.Length - 1); }
                 if (fmt.EndsWith("u")) { fmt = fmt.Remove(fmt.Length - 1); }
+                int fractionals = 0;
+                if (fmt.EndsWith(".f")) { fmt = fmt.Remove(fmt.Length - 2); fractionals = 1; }
                 //.NET 2 has no built-in formatting for time
                 //Currently remove millisec ("mm:ss" format)
                 if (fmt.Equals("ss") && sec.TotalSeconds < 60 || fmt.Equals("s"))
@@ -654,8 +656,12 @@ namespace GpsRunningPlugin.Util
                 else
                 {
                     //Truncate to seconds by creating new TimeSpan
-                    str = (new TimeSpan(0, 0, (int)Math.Round(sec.TotalSeconds))).ToString();
+                    str = (TimeSpan.FromSeconds(Math.Round(sec.TotalSeconds, fractionals))).ToString();
                     if (fmt.Equals("mm:ss") && str.StartsWith("00:")) { str = str.Substring(3); }
+                    if (fractionals > 0 && str.EndsWith("00000"))
+                    {
+                        str = str.Remove(str.Length - 6);
+                    }
                 }
 
                 return str;
@@ -1008,7 +1014,7 @@ namespace GpsRunningPlugin.Util
             }
             public static String ToString(double speedMS, IActivity activity, string fmt)
             {
-                //The only formatting handled is "u"/"U"
+                //The only formatting handled is "u"/"U" - other done by Time
                 double pace = ConvertFrom(speedMS, activity);
                 string str = "";
                 if (fmt.EndsWith("U")) { str = " " + Label; fmt = fmt.Remove(fmt.Length - 1); }
@@ -1017,15 +1023,15 @@ namespace GpsRunningPlugin.Util
                 {
                     str = "-" + str;
                 }
-                else if (speedMS < 60)
+                else //if (speedMS < 60)
                 {
                     str = Time.ToString(pace) + str;
                 }
-                else
-                {
-                    str = new TimeSpan(0, 0, (int)Math.Round(pace)).ToString() + str;
-                    if (str.StartsWith("00:")) { str = str.Substring(3); }
-                }
+                //else
+                //{
+                //    str = new TimeSpan(0, 0, (int)Math.Round(pace)).ToString() + str;
+                //    if (str.StartsWith("00:")) { str = str.Substring(3); }
+                //}
                 return str;
             }
 

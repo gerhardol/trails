@@ -86,9 +86,9 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Distance.ToString(row.StartDist, "");
                 case TrailResultColumnIds.EndTime:
                     if (row.Activity == null) return null;
-                    return row.EndTime.ToString();
+                    return row.EndDateTime.ToLocalTime().ToString("T");
                 case TrailResultColumnIds.Duration:
-                    return UnitUtil.Time.ToString(row.Duration);
+                    return UnitUtil.Time.ToString(row.Duration, "");
                 case TrailResultColumnIds.Distance:
                     return UnitUtil.Distance.ToString(row.Distance, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.AvgCadence:

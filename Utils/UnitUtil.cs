@@ -626,7 +626,7 @@ namespace GpsRunningPlugin.Util
         {
             //This class handles Time as in "Time for activities" rather than "Time of day"
             public static int DefaultDecimalPrecision { get { return 1; } } //Unly used for time less than a minute
-            private static string DefFmt { get { return "d.hh:mm:ss"; } }
+            private static string DefFmt { get { return "g"; } } //.NET4, output what is needed only
 
             public static string ToString(double p)
             {
@@ -656,11 +656,26 @@ namespace GpsRunningPlugin.Util
                 else
                 {
                     //Truncate to seconds by creating new TimeSpan
-                    str = (TimeSpan.FromSeconds(Math.Round(sec.TotalSeconds, fractionals))).ToString();
-                    if (fmt.Equals("mm:ss") && str.StartsWith("00:")) { str = str.Substring(3); }
-                    if (fractionals > 0 && str.EndsWith("00000"))
+                    TimeSpan s = TimeSpan.FromSeconds(Math.Round(sec.TotalSeconds, fractionals));
+                    str = s.ToString();
+                    //if (fmt.Equals("g") && str.StartsWith("0:")) { str = str.Substring(2); } //Day part is optional
+                    if (fmt.Equals("g") && str.StartsWith("00:")) { str = str.Substring(3); } //Hour, not minutes
+                    if (fractionals > 0)
                     {
-                        str = str.Remove(str.Length - 6);
+                        if (s.Milliseconds > 0)
+                        {
+                            //Remove trailing 0
+                            str = str.Remove(str.Length + fractionals - 7);
+                        }
+                        else
+                        {
+                            //Add skipped fractionals
+                            str += System.Globalization.NumberFormatInfo.InvariantInfo.NumberDecimalSeparator;
+                            while (fractionals-- > 0)
+                            {
+                                str += "0";
+                            }
+                        }
                     }
                 }
 
@@ -989,7 +1004,7 @@ namespace GpsRunningPlugin.Util
 
             private static Length.Units Unit { get { return getDistUnit(true); } }
             public static int DefaultDecimalPrecision { get { return 1; } } //Not really applicable
-            private static string DefFmt { get { return ""; } }
+            private static string DefFmt { get { return ""; } } //Same tweaks as for time
             public static Length GetLength(IActivity activity)
             {
                 Length du;
@@ -1017,21 +1032,17 @@ namespace GpsRunningPlugin.Util
                 //The only formatting handled is "u"/"U" - other done by Time
                 double pace = ConvertFrom(speedMS, activity);
                 string str = "";
+                if (string.IsNullOrEmpty(fmt)){fmt=DefFmt;}
                 if (fmt.EndsWith("U")) { str = " " + Label; fmt = fmt.Remove(fmt.Length - 1); }
                 if (fmt.EndsWith("u")) { str = " " + LabelAbbr; fmt = fmt.Remove(fmt.Length - 1); }
                 if (speedMS==0 || Math.Abs(speedMS) == double.MinValue || double.IsInfinity(speedMS) || double.IsNaN(speedMS))//"divide by zero" check. Or some hardcoded value?
                 {
                     str = "-" + str;
                 }
-                else //if (speedMS < 60)
+                else
                 {
-                    str = Time.ToString(pace) + str;
+                    str = Time.ToString(pace, fmt) + str;
                 }
-                //else
-                //{
-                //    str = new TimeSpan(0, 0, (int)Math.Round(pace)).ToString() + str;
-                //    if (str.StartsWith("00:")) { str = str.Substring(3); }
-                //}
                 return str;
             }
 

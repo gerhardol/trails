@@ -80,7 +80,7 @@ namespace TrailsPlugin.Data
         }
         public void SetSummary(IList<TrailResultWrapper> rows)
         {
-            ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows));
+            ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows, false));
         }
 
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
@@ -154,7 +154,7 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn)
+        public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
         {
             IList<TrailResult> result = new List<TrailResult>();
             if (tn != null)
@@ -162,13 +162,16 @@ namespace TrailsPlugin.Data
                 foreach (TrailResultWrapper tnp in tn)
                 {
                     result.Add(tnp.Result);
-                    //foreach (TrailResultWrapper tnc in tnp.Children)
-                    //{
-                    //    if (!result.Contains(tnc.Result))
-                    //    {
-                    //        result.Add(tnc.Result);
-                    //    }
-                    //}
+                    if (includeChildren)
+                    {
+                        foreach (TrailResultWrapper tnc in tnp.Children)
+                        {
+                            if (!result.Contains(tnc.Result))
+                            {
+                                result.Add(tnc.Result);
+                            }
+                        }
+                    }
                 }
             }
             return result;

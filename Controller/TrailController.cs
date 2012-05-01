@@ -328,7 +328,7 @@ namespace TrailsPlugin.Controller
             if (m_currentActivityTrail != null)
             {
                 if(m_currentActivityTrail.Status == TrailOrderStatus.Match &&
-                    !m_currentActivityTrail.Results.Contains(m_referenceTrailResult))
+                    !m_currentActivityTrail.AllResults.Contains(m_referenceTrailResult))
                 {
                     m_referenceTrailResult = null;
                 }
@@ -340,7 +340,7 @@ namespace TrailsPlugin.Controller
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
             {
-                foreach (Data.TrailResult tr in m_currentActivityTrail.Results)
+                foreach (Data.TrailResult tr in m_currentActivityTrail.ParentResults)
                 {
                     if (tr.Activity.Equals(m_referenceActivity))
                     {
@@ -359,9 +359,9 @@ namespace TrailsPlugin.Controller
             if (m_referenceTrailResult == null &&
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial &&
-                m_currentActivityTrail.Results.Count > 0)
+                m_currentActivityTrail.ParentResults.Count > 0)
             {
-                m_referenceTrailResult = m_currentActivityTrail.Results[0];
+                m_referenceTrailResult = m_currentActivityTrail.ParentResults[0];
             }
 
             return m_referenceTrailResult;
@@ -423,8 +423,9 @@ namespace TrailsPlugin.Controller
                     t.Clear();
                 }
             }
-            m_referenceTrailResult = null;
+            //If the reference is no longer available, reset it when checking ref when using it
         }
+
         private void NewTrail(Data.Trail trail)
         {
             m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);

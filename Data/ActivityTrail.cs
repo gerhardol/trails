@@ -165,11 +165,19 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public IList<TrailResult> Results
+        public IList<TrailResult> ParentResults
         {
             get
             {
-                return TrailResultWrapper.GetTrailResults(ResultTreeList);
+                return TrailResultWrapper.GetTrailResults(ResultTreeList, false);
+            }
+        }
+
+        public IList<TrailResult> AllResults
+        {
+            get
+            {
+                return TrailResultWrapper.GetTrailResults(ResultTreeList, true );
             }
         }
 
@@ -1178,9 +1186,9 @@ namespace TrailsPlugin.Data
                 }
                 foreach (TrailResultWrapper tr in selected)
                 {
-                    if (Results.Contains(tr.Result))
+                    if (ParentResults.Contains(tr.Result))
                     {
-                        Results.Remove(tr.Result);
+                        ParentResults.Remove(tr.Result);
                     }
                     if (ResultTreeList.Contains(tr))
                     {
@@ -1229,11 +1237,11 @@ namespace TrailsPlugin.Data
                 if (sortValue == null)
                 {
                     sortValue = 0;
-                    foreach (Data.TrailResult tr in this.Results)
+                    foreach (Data.TrailResult tr in this.ParentResults)
                     {
                         sortValue += tr.DistDiff;
                     }
-                    sortValue = sortValue / (float)Math.Pow(this.Results.Count, 1.5);
+                    sortValue = sortValue / (float)Math.Pow(this.ParentResults.Count, 1.5);
 
                 }
                 return (float)sortValue;
@@ -1422,7 +1430,7 @@ namespace TrailsPlugin.Data
             if (t.Status == TrailOrderStatus.Match ||
                 t.Status == TrailOrderStatus.MatchPartial)
             {
-                name += " (" + t.Results.Count + ")";
+                name += " (" + t.ParentResults.Count + ")";
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {

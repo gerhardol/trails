@@ -201,20 +201,20 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
                     at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses, true, null);
-                    if (at.Results.Count > 0)
+                    if (at.ParentResults.Count > 0)
                     {
-                        m_trailResult = at.Results[0];
+                        m_trailResult = at.ParentResults[0];
                     }
                     else
                     {
                         at.Reset();
                         at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true, null);
-                        if (at.Results.Count > 0)
+                        if (at.ParentResults.Count > 0)
                         {
                             //The best result is the result with most matches
                             //forward may be better than reverse, but those should be sorted first anyway
                             int currMaxRes = -1;
-                            foreach (TrailResult tr in at.Results)
+                            foreach (TrailResult tr in at.ParentResults)
                             {
                                 int res = 0;
                                 foreach (DateTime d in tr.TrailPointDateTime)

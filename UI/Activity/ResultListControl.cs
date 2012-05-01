@@ -273,7 +273,7 @@ namespace TrailsPlugin.UI.Activity {
                         //Get all current values in prev selection
                         setValue = TrailResultWrapper.SelectedItems(
                             m_controller.CurrentActivityTrailDisplayed,
-                    TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems)));
+                    TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems), false));
                         if ((null == setValue || setValue.Count == 0) &&
                             null != m_controller.CurrentActivityTrailDisplayed && 
                             null != m_controller.CurrentActivityTrailDisplayed.ResultTreeList &&
@@ -297,7 +297,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                return TrailResultWrapper.GetTrailResults(SelectedItemsWrapper);
+                return TrailResultWrapper.GetTrailResults(SelectedItemsWrapper, false);
             }
         }
 

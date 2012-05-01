@@ -263,7 +263,7 @@ namespace TrailsPlugin.UI.Activity {
                 //check for TrailOrdered - displayed status
                 if (m_controller.CurrentActivityTrailDisplayed != null)
                 {
-                    IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.Results;
+                    IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.ParentResults;
                     bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
                     if (!showAll)
                     {

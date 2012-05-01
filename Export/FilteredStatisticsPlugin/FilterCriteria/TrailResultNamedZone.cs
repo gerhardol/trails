@@ -122,7 +122,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 else if (m_Activity != null)
                 {
                     TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
-                    foreach (TrailsPlugin.Data.TrailResult tr in m_Trail.Results)
+                    foreach (TrailsPlugin.Data.TrailResult tr in m_Trail.ParentResults)
                     {
                         foreach(IValueRange<DateTime> t in tr.getSelInfo(false))
                         {

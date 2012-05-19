@@ -365,28 +365,12 @@ namespace TrailsPlugin.Data
         //All of result including pauses/stopped is how FilteredStatistics want the info
         public IValueRangeSeries<DateTime> getSelInfo(bool excludePauses)
         {
-            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-            DateTime? s1 = this.StartDateTime;
+            IValueRangeSeries<DateTime> res = new ValueRangeSeries<DateTime> { new ValueRange<DateTime>(this.StartDateTime, this.EndDateTime) };
             if (excludePauses)
             {
-                foreach (ValueRange<DateTime> p in this.Pauses)
-                {
-                    if (s1 != null && p.Lower > (DateTime)s1 && p.Lower < this.EndDateTime)
-                    {
-                        t.Add(new ValueRange<DateTime>((DateTime)s1, p.Lower));
-                        s1 = null;
-                    }
-                    if (p.Upper > this.StartDateTime && p.Upper < this.EndDateTime)
-                    {
-                        s1 = p.Upper;
-                    }
-                }
+                res = TrailsItemTrackSelectionInfo.excludePauses(res, this.Pauses);
             }
-            if (s1 != null)
-            {
-                t.Add(new ValueRange<DateTime>((DateTime)s1, this.EndDateTime));
-            }
-            return t;
+            return res;
         }
 
         public virtual double StartDist
@@ -1275,99 +1259,99 @@ namespace TrailsPlugin.Data
 
         //Insert points at start/end and pauses
         //Not exactly necessary, but improves averages etc
-        internal class InsertValues<T>
-        {
-            TrailResult result;
-            ITimeDataSeries<T> track;
-            ITimeDataSeries<T> source;
+        //internal class InsertValues<T>
+        //{
+        //    TrailResult result;
+        //    ITimeDataSeries<T> track;
+        //    ITimeDataSeries<T> source;
 
-            public InsertValues(TrailResult t, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
-            {
-                this.result = t;
-                this.track = track;
-                this.source = source;
-            }
-            public void insertValues(DateTime atime)
-            {
-                if (atime >= result.StartDateTime && atime <= result.EndDateTime &&
-                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, result.Pauses))
-                {
-                    ITimeValueEntry<T> interpolatedP = this.source.GetInterpolatedValue(atime);
-                    if (interpolatedP != null)
-                    {
-                        try
-                        {
-                            this.track.Add(atime, interpolatedP.Value);
-                        }
-                        catch { }
-                    }
-                }
-            }
-            public ITimeDataSeries<T> insertValues()
-            {
-                //Insert points around pauses and points
-                //This is needed to get the track match the cut-up activity
-                //(otherwise for instance start point need to be added)
+        //    public InsertValues(TrailResult t, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+        //    {
+        //        this.result = t;
+        //        this.track = track;
+        //        this.source = source;
+        //    }
+        //    public void insertValues(DateTime atime)
+        //    {
+        //        if (atime >= result.StartDateTime && atime <= result.EndDateTime &&
+        //            !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, result.Pauses))
+        //        {
+        //            ITimeValueEntry<T> interpolatedP = this.source.GetInterpolatedValue(atime);
+        //            if (interpolatedP != null)
+        //            {
+        //                try
+        //                {
+        //                    this.track.Add(atime, interpolatedP.Value);
+        //                }
+        //                catch { }
+        //            }
+        //        }
+        //    }
+        //    public ITimeDataSeries<T> insertValues()
+        //    {
+        //        //Insert points around pauses and points
+        //        //This is needed to get the track match the cut-up activity
+        //        //(otherwise for instance start point need to be added)
 
-                //Bug in ST 3.0.4205 not resorting
-                int noPoints = track.Count;
+        //        //Bug in ST 3.0.4205 not resorting
+        //        int noPoints = track.Count;
 
-                //start/end should be included from points, but prepare for changes...
-                insertValues(result.StartDateTime);
-                insertValues(result.EndDateTime);
+        //        //start/end should be included from points, but prepare for changes...
+        //        insertValues(result.StartDateTime);
+        //        insertValues(result.EndDateTime);
 
-                foreach (IValueRange<DateTime> p in result.Pauses)
-                {
-                    if (p.Lower > DateTime.MinValue)
-                    {
-                        insertValues(p.Lower.AddSeconds(-1));
-                    }
-                    insertValues(p.Upper.AddSeconds(1));
-                }
-                foreach (TrailResultPoint t in result.m_childrenInfo.Points)
-                {
-                    DateTime time = t.Time;
-                    if (time > DateTime.MinValue)
-                    {
-                        insertValues(time.AddSeconds(-1));
-                        insertValues(time);
-                    }
-                }
+        //        foreach (IValueRange<DateTime> p in result.Pauses)
+        //        {
+        //            if (p.Lower > DateTime.MinValue)
+        //            {
+        //                insertValues(p.Lower.AddSeconds(-1));
+        //            }
+        //            insertValues(p.Upper.AddSeconds(1));
+        //        }
+        //        foreach (TrailResultPoint t in result.m_childrenInfo.Points)
+        //        {
+        //            DateTime time = t.Time;
+        //            if (time > DateTime.MinValue)
+        //            {
+        //                insertValues(time.AddSeconds(-1));
+        //                insertValues(time);
+        //            }
+        //        }
 
-                if (noPoints > 0)
-                {
-                    //AllowMultipleAtSameTime=false does not work in 3.0.4205
-                    bool reSort = false;
-                    for (int i = noPoints; i < track.Count; i++)
-                    {
-                        if (track[noPoints - 1].ElapsedSeconds > track[i].ElapsedSeconds)
-                        {
-                            reSort = true;
-                            break;
-                        }
-                    }
-                    if (reSort)
-                    {
-                        SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
-                        foreach (ITimeValueEntry<T> g in track)
-                        {
-                            if (!dic.ContainsKey(g.ElapsedSeconds))
-                            {
-                                dic.Add(g.ElapsedSeconds, g);
-                            }
-                        }
-                        DateTime startTime = track.StartTime;
-                        track.Clear();
-                        foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
-                        {
-                            track.Add(startTime.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
-                        }
-                    }
-                }
-                //Return the original track, the typecasting must work
-                return this.track;
-            }
-        }
+        //        if (noPoints > 0)
+        //        {
+        //            //AllowMultipleAtSameTime=false does not work in 3.0.4205
+        //            bool reSort = false;
+        //            for (int i = noPoints; i < track.Count; i++)
+        //            {
+        //                if (track[noPoints - 1].ElapsedSeconds > track[i].ElapsedSeconds)
+        //                {
+        //                    reSort = true;
+        //                    break;
+        //                }
+        //            }
+        //            if (reSort)
+        //            {
+        //                SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
+        //                foreach (ITimeValueEntry<T> g in track)
+        //                {
+        //                    if (!dic.ContainsKey(g.ElapsedSeconds))
+        //                    {
+        //                        dic.Add(g.ElapsedSeconds, g);
+        //                    }
+        //                }
+        //                DateTime startTime = track.StartTime;
+        //                track.Clear();
+        //                foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
+        //                {
+        //                    track.Add(startTime.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
+        //                }
+        //            }
+        //        }
+        //        //Return the original track, the typecasting must work
+        //        return this.track;
+        //    }
+        //}
 
         //copy the relevant part to a new track
         private INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
@@ -2037,9 +2021,7 @@ namespace TrailsPlugin.Data
         {
             if (m_gpsPoints == null)
             {
-                IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
-                t.Add(new ValueRange<DateTime>(StartDateTime, EndDateTime));
-                m_gpsPoints = this.GpsPoints(t);
+                m_gpsPoints = this.GpsPoints(getSelInfo(true));
             }
             return m_gpsPoints;
         }
@@ -2062,7 +2044,7 @@ namespace TrailsPlugin.Data
         }
         private IList<IList<IGPSPoint>> GpsPoints(IValueRangeSeries<DateTime> t)
         {
-            return TrailsItemTrackSelectionInfo.GpsPoints(this.GPSRoute, this.Pauses, t);
+            return TrailsItemTrackSelectionInfo.GpsPoints(this.GPSRoute, t);
         }
 
         /*************************************************/

@@ -33,7 +33,7 @@ namespace TrailsPlugin.Data {
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
         {
             trailResult = tr;
-            selInfo.MarkedTimes = t;
+            selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(t, tr.Pauses);
             selInfo.Activity = tr.Activity;
         }
         //Note: IItemTrackSelectionInfo uses Activity distances, avoid...
@@ -46,6 +46,7 @@ namespace TrailsPlugin.Data {
         {
             trailResult = tr;
             selInfo.SetFromSelection(t, tr.Activity);
+            selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(selInfo.MarkedTimes, tr.Pauses);
         }
         public TrailResult trailResult;
         public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();

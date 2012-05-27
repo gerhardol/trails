@@ -55,9 +55,13 @@ namespace TrailsPlugin.Data
             //Preset status
             if (m_trail.TrailType == Trail.CalcType.HighScore)
             {
-                if(Integration.HighScore.HighScoreIntegrationEnabled)
+                if (Integration.HighScore.HighScoreIntegrationEnabled)
                 {
                     m_status = TrailOrderStatus.MatchNoCalc;
+                }
+                else
+                {
+                    //Add a separate status here?
                 }
             }
             else if (m_trail.TrailType == Trail.CalcType.Splits)
@@ -1266,7 +1270,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Trail.TrailType != to2.Trail.TrailType)
                 {
-                    return (this.Trail.TrailType < to2.Trail.TrailType) ? 1 : -1;
+                    return (this.Trail.TrailType > to2.Trail.TrailType) ? 1 : -1;
                 }
                 else if (this.Trail.Generated != to2.Trail.Generated)
                 {

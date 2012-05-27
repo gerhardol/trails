@@ -53,14 +53,14 @@ namespace TrailsPlugin.Data
             }
 
             //Preset status
-            if (m_trail.HighScore > 0)
+            if (m_trail.TrailType == Trail.CalcType.HighScore)
             {
                 if(Integration.HighScore.HighScoreIntegrationEnabled)
                 {
                     m_status = TrailOrderStatus.MatchNoCalc;
                 }
             }
-            else if (Trail.IsSplits)
+            else if (m_trail.TrailType == Trail.CalcType.Splits)
             {
                 //By default, always match
                 m_status = TrailOrderStatus.MatchNoCalc;
@@ -291,7 +291,9 @@ namespace TrailsPlugin.Data
                 {
                     progressBar.Maximum = activities.Count + progressBar.Value;
                 }
-                if (m_trail.HighScore > 0)
+
+                //Calculation depends on TrailType
+                if (m_trail.TrailType == Trail.CalcType.HighScore)
                 {
                     if (Integration.HighScore.HighScoreIntegrationEnabled)
                     {
@@ -324,7 +326,7 @@ namespace TrailsPlugin.Data
                 {
                     IList<TrailGPSLocation> trailgps = null;
                     IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
-                    if (!m_trail.IsSplits)
+                    if (m_trail.TrailType == Trail.CalcType.TrailPoints)
                     {
                         trailgps = m_trail.TrailLocations;
                         int noNonReq = 0;
@@ -340,7 +342,7 @@ namespace TrailsPlugin.Data
                     }
                     foreach (IActivity activity in activities)
                     {
-                        if (m_trail.IsSplits)
+                        if (m_trail.TrailType == Trail.CalcType.Splits)
                         {
                             this.Status = TrailOrderStatus.Match;
                             TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
@@ -1262,9 +1264,9 @@ namespace TrailsPlugin.Data
             }
             else if (Status == TrailOrderStatus.Match)
             {
-                if (this.Trail.IsSplits != to2.Trail.IsSplits)
+                if (this.Trail.TrailType != to2.Trail.TrailType)
                 {
-                    return (this.Trail.IsSplits) ? 1 : -1;
+                    return (this.Trail.TrailType < to2.Trail.TrailType) ? 1 : -1;
                 }
                 else if (this.Trail.Generated != to2.Trail.Generated)
                 {
@@ -1297,13 +1299,9 @@ namespace TrailsPlugin.Data
                 {
                     return 1;
                 }
-                else if (this.Trail.HighScore > 0)
+                else
                 {
-                    return 1;
-                }
-                else if (to2.Trail.HighScore > 0)
-                {
-                    return -1;
+                    return (this.Trail.TrailType > to2.Trail.TrailType) ? 1 : -1;
                 }
             }
 
@@ -1434,7 +1432,7 @@ namespace TrailsPlugin.Data
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
-                if (t.Trail.IsSplits)
+                if (t.Trail.TrailType == Trail.CalcType.Splits)
                 {
                     name += " (" + t.ActivityCount + ")";
                 }

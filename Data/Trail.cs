@@ -22,20 +22,30 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
 using System;
 
-namespace TrailsPlugin.Data {
-	public class Trail {
-		public string Id = Guid.NewGuid().ToString();
-		public string Name;
+namespace TrailsPlugin.Data
+{
+	public class Trail
+    {
+        //How the trail is to be determined
+        //A RefTrail is calc from Points, a Points trail could present Splits
+        //Also used when sorting trails
+        public enum CalcType
+        {
+            TrailPoints, Splits, HighScore
+        }
+
+        public string Id = Guid.NewGuid().ToString();
+        public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
         private float m_radius;
         private float m_minDistance = 0;
         private int m_maxRequiredMisses = 0;
         private bool m_biDirectional = false;
 
-        private bool m_matchAll = false;
+        private CalcType m_CalcType = Trail.CalcType.TrailPoints;
+        private bool m_splits = false;
         private bool m_generated = false;
         private bool m_isReference = false;
-        private int m_HighScore = 0; //0 not used, 1 standard HighScore (could be more variants)
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
@@ -79,9 +89,9 @@ namespace TrailsPlugin.Data {
             result.m_radius = this.m_radius;
             result.m_minDistance = this.m_minDistance;
             result.m_maxRequiredMisses = this.m_maxRequiredMisses;
-            if (this.IsSplits && activity != null && this.TrailLocations.Count == 0)
+            if (this.TrailType == CalcType.Splits && activity != null && this.TrailLocations.Count == 0)
             {
-                //get all points
+                //get all points - it is made to a CalcType.TrailPoint trail
                 TrailResultInfo indexes;
                 result.TrailLocations = Trail.TrailGpsPointsFromSplits(
                     activity, out indexes, false);
@@ -94,6 +104,12 @@ namespace TrailsPlugin.Data {
                 }
             }
             return result;
+        }
+
+        public CalcType TrailType
+        {
+            get { return m_CalcType; }
+            set { m_CalcType = value; }
         }
 
         public IList<TrailGPSLocation> TrailLocations
@@ -172,15 +188,18 @@ namespace TrailsPlugin.Data {
                 m_biDirectional = value;
             }
         }
+        /// <summary>
+        /// Present TrailPoints or Splits
+        /// </summary>
         public bool IsSplits
         {
             get
             {
-                return m_matchAll;
+                return m_splits;
             }
             set
             {
-                m_matchAll = value;
+                m_splits = value;
             }
         }
         public bool Generated
@@ -203,17 +222,6 @@ namespace TrailsPlugin.Data {
             set
             {
                 m_isReference = value;
-            }
-        }
-        public int HighScore
-        {
-            get
-            {
-                return m_HighScore;
-            }
-            set
-            {
-                m_HighScore = value;
             }
         }
 

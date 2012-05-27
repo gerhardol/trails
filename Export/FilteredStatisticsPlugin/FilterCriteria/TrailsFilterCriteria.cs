@@ -161,7 +161,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     }
 
                     //Generated results. Only HighScore is interesting
-                    if (trail.Trail.HighScore > 0 && trail.Status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
+                    if (trail.Trail.TrailType  == TrailsPlugin.Data.Trail.CalcType.HighScore && trail.Status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
                     {
                         foreach (TrailsPlugin.Data.TrailResult tr in trail.ParentResults)
                         {

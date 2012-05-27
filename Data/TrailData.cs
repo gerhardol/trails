@@ -35,15 +35,16 @@ namespace TrailsPlugin.Data
 
             //Splits Trail
             Data.Trail trail = new Data.Trail();
-            trail.Id = "30681520-b220-11e0-a00b-0800200c9a66";
+            trail.Id = GUIDs.SplitsTrail.ToString();
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.Generated = true;
             trail.IsSplits = true;
+            trail.TrailType = Trail.CalcType.Splits;
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
             trail = new Data.Trail();
-            trail.Id = "30681521-b220-11e0-a00b-0800200c9a66";
+            trail.Id = GUIDs.ReferenceTrail.ToString();
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.Generated = true;
             trail.IsReference = true;
@@ -51,10 +52,10 @@ namespace TrailsPlugin.Data
 
             //HighScore Trail
             trail = new Data.Trail();
-            trail.Id = "30681522-b220-11e0-a00b-0800200c9a66";
+            trail.Id = GUIDs.HighScoreTrail.ToString();
             trail.Name = Properties.Resources.HighScore_Trail;
             trail.Generated = true;
-            trail.HighScore = 1;
+            trail.TrailType = Trail.CalcType.HighScore;
             allTrails.Add(trail.Id, trail);
 
             return allTrails;

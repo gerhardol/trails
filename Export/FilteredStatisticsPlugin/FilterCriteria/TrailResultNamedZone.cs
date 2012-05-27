@@ -56,7 +56,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 string result = m_Trail.Trail.Name;
                 if (m_TrailResult != null)
                 {
-                    if (m_Trail.Trail.HighScore > 0)
+                    if (m_Trail.Trail.TrailType == Data.Trail.CalcType.HighScore)
                     {
                         result += " (" +
                             UnitUtil.Distance.ToString(m_TrailResult.Distance, "u") + ")";

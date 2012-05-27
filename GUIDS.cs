@@ -43,5 +43,10 @@ namespace TrailsPlugin {
         //FilteredStatistics
         public static readonly Guid FilteredStatisticsTemplateFilter = new Guid("9274e230-2359-11e0-ac64-0800200c9a66");
         public static readonly Guid FilteredStatisticsFilter = new Guid("92750940-2359-11e0-ac64-0800200c9a66");
+
+        //Generated Trails
+        public static readonly Guid SplitsTrail    = new Guid("30681520-b220-11e0-a00b-0800200c9a66");
+        public static readonly Guid ReferenceTrail = new Guid("30681521-b220-11e0-a00b-0800200c9a66");
+        public static readonly Guid HighScoreTrail = new Guid("30681522-b220-11e0-a00b-0800200c9a66");
     }
 }

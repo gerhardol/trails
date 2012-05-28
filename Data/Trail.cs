@@ -34,7 +34,7 @@ namespace TrailsPlugin.Data
             TrailPoints, Splits, HighScore
         }
 
-        public string Id = Guid.NewGuid().ToString();
+        public Guid Id;
         public string Name;
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
         private float m_radius;
@@ -49,8 +49,9 @@ namespace TrailsPlugin.Data
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
-		public Trail()
+        public Trail(Guid Id)
         {
+            this.Id = Id;
             m_radius = Data.Settings.DefaultRadius;
 		}
 
@@ -60,14 +61,15 @@ namespace TrailsPlugin.Data
         }
         public Trail Copy(bool isEdit, IActivity activity)
         {
-            Trail result = new Trail();
+            Trail result;
             if (isEdit)
             {
-                result.Id = this.Id;
+                result = new Trail(this.Id);
                 result.Name = this.Name;
             }
             else
             {
+                result = new Trail(System.Guid.NewGuid());
                 if (this.m_isReference && m_referenceActivity != null && m_referenceActivity.Name != "")
                 {
                     result.Name = this.m_referenceActivity.Name;
@@ -401,13 +403,23 @@ namespace TrailsPlugin.Data
 
         static public Trail FromXml(XmlNode node)
         {
-			Trail trail = new Trail();
-            if (node.Attributes[xmlTags.sId] == null)
+            Guid Id;
+            if (node.Attributes[xmlTags.sId] == null || String.IsNullOrEmpty(node.Attributes[xmlTags.sId].Value))
             {
-				trail.Id = System.Guid.NewGuid().ToString();
-			} else {
-				trail.Id = node.Attributes[xmlTags.sId].Value;
-			}
+                Id = System.Guid.NewGuid();
+            }
+            else
+            {
+                try
+                {
+                    Id = new Guid(node.Attributes[xmlTags.sId].Value);
+                }
+                catch (Exception)
+                {
+                    Id = System.Guid.NewGuid();
+                }
+            }
+            Trail trail = new Trail(Id);
             trail.Name = node.Attributes[xmlTags.sName].Value;
             //Hidden possibility to get trails matching everything while activities are seen
             //if (trail.Name.EndsWith("MatchAll"))
@@ -447,7 +459,7 @@ namespace TrailsPlugin.Data
         {
             XmlNode trailNode = doc.CreateElement(xmlTags.sTrail);
             XmlAttribute a = doc.CreateAttribute(xmlTags.sId);
-            a.Value = this.Id;
+            a.Value = this.Id.ToString();
             trailNode.Attributes.Append(a);
             a = doc.CreateAttribute(xmlTags.sName);
             a.Value = this.Name;

@@ -42,7 +42,7 @@ namespace TrailsPlugin.Controller
 			 
         private IList<IActivity> m_activities = new List<IActivity>();
         private ActivityTrail m_currentActivityTrail = null;
-		private string m_lastTrailId = null;
+		private Guid m_lastTrailId = Guid.Empty;
         private Data.TrailResult m_referenceTrailResult = null;
         private IActivity m_referenceActivity = null;
         private IActivity m_lastReferenceActivity = null;
@@ -477,7 +477,7 @@ namespace TrailsPlugin.Controller
                     m_CurrentOrderedTrails.Remove(m_currentActivityTrail);
                 }
                 m_currentActivityTrail = null;
-				m_lastTrailId = null;
+                m_lastTrailId = Guid.Empty;
 				return true;
 			} else {
 				return false;

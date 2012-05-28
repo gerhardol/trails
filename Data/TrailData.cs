@@ -26,16 +26,15 @@ namespace TrailsPlugin.Data
 {
 	public static class TrailData 
     {
-        private static SortedList<string, Data.Trail> m_AllTrails = defaultTrails();
+        private static SortedList<Guid, Data.Trail> m_AllTrails = defaultTrails();
         
-        private static SortedList<string, Data.Trail> defaultTrails()
+        private static SortedList<Guid, Data.Trail> defaultTrails()
         {
-            SortedList<string, Data.Trail> allTrails = new SortedList<string, Data.Trail>();
+            SortedList<Guid, Data.Trail> allTrails = new SortedList<Guid, Data.Trail>();
             //GUIDs could be dynamic or constants too
 
             //Splits Trail
-            Data.Trail trail = new Data.Trail();
-            trail.Id = GUIDs.SplitsTrail.ToString();
+            Data.Trail trail = new Data.Trail(GUIDs.SplitsTrail);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.Generated = true;
             trail.IsSplits = true;
@@ -43,16 +42,14 @@ namespace TrailsPlugin.Data
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
-            trail = new Data.Trail();
-            trail.Id = GUIDs.ReferenceTrail.ToString();
+            trail = new Data.Trail(GUIDs.ReferenceTrail);
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.Generated = true;
             trail.IsReference = true;
             allTrails.Add(trail.Id, trail);
 
             //HighScore Trail
-            trail = new Data.Trail();
-            trail.Id = GUIDs.HighScoreTrail.ToString();
+            trail = new Data.Trail(GUIDs.HighScoreTrail);
             trail.Name = Properties.Resources.HighScore_Trail;
             trail.Generated = true;
             trail.TrailType = Trail.CalcType.HighScore;
@@ -61,7 +58,7 @@ namespace TrailsPlugin.Data
             return allTrails;
         }
 
-		public static SortedList<string, Data.Trail> AllTrails
+		public static SortedList<Guid, Data.Trail> AllTrails
         {
 			get
             {
@@ -78,16 +75,16 @@ namespace TrailsPlugin.Data
         //    }
         //}
 
-        public static bool NameExists(string trailName)
+        public static Trail GetFromName(string trailName)
         {
             foreach (Trail t in m_AllTrails.Values)
             {
                 if (t.Name == trailName)
                 {
-                    return true;
+                    return t;
                 }
             }
-            return false;
+            return null;
         }
 
         public static bool InsertTrail(Data.Trail trail)
@@ -99,7 +96,7 @@ namespace TrailsPlugin.Data
                     return false;
                 }
             }
-            trail.Id = System.Guid.NewGuid().ToString();
+            trail.Id = System.Guid.NewGuid();
             m_AllTrails.Add(trail.Id, trail);
             Plugin.WriteExtensionData();
             return true;
@@ -113,8 +110,9 @@ namespace TrailsPlugin.Data
 				}
 			}
 
-			if (m_AllTrails.ContainsKey(trail.Id)) {
-				m_AllTrails.Remove(trail.Id);
+            if (m_AllTrails.ContainsKey(trail.Id))
+            {
+                m_AllTrails.Remove(trail.Id);
 				m_AllTrails.Add(trail.Id, trail);
 				Plugin.WriteExtensionData();
 				return true;
@@ -124,8 +122,9 @@ namespace TrailsPlugin.Data
 		}
         public static bool DeleteTrail(Data.Trail trail)
         {
-			if (m_AllTrails.ContainsKey(trail.Id)) {
-				m_AllTrails.Remove(trail.Id);
+            if (m_AllTrails.ContainsKey(trail.Id))
+            {
+                m_AllTrails.Remove(trail.Id);
 				Plugin.WriteExtensionData();
 				return true;
 			} else {

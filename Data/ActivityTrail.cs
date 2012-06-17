@@ -226,6 +226,7 @@ namespace TrailsPlugin.Data
             if (selected2.Count <= 1)
             {
                 //0 or 1 selected, use summary instead
+                //Special handling in TrailLineChart.SetupDataSeries
                 selected2 = m_resultsListWrapper;
             }
             m_summary.SetSummary(selected2);

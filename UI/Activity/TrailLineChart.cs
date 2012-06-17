@@ -619,10 +619,9 @@ namespace TrailsPlugin.UI.Activity {
                 //    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
                 //    m_trailResults.Count == 1 && m_trailResults[0] == m_refTrailResult))
                 {
-                    IList<TrailResult> results = this.TrailResults;
                     for (int i = 0; i < this.TrailResults.Count; i++)
                     {
-                        TrailResult tr = results[i];
+                        TrailResult tr = this.TrailResults[i];
                         //The track is mostly cached in result, it is not much extra to request and drop it
                         INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
 
@@ -645,30 +644,50 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //m_hasValues = null;
 
-                IList<TrailResult> results = m_trailResults;
-                IDictionary<LineChartTypes, ChartDataSeries> summaryCharts = new Dictionary<LineChartTypes, ChartDataSeries>();
-                bool onlySummary = false;
-                if (m_trailResults.Count == 2 && (m_trailResults[0] is SummaryTrailResult || m_trailResults[1] is SummaryTrailResult))
+                IList<TrailResult> results = new List<TrailResult>();
+                foreach (TrailResult tr in m_trailResults)
                 {
-                    //One of the results is a summary (that should be ignored in that case)
-                    results = this.TrailResults;
+                    results.Add(tr);
                 }
-                else if (m_trailResults.Count == 1 && (m_trailResults[0] is SummaryTrailResult))
+
+                //Special handling for summary if max one normal is selected
+                //Similar in ActivityTrail.SetSummary
+                bool summarySpecialColor = false;
+                if (m_trailResults.Count == 2 && (m_trailResults[0] is SummaryTrailResult || 
+                                                  m_trailResults[1] is SummaryTrailResult) ||
+                    m_trailResults.Count == 1 && (m_trailResults[0] is SummaryTrailResult))
                 {
-                    //Get results as if all results selected - avoid separate handling
-                    onlySummary = true;
-                    results = (m_trailResults[0] as SummaryTrailResult).Results;
-                    results.Add(m_trailResults[0]);
+                    if (m_trailResults.Count == 2)
+                    {
+                        summarySpecialColor = true;
+                    }
+                    //Get results as if all results selected
+                    SummaryTrailResult t;
+                    if (m_trailResults[0] is SummaryTrailResult)
+                    {
+                        t = (m_trailResults[0] as SummaryTrailResult);
+                    }
+                    else
+                    {
+                        t = (m_trailResults[1] as SummaryTrailResult);
+                    }
+                    foreach (TrailResult tr in t.Results)
+                    {
+                        if (!m_trailResults.Contains(tr))
+                        {
+                            results.Add(tr);
+                        }
+                    }
                 }
 
                 //Find if ReferenceTrailResult is in the results - needed when displaying data
                 TrailResult leftRefTr = null;
-                if (results.Count > 0)
+                if (m_trailResults.Count > 0)
                 {
-                    leftRefTr = results[0];
-                    for (int i = 0; i < results.Count; i++)
+                    leftRefTr = m_trailResults[0];
+                    for (int i = 0; i < m_trailResults.Count; i++)
                     {
-                        if (results[i] == ReferenceTrailResult)
+                        if (m_trailResults[i] == ReferenceTrailResult)
                         {
                             leftRefTr = ReferenceTrailResult;
                             break;
@@ -679,35 +698,15 @@ namespace TrailsPlugin.UI.Activity {
                 //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
                 foreach (LineChartTypes yaxis in m_axis.Keys)
                 {
+                    ChartDataSeries summaryDataLine = null;
+                    IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
                     for (int i = 0; i < results.Count; i++)
                     {
                         TrailResult tr = results[i];
-                        INumericTimeDataSeries graphPoints;
-
-                        //Hide right column graph in some situations
-                        //Note that the results may be needed if only refright alsooo should show average...
-                        if ((1 >= results.Count || onlySummary ||
-                            !Data.Settings.OnlyReferenceRight ||
-                            !(m_axis[yaxis] is RightVerticalAxis) ||
-                            tr == leftRefTr) &&
-                            !(tr is SummaryTrailResult))
-                        {
-                            TrailResult refTr = ReferenceTrailResult;
-                            if (refIsSelf && !onlySummary || null == ReferenceTrailResult)
-                            {
-                                refTr = tr;
-                            }
-                            graphPoints = GetSmoothedActivityTrack(tr, yaxis, refTr);
-                        }
-                        else
-                        {
-                            //No data or summary
-                            graphPoints = new NumericTimeDataSeries();
-                        }
 
                         Color chartLineColor;
                         //Color for the graph - keep standard color if only one graph for the axis
-                        if (results.Count <= 1 || onlySummary ||
+                        if (m_trailResults.Count <= 1 || summarySpecialColor ||
                             Data.Settings.OnlyReferenceRight && (m_axis[yaxis] is RightVerticalAxis))
                         {
                             chartLineColor = LineChartUtil.ChartColor[yaxis];
@@ -719,79 +718,89 @@ namespace TrailsPlugin.UI.Activity {
 
                         //Add empty Dataseries even if no graphpoints. index must match results
                         ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
-                        MainChart.DataSeries.Add(dataLine);
-
                         dataLine.ChartType = ChartDataSeries.Type.Line;
                         dataLine.LineColor = chartLineColor;
                         dataLine.SelectedColor = ControlPaint.Dark(chartLineColor, 0.01F);
+
+                        //Add to the chart only if visible
+                        if (m_trailResults.Contains(tr))
+                        {
+                            MainChart.DataSeries.Add(dataLine);
+                        }
+
                         if (tr is SummaryTrailResult)
                         {
-                            if (!summaryCharts.ContainsKey(yaxis))
-                            {
-                                summaryCharts.Add(yaxis, dataLine);
-                            }
-                            if (!onlySummary)
+                            summaryDataLine = dataLine;
+                            if (m_trailResults.Count > 1)
                             {
                                 dataLine.LineWidth *= 2;
                             }
                         }
-
-                        if (graphPoints.Count > 1)
+                        else
                         {
-                            Color chartFillColor = chartLineColor;
-                            ChartDataSeries dataFill = null;
+                            INumericTimeDataSeries graphPoints;
 
-                            if (results.Count == 1 && m_axis[yaxis] is LeftVerticalAxis)
+                            //Hide right column graph in some situations
+                            //Note that the results may be needed if only ref right also should show average...
+                            if ((1 >= m_trailResults.Count ||
+                                !Data.Settings.OnlyReferenceRight ||
+                                !(m_axis[yaxis] is RightVerticalAxis) ||
+                                tr == leftRefTr))
                             {
-                                // We must use 2 separate data series to overcome the display
-                                //  bug in fill mode.  The main data series is normally rendered but the copy
-                                //  is set in Line mode to be displayed over the fill
-                                dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
-                                MainChart.DataSeries.Add(dataFill);
-
-                                dataFill.ChartType = ChartDataSeries.Type.Fill;
-                                dataFill.LineColor = dataLine.LineColor;
-                                dataFill.SelectedColor = dataLine.SelectedColor;
-                                dataFill.FillColor = Color.WhiteSmoke;
+                                TrailResult refTr = ReferenceTrailResult;
+                                if (refIsSelf || null == ReferenceTrailResult)
+                                {
+                                    refTr = tr;
+                                }
+                                graphPoints = GetSmoothedActivityTrack(tr, yaxis, refTr);
+                            }
+                            else
+                            {
+                                //No data or summary
+                                graphPoints = new NumericTimeDataSeries();
                             }
 
-                            //Get the actual graph
-                            GetDataLine(tr, graphPoints, dataLine, dataFill);
-                        }
-                    }
-                }
-
-                //Create list summary from resulting datalines
-                foreach (KeyValuePair<LineChartTypes, ChartDataSeries> pair in summaryCharts)
-                {
-                    IList<ChartDataSeries> lists = new List<ChartDataSeries>();
-                    foreach (ChartDataSeries c in MainChart.DataSeries)
-                    {
-                        if (c.ValueAxis == m_axis[pair.Key])
-                        {
-                            if (c.ChartType == ChartDataSeries.Type.Line &&
-                                c.Points.Count > 1 //&&
-                                //Ignore ref for diff time/dist graphs
-                                //(pair.Key != LineChartTypes.DiffDist || pair.Key != LineChartTypes.DiffTime ||
-                                )
+                            if (graphPoints.Count > 1)
                             {
-                                lists.Add(c);
+                                Color chartFillColor = chartLineColor;
+                                ChartDataSeries dataFill = null;
+
+                                if (m_trailResults.Count == 1 && m_axis[yaxis] is LeftVerticalAxis &&
+                                    m_trailResults.Contains(tr))
+                                {
+                                    // We must use 2 separate data series to overcome the display
+                                    //  bug in fill mode.  The main data series is normally rendered but the copy
+                                    //  is set in Line mode to be displayed over the fill
+                                    dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
+                                    dataFill.ChartType = ChartDataSeries.Type.Fill;
+                                    dataFill.LineColor = dataLine.LineColor;
+                                    dataFill.SelectedColor = dataLine.SelectedColor;
+                                    dataFill.FillColor = Color.WhiteSmoke;
+                                    
+                                    MainChart.DataSeries.Add(dataFill);
+                                }
+
+                                //Get the actual graph
+                                GetDataLine(tr, graphPoints, dataLine, dataFill);
+                                if (dataLine.Points.Count > 1 //&&
+                                    //Ignore ref for diff time/dist graphs
+                                    //(pair.Key != LineChartTypes.DiffDist || pair.Key != LineChartTypes.DiffTime ||
+                                        )
+                                {
+                                    summarySeries.Add(dataLine);
+                                }
                             }
                         }
                     }
-                    if (lists.Count > 1)
+                    ////All results for this axis
+                    //Create list summary from resulting datalines
+                    if (summaryDataLine != null)
                     {
-                        //Only add if more than one one result
-                        this.getCategoryAverage(pair.Value, lists);
-                    }
-                }
-                if (onlySummary)
-                {
-                    //All individual graphs were just temporary
-                    MainChart.DataSeries.Clear();
-                    foreach (ChartDataSeries c in summaryCharts.Values)
-                    {
-                        MainChart.DataSeries.Add(c);
+                        if (summarySeries.Count > 1)
+                        {
+                            //Only add if more than one one result
+                            this.getCategoryAverage(summaryDataLine, summarySeries);
+                        }
                     }
                 }
 
@@ -1155,6 +1164,18 @@ namespace TrailsPlugin.UI.Activity {
                         track = result.DiffDistTrack0(refRes);
                         break;
                     }
+                case LineChartTypes.SpeedPaceDevice:
+                    {
+                        //xxx
+                        track = result.DiffDeviceTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.ElevationDevice:
+                    {
+                        //xxx
+                        track = result.DiffDeviceTrack0(refRes);
+                        break;
+                    }
                 case LineChartTypes.DiffDevice:
                     {
                         track = result.DiffDeviceTrack0(refRes);
@@ -1240,32 +1261,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                //TODO: cache?
-                IList<TrailResult> results = m_trailResults;
-                if (m_trailResults.Count == 1 && (m_trailResults[0] is SummaryTrailResult))
-                {
-                    results = (m_trailResults[0] as SummaryTrailResult).Results;
-                }
-                else if (m_trailResults.Count == 2 && (m_trailResults[1] is SummaryTrailResult))
-                {
-                    results = new List<TrailResult> { m_trailResults[0] };
-                }
-                else if (m_trailResults.Count == 2 && (m_trailResults[0] is SummaryTrailResult))
-                {
-                    results = new List<TrailResult> { m_trailResults[1] };
-                }
-                else
-                {
-                    results = new List<TrailResult>();
-                    foreach (TrailResult tr in m_trailResults)
-                    {
-                        if (!(tr is SummaryTrailResult))
-                        {
-                            results.Add(tr);
-                        }
-                    }
-                }
-                return results;
+                return m_trailResults;
             }
             set
             {

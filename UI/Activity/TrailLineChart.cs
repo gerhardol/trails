@@ -642,40 +642,30 @@ namespace TrailsPlugin.UI.Activity {
             MainChart.XAxis.Markers.Clear();
             if (m_visible)
             {
-                //m_hasValues = null;
-
-                IList<TrailResult> results = new List<TrailResult>();
+                IList<TrailResult> chartResults = new List<TrailResult>();
                 foreach (TrailResult tr in m_trailResults)
                 {
-                    results.Add(tr);
+                    chartResults.Add(tr);
                 }
 
-                //Special handling for summary if max one normal is selected
-                //Similar in ActivityTrail.SetSummary
+                //Special handling for summary, needs graphs for all results
                 bool summarySpecialColor = false;
-                if (m_trailResults.Count == 2 && (m_trailResults[0] is SummaryTrailResult || 
-                                                  m_trailResults[1] is SummaryTrailResult) ||
-                    m_trailResults.Count == 1 && (m_trailResults[0] is SummaryTrailResult))
+                SummaryTrailResult summaryResult = null;
+                foreach (TrailResult tr in m_trailResults)
                 {
-                    if (m_trailResults.Count == 2)
+                    if (tr is SummaryTrailResult)
                     {
-                        summarySpecialColor = true;
-                    }
-                    //Get results as if all results selected
-                    SummaryTrailResult t;
-                    if (m_trailResults[0] is SummaryTrailResult)
-                    {
-                        t = (m_trailResults[0] as SummaryTrailResult);
-                    }
-                    else
-                    {
-                        t = (m_trailResults[1] as SummaryTrailResult);
-                    }
-                    foreach (TrailResult tr in t.Results)
-                    {
-                        if (!m_trailResults.Contains(tr))
+                        summaryResult = (tr as SummaryTrailResult);
+                        if (m_trailResults.Count == 2)
                         {
-                            results.Add(tr);
+                            summarySpecialColor = true;
+                        }
+                        foreach (TrailResult tr2 in summaryResult.Results)
+                        {
+                            if (!m_trailResults.Contains(tr2))
+                            {
+                                chartResults.Add(tr2);
+                            }
                         }
                     }
                 }
@@ -700,9 +690,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     ChartDataSeries summaryDataLine = null;
                     IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
-                    for (int i = 0; i < results.Count; i++)
+                    for (int i = 0; i < chartResults.Count; i++)
                     {
-                        TrailResult tr = results[i];
+                        TrailResult tr = chartResults[i];
 
                         Color chartLineColor;
                         //Color for the graph - keep standard color if only one graph for the axis
@@ -722,7 +712,7 @@ namespace TrailsPlugin.UI.Activity {
                         dataLine.LineColor = chartLineColor;
                         dataLine.SelectedColor = ControlPaint.Dark(chartLineColor, 0.01F);
 
-                        //Add to the chart only if visible
+                        //Add to the chart only if result is visible
                         if (m_trailResults.Contains(tr))
                         {
                             MainChart.DataSeries.Add(dataLine);
@@ -756,7 +746,7 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             else
                             {
-                                //No data or summary
+                                //No data
                                 graphPoints = new NumericTimeDataSeries();
                             }
 
@@ -782,7 +772,10 @@ namespace TrailsPlugin.UI.Activity {
 
                                 //Get the actual graph
                                 GetDataLine(tr, graphPoints, dataLine, dataFill);
-                                if (dataLine.Points.Count > 1 //&&
+
+                                //Add as graph for summary
+                                if (dataLine.Points.Count > 1 && summaryResult != null &&
+                                    summaryResult.Results.Contains(tr)//&&
                                     //Ignore ref for diff time/dist graphs
                                     //(pair.Key != LineChartTypes.DiffDist || pair.Key != LineChartTypes.DiffTime ||
                                         )
@@ -802,7 +795,7 @@ namespace TrailsPlugin.UI.Activity {
                             this.getCategoryAverage(summaryDataLine, summarySeries);
                         }
                     }
-                }
+                }  //for all axis
 
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = ReferenceTrailResult;

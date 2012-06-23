@@ -41,7 +41,7 @@ namespace TrailsPlugin.Data
             : this(loc)
         {
             m_trailPointIndex = i;
-            if (tr != null && tr.TrailPointDateTime.Count>0)
+            if (tr != null && tr.TrailPointDateTime.Count > 0)
             {
                 if (tr.Reverse)
                 {
@@ -71,11 +71,12 @@ namespace TrailsPlugin.Data
             {
                 try
                 {
-                    ITimeValueEntry<float> entry = tr.ActivityDistanceMetersTrack.GetInterpolatedValue(d1);
-                    m_distance = UnitUtil.Distance.ConvertFrom(entry.Value, tr.Activity);
-                    m_time = entry.ElapsedSeconds;
+                    m_distance = UnitUtil.Distance.ConvertFrom(tr.getDistActivity(d1), tr.Activity);
+                    //Elapsed time is for the activity
+                    m_time = tr.getElapsedActivity(d1);
                 }
-                catch { }
+                catch 
+                { }
             }
         }
 

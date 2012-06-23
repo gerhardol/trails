@@ -156,6 +156,7 @@ namespace TrailsPlugin.Data
         public void Reset()
         {
             m_resultsListWrapper = null;
+            m_incompleteResults = null;
         }
 
         public void Clear()
@@ -169,6 +170,9 @@ namespace TrailsPlugin.Data
             }
         }
 
+        /// <summary>
+        /// Return only Parent results (not the Splits/SubResults)
+        /// </summary>
         public IList<TrailResult> ParentResults
         {
             get
@@ -376,7 +380,9 @@ namespace TrailsPlugin.Data
                                         m_status = TrailOrderStatus.InBound;
                                     }
                                     TrailOrderStatus status = CalcInboundResults(activity, trailgps, locationBounds, MaxRequiredMisses, false, progressBar);
-                                    if (bidirectional && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
+                                    //No need to check bidirectional for one point trails
+                                    if (bidirectional && trailgps.Count > 1 &&
+                                        status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
                                     {
                                         IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
                                         IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();
@@ -817,7 +823,6 @@ namespace TrailsPlugin.Data
 
                 //////////////////////////////
                 //All GPS points tested but search should maybe match
-                bool automaticMatch = false;
                 if (matchTime == null && routeIndex >= activity.GPSRoute.Count - 1)
                 {
                     bool required = trailgps[TrailIndex(trailgps, currResultPoints.Count)].Required;
@@ -826,17 +831,16 @@ namespace TrailsPlugin.Data
                     //Last point check for non required points - automatic match, so search can restart
                     if (!required)
                     {
-                        automaticMatch = true;
+                        matchTime = DateTime.MinValue;  //automaticMatch = true;
                     }
                     else if (currRequiredMisses < MaxRequiredMisses)
                     {
-                        automaticMatch = true;
+                        matchTime = DateTime.MinValue;  //automaticMatch = true;
                         //OK to miss this point. Set automatic match to start looking at prev match
                         currRequiredMisses++;
                     }
-                    if (automaticMatch)
+                    if (matchTime != null && matchTime == DateTime.MinValue)
                     {
-                        matchTime = DateTime.MinValue;
                         matchDist = radius * 2;
                     }
                 }
@@ -844,7 +848,7 @@ namespace TrailsPlugin.Data
                 ////////////////////////////
                 //Ignore short legs
                 if (minDistance > 0 && currResultPoints.Count > 0 &&
-                    matchTime != null && !automaticMatch)
+                    matchTime != null && matchTime != DateTime.MinValue)
                 {
                     int prevMatchIndex = getPrevMatchIndex(currResultPoints);
                     if (dTrack != null && prevMatchIndex >= 0 &&
@@ -959,6 +963,12 @@ namespace TrailsPlugin.Data
                             prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
                         }
                     }
+
+                    //If this was an automatic match, set back the routeIndex to last good match
+                    if (matchTime == DateTime.MinValue)
+                    {
+                        routeIndex = prevActivityMatchIndex;
+                    }
                 }
                 else
                 {
@@ -967,35 +977,38 @@ namespace TrailsPlugin.Data
                     prevPoint.dist = routeDist;
                 }
 
+//TODO remove - need for restart handling?
+#if OLD_TRAIL_RESTART_xxx
                 ////////////////////////////////////
                 //Determine where to start from
                 //At matches, the index is determined from type of match
                 //The normal case at no match is to continue with next routePoint
-                //At end points, the match may restart
-                if (matchTime == null &&
+                //At end points, non, the match may restart
+                if ((matchTime == null /*|| matchTime == DateTime.MinValue*/) &&
                     routeIndex >= activity.GPSRoute.Count - 1 &&
-                         currResultPoints.Count > 0 &&
-                        !currResultPoints[currResultPoints.Count - 1].restart)
+                         currResultPoints.Count > 0)// &&
+                        //!currResultPoints[currResultPoints.Count - 1].restart) 
                 {
                     ////////////////////////////////////
                     //We have reached the end without a match
                     //If there are non-required previous, try dropping them and continue
 
                     //Last req index that match for this activity
-                    int prevReqMatchIndex = -1;
                     bool matchNoReqToIgnore = false;
                     for (int i = currResultPoints.Count - 1; i >= 0; i--)
                     {
-                        if (trailgps[TrailIndex(trailgps, i)].Required)
+                        if (!currResultPoints[i].restart && trailgps[TrailIndex(trailgps, i)].Required &&
+                            currResultPoints[i].index >= 0)
                         {
-                            prevReqMatchIndex = currResultPoints[i].index;
+                            //prevActivityMatchIndex = currResultPoints[i].index;
+                            //reset routeIndex to last real match
+                            routeIndex = prevActivityMatchIndex;
                             break;
                         }
                         else if (!currResultPoints[i].restart)
                         {
                             //Hide the non-required point
                             currResultPoints[i].restart = true;
-                            matchNoReqToIgnore = true;
                         }
                     }
                     if (matchNoReqToIgnore)
@@ -1004,7 +1017,7 @@ namespace TrailsPlugin.Data
                         prevPoint.index = -1;
                     }
                 }
-
+#endif
                 //Route index cannot be lower than latest match
                 routeIndex = Math.Max(routeIndex, prevActivityMatchIndex);
 
@@ -1371,10 +1384,14 @@ namespace TrailsPlugin.Data
                 this.index = index;
                 this.matchInRadius = lastMatchInRadius;
                 this.matchPassBy = lastMatchPassBy;
+                this.restart = false;
             }
+            //indexes for this match
             public int index;
             public int matchInRadius;
             public int matchPassBy;
+            //a point may be used to "restart" match once
+            //TODO: No longer used?
             public bool restart;
         }
 

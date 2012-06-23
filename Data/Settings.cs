@@ -285,12 +285,16 @@ namespace TrailsPlugin.Data
             attr = pluginNode.GetAttribute(xmlTags.sXAxis);
             if (attr.Length > 0) { m_xAxisValue = (XAxisValue)Enum.Parse(typeof(XAxisValue), attr, true); }
             attr = pluginNode.GetAttribute(xmlTags.sChartType);
-            if (attr.Length > 0) { m_chartType = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), attr, true); }
-            if (m_chartType == LineChartTypes.DiffDist ||
-                m_chartType == LineChartTypes.DiffTime)
+            try
             {
-                m_chartType = LineChartTypes.DiffDistTime;
+                if (attr.Length > 0) { m_chartType = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), attr, true); }
+                if (m_chartType == LineChartTypes.DiffDist ||
+                    m_chartType == LineChartTypes.DiffTime)
+                {
+                    m_chartType = LineChartTypes.DiffDistTime;
+                }
             }
+            catch{}
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
             if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
             attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
@@ -350,19 +354,23 @@ namespace TrailsPlugin.Data
                 String[] values = attr.Split(';');
                 foreach (String column in values)
                 {
-                    LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
-                    //Compatibility w previous, where DifTime/DiffDist could be speced directly
-                    if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
+                    try
                     {
-                        if (!m_MultiChartTypes.Contains(LineChartTypes.DiffDistTime))
+                        LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
+                        //Compatibility w previous, where DifTime/DiffDist could be speced directly
+                        if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
                         {
-                            m_MultiChartTypes.Add(LineChartTypes.DiffDistTime);
+                            if (!m_MultiChartTypes.Contains(LineChartTypes.DiffDistTime))
+                            {
+                                m_MultiChartTypes.Add(LineChartTypes.DiffDistTime);
+                            }
+                        }
+                        else
+                        {
+                            m_MultiChartTypes.Add(t);
                         }
                     }
-                    else
-                    {
-                        m_MultiChartTypes.Add(t);
-                    }
+                    catch { }
                 }
             }
 

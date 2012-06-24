@@ -214,7 +214,9 @@ namespace TrailsPlugin.UI.Activity
 #endif
 
             if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) && 
-                !m_controller.CurrentActivityTrail.Trail.Generated)
+                !m_controller.CurrentActivityTrail.Trail.Generated &&
+                //Change: never replace points when editing trails
+                false)
             {
 #if ST_2_1
 				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
@@ -410,6 +412,7 @@ namespace TrailsPlugin.UI.Activity
 		}
 
 
+        //Unused
 #if !ST_2_1
         private void selectedGPSLocationsChanged_EditTrail(IList<IItemTrackSelectionInfo> selectedGPS)
         {

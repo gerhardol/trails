@@ -354,7 +354,7 @@
             this.multiChart.Size = new System.Drawing.Size(500, 100);
             this.multiChart.TabIndex = 1;
             this.multiChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.multiChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Unknown;
+            this.multiChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Unknown;
             this.multiChart.MultipleCharts = true;
             // 
             // speedChart
@@ -375,7 +375,7 @@
             this.speedChart.Size = new System.Drawing.Size(500, 100);
             this.speedChart.TabIndex = 2;
             this.speedChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.speedChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Speed;
+            this.speedChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Speed;
             // 
             // paceChart
             // 
@@ -395,7 +395,7 @@
             this.paceChart.Size = new System.Drawing.Size(500, 100);
             this.paceChart.TabIndex = 2;
             this.paceChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.paceChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Pace;
+            this.paceChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Pace;
             // 
             // elevationChart
             // 
@@ -414,7 +414,7 @@
             this.elevationChart.Size = new System.Drawing.Size(500, 100);
             this.elevationChart.TabIndex = 3;
             this.elevationChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.elevationChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Elevation;
+            this.elevationChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Elevation;
             // 
             // heartrateChart
             // 
@@ -433,7 +433,7 @@
             this.heartrateChart.Size = new System.Drawing.Size(500, 100);
             this.heartrateChart.TabIndex = 3;
             this.heartrateChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.heartrateChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.HeartRateBPM;
+            this.heartrateChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.HeartRateBPM;
             // 
             // cadenceChart
             // 
@@ -452,7 +452,7 @@
             this.cadenceChart.Size = new System.Drawing.Size(500, 100);
             this.cadenceChart.TabIndex = 6;
             this.cadenceChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.cadenceChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Cadence;
+            this.cadenceChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Cadence;
             // 
             // gradeChart
             // 
@@ -471,7 +471,7 @@
             this.gradeChart.Size = new System.Drawing.Size(500, 100);
             this.gradeChart.TabIndex = 7;
             this.gradeChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.gradeChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Grade;
+            this.gradeChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Grade;
             // 
             // diffTime
             // 
@@ -490,7 +490,7 @@
             this.diffTimeChart.Size = new System.Drawing.Size(500, 100);
             this.diffTimeChart.TabIndex = 7;
             this.diffTimeChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.diffTimeChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.DiffTime;
+            this.diffTimeChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.DiffTime;
             // 
             // diffDist
             // 
@@ -509,7 +509,7 @@
             this.diffDistChart.Size = new System.Drawing.Size(500, 100);
             this.diffDistChart.TabIndex = 7;
             this.diffDistChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.diffDistChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.DiffDist;
+            this.diffDistChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.DiffDist;
             // 
             // powerChart
             // 
@@ -528,7 +528,7 @@
             this.powerChart.Size = new System.Drawing.Size(500, 100);
             this.powerChart.TabIndex = 7;
             this.powerChart.XAxisReferential = TrailsPlugin.Data.XAxisValue.Time;
-            this.powerChart.YAxisReferential = TrailsPlugin.Data.LineChartTypes.Power;
+            this.powerChart.LeftChartType = TrailsPlugin.Data.LineChartTypes.Power;
             // 
             // MultiChartsControl
             // 

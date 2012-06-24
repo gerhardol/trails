@@ -51,8 +51,9 @@ namespace TrailsPlugin.Data
         private static bool m_showOnlyMarkedOnRoute = false;
         private static bool m_resultSummaryIsDevice = false;
         private static string m_excludeStoppedCategory = "";
+
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
-        static bool m_diffUsingCommonStretches = false; //Not in xml
+        private static bool m_diffUsingCommonStretches = false; //Not in xml
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -277,125 +278,129 @@ namespace TrailsPlugin.Data
         
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            String attr;
-            attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
-            if (attr.Length > 0) { m_defaultRadius = Settings.parseFloat(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.sNumFixedColumns);
-            if (attr.Length > 0) { m_activityPageNumFixedColumns = (Int16)XmlConvert.ToInt16(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.sXAxis);
-            if (attr.Length > 0) { m_xAxisValue = (XAxisValue)Enum.Parse(typeof(XAxisValue), attr, true); }
-            attr = pluginNode.GetAttribute(xmlTags.sChartType);
             try
             {
-                if (attr.Length > 0) { m_chartType = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), attr, true); }
-                if (m_chartType == LineChartTypes.DiffDist ||
-                    m_chartType == LineChartTypes.DiffTime)
+                String attr;
+                attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
+                if (attr.Length > 0) { m_defaultRadius = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sNumFixedColumns);
+                if (attr.Length > 0) { m_activityPageNumFixedColumns = (Int16)XmlConvert.ToInt16(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sXAxis);
+                if (attr.Length > 0) { m_xAxisValue = (XAxisValue)Enum.Parse(typeof(XAxisValue), attr, true); }
+                attr = pluginNode.GetAttribute(xmlTags.sChartType);
+                try
                 {
-                    m_chartType = LineChartTypes.DiffDistTime;
+                    if (attr.Length > 0) { m_chartType = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), attr, true); }
+                    if (m_chartType == LineChartTypes.DiffDist ||
+                        m_chartType == LineChartTypes.DiffTime)
+                    {
+                        m_chartType = LineChartTypes.DiffDistTime;
+                    }
                 }
-            }
-            catch{}
-            attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
-            if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
-            attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
-            if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
-            attr = pluginNode.GetAttribute(xmlTags.SelectSimilarResults);
-            if (attr.Length > 0) { m_SelectSimilarResults = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
-            if (attr.Length > 0) { m_addCurrentCategory = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
-            if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
-            if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.RestLapIsPause);
-            if (attr.Length > 0) { RestIsPause = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.NonReqIsPause);
-            if (attr.Length > 0) { NonReqIsPause = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.ResyncDiffAtTrailPoints);
-            if (attr.Length > 0) { ResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints);
-            if (attr.Length > 0) { AdjustResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.SyncChartAtTrailPoints);
-            if (attr.Length > 0) { SyncChartAtTrailPoints = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.OnlyReferenceRight);
-            if (attr.Length > 0) { OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.ZoomToSelection);
-            if (attr.Length > 0) { ZoomToSelection = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.ShowOnlyMarkedOnRoute);
-            if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
-            attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
-            if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
+                catch { }
+                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
+                if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
+                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
+                if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
+                attr = pluginNode.GetAttribute(xmlTags.SelectSimilarResults);
+                if (attr.Length > 0) { m_SelectSimilarResults = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
+                if (attr.Length > 0) { m_addCurrentCategory = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
+                if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
+                if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.RestLapIsPause);
+                if (attr.Length > 0) { RestIsPause = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.NonReqIsPause);
+                if (attr.Length > 0) { NonReqIsPause = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.ResyncDiffAtTrailPoints);
+                if (attr.Length > 0) { ResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints);
+                if (attr.Length > 0) { AdjustResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.SyncChartAtTrailPoints);
+                if (attr.Length > 0) { SyncChartAtTrailPoints = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.OnlyReferenceRight);
+                if (attr.Length > 0) { OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.ZoomToSelection);
+                if (attr.Length > 0) { ZoomToSelection = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.ShowOnlyMarkedOnRoute);
+                if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
+                if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
 
-            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
-            if (attr.Length > 0)
-            {
-                m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr); 
-            //Change defaults without version number
-            if (m_MaxAutoCalcActivitiesTrails == 500) { m_MaxAutoCalcActivitiesTrails = 10000; }
-            }
-            attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
-            if (attr.Length > 0) { m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr); }
-
-            attr = pluginNode.GetAttribute(xmlTags.sColumns);
-            if (attr.Length > 0)
-            {
-                m_activityPageColumns.Clear();
-                String[] values = attr.Split(';');
-                foreach (String column in values)
+                attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
+                if (attr.Length > 0)
                 {
-                    m_activityPageColumns.Add(column);
+                    m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr);
+                    //Change defaults without version number
+                    if (m_MaxAutoCalcActivitiesTrails == 500) { m_MaxAutoCalcActivitiesTrails = 10000; }
                 }
-            }
+                attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
+                if (attr.Length > 0) { m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr); }
 
-            attr = pluginNode.GetAttribute(xmlTags.sMultiChartType);
-            if (attr.Length > 0)
-            {
-                m_MultiChartTypes.Clear();
-                String[] values = attr.Split(';');
-                foreach (String column in values)
+                attr = pluginNode.GetAttribute(xmlTags.sColumns);
+                if (attr.Length > 0)
                 {
-                    try
+                    m_activityPageColumns.Clear();
+                    String[] values = attr.Split(';');
+                    foreach (String column in values)
+                    {
+                        m_activityPageColumns.Add(column);
+                    }
+                }
+
+                attr = pluginNode.GetAttribute(xmlTags.sMultiChartType);
+                if (attr.Length > 0)
+                {
+                    m_MultiChartTypes.Clear();
+                    String[] values = attr.Split(';');
+                    foreach (String column in values)
+                    {
+                        try
+                        {
+                            LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
+                            //Compatibility w previous, where DifTime/DiffDist could be speced directly
+                            if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
+                            {
+                                if (!m_MultiChartTypes.Contains(LineChartTypes.DiffDistTime))
+                                {
+                                    m_MultiChartTypes.Add(LineChartTypes.DiffDistTime);
+                                }
+                            }
+                            else
+                            {
+                                m_MultiChartTypes.Add(t);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+
+                attr = pluginNode.GetAttribute(xmlTags.sMultiGraphType);
+                if (attr.Length > 0)
+                {
+                    m_MultiGraphTypes.Clear();
+                    String[] values = attr.Split(';');
+                    foreach (String column in values)
                     {
                         LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
                         //Compatibility w previous, where DifTime/DiffDist could be speced directly
                         if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
                         {
-                            if (!m_MultiChartTypes.Contains(LineChartTypes.DiffDistTime))
+                            if (!m_MultiGraphTypes.Contains(LineChartTypes.DiffDistTime))
                             {
-                                m_MultiChartTypes.Add(LineChartTypes.DiffDistTime);
+                                m_MultiGraphTypes.Add(LineChartTypes.DiffDistTime);
                             }
                         }
                         else
                         {
-                            m_MultiChartTypes.Add(t);
+                            m_MultiGraphTypes.Add(t);
                         }
-                    }
-                    catch { }
-                }
-            }
-
-            attr = pluginNode.GetAttribute(xmlTags.sMultiGraphType);
-            if (attr.Length > 0)
-            {
-                m_MultiGraphTypes.Clear();
-                String[] values = attr.Split(';');
-                foreach (String column in values)
-                {
-                    LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
-                    //Compatibility w previous, where DifTime/DiffDist could be speced directly
-                    if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
-                    {
-                        if (!m_MultiGraphTypes.Contains(LineChartTypes.DiffDistTime))
-                        {
-                            m_MultiGraphTypes.Add(LineChartTypes.DiffDistTime);
-                        }
-                    }
-                    else
-                    {
-                        m_MultiGraphTypes.Add(t);
                     }
                 }
             }
+            catch { }
         }
 
         public static void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)

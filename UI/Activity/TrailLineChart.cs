@@ -47,8 +47,8 @@ namespace TrailsPlugin.UI.Activity {
         private IList<Data.TrailResult> m_trailResults = new List<Data.TrailResult>();
 
         private XAxisValue m_XAxisReferential = XAxisValue.Time;
-        private IList<LineChartTypes> m_YAxisReferentials = new List<LineChartTypes>();
-        private IDictionary<LineChartTypes, IAxis> m_axis = new Dictionary<LineChartTypes, IAxis>();
+        private IList<LineChartTypes> m_ChartTypes = new List<LineChartTypes>();
+        private IDictionary<LineChartTypes, IAxis> m_axisCharts = new Dictionary<LineChartTypes, IAxis>();
         private LineChartTypes m_lastSelectedType = LineChartTypes.Unknown;
         private IDictionary<LineChartTypes, bool> m_hasValues = null;
 
@@ -208,9 +208,14 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (e != null && e.DataSeries != null && m_page != null)
             {
-                foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
+                //Reset color on axis
+                foreach (LineChartTypes chartType in m_ChartTypes)
                 {
-                    kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key];
+                    LineChartTypes axisType = ChartToAxis(chartType);
+                    if (axisType == chartType || !m_ChartTypes.Contains(axisType))
+                    {
+                        m_axisCharts[axisType].LabelColor = LineChartUtil.ChartColor[axisType];
+                    }
                 }
                 e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
                 //Get index for dataseries - same as for result
@@ -604,18 +609,18 @@ namespace TrailsPlugin.UI.Activity {
         //Find if the chart has any data
         public bool AnyData()
         {
-            return m_axis != null && m_axis.Count>0;
+            return m_axisCharts != null && m_axisCharts.Count>0;
         }
 
-        public bool HasValues(LineChartTypes yaxis)
+        public bool HasValues(LineChartTypes chartType)
         {
             if (m_hasValues == null)
             {
                 m_hasValues = new Dictionary<LineChartTypes, bool>();
             }
-            if(!m_hasValues.ContainsKey(yaxis))
+            if(!m_hasValues.ContainsKey(chartType))
             {
-                m_hasValues.Add(yaxis, false);
+                m_hasValues.Add(chartType, false);
                 //Previous check when a diff to itself is not a value - enable replacing
                 //if (!(m_trailResults == null || m_refTrailResult == null ||
                 //    (yaxis == LineChartTypes.DiffTime || yaxis == LineChartTypes.DiffDist) &&
@@ -625,17 +630,17 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailResult tr = this.TrailResults[i];
                         //The track is mostly cached in result, it is not much extra to request and drop it
-                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, yaxis, ReferenceTrailResult);
+                        INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, chartType, ReferenceTrailResult);
 
                         if (graphPoints != null && graphPoints.Count > 1)
                         {
-                            m_hasValues[yaxis] = true;
+                            m_hasValues[chartType] = true;
                             break;
                         }
                     }
                 }
             }
-            return m_hasValues[yaxis];
+            return m_hasValues[chartType];
         }
 
         virtual protected void SetupDataSeries()
@@ -688,7 +693,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
-                foreach (LineChartTypes yaxis in m_axis.Keys)
+                foreach (LineChartTypes chartType in m_ChartTypes)
                 {
                     ChartDataSeries summaryDataLine = null;
                     IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
@@ -699,9 +704,9 @@ namespace TrailsPlugin.UI.Activity {
                         Color chartLineColor;
                         //Color for the graph - keep standard color if only one graph for the axis
                         if (m_trailResults.Count <= 1 || summarySpecialColor ||
-                            Data.Settings.OnlyReferenceRight && (m_axis[yaxis] is RightVerticalAxis))
+                            Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
                         {
-                            chartLineColor = LineChartUtil.ChartColor[yaxis];
+                            chartLineColor = LineChartUtil.ChartColor[chartType];
                         }
                         else
                         {
@@ -709,7 +714,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
 
                         //Add empty Dataseries even if no graphpoints. index must match results
-                        ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axis[yaxis]);
+                        ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
                         dataLine.ChartType = ChartDataSeries.Type.Line;
                         dataLine.LineColor = chartLineColor;
                         dataLine.SelectedColor = ControlPaint.Dark(chartLineColor, 0.01F);
@@ -736,7 +741,7 @@ namespace TrailsPlugin.UI.Activity {
                             //Note that the results may be needed if only ref right also should show average...
                             if ((1 >= m_trailResults.Count ||
                                 !Data.Settings.OnlyReferenceRight ||
-                                !(m_axis[yaxis] is RightVerticalAxis) ||
+                                !(m_axisCharts[chartType] is RightVerticalAxis) ||
                                 tr == leftRefTr))
                             {
                                 TrailResult refTr = ReferenceTrailResult;
@@ -744,7 +749,7 @@ namespace TrailsPlugin.UI.Activity {
                                 {
                                     refTr = tr;
                                 }
-                                graphPoints = GetSmoothedActivityTrack(tr, yaxis, refTr);
+                                graphPoints = GetSmoothedActivityTrack(tr, chartType, refTr);
                             }
                             else
                             {
@@ -757,7 +762,7 @@ namespace TrailsPlugin.UI.Activity {
                                 Color chartFillColor = chartLineColor;
                                 ChartDataSeries dataFill = null;
 
-                                if (m_trailResults.Count == 1 && m_axis[yaxis] is LeftVerticalAxis &&
+                                if (m_trailResults.Count == 1 && m_ChartTypes[0] == chartType && /*m_axisCharts[chartType] is LeftVerticalAxis && */
                                     m_trailResults.Contains(tr))
                                 {
                                     // We must use 2 separate data series to overcome the display
@@ -1066,38 +1071,70 @@ namespace TrailsPlugin.UI.Activity {
 
                 // Y axis
                 MainChart.YAxisRight.Clear();
-                foreach (LineChartTypes yaxis in m_YAxisReferentials)
+                foreach (LineChartTypes chartType in m_ChartTypes)
                 {
-                    CreateAxis(yaxis, m_axis.Count==0);
+                    CreateAxis(chartType, m_axisCharts.Count == 0);
                 }
             }
         }
-        
-        private void CreateAxis(LineChartTypes axisType, bool left)
+
+        private void CreateAxis(LineChartTypes chartType, bool left)
         {
             if ((m_trailResults == null || ReferenceTrailResult == null ||
-                (axisType == LineChartTypes.DiffTime || axisType == LineChartTypes.DiffDist) &&
+                (chartType == LineChartTypes.DiffTime || chartType == LineChartTypes.DiffDist) &&
                 m_trailResults.Count == 1 && m_trailResults == ReferenceTrailResult))
             {
                 return;
             }
-            if (!m_axis.ContainsKey(axisType))
+            LineChartTypes axisType = ChartToAxis(chartType);
+            if (!m_axisCharts.ContainsKey(axisType))
             {
                 IAxis axis;
-                if (left)
+                if (m_axisCharts.Count == 0)
                 {
                     axis = MainChart.YAxis;
                 }
                 else
                 {
                     axis = new RightVerticalAxis(MainChart);
-                    axis.SmartZoom = true;
                     MainChart.YAxisRight.Add(axis);
                 }
-                m_axis.Add(axisType, axis);
-                axis.LabelColor = LineChartUtil.ChartColor[axisType];
                 LineChartUtil.SetupYAxisFormatter(axisType, axis, ReferenceTrailResult.Activity);
+                m_axisCharts.Add(axisType, axis);
             }
+            if (!m_axisCharts.ContainsKey(chartType))
+            {
+                m_axisCharts.Add(chartType, m_axisCharts[axisType]);
+            }
+        }
+
+        /// <summary>
+        /// Some chartTypes share axis. Could be changeable in the chart
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <returns></returns>
+        public static LineChartTypes ChartToAxis(LineChartTypes chart)
+        {
+            LineChartTypes axis = chart;
+
+            if (chart == LineChartTypes.DeviceSpeed)
+            {
+                axis = LineChartTypes.Speed;
+            }
+            else if (chart == LineChartTypes.DevicePace)
+            {
+                axis = LineChartTypes.Pace;
+            }
+            else if (chart == LineChartTypes.DeviceElevation)
+            {
+                axis = LineChartTypes.Elevation;
+            }
+            else if (chart == LineChartTypes.DeviceDiffDist)
+            {
+                axis = LineChartTypes.DiffDist;
+            }
+
+            return axis;
         }
 
         private static INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart, TrailResult refRes)
@@ -1195,31 +1232,32 @@ namespace TrailsPlugin.UI.Activity {
 		}
 
         [DisplayName("Y Axis value")]
-        public LineChartTypes YAxisReferential
+        public LineChartTypes LeftChartType
         {
             get
             {
-                if (m_YAxisReferentials == null || m_YAxisReferentials.Count == 0)
+                if (m_ChartTypes == null || m_ChartTypes.Count == 0)
                 {
                     return LineChartTypes.Unknown;
                 }
-                return m_YAxisReferentials[0];
+                return m_ChartTypes[0];
             }
             set
             {
-                YAxisReferentials = new List<LineChartTypes> { value };
+                ChartTypes = new List<LineChartTypes> { value };
             }
         }
-        public IList<LineChartTypes> YAxisReferentials
+        public IList<LineChartTypes> ChartTypes
         {
             get
             {
-                return m_YAxisReferentials;
+                return m_ChartTypes;
             }
             set
             {
-                m_YAxisReferentials = value;
-                m_axis = new Dictionary<LineChartTypes, IAxis>();
+                m_ChartTypes = value;
+                //Clear list of axis
+                m_axisCharts = new Dictionary<LineChartTypes, IAxis>();
             }
         }
 
@@ -1287,8 +1325,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            LineChartTypes selectedChart = LineChartTypes.Unknown;
-
+            bool smoothChanged = false;
             bool increase = true;
             bool reset = false;
             bool zero = false;
@@ -1296,31 +1333,34 @@ namespace TrailsPlugin.UI.Activity {
 
             if (e.KeyCode == Keys.Home)
             {
+                smoothChanged = true;
                 reset = true;
             }
             else if (e.KeyCode == Keys.End)
             {
+                smoothChanged = true;
                 zero = true;
             }
             else if (e.Modifiers == Keys.Shift)
             {
+                smoothChanged = true;
                 increase = false;
             }
 
             if (e.KeyCode == Keys.PageDown || e.KeyCode == Keys.PageUp)
             {
-                selectedChart = m_lastSelectedType;
+                smoothChanged = true;
                 if (e.KeyCode == Keys.PageDown)
                 {
                     increase = false;
                 }
-                if (!m_axis.ContainsKey(selectedChart))
+                if (!m_ChartTypes.Contains(m_lastSelectedType))
                 {
-                    foreach(LineChartTypes l in m_axis.Keys)
+                    foreach (LineChartTypes chartType in m_ChartTypes)
                     {
-                        if (m_axis[l] is LeftVerticalAxis)
+                        if (m_axisCharts[chartType] is LeftVerticalAxis)
                         {
-                            selectedChart=l;
+                            m_lastSelectedType = chartType;
                             break;
                         }
                     }
@@ -1328,15 +1368,18 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.C)
             {
-                selectedChart = LineChartTypes.Cadence;
+                smoothChanged = true;
+                m_lastSelectedType = LineChartTypes.Cadence;
             }
             else if (e.KeyCode == Keys.E)
             {
-                selectedChart = LineChartTypes.Elevation;
+                smoothChanged = true;
+                m_lastSelectedType = LineChartTypes.Elevation;
             }
             else if (e.KeyCode == Keys.H)
             {
-                selectedChart = LineChartTypes.HeartRateBPM;
+                smoothChanged = true;
+                m_lastSelectedType = LineChartTypes.HeartRateBPM;
             }
             else if (e.KeyCode == Keys.L)
             {
@@ -1345,7 +1388,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.P)
             {
-                selectedChart = LineChartTypes.Power;
+                smoothChanged = true;
+                m_lastSelectedType = LineChartTypes.Power;
             }
             else if (e.KeyCode == Keys.R)
             {
@@ -1360,15 +1404,19 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.S)
             {
-                selectedChart = LineChartTypes.Speed;
+                smoothChanged = true;
+                m_lastSelectedType = LineChartTypes.Speed;
             }
             else if (e.KeyCode == Keys.T)
             {
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
                 refreshData = false;
             }
-            m_lastSelectedType = selectedChart;
-            IList<LineChartTypes> charts = MainChart_KeyDown_Smooth(selectedChart, increase, reset, zero);
+            IList<LineChartTypes> charts = new List<LineChartTypes>();
+            if (smoothChanged)
+            {
+                charts = MainChart_KeyDown_Smooth(m_lastSelectedType, increase, reset, zero);
+            }
 
             if (refreshData)
             {
@@ -1377,19 +1425,24 @@ namespace TrailsPlugin.UI.Activity {
                     t.Clear(true);
                 }
             }
-            m_page.RefreshControlState(); 
+            m_page.RefreshControlState();
             m_page.RefreshChart();
 
-            ShowSmoothToolTip(selectedChart);
-            foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axis)
+            if (smoothChanged)
             {
-                if (charts.Contains(kp.Key))
+                //Show smooth value once, change more than one axis if needed
+                ShowSmoothToolTip(m_lastSelectedType);
+
+                foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axisCharts)
                 {
-                    kp.Value.LabelColor = Color.Black;
-                }
-                else
-                {
-                    kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key];
+                    if (charts.Contains(kp.Key))
+                    {
+                        kp.Value.LabelColor = Color.Black;
+                    }
+                    else
+                    {
+                        kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key];
+                    }
                 }
             }
         }
@@ -1450,7 +1503,7 @@ namespace TrailsPlugin.UI.Activity {
                 case LineChartTypes.DeviceElevation:
                 case LineChartTypes.Grade:
                     {
-                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Elevation, LineChartTypes.DeviceElevation, LineChartTypes.Elevation })
+                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Elevation, LineChartTypes.DeviceElevation, LineChartTypes.Grade })
                         {
                             if (!charts.Contains(l))
                             {
@@ -1465,6 +1518,7 @@ namespace TrailsPlugin.UI.Activity {
                         break;
                     }
                 case LineChartTypes.HeartRateBPM:
+                case LineChartTypes.DiffHeartRateBPM:
                     {
                         if (val != null)
                         {
@@ -1511,16 +1565,17 @@ namespace TrailsPlugin.UI.Activity {
             return charts;
         }
 
-        void ShowSmoothToolTip(LineChartTypes l)
+        void ShowSmoothToolTip(LineChartTypes chartType)
         {
             if (summaryListCursorLocationAtMouseMove != null)
             {
-                summaryListToolTip.Show(GetDefaultSmooth(l).ToString(),
-                              this,
-                              new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                summaryListToolTip.Show(
+                    GetDefaultSmooth(chartType).ToString(),
+                    this,
+                    new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
                                   Cursor.Current.Size.Width / 2,
                                         summaryListCursorLocationAtMouseMove.Y),
-                              summaryListToolTip.AutoPopDelay);
+                   summaryListToolTip.AutoPopDelay);
             }
         }
 
@@ -1534,12 +1589,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (e.Axis is RightVerticalAxis || e.Axis is LeftVerticalAxis)
             {
-                foreach (LineChartTypes l in m_axis.Keys)
+                foreach (LineChartTypes chartType in m_ChartTypes)
                 {
-                    if (m_axis[l] == e.Axis)
+                    if (m_axisCharts[chartType] == e.Axis)
                     {
-                        m_lastSelectedType = l;
-                        ShowSmoothToolTip(l);
+                        //More than one chart could exist for the axis, only select the first
+                        m_lastSelectedType = chartType;
+                        ShowSmoothToolTip(chartType);
                         break;
                     }
                 }
@@ -1551,7 +1607,8 @@ namespace TrailsPlugin.UI.Activity {
 			return MainChart.BeginUpdate();
 		}
 
-		public void EndUpdate() {
+		public void EndUpdate()
+        {
 			MainChart.EndUpdate();
 		}
 	}

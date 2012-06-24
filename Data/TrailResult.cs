@@ -1944,7 +1944,8 @@ namespace TrailsPlugin.Data
                                 this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
                                 trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                     {
-                        lastValue = (float)(trRef.TrailPointDist0(trRef)[dateTrailPointIndex] - this.TrailPointDist0(trRef)[dateTrailPointIndex] + diffOffset);
+                        lastValue = (float)UnitUtil.Elevation.ConvertFrom(trRef.TrailPointDist0(trRef)[dateTrailPointIndex] - 
+                            this.TrailPointDist0(trRef)[dateTrailPointIndex] + diffOffset, trRef.Activity);
                         m_DiffDistTrack0.Add(EndTime, lastValue);
                     }
                 }

@@ -243,23 +243,23 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_showPage)
             {
-                LineChartTypes speedPaceYaxis = LineChartTypes.Speed;
-                LineChartTypes deviceSpeedPaceYaxis = LineChartTypes.DeviceSpeed;
+                LineChartTypes speedPaceChart = LineChartTypes.Speed;
+                LineChartTypes deviceSpeedPaceChart = LineChartTypes.DeviceSpeed;
                 if (m_controller.ReferenceActivity != null &&
                     m_controller.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Pace))
                 {
-                    speedPaceYaxis = LineChartTypes.Pace;
-                    deviceSpeedPaceYaxis = LineChartTypes.DevicePace;
+                    speedPaceChart = LineChartTypes.Pace;
+                    deviceSpeedPaceChart = LineChartTypes.DevicePace;
                 }
-                LineChartTypes diffYaxis = LineChartTypes.DiffDist;
+                LineChartTypes diffChart = LineChartTypes.DiffDist;
                 if (Data.Settings.XAxisValue == XAxisValue.Distance)
                 {
-                    diffYaxis = LineChartTypes.DiffTime;
+                    diffChart = LineChartTypes.DiffTime;
                 }
 
                 bool isData = m_controller.CurrentActivityTrailDisplayed != null;
 
-                m_multiChart.YAxisReferentials=new List<LineChartTypes>();
+                m_multiChart.ChartTypes=new List<LineChartTypes>();
                 multiChart.ShowPage = false;
                 //TODO: Temporary handling. Cleanup and decide multiple graphs and charts
                 TrailLineChart updateChart = m_multiChart;
@@ -283,30 +283,30 @@ namespace TrailsPlugin.UI.Activity {
                         LineChartTypes t2 = t;
                         if (t2 == LineChartTypes.SpeedPace)
                         {
-                            t2 = speedPaceYaxis;
+                            t2 = speedPaceChart;
                         }
                         if (t2 == LineChartTypes.DeviceSpeedPace)
                         {
-                            t2 = deviceSpeedPaceYaxis;
+                            t2 = deviceSpeedPaceChart;
                         }
                         if (t2 == LineChartTypes.DiffDistTime)
                         {
-                            t2 = diffYaxis;
+                            t2 = diffChart;
                         }
-                        if (!m_multiChart.YAxisReferentials.Contains(t2) &&
+                        if (!m_multiChart.ChartTypes.Contains(t2) &&
                             m_multiChart.HasValues(t2))
                         {
-                            m_multiChart.YAxisReferentials.Add(t2);
+                            m_multiChart.ChartTypes.Add(t2);
                         }
                     }
                     m_multiChart.ShowPage = true;
 
                     if (!m_multiChart.AnyData())
                     {
-                        m_multiChart.YAxisReferential = speedPaceYaxis;
+                        m_multiChart.LeftChartType = speedPaceChart;
                         m_multiChart.ShowPage = true;
                     }
-                    this.ChartBanner.Text = LineChartUtil.ChartTypeString(m_multiChart.YAxisReferential) + " / " +
+                    this.ChartBanner.Text = LineChartUtil.ChartTypeString(m_multiChart.LeftChartType) + " / " +
                     LineChartUtil.XAxisValueString(m_multiChart.XAxisReferential);
                     m_multiChart.EndUpdate();
                 }
@@ -317,17 +317,17 @@ namespace TrailsPlugin.UI.Activity {
                         bool visible = false;
 
                         if (m_multipleGraphs &&
-                            (Data.Settings.MultiGraphType.Contains(chart.YAxisReferential) ||
-                            chart.YAxisReferential == speedPaceYaxis &&
+                            (Data.Settings.MultiGraphType.Contains(chart.LeftChartType) ||
+                            chart.LeftChartType == speedPaceChart &&
                             (Data.Settings.MultiGraphType.Contains(LineChartTypes.SpeedPace) || Data.Settings.MultiGraphType.Contains(LineChartTypes.DeviceSpeedPace))||
-                            chart.YAxisReferential == diffYaxis &&
+                            chart.LeftChartType == diffChart &&
                             (Data.Settings.MultiGraphType.Contains(LineChartTypes.DiffDistTime) || Data.Settings.MultiGraphType.Contains(LineChartTypes.DeviceDiffDist))) ||
 
                             !m_multipleGraphs &&
-                            (chart.YAxisReferential == Data.Settings.ChartType ||
-                            chart.YAxisReferential == speedPaceYaxis &&
+                            (chart.LeftChartType == Data.Settings.ChartType ||
+                            chart.LeftChartType == speedPaceChart &&
                                 (LineChartTypes.SpeedPace == Data.Settings.ChartType || LineChartTypes.DeviceSpeedPace == Data.Settings.ChartType) ||
-                            chart.YAxisReferential == diffYaxis &&
+                            chart.LeftChartType == diffChart &&
                                 (LineChartTypes.DiffDistTime == Data.Settings.ChartType || LineChartTypes.DiffDistTime == Data.Settings.ChartType)))
                         {
                             visible = true;
@@ -342,26 +342,26 @@ namespace TrailsPlugin.UI.Activity {
                             IList<Data.TrailResult> list = this.m_page.SelectedItems;
                             updateChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                             updateChart.TrailResults = list;
-                            if (!m_multipleGraphs && updateChart.YAxisReferentials.Count == 1)
+                            if (!m_multipleGraphs && updateChart.ChartTypes.Count == 1)
                             {
-                                this.ChartBanner.Text = LineChartUtil.ChartTypeString(chart.YAxisReferential) + " / " +
+                                this.ChartBanner.Text = LineChartUtil.ChartTypeString(chart.LeftChartType) + " / " +
                                 LineChartUtil.XAxisValueString(chart.XAxisReferential);
                             }
-                            if (updateChart.HasValues(chart.YAxisReferential))
+                            if (updateChart.HasValues(chart.LeftChartType))
                             {
                                 updateChart.ShowPage = visible;
                             }
                             else
                             {
-                                if (visible && !updateChart.HasValues(chart.YAxisReferential))
+                                if (visible && !updateChart.HasValues(chart.LeftChartType))
                                 {
                                     chart.ShowPage = false;
                                     //Replace empty chart
-                                    if (!m_multipleGraphs && chart.YAxisReferential != speedPaceYaxis)
+                                    if (!m_multipleGraphs && chart.LeftChartType != speedPaceChart)
                                     {
                                         foreach (TrailLineChart replaceChart in m_lineCharts)
                                         {
-                                            if (replaceChart.YAxisReferential == speedPaceYaxis)
+                                            if (replaceChart.LeftChartType == speedPaceChart)
                                             {
                                                 replaceChart.BeginUpdate();
                                                 replaceChart.ShowPage = false;
@@ -371,7 +371,7 @@ namespace TrailsPlugin.UI.Activity {
                                                 replaceChart.TrailResults = list2;
                                                 if (!m_multipleGraphs)
                                                 {
-                                                    this.ChartBanner.Text = LineChartUtil.ChartTypeString(replaceChart.YAxisReferential) + " / " +
+                                                    this.ChartBanner.Text = LineChartUtil.ChartTypeString(replaceChart.LeftChartType) + " / " +
                                                     LineChartUtil.XAxisValueString(replaceChart.XAxisReferential);
                                                 }
                                                 replaceChart.ShowPage = visible;

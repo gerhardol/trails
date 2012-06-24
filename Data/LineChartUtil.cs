@@ -214,6 +214,8 @@ namespace TrailsPlugin.Data
 
         public static void SetupYAxisFormatter(LineChartTypes axisType, IAxis axis, IActivity activity)
         {
+            axis.SmartZoom = true;
+            axis.LabelColor = LineChartUtil.ChartColor[axisType];
             switch (axisType)
             {
                 case LineChartTypes.Cadence:
@@ -276,11 +278,16 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 case LineChartTypes.DiffDist:
-                case LineChartTypes.Distance:
                 case LineChartTypes.DeviceDiffDist:
                     {
-                        axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision);
+                        axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision - 1);
                         axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Elevation.LabelAbbrAct2(activity);
+                        break;
+                    }
+                case LineChartTypes.Distance:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Distance.LabelAbbrAct2(activity);
                         break;
                     }
                 default:
@@ -304,10 +311,11 @@ namespace TrailsPlugin.Data
                 //Private
                 {LineChartTypes.DiffTime, Color.DarkCyan},
                 {LineChartTypes.DiffDist, Color.CornflowerBlue},
-                {LineChartTypes.DeviceSpeed, ControlPaint.Dark(Color.FromArgb(32, 74, 135))},
-                {LineChartTypes.DevicePace, ControlPaint.Dark(Color.FromArgb(32, 74, 135))},
-                {LineChartTypes.DeviceElevation, ControlPaint.Dark(Color.FromArgb(143, 89, 2))},
-                {LineChartTypes.DeviceDiffDist, Color.LawnGreen}
+
+                {LineChartTypes.DeviceSpeed, ControlPaint.Light(Color.FromArgb(32, 74, 135), 0.03F)}, //LineChartTypes.Speed
+                {LineChartTypes.DevicePace, ControlPaint.Light(Color.FromArgb(32, 74, 135), 0.03F)}, //LineChartTypes.Pace
+                {LineChartTypes.DeviceElevation, ControlPaint.Light(Color.FromArgb(143, 89, 2), 0.03F)}, //LineChartTypes.Elevation
+                {LineChartTypes.DeviceDiffDist, ControlPaint.Light(Color.CornflowerBlue, 0.03F)}, //LineChartTypes.DiffDist
             };
     }
 }

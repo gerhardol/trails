@@ -80,11 +80,14 @@ namespace TrailsPlugin.UI.Activity {
             this.powerToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
 
             this.diffDistTimeToolStripMenuItem.Image = Properties.Resources.delta;
-            this.diffDeviceDistToolStripMenuItem.Image = Properties.Resources.delta;
+            this.diffDeviceToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffTimeToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffDistToolStripMenuItem.Image = Properties.Resources.delta;
             this.diffTimeToolStripMenuItem.Visible = false;
             this.diffDistToolStripMenuItem.Visible = false;
+            //this.deviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
+            this.speedPaceDeviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.elevationDeviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
 
             this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
@@ -145,7 +148,10 @@ namespace TrailsPlugin.UI.Activity {
 
             this.diffTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
             this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
-            this.diffDeviceDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDevice);
+            this.deviceToolStripMenuItem.Text = CommonResources.Text.LabelDevice;
+            this.speedPaceDeviceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceSpeedPace);
+            this.elevationDeviceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceElevation);
+            this.diffDeviceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceDiffDist);
             //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_resyncDiffAtTrailPoints;
@@ -237,15 +243,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_showPage)
             {
-                LineChartTypes speedPaceYaxis;
+                LineChartTypes speedPaceYaxis = LineChartTypes.Speed;
+                LineChartTypes deviceSpeedPaceYaxis = LineChartTypes.DeviceSpeed;
                 if (m_controller.ReferenceActivity != null &&
-                    m_controller.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Speed))
-                {
-                    speedPaceYaxis = LineChartTypes.Speed;
-                }
-                else
+                    m_controller.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Pace))
                 {
                     speedPaceYaxis = LineChartTypes.Pace;
+                    deviceSpeedPaceYaxis = LineChartTypes.DevicePace;
                 }
                 LineChartTypes diffYaxis = LineChartTypes.DiffDist;
                 if (Data.Settings.XAxisValue == XAxisValue.Distance)
@@ -281,6 +285,10 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             t2 = speedPaceYaxis;
                         }
+                        if (t2 == LineChartTypes.DeviceSpeedPace)
+                        {
+                            t2 = deviceSpeedPaceYaxis;
+                        }
                         if (t2 == LineChartTypes.DiffDistTime)
                         {
                             t2 = diffYaxis;
@@ -311,16 +319,16 @@ namespace TrailsPlugin.UI.Activity {
                         if (m_multipleGraphs &&
                             (Data.Settings.MultiGraphType.Contains(chart.YAxisReferential) ||
                             chart.YAxisReferential == speedPaceYaxis &&
-                            Data.Settings.MultiGraphType.Contains(LineChartTypes.SpeedPace) ||
+                            (Data.Settings.MultiGraphType.Contains(LineChartTypes.SpeedPace) || Data.Settings.MultiGraphType.Contains(LineChartTypes.DeviceSpeedPace))||
                             chart.YAxisReferential == diffYaxis &&
-                            Data.Settings.MultiGraphType.Contains(LineChartTypes.DiffDistTime)) ||
+                            (Data.Settings.MultiGraphType.Contains(LineChartTypes.DiffDistTime) || Data.Settings.MultiGraphType.Contains(LineChartTypes.DeviceDiffDist))) ||
 
                             !m_multipleGraphs &&
                             (chart.YAxisReferential == Data.Settings.ChartType ||
                             chart.YAxisReferential == speedPaceYaxis &&
-                                LineChartTypes.SpeedPace == Data.Settings.ChartType ||
+                                (LineChartTypes.SpeedPace == Data.Settings.ChartType || LineChartTypes.DeviceSpeedPace == Data.Settings.ChartType) ||
                             chart.YAxisReferential == diffYaxis &&
-                                LineChartTypes.DiffDistTime == Data.Settings.ChartType))
+                                (LineChartTypes.DiffDistTime == Data.Settings.ChartType || LineChartTypes.DiffDistTime == Data.Settings.ChartType)))
                         {
                             visible = true;
                         }
@@ -397,6 +405,7 @@ namespace TrailsPlugin.UI.Activity {
                 return Data.Settings.ChartType == t;
             }
         }
+
         void RefreshChartMenu()
         {
             //TODO: disable if track exists (or ref for diff). 
@@ -412,7 +421,10 @@ namespace TrailsPlugin.UI.Activity {
             diffTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffTime);
             diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
             diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
-            diffDeviceDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDevice);
+
+            speedPaceDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
+            elevationDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
+            diffDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceDiffDist);
             if (Data.Settings.XAxisValue == XAxisValue.Distance)
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
@@ -421,6 +433,15 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             }
+            speedPaceDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
+            elevationDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
+            //set as marker, for all subitems -not changable directly
+            deviceToolStripMenuItem.Checked = 
+                setLineChartChecked(LineChartTypes.DeviceSpeedPace) ||
+                setLineChartChecked(LineChartTypes.DeviceElevation) || 
+                setLineChartChecked(LineChartTypes.DeviceDiffDist);
+            deviceToolStripMenuItem.Enabled = true;
+
             resyncDiffAtTrailPointsToolStripMenuItem.Checked = Data.Settings.ResyncDiffAtTrailPoints;
             adjustResyncDiffAtTrailPointsToolStripMenuItem.Enabled = resyncDiffAtTrailPointsToolStripMenuItem.Checked;
             adjustResyncDiffAtTrailPointsToolStripMenuItem.Checked = Data.Settings.AdjustResyncDiffAtTrailPoints;
@@ -557,9 +578,17 @@ namespace TrailsPlugin.UI.Activity {
         {
             RefreshChart(LineChartTypes.DiffDistTime);
         }
-        private void diffDeviceDistToolStripMenuItem_Click(object sender, EventArgs e)
+        private void speedPaceDeviceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(LineChartTypes.DiffDevice);
+            RefreshChart(LineChartTypes.DeviceSpeedPace);
+        }
+        private void elevationDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshChart(LineChartTypes.DeviceElevation);
+        }
+        private void diffDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RefreshChart(LineChartTypes.DeviceDiffDist);
         }
 
         private void distanceToolStripMenuItem_Click(object sender, EventArgs e)

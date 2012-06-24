@@ -527,6 +527,7 @@ namespace TrailsPlugin.UI.Activity {
                 return GetSingleSelectionFromResult(tr, t1, t2);
             }
         }
+
         float[] GetSingleSelectionFromResult(TrailResult tr, DateTime d1, DateTime d2)
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
@@ -893,7 +894,8 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             yValueEntry = graphPoints.GetInterpolatedValue(time);
                         }
-                        if (yValueEntry != null)
+                        //Infinity values gives garbled graphs
+                        if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
                         {
                             PointF point = new PointF(xValue, yValueEntry.Value);
                             if (null != dataFill)
@@ -1157,21 +1159,20 @@ namespace TrailsPlugin.UI.Activity {
                         track = result.DiffDistTrack0(refRes);
                         break;
                     }
-                case LineChartTypes.SpeedPaceDevice:
+                case LineChartTypes.DeviceSpeed:
+                case LineChartTypes.DevicePace:
                     {
-                        //xxx
-                        track = result.DiffDeviceTrack0(refRes);
+                        track = result.DeviceSpeedPaceTrack0(refRes);
                         break;
                     }
-                case LineChartTypes.ElevationDevice:
+                case LineChartTypes.DeviceElevation:
                     {
-                        //xxx
-                        track = result.DiffDeviceTrack0(refRes);
+                        track = result.DeviceElevationTrack0(refRes);
                         break;
                     }
-                case LineChartTypes.DiffDevice:
+                case LineChartTypes.DeviceDiffDist:
                     {
-                        track = result.DiffDeviceTrack0(refRes);
+                        track = result.DeviceDiffDistTrack0(refRes);
                         break;
                     }
 
@@ -1445,9 +1446,10 @@ namespace TrailsPlugin.UI.Activity {
                         break;
                     }
                 case LineChartTypes.Elevation:
+                case LineChartTypes.DeviceElevation:
                 case LineChartTypes.Grade:
                     {
-                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Elevation, LineChartTypes.Elevation })
+                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Elevation, LineChartTypes.DeviceElevation, LineChartTypes.Elevation })
                         {
                             if (!charts.Contains(l))
                             {
@@ -1481,8 +1483,10 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 case LineChartTypes.Speed:
                 case LineChartTypes.Pace:
+                case LineChartTypes.DeviceSpeed:
+                case LineChartTypes.DevicePace:
                     {
-                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Speed, LineChartTypes.Pace })
+                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Speed, LineChartTypes.Pace, LineChartTypes.DeviceSpeed, LineChartTypes.DevicePace })
                         {
                             if (!charts.Contains(l))
                             {

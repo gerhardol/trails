@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
@@ -52,7 +53,11 @@ namespace TrailsPlugin.Data
         DiffTime,
         DiffDist,
         DiffDistTime,
-        DiffDevice,
+        DeviceSpeed,
+        DevicePace,
+        DeviceSpeedPace,
+        DeviceElevation,
+        DeviceDiffDist,
         DiffHeartRateBPM, //NotUsedInTrails
         Time, //NotUsedInTrails
         Distance //NotUsedInTrails
@@ -110,6 +115,7 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 case LineChartTypes.Elevation:
+                case LineChartTypes.DeviceElevation:
                     {
                         yAxisLabel = CommonResources.Text.LabelElevation;
                         break;
@@ -140,6 +146,7 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 case LineChartTypes.SpeedPace:
+                case LineChartTypes.DeviceSpeedPace:
                     {
                         yAxisLabel = CommonResources.Text.LabelSpeed + CommonResources.Text.LabelPace;
                         break;
@@ -150,6 +157,7 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 case LineChartTypes.DiffDist:
+                case LineChartTypes.DeviceDiffDist:
                     {
                         yAxisLabel = CommonResources.Text.LabelDistance;
                         break;
@@ -164,11 +172,11 @@ namespace TrailsPlugin.Data
                         yAxisLabel = CommonResources.Text.LabelDistance + CommonResources.Text.LabelTime;
                         break;
                     }
-                case LineChartTypes.DiffDevice:
-                    {
-                        yAxisLabel = CommonResources.Text.LabelDevice;
-                        break;
-                    }
+                //case LineChartTypes.DeviceDiffDist:
+                //{
+                    //    yAxisLabel = CommonResources.Text.LabelDevice;
+                    //    break;
+                    //}
                 default:
                     {
                         //Debug.Assert(false);
@@ -221,6 +229,7 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 case LineChartTypes.Elevation:
+                case LineChartTypes.DeviceElevation:
                     {
                         axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision);
                         axis.Label = CommonResources.Text.LabelElevation + UnitUtil.Elevation.LabelAbbrAct2(activity);
@@ -246,12 +255,14 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 case LineChartTypes.Speed:
+                case LineChartTypes.DeviceSpeed:
                     {
                         axis.Formatter = new Formatter.General(UnitUtil.Speed.DefaultDecimalPrecision);
                         axis.Label = CommonResources.Text.LabelSpeed + UnitUtil.Pace.LabelAbbrAct2(activity);
                         break;
                     }
                 case LineChartTypes.Pace:
+                case LineChartTypes.DevicePace:
                     {
                         axis.Formatter = new Formatter.SecondsToTime();
                         axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(activity);
@@ -266,10 +277,10 @@ namespace TrailsPlugin.Data
                     }
                 case LineChartTypes.DiffDist:
                 case LineChartTypes.Distance:
-                case LineChartTypes.DiffDevice:
+                case LineChartTypes.DeviceDiffDist:
                     {
-                        axis.Formatter = new Formatter.General(UnitUtil.Distance.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Distance.LabelAbbrAct2(activity);
+                        axis.Formatter = new Formatter.General(UnitUtil.Elevation.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelDistance + UnitUtil.Elevation.LabelAbbrAct2(activity);
                         break;
                     }
                 default:
@@ -293,7 +304,10 @@ namespace TrailsPlugin.Data
                 //Private
                 {LineChartTypes.DiffTime, Color.DarkCyan},
                 {LineChartTypes.DiffDist, Color.CornflowerBlue},
-                {LineChartTypes.DiffDevice, Color.LawnGreen}
+                {LineChartTypes.DeviceSpeed, ControlPaint.Dark(Color.FromArgb(32, 74, 135))},
+                {LineChartTypes.DevicePace, ControlPaint.Dark(Color.FromArgb(32, 74, 135))},
+                {LineChartTypes.DeviceElevation, ControlPaint.Dark(Color.FromArgb(143, 89, 2))},
+                {LineChartTypes.DeviceDiffDist, Color.LawnGreen}
             };
     }
 }

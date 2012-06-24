@@ -533,7 +533,7 @@ namespace TrailsPlugin.Data
 
             status = CalcTrail(activity, trailgps, locationBounds,
                 radius, 0, 0, false, maxPoints, trailResults, incompleteResults, null);
-            if (bidirectional && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
+            if (bidirectional && trailgps.Count > 1 && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
             {
                 IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
                 IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();

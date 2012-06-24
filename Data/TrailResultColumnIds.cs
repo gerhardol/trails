@@ -238,7 +238,7 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.Order:
                     return x.Order;
                 case TrailResultColumnIds.StartTime:
-                    return x.StartDateTime.Ticks;
+                    return x.StartTime.Ticks;
                 case TrailResultColumnIds.StartDistance:
                     return x.StartDist;
                 case TrailResultColumnIds.EndTime:

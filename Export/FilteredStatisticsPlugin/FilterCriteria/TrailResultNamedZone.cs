@@ -63,7 +63,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     }
                     else
                     {
-                        result += " " + m_TrailResult.StartDateTime.ToLocalTime().ToString();
+                        result += " " + m_TrailResult.StartTime.ToLocalTime().ToString();
                     }
                 }
                 return result;

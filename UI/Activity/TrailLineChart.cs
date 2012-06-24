@@ -388,7 +388,7 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 if (XAxisReferential == XAxisValue.Time)
                                 {
-                                    offset = (float)(m_trailResults[i].StartDateTime - m_trailResults[i].ParentResult.StartDateTime).TotalSeconds;
+                                    offset = (float)(m_trailResults[i].StartTime - m_trailResults[i].ParentResult.StartTime).TotalSeconds;
                                 }
                                 else
                                 {

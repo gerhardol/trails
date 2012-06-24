@@ -79,14 +79,14 @@ namespace TrailsPlugin.Data
                     string date = "";
                     if (m_multiple)
                     {
-                        date = row.StartDateTime.ToLocalTime().ToShortDateString() + " ";
+                        date = row.StartTime.ToLocalTime().ToShortDateString() + " ";
                     }
-                    return date + row.StartDateTime.ToLocalTime().ToString("T");
+                    return date + row.StartTime.ToLocalTime().ToString("T");
                 case TrailResultColumnIds.StartDistance:
                     return UnitUtil.Distance.ToString(row.StartDist, "");
                 case TrailResultColumnIds.EndTime:
                     if (row.Activity == null) return null;
-                    return row.EndDateTime.ToLocalTime().ToString("T");
+                    return row.EndTime.ToLocalTime().ToString("T");
                 case TrailResultColumnIds.Duration:
                     return UnitUtil.Time.ToString(row.Duration, "");
                 case TrailResultColumnIds.Distance:

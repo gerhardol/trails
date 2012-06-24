@@ -1096,12 +1096,12 @@ namespace TrailsPlugin.UI.Activity {
             TrailResult tr = getMouseResult(false);
             if (tr != null)
             {
-                currRes = tr.StartDateTime.ToLocalTime().ToString();
+                currRes = tr.StartTime.ToLocalTime().ToString();
             }
             string refRes = "";
             if (m_controller.ReferenceTrailResult != null)
             {
-                refRes = m_controller.ReferenceTrailResult.StartDateTime.ToLocalTime().ToString();
+                refRes = m_controller.ReferenceTrailResult.StartTime.ToLocalTime().ToString();
             }
             this.referenceResultMenuItem.Text = string.Format(
                 Properties.Resources.UI_Activity_List_ReferenceResult, currRes, refRes);

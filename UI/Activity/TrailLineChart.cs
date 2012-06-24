@@ -384,15 +384,16 @@ namespace TrailsPlugin.UI.Activity {
 
                             //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
                             float offset = 0;
-                            if (m_trailResults[i].ParentResult != null)
+                            if (m_trailResults[i] is ChildTrailResult)
                             {
+                                TrailResult tr = (m_trailResults[i] as ChildTrailResult).ParentResult;
                                 if (XAxisReferential == XAxisValue.Time)
                                 {
-                                    offset = (float)(m_trailResults[i].StartTime - m_trailResults[i].ParentResult.StartTime).TotalSeconds;
+                                    offset = (float)(m_trailResults[i].StartTime - tr.StartTime).TotalSeconds;
                                 }
                                 else
                                 {
-                                    offset = (float)TrailResult.DistanceConvertFrom(m_trailResults[i].StartDist - m_trailResults[i].ParentResult.StartDist, ReferenceTrailResult);
+                                    offset = (float)TrailResult.DistanceConvertFrom(m_trailResults[i].StartDist - tr.StartDist, ReferenceTrailResult);
                                 }
                             }
 

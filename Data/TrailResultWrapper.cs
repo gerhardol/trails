@@ -124,7 +124,7 @@ namespace TrailsPlugin.Data
         {
             if (this.Result != null)
             {
-                IList<TrailResult> children = this.Result.getSplits();
+                IList<ChildTrailResult> children = this.Result.getSplits();
                 if (children != null && children.Count > 1)
                 {
                     foreach (TrailResult tr in children)

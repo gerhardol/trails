@@ -386,7 +386,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             if (Data.Settings.SelectSimilarResults && this.SelectedItemsRaw != null)
             {
-                //Note that selecting will scroll
+                //Note that selecting will scroll, changing offsets
                 int? lastSplitIndex = null;
                 bool isSingleIndex = false;
                 IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
@@ -429,13 +429,17 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         if (lastSplitIndex < 0)
                         {
-                            this.m_controller.ReferenceTrailResult = this.m_controller.ReferenceTrailResult.ParentResult;
+                            if (this.m_controller.ReferenceTrailResult is ChildTrailResult)
+                            {
+                                //xxx?
+                                this.m_controller.ReferenceTrailResult = (this.m_controller.ReferenceTrailResult as ChildTrailResult).ParentResult;
+                            }
                             isChange = true;
                         }
                         else
                         {
                             IList<TrailResultWrapper> atrp;
-                            if (this.m_controller.ReferenceTrailResult.ParentResult == null)
+                            if (!(this.m_controller.ReferenceTrailResult is ChildTrailResult))
                             {
                                 atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail,
                                     new List<TrailResult> { this.m_controller.ReferenceTrailResult });
@@ -443,7 +447,7 @@ namespace TrailsPlugin.UI.Activity {
                             else
                             {
                                 atrp = TrailResultWrapper.SelectedItems(m_controller.CurrentActivityTrail,
-                                    new List<TrailResult> { this.m_controller.ReferenceTrailResult.ParentResult });
+                                    new List<TrailResult> { (this.m_controller.ReferenceTrailResult as ChildTrailResult).ParentResult });
                             }
                             if (atrp != null && atrp.Count > 0)
                             {

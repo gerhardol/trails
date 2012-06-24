@@ -30,6 +30,32 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
+    public class ChildTrailResult : TrailResult
+    {
+        private TrailResult m_parentResult;
+        public TrailResult ParentResult
+        {
+            get
+            {
+                return m_parentResult;
+            }
+        }
+
+        public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, order, indexes, distDiff)
+        {
+            this.m_parentResult = par;
+            if (par != null)
+            {
+                if (par.m_childrenResults == null)
+                {
+                    par.m_childrenResults = new List<ChildTrailResult>();
+                }
+                par.m_childrenResults.Add(this);
+            }
+        }
+
+    }
     public class TrailResult : ITrailResult, IComparable
     {
         private ActivityTrail m_activityTrail;
@@ -38,9 +64,8 @@ namespace TrailsPlugin.Data
         private string m_name;
         private bool m_reverse;
 
-        private TrailResult m_parentResult;
-        private IList<TrailResult> m_childrenResults;
-        private TrailResultInfo m_childrenInfo;
+        internal IList<ChildTrailResult> m_childrenResults;
+        private TrailResultInfo m_subResultInfo;
 
         private DateTime? m_startTime;
         private DateTime? m_endTime;
@@ -107,63 +132,51 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //reverse not used yet
+        //Normal TrailResult
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
-            : this(activityTrail, null, order, indexes, distDiff)
+            : this(activityTrail, order, indexes, distDiff)
         {
             this.m_reverse = reverse;
         }
 
+        //Results from Splits
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
-            : this(activityTrail, null, order, indexes, distDiff)
         {
+            createTrailResult(activityTrail, order, indexes, distDiff);
         }
 
+        //HighScore result
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
-            : this(activityTrail, null, order, indexes, distDiff)
+            : this(activityTrail, order, indexes, distDiff)
         {
             m_toolTip = toolTip;
         }
 
-        private TrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff)
-        {
-            createTrailResult(activityTrail, par, order, indexes, distDiff);
-        }
-
         //Create from splits
-        public TrailResult(ActivityTrail activityTrail, Trail trail, IActivity activity, int order)
-        {
-            TrailResultInfo indexes;
-            Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
-            createTrailResult(activityTrail, null, order, indexes, float.MaxValue);
-        }
+        //public TrailResult(ActivityTrail activityTrail, Trail trail, IActivity activity, int order)
+        //{
+        //    TrailResultInfo indexes;
+        //    Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
+        //    createTrailResult(activityTrail, order, indexes, float.MaxValue);
+        //}
 
-        //Summary result
+        //Summary result (avoid having createTrailResult more public)
         public TrailResult(ActivityTrail activityTrail)
         {
-            createTrailResult(activityTrail, null, 0, new TrailResultInfo(null, false), 0);
+            createTrailResult(activityTrail, 0, new TrailResultInfo(null, false), 0);
             m_toolTip = "";
             m_trailColor = Color.Black;
         }
 
-        private void createTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff)
+        private void createTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
         {
             m_activityTrail = activityTrail;
-            m_parentResult = par;
             m_activity = indexes.Activity;
             m_order = order;
             m_name = indexes.Name;
-            m_childrenInfo = indexes.Copy();
+            m_subResultInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
 
-            if (par != null)
-            {
-                if (par.m_childrenResults == null)
-                {
-                    par.m_childrenResults = new List<TrailResult>();
-                }
-                par.m_childrenResults.Add(this);
-            }
             if (m_activity != null)
             {
                 //Add activity listener if not already existing
@@ -178,31 +191,31 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public IList<TrailResult> getSplits()
+        public IList<ChildTrailResult> getSplits()
         {
-            IList<TrailResult> splits = new List<TrailResult>();
-            if (this.m_childrenInfo.Count > 1)
+            IList<ChildTrailResult> splits = new List<ChildTrailResult>();
+            if (this.m_subResultInfo.Count > 1)
             {
                 int i; //start time index
-                for (i = 0; i < m_childrenInfo.Count - 1; i++)
+                for (i = 0; i < m_subResultInfo.Count - 1; i++)
                 {
-                    if (m_childrenInfo.Points[i].Time != DateTime.MinValue)
+                    if (m_subResultInfo.Points[i].Time != DateTime.MinValue)
                     {
                         int j; //end time index
-                        for (j = i + 1; j < m_childrenInfo.Points.Count; j++)
+                        for (j = i + 1; j < m_subResultInfo.Points.Count; j++)
                         {
-                            if (m_childrenInfo.Points[j].Time != DateTime.MinValue)
+                            if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
                                 break;
                             }
                         }
-                        if (this.m_childrenInfo.Count > i &&
-                            this.m_childrenInfo.Count > j)
+                        if (this.m_subResultInfo.Count > i &&
+                            this.m_subResultInfo.Count > j)
                         {
-                            if (m_childrenInfo.Points[j].Time != DateTime.MinValue)
+                            if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
-                                TrailResultInfo t = m_childrenInfo.CopySlice(i, j);
-                                TrailResult tr = new TrailResult(m_activityTrail, this, i + 1, t, m_totalDistDiff);
+                                TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
+                                ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, m_totalDistDiff);
                                 //if (aActivities.Count > 1)
                                 //{
                                 //    nextTrailColor--;
@@ -226,7 +239,7 @@ namespace TrailsPlugin.Data
         //Distance error used to sort results
         public float DistDiff
         {
-            get { return (float)(m_totalDistDiff / Math.Pow(m_childrenInfo.Count, 1.5)); }
+            get { return (float)(m_totalDistDiff / Math.Pow(m_subResultInfo.Count, 1.5)); }
         }
         public int Order
         {
@@ -247,7 +260,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -261,7 +274,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -279,7 +292,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -303,14 +316,14 @@ namespace TrailsPlugin.Data
             {
                 if (m_startTime == null)
                 {
-                    if (m_childrenInfo.Points.Count == 0)
+                    if (m_subResultInfo.Points.Count == 0)
                     {
                         m_startTime = DateTime.MinValue;
                     }
                     else
                     {
-                        DateTime startTime = m_childrenInfo.Points[0].Time;
-                        DateTime endTime = m_childrenInfo.Points[m_childrenInfo.Points.Count - 1].Time;
+                        DateTime startTime = m_subResultInfo.Points[0].Time;
+                        DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
                         m_startTime = getFirstUnpausedTime(startTime, Pauses, true);
                         if (endTime.CompareTo((DateTime)m_startTime) <= 0)
                         {
@@ -336,14 +349,14 @@ namespace TrailsPlugin.Data
             {
                 if (m_endTime == null)
                 {
-                    if (m_childrenInfo.Points.Count == 0)
+                    if (m_subResultInfo.Points.Count == 0)
                     {
                         m_endTime = DateTime.MinValue;
                     }
                     else
                     {
-                        DateTime startTime = m_childrenInfo.Points[0].Time;
-                        DateTime endTime = m_childrenInfo.Points[m_childrenInfo.Points.Count - 1].Time;
+                        DateTime startTime = m_subResultInfo.Points[0].Time;
+                        DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
                         m_endTime = getFirstUnpausedTime(endTime, Pauses, false);
                         if (startTime.CompareTo((DateTime)m_endTime) >= 0)
                         {
@@ -658,10 +671,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (ParentResult != null)
+                if (this is ChildTrailResult)
                 {
                     //Note: Assumes that subtrails are a part of parent - could be changed
-                    return ParentResult.Pauses;
+                    return (this as ChildTrailResult).ParentResult.Pauses;
                 }
                 if (m_pauses == null)
                 {
@@ -775,9 +788,9 @@ namespace TrailsPlugin.Data
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = false;
-                if (this.ParentResult != null)
+                if (this is ChildTrailResult)
                 {
-                    m_activityDistanceMetersTrack = this.ParentResult.ActivityDistanceMetersTrack;
+                    m_activityDistanceMetersTrack = (this as ChildTrailResult).ParentResult.ActivityDistanceMetersTrack;
                     //m_distanceMetersTrack could be created from parent too (if second rounding is disregarded),
                     //but it is simpler and not heavier to use same code-path as parent
                 }
@@ -925,19 +938,11 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return m_childrenInfo.CopyTime();
+                return m_subResultInfo.CopyTime();
             }
         }
 
         /*************************************************/
-        public TrailResult ParentResult
-        {
-            get
-            {
-                return m_parentResult;
-            }
-        }
-
         public String Name
         {
             get
@@ -971,7 +976,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -990,7 +995,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -1009,7 +1014,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -1028,7 +1033,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -1052,7 +1057,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null &&
                     this.Activity.TotalDistanceMetersEntered > 0)
@@ -1068,7 +1073,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null &&
                     this.Activity.TotalDistanceMetersEntered > 0)
@@ -1083,7 +1088,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null &&
                     this.Activity.TotalTimeEntered.TotalSeconds > 0)
@@ -1117,7 +1122,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -1135,7 +1140,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.ParentResult == null &&
+                if (!(this is ChildTrailResult) &&
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                     this.Activity != null)
                 {
@@ -1249,7 +1254,7 @@ namespace TrailsPlugin.Data
                 m_gpsPoints = null;
                 m_gpsTrack = null;
 
-                if (ParentResult == null)
+                if (!(this is ChildTrailResult))
                 {
                     m_activityDistanceMetersTrack = null;
                     m_ActivityInfo = null;
@@ -1340,7 +1345,7 @@ namespace TrailsPlugin.Data
                     }
                     insertValues(p.Upper.AddSeconds(1));
                 }
-                foreach (TrailResultPoint t in result.m_childrenInfo.Points)
+                foreach (TrailResultPoint t in result.m_subResultInfo.Points)
                 {
                     DateTime time = t.Time;
                     if (time > DateTime.MinValue)
@@ -1648,7 +1653,7 @@ namespace TrailsPlugin.Data
         private TrailResult getRefSub(TrailResult parRes)
         {
             TrailResult res = parRes;
-            if (this.ParentResult != null && parRes != null && parRes.m_childrenResults != null)
+            if ((this is ChildTrailResult) && parRes != null && parRes.m_childrenResults != null)
             {
                 //This is a subsplit, get the subsplit related to the ref
                 foreach (TrailResult tr in parRes.m_childrenResults)
@@ -2176,9 +2181,9 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (!m_colorOverridden && s_activities.Count > 1 && this.ParentResult != null)
+                if (!m_colorOverridden && s_activities.Count > 1 && (this is ChildTrailResult))
                 {
-                    return this.ParentResult.m_trailColor;
+                    return (this as ChildTrailResult).ParentResult.m_trailColor;
                 }
                 else
                 {
@@ -2257,9 +2262,9 @@ namespace TrailsPlugin.Data
                 //Caching is not needed, done by ST
                 //return ActivityInfoCache.Instance.GetInfo(this.Activity);
                 //Custom InfoCache, to control smoothing
-                if (this.ParentResult != null)
+                if (this is ChildTrailResult)
                 {
-                    return this.ParentResult.Info;
+                    return (this as ChildTrailResult).ParentResult.Info;
                 }
                 if (m_ActivityInfo == null)
                 {

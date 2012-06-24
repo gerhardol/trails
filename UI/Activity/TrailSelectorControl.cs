@@ -187,11 +187,14 @@ namespace TrailsPlugin.UI.Activity
             {
 #if ST_2_1
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError_ST2, 
-#else
-                string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,
-#endif
- Properties.Resources.Trail_Reference_Name);
+                   Properties.Resources.Trail_Reference_Name);
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+#else
+                //Change: Just popup new trail
+                //string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError,
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, true, m_controller.ReferenceTrailResult);
+                showEditDialog(dialog);
+#endif
             }
  		}
         //private TrailsItemTrackSelectionInfo getSel(DateTime t)

@@ -41,9 +41,9 @@
             this.diffDistTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.diffDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.speedPaceDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.elevationDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deviceDiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deviceSpeedPaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deviceElevationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.syncChartAtTrailPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -198,9 +198,9 @@
             // deviceToolStripMenuItem
             // 
             this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.speedPaceDeviceToolStripMenuItem,
-            this.elevationDeviceToolStripMenuItem,
-            this.diffDeviceToolStripMenuItem});
+            this.deviceSpeedPaceToolStripMenuItem,
+            this.deviceElevationToolStripMenuItem,
+            this.deviceDiffToolStripMenuItem});
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             this.deviceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.deviceToolStripMenuItem.Text = "device";
@@ -208,24 +208,24 @@
             // 
             // speedPaceDeviceToolStripMenuItem
             // 
-            this.speedPaceDeviceToolStripMenuItem.Name = "speedPaceDeviceToolStripMenuItem";
-            this.speedPaceDeviceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.speedPaceDeviceToolStripMenuItem.Text = "speedPaceDevice";
-            this.speedPaceDeviceToolStripMenuItem.Click += new System.EventHandler(this.speedPaceDeviceToolStripMenuItem_Click);
+            this.deviceSpeedPaceToolStripMenuItem.Name = "deviceSpeedPaceToolStripMenuItem";
+            this.deviceSpeedPaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.deviceSpeedPaceToolStripMenuItem.Text = "deviceSpeedPace";
+            this.deviceSpeedPaceToolStripMenuItem.Click += new System.EventHandler(this.deviceSpeedPaceToolStripMenuItem_Click);
             // 
             // elevationDeviceToolStripMenuItem
             // 
-            this.elevationDeviceToolStripMenuItem.Name = "elevationDeviceToolStripMenuItem";
-            this.elevationDeviceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.elevationDeviceToolStripMenuItem.Text = "elevationDevice";
-            this.elevationDeviceToolStripMenuItem.Click += new System.EventHandler(this.elevationDeviceToolStripMenuItem_Click);
+            this.deviceElevationToolStripMenuItem.Name = "deviceElevationToolStripMenuItem";
+            this.deviceElevationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.deviceElevationToolStripMenuItem.Text = "deviceElevation";
+            this.deviceElevationToolStripMenuItem.Click += new System.EventHandler(this.deviceElevationToolStripMenuItem_Click);
             // 
-            // diffDeviceDistToolStripMenuItem
+            // deviceDiffToolStripMenuItem
             // 
-            this.diffDeviceToolStripMenuItem.Name = "diffDeviceDistToolStripMenuItem";
-            this.diffDeviceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.diffDeviceToolStripMenuItem.Text = "diffDeviceDist";
-            this.diffDeviceToolStripMenuItem.Click += new System.EventHandler(this.diffDeviceToolStripMenuItem_Click);
+            this.deviceDiffToolStripMenuItem.Name = "deviceDiffToolStripMenuItem";
+            this.deviceDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.deviceDiffToolStripMenuItem.Text = "deviceDiffDist";
+            this.deviceDiffToolStripMenuItem.Click += new System.EventHandler(this.deviceDiffToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -579,9 +579,9 @@
         private System.Windows.Forms.ToolStripMenuItem diffDistTimeToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripMenuItem deviceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem diffDeviceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem speedPaceDeviceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem elevationDeviceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deviceDiffToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deviceSpeedPaceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deviceElevationToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem distanceToolStripMenuItem;

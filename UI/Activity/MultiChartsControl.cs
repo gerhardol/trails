@@ -80,14 +80,14 @@ namespace TrailsPlugin.UI.Activity {
             this.powerToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
 
             this.diffDistTimeToolStripMenuItem.Image = Properties.Resources.delta;
-            this.diffDeviceToolStripMenuItem.Image = Properties.Resources.delta;
+            this.deviceDiffToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffTimeToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffDistToolStripMenuItem.Image = Properties.Resources.delta;
             this.diffTimeToolStripMenuItem.Visible = false;
             this.diffDistToolStripMenuItem.Visible = false;
             //this.deviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
-            this.speedPaceDeviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.elevationDeviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
+            this.deviceSpeedPaceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            this.deviceElevationToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
 
             this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
             this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
@@ -149,9 +149,9 @@ namespace TrailsPlugin.UI.Activity {
             this.diffTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
             this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             this.deviceToolStripMenuItem.Text = CommonResources.Text.LabelDevice;
-            this.speedPaceDeviceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceSpeedPace);
-            this.elevationDeviceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceElevation);
-            this.diffDeviceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceDiffDist);
+            this.deviceSpeedPaceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceSpeedPace);
+            this.deviceElevationToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceElevation);
+            this.deviceDiffToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DeviceDiffDist);
             //Set when updating chart
             this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDistTime);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = Properties.Resources.UI_Chart_resyncDiffAtTrailPoints;
@@ -422,9 +422,9 @@ namespace TrailsPlugin.UI.Activity {
             diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
             diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
 
-            speedPaceDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
-            elevationDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
-            diffDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceDiffDist);
+            deviceSpeedPaceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
+            deviceElevationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
+            deviceDiffToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceDiffDist);
             if (Data.Settings.XAxisValue == XAxisValue.Distance)
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
@@ -433,8 +433,8 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             }
-            speedPaceDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
-            elevationDeviceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
+            deviceSpeedPaceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
+            deviceElevationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
             //set as marker, for all subitems -not changable directly
             deviceToolStripMenuItem.Checked = 
                 setLineChartChecked(LineChartTypes.DeviceSpeedPace) ||
@@ -578,15 +578,15 @@ namespace TrailsPlugin.UI.Activity {
         {
             RefreshChart(LineChartTypes.DiffDistTime);
         }
-        private void speedPaceDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void deviceSpeedPaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceSpeedPace);
         }
-        private void elevationDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void deviceElevationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceElevation);
         }
-        private void diffDeviceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void deviceDiffToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceDiffDist);
         }

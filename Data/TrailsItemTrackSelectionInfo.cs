@@ -82,8 +82,10 @@ namespace TrailsPlugin.Data
             int countGPS = selectedGPS.Count;
             return countGPS > 0 && 
                 !(countGPS == 1 &&
-                selectedGPS[0].ItemReferenceId == "" || selectedGPS[0].MarkedDistances == null && selectedGPS[0].SelectedTime == null && selectedGPS[0].SelectedDistance == null && 
-                selectedGPS[0].MarkedTimes != null && selectedGPS[0].MarkedTimes.Count == 0);
+                (selectedGPS[0].ItemReferenceId == "" || 
+                ((selectedGPS[0].MarkedDistances == null || selectedGPS[0].MarkedDistances != null && selectedGPS[0].MarkedDistances.Count == 0)&& 
+                 selectedGPS[0].SelectedTime == null && selectedGPS[0].SelectedDistance == null && 
+                 (selectedGPS[0].MarkedTimes == null || selectedGPS[0].MarkedTimes != null && selectedGPS[0].MarkedTimes.Count == 0))));
         }
 
         public void SetFromSelection(IItemTrackSelectionInfo t, IActivity activity)

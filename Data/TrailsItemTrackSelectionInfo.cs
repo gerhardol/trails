@@ -118,7 +118,7 @@ namespace TrailsPlugin.Data
         public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelection
             (IList<IItemTrackSelectionInfo> selected, IList<IActivity> activities, bool fromST)
         {
-            if (selected.Count == 0 || activities == null)
+            if (selected == null || selected.Count == 0 || activities == null)
             {
                 //Do not adjust selection
                 return selected;
@@ -126,6 +126,8 @@ namespace TrailsPlugin.Data
             bool singleSelection = selected.Count == 0 || selected.Count == 1 && ! ( 
                 selected[0].MarkedDistances != null && selected[0].MarkedDistances.Count > 1 ||
                 selected[0].MarkedTimes != null && selected[0].MarkedTimes.Count > 1);
+
+            IList<IItemTrackSelectionInfo> results = new List<IItemTrackSelectionInfo>();
             for(int i = 0; i < selected.Count; i++)
             {
                 IActivity activity = null;
@@ -158,7 +160,7 @@ namespace TrailsPlugin.Data
 
                     if (fromST)
                     {
-                        //Set MarkedTimes (or SelectedTime), used internally
+                        //Set MarkedTimes (or SelectedTime), used internally. No need to clear "unused"
                         if (selected[i].MarkedDistances != null && selected[i].MarkedDistances.Count > 0 && 
                             (selected[i].MarkedTimes == null || selected[i].MarkedTimes.Count == 0))
                         {
@@ -170,7 +172,6 @@ namespace TrailsPlugin.Data
                                     DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper);
                                     AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
                                 }
-                                tmpSel.MarkedDistances = null;
                             }
                             catch { }
                         }
@@ -179,8 +180,6 @@ namespace TrailsPlugin.Data
                             try
                             {
                                 AddMarkedOrSelectedTime(tmpSel, singleSelection, selected[i].SelectedTime.Lower, selected[i].SelectedTime.Upper);
-
-                                tmpSel.SelectedTime = null;
                             }
                             catch { }
                         }
@@ -192,13 +191,13 @@ namespace TrailsPlugin.Data
                                 DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower);
                                 DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper);
                                 AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
-                                tmpSel.SelectedDistance = null;
                             }
                             catch { }
                         }
                     }
                     else
                     {
+                        //To ST
                         //The standard in the plugin(time) to standard in ST core and omb's Track Coloring (unpaused distance)
                         if (selected[i].MarkedDistances == null &&
                             selected[i].MarkedTimes != null && selected[i].MarkedTimes.Count > 0)
@@ -229,10 +228,10 @@ namespace TrailsPlugin.Data
                             catch { }
                         }
                     }
-                    selected[i] = tmpSel;
+                    results.Add(tmpSel);
                 }
             }
-            return selected;
+            return results;
         }
 
         private static void AddMarkedOrSelectedTime(TrailsItemTrackSelectionInfo tmpSel, bool singleSelection, DateTime d1, DateTime d2)

@@ -212,7 +212,7 @@ namespace TrailsPlugin.UI.Activity
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
-            IList<IItemTrackSelectionInfo> selectedGPS = (IList<IItemTrackSelectionInfo>)
+            IList<IItemTrackSelectionInfo> selectedGPS = 
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities, true);
 #endif
 
@@ -271,7 +271,7 @@ namespace TrailsPlugin.UI.Activity
         static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
-            DateTime d = DateTime.MaxValue;
+            IList<DateTime> dates = new List<DateTime>();
 
             IActivity activity = null;
             foreach (IActivity a in activities)
@@ -283,48 +283,33 @@ namespace TrailsPlugin.UI.Activity
                     break;
                 }
             }
+
             if (null != activity && null != activity.GPSRoute)
             {
                 if (null != ts)
                 {
-                    d = ts.Lower;
-                    IDistanceDataTrack dtrack = activity.GPSRoute.GetDistanceMetersTrack();
-                    double s = dtrack.GetInterpolatedValue(ts.Upper).Value - dtrack.GetInterpolatedValue(ts.Lower).Value;
-                    //TODO: pass radius for trail
-                    if (s > 2 * TrailsPlugin.Data.Settings.DefaultRadius)
+                    dates.Add(ts.Lower);
+                    if (ts.Upper > ts.Lower)
                     {
-                        //TODO: Common handling, avoid duplication
-                        if (d != DateTime.MaxValue)
+                        IDistanceDataTrack dtrack = activity.GPSRoute.GetDistanceMetersTrack();
+                        double s = dtrack.GetInterpolatedValue(ts.Upper).Value - dtrack.GetInterpolatedValue(ts.Lower).Value;
+                        if (s > 2 * trail.Radius)
                         {
-                            ITimeValueEntry<IGPSPoint> p2 = activity.GPSRoute.GetInterpolatedValue(d);
-                            if (null != p2)
-                            {
-                                result.Add(new TrailGPSLocation(d, p2, "", true));
-                            }
+                            dates.Add(ts.Upper);
                         }
-                        d = ts.Upper;
                     }
                 }
-                //MarkedTimes set when importing
-                //else
-                //{
-                //    //Normally, ST is selecting by distance, this is the common path
-                //    if (null != di &&
-                //        null != m_controller.ReferenceTrailResult &&
-                //        m_controller.ReferenceTrailResult.Activity == activity)
-                //    {
-                //        d = m_controller.ReferenceTrailResult.getDateTimeFromDistActivity(di.Lower);
-                //    }
-                //}
-                if (d != DateTime.MaxValue)
+                //Ignore di
+            }
+            foreach (DateTime d in dates)
+            {
+                ITimeValueEntry<IGPSPoint> p = activity.GPSRoute.GetInterpolatedValue(d);
+                if (null != p)
                 {
-                    ITimeValueEntry<IGPSPoint> p = activity.GPSRoute.GetInterpolatedValue(d);
-                    if (null != p)
-                    {
-                        result.Add(new TrailGPSLocation(d, p, "", true));
-                    }
+                    result.Add(new TrailGPSLocation(d, p, "", true));
                 }
             }
+
             return result;
         }
 
@@ -336,7 +321,7 @@ namespace TrailsPlugin.UI.Activity
                 IItemTrackSelectionInfo selectGPS = aSelectGPS[i];
                 IList<TrailGPSLocation> result2 = new List<TrailGPSLocation>();
 
-                //Marked
+                //Marked and Selected Times are set at import (ST uses Distances)
                 IValueRangeSeries<DateTime> tm = selectGPS.MarkedTimes;
                 if (null != tm)
                 {
@@ -345,28 +330,19 @@ namespace TrailsPlugin.UI.Activity
                         result2 = Trail.MergeTrailLocations(result2, getGPS(trail, activities, ts, null, aSelectGPS[i].ItemReferenceId));
                     }
                 }
-                //Should not be needed, MarkedTimes are set at import
-                //if (result2.Count == 0)
-                //{
-                //    IValueRangeSeries<double> td = selectGPS.MarkedDistances;
-                //    if (null != td)
-                //    {
-
-                //        foreach (IValueRange<double> td1 in td)
-                //        {
-                //            result2 = Trail.MergeTrailLocations(result2, getGPS(null, td1, aSelectGPS[i].ItemReferenceId));
-                //        }
-                //    }
-                //    if (result2.Count == 0)
-                //    {
-                //        //Selected
-                //        result2 = getGPS(selectGPS.SelectedTime, selectGPS.SelectedDistance, aSelectGPS[i].ItemReferenceId);
-                //    }
-                //}
+                if (result2.Count == 0)
+                {
+                    if (result2.Count == 0)
+                    {
+                        //Selected
+                        result2 = getGPS(trail, activities, selectGPS.SelectedTime, null, aSelectGPS[i].ItemReferenceId);
+                    }
+                }
                 result = Trail.MergeTrailLocations(result, result2);
             }
             return result;
         }
+
 #if ST_2_1
         IList<TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
         {

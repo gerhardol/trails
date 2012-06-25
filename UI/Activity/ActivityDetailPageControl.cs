@@ -642,10 +642,10 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 //m_view.RouteSelectionProvider.SelectedItems
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
-                if (selected != null && selected.SelectedItems != null)
+                if (selected != null)
                 {
-                    MultiCharts.SetSelectedRange(
-                      TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities, true));
+                    IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities, true);
+                    MultiCharts.SetSelectedRange(selectedGPS);
                 }
             }
         }

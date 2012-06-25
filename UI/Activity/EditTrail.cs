@@ -467,8 +467,10 @@ namespace TrailsPlugin.UI.Activity {
                 add.Name +=
                 " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
             add.GpsLocation = m_layer.GetCenterMap();
+
+            //If a point is selected on the track, use it instead
             IList<IActivity> activities = new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity };
-            IList<IItemTrackSelectionInfo> selectedGPS = (IList<IItemTrackSelectionInfo>)
+            IList<IItemTrackSelectionInfo> selectedGPS = 
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, activities, true);
             if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
             {
@@ -478,6 +480,7 @@ namespace TrailsPlugin.UI.Activity {
                     add.GpsLocation = loc[0].GpsLocation;
                 }
             }
+
             if (((IList<EditTrailRow>)EList.RowData).Count > 0)
             {
                 ((IList<EditTrailRow>)EList.RowData).Insert(i + 1, new EditTrailRow(add));
@@ -486,8 +489,14 @@ namespace TrailsPlugin.UI.Activity {
             {
                 EList.RowData = new List<EditTrailRow> { new EditTrailRow(add) };
             }
+
             //Make ST see the update
             EList.RowData = ((IList<EditTrailRow>)EList.RowData);
+            foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+            {
+                //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
+                EList.SetChecked(t, t.TrailGPS.Required);
+            }
             EList.Refresh();
             m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
             m_layer.TrailPoints = m_TrailToEdit.TrailLocations;

@@ -784,7 +784,7 @@ namespace TrailsPlugin.Data
 
         private void getDistanceTrack()
         {
-            if (null == m_distanceMetersTrack)
+            if (null == m_distanceMetersTrack || null == m_activityDistanceMetersTrack || float.IsNaN(m_startDistance))
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = false;
@@ -811,37 +811,31 @@ namespace TrailsPlugin.Data
                     int i = 0;
                     float distance = 0;
                     uint oldElapsed = 0;
-                    //Start(end) should always be inserted - it the base for StartTime in track
-                    //TODO is this correct?
-                    m_distanceMetersTrack.Add(this.StartTime, distance);
-
+                    
+                    //Prune search
+                    //Note that the distance track may not start at result StartTime
                     while (i < m_activityDistanceMetersTrack.Count &&
-                        this.StartTime.AddSeconds(1) >= m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
+                        this.StartTime.AddSeconds(-1) > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
                     {
                         i++;
                     }
 
+                    m_startDistance = TrailResult.getDistFromTrackTime(m_activityDistanceMetersTrack, StartTime);
                     float prevDist = m_startDistance;
                     while (i < m_activityDistanceMetersTrack.Count &&
                         EndTime > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
                     {
                         ITimeValueEntry<float> timeValue = m_activityDistanceMetersTrack[i];
-                        uint elapsed = timeValue.ElapsedSeconds;
                         DateTime time = m_activityDistanceMetersTrack.EntryDateTime(timeValue);
-                        if (float.IsNaN(m_startDistance))
-                        {
-                            m_startDistance = TrailResult.getDistFromTrackTime(m_activityDistanceMetersTrack, time);
-                            prevDist = m_startDistance;
-                        }
                         if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, Pauses))
                         {
-                            if (elapsed > oldElapsed)
+                            uint elapsed = timeValue.ElapsedSeconds;
+                            if (elapsed > oldElapsed || oldElapsed == 0)
                             {
                                 float actDist = timeValue.Value;
                                 if (!float.IsNaN(prevDist))
                                 {
-                                    //TODO: Get the offsets at boundaries, to minimize cumulative errors
-                                    //There are points at borders though
+                                    //TODO: Get the offsets at boundaries, instead of inserting values
                                     distance += actDist - prevDist;
                                 }
                                 m_distanceMetersTrack.Add(time, distance);
@@ -855,6 +849,7 @@ namespace TrailsPlugin.Data
                         }
                         i++;
                     }
+
                     //Set real last distance, even if elapsedSec is not matching
                     if (!float.IsNaN(prevDist))
                     {

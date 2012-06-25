@@ -392,7 +392,7 @@ namespace TrailsPlugin.UI.Activity {
                 IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
                 foreach (TrailResultWrapper t in this.SelectedItemsWrapper)
                 {
-                    int splitIndex = -1;
+                    int splitIndex = -1; //Index for parent, not for child(subsplit)
                     if (t.Parent != null)
                     {
                         splitIndex = t.Result.Order;
@@ -429,9 +429,9 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         if (lastSplitIndex < 0)
                         {
+                            //This should be a child(subsplit)
                             if (this.m_controller.ReferenceTrailResult is ChildTrailResult)
                             {
-                                //xxx?
                                 this.m_controller.ReferenceTrailResult = (this.m_controller.ReferenceTrailResult as ChildTrailResult).ParentResult;
                             }
                             isChange = true;

@@ -285,11 +285,11 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             t2 = speedPaceChart;
                         }
-                        if (t2 == LineChartTypes.DeviceSpeedPace)
+                        else if (t2 == LineChartTypes.DeviceSpeedPace)
                         {
                             t2 = deviceSpeedPaceChart;
                         }
-                        if (t2 == LineChartTypes.DiffDistTime)
+                        else if (t2 == LineChartTypes.DiffDistTime)
                         {
                             t2 = diffChart;
                         }

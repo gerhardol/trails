@@ -63,6 +63,8 @@ namespace TrailsPlugin.UI.Activity {
         private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
+        private enum SyncGraphMode { None, Start, End, Average, Min, Max };
+        private static SyncGraphMode syncGraph = SyncGraphMode.None;
 
         public TrailLineChart()
         {
@@ -632,7 +634,9 @@ namespace TrailsPlugin.UI.Activity {
                         //The track is mostly cached in result, it is not much extra to request and drop it
                         INumericTimeDataSeries graphPoints = GetSmoothedActivityTrack(tr, chartType, ReferenceTrailResult);
 
-                        if (graphPoints != null && graphPoints.Count > 1)
+                        if (graphPoints != null && graphPoints.Count > 1 || 
+                            //TODO: check data for summary too
+                            tr is SummaryTrailResult)
                         {
                             m_hasValues[chartType] = true;
                             break;
@@ -692,11 +696,37 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
+                float syncGraphOffsetSum = 0;
+                int syncGraphOffsetCount = 0;
+                LineChartTypes syncGraphOffsetChartType = LineChartTypes.Speed;
+                if (m_ChartTypes.Count > 0)
+                {
+                    syncGraphOffsetChartType = m_ChartTypes[0];
+                    if (syncGraphOffsetChartType != ChartToAxis(syncGraphOffsetChartType) && m_ChartTypes.Contains(ChartToAxis(syncGraphOffsetChartType)))
+                    {
+                        syncGraphOffsetChartType = ChartToAxis(syncGraphOffsetChartType);
+                    }
+                }
                 //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
                 foreach (LineChartTypes chartType in m_ChartTypes)
                 {
                     ChartDataSeries summaryDataLine = null;
                     IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
+                    INumericTimeDataSeries refGraphPoints = null;
+                    LineChartTypes refChartType = chartType;
+
+                    if(syncGraph != SyncGraphMode.None )
+                    {
+                        if (chartType != ChartToAxis(chartType) && m_ChartTypes.Contains(ChartToAxis(chartType)))
+                        {
+                            refChartType = ChartToAxis(chartType);
+                        }
+                        if (refChartType == syncGraphOffsetChartType)
+                        {
+                            refGraphPoints = GetSmoothedActivityTrack(ReferenceTrailResult, refChartType, ReferenceTrailResult);
+                        }
+                    }
+
                     for (int i = 0; i < chartResults.Count; i++)
                     {
                         TrailResult tr = chartResults[i];
@@ -777,8 +807,13 @@ namespace TrailsPlugin.UI.Activity {
                                     MainChart.DataSeries.Add(dataFill);
                                 }
 
-                                //Get the actual graph
-                                GetDataLine(tr, graphPoints, dataLine, dataFill);
+                                //Get the actual graph for all displayed
+                                float syncGraphOffset = GetDataLine(tr, graphPoints, dataLine, dataFill, refGraphPoints);
+                                if (syncGraphOffsetChartType == refChartType && ReferenceTrailResult != tr)
+                                {
+                                    syncGraphOffsetSum += syncGraphOffset;
+                                    syncGraphOffsetCount++;
+                                }
 
                                 //Add as graph for summary
                                 if (dataLine.Points.Count > 1 && summaryResult != null &&
@@ -803,6 +838,13 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }  //for all axis
+
+                if (syncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
+                {
+                    summaryListToolTip.Show(syncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount, this,
+                      new System.Drawing.Point(10 + Cursor.Current.Size.Width / 2, 10),
+                      summaryListToolTip.AutoPopDelay);
+                }
 
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = ReferenceTrailResult;
@@ -848,8 +890,8 @@ namespace TrailsPlugin.UI.Activity {
             }
 		}
 
-        private void GetDataLine(TrailResult tr, INumericTimeDataSeries graphPoints, 
-            ChartDataSeries dataLine, ChartDataSeries dataFill)
+        private float GetDataLine(TrailResult tr, INumericTimeDataSeries graphPoints, 
+            ChartDataSeries dataLine, ChartDataSeries dataFill, INumericTimeDataSeries refGraphPoints)
         {
             INumericTimeDataSeries dataPoints;
             if (XAxisReferential == XAxisValue.Time)
@@ -860,6 +902,41 @@ namespace TrailsPlugin.UI.Activity {
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
             }
+            float syncGraphOffset = 0;
+            if (graphPoints != refGraphPoints &&
+                refGraphPoints != null && refGraphPoints.Count > 1)
+            {
+                switch (syncGraph)
+                {
+                    case SyncGraphMode.None:
+                        break;
+                    case SyncGraphMode.Start:
+                        syncGraphOffset = refGraphPoints[0].Value - graphPoints[0].Value;
+                        break;
+                    case SyncGraphMode.End:
+                        syncGraphOffset = refGraphPoints[refGraphPoints.Count - 1].Value - graphPoints[graphPoints.Count-1].Value;
+                        break;
+                    case SyncGraphMode.Average:
+                        syncGraphOffset = refGraphPoints.Avg - graphPoints.Avg;
+                        break;
+                    case SyncGraphMode.Min:
+                        syncGraphOffset = refGraphPoints.Min - graphPoints.Min;
+                        break;
+                    case SyncGraphMode.Max:
+                        syncGraphOffset = refGraphPoints.Max - graphPoints.Max;
+                        break;
+                    default:
+                        {
+                            Debug.Assert(false);
+                            break;
+                        }
+                }
+                if(float.IsNaN(syncGraphOffset) || float.IsInfinity(syncGraphOffset))
+                {
+                    syncGraphOffset = 0;
+                }
+            }
+
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
             foreach (ITimeValueEntry<float> entry in dataPoints)
@@ -903,7 +980,7 @@ namespace TrailsPlugin.UI.Activity {
                         //Infinity values gives garbled graphs
                         if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
                         {
-                            PointF point = new PointF(xValue, yValueEntry.Value);
+                            PointF point = new PointF(xValue, yValueEntry.Value + syncGraphOffset);
                             if (null != dataFill)
                             {
                                 dataFill.Points.Add(elapsedEntry, point);
@@ -915,6 +992,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+            return syncGraphOffset;
         }
 
         //From Overlay plugin
@@ -1363,6 +1441,31 @@ namespace TrailsPlugin.UI.Activity {
                             m_lastSelectedType = chartType;
                             break;
                         }
+                    }
+                }
+            }
+            else if (e.KeyCode == Keys.A)
+            {
+                if (e.Modifiers == Keys.Shift)
+                {
+                    if (syncGraph <= SyncGraphMode.None)
+                    {
+                        syncGraph = SyncGraphMode.Max;
+                    }
+                    else
+                    {
+                        syncGraph--;
+                    }
+                }
+                else
+                {
+                    if (syncGraph >= SyncGraphMode.Max)
+                    {
+                        syncGraph = SyncGraphMode.None;
+                    }
+                    else
+                    {
+                        syncGraph++;
                     }
                 }
             }

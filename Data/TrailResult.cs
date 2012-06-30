@@ -1567,7 +1567,7 @@ namespace TrailsPlugin.Data
                                 //Ignore 0 time and infinity pace
                                 bool isPace = refRes.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
                                 if (t.ElapsedSeconds - prev.ElapsedSeconds > 0 && 
-                                    isPace &&(t.Value - prev.Value > 0))
+                                    (!isPace || (t.Value - prev.Value > 0)))
                                 {
                                     float val = (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace,
                                         Math.Abs( (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds)));

@@ -809,7 +809,7 @@ namespace TrailsPlugin.UI.Activity {
 
                                 //Get the actual graph for all displayed
                                 float syncGraphOffset = GetDataLine(tr, graphPoints, dataLine, dataFill, refGraphPoints);
-                                if (syncGraphOffsetChartType == refChartType && ReferenceTrailResult != tr)
+                                if (refChartType == ChartToAxis(chartType) && (refChartType != chartType || ReferenceTrailResult != tr))
                                 {
                                     syncGraphOffsetSum += syncGraphOffset;
                                     syncGraphOffsetCount++;
@@ -1407,7 +1407,8 @@ namespace TrailsPlugin.UI.Activity {
             bool increase = true;
             bool reset = false;
             bool zero = false;
-            bool refreshData = true;
+            bool refreshData = false;
+            bool clearRefreshData = true;
 
             if (e.KeyCode == Keys.Home)
             {
@@ -1421,7 +1422,6 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.Modifiers == Keys.Shift)
             {
-                smoothChanged = true;
                 increase = false;
             }
 
@@ -1446,26 +1446,34 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.A)
             {
-                if (e.Modifiers == Keys.Shift)
+                refreshData = true;
+                if (e.Modifiers == Keys.Control)
                 {
-                    if (syncGraph <= SyncGraphMode.None)
-                    {
-                        syncGraph = SyncGraphMode.Max;
-                    }
-                    else
-                    {
-                        syncGraph--;
-                    }
+                    TrailResult.m_SmoothOverTrailBorders = !TrailResult.m_SmoothOverTrailBorders;
                 }
                 else
                 {
-                    if (syncGraph >= SyncGraphMode.Max)
+                    if (e.Modifiers == Keys.Shift)
                     {
-                        syncGraph = SyncGraphMode.None;
+                        if (syncGraph <= SyncGraphMode.None)
+                        {
+                            syncGraph = SyncGraphMode.Max;
+                        }
+                        else
+                        {
+                            syncGraph--;
+                        }
                     }
                     else
                     {
-                        syncGraph++;
+                        if (syncGraph >= SyncGraphMode.Max)
+                        {
+                            syncGraph = SyncGraphMode.None;
+                        }
+                        else
+                        {
+                            syncGraph++;
+                        }
                     }
                 }
             }
@@ -1487,7 +1495,6 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.L)
             {
                 m_showTrailPoints = (e.Modifiers == Keys.Shift);
-                refreshData = false;
             }
             else if (e.KeyCode == Keys.P)
             {
@@ -1496,6 +1503,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
+                refreshData = true;
+                clearRefreshData = false;
                 if (e.Modifiers == Keys.Shift)
                 {
                     refIsSelf = !refIsSelf;
@@ -1513,23 +1522,26 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.T)
             {
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
-                refreshData = false;
             }
             IList<LineChartTypes> charts = new List<LineChartTypes>();
             if (smoothChanged)
             {
+                refreshData = true; 
                 charts = MainChart_KeyDown_Smooth(m_lastSelectedType, increase, reset, zero);
             }
 
             if (refreshData)
             {
-                foreach (TrailResult t in TrailResults)
+                if (clearRefreshData)
                 {
-                    t.Clear(true);
+                    foreach (TrailResult t in TrailResults)
+                    {
+                        t.Clear(true);
+                    }
                 }
+                m_page.RefreshControlState();
+                m_page.RefreshChart();
             }
-            m_page.RefreshControlState();
-            m_page.RefreshChart();
 
             if (smoothChanged)
             {

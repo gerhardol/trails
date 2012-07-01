@@ -1399,6 +1399,64 @@ namespace TrailsPlugin.Data
             return p;
         }
 
+        public static bool m_SmoothOverTrailBorders = true;
+        private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
+        {
+            if (smooth > 0)
+            {
+                float min; float max;
+                if (m_SmoothOverTrailBorders || m_subResultInfo.Points.Count <= 2)
+                {
+                    track = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(track, smooth, out min, out max);
+                }
+                else
+                {
+                    //Smooth individual trail sections individually
+                    //Implementation is not optimised, is there a need?
+                    INumericTimeDataSeries resTrack = new NumericTimeDataSeries();
+                    DateTime prevTime = this.StartTime;
+                    foreach (TrailResultPoint p in m_subResultInfo.Points)
+                    {
+                        DateTime currTime = p.Time;
+                        if (currTime > prevTime || p == m_subResultInfo.Points[m_subResultInfo.Points.Count - 1])
+                        {
+                            if (p == m_subResultInfo.Points[m_subResultInfo.Points.Count - 1])
+                            {
+                                currTime = this.EndTime;
+                            }
+                            INumericTimeDataSeries tTrack = new NumericTimeDataSeries();
+                            foreach (ITimeValueEntry<float> t in track)
+                            {
+                                DateTime pTime = track.EntryDateTime(t);
+                                //start/end points may be handled twice
+                                if (pTime < prevTime)
+                                {
+                                    continue;
+                                }
+                                else if (pTime > currTime)
+                                {
+                                    break;
+                                }
+                                tTrack.Add(pTime, t.Value);
+                                prevTime = pTime;
+                            }
+                            if (tTrack.Count > 1)
+                            {
+                                tTrack = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(tTrack, smooth, out min, out max);
+                            }
+                            foreach (ITimeValueEntry<float> t in tTrack)
+                            {
+                                DateTime pTime = tTrack.EntryDateTime(t);
+                                resTrack.Add(pTime, t.Value);
+                            }
+                        }
+                    }
+                    track = resTrack;
+                }
+            }
+            return track;
+        }
+
         //Copy a track and apply smoothing
         public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, int smooth, Convert convert, TrailResult refRes)
         {
@@ -1436,11 +1494,7 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 }
-                if (smooth > 0)
-                {
-                    float min; float max;
-                    track = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(track, smooth, out min, out max);
-                }
+                track = SmoothTrack(track, smooth);
             }
             return track;
         }
@@ -1537,8 +1591,13 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_paceTrack0 == null)
             {
+                //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
                 m_paceTrack0 = copySmoothTrack(this.SpeedTrack, false, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                new Convert(UnitUtil.Pace.ConvertFrom), refRes);
+                                new Convert(ConvertNone), refRes);
+                for (int i = 0; i < m_paceTrack0.Count; i++)
+                {
+                    m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, refRes.Activity));
+                }
             }
             return m_paceTrack0;
         }
@@ -1548,6 +1607,7 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_deviceSpeedPaceTrack0 == null)
             {
+                bool isPace = refRes.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
                 m_deviceSpeedPaceTrack0 = new NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
@@ -1565,12 +1625,10 @@ namespace TrailsPlugin.Data
                                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(time, this.Pauses))
                             {
                                 //Ignore 0 time and infinity pace
-                                bool isPace = refRes.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
                                 if (t.ElapsedSeconds - prev.ElapsedSeconds > 0 && 
                                     (!isPace || (t.Value - prev.Value > 0)))
                                 {
-                                    float val = (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace,
-                                        Math.Abs( (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds)));
+                                    float val = (float)Math.Abs( (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds));
                                     m_deviceSpeedPaceTrack0.Add(time, val);
                                 }
                             }
@@ -1586,11 +1644,11 @@ namespace TrailsPlugin.Data
                         }
                     }
                 }
-                if (TrailActivityInfoOptions.SpeedSmoothingSeconds > 0)
+                m_deviceSpeedPaceTrack0 = SmoothTrack(m_deviceSpeedPaceTrack0, TrailActivityInfoOptions.SpeedSmoothingSeconds);
+                //Smooth speed, convert after
+                for (int i = 0; i < m_deviceSpeedPaceTrack0.Count; i++)
                 {
-                    float min; float max;
-                    m_deviceSpeedPaceTrack0 = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(
-                        m_deviceSpeedPaceTrack0, TrailActivityInfoOptions.SpeedSmoothingSeconds, out min, out max);
+                    m_deviceSpeedPaceTrack0.SetValueAt(i, (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace, m_deviceSpeedPaceTrack0[i].Value, refRes.Activity));
                 }
             }
             return m_deviceSpeedPaceTrack0;
@@ -1607,9 +1665,7 @@ namespace TrailsPlugin.Data
                     m_deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
                        new Convert(UnitUtil.Elevation.ConvertFrom), refRes);
                 } 
-                float min; float max;
-                m_deviceElevationTrack0 = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(
-                    m_deviceElevationTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds, out min, out max);
+                m_deviceElevationTrack0 = SmoothTrack(m_deviceElevationTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds);
             }
             return m_deviceElevationTrack0;
         }

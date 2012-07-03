@@ -455,15 +455,15 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             TrailGPSLocation sel;
-            if (((IList<EditTrailRow>)EList.RowData).Count >0)
+            if (((IList<EditTrailRow>)EList.RowData).Count > 0)
             {
                 sel = ((IList<EditTrailRow>)EList.RowData)[i].TrailGPS;
             }
             else
             {
-                sel = new TrailGPSLocation(0,0,"");
+                sel = new TrailGPSLocation(m_layer.GetCenterMap());//xxx
             }
-            TrailGPSLocation add = sel.Copy();
+            TrailGPSLocation add = new TrailGPSLocation(sel);
                 add.Name +=
                 " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
             add.GpsLocation = m_layer.GetCenterMap();

@@ -116,28 +116,44 @@ namespace TrailsPlugin.Data
         }
     }
 
-    public class TrailResultPoint : IComparable
+    public class TrailResultPoint : TrailGPSLocation, IComparable
     {
-        public TrailResultPoint(DateTime time, string name, float distDiff)
+        //public TrailResultPoint(DateTime time, string name, bool active, float distDiff)
+        //{
+        //    this.m_time = time;
+        //    this.m_name = name;
+        //    this.Active = active;
+        //    this.DistDiff = distDiff;
+        //}
+        //public TrailResultPoint(DateTime time, string name, bool active)
+        //    : this(time, name, active, 0)
+        //{
+        //}
+        //public TrailResultPoint(DateTime time, string name)
+        //    : this(time, name, true, 0)
+        //{
+        //}
+        public TrailResultPoint(TrailGPSLocation trailLocation, DateTime time, float distDiff)
+            : base(trailLocation)
         {
             this.m_time = time;
-            this.m_name = name;
             this.DistDiff = distDiff;
         }
-        public TrailResultPoint(DateTime time, string name)
-            : this(time, name, 0)
+        public TrailResultPoint(TrailGPSLocation trailLocation, DateTime time)
+            : this(trailLocation, time, 0)
         {
         }
         public TrailResultPoint(TrailResultPoint t)
+            : base(t)
         {
             this.m_time = t.Time;
-            this.m_name = t.Name;
+            //this.m_name = t.Name;
             this.DistDiff = t.DistDiff;
         }
 
         public override string ToString()
         {
-            return m_name + " " + m_time;
+            return this.Name + " " + m_time;
         }
 
         private DateTime m_time;
@@ -152,18 +168,20 @@ namespace TrailsPlugin.Data
                 this.m_time = value;
             }
         }
-        private string m_name;
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                this.m_name = value;
-            }
-        }
+        //private string m_name;
+        //public string Name
+        //{
+        //    get
+        //    {
+        //        return m_name;
+        //    }
+        //    set
+        //    {
+        //        this.m_name = value;
+        //    }
+        //}
+        //TrailGPSLocation TrailLocation = null;
+        //public bool Active = true;
         public float DistDiff = 0;
         //Just a high number, affects sorting
         public const float DiffDistMax = 0xffff;

@@ -29,9 +29,8 @@ namespace TrailsPlugin.Data
     {
         private TrailGPSLocation m_gpsLoc;
         private int m_trailPointIndex;
-        //public DateTime? m_date;
-        public double? m_distance;
-        public double? m_time;
+        internal double? m_distance;
+        internal double? m_time;
         
         public EditTrailRow(TrailGPSLocation loc)
         {
@@ -59,14 +58,14 @@ namespace TrailsPlugin.Data
 
         private void SetDistance(TrailResult tr, DateTime d1)
         {
-            if (DateTime.MinValue == d1)
-            {
-                //Try get the value from the track
-                if (null != this.TrailGPS.DateTime)
-                {
-                    d1 = (DateTime)this.TrailGPS.DateTime;
-                }
-            }
+            //if (DateTime.MinValue == d1)
+            //{
+            //    //Try get the value from the track
+            //    if (null != this.TrailGPS.DateTime)
+            //    {
+            //        d1 = (DateTime)this.TrailGPS.DateTime;
+            //    }
+            //}
             if (DateTime.MinValue != d1)
             {
                 try
@@ -82,12 +81,17 @@ namespace TrailsPlugin.Data
 
         public void UpdateRow(TrailResult tr, DateTime d1)
         {
-            ITimeValueEntry<IGPSPoint> entry = tr.Activity.GPSRoute.GetInterpolatedValue(d1);
-            if (entry != null)
+            //ITimeValueEntry<IGPSPoint> entry = tr.Activity.GPSRoute.GetInterpolatedValue(d1);
+            //if (entry != null)
+            //{
+            //    this.TrailGPS.GpsLocation = new GPSLocation(
+            //        entry.Value.LatitudeDegrees,
+            //        entry.Value.LongitudeDegrees);
+            //}
+            IGPSLocation t = TrailGPSLocation.getGpsLoc(tr.Activity, d1);
+            if (t != null)
             {
-                this.TrailGPS = this.TrailGPS.Copy(
-                    entry.Value.LatitudeDegrees,
-                    entry.Value.LongitudeDegrees);
+                this.TrailGPS.GpsLocation = t;
             }
             SetDistance(tr, d1);
         }

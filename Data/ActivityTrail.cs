@@ -862,8 +862,8 @@ namespace TrailsPlugin.Data
                 //Add found match to result 
                 if (matchTime != null)
                 {
-                    currResultPoints.Add(new TrailResultPointMeta((DateTime)matchTime,
-                        trailgps[TrailIndex(trailgps, currResultPoints.Count)].Name,
+                    currResultPoints.Add(new TrailResultPointMeta(trailgps[TrailIndex(trailgps, currResultPoints.Count)],
+                        (DateTime)matchTime,
                         matchIndex, lastMatchInRadiusIndex, lastMatchPassByIndex, matchDist));
 
                     //Clear cache, dist unknown to next point
@@ -1237,7 +1237,7 @@ namespace TrailsPlugin.Data
                     //Set remaining points
                     for (int i = t.Points.Count; i < m_trail.TrailLocations.Count; i++)
                     {
-                        resultInfo.Points.Add(new TrailResultPoint(DateTime.MinValue, m_trail.TrailLocations[i].Name, TrailResultPoint.DiffDistMax));
+                        resultInfo.Points.Add(new TrailResultPoint(m_trail.TrailLocations[i], DateTime.MinValue, TrailResultPoint.DiffDistMax));
                     }
                     TrailResult tr = new TrailResult(this, m_resultsListWrapper.Count + 1,
                         resultInfo, resultInfo.DistDiff, t.Reverse);
@@ -1377,9 +1377,9 @@ namespace TrailsPlugin.Data
 
         internal class TrailResultPointMeta : TrailResultPoint
         {
-            public TrailResultPointMeta(DateTime time, string name,
+            public TrailResultPointMeta(TrailGPSLocation trailLoc, DateTime time,
                 int index, int lastMatchInRadius, int lastMatchPassBy, float diffDist) :
-                base(time, name, diffDist)
+                base(trailLoc, time, diffDist)
             {
                 this.index = index;
                 this.matchInRadius = lastMatchInRadius;

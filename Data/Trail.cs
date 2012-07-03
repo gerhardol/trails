@@ -94,15 +94,13 @@ namespace TrailsPlugin.Data
             if (this.TrailType == CalcType.Splits && activity != null && this.TrailLocations.Count == 0)
             {
                 //get all points - it is made to a CalcType.TrailPoint trail
-                TrailResultInfo indexes;
-                result.TrailLocations = Trail.TrailGpsPointsFromSplits(
-                    activity, out indexes, false);
+                result.TrailLocations = Trail.TrailGpsPointsFromSplits(activity, false);
             }
             else
             {
                 foreach (TrailGPSLocation t in this.TrailLocations)
                 {
-                    result.m_trailLocations.Add(t.Copy());
+                    result.m_trailLocations.Add(new TrailGPSLocation(t));
                 }
             }
             return result;
@@ -279,31 +277,37 @@ namespace TrailsPlugin.Data
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
             foreach (IGPSLocation g in gps)
             {
-                results.Add(new TrailGPSLocation(g.LatitudeDegrees, g.LongitudeDegrees, ""));
+                results.Add(new TrailGPSLocation(g));
             }
             return results;
         }
 
         public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity)
         {
-            TrailResultInfo indexes;
-
-            return TrailGpsPointsFromSplits(activity, out indexes);
-        }
-
-        public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
-            out TrailResultInfo indexes)
-        {
             //Add start indexes for active laps and for first point for rest following active
             //A pause at the end of the lap is not considered
-            return TrailGpsPointsFromSplits(activity, out indexes, true);
+            return TrailGpsPointsFromSplits(activity, true);
         }
 
-        public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity,
-            out TrailResultInfo indexes, bool onlyActiveLaps)
+        public static IList<TrailGPSLocation> TrailGpsPointsFromSplits(IActivity activity, bool onlyActiveLaps)
         {
-            IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
-            indexes = new TrailResultInfo(activity, false);
+            TrailResultInfo info = TrailResultInfoFromSplits(activity, onlyActiveLaps);
+            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
+            foreach (TrailResultPoint t in info.Points)
+            {
+                if (t.GpsLocation != null)
+                {
+                    result.Add(t);
+                }
+                else
+                {
+                }
+            }
+            return result;
+        }
+        public static TrailResultInfo TrailResultInfoFromSplits(IActivity activity, bool onlyActiveLaps)
+        {
+            TrailResultInfo results = new TrailResultInfo(activity, false);
             if (activity == null)
             {
                 //summary result
@@ -319,11 +323,12 @@ namespace TrailsPlugin.Data
                     if (!activity.Laps[j].Rest)
                     {
                         onlyActiveLaps = true;
+                        break;
                     }
                 }
             }
 
-            IList<bool> lapActive = new List<bool>();
+            //IList<bool> lapActive = new List<bool>();
 
             bool lastIsRestlap = false;
             if (null == activity.Laps || 0 == activity.Laps.Count)
@@ -338,15 +343,16 @@ namespace TrailsPlugin.Data
                     while (dist < track.Max)
                     {
                         DateTime time = track.GetTimeAtDistanceMeters(dist);
-                        indexes.Points.Add(new TrailResultPoint(time,""));
-                        lapActive.Add(true);
+                        results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
+                        //lapActive.Add(true);
                         dist = Math.Min(track.Max, dist + cDist);
                     }
                 }
                 else
                 {
-                    indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart, activity.Name));
-                    lapActive.Add(true);
+                    DateTime time = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart;
+                    results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
+                    //lapActive.Add(true);
                 }
             }
             else
@@ -359,10 +365,11 @@ namespace TrailsPlugin.Data
                         string name = l.Notes;
                         if (string.IsNullOrEmpty(name))
                         {
-                            name = "#" + (indexes.Points.Count + 1);
+                            name = "#" + (results.Points.Count + 1);
                         }
-                        indexes.Points.Add(new TrailResultPoint(l.StartTime, name));
-                        lapActive.Add(!l.Rest);
+                        DateTime d = l.StartTime;
+                        results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), name, !l.Rest), d));
+                        //lapActive.Add(!l.Rest);
                     }
                 }
                 lastIsRestlap = activity.Laps[activity.Laps.Count - 1].Rest;
@@ -371,24 +378,25 @@ namespace TrailsPlugin.Data
             //Add end point, except if last is a rest lap (where last already is added)
             if (!onlyActiveLaps || !lastIsRestlap)
             {
-                indexes.Points.Add(new TrailResultPoint(ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd, activity.Name));
-                lapActive.Add(!lastIsRestlap);
+                DateTime d = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd;
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), activity.Name, !lastIsRestlap), d));
+                //lapActive.Add(!lastIsRestlap);
             }
 
-            if (null != activity.GPSRoute && 0 < activity.GPSRoute.Count)
-            {
-                for (int i = 0; i < indexes.Points.Count; i++)
-                {
-                    TrailResultPoint p = indexes.Points[i];
-                    try
-                    {
-                        ITimeValueEntry<IGPSPoint> g = activity.GPSRoute.GetInterpolatedValue(p.Time);
-                        results.Add(new Data.TrailGPSLocation(
-                          p.Time, g, p.Name, lapActive[i]));
-                    }
-                    catch { }
-                }
-            }
+            //if (null != activity.GPSRoute && 0 < activity.GPSRoute.Count)
+            //{
+            //    for (int i = 0; i < results.Points.Count; i++)
+            //    {
+            //        TrailResultPoint p = results.Points[i];
+            //        try
+            //        {
+            //            ITimeValueEntry<IGPSPoint> g = activity.GPSRoute.GetInterpolatedValue(p.Time);
+            //            results.Add(new Data.TrailGPSLocation(
+            //              p.Time, g, p.Name, lapActive[i]));
+            //        }
+            //        catch { }
+            //    }
+            //}
             return results;
         }
 
@@ -537,7 +545,9 @@ namespace TrailsPlugin.Data
                 return m_gpsBounds;
             }
         }
-		private bool IsInBounds(IGPSBounds activityBounds) {
+
+		private bool IsInBounds(IGPSBounds activityBounds)
+        {
             if (null == activityBounds || this.TrailLocations.Count == 0)
             {
                 return false;

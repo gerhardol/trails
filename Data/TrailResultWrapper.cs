@@ -50,8 +50,7 @@ namespace TrailsPlugin.Data
         public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, int order)
             : base(null, null)
         {
-            TrailResultInfo indexes;
-            IList<Data.TrailGPSLocation> m_trailgps = Data.Trail.TrailGpsPointsFromSplits(activity, out indexes, false);
+            TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
             base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue);
             //Children are not created by default
             //getSplits();
@@ -62,8 +61,10 @@ namespace TrailsPlugin.Data
             : base(null, null)
         {
             TrailResultInfo indexes = new TrailResultInfo(activity, false);
-            indexes.Points.Add(new TrailResultPoint(selInfo.MarkedTimes[0].Lower, ""));
-            indexes.Points.Add(new TrailResultPoint(selInfo.MarkedTimes[0].Upper, ""));
+            DateTime time = selInfo.MarkedTimes[0].Lower;
+            indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
+            time = selInfo.MarkedTimes[0].Upper;
+            indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
             if (indexes.Count >= 2)
             {
                 base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue, tt);

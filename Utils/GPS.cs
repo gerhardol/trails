@@ -23,6 +23,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 namespace TrailsPlugin.Utils {
 	public class GPS {
 		public static IGPSPoint LocationToPoint(IGPSLocation location) {
+            if (location == null) { return new GPSPoint(0,0,0); }//xxx
 			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, 0);
 		}
 

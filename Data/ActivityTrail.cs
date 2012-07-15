@@ -823,7 +823,8 @@ namespace TrailsPlugin.Data
 
                 //////////////////////////////
                 //All GPS points tested but search should maybe match
-                if (matchTime == null && routeIndex >= activity.GPSRoute.Count - 1)
+                //Not meaningful for one point trails
+                if (matchTime == null && routeIndex >= activity.GPSRoute.Count - 1 && trailgps.Count > 1)
                 {
                     bool required = trailgps[TrailIndex(trailgps, currResultPoints.Count)].Required;
 
@@ -962,8 +963,12 @@ namespace TrailsPlugin.Data
                             //For one point trail, the same applies to the second match as for the end point
                             prevActivityMatchIndex = Math.Max(prevActivityMatchIndex, getFirstMatchRadius(currResultPoints));
                         }
+                        else
+                        {
+                            //Next match may be in the same radius
+                            routeIndex = matchIndex;
+                        }
                     }
-
                     //If this was an automatic match, set back the routeIndex to last good match
                     if (matchTime == DateTime.MinValue)
                     {

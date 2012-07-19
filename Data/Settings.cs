@@ -51,7 +51,7 @@ namespace TrailsPlugin.Data
         private static bool m_showOnlyMarkedOnRoute = false;
         private static bool m_resultSummaryIsDevice = false;
         private static string m_excludeStoppedCategory = "";
-        private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.All;
+        private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
@@ -271,7 +271,17 @@ namespace TrailsPlugin.Data
         public static SmoothOverTrailBorders SmoothOverTrailPoints
         {
             get { return m_SmoothOverTrailPoints; }
-            set { m_SmoothOverTrailPoints = value; }
+        }
+        public static void SmoothOverTrailPointsToggle()
+        {
+            if (m_SmoothOverTrailPoints >= SmoothOverTrailBorders.None)
+            {
+                m_SmoothOverTrailPoints = SmoothOverTrailBorders.All;
+            }
+            else
+            {
+                m_SmoothOverTrailPoints++;
+            }
         }
 
         /// <summary>

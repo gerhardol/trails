@@ -50,6 +50,7 @@
             this.distanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.chartSmoothMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExpand = new ZoneFiveSoftware.Common.Visuals.Button();
             this.ChartPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -109,6 +110,7 @@
             this.timeToolStripMenuItem,
             this.toolStripSeparator3,
             this.syncChartAtTrailPointsToolStripMenuItem,
+            this.chartSmoothMenuItem,
             this.showToolBarMenuItem});
             this.detailMenu.Name = "detailMenu";
             this.detailMenu.Size = new System.Drawing.Size(199, 258);
@@ -271,6 +273,13 @@
             this.syncChartAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.syncChartAtTrailPointsToolStripMenuItem.Text = "syncChartAtTrailPoints";
             this.syncChartAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.syncChartAtTrailPointsToolStripMenuItem_Click);
+            // 
+            // chartSmoothMenuItem
+            // 
+            this.chartSmoothMenuItem.Name = "chartSmoothMenuItem";
+            this.chartSmoothMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.chartSmoothMenuItem.Text = "chartSmoothMenuItem";
+            this.chartSmoothMenuItem.Click += new System.EventHandler(this.chartSmoothMenuItem_Click);
             // 
             // showToolBarMenuItem
             // 
@@ -591,6 +600,7 @@
         private System.Windows.Forms.ToolStripMenuItem resyncDiffAtTrailPointsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adjustResyncDiffAtTrailPointsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem syncChartAtTrailPointsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem chartSmoothMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
     }
 }

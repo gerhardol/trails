@@ -63,7 +63,6 @@ namespace TrailsPlugin.UI.Activity {
         private TrailPointsLayer m_layer;
 
         const int MaxSelectedSeries = 5;
-        private enum SyncGraphMode { None, Start, End, Average, Min, Max };
         private static SyncGraphMode syncGraph = SyncGraphMode.None;
 
         public TrailLineChart()
@@ -841,7 +840,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (syncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
                 {
-                    summaryListToolTip.Show(syncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount, this,
+                    summaryListToolTip.Show(syncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount, this, //TODO: Translate
                       new System.Drawing.Point(10 + Cursor.Current.Size.Width / 2, 10),
                       summaryListToolTip.AutoPopDelay);
                 }
@@ -1449,14 +1448,7 @@ namespace TrailsPlugin.UI.Activity {
                 refreshData = true;
                 if (e.Modifiers == Keys.Control)
                 {
-                    if (Data.Settings.SmoothOverTrailPoints >= SmoothOverTrailBorders.None)
-                    {
-                        Data.Settings.SmoothOverTrailPoints = SmoothOverTrailBorders.All;
-                    }
-                    else
-                    {
-                        Data.Settings.SmoothOverTrailPoints++;
-                    }
+                    Data.Settings.SmoothOverTrailPointsToggle();
                 }
                 else
                 {

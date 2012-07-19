@@ -1211,7 +1211,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_controller.CurrentActivityTrail != null)
             {
-                m_controller.CurrentActivityTrail.Clear();
+                m_controller.CurrentActivityTrail.Clear(false);
                 System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(1);
                 m_controller.CurrentActivityTrail.AddInBoundResult(progressBar);
                 m_page.RefreshData();

@@ -420,7 +420,7 @@ namespace TrailsPlugin.Controller
             {
                 foreach (ActivityTrail t in m_CurrentOrderedTrails)
                 {
-                    t.Clear();
+                    t.Clear(false);
                 }
             }
             //If the reference is no longer available, reset it when checking ref when using it

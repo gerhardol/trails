@@ -449,6 +449,7 @@ namespace TrailsPlugin.UI.Activity {
 
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;
             distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Distance;
+            this.chartSmoothMenuItem.Text = LineChartUtil.SmoothOverTrailBordersString(Data.Settings.SmoothOverTrailPoints);
             this.showToolBarMenuItem.Checked = Data.Settings.ShowChartToolBar;
         }
 
@@ -617,6 +618,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             Data.Settings.SyncChartAtTrailPoints = !Data.Settings.SyncChartAtTrailPoints;
             RefreshChartMenu();
+            m_page.RefreshChart();
+        }
+        private void chartSmoothMenuItem_Click(object sender, EventArgs e)
+        {
+            Data.Settings.SmoothOverTrailPointsToggle();
+            RefreshChartMenu();
+            m_controller.CurrentActivityTrail.Clear(true);
             m_page.RefreshChart();
         }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)

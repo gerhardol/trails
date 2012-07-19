@@ -159,13 +159,13 @@ namespace TrailsPlugin.Data
             m_incompleteResults = null;
         }
 
-        public void Clear()
+        public void Clear(bool onlyDisplay)
         {
             if (m_resultsListWrapper != null)
             {
                 foreach (TrailResultWrapper t in m_resultsListWrapper)
                 {
-                    t.Result.Clear(false);
+                    t.Result.Clear(onlyDisplay);
                 }
             }
         }

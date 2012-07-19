@@ -33,6 +33,7 @@ using GpsRunningPlugin.Util;
 namespace TrailsPlugin.Data
 {
     public enum SmoothOverTrailBorders { All, Unchanged, None };
+    public enum SyncGraphMode { None, Start, End, Average, Min, Max };
 
     public enum XAxisValue
     {
@@ -66,8 +67,13 @@ namespace TrailsPlugin.Data
     }
 
     public class LineChartUtil
+    {
+        public static string SmoothOverTrailBordersString(SmoothOverTrailBorders t)
         {
-            //No simple way to dynamically translate enum
+            return "Chart Border Smooth: " + Data.Settings.SmoothOverTrailPoints.ToString(); //TODO: Translate
+        }
+
+        //No simple way to dynamically translate enum
         //The integer (raw) value is stored as defaults too
         public static string XAxisValueString(XAxisValue XAxisReferential)
         {

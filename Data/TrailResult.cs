@@ -1422,65 +1422,68 @@ namespace TrailsPlugin.Data
             return p;
         }
 
-        public static bool m_SmoothOverTrailBorders = true;
+        public enum SmoothOverTrailBorders { All, Unchanged, None };
+        public static SmoothOverTrailBorders SmoothOverTrailPoints = SmoothOverTrailBorders.All;
         private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
         {
             if (smooth > 0)
             {
                 float min; float max;
-                if (m_SmoothOverTrailBorders || m_subResultInfo.Points.Count <= 2)
+                if (SmoothOverTrailPoints == SmoothOverTrailBorders.All || m_subResultInfo.Points.Count <= 2)
                 {
                     track = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(track, smooth, out min, out max);
                 }
                 else
                 {
                     //Smooth individual trail sections individually
-                    //Implementation is not optimised, is there a need?
-                    //int pIndex =1;
-                    //for (int i = 0; i < track.Count; i++)
-                    //{
-                    //    int nIndex = pIndex;
-                    //    while(pIndex < 1 + m_subResultInfo.Points.Count && 
-                    //        m_subResultInfo.Points[pIndex].
-                    INumericTimeDataSeries resTrack = new NumericTimeDataSeries();
-                    DateTime prevTime = this.StartTime;
-                    foreach (TrailResultPoint p in m_subResultInfo.Points)
+                    int pointIndex = 0;
+                    INumericTimeDataSeries tTrack = new NumericTimeDataSeries();
+                    DateTime pTime = DateTime.MinValue;
+                    for (int i = 0; i < track.Count; i++)
                     {
-                        DateTime currTime = p.Time;
-                        if (currTime > prevTime || p == m_subResultInfo.Points[m_subResultInfo.Points.Count - 1])
+                        DateTime t = track.EntryDateTime(track[i]);
+                        int addOffset = 0;
+                        if (t <= pTime || i >= track.Count - 1 || i == 0)
                         {
-                            if (p == m_subResultInfo.Points[m_subResultInfo.Points.Count - 1])
+                            tTrack.Add(t, track[i].Value);
+                        }
+                        else
+                        {
+                            //When updating, do not change this point
+                            addOffset = 1;
+                        }
+
+                        //End of section
+                        if ((i >= track.Count - 1 || t > pTime) && tTrack.Count > 0 && i > 0)
+                        {
+                            tTrack = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(tTrack, smooth, out min, out max);
+                            for (int j = 0; j < tTrack.Count; j++)
                             {
-                                currTime = this.EndTime;
+                                track.SetValueAt(i - addOffset - tTrack.Count + 1 + j, tTrack[j].Value);
                             }
-                            INumericTimeDataSeries tTrack = new NumericTimeDataSeries();
-                            foreach (ITimeValueEntry<float> t in track)
+                            tTrack = new NumericTimeDataSeries();
+                            if (addOffset > 0)
                             {
-                                DateTime pTime = track.EntryDateTime(t);
-                                //start/end points may be handled twice
-                                if (pTime < prevTime)
-                                {
-                                    continue;
-                                }
-                                else if (pTime > currTime)
-                                {
-                                    break;
-                                }
-                                tTrack.Add(pTime, t.Value);
-                                prevTime = pTime;
+                                //This point was not added in last smooth
+                                tTrack.Add(t, track[i].Value);
                             }
-                            if (tTrack.Count > 1)
+                        }
+                        //Increase point index
+                        //Do not care about last trail point, last section always smoothed
+                        int nIndex = pointIndex;
+                        while (t > pTime || pointIndex <= 0 ||
+                            pointIndex < m_subResultInfo.Points.Count &&
+                         (m_subResultInfo.Points[pointIndex].Time <= DateTime.MinValue ||
+                         nIndex < pointIndex && SmoothOverTrailPoints == SmoothOverTrailBorders.Unchanged &&
+                         m_subResultInfo.Points[nIndex].Required == m_subResultInfo.Points[pointIndex].Required))
+                        {
+                            pointIndex++;
+                            if (pointIndex < m_subResultInfo.Points.Count)
                             {
-                                tTrack = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(tTrack, smooth, out min, out max);
-                            }
-                            foreach (ITimeValueEntry<float> t in tTrack)
-                            {
-                                DateTime pTime = tTrack.EntryDateTime(t);
-                                resTrack.Add(pTime, t.Value);
+                                pTime = m_subResultInfo.Points[pointIndex].Time;
                             }
                         }
                     }
-                    track = resTrack;
                 }
             }
             return track;
@@ -1719,7 +1722,7 @@ namespace TrailsPlugin.Data
                             {
                                 start2 = t2.Value;
                             }
-                            float val = (float)UnitUtil.Elevation.ConvertFrom(t.Value - t2.Value + (float)start2);
+                            float val = (float)UnitUtil.Elevation.ConvertFrom(-t.Value + t2.Value - (float)start2);
                             m_deviceDiffDistTrack0.Add(time, val);
                         }
                     }

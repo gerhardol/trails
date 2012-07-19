@@ -51,6 +51,7 @@ namespace TrailsPlugin.Data
         private static bool m_showOnlyMarkedOnRoute = false;
         private static bool m_resultSummaryIsDevice = false;
         private static string m_excludeStoppedCategory = "";
+        private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.All;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
@@ -267,6 +268,12 @@ namespace TrailsPlugin.Data
             get { return m_showOnlyMarkedOnRoute; }
             set { m_showOnlyMarkedOnRoute = value; }
         }
+        public static SmoothOverTrailBorders SmoothOverTrailPoints
+        {
+            get { return m_SmoothOverTrailPoints; }
+            set { m_SmoothOverTrailPoints = value; }
+        }
+
         /// <summary>
         /// Show the summary from the device, instead of the track summaries
         /// </summary>
@@ -328,6 +335,11 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
                 if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
+                try
+                {
+                    if (attr.Length > 0) { m_SmoothOverTrailPoints = (SmoothOverTrailBorders)Enum.Parse(typeof(SmoothOverTrailBorders), attr, true); }
+                }
+                catch { }
 
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
                 if (attr.Length > 0)
@@ -424,6 +436,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.ZoomToSelection, XmlConvert.ToString(m_zoomToSelection));
             pluginNode.SetAttribute(xmlTags.ShowOnlyMarkedOnRoute, XmlConvert.ToString(m_showOnlyMarkedOnRoute));
             pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
+            pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
@@ -478,6 +491,7 @@ namespace TrailsPlugin.Data
             public const string ZoomToSelection = "ZoomToSelection";
             public const string ShowOnlyMarkedOnRoute = "ShowOnlyMarkedOnRoute";
             public const string ExcludeStoppedCategory = "ExcludeStoppedCategory";
+            public const string SmoothOverTrailPoints = "SmoothOverTrailPoints";
  
             public const string sColumns = "sColumns";
         }

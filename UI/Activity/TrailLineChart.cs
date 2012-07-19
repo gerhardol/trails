@@ -1449,7 +1449,14 @@ namespace TrailsPlugin.UI.Activity {
                 refreshData = true;
                 if (e.Modifiers == Keys.Control)
                 {
-                    TrailResult.m_SmoothOverTrailBorders = !TrailResult.m_SmoothOverTrailBorders;
+                    if (Data.Settings.SmoothOverTrailPoints >= SmoothOverTrailBorders.None)
+                    {
+                        Data.Settings.SmoothOverTrailPoints = SmoothOverTrailBorders.All;
+                    }
+                    else
+                    {
+                        Data.Settings.SmoothOverTrailPoints++;
+                    }
                 }
                 else
                 {

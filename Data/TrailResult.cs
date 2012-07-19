@@ -1422,14 +1422,12 @@ namespace TrailsPlugin.Data
             return p;
         }
 
-        public enum SmoothOverTrailBorders { All, Unchanged, None };
-        public static SmoothOverTrailBorders SmoothOverTrailPoints = SmoothOverTrailBorders.All;
         private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
         {
             if (smooth > 0)
             {
                 float min; float max;
-                if (SmoothOverTrailPoints == SmoothOverTrailBorders.All || m_subResultInfo.Points.Count <= 2)
+                if (Settings.SmoothOverTrailPoints == SmoothOverTrailBorders.All || m_subResultInfo.Points.Count <= 2)
                 {
                     track = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(track, smooth, out min, out max);
                 }
@@ -1474,7 +1472,7 @@ namespace TrailsPlugin.Data
                         while (t > pTime || pointIndex <= 0 ||
                             pointIndex < m_subResultInfo.Points.Count &&
                          (m_subResultInfo.Points[pointIndex].Time <= DateTime.MinValue ||
-                         nIndex < pointIndex && SmoothOverTrailPoints == SmoothOverTrailBorders.Unchanged &&
+                         nIndex < pointIndex && Settings.SmoothOverTrailPoints == SmoothOverTrailBorders.Unchanged &&
                          m_subResultInfo.Points[nIndex].Required == m_subResultInfo.Points[pointIndex].Required))
                         {
                             pointIndex++;

@@ -32,6 +32,8 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
+    public enum SmoothOverTrailBorders { All, Unchanged, None };
+
     public enum XAxisValue
     {
         Time,

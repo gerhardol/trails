@@ -367,7 +367,9 @@ namespace TrailsPlugin.UI.MapLayers
                 PointMapMarker selectedPoint = sender as PointMapMarker;
                 if (this.m_editTrail != null)
                 {
-                    if (e.Button == MouseButtons.Left)
+                    if (e.Button == MouseButtons.Left ||
+                        //Google Maps always reports button None
+                        e.Button == MouseButtons.None)
                     {
                         SetMovingWaypoint(selectedPoint);
                         Point midPoint = MapControl.MapProjection.GPSToPixel(MapControl.MapBounds.NorthWest,

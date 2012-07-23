@@ -173,7 +173,14 @@ namespace TrailsPlugin.Data
             m_activityTrail = activityTrail;
             m_activity = indexes.Activity;
             m_order = order;
-            m_name = indexes.Name;
+            if (this is ChildTrailResult || this.m_activity == null || string.IsNullOrEmpty(this.m_activity.Name))
+            {
+                m_name = indexes.Name;
+            }
+            else
+            {
+                this.m_name = this.m_activity.Name;
+            }
             m_subResultInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
 

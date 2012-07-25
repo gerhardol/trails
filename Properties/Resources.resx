@@ -353,4 +353,13 @@ Make sure that {1} is installed.</value>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
     <value>Add Activities with Current Reference Category</value>
   </data>
+  <data name="PerformancePredictorCompatible" xml:space="preserve">
+    <value>A PerformancePredictor Trail can be generated.</value>
+  </data>
+  <data name="PerformancePredictorPluginName" xml:space="preserve">
+    <value>PerformancePredictor plugin</value>
+  </data>
+  <data name="PerformancePredictorToInstall" xml:space="preserve">
+    <value>Install at least version {0} of {1} to get a PerformancePredictor popup.</value>
+  </data>
 </root>

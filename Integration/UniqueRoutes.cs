@@ -39,7 +39,7 @@ namespace TrailsPlugin.Integration
         private const string findSimilarRouteSnippets = "findSimilarRouteSnippets";
         private const string findCommonStretches = "findCommonStretches";
 
-        private static System.Version minVersion = new System.Version(1, 9, 235, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedUniqueRoutes = false;
 
@@ -53,6 +53,10 @@ namespace TrailsPlugin.Integration
                     testedUniqueRoutes = true;
 
                     _uniqueRoutes = IntegrationUtility.GetType(UniqueRoutesClr, UniquePlugin, out currVersion);
+                    if (currVersion.CompareTo(minVersion) < 0)
+                    {
+                        _uniqueRoutes = null;
+                    }
                 }
                 return _uniqueRoutes;
             }

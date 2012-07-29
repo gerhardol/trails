@@ -139,7 +139,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A PerformancePredictor Trail can be generated..
+        ///   Looks up a localized string similar to Analyze possible with PerformancePredictor..
         /// </summary>
         internal static string PerformancePredictorCompatible {
             get {
@@ -148,7 +148,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PerformancePredictor plugin.
+        ///   Looks up a localized string similar to PerformancePredictor.
         /// </summary>
         internal static string PerformancePredictorPluginName {
             get {
@@ -157,7 +157,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install at least version {0} of {1} to get a PerformancePredictor popup..
+        ///   Looks up a localized string similar to Install at least version {0} of {1} to analyze with PerformancePredictor..
         /// </summary>
         internal static string PerformancePredictorToInstall {
             get {

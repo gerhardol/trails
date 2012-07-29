@@ -33,6 +33,7 @@
             this.txtSetNameAtImport = new System.Windows.Forms.CheckBox();
             this.lblUniqueRoutes = new System.Windows.Forms.Label();
             this.lblHighScore = new System.Windows.Forms.Label();
+            this.lblPerformancePredictor = new System.Windows.Forms.Label();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -71,8 +72,9 @@
             this.tableLayoutPanel1.Controls.Add(this.txtSetNameAtImport, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 9);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -82,6 +84,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -177,6 +180,16 @@
             this.lblHighScore.TabIndex = 1;
             this.lblHighScore.Text = "<HS placeholder>\r\nline2";
             // 
+            // lblPerformancePredictor
+            // 
+            this.lblPerformancePredictor.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblPerformancePredictor, 2);
+            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 80);
+            this.lblPerformancePredictor.Name = "lblPerformancePredictor";
+            this.lblPerformancePredictor.Size = new System.Drawing.Size(93, 26);
+            this.lblPerformancePredictor.TabIndex = 1;
+            this.lblPerformancePredictor.Text = "<PP placeholder>\r\nline2";
+            // 
             // lblCopyright
             // 
             this.lblCopyright.AutoSize = true;
@@ -231,6 +244,7 @@
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label lblUniqueRoutes;
         private System.Windows.Forms.Label lblHighScore;
+        private System.Windows.Forms.Label lblPerformancePredictor;
         private System.Windows.Forms.Label lblLicense;
 	}
 }

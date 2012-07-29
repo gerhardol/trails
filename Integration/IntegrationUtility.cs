@@ -49,22 +49,22 @@ namespace TrailsPlugin.Integration
             return null;
         }
 
-        public static string CompabilityText(Type type, string PluginToInstall, string PluginCompatible, string UniquePlugin, System.Version currVersion, System.Version minVersion)
+        public static string CompabilityText(Type type, string PluginToInstall, string PluginCompatible, string PluginName, System.Version currVersion, System.Version minVersion)
         {
-            string result = string.Format(PluginToInstall, minVersion.ToString(), UniquePlugin);
+            string result = string.Format(PluginToInstall, minVersion.ToString(), PluginName);
             try
             {
                 if (type != null)
                 {
                     if (currVersion.CompareTo(minVersion) >= 0)
                     {
-                        result = string.Format(OtherPluginVersion, currVersion.ToString(), UniquePlugin) + " " +
+                        result = string.Format(OtherPluginVersion, currVersion.ToString(), PluginName) + " " +
                             PluginCompatible;
                     }
                     else
                     {
-                        result = string.Format(OtherPluginVersion, currVersion.ToString(), UniquePlugin) + " " +
-                            string.Format(PluginToInstall, minVersion.ToString(), UniquePlugin);
+                        result = string.Format(OtherPluginVersion, currVersion.ToString(), PluginName) + " " +
+                            string.Format(PluginToInstall, minVersion.ToString(), PluginName);
                     }
                 }
             }
@@ -73,6 +73,7 @@ namespace TrailsPlugin.Integration
             }
             return result;
         }
+
         public static string OtherPluginVersion
         {
             get

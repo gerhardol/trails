@@ -80,6 +80,7 @@ namespace TrailsPlugin.UI.Activity {
             limitActivityMenuItem.Visible = false;
             limitURMenuItem.Visible = false;
 #else
+            this.analyzeMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
             this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
 #endif
             this.summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
@@ -98,10 +99,12 @@ namespace TrailsPlugin.UI.Activity {
 
         public void UICultureChanged(CultureInfo culture)
         {
-            copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
+            this.copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_List_ListSettings;
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
+            this.analyzeMenuItem.Text = CommonResources.Text.ActionAnalyze;
+            this.performancePredictorMenuItem.Text = Properties.Resources.PerformancePredictorPluginName;
             this.advancedMenuItem.Text = Properties.Resources.UI_Activity_List_Advanced;
             this.excludeResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ExcludeResult;
             this.limitActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
@@ -883,6 +886,51 @@ namespace TrailsPlugin.UI.Activity {
             m_page.RefreshControlState();
 
         }
+
+        void PerformancePredictorPopup()
+        {
+            if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            {
+                TrailResult tr = null;
+                if (this.SelectedItemsRaw.Count == 1)
+                {
+                    //One selected use (regardless if summary/regular)
+                    tr = this.SelectedItems[0];
+                }
+                else
+                {
+                    //More than one or 0: use summary
+                    foreach (TrailResult t in this.SelectedItems)
+                    {
+                        if (t is SummaryTrailResult)
+                        {
+                            tr = t;
+                            break;
+                        }
+                    }
+                }
+                if (tr == null)
+                {
+                    tr = m_controller.CurrentActivityTrailDisplayed.GetSummary().Result;
+                }
+
+                if (tr != null)
+                {
+                    IList<IActivity> activities;
+                    if (tr is SummaryTrailResult)
+                    {
+                        activities = ((SummaryTrailResult)tr).Activities;
+                    }
+                    else
+                    {
+                        activities = new List<IActivity> { tr.Activity };
+                    }
+                    PerformancePredictor.PerformancePredictorControl(activities, null, tr.Duration, tr.Distance, null);
+                }
+            }
+        }
+
+        /*************************************************************************/
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -958,42 +1006,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.P)
             {
-                TrailResult tr = null;
-                if (this.SelectedItemsRaw.Count == 1)
-                {
-                    //One selected use (regardless if summary/regular)
-                    tr = this.SelectedItems[0];
-                }
-                else
-                {
-                    //More than one or 0: use summary
-                    foreach (TrailResult t in this.SelectedItems)
-                    {
-                        if (t is SummaryTrailResult)
-                        {
-                            tr = t;
-                            break;
-                        }
-                    }
-                }
-                if (tr == null)
-                {
-                    tr = m_controller.CurrentActivityTrailDisplayed.GetSummary().Result;
-                }
-
-                if (tr != null)
-                {
-                    IList<IActivity> activities;
-                    if (tr is SummaryTrailResult)
-                    {
-                        activities = ((SummaryTrailResult)tr).Activities;
-                    }
-                    else
-                    {
-                        activities = new List<IActivity>{ tr.Activity };
-                    }
-                    PerformancePredictor.PerformancePredictorControl(activities, null, tr.Duration, tr.Distance, null);
-                }
+                //In context menu, not documented, to be removed?
+                PerformancePredictorPopup();
             }
             else if (e.KeyCode == Keys.R)
             {
@@ -1176,7 +1190,7 @@ namespace TrailsPlugin.UI.Activity {
                 //this.referenceResultMenuItem.Enabled = true;
                 this.addCurrentCategoryMenuItem.Enabled = true;
                 this.excludeResultsMenuItem.Enabled = true;
-                this.markCommonStretchesMenuItem.Enabled = true;
+                this.markCommonStretchesMenuItem.Enabled = true && Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             }
             e.Cancel = false;
         }
@@ -1216,6 +1230,23 @@ namespace TrailsPlugin.UI.Activity {
                 m_controller.ReferenceTrailResult = tr;
                 m_page.RefreshChart();
             }
+        }
+
+        void analyzeMenuItem_DropDownOpened(object sender, System.EventArgs e)
+        {
+            if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            {
+                this.performancePredictorMenuItem.Enabled = true;
+            }
+            else
+            {
+                this.performancePredictorMenuItem.Enabled = false;
+            }
+        }
+
+        void performancePredictorMenuItem_Click(object sender, System.EventArgs e)
+        {
+            PerformancePredictorPopup();
         }
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)

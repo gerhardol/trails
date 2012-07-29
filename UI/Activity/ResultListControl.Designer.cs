@@ -32,6 +32,8 @@
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.referenceResultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.analyzeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.performancePredictorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.excludeResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.limitActivityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -113,6 +115,7 @@
             this.listSettingsMenuItem,
             this.selectSimilarSplitsMenuItem,
             this.referenceResultMenuItem,
+            this.analyzeMenuItem,
             this.advancedMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(199, 48);
@@ -145,6 +148,22 @@
             this.referenceResultMenuItem.Size = new System.Drawing.Size(198, 22);
             this.referenceResultMenuItem.Text = "<Set reference trail...";
             this.referenceResultMenuItem.Click += new System.EventHandler(referenceResultMenuItem_Click);
+            // 
+            // analyzeMenuItem
+            // 
+            this.analyzeMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.performancePredictorMenuItem});
+            this.analyzeMenuItem.Name = "sendToMenuItem";
+            this.analyzeMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.analyzeMenuItem.Text = "<Analyze";
+            this.analyzeMenuItem.DropDownOpened += new System.EventHandler(analyzeMenuItem_DropDownOpened);
+            // 
+            // performancePredictorMenuItem
+            // 
+            this.performancePredictorMenuItem.Name = "performancePredictorMenuItem";
+            this.performancePredictorMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.performancePredictorMenuItem.Text = "<PerformancePredictor...";
+            this.performancePredictorMenuItem.Click += new System.EventHandler(this.performancePredictorMenuItem_Click);
             // 
             // advancedMenuItem
             // 
@@ -234,6 +253,8 @@
         private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem referenceResultMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem analyzeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem performancePredictorMenuItem;
         private System.Windows.Forms.ToolStripMenuItem advancedMenuItem;
         private System.Windows.Forms.ToolStripMenuItem excludeResultsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem limitActivityMenuItem;

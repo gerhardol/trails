@@ -37,7 +37,7 @@ namespace TrailsPlugin.Integration
         private const string HighScorePlugin = "HighScorePlugin";
         private const string getHighScore = "getResults";
 
-        private static System.Version minVersion = new System.Version(1, 9, 246, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedHighScore = false;
 
@@ -51,6 +51,10 @@ namespace TrailsPlugin.Integration
                     testedHighScore = true;
 
                     _HighScore = IntegrationUtility.GetType(HighScoreClr, HighScorePlugin, out currVersion);
+                    if (currVersion.CompareTo(minVersion) < 0)
+                    {
+                        _HighScore = null;
+                    }
                 }
                 return _HighScore;
             }

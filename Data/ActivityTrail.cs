@@ -61,7 +61,7 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    //Add a separate status here?
+                    m_status = TrailOrderStatus.NotInstalled;
                 }
             }
             else if (m_trail.TrailType == Trail.CalcType.Splits)
@@ -1493,6 +1493,6 @@ namespace TrailsPlugin.Data
         //InBoundNoCalc is better than InBound, as it may be Match
         //MatchPartial is when all match, but some with "wildcards"
         //InBoundMatchPartial is when there is at least one match, but not for all points
-        Match, MatchPartial, MatchNoCalc, InBoundMatchPartial, InBoundNoCalc, InBound, NotInBound, NoInfo
+        Match, MatchPartial, MatchNoCalc, InBoundMatchPartial, InBoundNoCalc, InBound, NotInBound, NoInfo, NotInstalled
     }
 }

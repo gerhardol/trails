@@ -36,7 +36,7 @@ namespace TrailsPlugin.Integration
         private const string PerformancePredictorPlugin = "PerformancePredictorPlugin";
         private const string PerformancePredictorPopup = "PerformancePredictorControl";
 
-        private static System.Version minVersion = new System.Version(2, 0, 339, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedPerformancePredictor = false;
 
@@ -50,6 +50,10 @@ namespace TrailsPlugin.Integration
                     testedPerformancePredictor = true;
 
                     _PerformancePredictor = IntegrationUtility.GetType(PerformancePredictorClr, PerformancePredictorPlugin, out currVersion);
+                    if (currVersion.CompareTo(minVersion) < 0)
+                    {
+                        _PerformancePredictor = null;
+                    }
                 }
                 return _PerformancePredictor;
             }

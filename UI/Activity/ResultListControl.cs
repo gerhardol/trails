@@ -770,7 +770,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
-                TrailResultWrapper t = m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
+                m_controller.CurrentActivityTrailDisplayed.SetSummary(this.SelectedItemsWrapper);
+                TrailResultWrapper t = m_controller.CurrentActivityTrailDisplayed.GetSummary();
                 if (t != null)
                 {
                     summaryList.RefreshElements(new List<TrailResultWrapper>{t});
@@ -954,6 +955,45 @@ namespace TrailsPlugin.UI.Activity {
                     TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = true;
                 }
                 //Only in table, no need to refresh
+            }
+            else if (e.KeyCode == Keys.P)
+            {
+                TrailResult tr = null;
+                if (this.SelectedItemsRaw.Count == 1)
+                {
+                    //One selected use (regardless if summary/regular)
+                    tr = this.SelectedItems[0];
+                }
+                else
+                {
+                    //More than one or 0: use summary
+                    foreach (TrailResult t in this.SelectedItems)
+                    {
+                        if (t is SummaryTrailResult)
+                        {
+                            tr = t;
+                            break;
+                        }
+                    }
+                }
+                if (tr == null)
+                {
+                    tr = m_controller.CurrentActivityTrailDisplayed.GetSummary().Result;
+                }
+
+                if (tr != null)
+                {
+                    IList<IActivity> activities;
+                    if (tr is SummaryTrailResult)
+                    {
+                        activities = ((SummaryTrailResult)tr).Activities;
+                    }
+                    else
+                    {
+                        activities = new List<IActivity>{ tr.Activity };
+                    }
+                    PerformancePredictor.PerformancePredictorControl(activities, null, tr.Duration, tr.Distance, null);
+                }
             }
             else if (e.KeyCode == Keys.R)
             {

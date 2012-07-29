@@ -214,7 +214,7 @@ namespace TrailsPlugin.Data
             return results;
         }
 
-        public TrailResultWrapper SetSummary(IList<TrailResultWrapper> selected)
+        public void SetSummary(IList<TrailResultWrapper> selected)
         {
             IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
             if (selected != null)
@@ -234,6 +234,9 @@ namespace TrailsPlugin.Data
             }
             m_summary.SetSummary(selected2);
             //TODO: Splits
+        }
+        public TrailResultWrapper GetSummary()
+        {
             return m_summary;
         }
 

@@ -256,6 +256,22 @@ namespace TrailsPlugin.Data
             return results.Count - skip;
         }
 
+        public override IActivity Activity { get { return null; } }
+        public IList<IActivity> Activities
+        {
+            get
+            {
+                IList<IActivity> activities = new List<IActivity>();
+                foreach (TrailResult t in this.Results)
+                {
+                    if (!activities.Contains(t.Activity))
+                    {
+                        activities.Add(t.Activity);
+                    }
+                }
+                return activities;
+            }
+        }
         public IList<TrailResult> Results
         {
             get

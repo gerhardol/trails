@@ -32,12 +32,11 @@ namespace TrailsPlugin.Integration
 {
     public static class PerformancePredictor
     {
-        //Note: namespace changed, compatibility namespace still used
         private const string PerformancePredictorClr = "PerformancePredictor.Export.PerformancePredictor";
         private const string PerformancePredictorPlugin = "PerformancePredictorPlugin";
-        private const string getPerformancePredictor = "getResults";
+        private const string PerformancePredictorPopup = "PerformancePredictorControl";
 
-        private static System.Version minVersion = new System.Version(2, 0, 341, 0);
+        private static System.Version minVersion = new System.Version(2, 0, 339, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedPerformancePredictor = false;
 
@@ -81,26 +80,15 @@ namespace TrailsPlugin.Integration
             public IItemTrackSelectionInfo selInfo;
             public string tooltip;
         }
-        public static IList<PerformancePredictorResult> GetPerformancePredictorForActivity(IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
-        {
-            IList<PerformancePredictorResult> results = null;
 
+        public static void PerformancePredictorControl(IList<IActivity> activities, IDailyActivityView view, TimeSpan time, double distance, System.Windows.Forms.ProgressBar progressBar)
+        {
             try
             {
                 if (GetPerformancePredictor != null)
                 {
-                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod(getPerformancePredictor);
-                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, progressBar });
-                    results = new List<PerformancePredictorResult>();
-                    foreach (IList<Object> o in (IList<IList<Object>>)resultFromPlugIn)
-                    {
-                        //Ignore null results
-                        //could be used to sync results for the same PerformancePredictor Goal, separate activities
-                        if (o != null)
-                        {
-                            results.Add(new PerformancePredictorResult(o));
-                        }
-                    }
+                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod("PerformancePredictorPopup");
+                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, view, time, distance, progressBar });
                 }
             }
             catch (Exception e)
@@ -115,8 +103,6 @@ namespace TrailsPlugin.Integration
                 throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
         PerformancePredictorPlugin + ".dll", PerformancePredictorPluginName) + Environment.NewLine);
             }
-
-            return results;
         }
 
         private static string PerformancePredictorPluginName

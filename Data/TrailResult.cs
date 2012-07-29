@@ -239,7 +239,7 @@ namespace TrailsPlugin.Data
         }
 
         /**********************************************************/
-        public IActivity Activity
+        public virtual IActivity Activity
         {
             get { return m_activity; }
         }
@@ -818,6 +818,11 @@ namespace TrailsPlugin.Data
             {
                 m_distanceMetersTrack = new DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = false;
+                if (this is SummaryTrailResult)
+                {
+                    m_activityDistanceMetersTrack = m_distanceMetersTrack;
+                    return;
+                }
                 if (this is ChildTrailResult)
                 {
                     m_activityDistanceMetersTrack = (this as ChildTrailResult).ParentResult.ActivityDistanceMetersTrack;

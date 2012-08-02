@@ -674,6 +674,20 @@ namespace TrailsPlugin.Data
 
         /*********************************************/
 
+        public IValueRangeSeries<DateTime> ExternalPauses
+        {
+            get
+            {
+                IValueRangeSeries<DateTime> pauses = new ValueRangeSeries<DateTime>();
+                pauses.Add(new ValueRange<DateTime>( DateTime.MinValue, this.StartTime.AddSeconds(-1) ));
+                foreach(IValueRange<DateTime> v in this.Pauses)
+                {
+                    pauses.Add(v);
+                }
+                pauses.Add(new ValueRange<DateTime>(this.EndTime.AddSeconds(1), DateTime.MaxValue));
+                return pauses;
+            }
+        }
         public IValueRangeSeries<DateTime> Pauses
         {
             get

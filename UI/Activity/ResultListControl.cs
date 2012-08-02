@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Globalization;
 
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
@@ -887,36 +888,42 @@ namespace TrailsPlugin.UI.Activity {
 
         }
 
+        TrailResult GetSelectedTrailResults()
+        {
+            TrailResult tr = null;
+            if (this.SelectedItemsRaw.Count == 1)
+            {
+                //One selected use (regardless if summary/regular)
+                tr = this.SelectedItems[0];
+            }
+            else
+            {
+                //More than one or 0: use summary
+                foreach (TrailResult t in this.SelectedItems)
+                {
+                    if (t is SummaryTrailResult)
+                    {
+                        tr = t;
+                        break;
+                    }
+                }
+            }
+            if (tr == null)
+            {
+                tr = m_controller.CurrentActivityTrailDisplayed.GetSummary().Result;
+            }
+
+            return tr;
+        }
+
         void PerformancePredictorPopup()
         {
             if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
-                TrailResult tr = null;
-                if (this.SelectedItemsRaw.Count == 1)
-                {
-                    //One selected use (regardless if summary/regular)
-                    tr = this.SelectedItems[0];
-                }
-                else
-                {
-                    //More than one or 0: use summary
-                    foreach (TrailResult t in this.SelectedItems)
-                    {
-                        if (t is SummaryTrailResult)
-                        {
-                            tr = t;
-                            break;
-                        }
-                    }
-                }
-                if (tr == null)
-                {
-                    tr = m_controller.CurrentActivityTrailDisplayed.GetSummary().Result;
-                }
-
+                TrailResult tr = GetSelectedTrailResults();
+                IList<IActivity> activities;
                 if (tr != null)
                 {
-                    IList<IActivity> activities;
                     if (tr is SummaryTrailResult)
                     {
                         activities = ((SummaryTrailResult)tr).Activities;
@@ -925,7 +932,34 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         activities = new List<IActivity> { tr.Activity };
                     }
-                    PerformancePredictor.PerformancePredictorControl(activities, null, tr.Duration, tr.Distance, null);
+                    PerformancePredictor.PerformancePredictorPopup(activities, m_view, tr.Duration, tr.Distance, null);
+                }
+            }
+        }
+
+        void HighScorePopup()
+        {
+            if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            {
+                TrailResult tr = GetSelectedTrailResults();
+                IList<IActivity> activities = new List<IActivity>();
+                IList<IValueRangeSeries<DateTime>> pauses = new List<IValueRangeSeries<DateTime>>();
+                if (tr != null)
+                {
+                    if (tr is SummaryTrailResult)
+                    {
+                        foreach (TrailResult t in ((SummaryTrailResult)tr).Results)
+                        {
+                            activities.Add(t.Activity);
+                            pauses.Add(t.ExternalPauses);
+                        }
+                    }
+                    else
+                    {
+                        activities.Add(tr.Activity);
+                        pauses.Add(tr.ExternalPauses);
+                    }
+                    HighScore.HighScorePopup(activities, pauses, m_view, null);
                 }
             }
         }
@@ -1007,7 +1041,8 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.P)
             {
                 //In context menu, not documented, to be removed?
-                PerformancePredictorPopup();
+                //PerformancePredictorPopup();
+                HighScorePopup();
             }
             else if (e.KeyCode == Keys.R)
             {

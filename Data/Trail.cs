@@ -305,6 +305,7 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
+
         public static TrailResultInfo TrailResultInfoFromSplits(IActivity activity, bool onlyActiveLaps)
         {
             TrailResultInfo results = new TrailResultInfo(activity, false);

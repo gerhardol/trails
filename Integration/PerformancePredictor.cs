@@ -34,7 +34,7 @@ namespace TrailsPlugin.Integration
     {
         private const string PerformancePredictorClr = "PerformancePredictor.Export.PerformancePredictor";
         private const string PerformancePredictorPlugin = "PerformancePredictorPlugin";
-        private const string PerformancePredictorPopup = "PerformancePredictorControl";
+        private const string _PerformancePredictorPopup = "PerformancePredictorPopup";
 
         private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
@@ -85,13 +85,13 @@ namespace TrailsPlugin.Integration
             public string tooltip;
         }
 
-        public static void PerformancePredictorControl(IList<IActivity> activities, IDailyActivityView view, TimeSpan time, double distance, System.Windows.Forms.ProgressBar progressBar)
+        public static void PerformancePredictorPopup(IList<IActivity> activities, IDailyActivityView view, TimeSpan time, double distance, System.Windows.Forms.ProgressBar progressBar)
         {
             try
             {
                 if (GetPerformancePredictor != null)
                 {
-                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod("PerformancePredictorPopup");
+                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod(_PerformancePredictorPopup);
                     object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, view, time, distance, progressBar });
                 }
             }

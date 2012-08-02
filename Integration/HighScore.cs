@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
@@ -35,6 +36,7 @@ namespace TrailsPlugin.Integration
         //Note: namespace changed, compatibility namespace still used
         private const string HighScoreClr = "HighScore.Export.HighScore";
         private const string HighScorePlugin = "HighScorePlugin";
+        private const string _HighScorePopup = "HighScorePopup";
         private const string getHighScore = "getResults";
 
         private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
@@ -85,6 +87,7 @@ namespace TrailsPlugin.Integration
             public IItemTrackSelectionInfo selInfo;
             public string tooltip;
         }
+
         public static IList<HighScoreResult> GetHighScoreForActivity(IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<HighScoreResult> results = null;
@@ -111,16 +114,40 @@ namespace TrailsPlugin.Integration
             {
                 // Log error?
                 throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
-            HighScorePlugin + ".dll", HighScorePluginName) + Environment.NewLine, e);
+                  HighScorePlugin + ".dll", HighScorePluginName) + Environment.NewLine, e);
             }
 
             if (GetHighScore == null)
             {
                 throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
-        HighScorePlugin + ".dll", HighScorePluginName) + Environment.NewLine);
+                  HighScorePlugin + ".dll", HighScorePluginName) + Environment.NewLine);
             }
 
             return results;
+        }
+
+        public static void HighScorePopup(IList<IActivity> activities, IList<IValueRangeSeries<DateTime>> pauses, IDailyActivityView view, System.Windows.Forms.ProgressBar progressBar)
+        {
+            try
+            {
+                if (GetHighScore != null)
+                {
+                    MethodInfo methodInfo = GetHighScore.GetMethod(_HighScorePopup);
+                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, pauses, view, progressBar });
+                }
+            }
+            catch (Exception e)
+            {
+                // Log error?
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+                  HighScorePlugin + ".dll", HighScorePluginName) + Environment.NewLine, e);
+            }
+
+            if (GetHighScore == null)
+            {
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+                  HighScorePlugin + ".dll", HighScorePluginName) + Environment.NewLine);
+            }
         }
 
         private static string HighScorePluginName

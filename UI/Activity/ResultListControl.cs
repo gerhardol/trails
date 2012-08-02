@@ -105,6 +105,7 @@ namespace TrailsPlugin.UI.Activity {
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
             this.analyzeMenuItem.Text = CommonResources.Text.ActionAnalyze;
+            this.highScoreMenuItem.Text = Properties.Resources.HighScorePluginName;
             this.performancePredictorMenuItem.Text = Properties.Resources.PerformancePredictorPluginName;
             this.advancedMenuItem.Text = Properties.Resources.UI_Activity_List_Advanced;
             this.excludeResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ExcludeResult;
@@ -1269,6 +1270,15 @@ namespace TrailsPlugin.UI.Activity {
 
         void analyzeMenuItem_DropDownOpened(object sender, System.EventArgs e)
         {
+            if (HighScore.HighScoreIntegrationEnabled)
+            {
+                this.highScoreMenuItem.Enabled = true;
+            }
+            else
+            {
+                this.highScoreMenuItem.Enabled = false;
+            }
+
             if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 this.performancePredictorMenuItem.Enabled = true;
@@ -1277,6 +1287,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.performancePredictorMenuItem.Enabled = false;
             }
+        }
+
+        void highScoreMenuItem_Click(object sender, System.EventArgs e)
+        {
+            PerformancePredictorPopup();
         }
 
         void performancePredictorMenuItem_Click(object sender, System.EventArgs e)

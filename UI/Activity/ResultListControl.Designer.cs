@@ -33,6 +33,7 @@
             this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.referenceResultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analyzeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.highScoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.performancePredictorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.excludeResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,11 +153,19 @@
             // analyzeMenuItem
             // 
             this.analyzeMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                this.highScoreMenuItem,
             this.performancePredictorMenuItem});
             this.analyzeMenuItem.Name = "sendToMenuItem";
             this.analyzeMenuItem.Size = new System.Drawing.Size(198, 22);
             this.analyzeMenuItem.Text = "<Analyze";
             this.analyzeMenuItem.DropDownOpened += new System.EventHandler(analyzeMenuItem_DropDownOpened);
+            // 
+            // highScoreMenuItem
+            // 
+            this.highScoreMenuItem.Name = "highScoreMenuItem";
+            this.highScoreMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.highScoreMenuItem.Text = "<highScore...";
+            this.highScoreMenuItem.Click += new System.EventHandler(this.highScoreMenuItem_Click);
             // 
             // performancePredictorMenuItem
             // 
@@ -254,6 +263,7 @@
         private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem referenceResultMenuItem;
         private System.Windows.Forms.ToolStripMenuItem analyzeMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem highScoreMenuItem;
         private System.Windows.Forms.ToolStripMenuItem performancePredictorMenuItem;
         private System.Windows.Forms.ToolStripMenuItem advancedMenuItem;
         private System.Windows.Forms.ToolStripMenuItem excludeResultsMenuItem;

@@ -39,23 +39,29 @@ namespace TrailsPlugin.UI.Settings {
         {
             txtDefaultRadius.Text = UnitUtil.Elevation.ToString(Data.Settings.DefaultRadius, "u");
             txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
+            boxStoppedCategory.Text = Data.Settings.ExcludeStoppedCategory;
         }
         public void ThemeChanged(ITheme visualTheme)
         {
 			PluginInfoBanner.ThemeChanged(visualTheme);
 			PluginInfoPanel.ThemeChanged(visualTheme);
 			txtDefaultRadius.ThemeChanged(visualTheme);
+            boxStoppedCategory.ThemeChanged(visualTheme);
 		}
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
+            //Not working
             toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
+            
             lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
+            this.lblStoppedCategory.Text = "Stopped Category Override" + ":"; //TODO: Translate 
             presentSettings();
 
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
             this.lblHighScore.Text = Integration.HighScore.CompabilityText;
             this.lblPerformancePredictor.Text = Integration.PerformancePredictor.CompabilityText;
+
             //Some untranslated strings....
             this.lblLicense.Text = "\r\nTrails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
@@ -77,10 +83,16 @@ namespace TrailsPlugin.UI.Settings {
             }
             presentSettings();
         }
+
         void txtSetNameAtImport_CheckedChanged(object sender, System.EventArgs e)
         {
             Data.Settings.SetNameAtImport = txtSetNameAtImport.Checked;
             presentSettings();
+        }
+
+        void boxStoppedCategory_LostFocus(object sender, System.EventArgs e)
+        {
+            Data.Settings.ExcludeStoppedCategory = boxStoppedCategory.Text;
         }
 	}
 }

@@ -123,6 +123,7 @@ namespace TrailsPlugin.Integration
             }
         }
 
+        //relatve fast call for 2150 activities, 0.03s calledindividually, 0.0016s called for all
         public static IList<PerformancePredictorResult> PerformancePredictorFields(IList<IActivity> activities, IList<double> times, IList<double> distances, IList<double> predictDistances, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<PerformancePredictorResult> results = null;

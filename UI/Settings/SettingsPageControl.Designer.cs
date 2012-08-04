@@ -37,6 +37,8 @@
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.lblStoppedCategory = new System.Windows.Forms.Label();
+            this.boxStoppedCategory = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.PluginInfoPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -70,17 +72,20 @@
             this.tableLayoutPanel1.Controls.Add(this.txtDefaultRadius, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.lblSetNameAtImport, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.txtSetNameAtImport, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblStoppedCategory, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.boxStoppedCategory, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 10);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 9;
+            this.tableLayoutPanel1.RowCount = 12;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
@@ -89,13 +94,15 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 200);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // PluginInfoBanner
             // 
-            this.PluginInfoBanner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PluginInfoBanner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PluginInfoBanner.BackColor = System.Drawing.Color.Transparent;
             this.tableLayoutPanel1.SetColumnSpan(this.PluginInfoBanner, 2);
             this.PluginInfoBanner.HasMenuButton = false;
@@ -117,7 +124,7 @@
             this.lblDefaultRadius.Name = "lblDefaultRadius";
             this.lblDefaultRadius.Size = new System.Drawing.Size(80, 13);
             this.lblDefaultRadius.TabIndex = 0;
-            this.lblDefaultRadius.Text = "Default Radius:";
+            this.lblDefaultRadius.Text = "<Default Radius:";
             // 
             // txtDefaultRadius
             // 
@@ -160,11 +167,42 @@
             this.txtSetNameAtImport.TabIndex = 0;
             this.txtSetNameAtImport.CheckedChanged += new System.EventHandler(this.txtSetNameAtImport_CheckedChanged);
             // 
+            // lblStoppedCategory
+            // 
+            this.lblStoppedCategory.AutoSize = true;
+            this.lblStoppedCategory.Location = new System.Drawing.Point(3, 213);
+            this.lblStoppedCategory.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblStoppedCategory.Name = "lblStoppedCategory";
+            this.lblStoppedCategory.Size = new System.Drawing.Size(96, 13);
+            this.lblStoppedCategory.TabIndex = 4;
+            this.lblStoppedCategory.Text = "<StoppedCategory";
+            // 
+            // boxStoppedCategory
+            // 
+            this.boxStoppedCategory.AcceptsReturn = false;
+            this.boxStoppedCategory.AcceptsTab = false;
+            this.boxStoppedCategory.BackColor = System.Drawing.Color.White;
+            this.boxStoppedCategory.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxStoppedCategory.ButtonImage = null;
+            this.boxStoppedCategory.Location = new System.Drawing.Point(0, 246);
+            this.boxStoppedCategory.Margin = new System.Windows.Forms.Padding(0);
+            this.boxStoppedCategory.MaxLength = 32767;
+            this.boxStoppedCategory.Multiline = false;
+            this.boxStoppedCategory.Name = "boxStoppedCategory";
+            this.boxStoppedCategory.ReadOnly = false;
+            this.boxStoppedCategory.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxStoppedCategory.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxStoppedCategory.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxStoppedCategory.Size = new System.Drawing.Size(100, 19);
+            this.boxStoppedCategory.TabIndex = 5;
+            this.boxStoppedCategory.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxStoppedCategory.LostFocus += new System.EventHandler(boxStoppedCategory_LostFocus);
+            // 
             // lblUniqueRoutes
             // 
             this.lblUniqueRoutes.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblUniqueRoutes, 2);
-            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 80);
+            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 100);
             this.lblUniqueRoutes.Name = "lblUniqueRoutes";
             this.lblUniqueRoutes.Size = new System.Drawing.Size(93, 26);
             this.lblUniqueRoutes.TabIndex = 1;
@@ -174,9 +212,9 @@
             // 
             this.lblHighScore.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblHighScore, 2);
-            this.lblHighScore.Location = new System.Drawing.Point(3, 80);
+            this.lblHighScore.Location = new System.Drawing.Point(3, 130);
             this.lblHighScore.Name = "lblHighScore";
-            this.lblHighScore.Size = new System.Drawing.Size(93, 26);
+            this.lblHighScore.Size = new System.Drawing.Size(92, 26);
             this.lblHighScore.TabIndex = 1;
             this.lblHighScore.Text = "<HS placeholder>\r\nline2";
             // 
@@ -184,9 +222,9 @@
             // 
             this.lblPerformancePredictor.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblPerformancePredictor, 2);
-            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 80);
+            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 160);
             this.lblPerformancePredictor.Name = "lblPerformancePredictor";
-            this.lblPerformancePredictor.Size = new System.Drawing.Size(93, 26);
+            this.lblPerformancePredictor.Size = new System.Drawing.Size(91, 26);
             this.lblPerformancePredictor.TabIndex = 1;
             this.lblPerformancePredictor.Text = "<PP placeholder>\r\nline2";
             // 
@@ -195,7 +233,7 @@
             this.lblCopyright.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblCopyright, 2);
             this.lblCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCopyright.Location = new System.Drawing.Point(3, 140);
+            this.lblCopyright.Location = new System.Drawing.Point(3, 190);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(350, 20);
             this.lblCopyright.TabIndex = 1;
@@ -205,13 +243,13 @@
             // 
             this.lblLicense.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblLicense, 2);
-            this.lblLicense.Location = new System.Drawing.Point(3, 160);
+            this.lblLicense.Location = new System.Drawing.Point(3, 226);
             this.lblLicense.Name = "lblLicense";
-            this.lblLicense.Size = new System.Drawing.Size(350, 39);
+            this.lblLicense.Size = new System.Drawing.Size(350, 20);
             this.lblLicense.TabIndex = 3;
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
-                "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
-                "rg/licenses/lgpl.html.";
+    "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
+    "rg/licenses/lgpl.html.";
             // 
             // SettingsPageControl
             // 
@@ -246,5 +284,7 @@
         private System.Windows.Forms.Label lblHighScore;
         private System.Windows.Forms.Label lblPerformancePredictor;
         private System.Windows.Forms.Label lblLicense;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxStoppedCategory;
+        private System.Windows.Forms.Label lblStoppedCategory;
 	}
 }

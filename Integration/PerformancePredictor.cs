@@ -34,9 +34,11 @@ namespace TrailsPlugin.Integration
     {
         private const string PerformancePredictorClr = "PerformancePredictor.Export.PerformancePredictor";
         private const string PerformancePredictorPlugin = "PerformancePredictorPlugin";
-        private const string _PerformancePredictorPopup = "PerformancePredictorPopup";
 
-        private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
+        private const string _PerformancePredictorPopup = "PerformancePredictorPopup";
+        private const string _PerformancePredictorFields = "getResults";
+
+        private static readonly System.Version minVersion = new System.Version(2, 0, 357, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedPerformancePredictor = false;
 
@@ -74,15 +76,27 @@ namespace TrailsPlugin.Integration
 
         public class PerformancePredictorResult
         {
+            public class Predicted
+            {
+                public double new_dist, new_time;
+                public Predicted(double new_dist, double new_time)
+                {
+                    this.new_dist = new_dist;
+                    this.new_time = new_time;
+                }
+            }
             public PerformancePredictorResult(IList<Object> o)
             {
-                this.activity = (IActivity)o[0];
-                this.selInfo = (IItemTrackSelectionInfo)o[1];
-                this.tooltip = (string)o[2];
+                this.vo2max = (double)o[0];
+                this.vdot = (double)o[1];
+                this.predicted = new List<Predicted>();
+                for(int i = 2; i < o.Count-1; i+=2)
+                {
+                    predicted.Add(new Predicted((double)o[i], (double)o[i+1]));
+                }
             }
-            public IActivity activity;
-            public IItemTrackSelectionInfo selInfo;
-            public string tooltip;
+            public double vo2max, vdot;
+            public IList<Predicted> predicted;
         }
 
         public static void PerformancePredictorPopup(IList<IActivity> activities, IDailyActivityView view, TimeSpan time, double distance, System.Windows.Forms.ProgressBar progressBar)
@@ -107,6 +121,43 @@ namespace TrailsPlugin.Integration
                 throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
         PerformancePredictorPlugin + ".dll", PerformancePredictorPluginName) + Environment.NewLine);
             }
+        }
+
+        public static IList<PerformancePredictorResult> PerformancePredictorFields(IList<IActivity> activities, IList<double> times, IList<double> distances, IList<double> predictDistances, System.Windows.Forms.ProgressBar progressBar)
+        {
+            IList<PerformancePredictorResult> results = null;
+            try
+            {
+                if (GetPerformancePredictor != null)
+                {
+                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod("getResults");
+                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, times, distances, predictDistances, progressBar });
+                    results = new List<PerformancePredictorResult>();
+                    foreach (IList<Object> o in (IList<IList<Object>>)resultFromPlugIn)
+                    {
+                        //Ignore null results
+                        //could be used to sync results for the same HighScore Goal, separate activities
+                        if (o != null)
+                        {
+                            results.Add(new PerformancePredictorResult(o));
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // Log error?
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+            PerformancePredictorPlugin + ".dll", PerformancePredictorPluginName) + Environment.NewLine, e);
+            }
+
+            if (GetPerformancePredictor == null)
+            {
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+        PerformancePredictorPlugin + ".dll", PerformancePredictorPluginName) + Environment.NewLine);
+            }
+
+            return results;
         }
 
         private static string PerformancePredictorPluginName

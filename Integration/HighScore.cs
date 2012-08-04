@@ -39,7 +39,7 @@ namespace TrailsPlugin.Integration
         private const string _HighScorePopup = "HighScorePopup";
         private const string getHighScore = "getResults";
 
-        private static readonly System.Version minVersion = new System.Version(2, 0, 343, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 357, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedHighScore = false;
 

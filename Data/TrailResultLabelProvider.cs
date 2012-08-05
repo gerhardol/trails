@@ -123,6 +123,8 @@ namespace TrailsPlugin.Data
                     return UnitUtil.PaceOrSpeed.ToString(row.FastestSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.Name:
                     return row.Name;
+                case TrailResultColumnIds.PredictDistance:
+                    return UnitUtil.Time.ToString(row.PredictDistance, "");
                 default:
                     if (row.Activity == null) return null;
                     return base.GetText(row.Activity, column);

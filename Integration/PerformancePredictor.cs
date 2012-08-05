@@ -52,7 +52,7 @@ namespace TrailsPlugin.Integration
                     testedPerformancePredictor = true;
 
                     _PerformancePredictor = IntegrationUtility.GetType(PerformancePredictorClr, PerformancePredictorPlugin, out currVersion);
-                    if (currVersion.CompareTo(minVersion) < 0)
+                    if (currVersion == null || currVersion.CompareTo(minVersion) < 0)
                     {
                         _PerformancePredictor = null;
                     }

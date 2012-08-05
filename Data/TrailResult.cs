@@ -67,8 +67,10 @@ namespace TrailsPlugin.Data
         internal IList<ChildTrailResult> m_childrenResults;
         private TrailResultInfo m_subResultInfo;
 
+        private bool? m_includeStopped;
         private DateTime? m_startTime;
         private DateTime? m_endTime;
+        private float? m_predictDistance;
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
         private Color m_trailColor = getColor(nextTrailColor++);
@@ -647,7 +649,7 @@ namespace TrailsPlugin.Data
             }
             return isIncludeStoppedCategory(category.Parent);
         }
-        private bool? m_includeStopped;
+
         private bool IncludeStopped
         {
             get
@@ -1263,6 +1265,31 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public float PredictDistance
+        {
+            get
+            {
+                if(m_predictDistance==null)
+                {
+                           if (TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            {
+ IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t = 
+     TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
+     new List<IActivity>{this.Activity},new List<double>{this.Duration.TotalSeconds},new List<double>{this.Distance},new List<double>{Settings.PredictDistance},null);
+                               if(t!=null && t.Count>0&&t[0]!=null)
+                               {
+                                   m_predictDistance=(float)t[0].predicted[0].new_time;
+                               }
+                           }
+                if(m_predictDistance==null)
+                {
+                    m_predictDistance=float.NaN;
+                }
+            }
+            return (float)m_predictDistance;
+            }
+        }
+
         /**************************************************************************/
         //Reset values used in calculations
         public void Clear(bool onlyDisplay)
@@ -1284,6 +1311,7 @@ namespace TrailsPlugin.Data
             m_trailPointDist0 = null;
             m_ascent = null;
             m_descent = null;
+            m_predictDistance = null;
 
             //smoothing control
             //m_TrailActivityInfoOptions = null;

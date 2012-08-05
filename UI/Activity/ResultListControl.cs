@@ -940,7 +940,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void HighScorePopup()
         {
-            if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            if (HighScore.HighScoreIntegrationEnabled)
             {
                 TrailResult tr = GetSelectedTrailResults();
                 IList<IActivity> activities = new List<IActivity>();
@@ -951,7 +951,11 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         foreach (TrailResult t in ((SummaryTrailResult)tr).Results)
                         {
-                            activities.Add(t.Activity);
+                            //Only add one activity, PP only uses that
+                            if (activities.Count == 0)
+                            {
+                                activities.Add(t.Activity);
+                            }
                             pauses.Add(t.ExternalPauses);
                         }
                     }
@@ -1291,7 +1295,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void highScoreMenuItem_Click(object sender, System.EventArgs e)
         {
-            PerformancePredictorPopup();
+            HighScorePopup();
         }
 
         void performancePredictorMenuItem_Click(object sender, System.EventArgs e)

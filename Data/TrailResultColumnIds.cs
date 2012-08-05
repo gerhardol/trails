@@ -114,6 +114,7 @@ namespace TrailsPlugin.Data {
         public const string Name = "Name";
         public const string Location = "Location";
         public const string Category = "Category";
+        public const string PredictDistance = "PredictDistance";
 
         public static IList<string> DefaultColumns()
         {
@@ -184,6 +185,7 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, "", 70, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u")+ ")", "", 70, StringAlignment.Far));
 
             return columnDefs;
 		}
@@ -273,6 +275,8 @@ namespace TrailsPlugin.Data {
                     return x.ElevChg;
                 case TrailResultColumnIds.MaxHR:
                     return x.MaxHR;
+                case TrailResultColumnIds.PredictDistance:
+                    return x.PredictDistance;
                 default:
                     return x.Order;
             }

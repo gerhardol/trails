@@ -53,7 +53,7 @@ namespace TrailsPlugin.Integration
                     testedHighScore = true;
 
                     _HighScore = IntegrationUtility.GetType(HighScoreClr, HighScorePlugin, out currVersion);
-                    if (currVersion.CompareTo(minVersion) < 0)
+                    if (currVersion == null || currVersion.CompareTo(minVersion) < 0)
                     {
                         _HighScore = null;
                     }

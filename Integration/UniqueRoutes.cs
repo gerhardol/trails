@@ -53,7 +53,7 @@ namespace TrailsPlugin.Integration
                     testedUniqueRoutes = true;
 
                     _uniqueRoutes = IntegrationUtility.GetType(UniqueRoutesClr, UniquePlugin, out currVersion);
-                    if (currVersion.CompareTo(minVersion) < 0)
+                    if (currVersion == null || currVersion.CompareTo(minVersion) < 0)
                     {
                         _uniqueRoutes = null;
                     }

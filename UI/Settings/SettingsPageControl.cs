@@ -28,11 +28,19 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using GpsRunningPlugin.Util;
 
-namespace TrailsPlugin.UI.Settings {
-	public partial class SettingsPageControl : UserControl {
-		public SettingsPageControl() {
+namespace TrailsPlugin.UI.Settings
+{
+	public partial class SettingsPageControl : UserControl
+    {
+		public SettingsPageControl()
+        {
 			InitializeComponent();
             presentSettings();
+            if (!TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            {
+                this.lblPredictDistance.Enabled = false;
+                this.boxPredictDistance.Enabled = false;
+            }
 		}
 
         private void presentSettings()
@@ -40,6 +48,7 @@ namespace TrailsPlugin.UI.Settings {
             txtDefaultRadius.Text = UnitUtil.Elevation.ToString(Data.Settings.DefaultRadius, "u");
             txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
             boxStoppedCategory.Text = Data.Settings.ExcludeStoppedCategory;
+            this.boxPredictDistance.Text = UnitUtil.Distance.ToString(Data.Settings.PredictDistance, "u");
         }
         public void ThemeChanged(ITheme visualTheme)
         {
@@ -47,12 +56,13 @@ namespace TrailsPlugin.UI.Settings {
 			PluginInfoPanel.ThemeChanged(visualTheme);
 			txtDefaultRadius.ThemeChanged(visualTheme);
             boxStoppedCategory.ThemeChanged(visualTheme);
+            this.boxPredictDistance.ThemeChanged(visualTheme);
 		}
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
             //Not working
-            toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
+            //toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
             
             lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
             this.lblStoppedCategory.Text = "Stopped Category Override" + ":"; //TODO: Translate 
@@ -61,6 +71,7 @@ namespace TrailsPlugin.UI.Settings {
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
             this.lblHighScore.Text = Integration.HighScore.CompabilityText;
             this.lblPerformancePredictor.Text = Integration.PerformancePredictor.CompabilityText;
+            this.lblPredictDistance.Text = "Predict Time for Distance:";
 
             //Some untranslated strings....
             this.lblLicense.Text = "\r\nTrails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
@@ -94,5 +105,21 @@ namespace TrailsPlugin.UI.Settings {
         {
             Data.Settings.ExcludeStoppedCategory = boxStoppedCategory.Text;
         }
-	}
+
+        private void boxPredictDistance_LostFocus(object sender, EventArgs e)
+        {
+            float result;
+            result = (float)UnitUtil.Distance.Parse(this.boxPredictDistance.Text);
+            if (!float.IsNaN(result) && result > 0)
+            {
+                Data.Settings.PredictDistance = result;
+            }
+            else
+            {
+                //TODO: Translate
+                MessageBox.Show("Incorrect distance format");
+            }
+            presentSettings();
+        }
+    }
 }

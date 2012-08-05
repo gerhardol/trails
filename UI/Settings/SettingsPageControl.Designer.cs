@@ -31,14 +31,16 @@
             this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblSetNameAtImport = new System.Windows.Forms.Label();
             this.txtSetNameAtImport = new System.Windows.Forms.CheckBox();
+            this.lblStoppedCategory = new System.Windows.Forms.Label();
+            this.boxStoppedCategory = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblUniqueRoutes = new System.Windows.Forms.Label();
             this.lblHighScore = new System.Windows.Forms.Label();
             this.lblPerformancePredictor = new System.Windows.Forms.Label();
+            this.lblPredictDistance = new System.Windows.Forms.Label();
+            this.boxPredictDistance = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.lblStoppedCategory = new System.Windows.Forms.Label();
-            this.boxStoppedCategory = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            //this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.PluginInfoPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -77,12 +79,14 @@
             this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 12);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 12;
+            this.tableLayoutPanel1.RowCount = 13;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -92,10 +96,10 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 200);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
@@ -228,6 +232,37 @@
             this.lblPerformancePredictor.TabIndex = 1;
             this.lblPerformancePredictor.Text = "<PP placeholder>\r\nline2";
             // 
+            // lblPredictDistance
+            // 
+            this.lblPredictDistance.AutoSize = true;
+            this.lblPredictDistance.Location = new System.Drawing.Point(3, 33);
+            this.lblPredictDistance.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblPredictDistance.Name = "lblPredictDistance";
+            this.lblPredictDistance.Size = new System.Drawing.Size(80, 13);
+            this.lblPredictDistance.TabIndex = 0;
+            this.lblPredictDistance.Text = "<PredictDistance:";
+            // 
+            // boxPredictDistance
+            // 
+            this.boxPredictDistance.AcceptsReturn = false;
+            this.boxPredictDistance.AcceptsTab = false;
+            this.boxPredictDistance.BackColor = System.Drawing.Color.White;
+            this.boxPredictDistance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxPredictDistance.ButtonImage = null;
+            this.boxPredictDistance.Location = new System.Drawing.Point(150, 30);
+            this.boxPredictDistance.Margin = new System.Windows.Forms.Padding(0);
+            this.boxPredictDistance.MaxLength = 32767;
+            this.boxPredictDistance.Multiline = false;
+            this.boxPredictDistance.Name = "boxPredictDistance";
+            this.boxPredictDistance.ReadOnly = false;
+            this.boxPredictDistance.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxPredictDistance.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxPredictDistance.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxPredictDistance.Size = new System.Drawing.Size(100, 19);
+            this.boxPredictDistance.TabIndex = 1;
+            this.boxPredictDistance.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxPredictDistance.LostFocus += new System.EventHandler(this.boxPredictDistance_LostFocus);
+            // 
             // lblCopyright
             // 
             this.lblCopyright.AutoSize = true;
@@ -279,12 +314,14 @@
         private ZoneFiveSoftware.Common.Visuals.TextBox txtDefaultRadius;
         private System.Windows.Forms.Label lblSetNameAtImport;
         private System.Windows.Forms.CheckBox txtSetNameAtImport;
-        private System.Windows.Forms.ToolTip toolTip;
+        //private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Label lblStoppedCategory;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxStoppedCategory;
         private System.Windows.Forms.Label lblUniqueRoutes;
         private System.Windows.Forms.Label lblHighScore;
         private System.Windows.Forms.Label lblPerformancePredictor;
+        private System.Windows.Forms.Label lblPredictDistance;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxPredictDistance;
         private System.Windows.Forms.Label lblLicense;
-        private ZoneFiveSoftware.Common.Visuals.TextBox boxStoppedCategory;
-        private System.Windows.Forms.Label lblStoppedCategory;
 	}
 }

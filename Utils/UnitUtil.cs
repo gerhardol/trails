@@ -634,6 +634,10 @@ namespace GpsRunningPlugin.Util
             }
             public static String ToString(double sec, string fmt)
             {
+                if(double.IsNaN(sec))
+                {
+                    return "-";
+                }
                 return ToString(TimeSpan.FromSeconds(sec), fmt);
             }
             public static string ToString(TimeSpan p)

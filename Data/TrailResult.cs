@@ -56,8 +56,10 @@ namespace TrailsPlugin.Data
         }
 
     }
+
     public class TrailResult : ITrailResult, IComparable
     {
+        #region private variables
         private ActivityTrail m_activityTrail;
         private IActivity m_activity;
         protected int m_order;
@@ -117,23 +119,10 @@ namespace TrailsPlugin.Data
         private static IActivity m_cacheTrackActivity;
         private static IDictionary<IActivity, IItemTrackSelectionInfo[]> m_commonStretches;
         private static ActivityInfoOptions m_TrailActivityInfoOptions;
+        #endregion
 
-        public static ActivityInfoOptions TrailActivityInfoOptions
-        {
-            get
-            {
-                if (m_TrailActivityInfoOptions == null)
-                {
-                    m_TrailActivityInfoOptions = new ActivityInfoOptions(true);
-                }
-                return m_TrailActivityInfoOptions;
-            }
-            set
-            {
-                m_TrailActivityInfoOptions = value;
-            }
-        }
-
+        /**********************************************************/
+        #region contructors
         //Normal TrailResult
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : this(activityTrail, order, indexes, distDiff)
@@ -239,8 +228,91 @@ namespace TrailsPlugin.Data
             }
             return splits;
         }
+#endregion
 
         /**********************************************************/
+        #region state
+        //Reset values used in calculations
+        public void Clear(bool onlyDisplay)
+        {
+            m_distanceMetersTrack0 = null;
+            m_elevationMetersTrack0 = null;
+            m_gradeTrack0 = null;
+            m_heartRatePerMinuteTrack0 = null;
+            m_powerWattsTrack0 = null;
+            m_cadencePerMinuteTrack0 = null;
+            m_speedTrack0 = null;
+            m_paceTrack0 = null;
+            m_deviceSpeedPaceTrack0 = null;
+            m_deviceElevationTrack0 = null;
+            m_deviceDiffDistTrack0 = null;
+            m_DiffTimeTrack0 = null;
+            m_DiffDistTrack0 = null;
+            m_trailPointTime0 = null;
+            m_trailPointDist0 = null;
+            m_ascent = null;
+            m_descent = null;
+            m_predictDistance = null;
+
+            //smoothing control
+            //m_TrailActivityInfoOptions = null;
+
+            if (!onlyDisplay)
+            {
+                m_startTime = null;
+                m_endTime = null;
+                m_includeStopped = null;
+
+                m_distanceMetersTrack = null;
+                m_gpsPoints = null;
+                m_gpsTrack = null;
+
+                if (!(this is ChildTrailResult))
+                {
+                    m_activityDistanceMetersTrack = null;
+                    m_ActivityInfo = null;
+                    m_pauses = null;
+                }
+            }
+        }
+
+        public static void Reset()
+        {
+            nextTrailColor = 1;
+            //nextActivityColor = 1;
+            foreach (KeyValuePair<IActivity, trActivityInfo> a in s_activities)
+            {
+                TrailResult.Activity_PropertyChanged(a.Key, null);
+                a.Key.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
+            }
+
+            s_activities.Clear();
+        }
+
+        static void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            //e is null at reset. For other this is called multiple times - only run once
+            if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
+            {
+                IActivity a = sender as IActivity;
+                if (s_activities != null && s_activities.ContainsKey(a) && s_activities[a].res != null)
+                {
+                    foreach (TrailResult tr in s_activities[a].res)
+                    {
+                        if (tr != null)
+                        {
+                            tr.Clear(false);
+                            //Charts cannot be updated from here, listener must be changed for that
+                        }
+                    }
+                }
+            }
+        }
+        #endregion
+
+        /**********************************************************/
+        #region basic fields
+
         public virtual IActivity Activity
         {
             get { return m_activity; }
@@ -445,9 +517,10 @@ namespace TrailsPlugin.Data
                 return m_startDistance;
             }
         }
+        #endregion
 
-
-        /*************************************************/
+        /**********************************************************/
+        #region conversions
         //DateTime vs elapsed result/activity, distance result/activity conversions
         //The correct tracks must be in DistanceMetersTrack and ActivityDistanceMetersTrack
 
@@ -629,7 +702,10 @@ namespace TrailsPlugin.Data
             }
             return time;
         }
+        #endregion
 
+        /**********************************************************/
+        #region basic tracks
         bool isIncludeStoppedCategory(IActivityCategory category)
         {
             if (category == null || Settings.ExcludeStoppedCategory == null || Settings.ExcludeStoppedCategory == "")
@@ -930,55 +1006,10 @@ namespace TrailsPlugin.Data
                 return m_activityDistanceMetersTrack;
             }
         }
+        #endregion
 
-        //The Activity related tracks were previously cached. Kept as an uniform method to get
-        //The tracks, if the Info cache handling is changed
-        private INumericTimeDataSeries CadencePerMinuteTrack
-        {
-            get
-            {
-                return Info.SmoothedCadenceTrack;
-            }
-        }
-
-        private INumericTimeDataSeries ElevationMetersTrack
-        {
-            get
-            {
-                return Info.SmoothedElevationTrack;
-            }
-        }
-        private INumericTimeDataSeries GradeTrack
-        {
-            get
-            {
-                return Info.SmoothedGradeTrack;
-            }
-        }
-
-        private INumericTimeDataSeries HeartRatePerMinuteTrack
-        {
-            get
-            {
-                return Info.SmoothedHeartRateTrack;
-            }
-        }
-
-        private INumericTimeDataSeries PowerWattsTrack
-        {
-            get
-            {
-                return Info.SmoothedPowerTrack;
-            }
-        }
-
-        private INumericTimeDataSeries SpeedTrack
-        {
-            get
-            {
-                return Info.SmoothedSpeedTrack;
-            }
-        }
+        /**********************************************************/
+        #region fields
 
         public IList<DateTime> TrailPointDateTime
         {
@@ -988,7 +1019,6 @@ namespace TrailsPlugin.Data
             }
         }
 
-        /*************************************************/
         public String Name
         {
             get
@@ -1289,52 +1319,10 @@ namespace TrailsPlugin.Data
             return (float)m_predictDistance;
             }
         }
+#endregion
 
-        /**************************************************************************/
-        //Reset values used in calculations
-        public void Clear(bool onlyDisplay)
-        {
-            m_distanceMetersTrack0 = null;
-            m_elevationMetersTrack0 = null;
-            m_gradeTrack0 = null;
-            m_heartRatePerMinuteTrack0 = null;
-            m_powerWattsTrack0 = null;
-            m_cadencePerMinuteTrack0 = null;
-            m_speedTrack0 = null;
-            m_paceTrack0 = null;
-            m_deviceSpeedPaceTrack0 = null;
-            m_deviceElevationTrack0 = null;
-            m_deviceDiffDistTrack0 = null;
-            m_DiffTimeTrack0 = null;
-            m_DiffDistTrack0 = null;
-            m_trailPointTime0 = null;
-            m_trailPointDist0 = null;
-            m_ascent = null;
-            m_descent = null;
-            m_predictDistance = null;
-
-            //smoothing control
-            //m_TrailActivityInfoOptions = null;
-
-            if (!onlyDisplay)
-            {
-                m_startTime = null;
-                m_endTime = null;
-                m_includeStopped = null;
-
-                m_distanceMetersTrack = null;
-                m_gpsPoints = null;
-                m_gpsTrack = null;
-
-                if (!(this is ChildTrailResult))
-                {
-                    m_activityDistanceMetersTrack = null;
-                    m_ActivityInfo = null;
-                    m_pauses = null;
-                }
-            }
-        }
-
+        /**********************************************************/
+        #region tracks
         private bool checkCacheRef(TrailResult refRes)
         {
             if (refRes == null || refRes != m_cacheTrackRef)
@@ -1686,6 +1674,38 @@ namespace TrailsPlugin.Data
             return m_paceTrack0;
         }
 
+        public static IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
+        {
+            checkCacheAct(refAct);
+            if (null == m_commonStretches)
+            {
+                m_commonStretches = new Dictionary<IActivity, IItemTrackSelectionInfo[]>();
+            }
+            IList<IActivity> acts2 = new List<IActivity>();
+            foreach (IActivity act in acts)
+            {
+                if (!m_commonStretches.ContainsKey(act))
+                {
+                    acts2.Add(act);
+                }
+            }
+            if (acts2.Count > 0)
+            {
+                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches =
+                    TrailsPlugin.Integration.UniqueRoutes.GetCommonStretchesForActivity(refAct, acts2, null);
+                foreach (IActivity act in acts2)
+                {
+                    m_commonStretches.Add(act, commonStretches[act]);
+                }
+            }
+            //Return all...
+            return m_commonStretches;
+        }
+
+        #endregion
+
+        /**********************************************************/
+        #region device tracks
         public INumericTimeDataSeries DeviceSpeedPaceTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1782,8 +1802,10 @@ namespace TrailsPlugin.Data
             }
             return m_deviceDiffDistTrack0;
         }
+#endregion
 
-        /********************************************************************/
+        /**********************************************************/
+        #region diff
 
         private TrailResult getRefSub(TrailResult parRes)
         {
@@ -1802,9 +1824,16 @@ namespace TrailsPlugin.Data
             }
             return res;
         }
-
         /********************************************************************/
 
+        //From:
+        //Energy cost of walking and running at extreme uphill and downhill slopes
+        //Alberto E. Minetti, Christian Moia1, Giulio S. Roi, Davide Susta1, and Guido Ferretti
+        //http://jap.physiology.org/content/93/3/1039.full
+        private static float cr(float g)
+        {
+            return (float)((3.6 + g*(19.5+g*(46.3+g*(-43.3+g*(-30.4+g*155.4)))))/3.6);
+        }
         public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -2205,8 +2234,11 @@ namespace TrailsPlugin.Data
             }
             return m_trailPointDist0;
         }
+#endregion
 
-        /****************************************************************/
+        /**********************************************************/
+        #region GPS
+
         private IGPSRoute getGps()
         {
             IGPSRoute gpsTrack = new GPSRoute();
@@ -2292,8 +2324,9 @@ namespace TrailsPlugin.Data
         {
             return TrailsItemTrackSelectionInfo.GpsPoints(this.GPSRoute, t);
         }
+#endregion
 
-        /*************************************************/
+        /**********************************************************/
         #region Color
         private static int nextTrailColor = 1;
         //private static int nextActivityColor = 1;
@@ -2359,35 +2392,23 @@ namespace TrailsPlugin.Data
         //}
         #endregion
 
+        /**********************************************************/
         #region Activity caches
 
-        /********************************************************************/
-        public static IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
+        public static ActivityInfoOptions TrailActivityInfoOptions
         {
-            checkCacheAct(refAct);
-            if (null == m_commonStretches)
+            get
             {
-                m_commonStretches = new Dictionary<IActivity, IItemTrackSelectionInfo[]>();
-            }
-            IList<IActivity> acts2 = new List<IActivity>();
-            foreach (IActivity act in acts)
-            {
-                if (!m_commonStretches.ContainsKey(act))
+                if (m_TrailActivityInfoOptions == null)
                 {
-                    acts2.Add(act);
+                    m_TrailActivityInfoOptions = new ActivityInfoOptions(true);
                 }
+                return m_TrailActivityInfoOptions;
             }
-            if (acts2.Count > 0)
+            set
             {
-                IDictionary<IActivity, IItemTrackSelectionInfo[]> commonStretches =
-                    TrailsPlugin.Integration.UniqueRoutes.GetCommonStretchesForActivity(refAct, acts2, null);
-                foreach (IActivity act in acts2)
-                {
-                    m_commonStretches.Add(act, commonStretches[act]);
-                }
+                m_TrailActivityInfoOptions = value;
             }
-            //Return all...
-            return m_commonStretches;
         }
 
         ActivityInfo m_ActivityInfo = null;
@@ -2450,36 +2471,53 @@ namespace TrailsPlugin.Data
         //    s_activities.TryGetValue(activity, out t);
         //    return t.res;
         //}
-        public static void Reset()
-        {
-            nextTrailColor = 1;
-            //nextActivityColor = 1;
-            foreach (KeyValuePair<IActivity, trActivityInfo> a in s_activities)
-            {
-               TrailResult.Activity_PropertyChanged(a.Key, null);
-                a.Key.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-            }
 
-            s_activities.Clear();
+        //The Activity related tracks were previously cached. Kept as an uniform method to get
+        //the tracks, if the Info cache handling is changed
+        private INumericTimeDataSeries CadencePerMinuteTrack
+        {
+            get
+            {
+                return Info.SmoothedCadenceTrack;
+            }
         }
 
-        static void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private INumericTimeDataSeries ElevationMetersTrack
         {
-            //e is null at reset. For other this is called multiple times - only run once
-            if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
+            get
             {
-                IActivity a = sender as IActivity;
-                if (s_activities != null && s_activities.ContainsKey(a) && s_activities[a].res != null)
-                {
-                    foreach (TrailResult tr in s_activities[a].res)
-                    {
-                        if (tr != null)
-                        {
-                            tr.Clear(false);
-                            //Charts cannot be updated from here, listener must be changed for that
-                        }
-                    }
-                }
+                return Info.SmoothedElevationTrack;
+            }
+        }
+        private INumericTimeDataSeries GradeTrack
+        {
+            get
+            {
+                return Info.SmoothedGradeTrack;
+            }
+        }
+
+        private INumericTimeDataSeries HeartRatePerMinuteTrack
+        {
+            get
+            {
+                return Info.SmoothedHeartRateTrack;
+            }
+        }
+
+        private INumericTimeDataSeries PowerWattsTrack
+        {
+            get
+            {
+                return Info.SmoothedPowerTrack;
+            }
+        }
+
+        private INumericTimeDataSeries SpeedTrack
+        {
+            get
+            {
+                return Info.SmoothedSpeedTrack;
             }
         }
 
@@ -2501,6 +2539,7 @@ namespace TrailsPlugin.Data
             return activity;
         }
 
+        /**********************************************************/
         #region Implementation of ITrailResult
 
         float ITrailResult.AvgCadence
@@ -2642,6 +2681,7 @@ namespace TrailsPlugin.Data
 
         #endregion
 
+        /**********************************************************/
         #region IComparable<Product> Members
 
         public int CompareTo(object obj)

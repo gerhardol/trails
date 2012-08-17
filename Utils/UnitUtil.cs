@@ -634,7 +634,7 @@ namespace GpsRunningPlugin.Util
             }
             public static String ToString(double sec, string fmt)
             {
-                if(double.IsNaN(sec))
+                if(double.IsNaN(sec)|| double.IsInfinity(sec))
                 {
                     return "-";
                 }

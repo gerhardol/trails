@@ -267,9 +267,8 @@ namespace TrailsPlugin.UI.Activity
 
         /*************************************************************************************************************/
 //ST3
-        //TODO: Rewrite, using IItemTrackSelectionInfo help functions
-        //xxxTrailResultInfo
-        static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
+        //TODO: Rewrite, using IItemTrackSelectionInfo help functions?
+        private static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             IList<DateTime> dates = new List<DateTime>();
@@ -300,11 +299,10 @@ namespace TrailsPlugin.UI.Activity
                         }
                     }
                 }
-                //Ignore di
+                //Ignore di (distances)
             }
             foreach (DateTime d in dates)
             {
-                //xxx
                 result.Add(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), "", true));
             }
 

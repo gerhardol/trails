@@ -72,7 +72,7 @@ namespace TrailsPlugin.Data
                 {
                     m_distance = UnitUtil.Distance.ConvertFrom(tr.getDistActivity(d1), tr.Activity);
                     //Elapsed time is for the activity
-                    m_time = tr.getElapsedActivity(d1);
+                    m_time = tr.getTimeActivity(d1);
                 }
                 catch 
                 { }

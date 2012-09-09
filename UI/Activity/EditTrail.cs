@@ -461,7 +461,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                sel = new TrailGPSLocation(m_layer.GetCenterMap());//xxx
+                sel = new TrailGPSLocation(m_layer.GetCenterMap());
             }
             TrailGPSLocation add = new TrailGPSLocation(sel);
                 add.Name +=
@@ -557,7 +557,7 @@ namespace TrailsPlugin.UI.Activity {
                 try
                 {
                     double time = UnitUtil.Time.Parse(editBox.Text);
-                    DateTime d1 = m_trailResult.getDateTimeFromElapsedActivity((float)time);
+                    DateTime d1 = m_trailResult.getDateTimeFromTimeActivity((float)time);
                     t[m_rowDoubleClickSelected].UpdateRow(m_trailResult, d1);
                 }
                 catch { }

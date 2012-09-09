@@ -488,8 +488,8 @@ namespace TrailsPlugin.UI.Activity {
                 DateTime d2;
                 if (XAxisReferential == XAxisValue.Time)
                 {
-                    d1 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[0]));
-                    d2 = tr.getDateTimeFromElapsedResult(GetResyncOffsetTime(tr, at[1]));
+                    d1 = tr.getDateTimeFromTimeResult(GetResyncOffsetTime(tr, at[0]));
+                    d2 = tr.getDateTimeFromTimeResult(GetResyncOffsetTime(tr, at[1]));
                 }
                 else
                 {
@@ -539,8 +539,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
             //Convert to distance display unit, Time is always in seconds
-            x1 = (float)(tr.getElapsedResult(d1));
-            x2 = (float)(tr.getElapsedResult(d2));
+            x1 = (float)(tr.getTimeResult(d1));
+            x2 = (float)(tr.getTimeResult(d2));
             return new float[] { x1, x2 };
         }
         float[] GetSingleSelectionFromResult(TrailResult tr, double t1, double t2)
@@ -869,7 +869,7 @@ namespace TrailsPlugin.UI.Activity {
                         double elapsed;
                         if (XAxisReferential == XAxisValue.Time)
                         {
-                            elapsed = trailPointResult.getElapsedResult(t);
+                            elapsed = trailPointResult.getTimeResult(t);
                         }
                         else
                         {
@@ -949,7 +949,7 @@ namespace TrailsPlugin.UI.Activity {
                     float xValue;
                     if (XAxisReferential == XAxisValue.Time)
                     {
-                        xValue = (float)tr.getElapsedResult(time);
+                        xValue = (float)tr.getTimeResult(time);
                     }
                     else
                     {

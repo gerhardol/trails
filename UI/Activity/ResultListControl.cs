@@ -1049,6 +1049,24 @@ namespace TrailsPlugin.UI.Activity {
                 //PerformancePredictorPopup();
                 HighScorePopup();
             }
+            else if (e.KeyCode == Keys.Q)
+            {
+                if (e.Modifiers == Keys.Control)
+                {
+                    TrailResult.diffToSelf = !TrailResult.diffToSelf;
+                }
+                else
+                {
+                    TrailResult.IncreaseRunningGradeCalcMethod();
+                }
+                summaryListToolTip.Show(TrailResult.RunningGradeCalcMethod.ToString(),
+                              summaryList,
+                              new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                                  Cursor.Current.Size.Width / 2,
+                                        summaryListCursorLocationAtMouseMove.Y),
+                              summaryListToolTip.AutoPopDelay);
+                m_page.RefreshData();
+            }
             else if (e.KeyCode == Keys.R)
             {
                 m_controller.Reset(false);
@@ -1130,7 +1148,7 @@ namespace TrailsPlugin.UI.Activity {
         System.Drawing.Point summaryListCursorLocationAtMouseMove;
         TrailResultWrapper summaryListLastEntryAtMouseMove = null;
 
-        void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             m_mouseClickArgs = e;
             TreeList.RowHitState rowHitState;
@@ -1247,7 +1265,7 @@ namespace TrailsPlugin.UI.Activity {
             dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.ReferenceActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
-            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count > 1);
+            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count > 1, true);
 #endif
             dialog.ThemeChanged(m_visualTheme);
             dialog.AllowFixedColumnSelect = true;

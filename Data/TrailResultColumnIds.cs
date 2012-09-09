@@ -115,6 +115,8 @@ namespace TrailsPlugin.Data {
         public const string Location = "Location";
         public const string Category = "Category";
         public const string PredictDistance = "PredictDistance";
+        public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
+        public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
 
         public static IList<string> DefaultColumns()
         {
@@ -138,6 +140,10 @@ namespace TrailsPlugin.Data {
         }
 #endif
         public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult)
+        {
+            return ColumnDefs(activity, mult, false);
+        }
+        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult, bool all)
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", 32, StringAlignment.Far));
@@ -185,8 +191,15 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, "", 70, StringAlignment.Near));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, "", 70, StringAlignment.Near));
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u")+ ")", "", 70, StringAlignment.Far));
-
+            if (all || TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            {
+                columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", "", 70, StringAlignment.Far));
+            }
+            if (all || TrailResult.RunningGradeCalcMethod != TrailResult.RunningGradeCalcMethodClass.None)
+            {
+                columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelDuration, "", 60, StringAlignment.Far));
+                columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
+            }
             return columnDefs;
 		}
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
@@ -277,6 +290,10 @@ namespace TrailsPlugin.Data {
                     return x.MaxHR;
                 case TrailResultColumnIds.PredictDistance:
                     return x.PredictDistance;
+                case TrailResultColumnIds.GradeRunAdjustedTime:
+                    return x.GradeRunAdjustedTime.TotalSeconds;
+                case TrailResultColumnIds.GradeRunAdjustedPace:
+                    return x.GradeRunAdjustedSpeed;
                 default:
                     return x.Order;
             }

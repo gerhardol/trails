@@ -43,6 +43,7 @@
             this.markCommonStretchesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addInBoundActivitiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addCurrentCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
@@ -183,7 +184,8 @@
             this.selectWithURMenuItem,
             this.markCommonStretchesMenuItem,
             this.addInBoundActivitiesMenuItem,
-            this.addCurrentCategoryMenuItem});
+            this.addCurrentCategoryMenuItem,
+            this.runGradeAdjustMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
@@ -237,6 +239,13 @@
             this.addCurrentCategoryMenuItem.Text = "<addCurrentCategoryMenuItem...";
             this.addCurrentCategoryMenuItem.Click += new System.EventHandler(this.addCurrentCategoryMenuItem_Click);
             // 
+            // runGradeAdjustMenuItem
+            // 
+            this.runGradeAdjustMenuItem.Name = "runGradeAdjustMenuItem";
+            this.runGradeAdjustMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.runGradeAdjustMenuItem.Text = "<runGradeAdjustMenuItem";
+            this.runGradeAdjustMenuItem.Click += new System.EventHandler(this.runGradeAdjustMenuItem_Click);
+            // 
             // ResultListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -273,6 +282,7 @@
         private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addInBoundActivitiesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addCurrentCategoryMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
         private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();
     }

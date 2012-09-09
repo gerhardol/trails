@@ -1250,6 +1250,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.excludeResultsMenuItem.Enabled = true;
                 this.markCommonStretchesMenuItem.Enabled = true && Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             }
+            this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + TrailResult.RunningGradeCalcMethod.ToString();
             e.Cancel = false;
         }
 
@@ -1410,6 +1411,12 @@ namespace TrailsPlugin.UI.Activity {
         void selectWithURMenuItem_Click(object sender, System.EventArgs e)
         {
             selectWithUR();
+        }
+
+        private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
+        {
+            TrailResult.IncreaseRunningGradeCalcMethod();
+            m_page.RefreshData();
         }
     }
 }

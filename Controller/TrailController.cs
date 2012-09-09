@@ -1,5 +1,6 @@
 ﻿/*
 Copyright (C) 2009 Brendan Doherty
+Copyright (C) 2012 Gerhard Olsson
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -122,7 +123,7 @@ namespace TrailsPlugin.Controller
         {
             foreach (ActivityTrail to in GetOrderedTrails(progressBar, false))
             {
-                if (to.Trail.Id == value.Trail.Id)
+                if (to.Trail != null && to.Trail.Id == value.Trail.Id)
                 {
                     m_currentActivityTrail = to;
                     //Trigger result recalculation if needed

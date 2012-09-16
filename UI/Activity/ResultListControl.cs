@@ -1051,9 +1051,17 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.Q)
             {
-                if (e.Modifiers == Keys.Control)
+                if (e.Modifiers == (Keys.Shift | Keys.Control))
+                {
+                    TrailResult.PaceTrackIsGradeAdjustedPaceAvg = !TrailResult.PaceTrackIsGradeAdjustedPaceAvg;
+                }
+                else if (e.Modifiers == Keys.Control)
                 {
                     TrailResult.diffToSelf = !TrailResult.diffToSelf;
+                }
+                else if (e.Modifiers == Keys.Shift)
+                {
+                    TrailResult.ResetRunningGradeCalcMethod();
                 }
                 else
                 {

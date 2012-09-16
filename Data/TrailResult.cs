@@ -80,6 +80,7 @@ namespace TrailsPlugin.Data
         //Temporary? (undocumented)
         public static bool m_diffOnDateTime = false;
         public static bool diffToSelf = false;
+        static public bool PaceTrackIsGradeAdjustedPaceAvg = false;
 
         private IValueRangeSeries<DateTime> m_pauses;
         private IDistanceDataTrack m_distanceMetersTrack;
@@ -91,7 +92,7 @@ namespace TrailsPlugin.Data
         //private INumericTimeDataSeries m_speedTrack;
         //private INumericTimeDataSeries m_gradeTrack;
         private INumericTimeDataSeries m_gradeRunAdjustedTime;
-        private INumericTimeDataSeries m_gradeRunAdjustedTimeAvg; //data is time, not elapsed
+        private IDistanceDataTrack m_gradeRunAdjustedTimeAvg; //data is time, not elapsed/distance
         private IList<ginfo> m_grades = new List<ginfo>();
 
         //Converted tracks, to display format, with smoothing
@@ -946,16 +947,17 @@ namespace TrailsPlugin.Data
                     int i = 0;
                     float distance = 0;
                     uint oldElapsed = 0;
-                    
+
+                    m_distanceMetersTrack.Add(StartTime, distance);
+                    m_startDistance = TrailResult.getDistFromDateTime(m_activityDistanceMetersTrack, StartTime);
                     //Prune search
                     //Note that the distance track may not start at result StartTime
                     while (i < m_activityDistanceMetersTrack.Count &&
-                        this.StartTime.AddSeconds(-1) > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
+                        this.StartTime > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
                     {
                         i++;
                     }
 
-                    m_startDistance = TrailResult.getDistFromDateTime(m_activityDistanceMetersTrack, StartTime);
                     float prevDist = m_startDistance;
                     while (i < m_activityDistanceMetersTrack.Count &&
                         EndTime > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
@@ -1349,11 +1351,11 @@ namespace TrailsPlugin.Data
             return false;
         }
 
-        private static bool checkCacheAct(IActivity refRes)
+        private static bool checkCacheAct(IActivity refAct)
         {
-            if (refRes == null || refRes != m_cacheTrackActivity)
+            if (refAct == null || refAct != m_cacheTrackActivity)
             {
-                m_cacheTrackActivity = refRes;
+                m_cacheTrackActivity = refAct;
                 m_commonStretches = null;
 
                 return true;
@@ -1606,7 +1608,7 @@ namespace TrailsPlugin.Data
             if (m_elevationMetersTrack0 == null)
             {
                 m_elevationMetersTrack0 = copySmoothTrack(this.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new Convert(UnitUtil.Elevation.ConvertFrom), refRes);
+                    new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_elevationMetersTrack0;
         }
@@ -1617,7 +1619,7 @@ namespace TrailsPlugin.Data
             if (m_gradeTrack0 == null)
             {
                 m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new Convert(UnitUtil.Grade.ConvertFrom), refRes);
+                    new Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_gradeTrack0;
         }
@@ -1628,7 +1630,7 @@ namespace TrailsPlugin.Data
             if (m_cadencePerMinuteTrack0 == null)
             {
                 m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
-                     new Convert(UnitUtil.Cadence.ConvertFrom), refRes);
+                     new Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_cadencePerMinuteTrack0;
         }
@@ -1639,7 +1641,7 @@ namespace TrailsPlugin.Data
             if (m_heartRatePerMinuteTrack0 == null)
             {
                 m_heartRatePerMinuteTrack0 = copySmoothTrack(this.HeartRatePerMinuteTrack, true, TrailActivityInfoOptions.HeartRateSmoothingSeconds,
-                    new Convert(UnitUtil.HeartRate.ConvertFrom), refRes);
+                    new Convert(UnitUtil.HeartRate.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_heartRatePerMinuteTrack0;
         }
@@ -1650,7 +1652,7 @@ namespace TrailsPlugin.Data
             if (m_powerWattsTrack0 == null)
             {
                 m_powerWattsTrack0 = copySmoothTrack(this.PowerWattsTrack, true, TrailActivityInfoOptions.PowerSmoothingSeconds,
-                    new Convert(UnitUtil.Power.ConvertFrom), refRes);
+                    new Convert(UnitUtil.Power.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_powerWattsTrack0;
         }
@@ -1661,7 +1663,7 @@ namespace TrailsPlugin.Data
             if (m_speedTrack0 == null)
             {
                 m_speedTrack0 = copySmoothTrack(this.SpeedTrack, false, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                new Convert(UnitUtil.Speed.ConvertFrom), refRes);
+                                 new Convert(UnitUtil.Speed.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_speedTrack0;
         }
@@ -1678,23 +1680,39 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
-                    paceTrack = new NumericTimeDataSeries();
-                    foreach (ginfo t in m_grades)
+                    if (!PaceTrackIsGradeAdjustedPaceAvg)
                     {
-                        //Add first point too?
-                        if (t.time > 0)
+                        //Show pace, as it was flat
+                        this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
+                        paceTrack = new NumericTimeDataSeries();
+                        foreach (ginfo t in m_grades)
                         {
-                            paceTrack.Add(t.dateTime, t.dist / t.time);
+                            //Add first point too?
+                            if (t.time > 0)
+                            {
+                                paceTrack.Add(t.dateTime, t.dist / t.time / t.q);
+                            }
                         }
                     }
+                    else
+                    {
+                        //Show pace as it should have been with "even" pace"
+                        paceTrack = new NumericTimeDataSeries();
+                        INumericTimeDataSeries timeTrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
+                        for (int i = 1; i < timeTrack.Count; i++)
+                        {
+                            ginfo t = this.m_grades[i];
+                            paceTrack.Add(t.dateTime, t.dist / (timeTrack[i].Value - timeTrack[i - 1].Value));
+                        }
+                    }
+
                 }
                 //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
                 m_paceTrack0 = copySmoothTrack(paceTrack, false, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                new Convert(ConvertNone), refRes);
+                                new Convert(ConvertNone), this.m_cacheTrackRef);
                 for (int i = 0; i < m_paceTrack0.Count; i++)
                 {
-                    m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, refRes.Activity));
+                    m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
                 }
             }
             return m_paceTrack0;
@@ -1737,7 +1755,7 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_deviceSpeedPaceTrack0 == null)
             {
-                bool isPace = refRes.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
+                bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
                 m_deviceSpeedPaceTrack0 = new NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
@@ -1778,7 +1796,7 @@ namespace TrailsPlugin.Data
                 //Smooth speed, convert after
                 for (int i = 0; i < m_deviceSpeedPaceTrack0.Count; i++)
                 {
-                    m_deviceSpeedPaceTrack0.SetValueAt(i, (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace, m_deviceSpeedPaceTrack0[i].Value, refRes.Activity));
+                    m_deviceSpeedPaceTrack0.SetValueAt(i, (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace, m_deviceSpeedPaceTrack0[i].Value, this.m_cacheTrackRef.Activity));
                 }
             }
             return m_deviceSpeedPaceTrack0;
@@ -1793,7 +1811,7 @@ namespace TrailsPlugin.Data
                 if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
                 {
                     m_deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                       new Convert(UnitUtil.Elevation.ConvertFrom), refRes);
+                       new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 } 
                 m_deviceElevationTrack0 = SmoothTrack(m_deviceElevationTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds);
             }
@@ -1833,8 +1851,14 @@ namespace TrailsPlugin.Data
         /**********************************************************/
         #region GradeAdjust
 
-        public enum RunningGradeCalcMethodClass { None, AlbertoMinetti, MervynDavies, GregMaclin, JackDaniels, ACSM, Pandolf };
+        public enum RunningGradeCalcMethodClass { None, MervynDavies, GregMaclin, JackDaniels, AlbertoMinetti, ACSM, Pandolf };
+
         public static RunningGradeCalcMethodClass RunningGradeCalcMethod = RunningGradeCalcMethodClass.None;
+        internal static void ResetRunningGradeCalcMethod()
+        {
+            RunningGradeCalcMethod = RunningGradeCalcMethodClass.None;
+        }
+
         internal static void IncreaseRunningGradeCalcMethod()
         {
             if (RunningGradeCalcMethod == RunningGradeCalcMethodClass.Pandolf)
@@ -2111,41 +2135,46 @@ namespace TrailsPlugin.Data
             }
         }
 
-        private INumericTimeDataSeries GradeRunAdjustedTimeTrack(TrailResult refRes)
+        private IDistanceDataTrack GradeRunAdjustedTimeTrack(TrailResult refRes)
         {
             this.calcGradeRunAdjustedTime(refRes);
 
             if (m_gradeRunAdjustedTimeAvg == null)
             {
-                m_gradeRunAdjustedTimeAvg = new NumericTimeDataSeries();
+                m_gradeRunAdjustedTimeAvg = new DistanceDataTrack();
                 if (this.m_gradeRunAdjustedTime.Count > 0)
                 {
                     //Iterate to get new time apropriate for "adjusted time"
-                    float resultTime = (float)this.Duration.TotalSeconds;
-                    float prevNewTime = resultTime;//Time used to predict
-                    float newTime = m_gradeRunAdjustedTime[m_gradeRunAdjustedTime.Count - 1].Value; //predicted time
-                    int i = 0; //debug iterations
-                    while (Math.Abs(newTime - resultTime) > 3 && i < 9 ||
-                        Math.Abs(newTime - resultTime) > 1 && i < 2/*&& Math.Abs(newTime - resultTime) / prevNewTime > 0.005*/)
+                    float newTime = m_gradeRunAdjustedTime[m_gradeRunAdjustedTime.Count - 1].Value; //time derived from predictTime, should converge to resultTime
+                    float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime;//Time used to predict resultTime - seed with most likely
+                    int i = 0; //limit iterations
+                    while (Math.Abs(newTime - this.Duration.TotalSeconds) > 3 && i < 9 ||
+                        Math.Abs(newTime - this.Duration.TotalSeconds) > 1 && i < 2)
                     {
-                        prevNewTime = (float)(resultTime + (prevNewTime - newTime));
-                        float avgAdjSpeed = (float)(this.Distance / prevNewTime);
+                        float avgAdjSpeed = (float)(this.Distance / predictTime);
                         newTime = 0;
                         foreach (ginfo t in m_grades)
                         {
-                            newTime += t.q * t.dist / avgAdjSpeed;
+                            if (t.q > 0)
+                            {
+                                newTime += t.dist / avgAdjSpeed / t.q;
+                            }
                         }
+                        predictTime = (float)(this.Duration.TotalSeconds + (predictTime - newTime));
                         i++;
                     }
                     if (i > 3)
                     { }
                     {
-                        float avgAdjSpeed = (float)(this.Distance / prevNewTime);
+                        float avgAdjSpeed = (float)(this.Distance / predictTime);
                         newTime = 0;
                         foreach (ginfo t in m_grades)
                         {
-                            //Add time, not elapsed
-                            newTime += t.q * t.dist / avgAdjSpeed;
+                            //Add time, not elapsed to track
+                            if (t.q > 0)
+                            {
+                                newTime += t.dist / avgAdjSpeed / t.q;
+                            }
                             m_gradeRunAdjustedTimeAvg.Add(t.dateTime, newTime);
                         }
                     }
@@ -2191,7 +2220,7 @@ namespace TrailsPlugin.Data
                     float lastValue = 0;
                     int dateTrailPointIndex = -1;
                     float refOffset = 0;
-                    float refPrevElapsedSec = 0;
+                    float refPrevTime = 0;
                     float diffOffset = 0;
 
                     bool prevCommonStreches = false;
@@ -2230,10 +2259,12 @@ namespace TrailsPlugin.Data
                                             //diffdist over time will normally "jump" at each trail point
                                             //I.e. if the reference is behind, the distance suddenly gained must be subtracted
                                             //Note: ST only uses int for time, use double anyway
-                                            float oldElapsedSec = oldElapsed > 0 ? oldElapsed : 0;
-                                            float refElapsedP = (float)trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]);
-                                            float elapsedP = (float)this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]);
-                                            diffOffset += (refElapsedP - refPrevElapsedSec - (elapsedP - oldElapsed));
+                                            //float oldElapsedSec = oldElapsed > 0 ? oldElapsed : 0;
+                                            //TODO correct?
+                                            //float oldTime = oldElapsed;
+                                            float refTimeP = (float)trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]);
+                                            float thisTimeP = (float)this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]);
+                                            diffOffset += (refTimeP - refPrevTime - (thisTimeP - refPrevTime)); 
                                         }
                                     }
                                 }
@@ -2247,25 +2278,27 @@ namespace TrailsPlugin.Data
                                 else
                                 {
                                     //elapsed (entry) is elapsed in the series, not result/activity elapsed seconds
-                                    float elapsedSec = (float)this.getTimeResult(d1);
-                                    float? refElapsedSec = null;
+                                    float thisTime = (float)this.getTimeResult(d1);
+                                    float? refTime = null;
                                     if (TrailResult.diffToSelf || trRef == this)
                                     {
                                         ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
-                                        //refElapsedSec = elapsedSec;
+                                        //refTime = thisTime;
                                         //get diff from average
                                         if (TrailResult.RunningGradeCalcMethod != RunningGradeCalcMethodClass.None)
                                         {
-                                            ITimeValueEntry<float> val =  this.GradeRunAdjustedTimeTrack(refRes).GetInterpolatedValue(d1);
+                                            float dist = this.getDistResult(d1);
+                                            calcGradeRunAdjustedTime(this.m_cacheTrackRef);
+                                            ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef).GetInterpolatedValue(d1);
                                             if (val != null)
                                             {
-                                                refElapsedSec = val.Value; //time, not elapsed
+                                                refTime = val.Value;
                                             }
                                         }
                                         else 
                                         {
                                             float dist = this.getDistResult(d1);
-                                            refElapsedSec = dist / this.AvgSpeed;
+                                            refTime = dist / this.AvgSpeed;
                                         }
                                     }
                                     else
@@ -2273,20 +2306,20 @@ namespace TrailsPlugin.Data
                                         if (t.Value + refOffset <= trRef.DistanceMetersTrack.Max)
                                         {
                                             DateTime d2 = TrailResult.getDateTimeFromTrackDist(trRef.DistanceMetersTrack, t.Value + refOffset);
-                                            refElapsedSec = (float)trRef.getTimeResult(d2);
+                                            refTime = (float)trRef.getTimeResult(d2);
                                         }
                                     }
-                                    if (refElapsedSec != null)
+                                    if (refTime != null && !float.IsNaN((float)refTime))
                                     {
                                         if (Settings.DiffUsingCommonStretches && prevCommonStreches)
                                         {
-                                            diffOffset = elapsedSec - (float)refElapsedSec;
+                                            diffOffset = thisTime - (float)refTime;
                                             prevCommonStreches = false;
                                         }
-                                        lastValue = (float)refElapsedSec - elapsedSec + diffOffset;
+                                        lastValue = (float)refTime - thisTime + diffOffset;
                                         m_DiffTimeTrack0.Add(d1, lastValue);
                                         oldElapsed = (int)elapsed;
-                                        refPrevElapsedSec = (float)refElapsedSec;
+                                        refPrevTime = (float)refTime;
                                     }
                                 }
                             }
@@ -2336,7 +2369,7 @@ namespace TrailsPlugin.Data
                     int oldElapsed = int.MinValue;
                     float lastValue = 0;
                     int dateTrailPointIndex = -1;
-                    int refOffset = 0;
+                    int refTimeOffset = 0;
                     float diffOffset = 0;
                     double prevDist = 0;
                     double prevRefDist = 0;
@@ -2359,6 +2392,7 @@ namespace TrailsPlugin.Data
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         uint elapsed = t.ElapsedSeconds;
+                        float thisDist = t.Value;
                         if (elapsed > oldElapsed)
                         {
                             DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
@@ -2377,7 +2411,7 @@ namespace TrailsPlugin.Data
                                         this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
                                         trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                                     {
-                                        refOffset = (int)(trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]) -
+                                        refTimeOffset = (int)(trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]) -
                                            this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]));
                                         //TODO: Configure, explain (or remove)
                                         if (Settings.AdjustResyncDiffAtTrailPoints)
@@ -2389,6 +2423,7 @@ namespace TrailsPlugin.Data
                                                 trRef.TrailPointDateTime[dateTrailPointIndex], out status2);
                                             if (status2 == 0)
                                             {
+                                                //getDistResult
                                                 double distP = getDistFromDateTime(this.DistanceMetersTrack,
                                                     this.TrailPointDateTime[dateTrailPointIndex], out status2);
                                                 if (status2 == 0)
@@ -2402,26 +2437,30 @@ namespace TrailsPlugin.Data
 
                                 if (Settings.DiffUsingCommonStretches &&
                                     //IsPaused is in the series here...
-                                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches))
+                                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches))
                                 {
                                     prevCommonStreches = true;
                                 }
                                 else
                                 {
-                                    if (t.ElapsedSeconds + refOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
+                                    //Only check if possible (ignore pauses when pruning)
+                                    //if (t.ElapsedSeconds + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
                                     {
                                         double? refDist = null;
                                         if (TrailResult.diffToSelf || trRef == this)
                                         {
                                             ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
-                                            //refElapsedSec = elapsedSec;
                                             //get diff from average
                                             if (TrailResult.RunningGradeCalcMethod != RunningGradeCalcMethodClass.None)
                                             {
-                                                ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(refRes).GetInterpolatedValue(d1);
-                                                if (val != null)
+                                                ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef).GetInterpolatedValue(d1);
+                                                if (val != null && !float.IsNaN(val.Value))
                                                 {
-                                                    refDist = this.getDistResult(getDateTimeFromTimeResult(val.Value));
+                                                    //TODO: correct check here?
+                                                    //refDist = this.getDistResult(getDateTimeFromTimeResult(val.Value));
+                                                    IDistanceDataTrack dt = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
+                                                    DateTime d2 = dt.GetTimeAtDistanceMeters(this.getTimeResult(d1));
+                                                    refDist = this.getDistResult(d2);
                                                 }
                                             }
                                             else
@@ -2435,7 +2474,7 @@ namespace TrailsPlugin.Data
                                             DateTime d2;
                                             if (diffMode == DiffMode.ActivityStart)
                                             {
-                                                d2 = trRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refOffset));
+                                                d2 = trRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refTimeOffset));
                                             }
                                             else
                                             {
@@ -2448,19 +2487,20 @@ namespace TrailsPlugin.Data
                                                 refDist = null;
                                             }
                                         }
-                                        if (refDist != null)
+                                        //Only add if valid estimation
+                                        if (refDist != null && !float.IsNaN((float)refDist))
                                         {
                                             if (Settings.DiffUsingCommonStretches && prevCommonStreches)
                                             {
-                                                diffOffset = (float)refDist - t.Value;
+                                                //TODO: Not implemented
+                                                diffOffset = (float)refDist - thisDist;
                                                 prevCommonStreches = false;
                                             }
-                                            //Only add if valid estimation
-                                            double diff = t.Value - (double)refDist + diffOffset;
+                                            double diff = thisDist - (double)refDist + diffOffset;
                                             lastValue = (float)UnitUtil.Elevation.ConvertFrom(diff, trRef.Activity);
                                             m_DiffDistTrack0.Add(d1, lastValue);
                                             oldElapsed = (int)elapsed;
-                                            prevDist = t.Value;
+                                            prevDist = thisDist;
                                             prevRefDist = (double)refDist;
                                         }
                                     }
@@ -2622,7 +2662,7 @@ namespace TrailsPlugin.Data
                 StartTime != DateTime.MinValue && EndTime != DateTime.MinValue)
             {
                 //Insert values at borders in m_gpsTrack
-                //gpsTrack = (GPSRoute)(new InsertValues<IGPSPoint>(this, gpsTrack, m_activity.GPSRoute)).insertValues();
+                gpsTrack = (GPSRoute)(new InsertValues<IGPSPoint>(this, gpsTrack, m_activity.GPSRoute)).insertValues();
 
                 int i = 0;
                 while (i < m_activity.GPSRoute.Count)

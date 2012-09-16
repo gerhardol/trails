@@ -1851,7 +1851,7 @@ namespace TrailsPlugin.Data
         /**********************************************************/
         #region GradeAdjust
 
-        public enum RunningGradeCalcMethodClass { None, MervynDavies, GregMaclin, JackDaniels, AlbertoMinetti, ACSM, Pandolf };
+        public enum RunningGradeCalcMethodClass { None, MervynDavies, GregMaclin, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
 
         public static RunningGradeCalcMethodClass RunningGradeCalcMethod = RunningGradeCalcMethodClass.None;
         internal static void ResetRunningGradeCalcMethod()
@@ -1861,13 +1861,10 @@ namespace TrailsPlugin.Data
 
         internal static void IncreaseRunningGradeCalcMethod()
         {
-            if (RunningGradeCalcMethod == RunningGradeCalcMethodClass.Pandolf)
+            RunningGradeCalcMethod++;
+            if (RunningGradeCalcMethod == RunningGradeCalcMethodClass.Last)
             {
                 RunningGradeCalcMethod = RunningGradeCalcMethodClass.None;
-            }
-            else
-            {
-                RunningGradeCalcMethod++;
             }
             foreach (TrailResult t in TrailsPlugin.Controller.TrailController.Instance.CurrentActivityTrail.AllResults)
             {
@@ -2945,6 +2942,18 @@ namespace TrailsPlugin.Data
             IActivity activity = Plugin.GetApplication().Logbook.Activities.Add(this.StartTime);
             activity.Category = this.Activity.Category;
             activity.GPSRoute = this.GPSRoute;
+            if (RunningGradeCalcMethod != RunningGradeCalcMethodClass.None)
+            {
+                IGPSRoute gpsRoute = new GPSRoute();
+                IDistanceDataTrack dt = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
+                foreach (ITimeValueEntry<IGPSPoint> g in this.GPSRoute)
+                {
+                    DateTime d1 = this.GPSRoute.EntryDateTime(g);
+                    DateTime d2 = this.getDateTimeFromTimeResult(dt.GetInterpolatedValue(d1).Value);
+                    gpsRoute.Add(d2, g.Value);
+                }
+                activity.GPSRoute = gpsRoute;
+            }
             activity.TimeZoneUtcOffset = this.Activity.TimeZoneUtcOffset;
             activity.TimerPauses.Clear();
             foreach (IValueRange<DateTime> t in this.Pauses)

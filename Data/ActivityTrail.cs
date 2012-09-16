@@ -986,7 +986,7 @@ namespace TrailsPlugin.Data
                 }
 
 //TODO remove - need for restart handling?
-#if OLD_TRAIL_RESTART_xxx
+#if OLD_TRAIL_RESTART
                 ////////////////////////////////////
                 //Determine where to start from
                 //At matches, the index is determined from type of match

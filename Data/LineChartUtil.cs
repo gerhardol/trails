@@ -320,10 +320,10 @@ namespace TrailsPlugin.Data
                 {LineChartTypes.DiffTime, Color.DarkCyan},
                 {LineChartTypes.DiffDist, Color.CornflowerBlue},
 
-                {LineChartTypes.DeviceSpeed, Color.FromArgb(42, 74, 135)}, //LineChartTypes.Speed
-                {LineChartTypes.DevicePace, Color.FromArgb(42, 70, 132)}, //LineChartTypes.Pace, red
-                {LineChartTypes.DeviceElevation, Color.FromArgb(143, 89, 12)}, //LineChartTypes.Elevation
-                {LineChartTypes.DeviceDiffDist, Color.FromArgb(110,145,227)}, //LineChartTypes.DiffDist
+                {LineChartTypes.DeviceSpeed, Color.FromArgb(62, 65, 122)}, //LineChartTypes.Speed
+                {LineChartTypes.DevicePace, Color.FromArgb(62, 65, 122)}, //LineChartTypes.Pace, red
+                {LineChartTypes.DeviceElevation, Color.FromArgb(183, 70, 2)}, //LineChartTypes.Elevation
+                {LineChartTypes.DeviceDiffDist, Color.FromArgb(130, 132, 217)}, //LineChartTypes.DiffDist
             };
     }
 }

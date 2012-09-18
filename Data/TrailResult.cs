@@ -1521,16 +1521,28 @@ namespace TrailsPlugin.Data
                         //Increase point index
                         //Do not care about last trail point, last section always smoothed
                         int nIndex = pointIndex;
-                        while (t > pTime || pointIndex <= 0 ||
-                            pointIndex < m_subResultInfo.Points.Count &&
-                         (m_subResultInfo.Points[pointIndex].Time <= DateTime.MinValue ||
-                         nIndex < pointIndex && Settings.SmoothOverTrailPoints == SmoothOverTrailBorders.Unchanged &&
-                         m_subResultInfo.Points[nIndex].Required == m_subResultInfo.Points[pointIndex].Required))
+                        if ((pointIndex < m_subResultInfo.Points.Count) &&
+                            (pTime <= DateTime.MinValue || //No match with current, handle w next
+                            t > pTime))
                         {
+                            bool unchangedBorder = Settings.SmoothOverTrailPoints == SmoothOverTrailBorders.Unchanged;
                             pointIndex++;
                             if (pointIndex < m_subResultInfo.Points.Count)
                             {
                                 pTime = m_subResultInfo.Points[pointIndex].Time;
+                                unchangedBorder &= m_subResultInfo.Points[nIndex].Required == m_subResultInfo.Points[pointIndex].Required;
+                            }
+                            while ((pointIndex < m_subResultInfo.Points.Count) &&
+                                (pTime <= DateTime.MinValue || //No match with current, handle w next
+                                //Advance if next (and all in between) is same as start
+                                unchangedBorder))
+                            {
+                                pointIndex++;
+                                if (pointIndex < m_subResultInfo.Points.Count)
+                                {
+                                    pTime = m_subResultInfo.Points[pointIndex].Time;
+                                    unchangedBorder &= m_subResultInfo.Points[nIndex].Required == m_subResultInfo.Points[pointIndex].Required;
+                                }
                             }
                         }
                     }

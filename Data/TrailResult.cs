@@ -2115,7 +2115,7 @@ namespace TrailsPlugin.Data
 
                     if (t2 != null)
                     {
-                        float elev = t2.Value;
+                        float elev = (float)UnitUtil.Elevation.ConvertFrom(t2.Value);//convert back...
                         //This point is valid, at least for next
                         if (prevElev != null)
                         {
@@ -2462,8 +2462,8 @@ namespace TrailsPlugin.Data
                                             //get diff from average
                                             if (TrailResult.RunningGradeCalcMethod != RunningGradeCalcMethodClass.None)
                                             {
-                                                ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef).GetInterpolatedValue(d1);
-                                                if (val != null && !float.IsNaN(val.Value))
+                                                //ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef).GetInterpolatedValue(d1);
+                                                //if (val != null && !float.IsNaN(val.Value))
                                                 {
                                                     //TODO: correct check here?
                                                     //refDist = this.getDistResult(getDateTimeFromTimeResult(val.Value));

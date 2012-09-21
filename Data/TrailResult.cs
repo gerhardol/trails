@@ -2045,7 +2045,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public TimeSpan GradeRunAdjustedTime
+        public virtual TimeSpan GradeRunAdjustedTime
         {
             get
             {

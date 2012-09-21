@@ -70,6 +70,19 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public override TimeSpan GradeRunAdjustedTime
+        {
+            get
+            {
+                TimeSpan tot = TimeSpan.Zero;
+                foreach (TrailResult t in results)
+                {
+                    tot += t.GradeRunAdjustedTime;
+                }
+                return TimeSpan.FromSeconds(tot.TotalSeconds / NoOfResults(0));
+            }
+        }
+        
         public override double Distance
         {
             get

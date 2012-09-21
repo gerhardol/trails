@@ -2035,6 +2035,7 @@ namespace TrailsPlugin.Data
             public float time;
             public float dist;
             public float q;
+            public float adjTime = 0;
 
             public ginfo(DateTime dateTime, float time, float dist, float q)
             {
@@ -2146,9 +2147,10 @@ namespace TrailsPlugin.Data
                     //Iterate to get new time apropriate for "adjusted time"
                     float newTime = m_gradeRunAdjustedTime[m_gradeRunAdjustedTime.Count - 1].Value; //time derived from predictTime, should converge to resultTime
                     float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime;//Time used to predict resultTime - seed with most likely
+
                     int i = 0; //limit iterations
                     while (Math.Abs(newTime - this.Duration.TotalSeconds) > 3 && i < 9 ||
-                        Math.Abs(newTime - this.Duration.TotalSeconds) > 1 && i < 2)
+                        Math.Abs(newTime - this.Duration.TotalSeconds) > 1 && i < 3)
                     {
                         float avgAdjSpeed = (float)(this.Distance / predictTime);
                         newTime = 0;
@@ -2158,24 +2160,17 @@ namespace TrailsPlugin.Data
                             {
                                 newTime += t.dist / avgAdjSpeed / t.q;
                             }
+                            //Add time, not elapsed to track
+                            t.adjTime = newTime;
                         }
                         predictTime = (float)(this.Duration.TotalSeconds + (predictTime - newTime));
                         i++;
                     }
                     if (i > 3)
                     { }
+                    foreach (ginfo t in m_grades)
                     {
-                        float avgAdjSpeed = (float)(this.Distance / predictTime);
-                        newTime = 0;
-                        foreach (ginfo t in m_grades)
-                        {
-                            //Add time, not elapsed to track
-                            if (t.q > 0)
-                            {
-                                newTime += t.dist / avgAdjSpeed / t.q;
-                            }
-                            m_gradeRunAdjustedTimeAvg.Add(t.dateTime, newTime);
-                        }
+                        m_gradeRunAdjustedTimeAvg.Add(t.dateTime, t.adjTime);
                     }
                 }
             }

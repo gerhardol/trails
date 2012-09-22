@@ -26,6 +26,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
+using TrailsPlugin.Utils;
 using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
@@ -411,7 +412,7 @@ namespace TrailsPlugin.Data
                     {
                         DateTime startTime = m_subResultInfo.Points[0].Time;
                         DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
-                        m_startTime = getFirstUnpausedTime(startTime, Pauses, true);
+                        m_startTime = TrackUtil.getFirstUnpausedTime(startTime, Pauses, true);
                         if (endTime.CompareTo((DateTime)m_startTime) <= 0)
                         {
                             //Trail (or subtrail) is completely paused. Use all
@@ -444,7 +445,7 @@ namespace TrailsPlugin.Data
                     {
                         DateTime startTime = m_subResultInfo.Points[0].Time;
                         DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
-                        m_endTime = getFirstUnpausedTime(endTime, Pauses, false);
+                        m_endTime = TrackUtil.getFirstUnpausedTime(endTime, Pauses, false);
                         if (startTime.CompareTo((DateTime)m_endTime) >= 0)
                         {
                             //Trail (or subtrail) is completely paused. Use all
@@ -490,7 +491,7 @@ namespace TrailsPlugin.Data
                         if (this.TrailPointDateTime[k] > DateTime.MinValue)
                         {
                             //The used start time for the point, disregarding pauses
-                            startTime = getFirstUnpausedTime(this.TrailPointDateTime[k], new ValueRangeSeries<DateTime>(), true);
+                            startTime = TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], new ValueRangeSeries<DateTime>(), true);
                             i = k;
                             break;
                         }
@@ -533,24 +534,24 @@ namespace TrailsPlugin.Data
         //Get result time and distance from activity references
         public float getDistActivity(DateTime t)
         {
-            return getDistFromDateTime(ActivityDistanceMetersTrack, t);
+            return TrackUtil.getDistFromDateTime(ActivityDistanceMetersTrack, t);
         }
         public float getDistResult(DateTime t)
         {
-            return getDistFromDateTime(DistanceMetersTrack, t);
+            return TrackUtil.getDistFromDateTime(DistanceMetersTrack, t);
         }
         public float getDistResultFromDistActivity(double t)
         {
-            return getDistResult(getDateTimeFromDistActivity(t));
+            return this.getDistResult(getDateTimeFromDistActivity(t));
         }
 
         public DateTime getDateTimeFromDistActivity(double t)
         {
-            return getDateTimeFromTrackDist(ActivityDistanceMetersTrack, (float)t);
+            return TrackUtil.getDateTimeFromTrackDist(ActivityDistanceMetersTrack, (float)t);
         }
         public DateTime getDateTimeFromDistResult(double t)
         {
-            DateTime dateTime = getDateTimeFromTrackDist(DistanceMetersTrack, (float)t);
+            DateTime dateTime = TrackUtil.getDateTimeFromTrackDist(DistanceMetersTrack, (float)t);
             return adjustTimeToLimits(dateTime);
         }
         //public float getDistActivityFromDistResult(double t)
@@ -613,101 +614,6 @@ namespace TrailsPlugin.Data
             if (dateTime > this.EndTime)
             {
                 dateTime = EndTime;
-            }
-            return dateTime;
-        }
-
-        /**********************************/
-        //Static methods
-
-        private static float getDistFromDateTime(IDistanceDataTrack distTrack, DateTime t)
-        {
-            int status;
-            return getDistFromDateTime(distTrack, t, out status);
-        }
-
-        private static float getDistFromDateTime(IDistanceDataTrack distTrack, DateTime t, out int status)
-        {
-            //Ignore malformed activities and selection outside the result
-            float res = 0;
-            status = 1;
-            ITimeValueEntry<float> entry = distTrack.GetInterpolatedValue(t);
-            if (entry != null)
-            {
-                res = entry.Value;
-                status = 0;
-            }
-            else if (distTrack.Count > 0 && t >= distTrack.StartTime.AddSeconds(2))
-            {
-                //Seem to be out of bounds
-                //Any time after start is handled as end, as pauses may complicate calcs (default is 0, i.e. before)
-                res = distTrack[distTrack.Count - 1].Value;
-            }
-            return res;
-        }
-
-        public static DateTime getDateTimeFromTrackDist(IDistanceDataTrack distTrack, float t)
-        {
-            DateTime res = DateTime.MinValue;
-            if (t >= distTrack.Max && distTrack.Count > 0)
-            {
-                res = distTrack.StartTime.AddSeconds(distTrack.TotalElapsedSeconds);
-            }
-            else if (t <= distTrack.Min)
-            {
-                res = distTrack.StartTime;
-            }
-            else
-            {
-                try
-                {
-                    res = distTrack.GetTimeAtDistanceMeters(t);
-                }
-                catch { }
-            }
-            return res;
-        }
-
-        //Chart and Result must have the same understanding of Distance
-        public static double DistanceConvertTo(double t, TrailResult refRes)
-        {
-            IActivity activity = refRes == null ? null : refRes.Activity;
-            return UnitUtil.Distance.ConvertTo(t, activity);
-        }
-
-        public static double DistanceConvertFrom(double t, TrailResult refRes)
-        {
-            IActivity activity = refRes == null ? null : refRes.Activity;
-            return UnitUtil.Distance.ConvertFrom(t, activity);
-        }
-
-        /***************************************************/
-
-        private static DateTime getFirstUnpausedTime(DateTime dateTime, IValueRangeSeries<DateTime> pauses, bool next)
-        {
-            return getFirstUnpausedTime(dateTime, ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, pauses), pauses, next);
-        }
-
-        internal static DateTime getFirstUnpausedTime(DateTime dateTime, bool isPause, IValueRangeSeries<DateTime> pauses, bool next)
-        {
-            if (isPause)
-            {
-                foreach (IValueRange<DateTime> pause in pauses)
-                {
-                    if (dateTime.CompareTo(pause.Lower) >= 0 &&
-                        dateTime.CompareTo(pause.Upper) <= 0)
-                    {
-                        if (next)
-                        {
-                            dateTime = (pause.Upper).Add(TimeSpan.FromSeconds(1));
-                        }
-                        else if (pause.Lower > DateTime.MinValue)
-                        {
-                            dateTime = (pause.Lower).Add(TimeSpan.FromSeconds(-1));
-                        }
-                        break;
-                    }
-                }
             }
             return dateTime;
         }
@@ -949,7 +855,7 @@ namespace TrailsPlugin.Data
                     uint oldElapsed = 0;
 
                     m_distanceMetersTrack.Add(StartTime, distance);
-                    m_startDistance = TrailResult.getDistFromDateTime(m_activityDistanceMetersTrack, StartTime);
+                    m_startDistance = TrackUtil.getDistFromDateTime(m_activityDistanceMetersTrack, StartTime);
                     //Prune search
                     //Note that the distance track may not start at result StartTime
                     while (i < m_activityDistanceMetersTrack.Count &&
@@ -990,7 +896,7 @@ namespace TrailsPlugin.Data
                     //Set real last distance, even if elapsedSec is not matching
                     if (!float.IsNaN(prevDist))
                     {
-                        distance += TrailResult.getDistFromDateTime(this.m_activityDistanceMetersTrack, EndTime) - prevDist;
+                        distance += TrackUtil.getDistFromDateTime(this.m_activityDistanceMetersTrack, EndTime) - prevDist;
                         m_distanceMetersTrack.Add(EndTime, distance);
                     }
                 }
@@ -2176,7 +2082,7 @@ namespace TrailsPlugin.Data
                                     {
                                         if (t.Value + refOffset <= trRef.DistanceMetersTrack.Max)
                                         {
-                                            DateTime d2 = TrailResult.getDateTimeFromTrackDist(trRef.DistanceMetersTrack, t.Value + refOffset);
+                                            DateTime d2 = TrackUtil.getDateTimeFromTrackDist(trRef.DistanceMetersTrack, t.Value + refOffset);
                                             refTime = (float)trRef.getTimeResult(d2);
                                         }
                                     }
@@ -2290,12 +2196,12 @@ namespace TrailsPlugin.Data
                                             //diffdist over time will normally "jump" at each trail point
                                             //I.e. if the reference is behind, the distance suddenly gained must be subtracted
                                             int status2;
-                                            double refDistP = getDistFromDateTime(trRef.DistanceMetersTrack,
+                                            double refDistP = TrackUtil.getDistFromDateTime(trRef.DistanceMetersTrack,
                                                 trRef.TrailPointDateTime[dateTrailPointIndex], out status2);
                                             if (status2 == 0)
                                             {
                                                 //getDistResult
-                                                double distP = getDistFromDateTime(this.DistanceMetersTrack,
+                                                double distP = TrackUtil.getDistFromDateTime(this.DistanceMetersTrack,
                                                     this.TrailPointDateTime[dateTrailPointIndex], out status2);
                                                 if (status2 == 0)
                                                 {
@@ -2352,7 +2258,7 @@ namespace TrailsPlugin.Data
                                                 d2 = d1;
                                             }
                                             int status;
-                                            refDist = getDistFromDateTime(trRef.DistanceMetersTrack, d2, out status);
+                                            refDist = TrackUtil.getDistFromDateTime(trRef.DistanceMetersTrack, d2, out status);
                                             if (status != 0)
                                             {
                                                 refDist = null;
@@ -2435,7 +2341,7 @@ namespace TrailsPlugin.Data
                     if (this.TrailPointDateTime[k] > DateTime.MinValue)
                     {
                         //The used start time for the point
-                        DateTime t1 = getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true);
+                        DateTime t1 = TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true);
                         //Same as val = getTimeSpanResult(t1);
                         val = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
                                 StartTime, t1, Pauses).TotalSeconds;
@@ -2482,7 +2388,7 @@ namespace TrailsPlugin.Data
                     double val = 0, val1 = 0;
                     if (TrailPointDateTime[k] > DateTime.MinValue)
                     {
-                        ITimeValueEntry<float> interpolatedP = DistanceMetersTrack0(m_cacheTrackRef).GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
+                        ITimeValueEntry<float> interpolatedP = DistanceMetersTrack0(m_cacheTrackRef).GetInterpolatedValue(TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
                         if (interpolatedP != null)
                         {
                             val = interpolatedP.Value;
@@ -2493,7 +2399,7 @@ namespace TrailsPlugin.Data
                         }
 
                         //Use "ST" distance track to get offset from detected start (that could be paused) to used start
-                        interpolatedP = ActivityDistanceMetersTrack.GetInterpolatedValue(getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
+                        interpolatedP = ActivityDistanceMetersTrack.GetInterpolatedValue(TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
                         ITimeValueEntry<float> interpolatedP2 = ActivityDistanceMetersTrack.GetInterpolatedValue(this.TrailPointDateTime[k]);
                         if (interpolatedP != null && interpolatedP2 != null)
                         {

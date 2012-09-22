@@ -39,6 +39,7 @@ using ZoneFiveSoftware.Common.Visuals.Forms;
 using TrailsPlugin.UI.MapLayers;
 #endif
 using TrailsPlugin.Data;
+using TrailsPlugin.Utils;
 using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.Activity {
@@ -399,7 +400,7 @@ namespace TrailsPlugin.UI.Activity {
                                 }
                                 else
                                 {
-                                    offset = (float)TrailResult.DistanceConvertFrom(m_trailResults[i].StartDist - tr.StartDist, ReferenceTrailResult);
+                                    offset = (float)TrackUtil.DistanceConvertFrom(m_trailResults[i].StartDist - tr.StartDist, ReferenceTrailResult);
                                 }
                             }
 
@@ -494,8 +495,8 @@ namespace TrailsPlugin.UI.Activity {
                 else
                 {
 
-                    d1 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[0]), ReferenceTrailResult));
-                    d2 = tr.getDateTimeFromDistResult(TrailResult.DistanceConvertTo(GetResyncOffsetDist(tr, at[1]), ReferenceTrailResult));
+                    d1 = tr.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(GetResyncOffsetDist(tr, at[0]), ReferenceTrailResult));
+                    d2 = tr.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(GetResyncOffsetDist(tr, at[1]), ReferenceTrailResult));
                 }
                 t.Add(new ValueRange<DateTime>(d1, d2));
             }
@@ -547,8 +548,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
             //distance is for result, then to display units
-            x1 = (float)TrailResult.DistanceConvertFrom(t1, ReferenceTrailResult);
-            x2 = (float)TrailResult.DistanceConvertFrom(t2, ReferenceTrailResult);
+            x1 = (float)TrackUtil.DistanceConvertFrom(t1, ReferenceTrailResult);
+            x2 = (float)TrackUtil.DistanceConvertFrom(t2, ReferenceTrailResult);
             return new float[] { x1, x2 };
         }
 
@@ -873,7 +874,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            elapsed = TrailResult.DistanceConvertFrom(
+                            elapsed = TrackUtil.DistanceConvertFrom(
                                 trailPointResult.getDistResult(t), trailPointResult);
                         }
                         if (!double.IsNaN(elapsed) && elapsed > oldElapsed)

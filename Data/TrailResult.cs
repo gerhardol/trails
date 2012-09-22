@@ -2034,14 +2034,16 @@ namespace TrailsPlugin.Data
             public DateTime dateTime;
             public float time;
             public float dist;
+            public float totDist;
             public float q;
             public float adjTime = 0;
 
-            public ginfo(DateTime dateTime, float time, float dist, float q)
+            public ginfo(DateTime dateTime, float time, float dist, float totDist, float q)
             {
                 this.dateTime = dateTime;
                 this.time = time;
                 this.dist = dist;
+                this.totDist = totDist;
                 this.q = q;
             }
         }
@@ -2127,7 +2129,7 @@ namespace TrailsPlugin.Data
                     float val = prevVal + q * (time - prevTime);
                     m_gradeRunAdjustedTime.Add(dateTime, val);
                     prevVal = val;
-                    m_grades.Add(new ginfo(dateTime, time - prevTime, dist - prevDist, q));
+                    m_grades.Add(new ginfo(dateTime, time - prevTime, dist - prevDist, dist, q));
 
                     prevTime = time;
                     prevDist = dist;
@@ -2147,18 +2149,42 @@ namespace TrailsPlugin.Data
                     //Iterate to get new time apropriate for "adjusted time"
                     float newTime = m_gradeRunAdjustedTime[m_gradeRunAdjustedTime.Count - 1].Value; //time derived from predictTime, should converge to resultTime
                     float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime;//Time used to predict resultTime - seed with most likely
-
-                    int i = 0; //limit iterations
+                    float[,] splitTime = { { 4000, 120 }, { 18000, -120 } };
+                    int i = 0; //limit iterations - should iterate within 3 tries
                     while (Math.Abs(newTime - this.Duration.TotalSeconds) > 3 && i < 9 ||
                         Math.Abs(newTime - this.Duration.TotalSeconds) > 1 && i < 3)
                     {
                         float avgAdjSpeed = (float)(this.Distance / predictTime);
+                        float avgAdjSpeedAdj = avgAdjSpeed;
+                        int j = -1;
                         newTime = 0;
+
                         foreach (ginfo t in m_grades)
                         {
                             if (t.q > 0)
                             {
-                                newTime += t.dist / avgAdjSpeed / t.q;
+                                //Get avg speed for this part
+                                while (splitTime != null && splitTime.Length > 0 &&
+                                    j < splitTime.Length / 2 && (j < 0 || t.totDist > splitTime[j, 0]))
+                                {
+                                    j++;
+                                    float prevTime = 0;
+                                    float prevDist = 0;
+                                    if (j > 0)
+                                    {
+                                        prevDist = splitTime[j - 1, 0];
+                                        prevTime = splitTime[j - 1, 1];
+                                    }
+                                    float thisTime = 0;
+                                    float thisDist = (float)this.Distance;
+                                    if (j < splitTime.Length / 2)
+                                    {
+                                        thisDist = splitTime[j, 0];
+                                        thisTime = splitTime[j, 1];
+                                    }
+                                    avgAdjSpeedAdj = (thisDist - prevDist) / ((thisDist - prevDist) / avgAdjSpeed + (thisTime - prevTime));
+                                }
+                                newTime += t.dist / avgAdjSpeedAdj / t.q;
                             }
                             //Add time, not elapsed to track
                             t.adjTime = newTime;

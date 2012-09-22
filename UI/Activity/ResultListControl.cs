@@ -1067,7 +1067,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailResult.IncreaseRunningGradeCalcMethod();
                 }
-                summaryListToolTip.Show(TrailResult.RunningGradeCalcMethod.ToString(),
+                summaryListToolTip.Show(Data.Settings.RunningGradeAdjustMethod.ToString(),
                               summaryList,
                               new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
                                   Cursor.Current.Size.Width / 2,
@@ -1258,7 +1258,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.excludeResultsMenuItem.Enabled = true;
                 this.markCommonStretchesMenuItem.Enabled = true && Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             }
-            this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + TrailResult.RunningGradeCalcMethod.ToString();
+            this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
             e.Cancel = false;
         }
 

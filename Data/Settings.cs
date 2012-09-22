@@ -53,6 +53,8 @@ namespace TrailsPlugin.Data
         private static string m_excludeStoppedCategory = "";
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
         private static float m_predictDistance = 10000;
+        private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
+        private static float[,] m_AdjustDiffSplitTimes = null;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
@@ -297,6 +299,30 @@ namespace TrailsPlugin.Data
                 m_predictDistance = value;
             }
         }
+        ///
+        /// Adjust pace according to grade
+        public static RunningGradeAdjustMethodEnum RunningGradeAdjustMethod
+        {
+            get
+            {
+                return m_RunningGradeAdjustMethod;
+            }
+            set
+            {
+                m_RunningGradeAdjustMethod = value;
+            }
+        }
+        ///
+        ///Make diff to ideal time adjusted to grade
+        public static float[,] AdjustDiffSplitTimes
+        {
+            get
+            {
+                return m_AdjustDiffSplitTimes;
+            }
+            //Not possible to set now
+        }
+            
         /// <summary>
         /// Show the summary from the device, instead of the track summaries
         /// </summary>
@@ -358,6 +384,7 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
                 if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
+                attr = pluginNode.GetAttribute(xmlTags.SmoothOverTrailPoints);
                 try
                 {
                     if (attr.Length > 0) { m_SmoothOverTrailPoints = (SmoothOverTrailBorders)Enum.Parse(typeof(SmoothOverTrailBorders), attr, true); }
@@ -365,7 +392,34 @@ namespace TrailsPlugin.Data
                 catch { }
                 attr = pluginNode.GetAttribute(xmlTags.PredictDistance);
                 if (attr.Length > 0) { m_predictDistance = Settings.parseFloat(attr); }
-
+                attr = pluginNode.GetAttribute(xmlTags.sRunningGradeAdjustMethod);
+                try
+                {
+                    if (attr.Length > 0) { m_RunningGradeAdjustMethod = (RunningGradeAdjustMethodEnum)Enum.Parse(typeof(RunningGradeAdjustMethodEnum), attr, true); }
+                }
+                catch { }
+                attr = pluginNode.GetAttribute(xmlTags.sAdjustDiffSplitTimes);
+                try
+                {
+                    if (attr.Length > 0)
+                    {
+                        string[] values = attr.Split(';');
+                        m_AdjustDiffSplitTimes = new float[values.Length/2, 2];
+                        int i = 0;
+                        foreach (string column in values)
+                        {
+                            float f = Settings.parseFloat(column);
+                            if (i % 2 == 0)
+                            {
+                                f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f,null);
+                            }
+                            m_AdjustDiffSplitTimes[i / 2, i % 2] = f;
+                            i++;
+                        }
+                    }
+                }
+                catch { }
+            
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
                 if (attr.Length > 0)
                 {
@@ -463,11 +517,27 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
             pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
             pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_predictDistance));
+            pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
+            String colText = null;
+            if (m_AdjustDiffSplitTimes != null)
+            {
+                for (int i = 0; i < m_AdjustDiffSplitTimes.Length; i++)
+                {
+                    float f = m_AdjustDiffSplitTimes[i / 2, i % 2];
+                    if (i % 2 == 0)
+                    {
+                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
+                    }
+                    if (colText == null) { colText = f.ToString(); }
+                    else { colText += ";" + f; }
+                }
+            }
+            pluginNode.SetAttribute(xmlTags.sAdjustDiffSplitTimes, colText);
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
 
-            String colText = null;
+            colText = null;
             foreach (String column in m_activityPageColumns)
             {
                 if (colText == null) { colText = column; }
@@ -519,6 +589,8 @@ namespace TrailsPlugin.Data
             public const string ExcludeStoppedCategory = "ExcludeStoppedCategory";
             public const string SmoothOverTrailPoints = "SmoothOverTrailPoints";
             public const string PredictDistance = "PredictDistance1";
+            public const string sRunningGradeAdjustMethod = "sRunningGradeAdjustMethod";
+            public const string sAdjustDiffSplitTimes = "sAdjustDiffSplitTimes";
  
             public const string sColumns = "sColumns";
         }

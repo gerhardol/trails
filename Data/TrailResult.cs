@@ -1993,6 +1993,8 @@ namespace TrailsPlugin.Data
                     float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime;//Time used to predict resultTime - seed with most likely
                     float[,] splitTime = Settings.AdjustDiffSplitTimes;
 
+                    //set racesplit in Preferences, or hardcoded here:
+                    //splitTime= new float[,]{{4000,120},{20000,-120}};
                     int i = 0; //limit iterations - should iterate within 3 tries
                     while (Math.Abs(newTime - this.Duration.TotalSeconds) > 3 && i < 9 ||
                         Math.Abs(newTime - this.Duration.TotalSeconds) > 1 && i < 3)
@@ -2040,6 +2042,12 @@ namespace TrailsPlugin.Data
                     foreach (ginfo t in m_grades)
                     {
                         m_gradeRunAdjustedTimeAvg.Add(t.dateTime, t.adjTime);
+                        if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) > 4)
+                        {
+                        }
+                        if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) <2)
+                        {
+                        }
                     }
                 }
             }

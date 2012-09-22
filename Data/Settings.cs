@@ -409,10 +409,10 @@ namespace TrailsPlugin.Data
                         foreach (string column in values)
                         {
                             float f = Settings.parseFloat(column);
-                            if (i % 2 == 0)
-                            {
-                                f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f,null);
-                            }
+                            //if (i % 2 == 0)
+                            //{
+                            //    f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f,null);
+                            //}
                             m_AdjustDiffSplitTimes[i / 2, i % 2] = f;
                             i++;
                         }
@@ -524,10 +524,10 @@ namespace TrailsPlugin.Data
                 for (int i = 0; i < m_AdjustDiffSplitTimes.Length; i++)
                 {
                     float f = m_AdjustDiffSplitTimes[i / 2, i % 2];
-                    if (i % 2 == 0)
-                    {
-                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
-                    }
+                    //if (i % 2 == 0)
+                    //{
+                    //    f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
+                    //}
                     if (colText == null) { colText = f.ToString(); }
                     else { colText += ";" + f; }
                 }

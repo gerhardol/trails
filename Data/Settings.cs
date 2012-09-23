@@ -320,7 +320,10 @@ namespace TrailsPlugin.Data
             {
                 return m_AdjustDiffSplitTimes;
             }
-            //Not possible to set now
+            set
+            {
+                m_AdjustDiffSplitTimes = value;
+            }
         }
             
         /// <summary>
@@ -398,27 +401,28 @@ namespace TrailsPlugin.Data
                     if (attr.Length > 0) { m_RunningGradeAdjustMethod = (RunningGradeAdjustMethodEnum)Enum.Parse(typeof(RunningGradeAdjustMethodEnum), attr, true); }
                 }
                 catch { }
-                attr = pluginNode.GetAttribute(xmlTags.sAdjustDiffSplitTimes);
-                try
-                {
-                    if (attr.Length > 0)
-                    {
-                        string[] values = attr.Split(';');
-                        m_AdjustDiffSplitTimes = new float[values.Length/2, 2];
-                        int i = 0;
-                        foreach (string column in values)
-                        {
-                            float f = Settings.parseFloat(column);
-                            //if (i % 2 == 0)
-                            //{
-                            //    f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f,null);
-                            //}
-                            m_AdjustDiffSplitTimes[i / 2, i % 2] = f;
-                            i++;
-                        }
-                    }
-                }
-                catch { }
+                //Not read or saved in preferences right now
+                //attr = pluginNode.GetAttribute(xmlTags.sAdjustDiffSplitTimes);
+                //try
+                //{
+                //    if (attr.Length > 0)
+                //    {
+                //        string[] values = attr.Split(';');
+                //        m_AdjustDiffSplitTimes = new float[values.Length/2, 2];
+                //        int i = 0;
+                //        foreach (string column in values)
+                //        {
+                //            float f = Settings.parseFloat(column);
+                //            //if (i % 2 == 0)
+                //            //{
+                //            //    f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f,null);
+                //            //}
+                //            m_AdjustDiffSplitTimes[i / 2, i % 2] = f;
+                //            i++;
+                //        }
+                //    }
+                //}
+                //catch { }
             
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
                 if (attr.Length > 0)
@@ -519,20 +523,20 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_predictDistance));
             pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
             String colText = null;
-            if (m_AdjustDiffSplitTimes != null)
-            {
-                for (int i = 0; i < m_AdjustDiffSplitTimes.Length; i++)
-                {
-                    float f = m_AdjustDiffSplitTimes[i / 2, i % 2];
-                    //if (i % 2 == 0)
-                    //{
-                    //    f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
-                    //}
-                    if (colText == null) { colText = f.ToString(); }
-                    else { colText += ";" + f; }
-                }
-            }
-            pluginNode.SetAttribute(xmlTags.sAdjustDiffSplitTimes, colText);
+            //if (m_AdjustDiffSplitTimes != null)
+            //{
+            //    for (int i = 0; i < m_AdjustDiffSplitTimes.Length; i++)
+            //    {
+            //        float f = m_AdjustDiffSplitTimes[i / 2, i % 2];
+            //        //if (i % 2 == 0)
+            //        //{
+            //        //    f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
+            //        //}
+            //        if (colText == null) { colText = f.ToString(); }
+            //        else { colText += ";" + f; }
+            //    }
+            //}
+            //pluginNode.SetAttribute(xmlTags.sAdjustDiffSplitTimes, colText);
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));

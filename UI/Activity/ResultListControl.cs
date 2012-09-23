@@ -1059,6 +1059,81 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailResult.diffToSelf = !TrailResult.diffToSelf;
                 }
+                else if (e.Modifiers == Keys.Alt)
+                {
+                    //Cannot use ST controls for most part here
+                    System.Windows.Forms.Form p = new System.Windows.Forms.Form();
+                    p.Size = new System.Drawing.Size(293, 105);
+                    ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+                    ZoneFiveSoftware.Common.Visuals.TextBox AdjustDiffSplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+                    System.Windows.Forms.Button b = new System.Windows.Forms.Button();
+                    System.Windows.Forms.Button c = new System.Windows.Forms.Button();
+                    p.Text = "Diff Adjust: dist; timeOffset";
+                    p.Controls.Add(pa);
+                    pa.Dock = DockStyle.Fill;
+                    pa.Controls.Add(AdjustDiffSplitTimes_TextBox);
+                    pa.Controls.Add(b);
+                    pa.Controls.Add(c);
+                    p.AcceptButton = b;
+                    p.CancelButton = c;
+                    b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
+                    b.DialogResult = DialogResult.OK;
+                    c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
+                    c.DialogResult = DialogResult.Cancel;
+                    b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+                    c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+                    pa.ThemeChanged(this.m_visualTheme);
+                    //p.ThemeChanged(this.m_visualTheme);
+                    AdjustDiffSplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
+                    AdjustDiffSplitTimes_TextBox.Width = 200;
+                    AdjustDiffSplitTimes_TextBox.Location = new System.Drawing.Point(10,10);
+
+                    b.Click += 
+                        delegate(object sender2, EventArgs args)
+                        {
+                            try
+                            {
+                                string[] values = AdjustDiffSplitTimes_TextBox.Text.Split(';');
+                                float[,] splitTimes = new float[values.Length / 2, 2];
+                                int i = 0;
+                                foreach (string column in values)
+                                {
+                                    float f = 0;
+                                    if (string.IsNullOrEmpty(column))
+                                    {
+                                        f = TrailsPlugin.Data.Settings.parseFloat(column);
+                                    }
+                                    if (i % 2 == 0)
+                                    {
+                                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f, null);
+                                    }
+                                    splitTimes[i / 2, i % 2] = f;
+                                    i++;
+                                }
+                                TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = splitTimes;
+                            }
+                            catch { }
+                        };
+
+                    String colText = "";
+                    if (TrailsPlugin.Data.Settings.AdjustDiffSplitTimes != null)
+                    {
+                        for (int i = 0; i < TrailsPlugin.Data.Settings.AdjustDiffSplitTimes.Length; i++)
+                        {
+                            float f = TrailsPlugin.Data.Settings.AdjustDiffSplitTimes[i / 2, i % 2];
+                            if (i % 2 == 0)
+                            {
+                                f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
+                            }
+                            if (colText == "") { colText = f.ToString(); }
+                            else { colText += ";" + f; }
+                        }
+                    }
+                    AdjustDiffSplitTimes_TextBox.Text = colText;
+
+                    //update is done in clicking OK/Enter
+                    p.ShowDialog();
+                }
                 else if (e.Modifiers == Keys.Shift)
                 {
                     TrailResult.ResetRunningGradeCalcMethod();

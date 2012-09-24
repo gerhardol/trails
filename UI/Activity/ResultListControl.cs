@@ -1094,7 +1094,7 @@ namespace TrailsPlugin.UI.Activity {
                             try
                             {
                                 string[] values = AdjustDiffSplitTimes_TextBox.Text.Split(';');
-                                float[,] splitTimes = new float[values.Length / 2, 2];
+                                float[,] splitTimes = new float[(1+values.Length) / 2, 2];
                                 int i = 0;
                                 foreach (string column in values)
                                 {

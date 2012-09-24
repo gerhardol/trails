@@ -1068,7 +1068,7 @@ namespace TrailsPlugin.UI.Activity {
                     ZoneFiveSoftware.Common.Visuals.TextBox AdjustDiffSplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
                     System.Windows.Forms.Button b = new System.Windows.Forms.Button();
                     System.Windows.Forms.Button c = new System.Windows.Forms.Button();
-                    p.Text = "Diff Adjust: dist; timeOffset";
+                    p.Text = string.Format("Diff Adjust: dist ({0}); timeOffset (s)", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(m_controller.ReferenceActivity));
                     p.Controls.Add(pa);
                     pa.Dock = DockStyle.Fill;
                     pa.Controls.Add(AdjustDiffSplitTimes_TextBox);
@@ -1099,18 +1099,27 @@ namespace TrailsPlugin.UI.Activity {
                                 foreach (string column in values)
                                 {
                                     float f = 0;
-                                    if (string.IsNullOrEmpty(column))
+                                    if (!string.IsNullOrEmpty(column))
                                     {
                                         f = TrailsPlugin.Data.Settings.parseFloat(column);
                                     }
                                     if (i % 2 == 0)
                                     {
-                                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f, null);
+                                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f, m_controller.ReferenceActivity);
                                     }
                                     splitTimes[i / 2, i % 2] = f;
                                     i++;
                                 }
-                                TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = splitTimes;
+                                if (splitTimes == null || splitTimes.Length == 0 || 
+                                    splitTimes.Length == 2 && splitTimes[0, 0] == 0 && splitTimes[0, 1] == 0)
+                                {
+                                    //empty is null
+                                    TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = null;
+                                }
+                                else
+                                {
+                                    TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = splitTimes;
+                                }
                             }
                             catch { }
                         };

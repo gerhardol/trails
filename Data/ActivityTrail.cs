@@ -243,8 +243,11 @@ namespace TrailsPlugin.Data
         public void Sort()
         {
             ((List<TrailResultWrapper>)ResultTreeList).Sort();
+            int i = 1;
             foreach (TrailResultWrapper tr in ResultTreeList)
             {
+                tr.Result.Order = i;
+                i++;
                 tr.Sort();
             }
         }

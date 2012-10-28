@@ -139,15 +139,17 @@ namespace TrailsPlugin.Data {
             return columnDefs_ST2;
         }
 #endif
-        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult)
+        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, int noRes, bool multAct)
         {
-            return ColumnDefs(activity, mult, false);
+            return ColumnDefs(activity, noRes, multAct, false);
         }
-        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, bool mult, bool all)
+
+        public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, int noRes, bool multAct, bool all)
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", 32, StringAlignment.Far));
-            int w = mult ? 115 : 70;
+            int w = 14 + (int)System.Math.Log10(noRes) *9;
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", w, StringAlignment.Far));
+            w = multAct ? 115 : 70;
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Far));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartDistance, CommonResources.Text.LabelStart + CommonResources.Text.LabelDistance + " (" + UnitUtil.Distance.LabelAbbrAct(activity) + ")", "", 60, StringAlignment.Far));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, "", 70, StringAlignment.Far));
@@ -251,7 +253,8 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.Color:
                     return x.TrailColor.ToArgb();
                 case TrailResultColumnIds.Order:
-                    return x.Order;
+                    //Order is set dynamically, ignore
+                    return 0;
                 case TrailResultColumnIds.StartTime:
                     return x.StartTime.Ticks;
                 case TrailResultColumnIds.StartDistance:

@@ -41,9 +41,24 @@ namespace TrailsPlugin.Data
 
         protected override System.Drawing.FontStyle GetCellFontStyle(object element, TreeList.Column column)
         {
-            if (element is TrailResultWrapper && (element as TrailResultWrapper).IsSummary)
+            if (element is TrailResultWrapper)
             {
-                return System.Drawing.FontStyle.Bold;
+                TrailResultWrapper wrapper = (element as TrailResultWrapper);
+                if (wrapper.IsSummary)
+                {
+                    return System.Drawing.FontStyle.Bold;
+                }
+                else
+                {
+                    /*Controller.TrailController controller = Controller.TrailController.Instance;
+                    if (controller != null && controller.CurrentActivityTrailNoChecks != null && 
+                        controller.CurrentActivityTrailNoChecks.ResultTreeList.Count > 1 && 
+                        wrapper.Result.Equals(controller.ReferenceTrailResultNoChecks))
+                    {
+                        return System.Drawing.FontStyle.Italic;
+                    }
+                     * */
+                }
             }
             return base.GetCellFontStyle(element, column);
         }

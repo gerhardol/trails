@@ -107,6 +107,14 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        public Data.ActivityTrail CurrentActivityTrailNoChecks
+        {
+            get
+            {
+                return m_currentActivityTrail;
+            }
+        }
+
         public Data.ActivityTrail CurrentActivityTrail
         {
             set
@@ -119,6 +127,7 @@ namespace TrailsPlugin.Controller
                 return m_currentActivityTrail;
             }
         }
+
         public void SetCurrentActivityTrail(Data.ActivityTrail value, System.Windows.Forms.ProgressBar progressBar)
         {
             foreach (ActivityTrail to in GetOrderedTrails(progressBar, false))
@@ -137,6 +146,7 @@ namespace TrailsPlugin.Controller
                 }
             }
         }
+
         private void checkCurrentTrailOrdered(bool checkRef)
         {
             if (Activities.Count > 0)
@@ -221,6 +231,19 @@ namespace TrailsPlugin.Controller
                 return checkReferenceActivity(true);
             }
         }
+
+        public Data.TrailResult ReferenceTrailResultNoChecks
+        {
+            get
+            {
+                if (m_referenceTrailResult == null)
+                {
+                    return this.ReferenceTrailResult;
+                }
+                return m_referenceTrailResult;
+            }
+        }
+
         public Data.TrailResult ReferenceTrailResult
         {
             set

@@ -131,7 +131,7 @@ namespace TrailsPlugin.Integration
             {
                 if (GetPerformancePredictor != null)
                 {
-                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod("getResults");
+                    MethodInfo methodInfo = GetPerformancePredictor.GetMethod(_PerformancePredictorFields);
                     object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, times, distances, predictDistances, progressBar });
                     results = new List<PerformancePredictorResult>();
                     foreach (IList<Object> o in (IList<IList<Object>>)resultFromPlugIn)

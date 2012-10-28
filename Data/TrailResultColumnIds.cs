@@ -253,8 +253,8 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.Color:
                     return x.TrailColor.ToArgb();
                 case TrailResultColumnIds.Order:
-                    //Order is set dynamically, ignore
-                    return 0;
+                    //Order is set dynamically for parents, but used for children
+                    return x.Order;
                 case TrailResultColumnIds.StartTime:
                     return x.StartTime.Ticks;
                 case TrailResultColumnIds.StartDistance:

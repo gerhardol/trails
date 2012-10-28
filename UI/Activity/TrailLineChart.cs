@@ -890,6 +890,7 @@ namespace TrailsPlugin.UI.Activity {
             }
 		}
 
+        internal static float FixedSyncGraphMode = 0;//Fix....
         private float GetDataLine(TrailResult tr, INumericTimeDataSeries graphPoints, 
             ChartDataSeries dataLine, ChartDataSeries dataFill, INumericTimeDataSeries refGraphPoints)
         {
@@ -936,6 +937,7 @@ namespace TrailsPlugin.UI.Activity {
                     syncGraphOffset = 0;
                 }
             }
+            TrailLineChart.FixedSyncGraphMode = syncGraphOffset;
 
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;

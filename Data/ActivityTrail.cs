@@ -320,16 +320,22 @@ namespace TrailsPlugin.Data
                             HighScoreProgressVal = progressBar.Value;
                             HighScoreProgressMax = progressBar.Maximum;
                         }
-                        IList<Integration.HighScore.HighScoreResult> res = Integration.HighScore.GetHighScoreForActivity(activities, progressBar);
-                        if (res != null && res.Count > 0)
+                        IList<Integration.HighScore.HighScoreResult> hs = Integration.HighScore.GetHighScoreForActivity(activities, 10, progressBar);
+                        if (hs != null && hs.Count > 0)
                         {
-                            foreach (Integration.HighScore.HighScoreResult h in res)
+                            TrailResultWrapper parent = null;
+                            foreach (Integration.HighScore.HighScoreResult h in hs)
                             {
                                 this.Status = TrailOrderStatus.Match;
-                                TrailResultWrapper result = new TrailResultWrapper(this, h.activity, h.selInfo, h.tooltip, m_resultsListWrapper.Count + 1);
-                                m_resultsListWrapper.Add(result);
+                                TrailResultWrapper result = new TrailResultWrapper(this, parent, h.activity, h.selInfo, h.tooltip, h.order/* m_resultsListWrapper.Count + 1*/);
+                                if (h.order == 1)
+                                {
+                                    m_resultsListWrapper.Add(result);
+                                    parent = result;
+                                }
                             }
                         }
+
                         if (null != progressBar)
                         {
                             progressBar.Maximum = HighScoreProgressMax;

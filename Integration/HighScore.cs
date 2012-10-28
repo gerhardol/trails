@@ -39,7 +39,7 @@ namespace TrailsPlugin.Integration
         private const string _HighScorePopup = "HighScorePopup";
         private const string getHighScore = "getResults";
 
-        private static readonly System.Version minVersion = new System.Version(2, 0, 357, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 360, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedHighScore = false;
 
@@ -81,14 +81,16 @@ namespace TrailsPlugin.Integration
             {
                 this.activity = (IActivity)o[0];
                 this.selInfo = (IItemTrackSelectionInfo)o[1];
-                this.tooltip = (string)o[2];
+                this.order = (int)o[2];
+                this.tooltip = (string)o[3];
             }
             public IActivity activity;
             public IItemTrackSelectionInfo selInfo;
             public string tooltip;
+            public int order;
         }
 
-        public static IList<HighScoreResult> GetHighScoreForActivity(IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
+        public static IList<HighScoreResult> GetHighScoreForActivity(IList<IActivity> activities, int noOfResults, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<HighScoreResult> results = null;
 
@@ -97,7 +99,7 @@ namespace TrailsPlugin.Integration
                 if (GetHighScore != null)
                 {
                     MethodInfo methodInfo = GetHighScore.GetMethod(getHighScore);
-                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, progressBar });
+                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, noOfResults, progressBar });
                     results = new List<HighScoreResult>();
                     foreach (IList<Object> o in (IList<IList<Object>>)resultFromPlugIn)
                     {

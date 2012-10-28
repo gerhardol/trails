@@ -33,6 +33,8 @@ namespace TrailsPlugin.Data
 {
     public class ChildTrailResult : TrailResult
     {
+        internal bool PartOfParent = true;
+
         private TrailResult m_parentResult;
         public TrailResult ParentResult
         {
@@ -56,6 +58,13 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
+            this(activityTrail, par, order, indexes, distDiff)
+        {
+            this.m_toolTip = tt;
+            this.PartOfParent = false;
+        }
+
     }
 
     public class TrailResult : ITrailResult, IComparable
@@ -77,7 +86,7 @@ namespace TrailsPlugin.Data
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
         private Color m_trailColor = getColor(nextTrailColor++);
-        private string m_toolTip;
+        protected string m_toolTip;
         //Temporary? (undocumented)
         public static bool m_diffOnDateTime = false;
         public static bool diffToSelf = false;
@@ -275,7 +284,7 @@ namespace TrailsPlugin.Data
                 m_gradeRunAdjustedTime = null;
                 //No need to explicitly clear derived, like: m_gradeRunAdjustedTimeAvg = null;
 
-                if (!(this is ChildTrailResult))
+                if (!(this is ChildTrailResult) || !(this as ChildTrailResult).PartOfParent)
                 {
                     m_activityDistanceMetersTrack = null;
                     m_ActivityInfo = null;
@@ -335,6 +344,10 @@ namespace TrailsPlugin.Data
             get
             {
                 return m_order;
+            }
+           set
+            {
+                m_order = value;
             }
         }
         public bool Reverse
@@ -685,9 +698,8 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this is ChildTrailResult)
+                if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                 {
-                    //Note: Assumes that subtrails are a part of parent - could be changed
                     return (this as ChildTrailResult).ParentResult.Pauses;
                 }
                 if (m_pauses == null)
@@ -830,7 +842,7 @@ namespace TrailsPlugin.Data
                     m_activityDistanceMetersTrack = m_distanceMetersTrack;
                     return;
                 }
-                if (this is ChildTrailResult)
+                if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                 {
                     m_activityDistanceMetersTrack = (this as ChildTrailResult).ParentResult.ActivityDistanceMetersTrack;
                     //m_distanceMetersTrack could be created from parent too (if second rounding is disregarded),
@@ -1710,20 +1722,101 @@ namespace TrailsPlugin.Data
             return m_deviceSpeedPaceTrack0;
         }
 
+        internal IList<IActivity> SameTimeActivities = null;
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes)
         {
+            return DeviceElevationTrack0(refRes, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+        }
+        public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes, int eleSmooth)
+        {
             checkCacheRef(refRes);
-            if (m_deviceElevationTrack0 == null)
+            if (m_deviceElevationTrack0 == null || eleSmooth != TrailActivityInfoOptions.ElevationSmoothingSeconds)
             {
-                m_deviceElevationTrack0 = new NumericTimeDataSeries();
+                INumericTimeDataSeries deviceElevationTrack0 = new NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
                 {
-                    m_deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+                    deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, eleSmooth,
+                       new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                }
+                else if (this.SameTimeActivities != null && this.SameTimeActivities.Count > 0 && this.SameTimeActivities[0].ElevationMetersTrack != null && this.SameTimeActivities[0].ElevationMetersTrack.Count > 0)
+                {
+                    deviceElevationTrack0 = copySmoothTrack(this.SameTimeActivities[0].ElevationMetersTrack, true, eleSmooth,
                        new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 } 
-                m_deviceElevationTrack0 = SmoothTrack(m_deviceElevationTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+
+                //xxx deviceElevationTrack0 = SmoothTrack(m_deviceElevationTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+                if (TrailActivityInfoOptions.ElevationSmoothingSeconds == eleSmooth)
+                {
+                    m_deviceElevationTrack0 = deviceElevationTrack0;
+                }
+                else
+                {
+                    //"Temporary" track
+                    return deviceElevationTrack0;
+                }
+
             }
             return m_deviceElevationTrack0;
+        }
+
+        internal int SetDeviceElevation()
+        {
+            INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(this.m_cacheTrackRef, 0);
+            if (eTrack != null && eTrack.Count > 0 &&
+                this.Activity != null &&
+                this.GPSRoute != null && this.GPSRoute.Count > 0)
+            {
+                IGPSRoute gpsRoute = new GPSRoute();
+                INumericTimeDataSeries elexxx = new NumericTimeDataSeries();
+                foreach (ITimeValueEntry<IGPSPoint> g in this.GPSRoute)
+                {
+                    DateTime d1 = this.GPSRoute.EntryDateTime(g);
+                    ITimeValueEntry<float> val = eTrack.GetInterpolatedValue(d1);
+                    float? ele = null;
+                    if (val == null)
+                    {
+                        if (d1 < eTrack.StartTime)
+                        {
+                            ele = eTrack[0].Value;
+                        }
+                        else if (d1 > eTrack.EntryDateTime(eTrack[eTrack.Count - 1]))
+                        {
+                            ele = eTrack[eTrack.Count - 1].Value;
+                        }
+                        else
+                        {
+                            ele = eTrack[0].Value;
+                        }
+                    }
+                    else
+                    {
+                        ele = val.Value;
+                    }
+                    if (ele != null)
+                    {
+                        //ele += UI.Activity.TrailLineChart.FixedSyncGraphMode;
+                        IGPSPoint g2 = new GPSPoint(g.Value.LatitudeDegrees, g.Value.LongitudeDegrees, (float)ele);
+                        gpsRoute.Add(d1, g.Value);
+                        elexxx.Add(d1, (float)ele);
+                    }
+                }
+                this.Activity.GPSRoute = gpsRoute;
+                this.Activity.ElevationMetersTrack = elexxx;
+            }
+            return 0;
+        }
+
+        internal int SetDeviceElevationOffset()
+        {
+            if (this.Activity != null && this.Activity.ElevationMetersTrack != null &&
+                this.Activity.ElevationMetersTrack.Count > 0 && UI.Activity.TrailLineChart.FixedSyncGraphMode != 0)
+            {
+                for (int i = 0; i < this.ElevationMetersTrack.Count; i++)
+                {
+                    this.ElevationMetersTrack.SetValueAt(i, this.ElevationMetersTrack[i].Value - UI.Activity.TrailLineChart.FixedSyncGraphMode);
+                }
+            }
+            return 0;
         }
 
         public INumericTimeDataSeries DeviceDiffDistTrack0(TrailResult refRes)
@@ -1968,7 +2061,8 @@ namespace TrailsPlugin.Data
         private TrailResult getRefSub(TrailResult parRes)
         {
             TrailResult res = parRes;
-            if ((this is ChildTrailResult) && parRes != null && parRes.m_childrenResults != null)
+            if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent &&
+                parRes != null && parRes.m_childrenResults != null)
             {
                 //This is a subsplit, get the subsplit related to the ref
                 foreach (TrailResult tr in parRes.m_childrenResults)
@@ -2542,7 +2636,8 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (!m_colorOverridden && s_activities.Count > 1 && (this is ChildTrailResult))
+                if (!m_colorOverridden && s_activities.Count > 1 &&
+                    (this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
                     return (this as ChildTrailResult).ParentResult.m_trailColor;
                 }
@@ -2608,10 +2703,8 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                //Caching is not needed, done by ST
-                //return ActivityInfoCache.Instance.GetInfo(this.Activity);
-                //Custom InfoCache, to control smoothing
-                if (this is ChildTrailResult)
+                //Custom InfoCache, to control smoothing (otherwise ST could cache)
+                if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                 {
                     return (this as ChildTrailResult).ParentResult.Info;
                 }

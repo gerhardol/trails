@@ -57,7 +57,7 @@ namespace TrailsPlugin.Data
         }
 
         //Create from HighScore, add the first and last time stamps in MarkedTimes
-        public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
+        public TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper parent, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
             : base(null, null)
         {
             TrailResultInfo indexes = new TrailResultInfo(activity, false);
@@ -67,9 +67,18 @@ namespace TrailsPlugin.Data
             indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
             if (indexes.Count >= 2)
             {
-                base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue, tt);
+                if (order == 1 || parent == null)
+                {
+                    base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue, tt);
+                }
+                else
+                {
+                    base.Parent = parent;
+                    base.Element = new ChildTrailResult(activityTrail, parent.Result, order, indexes, float.MaxValue, tt);
+                    parent.Children.Add(this);
+                    parent.m_children.Add(this);
+                }
             }
-            //No Children
         }
 
         //Summary line
@@ -79,6 +88,7 @@ namespace TrailsPlugin.Data
             m_isSummary = true;
             base.Element = new SummaryTrailResult(activityTrail);
         }
+
         public void SetSummary(IList<TrailResultWrapper> rows)
         {
             ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows, false));

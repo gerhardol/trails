@@ -29,7 +29,7 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
 
 namespace TrailsPlugin.UI.Activity {
-	internal class ActivityDetailPage :
+	internal class ActivityDetailPage : IDisposable,
 #if ST_2_1
      IActivityDetailPage
 #else
@@ -213,6 +213,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public void Dispose()
+        {
+            this.m_control.Dispose();
         }
     }
 }

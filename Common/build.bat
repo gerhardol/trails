@@ -36,12 +36,18 @@ SET StVersion=3.1.4415
 IF "%StPluginVersion%"=="2" SET StVersion=2.1.3478
 
 REM 7-zip must be configured, hardcoded path used
-REM "%programfiles%\7-zip\7z.exe"
+set sevenzip=%ProgramFiles%\7-zip\7z.exe
+set sevenzip64=%ProgramW6432%\7-zip\7z.exe
+if EXIST "%sevenzip64%" set sevenzip=%sevenzip64%
 
 REM Plugin version
 set PluginVersion=0.1
 set perl=C:\Cygwin\bin\perl.exe
-IF NOT EXIST "%perl%" GOTO endversion 
+IF EXIST "%perl%" GOTO PERL_VERSION
+echo "Cannot find %perl%, will hardcode version number %PluginVersion%"
+GOTO endversion 
+
+:PERL_VERSION
 set cygwin=nodosfilewarning
 set tempfile=%temp%\%ProjectName%-stpluginversion.tmp
 %perl% -ne "if(/^^\[assembly: AssemblyVersion\(.([\.\d]*)(\.\*)*.\)\]/){print $1;}" %ProjectDir%\Properties\AssemblyInfo.cs > %tempfile%
@@ -71,19 +77,23 @@ REM generate the plugin.xml file
 ECHO ^<?xml version="1.0" encoding="utf-8" ?^> >  "%TargetDir%plugin.xml"
 ECHO ^<plugin id="%guid%" minimumCommonVersion="%StVersion%" /^> >> "%TargetDir%plugin.xml"
 
-DEL "%stPlgFile%"
-IF NOT EXIST "%programfiles%\7-zip\7z.exe" GOTO END
+IF EXIST "%stPlgFile%" DEL "%stPlgFile%"
+IF EXIST "%sevenzip%" GOTO ZIP_PACKAGE
 
+ECHO "Cannot find %sevenzip%, will not create plugin package"
+GOTO END
+
+:ZIP_PACKAGE
 REM Include pdb for now also in release builds - helpful.
 REM IF NOT "%ConfigurationType%"=="Release" GOTO DebugPluginPackage
 
 :DebugPluginPackage
 REM Create debug package, with pdb
-"%programfiles%\7-zip\7z" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml
+"%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml
 GOTO end
 
 :ReleasePluginPackage
-"%programfiles%\7-zip\7z" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml -x!*.pdb
+"%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml -x!*.pdb
 
 IF "%stPlgoutdir%"=="" GOTO END
 IF not EXIST "%stPlgoutdir%" GOTO END
@@ -91,3 +101,5 @@ COPY "%stPlgFile%" "%stPlgoutdir%"
 GOTO end
 
 :END
+
+REM F:\old\big\Users\go\dev\gc\trails\trunk\\Common\build.bat d75393a2-4a95-4fe7-ace2-375ff7338b2c 3 TrailsPlugin F:\old\big\Users\go\dev\gc\trails\trunk\ ZoneFiveSoftware\SportTracks\3\Plugins F:\old\big\Users\go\dev\gc\trails\trunk\bin\ST3.0Debug\ Debug

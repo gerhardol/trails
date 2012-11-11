@@ -898,7 +898,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_controller.ReferenceTrailResult.SameTimeActivities = new List<IActivity>();
                 foreach (IActivity activity in addActivities)
                 {
-                    //xxx m_controller.ReferenceTrailResult.SameTimeActivities.Add(activity);
+                    m_controller.ReferenceTrailResult.SameTimeActivities.Add(activity);
                 }
                 m_controller.ReferenceTrailResult.Clear(true);
             }
@@ -1121,7 +1121,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (m_controller.ReferenceTrailResult != null)
                     {
-                        //xxx m_controller.ReferenceTrailResult.SetDeviceElevation();
+                        m_controller.ReferenceTrailResult.SetDeviceElevation();
                         m_page.RefreshData();
                     }
                 }
@@ -1129,9 +1129,14 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (m_controller.ReferenceTrailResult != null)
                     {
-                        //xxx m_controller.ReferenceTrailResult.SetDeviceElevationOffset();
+                        m_controller.ReferenceTrailResult.SetDeviceElevationOffset();
                         m_page.RefreshData();
                     }
+                }
+                else if (e.Modifiers == Keys.Shift)
+                {
+                    TrailResult.UseNormalElevation = !TrailResult.UseNormalElevation;
+                    m_page.RefreshData();
                 }
             }
             else if (e.KeyCode == Keys.I)

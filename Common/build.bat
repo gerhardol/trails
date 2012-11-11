@@ -101,5 +101,3 @@ COPY "%stPlgFile%" "%stPlgoutdir%"
 GOTO end
 
 :END
-
-REM F:\old\big\Users\go\dev\gc\trails\trunk\\Common\build.bat d75393a2-4a95-4fe7-ace2-375ff7338b2c 3 TrailsPlugin F:\old\big\Users\go\dev\gc\trails\trunk\ ZoneFiveSoftware\SportTracks\3\Plugins F:\old\big\Users\go\dev\gc\trails\trunk\bin\ST3.0Debug\ Debug

@@ -134,6 +134,7 @@ namespace TrailsPlugin.Data
         private static IActivity m_cacheTrackActivity;
         private static IDictionary<IActivity, IItemTrackSelectionInfo[]> m_commonStretches;
         private static ActivityInfoOptions m_TrailActivityInfoOptions;
+        internal IList<IActivity> SameTimeActivities = null;
         #endregion
 
         /**********************************************************/
@@ -1722,11 +1723,11 @@ namespace TrailsPlugin.Data
             return m_deviceSpeedPaceTrack0;
         }
 
-        internal IList<IActivity> SameTimeActivities = null;
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes)
         {
             return DeviceElevationTrack0(refRes, TrailActivityInfoOptions.ElevationSmoothingSeconds);
         }
+
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes, int eleSmooth)
         {
             checkCacheRef(refRes);
@@ -1738,13 +1739,18 @@ namespace TrailsPlugin.Data
                     deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, eleSmooth,
                        new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 }
-                else if (this.SameTimeActivities != null && this.SameTimeActivities.Count > 0 && this.SameTimeActivities[0].ElevationMetersTrack != null && this.SameTimeActivities[0].ElevationMetersTrack.Count > 0)
+                else if (this.SameTimeActivities != null)
                 {
-                    deviceElevationTrack0 = copySmoothTrack(this.SameTimeActivities[0].ElevationMetersTrack, true, eleSmooth,
-                       new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
-                } 
+                    foreach (IActivity activity in this.SameTimeActivities)
+                    {
+                        if (activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 0)
+                        {
+                            deviceElevationTrack0 = copySmoothTrack(activity.ElevationMetersTrack, true, eleSmooth,
+                               new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                        }
+                    }
+                }
 
-                //xxx deviceElevationTrack0 = SmoothTrack(m_deviceElevationTrack0, TrailActivityInfoOptions.ElevationSmoothingSeconds);
                 if (TrailActivityInfoOptions.ElevationSmoothingSeconds == eleSmooth)
                 {
                     m_deviceElevationTrack0 = deviceElevationTrack0;
@@ -1754,7 +1760,6 @@ namespace TrailsPlugin.Data
                     //"Temporary" track
                     return deviceElevationTrack0;
                 }
-
             }
             return m_deviceElevationTrack0;
         }
@@ -1767,7 +1772,7 @@ namespace TrailsPlugin.Data
                 this.GPSRoute != null && this.GPSRoute.Count > 0)
             {
                 IGPSRoute gpsRoute = new GPSRoute();
-                INumericTimeDataSeries elexxx = new NumericTimeDataSeries();
+                INumericTimeDataSeries eleTrack = new NumericTimeDataSeries();
                 foreach (ITimeValueEntry<IGPSPoint> g in this.GPSRoute)
                 {
                     DateTime d1 = this.GPSRoute.EntryDateTime(g);
@@ -1785,7 +1790,8 @@ namespace TrailsPlugin.Data
                         }
                         else
                         {
-                            ele = eTrack[0].Value;
+                            //Should not happen...
+                            //ele = eTrack[0].Value;
                         }
                     }
                     else
@@ -1797,11 +1803,11 @@ namespace TrailsPlugin.Data
                         //ele += UI.Activity.TrailLineChart.FixedSyncGraphMode;
                         IGPSPoint g2 = new GPSPoint(g.Value.LatitudeDegrees, g.Value.LongitudeDegrees, (float)ele);
                         gpsRoute.Add(d1, g.Value);
-                        elexxx.Add(d1, (float)ele);
+                        eleTrack.Add(d1, (float)ele);
                     }
                 }
-                this.Activity.GPSRoute = gpsRoute;
-                this.Activity.ElevationMetersTrack = elexxx;
+                //TBD this.Activity.GPSRoute = gpsRoute;
+                this.Activity.ElevationMetersTrack = eleTrack;
             }
             return 0;
         }
@@ -1809,7 +1815,8 @@ namespace TrailsPlugin.Data
         internal int SetDeviceElevationOffset()
         {
             if (this.Activity != null && this.Activity.ElevationMetersTrack != null &&
-                this.Activity.ElevationMetersTrack.Count > 0 && UI.Activity.TrailLineChart.FixedSyncGraphMode != 0)
+                this.Activity.ElevationMetersTrack.Count > 0 && Settings.ChartType == LineChartTypes.Elevation &&
+                UI.Activity.TrailLineChart.FixedSyncGraphMode != 0)
             {
                 for (int i = 0; i < this.ElevationMetersTrack.Count; i++)
                 {
@@ -1923,6 +1930,8 @@ namespace TrailsPlugin.Data
             }
         }
 
+        //TODO timeofday
+        public static bool UseNormalElevation = true; 
         private void calcGradeRunAdjustedTime(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1937,12 +1946,21 @@ namespace TrailsPlugin.Data
                 float prevVal = 0;
                 float? prevElev = null;
                 float prevDist = 0;
+                INumericTimeDataSeries eleTrack;
+                if (UseNormalElevation)
+                {
+                    eleTrack = this.ElevationMetersTrack0(this.m_cacheTrackRef);
+                }
+                else
+                {
+                    eleTrack = this.DeviceElevationTrack0(this.m_cacheTrackRef);
+                }
 
                 foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                 {
                     //TODO insert when sparse
                     DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
-                    ITimeValueEntry<float> t2 = this.ElevationMetersTrack0(this.m_cacheTrackRef).GetInterpolatedValue(dateTime);
+                    ITimeValueEntry<float> t2 = eleTrack.GetInterpolatedValue(dateTime);
                     float dist = t.Value;
                     float time = (float)this.getTimeResult(dateTime);
                     float q = 1; //diff to flat

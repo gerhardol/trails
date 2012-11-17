@@ -65,6 +65,7 @@ set C_APPDATA=%PROGRAMDATA%
 IF "%C_APPDATA%"=="" set C_APPDATA=%ALLUSERSPROFILE%\Application Data
 IF EXIST "%C_APPDATA%" GOTO COPY_REL
 GOTO END_COPY_REL
+
 :COPY_REL
 set StTarget="%C_APPDATA%\%StPluginPath%\Update\%guid%\%ProjectName%"
 IF NOT EXIST %StTarget% mkdir %StTarget%
@@ -81,23 +82,23 @@ IF EXIST "%stPlgFile%" DEL "%stPlgFile%"
 IF EXIST "%sevenzip%" GOTO ZIP_PACKAGE
 
 ECHO "Cannot find %sevenzip%, will not create plugin package"
-GOTO END
+GOTO END_ZIP_PACKAGE
 
 :ZIP_PACKAGE
-REM Include pdb for now also in release builds - helpful.
-REM IF NOT "%ConfigurationType%"=="Release" GOTO DebugPluginPackage
+IF "%ConfigurationType%"=="Release" GOTO ReleasePluginPackage
 
 :DebugPluginPackage
 REM Create debug package, with pdb
 "%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml
-GOTO end
+GOTO COPY_ZIP_PACKAGE
 
 :ReleasePluginPackage
 "%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml -x!*.pdb
 
+:COPY_ZIP_PACKAGE
 IF "%stPlgoutdir%"=="" GOTO END
 IF not EXIST "%stPlgoutdir%" GOTO END
 COPY "%stPlgFile%" "%stPlgoutdir%"
-GOTO end
+:END_ZIP_PACKAGE
 
 :END

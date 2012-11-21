@@ -147,7 +147,8 @@ namespace TrailsPlugin.Data {
         public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, int noRes, bool multAct, bool all)
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
-            int w = 14 + (int)System.Math.Log10(noRes) *9;
+            int noRes2 = System.Math.Max(10, noRes);
+            int w = 14 + (int)System.Math.Log10(noRes2) * 9;
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", "", w, StringAlignment.Far));
             w = multAct ? 115 : 70;
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, "", w, StringAlignment.Far));

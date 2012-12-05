@@ -198,13 +198,13 @@ namespace TrailsPlugin.Data
                 {
                     foreach (TrailResultWrapper tnp in at.ResultTreeList)
                     {
-                        if (tnp.Result.Equals(trr))
+                        if (tnp.Result.CompareTo(trr) == 0)
                         {
                             result.Add(tnp);
                         }
                         foreach (TrailResultWrapper tnc in tnp.m_children)
                         {
-                            if (tnc.Result.Equals(trr))
+                            if (tnc.Result.CompareTo(trr) == 0)
                             {
                                 result.Add(tnc);
                             }

@@ -43,7 +43,7 @@ namespace TrailsPlugin.Data
 
         public ActivityTrail(Controller.TrailController controller, Data.Trail trail)
         {
-            m_controller = controller; ;
+            m_controller = controller;
             m_trail = trail;
             m_status = TrailOrderStatus.NoInfo;
 
@@ -122,6 +122,7 @@ namespace TrailsPlugin.Data
                 m_status = BestCalcStatus(m_status, value);
             }
         }
+
         public bool IsInBounds
         {
             get
@@ -145,6 +146,7 @@ namespace TrailsPlugin.Data
                 return Status <= TrailOrderStatus.InBound;
             }
         }
+
         public bool IsNoCalc
         {
             get
@@ -235,6 +237,7 @@ namespace TrailsPlugin.Data
             m_summary.SetSummary(selected2);
             //TODO: Splits
         }
+
         public TrailResultWrapper GetSummary()
         {
             return m_summary;
@@ -285,12 +288,12 @@ namespace TrailsPlugin.Data
 
         public void CalcResults()
         {
-            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional, null);
+            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.BiDirectional, null);
         }
 
         public void CalcResults(System.Windows.Forms.ProgressBar progressBar)
         {
-            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.Bidirectional, progressBar);
+            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.BiDirectional, progressBar);
         }
 
         public void CalcResults(IList<IActivity> activities, int MaxRequiredMisses, bool bidirectional, System.Windows.Forms.ProgressBar progressBar)
@@ -371,6 +374,7 @@ namespace TrailsPlugin.Data
                         }
                         else
                         {
+                            TrailOrderStatus activityStatus = TrailOrderStatus.NoInfo;
                             if (trailgps.Count > 0)
                             {
                                 bool inBound = false;
@@ -391,10 +395,10 @@ namespace TrailsPlugin.Data
                                     {
                                         m_status = TrailOrderStatus.InBound;
                                     }
-                                    TrailOrderStatus status = CalcInboundResults(activity, trailgps, locationBounds, MaxRequiredMisses, false, progressBar);
+                                    activityStatus = CalcInboundResults(activity, trailgps, locationBounds, MaxRequiredMisses, false, progressBar);
                                     //No need to check bidirectional for one point trails
                                     if (bidirectional && trailgps.Count > 1 &&
-                                        status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
+                                        activityStatus != TrailOrderStatus.Match && activityStatus < TrailOrderStatus.InBound)
                                     {
                                         IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
                                         IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();
@@ -403,12 +407,22 @@ namespace TrailsPlugin.Data
                                             trailgpsReverse.Add(trailgps[i]);
                                             locationBoundsReverse.Add(locationBounds[i]);
                                         }
-                                        CalcInboundResults(activity, trailgpsReverse, locationBoundsReverse, MaxRequiredMisses, true, progressBar);
+                                        activityStatus = CalcInboundResults(activity, trailgpsReverse, locationBoundsReverse, MaxRequiredMisses, true, progressBar);
                                     }
                                 }
                                 //NotInBound is pruned prior to this
                             }
+                            //If there was no other match, try match name
+                            if (activityStatus >= TrailOrderStatus.InBound && this.m_trail.IsNameMatch && !string.IsNullOrEmpty(activity.Name) &&
+                                (activity.Name.StartsWith(this.m_trail.Name) || this.m_trail.Name.StartsWith(activity.Name)))
+                            {
+                                this.Status = TrailOrderStatus.Match;
+                                //Splits result
+                                TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                                m_resultsListWrapper.Add(result);
+                            }
                         }
+                        
                         if (null != progressBar && progressBar.Value < progressBar.Maximum)
                         {
                             progressBar.Value++;
@@ -437,6 +451,7 @@ namespace TrailsPlugin.Data
                 this.dist = dist;
                 this.prevDist = prevDist;
             }
+
             public float checkPass(IActivity activity, TrailGPSLocation trailp, float radius, ref float closeDist)
             {
                 double dist;
@@ -452,6 +467,7 @@ namespace TrailsPlugin.Data
                 }
                 return routeFactor;
             }
+
             public int index;
             public float dist;
             public float prevDist;

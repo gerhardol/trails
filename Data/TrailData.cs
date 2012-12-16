@@ -154,7 +154,7 @@ namespace TrailsPlugin.Data
             XmlNode trails = doc.CreateElement("Trails");
             foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
             {
-                if (!trail.Generated)
+                if (!trail.Generated && !trail.IsTemporary)
                 {
                     trails.AppendChild(trail.ToXml(doc));
                 }

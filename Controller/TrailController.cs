@@ -400,6 +400,7 @@ namespace TrailsPlugin.Controller
             ((List<ActivityTrail>)m_CurrentOrderedTrails).Sort();
             return m_CurrentOrderedTrails;
         }
+
         public IList<ActivityTrail> OrderedTrails
         {
             get
@@ -421,7 +422,8 @@ namespace TrailsPlugin.Controller
                     if (to.Status != TrailOrderStatus.MatchNoCalc &&
                         (force ||
                         Activities.Count * Data.TrailData.AllTrails.Values.Count <=
-                        TrailsPlugin.Data.Settings.MaxAutoCalcActivitiesTrails))
+                        TrailsPlugin.Data.Settings.MaxAutoCalcActivitiesTrails) &&
+                        trail.IsAutoTryAll)
                     {
                         to.CalcResults(progressBar);
                     }

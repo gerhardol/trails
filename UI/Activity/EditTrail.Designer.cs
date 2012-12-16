@@ -25,6 +25,14 @@
 		private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.chkTemporaryTrail = new System.Windows.Forms.CheckBox();
+            this.chkTwoWay = new System.Windows.Forms.CheckBox();
+            this.chkAutoTryAll = new System.Windows.Forms.CheckBox();
+            this.chkName = new System.Windows.Forms.CheckBox();
+            this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnRefresh = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnReverse = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnOk = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel = new System.Windows.Forms.TableLayoutPanel();
@@ -37,16 +45,158 @@
             this.btnAdd = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnZUp = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnZDown = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnRefresh = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel.SuspendLayout();
             this.EList.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // chkTemporaryTrail
+            // 
+            this.chkTemporaryTrail.AutoSize = true;
+            this.chkTemporaryTrail.Checked = true;
+            this.chkTemporaryTrail.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkTemporaryTrail.Location = new System.Drawing.Point(189, 302);
+            this.chkTemporaryTrail.Name = "chkTemporaryTrail";
+            this.chkTemporaryTrail.Size = new System.Drawing.Size(15, 14);
+            this.chkTemporaryTrail.TabIndex = 25;
+            this.toolTip.SetToolTip(this.chkTemporaryTrail, ">Temporary trail (deleted when exiting SportTracks)");
+            this.chkTemporaryTrail.UseVisualStyleBackColor = true;
+            // 
+            // chkTwoWay
+            // 
+            this.chkTwoWay.AutoSize = true;
+            this.chkTwoWay.Checked = true;
+            this.chkTwoWay.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkTwoWay.Location = new System.Drawing.Point(168, 302);
+            this.chkTwoWay.Name = "chkTwoWay";
+            this.chkTwoWay.Size = new System.Drawing.Size(15, 14);
+            this.chkTwoWay.TabIndex = 26;
+            this.toolTip.SetToolTip(this.chkTwoWay, ">Two-way match");
+            this.chkTwoWay.UseVisualStyleBackColor = true;
+            // 
+            // chkAutoTryAll
+            // 
+            this.chkAutoTryAll.AutoSize = true;
+            this.chkAutoTryAll.Checked = true;
+            this.chkAutoTryAll.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkAutoTryAll.Location = new System.Drawing.Point(231, 302);
+            this.chkAutoTryAll.Name = "chkAutoTryAll";
+            this.chkAutoTryAll.Size = new System.Drawing.Size(15, 14);
+            this.chkAutoTryAll.TabIndex = 27;
+            this.toolTip.SetToolTip(this.chkAutoTryAll, ">Auto TryAll");
+            this.chkAutoTryAll.UseVisualStyleBackColor = true;
+            this.chkAutoTryAll.Visible = false;
+            // 
+            // chkName
+            // 
+            this.chkName.AutoSize = true;
+            this.chkName.Checked = true;
+            this.chkName.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkName.Location = new System.Drawing.Point(210, 302);
+            this.chkName.Name = "chkName";
+            this.chkName.Size = new System.Drawing.Size(15, 14);
+            this.chkName.TabIndex = 28;
+            this.toolTip.SetToolTip(this.chkName, ">Name match");
+            this.chkName.UseVisualStyleBackColor = true;
+            // 
+            // btnCopy
+            // 
+            this.btnCopy.BackColor = System.Drawing.Color.Transparent;
+            this.btnCopy.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnCopy.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnCopy.CenterImage = null;
+            this.btnCopy.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnCopy.HyperlinkStyle = false;
+            this.btnCopy.ImageMargin = 2;
+            this.btnCopy.LeftImage = null;
+            this.btnCopy.Location = new System.Drawing.Point(18, 297);
+            this.btnCopy.Name = "btnCopy";
+            this.btnCopy.Padding = new System.Windows.Forms.Padding(2);
+            this.btnCopy.PushStyle = true;
+            this.btnCopy.RightImage = null;
+            this.btnCopy.Size = new System.Drawing.Size(19, 19);
+            this.btnCopy.TabIndex = 23;
+            this.btnCopy.Text = "C";
+            this.btnCopy.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnCopy.TextLeftMargin = 2;
+            this.btnCopy.TextRightMargin = 2;
+            this.toolTip.SetToolTip(this.btnCopy, "<Copy Trail");
+            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            // 
+            // btnExport
+            // 
+            this.btnExport.BackColor = System.Drawing.Color.Transparent;
+            this.btnExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnExport.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnExport.CenterImage = null;
+            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnExport.HyperlinkStyle = false;
+            this.btnExport.ImageMargin = 2;
+            this.btnExport.LeftImage = null;
+            this.btnExport.Location = new System.Drawing.Point(52, 297);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Padding = new System.Windows.Forms.Padding(2);
+            this.btnExport.PushStyle = true;
+            this.btnExport.RightImage = null;
+            this.btnExport.Size = new System.Drawing.Size(19, 19);
+            this.btnExport.TabIndex = 24;
+            this.btnExport.Text = "E";
+            this.btnExport.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnExport.TextLeftMargin = 2;
+            this.btnExport.TextRightMargin = 2;
+            this.toolTip.SetToolTip(this.btnExport, "<Export to activity");
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.BackColor = System.Drawing.Color.Transparent;
+            this.btnRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnRefresh.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnRefresh.CenterImage = null;
+            this.btnRefresh.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnRefresh.HyperlinkStyle = false;
+            this.btnRefresh.ImageMargin = 2;
+            this.btnRefresh.LeftImage = null;
+            this.btnRefresh.Location = new System.Drawing.Point(86, 297);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Padding = new System.Windows.Forms.Padding(2);
+            this.btnRefresh.PushStyle = true;
+            this.btnRefresh.RightImage = null;
+            this.btnRefresh.Size = new System.Drawing.Size(19, 19);
+            this.btnRefresh.TabIndex = 24;
+            this.btnRefresh.Text = "R";
+            this.btnRefresh.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnRefresh.TextLeftMargin = 2;
+            this.btnRefresh.TextRightMargin = 2;
+            this.toolTip.SetToolTip(this.btnRefresh, "<Refresh");
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // btnReverse
+            // 
+            this.btnReverse.BackColor = System.Drawing.Color.Transparent;
+            this.btnReverse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.btnReverse.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.btnReverse.CenterImage = null;
+            this.btnReverse.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.btnReverse.HyperlinkStyle = false;
+            this.btnReverse.ImageMargin = 2;
+            this.btnReverse.LeftImage = null;
+            this.btnReverse.Location = new System.Drawing.Point(120, 297);
+            this.btnReverse.Name = "btnReverse";
+            this.btnReverse.Padding = new System.Windows.Forms.Padding(2);
+            this.btnReverse.PushStyle = true;
+            this.btnReverse.RightImage = null;
+            this.btnReverse.Size = new System.Drawing.Size(19, 19);
+            this.btnReverse.TabIndex = 29;
+            this.btnReverse.Text = "R";
+            this.btnReverse.TextAlign = System.Drawing.StringAlignment.Center;
+            this.btnReverse.TextLeftMargin = 2;
+            this.btnReverse.TextRightMargin = 2;
+            this.toolTip.SetToolTip(this.btnReverse, "<Reverse Trail");
+            this.btnReverse.Click += new System.EventHandler(this.btnReverse_Click);
             // 
             // btnOk
             // 
@@ -57,7 +207,7 @@
             this.btnOk.HyperlinkStyle = false;
             this.btnOk.ImageMargin = 2;
             this.btnOk.LeftImage = null;
-            this.btnOk.Location = new System.Drawing.Point(215, 303);
+            this.btnOk.Location = new System.Drawing.Point(252, 297);
             this.btnOk.Name = "btnOk";
             this.btnOk.PushStyle = true;
             this.btnOk.RightImage = null;
@@ -78,7 +228,7 @@
             this.btnCancel.HyperlinkStyle = false;
             this.btnCancel.ImageMargin = 2;
             this.btnCancel.LeftImage = null;
-            this.btnCancel.Location = new System.Drawing.Point(296, 303);
+            this.btnCancel.Location = new System.Drawing.Point(327, 297);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.PushStyle = true;
             this.btnCancel.RightImage = null;
@@ -92,9 +242,9 @@
             // 
             // Panel
             // 
-            this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Panel.ColumnCount = 7;
             this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));
@@ -130,8 +280,8 @@
             // 
             this.Radius.AcceptsReturn = false;
             this.Radius.AcceptsTab = false;
-            this.Radius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Radius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Radius.BackColor = System.Drawing.Color.White;
             this.Radius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.Radius.ButtonImage = null;
@@ -164,8 +314,8 @@
             // 
             this.TrailName.AcceptsReturn = false;
             this.TrailName.AcceptsTab = false;
-            this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TrailName.BackColor = System.Drawing.Color.White;
             this.TrailName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.TrailName.ButtonImage = null;
@@ -258,7 +408,7 @@
             this.btnAdd.HyperlinkStyle = false;
             this.btnAdd.ImageMargin = 2;
             this.btnAdd.LeftImage = null;
-            this.btnAdd.Location = new System.Drawing.Point(343, 3);
+            this.btnAdd.Location = new System.Drawing.Point(318, 3);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
             this.btnAdd.PushStyle = true;
@@ -281,7 +431,7 @@
             this.btnEdit.HyperlinkStyle = false;
             this.btnEdit.ImageMargin = 2;
             this.btnEdit.LeftImage = null;
-            this.btnEdit.Location = new System.Drawing.Point(368, 3);
+            this.btnEdit.Location = new System.Drawing.Point(343, 3);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
             this.btnEdit.PushStyle = true;
@@ -304,7 +454,7 @@
             this.btnDelete.HyperlinkStyle = false;
             this.btnDelete.ImageMargin = 2;
             this.btnDelete.LeftImage = null;
-            this.btnDelete.Location = new System.Drawing.Point(393, 3);
+            this.btnDelete.Location = new System.Drawing.Point(368, 3);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
             this.btnDelete.PushStyle = true;
@@ -327,7 +477,7 @@
             this.btnZUp.HyperlinkStyle = false;
             this.btnZUp.ImageMargin = 2;
             this.btnZUp.LeftImage = null;
-            this.btnZUp.Location = new System.Drawing.Point(368, 28);
+            this.btnZUp.Location = new System.Drawing.Point(293, 28);
             this.btnZUp.Name = "btnZUp";
             this.btnZUp.Padding = new System.Windows.Forms.Padding(2);
             this.btnZUp.PushStyle = true;
@@ -350,7 +500,7 @@
             this.btnZDown.HyperlinkStyle = false;
             this.btnZDown.ImageMargin = 2;
             this.btnZDown.LeftImage = null;
-            this.btnZDown.Location = new System.Drawing.Point(393, 28);
+            this.btnZDown.Location = new System.Drawing.Point(318, 28);
             this.btnZDown.Name = "btnZDown";
             this.btnZDown.Padding = new System.Windows.Forms.Padding(2);
             this.btnZDown.PushStyle = true;
@@ -373,7 +523,7 @@
             this.btnUp.HyperlinkStyle = false;
             this.btnUp.ImageMargin = 2;
             this.btnUp.LeftImage = null;
-            this.btnUp.Location = new System.Drawing.Point(368, 28);
+            this.btnUp.Location = new System.Drawing.Point(343, 28);
             this.btnUp.Name = "btnUp";
             this.btnUp.Padding = new System.Windows.Forms.Padding(2);
             this.btnUp.PushStyle = true;
@@ -396,7 +546,7 @@
             this.btnDown.HyperlinkStyle = false;
             this.btnDown.ImageMargin = 2;
             this.btnDown.LeftImage = null;
-            this.btnDown.Location = new System.Drawing.Point(393, 28);
+            this.btnDown.Location = new System.Drawing.Point(368, 28);
             this.btnDown.Name = "btnDown";
             this.btnDown.Padding = new System.Windows.Forms.Padding(2);
             this.btnDown.PushStyle = true;
@@ -409,75 +559,6 @@
             this.btnDown.TextRightMargin = 2;
             this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
             // 
-            // btnCopy
-            // 
-            this.btnCopy.BackColor = System.Drawing.Color.Transparent;
-            this.btnCopy.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnCopy.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnCopy.CenterImage = null;
-            this.btnCopy.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnCopy.HyperlinkStyle = false;
-            this.btnCopy.ImageMargin = 2;
-            this.btnCopy.LeftImage = null;
-            this.btnCopy.Location = new System.Drawing.Point(18, 303);
-            this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Padding = new System.Windows.Forms.Padding(2);
-            this.btnCopy.PushStyle = true;
-            this.btnCopy.RightImage = null;
-            this.btnCopy.Size = new System.Drawing.Size(19, 19);
-            this.btnCopy.TabIndex = 23;
-            this.btnCopy.Text = "CC";
-            this.btnCopy.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnCopy.TextLeftMargin = 2;
-            this.btnCopy.TextRightMargin = 2;
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
-            // 
-            // btnExport
-            // 
-            this.btnExport.BackColor = System.Drawing.Color.Transparent;
-            this.btnExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnExport.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnExport.CenterImage = null;
-            this.btnExport.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnExport.HyperlinkStyle = false;
-            this.btnExport.ImageMargin = 2;
-            this.btnExport.LeftImage = null;
-            this.btnExport.Location = new System.Drawing.Point(52, 303);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Padding = new System.Windows.Forms.Padding(2);
-            this.btnExport.PushStyle = true;
-            this.btnExport.RightImage = null;
-            this.btnExport.Size = new System.Drawing.Size(19, 19);
-            this.btnExport.TabIndex = 24;
-            this.btnExport.Text = "E";
-            this.btnExport.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnExport.TextLeftMargin = 2;
-            this.btnExport.TextRightMargin = 2;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.BackColor = System.Drawing.Color.Transparent;
-            this.btnRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnRefresh.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnRefresh.CenterImage = null;
-            this.btnRefresh.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnRefresh.HyperlinkStyle = false;
-            this.btnRefresh.ImageMargin = 2;
-            this.btnRefresh.LeftImage = null;
-            this.btnRefresh.Location = new System.Drawing.Point(86, 303);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Padding = new System.Windows.Forms.Padding(2);
-            this.btnRefresh.PushStyle = true;
-            this.btnRefresh.RightImage = null;
-            this.btnRefresh.Size = new System.Drawing.Size(19, 19);
-            this.btnRefresh.TabIndex = 24;
-            this.btnRefresh.Text = "R";
-            this.btnRefresh.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnRefresh.TextLeftMargin = 2;
-            this.btnRefresh.TextRightMargin = 2;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
             // EditTrail
             // 
             this.AcceptButton = this.btnOk;
@@ -485,6 +566,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(421, 328);
+            this.Controls.Add(this.btnReverse);
+            this.Controls.Add(this.chkName);
+            this.Controls.Add(this.chkAutoTryAll);
+            this.Controls.Add(this.chkTwoWay);
+            this.Controls.Add(this.chkTemporaryTrail);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCopy);
@@ -502,6 +588,7 @@
             this.Panel.PerformLayout();
             this.EList.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 
@@ -527,6 +614,11 @@
         private ZoneFiveSoftware.Common.Visuals.Button btnCopy;
         private ZoneFiveSoftware.Common.Visuals.Button btnExport;
         private ZoneFiveSoftware.Common.Visuals.Button btnRefresh;
+        private System.Windows.Forms.CheckBox chkTemporaryTrail;
+        private System.Windows.Forms.CheckBox chkTwoWay;
+        private System.Windows.Forms.CheckBox chkAutoTryAll;
+        private System.Windows.Forms.CheckBox chkName;
+        private ZoneFiveSoftware.Common.Visuals.Button btnReverse;
 
 	}
 }

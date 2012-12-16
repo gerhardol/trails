@@ -180,7 +180,7 @@ namespace TrailsPlugin.UI.Activity
             else if ((m_editTrail == null) && this.m_controller.CurrentActivityTrailDisplayed != null &&
                this.m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
             {
-                //Just for conveience (the popup text next contradicts this currently)
+                //Just for convenience (the popup text next contradicts this currently)
                 btnEdit_Click(sender, e);
             }
             else

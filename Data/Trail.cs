@@ -39,13 +39,17 @@ namespace TrailsPlugin.Data
 		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
         private float m_radius;
         private float m_minDistance = 0;
-        private int m_maxRequiredMisses = 0;
+        private int   m_maxRequiredMisses = 0;
         private bool m_biDirectional = false;
+        private bool m_isReference = false;
+        private bool m_isTemporary = false;
+        private bool m_isNameMatch = false;
+        private bool m_isAutoTryAll = true;
 
         private CalcType m_CalcType = Trail.CalcType.TrailPoints;
         private bool m_splits = false;
         private bool m_generated = false;
-        private bool m_isReference = false;
+
         private IActivity m_referenceActivity = null;
         private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
@@ -59,6 +63,7 @@ namespace TrailsPlugin.Data
         {
             return Copy(isEdit, null);
         }
+
         public Trail Copy(bool isEdit, IActivity activity)
         {
             Trail result;
@@ -91,6 +96,11 @@ namespace TrailsPlugin.Data
             result.m_radius = this.m_radius;
             result.m_minDistance = this.m_minDistance;
             result.m_maxRequiredMisses = this.m_maxRequiredMisses;
+            result.BiDirectional = this.BiDirectional;
+            result.IsNameMatch = this.IsNameMatch;
+            result.IsAutoTryAll = this.IsAutoTryAll;
+            result.IsTemporary = this.IsTemporary;
+
             if (this.TrailType == CalcType.Splits && activity != null && this.TrailLocations.Count == 0)
             {
                 //get all points - it is made to a CalcType.TrailPoint trail
@@ -152,6 +162,7 @@ namespace TrailsPlugin.Data
                 }
             }
 		}
+
         //This property is not visible in the GUI
         public float MinDistance
         {
@@ -164,6 +175,7 @@ namespace TrailsPlugin.Data
                 m_minDistance = value;
             }
         }
+
         //This property is not visible in the GUI
         public int MaxRequiredMisses
         {
@@ -176,8 +188,9 @@ namespace TrailsPlugin.Data
                 m_maxRequiredMisses = value;
             }
         }
+
         //This property is not visible in the GUI
-        public bool Bidirectional
+        public bool BiDirectional
         {
             get
             {
@@ -188,6 +201,7 @@ namespace TrailsPlugin.Data
                 m_biDirectional = value;
             }
         }
+
         /// <summary>
         /// Present TrailPoints or Splits
         /// </summary>
@@ -202,6 +216,7 @@ namespace TrailsPlugin.Data
                 m_splits = value;
             }
         }
+
         public bool Generated
         {
             get
@@ -213,6 +228,7 @@ namespace TrailsPlugin.Data
                 m_generated = value;
             }
         }
+
         public bool IsReference
         {
             get
@@ -225,6 +241,42 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public bool IsTemporary
+        {
+            get
+            {
+                return m_isTemporary;
+            }
+            set
+            {
+                m_isTemporary = value;
+            }
+        }
+
+        public bool IsNameMatch
+        {
+            get
+            {
+                return m_isNameMatch;
+            }
+            set
+            {
+                m_isNameMatch = value;
+            }
+        }
+
+        public bool IsAutoTryAll
+        {
+            get
+            {
+                return m_isAutoTryAll;
+            }
+            set
+            {
+                m_isAutoTryAll = value;
+            }
+        }
+
         public IActivity ReferenceActivity
         {
             get
@@ -233,6 +285,7 @@ namespace TrailsPlugin.Data
                 return m_referenceActivity;
             }
         }
+
         public IActivity ReferenceActivityNoCalc
         {
             get
@@ -249,6 +302,7 @@ namespace TrailsPlugin.Data
                 }
             }
         }
+
         private bool checkReferenceChanged()
         {
             bool result = false;
@@ -329,8 +383,6 @@ namespace TrailsPlugin.Data
                 }
             }
 
-            //IList<bool> lapActive = new List<bool>();
-
             bool lastIsRestlap = false;
             if (null == activity.Laps || 0 == activity.Laps.Count)
             {
@@ -345,7 +397,6 @@ namespace TrailsPlugin.Data
                     {
                         DateTime time = track.GetTimeAtDistanceMeters(dist);
                         results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
-                        //lapActive.Add(true);
                         dist = Math.Min(track.Max, dist + cDist);
                     }
                 }
@@ -353,7 +404,6 @@ namespace TrailsPlugin.Data
                 {
                     DateTime time = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart;
                     results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
-                    //lapActive.Add(true);
                 }
             }
             else
@@ -370,7 +420,6 @@ namespace TrailsPlugin.Data
                         }
                         DateTime d = l.StartTime;
                         results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), name, !l.Rest), d));
-                        //lapActive.Add(!l.Rest);
                     }
                 }
                 lastIsRestlap = activity.Laps[activity.Laps.Count - 1].Rest;
@@ -381,23 +430,8 @@ namespace TrailsPlugin.Data
             {
                 DateTime d = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd;
                 results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), activity.Name, !lastIsRestlap), d));
-                //lapActive.Add(!lastIsRestlap);
             }
 
-            //if (null != activity.GPSRoute && 0 < activity.GPSRoute.Count)
-            //{
-            //    for (int i = 0; i < results.Points.Count; i++)
-            //    {
-            //        TrailResultPoint p = results.Points[i];
-            //        try
-            //        {
-            //            ITimeValueEntry<IGPSPoint> g = activity.GPSRoute.GetInterpolatedValue(p.Time);
-            //            results.Add(new Data.TrailGPSLocation(
-            //              p.Time, g, p.Name, lapActive[i]));
-            //        }
-            //        catch { }
-            //    }
-            //}
             return results;
         }
 
@@ -421,7 +455,7 @@ namespace TrailsPlugin.Data
             {
                 try
                 {
-                    Id = new Guid(node.Attributes[xmlTags.sId].Value);
+                    Id = new Guid(node.Attributes[xmlTags.sId].Value.ToString());
                 }
                 catch (Exception)
                 {
@@ -429,7 +463,7 @@ namespace TrailsPlugin.Data
                 }
             }
             Trail trail = new Trail(Id);
-            trail.Name = node.Attributes[xmlTags.sName].Value;
+            trail.Name = node.Attributes[xmlTags.sName].Value.ToString();
             //Hidden possibility to get trails matching everything while activities are seen
             //if (trail.Name.EndsWith("MatchAll"))
             //{
@@ -447,9 +481,18 @@ namespace TrailsPlugin.Data
             {
                 trail.MaxRequiredMisses = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMaxRequiredMisses].Value);
             }
-            if (node.Attributes[xmlTags.sBidirectional] != null)
+            if (node.Attributes[xmlTags.sBiDirectional] != null)
             {
-                trail.Bidirectional = XmlConvert.ToBoolean(node.Attributes[xmlTags.sBidirectional].Value);
+                //Output prior to 1.0.604 is not xml parsable (only if trail modified manually)
+                trail.BiDirectional = XmlConvert.ToBoolean(node.Attributes[xmlTags.sBiDirectional].Value.ToLower());
+            }
+            if (node.Attributes[xmlTags.sNameMatch] != null)
+            {
+                trail.IsNameMatch = XmlConvert.ToBoolean(node.Attributes[xmlTags.sNameMatch].Value);
+            }
+            if (node.Attributes[xmlTags.sAutoTryAll] != null)
+            {
+                trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
             }
             trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
@@ -467,32 +510,45 @@ namespace TrailsPlugin.Data
         public XmlNode ToXml(XmlDocument doc)
         {
             XmlNode trailNode = doc.CreateElement(xmlTags.sTrail);
+
             XmlAttribute a = doc.CreateAttribute(xmlTags.sId);
-            a.Value = this.Id.ToString();
+            a.Value = XmlConvert.ToString(this.Id);
             trailNode.Attributes.Append(a);
             a = doc.CreateAttribute(xmlTags.sName);
-            a.Value = this.Name;
+            a.Value = this.Name.ToString();
             trailNode.Attributes.Append(a);
             a = doc.CreateAttribute(xmlTags.sRadius);
-            a.Value = this.Radius.ToString();
+            a.Value = XmlConvert.ToString(this.Radius);
             trailNode.Attributes.Append(a);
             //Undocumented non-GUI property
             if (this.MinDistance > 0)
             {
                 a = doc.CreateAttribute(xmlTags.sMinDistance);
-                a.Value = this.MinDistance.ToString();
+                a.Value = XmlConvert.ToString(this.MinDistance);
                 trailNode.Attributes.Append(a);
             }
             if (this.MaxRequiredMisses > 0)
             {
                 a = doc.CreateAttribute(xmlTags.sMaxRequiredMisses);
-                a.Value = this.MaxRequiredMisses.ToString();
+                a.Value = XmlConvert.ToString(this.MaxRequiredMisses);
                 trailNode.Attributes.Append(a);
             }
-            if (this.Bidirectional)
+            if (this.BiDirectional)
             {
-                a = doc.CreateAttribute(xmlTags.sBidirectional);
-                a.Value = this.Bidirectional.ToString();
+                a = doc.CreateAttribute(xmlTags.sBiDirectional);
+                a.Value = XmlConvert.ToString(this.BiDirectional);
+                trailNode.Attributes.Append(a);
+            }
+            if (this.IsNameMatch)
+            {
+                a = doc.CreateAttribute(xmlTags.sNameMatch);
+                a.Value = XmlConvert.ToString(this.IsNameMatch);
+                trailNode.Attributes.Append(a);
+            }
+            if (!this.IsAutoTryAll)
+            {
+                a = doc.CreateAttribute(xmlTags.sAutoTryAll);
+                a.Value = XmlConvert.ToString(this.IsAutoTryAll);
                 trailNode.Attributes.Append(a);
             }
             foreach (TrailGPSLocation point in this.TrailLocations)
@@ -510,7 +566,9 @@ namespace TrailsPlugin.Data
             public const string sRadius = "radius";
             public const string sMinDistance = "minDistance";
             public const string sMaxRequiredMisses = "maxRequiredMisses";
-            public const string sBidirectional = "bidirectional";
+            public const string sBiDirectional = "bidirectional";
+            public const string sNameMatch = "namematch";
+            public const string sAutoTryAll = "autotryall";
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }
 
@@ -568,6 +626,7 @@ namespace TrailsPlugin.Data
             }
             return a2.Contains(this.GpsBounds);
 		}
+
         public override string ToString()
         {
             return this.Name.ToString() + " " + this.m_gpsBounds + " " + this.m_trailLocations.Count;

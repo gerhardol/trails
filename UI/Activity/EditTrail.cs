@@ -84,9 +84,11 @@ namespace TrailsPlugin.UI.Activity {
                     m_TrailToEdit = m_TrailToEdit.Copy(true);
                 }
             }
+
             //Done after init code, as it depends on it
             InitControls();
         }
+
 #if ST_2_1
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, Object view, bool addMode)
 #else
@@ -100,9 +102,10 @@ namespace TrailsPlugin.UI.Activity {
             m_layer = layer;
             m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
 #endif
+            m_trailResult = tr;
+
             ThemeChanged(visualTheme);
             UICultureChanged(culture);
-            m_trailResult = tr;
         }
 
         void InitControls()
@@ -138,6 +141,18 @@ namespace TrailsPlugin.UI.Activity {
             btnExport.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Export16;
             btnRefresh.Text = "";
             btnRefresh.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Refresh16;
+            this.btnReverse.Text = "";
+            this.btnReverse.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
+
+            this.chkTwoWay.Checked = this.m_TrailToEdit.BiDirectional;
+            this.chkTemporaryTrail.Checked = this.m_TrailToEdit.IsTemporary;
+            this.chkName.Checked = this.m_TrailToEdit.IsNameMatch;
+            this.chkAutoTryAll.Checked = this.m_TrailToEdit.IsAutoTryAll;
+
+            this.chkTwoWay.CheckedChanged += new System.EventHandler(this.chkTwoWay_CheckedChanged);
+            this.chkTemporaryTrail.CheckedChanged += new System.EventHandler(this.chkTemporaryTrail_CheckedChanged);
+            this.chkName.CheckedChanged += new System.EventHandler(this.chkName_CheckedChanged);
+            this.chkAutoTryAll.CheckedChanged += new System.EventHandler(this.chkAutoTryAll_CheckedChanged);
 #if ST_2_1
             this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #else
@@ -163,6 +178,14 @@ namespace TrailsPlugin.UI.Activity {
             this.btnOk.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
             this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
             presentRadius();
+            this.toolTip.SetToolTip(this.btnCopy, "Create a Copy of the Trail");
+            this.toolTip.SetToolTip(this.btnExport, "Export Trail to Activity");
+            this.toolTip.SetToolTip(this.btnRefresh, "Refresh Calculation");
+            this.toolTip.SetToolTip(this.btnReverse, "Reverse TrailPoints");
+            this.toolTip.SetToolTip(this.chkTemporaryTrail, "Temporary Trail (deleted when exiting SportTracks)");
+            this.toolTip.SetToolTip(this.chkTwoWay, "Two-way Match");
+            this.toolTip.SetToolTip(this.chkName, "Match by Name");
+            this.toolTip.SetToolTip(this.chkAutoTryAll, "Calculate Trail in automatic updates");
         }
 
         public void UpdatePointFromMap(TrailGPSLocation point)
@@ -291,12 +314,11 @@ namespace TrailsPlugin.UI.Activity {
 
         void btnCopy_Click(object sender, System.EventArgs e)
         {
-            if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_EditTrail_Copy, CommonResources.Text.ActionOk, CommonResources.Text.ActionCancel),
-                "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-            {
-                m_addMode = true;
-                this.btnCopy.Enabled = false;
-            }
+            this.m_TrailToEdit.Name += " " + CommonResources.Text.ActionCopy;
+            this.TrailName.Text = this.m_TrailToEdit.Name;
+            this.m_addMode = true;
+            //Disable copy, as the previous copy is not handled otherwise
+            this.btnCopy.Enabled = false;
         }
 
         void btnExport_Click(object sender, System.EventArgs e)
@@ -522,6 +544,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             Radius.Text = UnitUtil.Elevation.ToString(m_TrailToEdit.Radius, "u");
         }
+
         private void Radius_LostFocus(object sender, System.EventArgs e)
         {
             float result;
@@ -802,6 +825,38 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_layer.SelectedTrailPoints = EditTrailRow.getTrailGPSLocation(result);
             }
+        }
+
+        private void btnReverse_Click(object sender, EventArgs e)
+        {
+            IList<TrailGPSLocation> trailLocations = new List<TrailGPSLocation>();
+            foreach (TrailGPSLocation t in this.m_TrailToEdit.TrailLocations)
+            {
+                trailLocations.Insert(0, t);
+            }
+            this.m_TrailToEdit.TrailLocations = trailLocations;
+            RefreshResult(true);
+        }
+
+        private void chkTwoWay_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_TrailToEdit.BiDirectional = !this.m_TrailToEdit.BiDirectional;
+            RefreshResult(true);
+        }
+
+        private void chkTemporaryTrail_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_TrailToEdit.IsTemporary = !this.m_TrailToEdit.IsTemporary;
+        }
+
+        private void chkName_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_TrailToEdit.IsNameMatch = !this.m_TrailToEdit.IsNameMatch;
+        }
+
+        private void chkAutoTryAll_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_TrailToEdit.IsAutoTryAll = !this.m_TrailToEdit.IsAutoTryAll;
         }
     }
 }

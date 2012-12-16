@@ -157,7 +157,7 @@ namespace TrailsPlugin.Data
             if (null != node.Attributes[xmlTags.sName] &&
                 null != node.Attributes[xmlTags.sName].Value)
             {
-                name = node.Attributes[xmlTags.sName].Value;
+                name = node.Attributes[xmlTags.sName].Value.ToString();
             }
             bool required = true;
             if (null != node.Attributes[xmlTags.sRequired] &&
@@ -176,11 +176,13 @@ namespace TrailsPlugin.Data
         public XmlNode ToXml(XmlDocument doc)
         {
 			XmlNode TrailGPSLocationNode = doc.CreateElement(xmlTags.sTrailGPSLocation);
-			XmlAttribute a = doc.CreateAttribute(xmlTags.sLatitude);
-			a.Value = this.LatitudeDegrees.ToString();
+
+			XmlAttribute a;
+            a = doc.CreateAttribute(xmlTags.sLatitude);
+			a.Value = XmlConvert.ToString(this.LatitudeDegrees);
 			TrailGPSLocationNode.Attributes.Append(a);
             a = doc.CreateAttribute(xmlTags.sLongitude);
-            a.Value = this.LongitudeDegrees.ToString();
+            a.Value = XmlConvert.ToString(this.LongitudeDegrees);
             TrailGPSLocationNode.Attributes.Append(a);
             a = doc.CreateAttribute(xmlTags.sName);
             a.Value = this.Name.ToString();

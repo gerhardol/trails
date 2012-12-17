@@ -11,7 +11,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TrailsPlugin")]
-[assembly: AssemblyCopyright("Copyright © Brendan Doherty 2009, Gerhard 2010-2011 ")]
+[assembly: AssemblyCopyright("Copyright © Brendan Doherty 2009, Gerhard 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,6 +32,6 @@ using System.Resources;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.604.*")]
+[assembly: AssemblyVersion("1.0.606.*")]
 [assembly: AssemblyFileVersion("1.0")]
 [assembly: NeutralResourcesLanguageAttribute("")]

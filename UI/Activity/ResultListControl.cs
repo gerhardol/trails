@@ -286,16 +286,44 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResultWrapper.GetTrailResults(getTrailResultWrapperSelection(m_prevSelectedItems), false));
                         if ((null == setValue || setValue.Count == 0) &&
                             null != m_controller.CurrentActivityTrailDisplayed && 
-                            null != m_controller.CurrentActivityTrailDisplayed.ResultTreeList &&
-                            m_controller.CurrentActivityTrailDisplayed.ResultTreeList.Count > 0)
+                            null != m_controller.CurrentActivityTrailDisplayed.ResultTreeList)
                         {
-                            setValue = new List<TrailResultWrapper> {
-                           m_controller.CurrentActivityTrailDisplayed.ResultTreeList[0] };
+                            //TBD get same activity
+                            if (m_controller.ReferenceTrailResult != null && m_controller.ReferenceTrailResult.Activity != null)
+                            {
+                                foreach (TrailResultWrapper tr in (IList<TrailResultWrapper>)this.summaryList.RowData)
+                                {
+                                    if (m_controller.ReferenceTrailResult.Activity.Equals(tr.Result.Activity))
+                                    {
+                                        setValue = new List<TrailResultWrapper> { tr };
+                                        break;
+                                    }
+                                }
+                            }
+                            if(setValue == null &&
+                            m_controller.CurrentActivityTrailDisplayed.ResultTreeList.Count > 0)
+                            {
+                                setValue = new List<TrailResultWrapper> {
+                                    m_controller.CurrentActivityTrailDisplayed.ResultTreeList[0] };
+                            }
                         }
                     }
                 }
                 //Set value, let callback update m_prevSelectedItems and refresh chart
                 SelectedItemsRaw = (List<TrailResultWrapper>)setValue;
+                //foreach (TrailResultWrapper t in setValue)
+                //{
+                //    if (t.Result is ChildTrailResult)
+                //    {
+                //        foreach (TrailResultWrapper tr in (IList<TrailResultWrapper>)this.summaryList.RowData)
+                //        {
+                //            if (t.Parent.Equals(tr))
+                //            {
+                //                //TBD expand selections
+                //            }
+                //        }
+                //    }
+                //}
             }
             get
             {

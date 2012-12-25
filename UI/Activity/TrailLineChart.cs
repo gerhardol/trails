@@ -544,6 +544,7 @@ namespace TrailsPlugin.UI.Activity {
             x2 = (float)(tr.getTimeResult(d2));
             return new float[] { x1, x2 };
         }
+
         float[] GetSingleSelectionFromResult(TrailResult tr, double t1, double t2)
         {
             float x1 = float.MaxValue, x2 = float.MinValue;
@@ -1383,7 +1384,7 @@ namespace TrailsPlugin.UI.Activity {
                     m_hasValues = null;
                     if (value == null)
                     {
-                        m_trailResults = new List<Data.TrailResult>();
+                        m_trailResults.Clear();
                     }
                     else
                     {

@@ -43,7 +43,8 @@ namespace TrailsPlugin.Controller
 			 
         private IList<IActivity> m_activities = new List<IActivity>();
         private ActivityTrail m_currentActivityTrail = null;
-		private Guid m_lastTrailId = Guid.Empty;
+        private IList<ActivityTrail> m_currentActivityTrails = new List<ActivityTrail>();
+        private Guid m_lastTrailId = Guid.Empty;
         private Data.TrailResult m_referenceTrailResult = null;
         private IActivity m_referenceActivity = null;
         private IActivity m_lastReferenceActivity = null;
@@ -84,6 +85,7 @@ namespace TrailsPlugin.Controller
             if (all)
             {
                 m_currentActivityTrail = null;
+                this.m_currentActivityTrails.Clear();
                 m_lastReferenceActivity = m_referenceActivity;
                 m_referenceActivity = null;
             }
@@ -107,6 +109,28 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        public IList<ActivityTrail> CurrentActivityTrail_Multi
+        {
+            get
+            {
+                if (CurrentActivityTrail != null)
+                {
+                    //Avoid setting if there are "too many" activities
+                    //as this triggers building the result list, which can take a while to build
+                    if (m_currentActivityTrail.IsNoCalc)
+                    {
+                        return null;
+                    }
+                }
+                if (m_currentActivityTrail != null &&
+                    m_currentActivityTrails == null || m_currentActivityTrails.Count == 0)
+                {
+                    m_currentActivityTrails = new List<ActivityTrail> { m_currentActivityTrail };
+                }
+                return m_currentActivityTrails;
+            }
+        }
+
         public Data.ActivityTrail CurrentActivityTrailNoChecks
         {
             get
@@ -119,7 +143,7 @@ namespace TrailsPlugin.Controller
         {
             set
             {
-                SetCurrentActivityTrail(value, null);
+                SetCurrentActivityTrail(value, false, null);
             }
             get
             {
@@ -128,13 +152,29 @@ namespace TrailsPlugin.Controller
             }
         }
 
-        public void SetCurrentActivityTrail(Data.ActivityTrail value, System.Windows.Forms.ProgressBar progressBar)
+        public void SetCurrentActivityTrail(Data.ActivityTrail value, bool addMode, System.Windows.Forms.ProgressBar progressBar)
         {
+            if (!addMode)
+            {
+                m_currentActivityTrails.Clear();
+            }
+            else
+            {
+                if (m_currentActivityTrail != null &&
+                    m_currentActivityTrails == null || m_currentActivityTrails.Count == 0)
+                {
+                    m_currentActivityTrails = new List<ActivityTrail> { m_currentActivityTrail };
+                }
+            }
             foreach (ActivityTrail to in GetOrderedTrails(progressBar, false))
             {
                 if (to.Trail != null && to.Trail.Id == value.Trail.Id)
                 {
-                    m_currentActivityTrail = to;
+                    if (m_currentActivityTrails.Count == 0)
+                    {
+                        m_currentActivityTrail = to;
+                    }
+                    m_currentActivityTrails.Add(to);
                     //Trigger result recalculation if needed
                     if (progressBar != null)
                     {
@@ -162,7 +202,7 @@ namespace TrailsPlugin.Controller
                         {
                             if (to.Status <= TrailOrderStatus.InBoundMatchPartial)
                             {
-                                m_currentActivityTrail = to;
+                                this.SetCurrentActivityTrail(to, false, null);
                             }
                             break;
                         }
@@ -185,7 +225,7 @@ namespace TrailsPlugin.Controller
                             {
                                 if (to.IsInBounds)
                                 {
-                                    m_currentActivityTrail = to;
+                                    this.SetCurrentActivityTrail(to, false, null);
                                 }
                                 break;
                             }
@@ -197,7 +237,7 @@ namespace TrailsPlugin.Controller
                 {
                     //The ordered list should have the best match first
                     //(but results may not be calculated)
-                    m_currentActivityTrail = OrderedTrails[0];
+                    this.SetCurrentActivityTrail(OrderedTrails[0], false, null);
                 }
                 if (m_currentActivityTrail != null)
                 {
@@ -454,7 +494,7 @@ namespace TrailsPlugin.Controller
 
         private void NewTrail(Data.Trail trail)
         {
-            m_currentActivityTrail = new TrailsPlugin.Data.ActivityTrail(this, trail);
+            this.SetCurrentActivityTrail(new TrailsPlugin.Data.ActivityTrail(this, trail), false, null);
             m_currentActivityTrail.CalcResults();
             if (m_CurrentOrderedTrails == null)
             {
@@ -503,6 +543,7 @@ namespace TrailsPlugin.Controller
                     m_CurrentOrderedTrails.Remove(m_currentActivityTrail);
                 }
                 m_currentActivityTrail = null;
+                this.m_currentActivityTrails.Clear();
                 m_lastTrailId = Guid.Empty;
 				return true;
 			} else {

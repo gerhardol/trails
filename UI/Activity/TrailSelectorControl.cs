@@ -60,6 +60,7 @@ namespace TrailsPlugin.UI.Activity
 
         ActivityDetailPageControl m_page;
         private EditTrail m_editTrail = null;
+        private bool m_selectTrailAddMode;
 
         public TrailSelectorControl()
         {
@@ -145,6 +146,10 @@ namespace TrailsPlugin.UI.Activity
             if (null != m_controller.CurrentActivityTrailDisplayed)
             {
                 TrailName.Text = m_controller.CurrentActivityTrailDisplayed.Trail.Name;
+                if (m_controller.CurrentActivityTrail_Multi.Count > 1)
+                {
+                    TrailName.Text += " (*)";
+                }
                 TrailName.Enabled = (m_editTrail == null);
             }
             else
@@ -444,7 +449,11 @@ namespace TrailsPlugin.UI.Activity
             System.Collections.IList currSel = null;
             if (m_controller.CurrentActivityTrailDisplayed != null)
             {
-                currSel = new object[] { m_controller.CurrentActivityTrailDisplayed };
+                currSel = new object[m_controller.CurrentActivityTrail_Multi.Count];
+                for (int i = 0; i < m_controller.CurrentActivityTrail_Multi.Count; i++)
+                {
+                    currSel[i] = m_controller.CurrentActivityTrail_Multi[i];
+                }
             }
 #if ST_2_1
             treeListPopup.Tree.Selected = currSel;
@@ -452,13 +461,16 @@ namespace TrailsPlugin.UI.Activity
             treeListPopup.Tree.SelectedItems = currSel;
 #endif
             treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
-
+            m_selectTrailAddMode = false;
+            if (e is MouseEventArgs && (e as MouseEventArgs).Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                m_selectTrailAddMode = true;
+            }
             treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
             treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));
         }
 
         /*******************************************************/
-
 		private void TrailName_ItemSelected(object sender, EventArgs e)
         {
             ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
@@ -467,7 +479,7 @@ namespace TrailsPlugin.UI.Activity
                 ((TreeListPopup)sender).Hide();
             }
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
-            m_controller.SetCurrentActivityTrail(t, progressBar);
+            m_controller.SetCurrentActivityTrail(t, m_selectTrailAddMode, progressBar);
             m_page.StopProgressBar();
             m_page.RefreshData();
             m_page.RefreshControlState();

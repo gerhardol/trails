@@ -296,8 +296,8 @@ namespace TrailsPlugin.UI.Activity {
             //m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
 
             Data.Trail trail = Data.TrailData.GetFromName(TrailName.Text);
-            if (m_addMode && trail != null ||
-                !m_addMode && trail.Id != m_TrailToEdit.Id)
+            if (trail != null && (m_addMode ||
+                !m_addMode && trail.Id != m_TrailToEdit.Id))
             {
                 MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
                 return;

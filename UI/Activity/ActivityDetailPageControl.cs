@@ -261,9 +261,9 @@ namespace TrailsPlugin.UI.Activity {
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                 //check for TrailOrdered - displayed status
-                if (m_controller.CurrentActivityTrailDisplayed != null)
+                if (m_controller.CurrentActivityTrailIsDisplayed)
                 {
-                    IList<TrailResult> results = m_controller.CurrentActivityTrailDisplayed.ParentResults;
+                    IList<TrailResult> results = m_controller.CurrentActivityTrail.ParentResults;
                     bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
                     if (!showAll)
                     {

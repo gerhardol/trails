@@ -257,7 +257,7 @@ namespace TrailsPlugin.UI.Activity {
                     diffChart = LineChartTypes.DiffTime;
                 }
 
-                bool isData = m_controller.CurrentActivityTrailDisplayed != null;
+                bool isData = m_controller.CurrentActivityTrailIsDisplayed;
 
                 m_multiChart.ChartTypes=new List<LineChartTypes>();
                 multiChart.ShowPage = false;

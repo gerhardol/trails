@@ -143,9 +143,9 @@ namespace TrailsPlugin.UI.Activity
             enabled = (m_editTrail == null);//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
 
-            if (null != m_controller.CurrentActivityTrailDisplayed)
+            if (m_controller.CurrentActivityTrailIsDisplayed)
             {
-                TrailName.Text = m_controller.CurrentActivityTrailDisplayed.Trail.Name;
+                TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
                 if (m_controller.CurrentActivityTrail_Multi.Count > 1)
                 {
                     TrailName.Text += " (*)";
@@ -156,7 +156,7 @@ namespace TrailsPlugin.UI.Activity
             {
                 TrailName.Text = Properties.Resources.Trail_NoTrailSelected;
             }
-            enabled = enabled && ((m_controller.CurrentActivityTrailDisplayed == null) || !m_controller.CurrentActivityTrailDisplayed.Trail.Generated);
+            enabled = enabled && ((!m_controller.CurrentActivityTrailIsDisplayed) || !m_controller.CurrentActivityTrail.Trail.Generated);
             btnDelete.Enabled = enabled;
         }
 
@@ -182,8 +182,8 @@ namespace TrailsPlugin.UI.Activity
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
             }
-            else if ((m_editTrail == null) && this.m_controller.CurrentActivityTrailDisplayed != null &&
-               this.m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
+            else if ((m_editTrail == null) && this.m_controller.CurrentActivityTrailIsDisplayed &&
+               this.m_controller.CurrentActivityTrail.Trail.Generated)
             {
                 //Just for convenience (the popup text next contradicts this currently)
                 btnEdit_Click(sender, e);
@@ -367,7 +367,7 @@ namespace TrailsPlugin.UI.Activity
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             bool addCurrent = false;
-            if (m_controller.CurrentActivityTrailDisplayed != null && !m_controller.CurrentActivityTrailDisplayed.Trail.Generated)
+            if (m_controller.CurrentActivityTrailIsDisplayed && !m_controller.CurrentActivityTrail.Trail.Generated)
             {
                 if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
                     "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -376,7 +376,7 @@ namespace TrailsPlugin.UI.Activity
                 }
             }
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, !addCurrent, m_controller.ReferenceTrailResult);
-            if (m_controller.CurrentActivityTrailDisplayed != null)
+            if (m_controller.CurrentActivityTrailIsDisplayed)
             {
                 if (addCurrent)
                 {
@@ -447,7 +447,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.StopProgressBar();
             //Note: Just checking for current trail could modify the ordered list, so do this first
             System.Collections.IList currSel = null;
-            if (m_controller.CurrentActivityTrailDisplayed != null)
+            if (m_controller.CurrentActivityTrailIsDisplayed)
             {
                 currSel = new object[m_controller.CurrentActivityTrail_Multi.Count];
                 for (int i = 0; i < m_controller.CurrentActivityTrail_Multi.Count; i++)
@@ -464,7 +464,7 @@ namespace TrailsPlugin.UI.Activity
             m_selectTrailAddMode = false;
             if (e is MouseEventArgs && (e as MouseEventArgs).Button == System.Windows.Forms.MouseButtons.Right)
             {
-                m_selectTrailAddMode = true;
+                //TBD m_selectTrailAddMode = true;
             }
             treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
             treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));

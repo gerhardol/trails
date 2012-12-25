@@ -92,7 +92,7 @@ namespace TrailsPlugin.Controller
         }
 
         //Used when no calculation is forced, ie displaying
-        public ActivityTrail CurrentActivityTrailDisplayed
+        public bool CurrentActivityTrailIsDisplayed
         {
             get
             {
@@ -102,10 +102,10 @@ namespace TrailsPlugin.Controller
                     //as this triggers building the result list, which can take a while to build
                     if (m_currentActivityTrail.IsNoCalc)
                     {
-                        return null;
+                        return false;
                     }
                 }
-                return m_currentActivityTrail;
+                return m_currentActivityTrail != null;
             }
         }
 

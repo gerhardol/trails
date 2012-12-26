@@ -39,7 +39,6 @@ namespace TrailsPlugin.Data
         public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
         private IList<IActivity> m_inBound = new List<IActivity>();
         private bool m_canAddInbound = true;
-        private TrailResultWrapper m_summary;
 
         public ActivityTrail(Controller.TrailController controller, Data.Trail trail)
         {
@@ -85,7 +84,6 @@ namespace TrailsPlugin.Data
             {
                 m_status = TrailOrderStatus.NotInBound;
             }
-            m_summary = new TrailResultWrapper();
         }
 
 		public Data.Trail Trail {
@@ -207,40 +205,7 @@ namespace TrailsPlugin.Data
             {
                 results.Add(t);
             }
-            //Add summary for single results too - compare splits
-            if (results.Count > 0)
-            {
-                //On top
-                results.Insert(0, m_summary);
-            }
             return results;
-        }
-
-        public void SetSummary(IList<TrailResultWrapper> selected)
-        {
-            IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
-            if (selected != null)
-            {
-                foreach (TrailResultWrapper t in selected)
-                {
-                    if (!t.IsSummary)
-                    {
-                        selected2.Add(t);
-                    }
-                }
-            }
-            if (selected2.Count <= 1)
-            {
-                //0 or 1 selected, use summary instead
-                selected2 = m_resultsListWrapper;
-            }
-            m_summary.SetSummary(selected2);
-            //TODO: Splits
-        }
-
-        public TrailResultWrapper GetSummary()
-        {
-            return m_summary;
         }
 
         public void Sort()

@@ -46,6 +46,7 @@ namespace TrailsPlugin.UI.Activity {
         ActivityDetailPageControl m_page;
         private ITheme m_visualTheme;
         private Controller.TrailController m_controller;
+        private TrailResultWrapper m_summary;
 
 #if !ST_2_1
         private IDailyActivityView m_view = null;
@@ -54,6 +55,7 @@ namespace TrailsPlugin.UI.Activity {
         public ResultListControl()
         {
             InitializeComponent();
+            m_summary = new TrailResultWrapper();
         }
 #if ST_2_1
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
@@ -416,6 +418,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (ActivityTrail t in m_controller.CurrentActivityTrail_Multi)
                 {
                     t.Sort();
+                    //xxx summary handling
                     foreach (TrailResultWrapper trw in t.ResultTreeListRows())
                     {
                         if (atr.Count == 0 || !(trw.Result is SummaryTrailResult))
@@ -424,11 +427,42 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
+                this.SetSummary(this.SelectedItemsWrapper);
+                if (atr.Count > 0)
+                {
+                    atr.Insert(0, this.GetSummary());
+                }
                 summaryList.RowData = atr;
-                m_controller.CurrentActivityTrail.SetSummary(this.SelectedItemsWrapper);
                 summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
             }
+        }
+
+        public void SetSummary(IList<TrailResultWrapper> selected)
+        {
+            IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
+            if (selected != null)
+            {
+                foreach (TrailResultWrapper t in selected)
+                {
+                    if (!t.IsSummary)
+                    {
+                        selected2.Add(t);
+                    }
+                }
+            }
+            if (selected2.Count <= 1)
+            {
+                //0 or 1 selected, use summary instead
+                selected2 = m_controller.CurrentActivityTrail.ResultTreeList;
+            }
+            m_summary.SetSummary(selected2);
+            //TODO: Splits
+        }
+
+        public TrailResultWrapper GetSummary()
+        {
+            return m_summary;
         }
 
         bool selectSimilarSplits()
@@ -832,8 +866,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (m_controller.CurrentActivityTrailIsDisplayed)
             {
-                m_controller.CurrentActivityTrail.SetSummary(this.SelectedItemsWrapper);
-                TrailResultWrapper t = m_controller.CurrentActivityTrail.GetSummary();
+                this.SetSummary(this.SelectedItemsWrapper);
+                TrailResultWrapper t = this.GetSummary();
                 if (t != null)
                 {
                     summaryList.RefreshElements(new List<TrailResultWrapper>{t});
@@ -1055,7 +1089,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (tr == null && m_controller.CurrentActivityTrailIsDisplayed)
             {
-                tr = m_controller.CurrentActivityTrail.GetSummary().Result;
+                tr = this.GetSummary().Result;
             }
 
             return tr;

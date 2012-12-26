@@ -1872,7 +1872,7 @@ namespace TrailsPlugin.Data
             {
                 Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
             }
-            foreach (TrailResult t in TrailsPlugin.Controller.TrailController.Instance.CurrentActivityTrail.AllResults)
+            foreach (TrailResult t in TrailResultWrapper.AllResults(TrailsPlugin.Controller.TrailController.Instance.CurrentActivityTrail.ResultTreeList))
             {
                 t.m_gradeRunAdjustedTime = null;
             }

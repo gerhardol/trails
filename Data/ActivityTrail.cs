@@ -170,24 +170,21 @@ namespace TrailsPlugin.Data
             }
         }
 
-        /// <summary>
-        /// Return only Parent results (not the Splits/SubResults)
-        /// </summary>
-        public IList<TrailResult> ParentResults
-        {
-            get
-            {
-                return TrailResultWrapper.GetTrailResults(ResultTreeList, false);
-            }
-        }
+        //public IList<TrailResult> ParentResults
+        //{
+        //    get
+        //    {
+        //        return TrailResultWrapper.GetTrailResults(ResultTreeList, false);
+        //    }
+        //}
 
-        public IList<TrailResult> AllResults
-        {
-            get
-            {
-                return TrailResultWrapper.GetTrailResults(ResultTreeList, true );
-            }
-        }
+        //public IList<TrailResult> AllResults
+        //{
+        //    get
+        //    {
+        //        return TrailResultWrapper.GetTrailResults(ResultTreeList, true );
+        //    }
+        //}
 
         public IList<TrailResultWrapper> ResultTreeList
         {
@@ -1204,9 +1201,9 @@ namespace TrailsPlugin.Data
                 }
                 foreach (TrailResultWrapper tr in selected)
                 {
-                    if (ParentResults.Contains(tr.Result))
+                    if (TrailResultWrapper.ParentResults(this.ResultTreeList).Contains(tr.Result))
                     {
-                        ParentResults.Remove(tr.Result);
+                        TrailResultWrapper.ParentResults(this.ResultTreeList).Remove(tr.Result);
                     }
                     if (ResultTreeList.Contains(tr))
                     {
@@ -1255,11 +1252,11 @@ namespace TrailsPlugin.Data
                 if (sortValue == null)
                 {
                     sortValue = 0;
-                    foreach (Data.TrailResult tr in this.ParentResults)
+                    foreach (Data.TrailResult tr in TrailResultWrapper.ParentResults(this.ResultTreeList))
                     {
                         sortValue += tr.DistDiff;
                     }
-                    sortValue = sortValue / (float)Math.Pow(this.ParentResults.Count, 1.5);
+                    sortValue = sortValue / (float)Math.Pow(TrailResultWrapper.ParentResults(this.ResultTreeList).Count, 1.5);
 
                 }
                 return (float)sortValue;
@@ -1448,7 +1445,7 @@ namespace TrailsPlugin.Data
             if (t.Status == TrailOrderStatus.Match ||
                 t.Status == TrailOrderStatus.MatchPartial)
             {
-                name += " (" + t.ParentResults.Count + ")";
+                name += " (" + TrailResultWrapper.ParentResults(t.ResultTreeList).Count + ")";
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {

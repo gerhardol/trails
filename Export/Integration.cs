@@ -37,7 +37,7 @@ namespace TrailsPlugin.Export
                 var activityTrail = new ActivityTrail(controller, trail);
 
                 List<ITrailResult> trailResults = new List<ITrailResult>();
-                foreach (var result in activityTrail.ParentResults)
+                foreach (var result in TrailResultWrapper.ParentResults(activityTrail.ResultTreeList))
                 {
                     trailResults.Add(result);
                 }

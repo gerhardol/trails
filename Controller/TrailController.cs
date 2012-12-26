@@ -410,7 +410,7 @@ namespace TrailsPlugin.Controller
             if (m_currentActivityTrail != null)
             {
                 if(m_currentActivityTrail.Status == TrailOrderStatus.Match &&
-                    !m_currentActivityTrail.AllResults.Contains(m_referenceTrailResult))
+                    !TrailResultWrapper.AllResults(m_currentActivityTrail.ResultTreeList).Contains(m_referenceTrailResult))
                 {
                     m_referenceTrailResult = null;
                 }
@@ -422,7 +422,7 @@ namespace TrailsPlugin.Controller
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
             {
-                foreach (Data.TrailResult tr in m_currentActivityTrail.ParentResults)
+                foreach (Data.TrailResult tr in TrailResultWrapper.ParentResults(m_currentActivityTrail.ResultTreeList))
                 {
                     if (tr.Activity.Equals(m_referenceActivity))
                     {
@@ -441,9 +441,9 @@ namespace TrailsPlugin.Controller
             if (m_referenceTrailResult == null &&
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial &&
-                m_currentActivityTrail.ParentResults.Count > 0)
+                TrailResultWrapper.ParentResults(m_currentActivityTrail.ResultTreeList).Count > 0)
             {
-                m_referenceTrailResult = m_currentActivityTrail.ParentResults[0];
+                m_referenceTrailResult = TrailResultWrapper.ParentResults(m_currentActivityTrail.ResultTreeList)[0];
             }
 
             return m_referenceTrailResult;

@@ -58,10 +58,11 @@ namespace TrailsPlugin.UI.Activity {
 
             InitializeComponent();
 
-            if (Controller.TrailController.Instance.CurrentActivityTrail == null)
+            if (!Controller.TrailController.Instance.CurrentActivityTrailIsDisplayed)
             {
                 m_addMode = true;
             }
+
             if (m_addMode)
             {
                 m_TrailToEdit = new TrailsPlugin.Data.Trail(System.Guid.NewGuid());

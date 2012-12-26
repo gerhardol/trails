@@ -25,14 +25,15 @@ namespace TrailsPlugin.Export
 {
     public static class Integration
     {
+        //CalculatedFields integration
         public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivities(IList<IActivity> activities)
         {
             var results = new Dictionary<string, List<ITrailResult>>();
 
+            Controller.TrailController controller = Controller.TrailController.Instance;
+            controller.Activities = activities;
             foreach (Trail trail in Data.TrailData.AllTrails.Values)
             {
-                Controller.TrailController controller = Controller.TrailController.Instance;
-                controller.Activities = activities;
                 var activityTrail = new ActivityTrail(controller, trail);
 
                 List<ITrailResult> trailResults = new List<ITrailResult>();
@@ -46,6 +47,7 @@ namespace TrailsPlugin.Export
 
             return results;
         }
+
         public static Dictionary<string, List<ITrailResult>> GetTrailsResultsForActivity(IActivity activity)
         {
             return GetTrailsResultsForActivities(new List<IActivity> { activity });

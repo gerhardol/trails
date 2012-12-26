@@ -609,12 +609,8 @@ namespace TrailsPlugin.UI.Activity {
                                 allActivities.Add(activity);
                             }
                         }
-                        ActivityTrail t = m_controller.CurrentActivityTrail;
+                        //Set activities, keep trail/selection
                         m_controller.Activities = allActivities;
-                        if (!m_controller.CurrentActivityTrailIsDisplayed)
-                        {
-                            m_controller.CurrentActivityTrail = t;
-                        }
                         m_page.RefreshData();
                         m_page.RefreshControlState();
                     }
@@ -904,12 +900,8 @@ namespace TrailsPlugin.UI.Activity {
                     allActivities.Insert(m_controller.Activities.Count, activity);
                 }
             }
-            ActivityTrail t = m_controller.CurrentActivityTrail;
+            //Set activities, keep trail/selection
             m_controller.Activities = allActivities;
-            if (m_controller.CurrentActivityTrail != t)
-            {
-                m_controller.CurrentActivityTrail = t;
-            }
             m_page.RefreshData();
             m_page.RefreshControlState();
         }
@@ -941,12 +933,8 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            ActivityTrail t = m_controller.CurrentActivityTrail;
+            //Set activities, keep trail/selection
             m_controller.Activities = allActivities;
-            if (m_controller.CurrentActivityTrail != t)
-            {
-                m_controller.CurrentActivityTrail = t;
-            }
             m_page.RefreshData();
             m_page.RefreshControlState();
             if (m_controller.ReferenceTrailResult != null && addActivities.Count>0)
@@ -1545,7 +1533,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void addInBoundActivitiesMenuItem_Click(object sender, System.EventArgs e)
         {
-            if (m_controller.CurrentActivityTrail != null)
+            if (m_controller.CurrentActivityTrailIsDisplayed)
             {
                 System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(1);
                 foreach (ActivityTrail t in m_controller.CurrentActivityTrail_Multi)

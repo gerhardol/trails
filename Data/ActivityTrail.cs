@@ -85,7 +85,7 @@ namespace TrailsPlugin.Data
             {
                 m_status = TrailOrderStatus.NotInBound;
             }
-            m_summary = new TrailResultWrapper(this);
+            m_summary = new TrailResultWrapper();
         }
 
 		public Data.Trail Trail {
@@ -151,7 +151,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (Status == TrailOrderStatus.MatchNoCalc || Status == TrailOrderStatus.InBoundNoCalc);
+                return (this.Status == TrailOrderStatus.MatchNoCalc || this.Status == TrailOrderStatus.InBoundNoCalc);
             }
         }
 

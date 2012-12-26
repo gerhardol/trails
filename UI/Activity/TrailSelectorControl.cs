@@ -221,7 +221,8 @@ namespace TrailsPlugin.UI.Activity
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities, true);
 #endif
 
-            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) && 
+            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) &&
+                m_controller.CurrentActivityTrailIsDisplayed &&
                 !m_controller.CurrentActivityTrail.Trail.Generated &&
                 //Change: never replace points when editing trails
                 false)
@@ -246,11 +247,11 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshControlState(); 
             
             dialog.TopMost = true;
-            dialog.FormClosed += new FormClosedEventHandler(popupForm_FormClosed);
+            dialog.FormClosed += new FormClosedEventHandler(editTrail_FormClosed);
             dialog.Show();
         }
 
-        void popupForm_FormClosed(object sender, FormClosedEventArgs e)
+        void editTrail_FormClosed(object sender, FormClosedEventArgs e)
         {
             m_editTrail = null;
             m_layer.editTrail = null;
@@ -261,7 +262,8 @@ namespace TrailsPlugin.UI.Activity
 
 		private void btnDelete_Click(object sender, EventArgs e)
         {
-			if (MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
+            if (m_controller.CurrentActivityTrailIsDisplayed &&
+                MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
                 == DialogResult.Yes)
             {
 				m_controller.DeleteCurrentTrail();

@@ -50,6 +50,7 @@ namespace TrailsPlugin.Controller
         private IActivity m_lastReferenceActivity = null;
         private IList<ActivityTrail> m_CurrentOrderedTrails = null;
 
+        //Update activities, should keep trail and reference
         public IList<IActivity> Activities
         {
             get
@@ -58,9 +59,26 @@ namespace TrailsPlugin.Controller
             }
             set
             {
-                if (m_activities != value)
+                this.ActivitiesNoAuto = value;
+                //TBD: Need to check trail and reference?
+            }
+        }
+
+        //Set activities, do not force calculation
+        public IList<IActivity> ActivitiesNoAuto
+        {
+            set
+            {
+                if (this.m_activities != value)
                 {
-                    m_activities = value;
+                    if (value == null || value.Count == 1 && value[0] == null)
+                    {
+                        this.m_activities.Clear();
+                    }
+                    else
+                    {
+                        this.m_activities = value;
+                    }
                     this.Reset(true);
                 }
             }
@@ -179,7 +197,7 @@ namespace TrailsPlugin.Controller
                     if (progressBar != null)
                     {
                         progressBar.Value = 0;
-                        progressBar.Maximum = this.Activities.Count;
+                        progressBar.Maximum = this.m_activities.Count;
                     }
                     to.CalcResults(progressBar);
                     break;
@@ -189,7 +207,7 @@ namespace TrailsPlugin.Controller
 
         private void checkCurrentTrailOrdered(bool checkRef)
         {
-            if (Activities.Count > 0)
+            if (this.m_activities.Count > 0)
             {
                 if (m_currentActivityTrail == null && m_activities.Count > 0)
                 {
@@ -253,7 +271,7 @@ namespace TrailsPlugin.Controller
                     //Precalculate results if not too heavy
                     //Ref trail may require recalc, only recalc when requested
                     if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                        Activities.Count <= TrailsPlugin.Data.Settings.MaxAutoCalcActitiesSingleTrail &&
+                        this.m_activities.Count <= TrailsPlugin.Data.Settings.MaxAutoCalcActitiesSingleTrail &&
                         m_currentActivityTrail.Status >= TrailOrderStatus.MatchNoCalc)
                     {
                         m_currentActivityTrail.CalcResults();
@@ -352,11 +370,11 @@ namespace TrailsPlugin.Controller
                         }
                     }
                     else if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                        Activities.Count > 0 &&
+                        this.m_activities.Count > 0 &&
                         null != m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
                     {
                         //If reference trail, set the ref from the trail
-                        foreach (IActivity activity in Activities)
+                        foreach (IActivity activity in this.m_activities)
                         {
                             if (activity == m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
                             {
@@ -365,9 +383,9 @@ namespace TrailsPlugin.Controller
                         }
                     }
 
-                    if (m_referenceActivity == null && Activities.Count > 0)
+                    if (m_referenceActivity == null && this.m_activities.Count > 0)
                     {
-                        m_referenceActivity = Activities[0];
+                        m_referenceActivity = this.m_activities[0];
                     }
                 }
             }
@@ -461,7 +479,7 @@ namespace TrailsPlugin.Controller
                 {
                     if (to.Status != TrailOrderStatus.MatchNoCalc &&
                         (force ||
-                        Activities.Count * Data.TrailData.AllTrails.Values.Count <=
+                        this.m_activities.Count * Data.TrailData.AllTrails.Values.Count <=
                         TrailsPlugin.Data.Settings.MaxAutoCalcActivitiesTrails) &&
                         trail.IsAutoTryAll)
                     {
@@ -469,12 +487,12 @@ namespace TrailsPlugin.Controller
                     }
                     else if (progressBar != null)
                     {
-                        progressBar.Value += Activities.Count;
+                        progressBar.Value += this.m_activities.Count;
                     }
                 }
                 else if (progressBar != null)
                 {
-                    progressBar.Value += Activities.Count;
+                    progressBar.Value += this.m_activities.Count;
                 }
                 m_CurrentOrderedTrails.Add(to);
             }

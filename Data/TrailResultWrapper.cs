@@ -82,11 +82,11 @@ namespace TrailsPlugin.Data
         }
 
         //Summary line
-        public TrailResultWrapper(ActivityTrail activityTrail)
+        public TrailResultWrapper()
             : base(null, null)
         {
             m_isSummary = true;
-            base.Element = new SummaryTrailResult(activityTrail);
+            base.Element = new SummaryTrailResult();
         }
 
         public void SetSummary(IList<TrailResultWrapper> rows)

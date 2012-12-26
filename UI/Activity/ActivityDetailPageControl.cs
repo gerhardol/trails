@@ -135,7 +135,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             set
             {
-                m_controller.Activities = value;
+                //Reselecting activities should not force updating calculations
+                m_controller.ActivitiesNoAuto = value;
 #if !ST_2_1
                 m_layerPoints.ClearOverlays();
                 m_layerRoutes.ClearOverlays();
@@ -244,10 +245,10 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshRoute()
         {
-            //Refreh map when visibe
+            //Refreh map when visible
             //for reports view, also the separate Map could be updated
             if ((!m_isExpanded || isReportView)
-                && m_controller.CurrentActivityTrail != null)
+                && m_controller.CurrentActivityTrailIsDisplayed)
             {
                 //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
@@ -260,42 +261,38 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerPoints.TrailPoints = points;
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
-                //check for TrailOrdered - displayed status
-                if (m_controller.CurrentActivityTrailIsDisplayed)
+                IList<TrailResult> results = m_controller.CurrentActivityTrail.ParentResults;
+                bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
+                if (!showAll)
                 {
-                    IList<TrailResult> results = m_controller.CurrentActivityTrail.ParentResults;
-                    bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
-                    if (!showAll)
+                    if (this.ResultList.SelectedItems == null)
                     {
-                        if (this.ResultList.SelectedItems == null)
+                        showAll = true;
+                    }
+                    else
+                    {
+                        foreach (TrailResult tr in this.ResultList.SelectedItems)
                         {
-                            showAll = true;
-                        }
-                        else
-                        {
-                            foreach (TrailResult tr in this.ResultList.SelectedItems)
+                            if (tr is SummaryTrailResult)
                             {
-                                if (tr is SummaryTrailResult)
-                                {
-                                    showAll = true;
-                                    break;
-                                }
+                                showAll = true;
+                                break;
                             }
                         }
                     }
-                    foreach (TrailResult tr in results)
+                }
+                foreach (TrailResult tr in results)
+                {
+                    if (showAll || this.ResultList.SelectedItems.Contains(tr))
                     {
-                        if (showAll || this.ResultList.SelectedItems.Contains(tr))
+                        //Do not map activities displayed already by ST
+                        if (!ViewSingleActivity(tr.Activity))
                         {
-                            //Do not map activities displayed already by ST
-                            if (!ViewSingleActivity(tr.Activity))
+                            //Note: Possibly limit no of Trails shown, it slows down Gmaps some
+                            foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
                             {
-                                //Note: Possibly limit no of Trails shown, it slows down Gmaps some
-                                foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
-                                {
-                                    m.Click += new MouseEventHandler(mapPoly_Click);
-                                    routes.Add(m.key, m);
-                                }
+                                m.Click += new MouseEventHandler(mapPoly_Click);
+                                routes.Add(m.key, m);
                             }
                         }
                     }

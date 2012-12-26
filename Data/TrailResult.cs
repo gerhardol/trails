@@ -168,9 +168,10 @@ namespace TrailsPlugin.Data
         //}
 
         //Summary result (avoid having createTrailResult more public)
-        public TrailResult(ActivityTrail activityTrail)
+        public TrailResult()
         {
-            createTrailResult(activityTrail, 0, new TrailResultInfo(null, false), 0);
+            //a summary result is not related to an activity trail
+            createTrailResult(null, 0, new TrailResultInfo(null, false), 0);
             m_toolTip = "";
             m_trailColor = Color.Black;
         }
@@ -514,7 +515,7 @@ namespace TrailsPlugin.Data
                     //startDistance = this.ActivityDistanceMetersTrack.GetInterpolatedValue(StartDateTime).Value -
                     //    this.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime).Value;
                     float startDistance = -1000; //Negative to see it in list
-                    if (i >= 0 && i < this.m_activityTrail.Trail.TrailLocations.Count)
+                    if (i >= 0 && this.m_activityTrail != null && i < this.m_activityTrail.Trail.TrailLocations.Count)
                     {
                         ITimeValueEntry<IGPSPoint> entry = this.Activity.GPSRoute.GetInterpolatedValue(StartTime);
                         if (entry != null)
@@ -2218,7 +2219,8 @@ namespace TrailsPlugin.Data
                     dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
                     if (trRef != this &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndTime, Pauses) &&
-                        (Settings.ResyncDiffAtTrailPoints || this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated) &&
+                        (Settings.ResyncDiffAtTrailPoints ||
+                        this.m_activityTrail != null && (this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated)) &&
                         m_cacheTrackRef == trRef && //Otherwise will cache be cleared for splits...
                         this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                         dateTrailPointIndex > 0 &&
@@ -2402,7 +2404,8 @@ namespace TrailsPlugin.Data
                     dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
                     if (trRef != this &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndTime, Pauses) &&
-                        (Settings.ResyncDiffAtTrailPoints || this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated) &&
+                        (Settings.ResyncDiffAtTrailPoints || 
+                        this.m_activityTrail != null && (this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated)) &&
                         m_cacheTrackRef == trRef && //Otherwise will cache be cleared for splits...
                         this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                         dateTrailPointIndex > 0 &&

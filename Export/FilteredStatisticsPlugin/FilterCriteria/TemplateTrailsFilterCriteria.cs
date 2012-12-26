@@ -52,15 +52,8 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 if (m_Activity != value)
                 {
                     m_Activity = value;
-                    if (m_Activity == null)
-                    {
-                        TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity>();
-                    }
-                    else
-                    {
-                        TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
-                    }
-
+                    //If activity is null, controler will handle the list as empty
+                    TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
                     BuildNamedZones();
                 }
             }

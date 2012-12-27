@@ -403,6 +403,15 @@ namespace TrailsPlugin.UI.Activity {
             if (m_controller.CurrentActivityTrailIsDisplayed)
             {
                 IList<TrailResultWrapper> atr = m_controller.CurrentResultTreeList;
+                ((List<TrailResultWrapper>)(atr)).Sort();
+                int i = 1;
+                foreach (TrailResultWrapper tr in atr)
+                {
+                    tr.Result.Order = i;
+                    i++;
+                    tr.Sort();
+                }
+
                 this.SetSummary(this.SelectedItemsWrapper);
                 if (atr.Count > 0)
                 {

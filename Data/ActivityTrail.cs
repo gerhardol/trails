@@ -170,22 +170,6 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //public IList<TrailResult> ParentResults
-        //{
-        //    get
-        //    {
-        //        return TrailResultWrapper.GetTrailResults(ResultTreeList, false);
-        //    }
-        //}
-
-        //public IList<TrailResult> AllResults
-        //{
-        //    get
-        //    {
-        //        return TrailResultWrapper.GetTrailResults(ResultTreeList, true );
-        //    }
-        //}
-
         public IList<TrailResultWrapper> ResultTreeList
         {
             get
@@ -205,17 +189,17 @@ namespace TrailsPlugin.Data
             return results;
         }
 
-        public void Sort()
-        {
-            ((List<TrailResultWrapper>)ResultTreeList).Sort();
-            int i = 1;
-            foreach (TrailResultWrapper tr in ResultTreeList)
-            {
-                tr.Result.Order = i;
-                i++;
-                tr.Sort();
-            }
-        }
+        //public void Sort()
+        //{
+        //    ((List<TrailResultWrapper>)ResultTreeList).Sort();
+        //    int i = 1;
+        //    foreach (TrailResultWrapper tr in ResultTreeList)
+        //    {
+        //        tr.Result.Order = i;
+        //        i++;
+        //        tr.Sort();
+        //    }
+        //}
 
         public bool CanAddInbound
         {

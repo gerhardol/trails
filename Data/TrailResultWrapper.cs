@@ -130,7 +130,6 @@ namespace TrailsPlugin.Data
         //TODO: Calculate children when needed, by implementing Children
         //This is currently called after all parent results have been determined
         //A good enough reason is that this will give main activities separate colors, in the intended order
-        private IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
         public void getSplits()
         {
             if (this.Result != null)
@@ -234,6 +233,7 @@ namespace TrailsPlugin.Data
             return result;
         }
 
+        private IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
         private bool m_isSummary = false;
 
         #region IComparable<Product> Members

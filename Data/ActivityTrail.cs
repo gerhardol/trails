@@ -1,6 +1,6 @@
 ﻿/*
 Copyright (C) 2009 Brendan Doherty
-Copyright (C) 2010 Gerhard Olsson
+Copyright (C) 2010-2012 Gerhard Olsson
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -42,52 +42,54 @@ namespace TrailsPlugin.Data
 
         public ActivityTrail(Controller.TrailController controller, Data.Trail trail)
         {
-            m_controller = controller;
-            m_trail = trail;
-            m_status = TrailOrderStatus.NoInfo;
+            this.m_controller = controller;
+            this.m_trail = trail;
+            this.m_status = TrailOrderStatus.NoInfo;
 
-            if (m_trail.Generated && !m_trail.IsReference)
+            if (this.m_trail.Generated && !this.m_trail.IsReference)
             {
-                m_canAddInbound = false;
+                this.m_canAddInbound = false;
             }
 
             //Preset status
-            if (m_trail.TrailType == Trail.CalcType.HighScore)
+            if (this.m_trail.TrailType == Trail.CalcType.HighScore)
             {
                 if (Integration.HighScore.HighScoreIntegrationEnabled)
                 {
-                    m_status = TrailOrderStatus.MatchNoCalc;
+                    this.m_status = TrailOrderStatus.MatchNoCalc;
                 }
                 else
                 {
-                    m_status = TrailOrderStatus.NotInstalled;
+                    this.m_status = TrailOrderStatus.NotInstalled;
                 }
             }
             else if (m_trail.TrailType == Trail.CalcType.Splits)
             {
                 //By default, always match
-                m_status = TrailOrderStatus.MatchNoCalc;
+                this.m_status = TrailOrderStatus.MatchNoCalc;
             }
             else if (Trail.IsReference)
             {
                 if (trail.ReferenceActivity != null && trail.ReferenceActivity.GPSRoute != null)
                 {
                     // Let Reference always match, to trigger possible recalc after
-                    m_status = TrailOrderStatus.MatchNoCalc;
+                    this.m_status = TrailOrderStatus.MatchNoCalc;
                 }
                 else
                 {
-                    m_status = TrailOrderStatus.NotInBound;
+                    this.m_status = TrailOrderStatus.NotInBound;
                 }
             }
             else if (Trail.TrailLocations.Count == 0)
             {
-                m_status = TrailOrderStatus.NotInBound;
+                this.m_status = TrailOrderStatus.NotInBound;
             }
         }
 
-		public Data.Trail Trail {
-			get {
+		public Data.Trail Trail
+        {
+			get
+            {
 				return m_trail;
 			}
 		}
@@ -125,23 +127,23 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (Status == TrailOrderStatus.NoInfo || 
-                    m_trail.IsReference && Status == TrailOrderStatus.MatchNoCalc)
+                if (this.Status == TrailOrderStatus.NoInfo ||
+                    m_trail.IsReference && this.Status == TrailOrderStatus.MatchNoCalc)
                 {
                     if (m_trail.IsInBounds(m_controller.Activities) || 
                         m_trail.IsReference && m_trail.ReferenceActivity == null)
                     {
                         //Do not downgrade MatchNoCalc here
-                        Status = TrailOrderStatus.InBoundNoCalc;
+                        this.Status = TrailOrderStatus.InBoundNoCalc;
                     }
                     else
                     {
                         //Downgrade status
-                        m_status = TrailOrderStatus.NotInBound;
+                        this.m_status = TrailOrderStatus.NotInBound;
                     }
                 }
                 //Any activity in bounds?
-                return Status <= TrailOrderStatus.InBound;
+                return this.Status <= TrailOrderStatus.InBound;
             }
         }
 
@@ -439,7 +441,7 @@ namespace TrailsPlugin.Data
                 m_noResCount[status]++;
             }
             //Update accumulated status
-            Status = status;
+            this.Status = status;
 
             return status;
         }
@@ -1255,11 +1257,11 @@ namespace TrailsPlugin.Data
                 return 1;
             }
             ActivityTrail to2 = obj as ActivityTrail;
-            if (Status != to2.Status)
+            if (this.Status != to2.Status)
             {
-                return Status > to2.Status ? 1 : -1;
+                return this.Status > to2.Status ? 1 : -1;
             }
-            else if (Status == TrailOrderStatus.Match)
+            else if (this.Status == TrailOrderStatus.Match)
             {
                 if (this.Trail.TrailType != to2.Trail.TrailType)
                 {
@@ -1283,7 +1285,7 @@ namespace TrailsPlugin.Data
                     return this.SortValue > to2.SortValue ? 1 : -1;
                 }
             }
-            else if (Status == TrailOrderStatus.MatchNoCalc)
+            else if (this.Status == TrailOrderStatus.MatchNoCalc)
             {
                 //Sort generated trails as Reference, Splits, HighScore
                 //If this is changed, consider changing checkCurrentTrailOrdered() so not the trail always follows the generated trail

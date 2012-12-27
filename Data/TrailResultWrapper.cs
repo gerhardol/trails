@@ -201,6 +201,7 @@ namespace TrailsPlugin.Data
         }
 
         //Get all TrailResultWrapper (including children) for the provided TrailResult in the list
+        //The check uses CompareTo() instead of Contains() as the result list may be for previous calculations
         public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> trws, IList<TrailResult> tr)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
@@ -215,6 +216,8 @@ namespace TrailsPlugin.Data
                             if (tnp.Result.CompareTo(trr) == 0)
                             {
                                 result.Add(tnp);
+                                //Break the loop (break could be used, goto required below)
+                                goto EndCurrentTrailResult;
                             }
                         }
                         else
@@ -224,10 +227,15 @@ namespace TrailsPlugin.Data
                                 if (tnc.Result.CompareTo(trr) == 0)
                                 {
                                     result.Add(tnc);
+                                    //break from two levels of foreach
+                                    goto EndCurrentTrailResult;
                                 }
                             }
                         }
                     }
+                    // a match should only match once, so jump here to prune searching
+                EndCurrentTrailResult:
+                    ;
                 }
             }
             return result;

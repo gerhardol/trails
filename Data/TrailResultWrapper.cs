@@ -165,7 +165,7 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
+        private static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
         {
             IList<TrailResult> result = new List<TrailResult>();
             if (tn != null)
@@ -202,14 +202,14 @@ namespace TrailsPlugin.Data
         }
 
         //Get all TrailResultWrapper (including children) for the provided TrailResult in the list
-        public static IList<TrailResultWrapper> SelectedItems(ActivityTrail at, IList<TrailResult> tr)
+        public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> trws, IList<TrailResult> tr)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
-            if (at != null && at.ResultTreeList != null && tr != null)
+            if (trws != null && tr != null)
             {
                 foreach (TrailResult trr in tr)
                 {
-                    foreach (TrailResultWrapper tnp in at.ResultTreeList)
+                    foreach (TrailResultWrapper tnp in trws)
                     {
                         if (!(trr is ChildTrailResult))
                         {

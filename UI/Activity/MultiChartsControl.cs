@@ -624,7 +624,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             Data.Settings.SmoothOverTrailPointsToggle();
             RefreshChartMenu();
-            m_controller.CurrentActivityTrail.Clear(true);
+            m_controller.CurrentClear(true);
             m_page.RefreshChart();
         }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)

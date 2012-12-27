@@ -137,13 +137,8 @@ namespace TrailsPlugin.Controller
                     //as this triggers building the result list, which can take a while to build
                     if (m_currentActivityTrail.IsNoCalc)
                     {
-                        return null;
+                        //TBD return null;
                     }
-                }
-                if (m_currentActivityTrail != null &&
-                    m_currentActivityTrails == null || m_currentActivityTrails.Count == 0)
-                {
-                    m_currentActivityTrails = new List<ActivityTrail> { m_currentActivityTrail };
                 }
                 return m_currentActivityTrails;
             }
@@ -170,20 +165,29 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        public IList<TrailResultWrapper> CurrentResultTreeList
+        {
+            get
+            {
+                IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
+                foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
+                {
+                    foreach (TrailResultWrapper tw in at.ResultTreeList)
+                    {
+                        result.Add(tw);
+                    }
+                }
+                return result;
+            }
+        }
+
         public void SetCurrentActivityTrail(Data.ActivityTrail value, bool addMode, System.Windows.Forms.ProgressBar progressBar)
         {
             if (!addMode)
             {
                 m_currentActivityTrails.Clear();
             }
-            else
-            {
-                if (m_currentActivityTrail != null &&
-                    m_currentActivityTrails == null || m_currentActivityTrails.Count == 0)
-                {
-                    m_currentActivityTrails = new List<ActivityTrail> { m_currentActivityTrail };
-                }
-            }
+
             foreach (ActivityTrail to in GetOrderedTrails(progressBar, false))
             {
                 if (to.Trail != null && to.Trail.Id == value.Trail.Id)
@@ -399,7 +403,7 @@ namespace TrailsPlugin.Controller
                 (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
                 m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
             {
-                if (TrailResultWrapper.SelectedItems(m_currentActivityTrail, 
+                if (TrailResultWrapper.SelectedItems(this.CurrentResultTreeList, 
                     new List<TrailResult>{m_referenceTrailResult}).Count==0)
                 {
                     m_referenceTrailResult = null;
@@ -508,6 +512,14 @@ namespace TrailsPlugin.Controller
                 }
             }
             //If the reference is no longer available, reset it when checking ref when using it
+        }
+
+        public void CurrentClear(bool onlyDisplay)
+        {
+            foreach (ActivityTrail t in this.CurrentActivityTrail_Multi)
+            {
+                t.Clear(onlyDisplay);
+            }
         }
 
         private void NewTrail(Data.Trail trail)

@@ -358,10 +358,10 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Set the matching time distance for the activity
-                //Note: Time/dist need the Trailresult related to the current results...
-                //With single results, this can be done, but for mult results per activity this can be incorrect
+                //TBD: Time/dist need the TrailResult related to the current results...
+                //With single results, this can be done, but for multi results per activity this can be incorrect
                 IList<float[]> l = null;
-                IList<TrailResult> t = TrailResultWrapper.ParentResults(Controller.TrailController.Instance.CurrentActivityTrail.ResultTreeList);
+                IList<TrailResult> t = TrailResultWrapper.ParentResults(Controller.TrailController.Instance.CurrentResultTreeList);
                 foreach(TrailResult tr in t)
                 {
                     if (tr.Activity == sel.Activity)

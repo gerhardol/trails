@@ -261,7 +261,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerPoints.TrailPoints = points;
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
-                IList<TrailResult> results = TrailResultWrapper.ParentResults(m_controller.CurrentActivityTrail.ResultTreeList);
+                IList<TrailResult> results = TrailResultWrapper.ParentResults(m_controller.CurrentResultTreeList);
                 bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
                 if (!showAll)
                 {

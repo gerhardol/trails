@@ -466,7 +466,7 @@ namespace TrailsPlugin.UI.Activity
             m_selectTrailAddMode = false;
             if (e is MouseEventArgs && (e as MouseEventArgs).Button == System.Windows.Forms.MouseButtons.Right)
             {
-                //TBD m_selectTrailAddMode = true;
+                m_selectTrailAddMode = true;
             }
             treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(TrailName_ItemSelected);
             treeListPopup.Popup(this.TrailName.Parent.RectangleToScreen(this.TrailName.Bounds));

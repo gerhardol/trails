@@ -50,14 +50,13 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    /*Controller.TrailController controller = Controller.TrailController.Instance;
-                    if (controller != null && controller.CurrentActivityTrailNoChecks != null && 
-                        controller.CurrentActivityTrailNoChecks.ResultTreeList.Count > 1 && 
+                    Controller.TrailController controller = Controller.TrailController.Instance;
+                    if (controller.CurrentResultTreeList.Count > 1 && 
                         wrapper.Result.Equals(controller.ReferenceTrailResultNoChecks))
                     {
                         return System.Drawing.FontStyle.Italic;
                     }
-                     * */
+                     
                 }
             }
             return base.GetCellFontStyle(element, column);

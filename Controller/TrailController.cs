@@ -29,20 +29,23 @@ namespace TrailsPlugin.Controller
     public class TrailController
     {
         static private TrailController m_instance;
-		static public TrailController Instance {
-			get {
-				if (m_instance == null) {
+		static public TrailController Instance
+        {
+			get
+            {
+				if (m_instance == null)
+                {
 					m_instance = new TrailController();
 				}
 				return m_instance;
 			}
 		}
 
-		private TrailController() {
+		private TrailController()
+        {
 		}
 			 
         private IList<IActivity> m_activities = new List<IActivity>();
-        private ActivityTrail m_currentActivityTrail = null;
         private IList<ActivityTrail> m_currentActivityTrails = new List<ActivityTrail>();
         private Guid m_lastTrailId = Guid.Empty;
         private Data.TrailResult m_referenceTrailResult = null;
@@ -95,14 +98,13 @@ namespace TrailsPlugin.Controller
                 }
             }
             m_CurrentOrderedTrails = null;
-            if (m_currentActivityTrail != null)
+            if (m_currentActivityTrails.Count > 0)
             {
-                m_lastTrailId = m_currentActivityTrail.Trail.Id;
+                m_lastTrailId = m_currentActivityTrails[0].Trail.Id;
             }
 
             if (all)
             {
-                m_currentActivityTrail = null;
                 this.m_currentActivityTrails.Clear();
                 m_lastReferenceActivity = m_referenceActivity;
                 m_referenceActivity = null;
@@ -118,12 +120,12 @@ namespace TrailsPlugin.Controller
                 {
                     //Avoid setting if there are "too many" activities
                     //as this triggers building the result list, which can take a while to build
-                    if (m_currentActivityTrail.IsNoCalc)
+                    if (m_currentActivityTrails[0].IsNoCalc)
                     {
                         return false;
                     }
                 }
-                return m_currentActivityTrail != null;
+                return m_currentActivityTrails.Count > 0;
             }
         }
 
@@ -135,20 +137,12 @@ namespace TrailsPlugin.Controller
                 {
                     //Avoid setting if there are "too many" activities
                     //as this triggers building the result list, which can take a while to build
-                    if (m_currentActivityTrail.IsNoCalc)
+                    if (m_currentActivityTrails[0].IsNoCalc)
                     {
                         //TBD return null;
                     }
                 }
                 return m_currentActivityTrails;
-            }
-        }
-
-        public Data.ActivityTrail CurrentActivityTrailNoChecks
-        {
-            get
-            {
-                return m_currentActivityTrail;
             }
         }
 
@@ -161,7 +155,14 @@ namespace TrailsPlugin.Controller
             get
             {
                 checkCurrentTrailOrdered(true);
-                return m_currentActivityTrail;
+                if (m_currentActivityTrails.Count == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return m_currentActivityTrails[0];
+                }
             }
         }
 
@@ -192,10 +193,6 @@ namespace TrailsPlugin.Controller
             {
                 if (to.Trail != null && to.Trail.Id == value.Trail.Id)
                 {
-                    if (m_currentActivityTrails.Count == 0)
-                    {
-                        m_currentActivityTrail = to;
-                    }
                     m_currentActivityTrails.Add(to);
                     //Trigger result recalculation if needed
                     if (progressBar != null)
@@ -213,7 +210,7 @@ namespace TrailsPlugin.Controller
         {
             if (this.m_activities.Count > 0)
             {
-                if (m_currentActivityTrail == null && m_activities.Count > 0)
+                if (m_currentActivityTrails.Count == 0 && m_activities.Count > 0)
                 {
                     //If last used trail had results, use it
                     foreach (ActivityTrail to in OrderedTrails)
@@ -230,7 +227,7 @@ namespace TrailsPlugin.Controller
                         }
                     }
                 }
-                if (m_currentActivityTrail == null &&
+                if (m_currentActivityTrails.Count == 0 &&
                     OrderedTrails.Count > 0)
                 {
                     if (checkRef)
@@ -254,31 +251,31 @@ namespace TrailsPlugin.Controller
                         }
                     }
                 }
-                if (m_currentActivityTrail == null &&
+                if (m_currentActivityTrails.Count == 0 &&
                     OrderedTrails.Count > 0)
                 {
                     //The ordered list should have the best match first
                     //(but results may not be calculated)
                     this.SetCurrentActivityTrail(OrderedTrails[0], false, null);
                 }
-                if (m_currentActivityTrail != null)
+                if (m_currentActivityTrails.Count >0)
                 {
                     //Reset Ref trail
-                    if (m_currentActivityTrail.Trail.IsReference &&
-                        m_referenceActivity != m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
+                    if (m_currentActivityTrails[0].Trail.IsReference &&
+                        m_referenceActivity != m_currentActivityTrails[0].Trail.ReferenceActivityNoCalc)
                     {
-                        m_currentActivityTrail.Trail.ReferenceActivityNoCalc = null;
+                        m_currentActivityTrails[0].Trail.ReferenceActivityNoCalc = null;
                     }
                 }
-                if (m_currentActivityTrail != null)
+                if (m_currentActivityTrails.Count > 0)
                 {
                     //Precalculate results if not too heavy
                     //Ref trail may require recalc, only recalc when requested
-                    if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
+                    if ((checkRef || !m_currentActivityTrails[0].Trail.IsReference) &&
                         this.m_activities.Count <= TrailsPlugin.Data.Settings.MaxAutoCalcActitiesSingleTrail &&
-                        m_currentActivityTrail.Status >= TrailOrderStatus.MatchNoCalc)
+                        m_currentActivityTrails[0].Status >= TrailOrderStatus.MatchNoCalc)
                     {
-                        m_currentActivityTrail.CalcResults();
+                        m_currentActivityTrails[0].CalcResults();
                     }
                 }
             }
@@ -319,7 +316,7 @@ namespace TrailsPlugin.Controller
             get
             {
                 checkCurrentTrailOrdered(false);
-                if (m_currentActivityTrail == null)
+                if (m_currentActivityTrails.Count == 0)
                 {
                     m_referenceTrailResult = null;
                 }
@@ -362,9 +359,9 @@ namespace TrailsPlugin.Controller
                 {
                     checkCurrentTrailOrdered(false);
                 }
-                if (m_currentActivityTrail != null)
+                if (m_currentActivityTrails.Count > 0)
                 {
-                    if (!m_currentActivityTrail.Trail.IsReference)
+                    if (!m_currentActivityTrails[0].Trail.IsReference)
                     {
                         //If trail is not reference, try the reference result
                         TrailResult tr = checkReferenceTrailResult(checkRef);
@@ -373,14 +370,14 @@ namespace TrailsPlugin.Controller
                             m_referenceActivity = tr.Activity;
                         }
                     }
-                    else if ((checkRef || !m_currentActivityTrail.Trail.IsReference) &&
+                    else if ((checkRef || !m_currentActivityTrails[0].Trail.IsReference) &&
                         this.m_activities.Count > 0 &&
-                        null != m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
+                        null != m_currentActivityTrails[0].Trail.ReferenceActivityNoCalc)
                     {
                         //If reference trail, set the ref from the trail
                         foreach (IActivity activity in this.m_activities)
                         {
-                            if (activity == m_currentActivityTrail.Trail.ReferenceActivityNoCalc)
+                            if (activity == m_currentActivityTrails[0].Trail.ReferenceActivityNoCalc)
                             {
                                 m_referenceActivity = activity;
                             }
@@ -398,58 +395,60 @@ namespace TrailsPlugin.Controller
 
         private Data.TrailResult checkReferenceTrailResult(bool checkRef)
         {
-            //Check that the ref is for current result
-            if (m_referenceTrailResult != null &&
-                (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
+            if (m_currentActivityTrails.Count > 0)
             {
-                if (TrailResultWrapper.SelectedItems(this.CurrentResultTreeList, 
-                    new List<TrailResult>{m_referenceTrailResult}).Count==0)
+                //Check that the ref is for current result
+                if (m_referenceTrailResult != null &&
+                    (checkRef || !m_currentActivityTrails[0].Trail.IsReference) &&
+                    m_currentActivityTrails[0].Status <= TrailOrderStatus.MatchPartial)
                 {
-                    m_referenceTrailResult = null;
-                }
-            }
-
-            //check that the ref is for current results
-            if (m_currentActivityTrail != null)
-            {
-                if(m_currentActivityTrail.Status == TrailOrderStatus.Match &&
-                    !TrailResultWrapper.AllResults(m_currentActivityTrail.ResultTreeList).Contains(m_referenceTrailResult))
-                {
-                    m_referenceTrailResult = null;
-                }
-            }
-
-            //If the reference result is not set, try a result for current activity
-            if (m_referenceTrailResult == null &&
-                m_referenceActivity != null &&
-                (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial)
-            {
-                foreach (Data.TrailResult tr in TrailResultWrapper.ParentResults(m_currentActivityTrail.ResultTreeList))
-                {
-                    if (tr.Activity.Equals(m_referenceActivity))
+                    if (TrailResultWrapper.SelectedItems(this.CurrentResultTreeList,
+                        new List<TrailResult> { m_referenceTrailResult }).Count == 0)
                     {
-                        m_referenceTrailResult = tr;
-                        break;
+                        m_referenceTrailResult = null;
                     }
                 }
-            }
 
-            if (m_referenceTrailResult == null &&
-                (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status >= TrailOrderStatus.MatchNoCalc)
-            {
-                m_currentActivityTrail.CalcResults();
-            }
-            if (m_referenceTrailResult == null &&
-                (checkRef || !m_currentActivityTrail.Trail.IsReference) &&
-                m_currentActivityTrail.Status <= TrailOrderStatus.MatchPartial &&
-                TrailResultWrapper.ParentResults(m_currentActivityTrail.ResultTreeList).Count > 0)
-            {
-                m_referenceTrailResult = TrailResultWrapper.ParentResults(m_currentActivityTrail.ResultTreeList)[0];
-            }
+                //check that the ref is for current results
+                if (m_currentActivityTrails.Count > 0)
+                {
+                    if (m_currentActivityTrails[0].Status == TrailOrderStatus.Match &&
+                        !TrailResultWrapper.AllResults(m_currentActivityTrails[0].ResultTreeList).Contains(m_referenceTrailResult))
+                    {
+                        m_referenceTrailResult = null;
+                    }
+                }
 
+                //If the reference result is not set, try a result for current activity
+                if (m_referenceTrailResult == null &&
+                    m_referenceActivity != null &&
+                    (checkRef || !m_currentActivityTrails[0].Trail.IsReference) &&
+                    m_currentActivityTrails[0].Status <= TrailOrderStatus.MatchPartial)
+                {
+                    foreach (Data.TrailResult tr in TrailResultWrapper.ParentResults(m_currentActivityTrails[0].ResultTreeList))
+                    {
+                        if (tr.Activity.Equals(m_referenceActivity))
+                        {
+                            m_referenceTrailResult = tr;
+                            break;
+                        }
+                    }
+                }
+
+                if (m_referenceTrailResult == null &&
+                    (checkRef || !m_currentActivityTrails[0].Trail.IsReference) &&
+                    m_currentActivityTrails[0].Status >= TrailOrderStatus.MatchNoCalc)
+                {
+                    m_currentActivityTrails[0].CalcResults();
+                }
+                if (m_referenceTrailResult == null &&
+                    (checkRef || !m_currentActivityTrails[0].Trail.IsReference) &&
+                    m_currentActivityTrails[0].Status <= TrailOrderStatus.MatchPartial &&
+                    TrailResultWrapper.ParentResults(m_currentActivityTrails[0].ResultTreeList).Count > 0)
+                {
+                    m_referenceTrailResult = TrailResultWrapper.ParentResults(m_currentActivityTrails[0].ResultTreeList)[0];
+                }
+            }
             return m_referenceTrailResult;
         }
 
@@ -524,13 +523,14 @@ namespace TrailsPlugin.Controller
 
         private void NewTrail(Data.Trail trail)
         {
-            this.SetCurrentActivityTrail(new TrailsPlugin.Data.ActivityTrail(this, trail), false, null);
-            m_currentActivityTrail.CalcResults();
+            ActivityTrail t = new TrailsPlugin.Data.ActivityTrail(this, trail);
+            this.SetCurrentActivityTrail(t, false, null);
+            t.CalcResults();
             if (m_CurrentOrderedTrails == null)
             {
                 getTrails(null, false);
             }
-            m_CurrentOrderedTrails.Add(m_currentActivityTrail);
+            m_CurrentOrderedTrails.Add(t);
             m_lastTrailId = trail.Id;
         }
 
@@ -551,9 +551,10 @@ namespace TrailsPlugin.Controller
         {
             if (Data.TrailData.UpdateTrail(trail))
             {
-                if (m_currentActivityTrail != null)
+                //Assume the primary trail was edited
+                if (m_currentActivityTrails.Count > 0)
                 {
-                    m_CurrentOrderedTrails.Remove(m_currentActivityTrail);
+                    m_CurrentOrderedTrails.Remove(m_currentActivityTrails[0]);
                 }
                 NewTrail(trail);
                 return true;
@@ -564,15 +565,16 @@ namespace TrailsPlugin.Controller
             }
 		}
 
-		public bool DeleteCurrentTrail() {
-            if (m_currentActivityTrail != null &&
-                Data.TrailData.DeleteTrail(m_currentActivityTrail.Trail))
+		public bool DeleteCurrentTrail()
+        {
+            if (m_currentActivityTrails.Count > 0 &&
+                Data.TrailData.DeleteTrail(m_currentActivityTrails[0].Trail))
             {
-                if (m_currentActivityTrail != null)
+                if (m_currentActivityTrails[0] != null)
                 {
-                    m_CurrentOrderedTrails.Remove(m_currentActivityTrail);
+                    m_CurrentOrderedTrails.Remove(m_currentActivityTrails[0]);
                 }
-                m_currentActivityTrail = null;
+                m_currentActivityTrails[0] = null;
                 this.m_currentActivityTrails.Clear();
                 m_lastTrailId = Guid.Empty;
 				return true;

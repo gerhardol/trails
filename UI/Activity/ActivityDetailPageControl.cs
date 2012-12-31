@@ -135,8 +135,10 @@ namespace TrailsPlugin.UI.Activity {
         {
             set
             {
-                //Reselecting activities should not force updating calculations
-                m_controller.SetActivities(value, false, null); //TBD: create progressbar
+                //Reselecting activities updates calculations
+                System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(0);
+                m_controller.SetActivities(value, false, progressBar);
+                this.StopProgressBar();
 #if !ST_2_1
                 m_layerPoints.ClearOverlays();
                 m_layerRoutes.ClearOverlays();
@@ -205,11 +207,6 @@ namespace TrailsPlugin.UI.Activity {
             bool showPage = m_showPage;
             HidePage(); //defer updates
             m_controller.Clear();
-
-            //TBD recalc? Initial calculation, to get progressbar
-            System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
-            IList<ActivityTrail> temp = m_controller.OrderedTrails();
-            this.StopProgressBar();
 
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();

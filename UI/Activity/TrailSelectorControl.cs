@@ -444,10 +444,8 @@ namespace TrailsPlugin.UI.Activity
             treeListPopup.ThemeChanged(m_visualTheme);
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-            System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
             //Get the list of ordered activity trails, without forcing calculation
             treeListPopup.Tree.RowData = m_controller.OrderedTrails();
-            m_page.StopProgressBar();
             //Note: Just checking for current trail could modify the ordered list, so do this first
             System.Collections.IList currSel = null;
             if (m_controller.CurrentActivityTrailIsSelected)
@@ -493,7 +491,7 @@ namespace TrailsPlugin.UI.Activity
             ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
             ats.Add(t);
 
-            System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
+            System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
             m_controller.SetCurrentActivityTrail(ats, true, progressBar);
             m_page.StopProgressBar();
             m_page.RefreshData();

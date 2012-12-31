@@ -90,7 +90,7 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryList.LabelProvider = new TrailResultLabelProvider();
             this.summaryList.RowDataRenderer = new SummaryRowDataRenderer(this.summaryList);
 
-            this.progressBar.Visible = false;
+            //this.progressBar.Visible = false;
 
             this.selectWithURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
@@ -352,6 +352,10 @@ namespace TrailsPlugin.UI.Activity {
 
         public System.Windows.Forms.ProgressBar StartProgressBar(int val)
         {
+            if (val == 0)
+            {
+                val = m_controller.OrderedTrails().Count;
+            }
             this.summaryList.Visible = false;
             this.progressBar.Value = 0;
             this.progressBar.Minimum = 0;
@@ -1275,12 +1279,15 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (e.Modifiers != Keys.Shift)
                 {
+                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(m_controller.Activities.Count);
+                    m_controller.ReCalcTrails(false, progressBar);
+                    StopProgressBar();
                     m_page.RefreshData();
                 }
                 else
                 {
-                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
                     //Test trail calculation time - not documented
+                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(0);
                     m_controller.ReCalcTrails(true, progressBar);
                     StopProgressBar();
                 }
@@ -1410,12 +1417,13 @@ namespace TrailsPlugin.UI.Activity {
         /*************************************************************************************************************/
         void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            string currRes = "";
+            string currRes = "none"; //TBD
             TrailResult tr = getMouseResult(false);
-            if (tr != null)
+            if (tr != null && !(tr is SummaryTrailResult))
             {
                 currRes = tr.StartTime.ToLocalTime().ToString();
             }
+
             string refRes = "";
             if (m_controller.ReferenceTrailResult != null)
             {
@@ -1561,15 +1569,15 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_controller.CurrentActivityTrailIsSelected)
             {
-                System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(1);
+                System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(0);
                 m_controller.CurrentClear(false);
                 foreach (ActivityTrail t in m_controller.CurrentActivityTrails)
                 {
                     t.AddInBoundResult(progressBar);
                 }
+                this.StopProgressBar();
                 m_page.RefreshData();
                 m_page.RefreshControlState();
-                this.StopProgressBar();
             }
         }
 

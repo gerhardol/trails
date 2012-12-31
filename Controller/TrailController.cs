@@ -218,8 +218,7 @@ namespace TrailsPlugin.Controller
                 //Trigger result calculation, a current trail is always calculated
                 if (progressBar != null)
                 {
-                    progressBar.Value = 0;
-                    progressBar.Maximum = this.m_activities.Count;
+                    progressBar.Maximum++;
                 }
                 to.CalcResults(progressBar);
             }
@@ -323,9 +322,14 @@ namespace TrailsPlugin.Controller
 
         public void ReCalcTrails(bool reCalc, System.Windows.Forms.ProgressBar progressBar)
         {
-            foreach (ActivityTrail at in m_CurrentOrderedTrails)
+            foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
             {
-                bool jumpProgress = true;
+                int val = 0;
+                if (progressBar != null)
+                {
+                    val = progressBar.Value;
+                }
+
                 if (at.IsInBounds)
                 {
 
@@ -335,12 +339,13 @@ namespace TrailsPlugin.Controller
                         at.Trail.IsAutoTryAll)
                     {
                         at.CalcResults(progressBar);
-                        jumpProgress = false;
                     }
-                }
-                if (jumpProgress && progressBar != null && progressBar.Value + this.m_activities.Count < progressBar.Maximum)
+                } 
+                
+                //Increase the progress, regardless if updated or not
+                if (progressBar != null && val < progressBar.Maximum)
                 {
-                    progressBar.Value += this.m_activities.Count;
+                    progressBar.Value = val + 1;
                 }
             }
             //Check that current trail is OK,

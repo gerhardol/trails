@@ -222,11 +222,6 @@ namespace TrailsPlugin.Data
         {
             CalcResults(progressBar);
             m_canAddInbound = false;
-            if (null != progressBar)
-            {
-                progressBar.Value = 0;
-                progressBar.Maximum = m_inBound.Count;
-            }
             foreach (IActivity activity in m_inBound)
             {
                 //No GPS check: Must have been done when adding to inbound list
@@ -234,11 +229,8 @@ namespace TrailsPlugin.Data
                 m_resultsListWrapper.Add(result);
                 //add children
                 result.getSplits();
-                if (null != progressBar)
-                {
-                    progressBar.Value++;
-                }
             }
+            //No progress update
         }
 
         public void CalcResults(System.Windows.Forms.ProgressBar progressBar)
@@ -259,25 +251,23 @@ namespace TrailsPlugin.Data
                 m_resultsListWrapper = new List<TrailResultWrapper>();
                 m_incompleteResults = new List<IncompleteTrailResult>();
 
-                if (null != progressBar && progressBar.Maximum < progressBar.Value + activities.Count)
-                {
-                    progressBar.Maximum = activities.Count + progressBar.Value;
-                }
-
                 //Calculation depends on TrailType
                 if (m_trail.TrailType == Trail.CalcType.HighScore)
                 {
                     if (Integration.HighScore.HighScoreIntegrationEnabled)
                     {
+                        //Save values modified by HighScore
+                        bool visible = false;
                         int HighScoreProgressVal = 0;
                         int HighScoreProgressMax = 0;
                         if (null != progressBar)
                         {
                             //Set by HighScore before 2.0.327
+                            visible = progressBar.Visible;
                             HighScoreProgressVal = progressBar.Value;
                             HighScoreProgressMax = progressBar.Maximum;
                         }
-                        IList<Integration.HighScore.HighScoreResult> hs = Integration.HighScore.GetHighScoreForActivity(activities, 10, progressBar);
+                        IList<Integration.HighScore.HighScoreResult> hs = Integration.HighScore.GetHighScoreForActivity(activities, 10, null/*progressBar*/);
                         if (hs != null && hs.Count > 0)
                         {
                             TrailResultWrapper parent = null;
@@ -295,8 +285,9 @@ namespace TrailsPlugin.Data
 
                         if (null != progressBar)
                         {
+                            progressBar.Visible = visible;
                             progressBar.Maximum = HighScoreProgressMax;
-                            progressBar.Value = HighScoreProgressVal + activities.Count;
+                            progressBar.Value = HighScoreProgressVal + 1;
                         }
                     }
                 }
@@ -376,11 +367,6 @@ namespace TrailsPlugin.Data
                                 m_resultsListWrapper.Add(result);
                             }
                         }
-                        
-                        if (null != progressBar && progressBar.Value < progressBar.Maximum)
-                        {
-                            progressBar.Value++;
-                        }
                     }
                     //Always set InBound count, used in some displays
                     m_noResCount[TrailOrderStatus.InBound] = m_inBound.Count;
@@ -394,6 +380,11 @@ namespace TrailsPlugin.Data
                     //Downgrade status from "speculative match"
                     m_status = TrailOrderStatus.InBound;
                 }
+            }
+
+            if (null != progressBar && progressBar.Value < progressBar.Maximum)
+            {
+                progressBar.Value++;
             }
         }
 

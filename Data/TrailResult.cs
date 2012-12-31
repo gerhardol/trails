@@ -70,7 +70,7 @@ namespace TrailsPlugin.Data
     public class TrailResult : ITrailResult, IComparable
     {
         #region private variables
-        private ActivityTrail m_activityTrail;
+        public ActivityTrail m_activityTrail;
         private IActivity m_activity;
         protected int m_order;
         private string m_name;

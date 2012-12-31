@@ -156,7 +156,7 @@ namespace TrailsPlugin.UI.Activity {
             foreach (string id in Data.Settings.ActivityPageColumns)
             {
                 int noResults = 1;
-                if (m_controller.CurrentActivityTrailIsDisplayed)
+                if (m_controller.CurrentActivityTrailIsSelected)
                 {
                     noResults = m_controller.CurrentResultTreeList.Count;
                 }
@@ -188,7 +188,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshList()
         {
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
                 RefreshColumns();
 
@@ -287,12 +287,13 @@ namespace TrailsPlugin.UI.Activity {
                             TrailResultWrapper.ParentResults(getTrailResultWrapperSelection(m_prevSelectedItems)));
                         if (null == setValue || setValue.Count == 0)
                         {
-                            //TBD get same activity
-                            if (m_controller.ReferenceTrailResult != null && m_controller.ReferenceTrailResult.Activity != null)
+                            //get a result for the reference activity
+                            if (m_controller.ReferenceActivity != null &&
+                                this.summaryList.RowData != null)
                             {
                                 foreach (TrailResultWrapper tr in (IList<TrailResultWrapper>)this.summaryList.RowData)
                                 {
-                                    if (m_controller.ReferenceTrailResult.Activity.Equals(tr.Result.Activity))
+                                    if (m_controller.ReferenceActivity.Equals(tr.Result.Activity))
                                     {
                                         setValue = new List<TrailResultWrapper> { tr };
                                         break;
@@ -301,6 +302,7 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             if (setValue == null && m_controller.CurrentResultTreeList.Count > 0)
                             {
+                                //Still no match, use first in list
                                 setValue = new List<TrailResultWrapper> { m_controller.CurrentResultTreeList[0] };
                             }
                         }
@@ -400,7 +402,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void summaryList_Sort()
         {
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
                 IList<TrailResultWrapper> atr = m_controller.CurrentResultTreeList;
                 ((List<TrailResultWrapper>)(atr)).Sort();
@@ -497,7 +499,7 @@ namespace TrailsPlugin.UI.Activity {
                     isChange = true;
                 }
                 //If a single index is selected, let the reference follow the current result
-                if (isSingleIndex)
+                if (isSingleIndex && this.m_controller.ReferenceTrailResult != null)
                 {
                     if (this.m_controller.ReferenceTrailResult.Order != lastSplitIndex)
                     {
@@ -558,7 +560,11 @@ namespace TrailsPlugin.UI.Activity {
                 m_controller.CurrentResultTreeList.Count > 0)
             {
                 IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
-                m_controller.CurrentActivityTrail.Remove(atr, invertSelection);
+                foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
+                {
+                    //Note: If more than one selected, will try to match all
+                    at.Remove(atr, invertSelection);
+                }
                 m_page.RefreshData();
                 m_page.RefreshControlState();
             }
@@ -567,7 +573,7 @@ namespace TrailsPlugin.UI.Activity {
         void selectAll()
         {
             System.Collections.IList all = new List<TrailResultWrapper>();
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
                 foreach (TrailResultWrapper t in m_controller.CurrentResultTreeList)
                 {
@@ -597,7 +603,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void selectWithUR()
         {
-            if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled)
+            if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled && m_controller.ReferenceActivity != null)
             {
                 try
                 {
@@ -640,7 +646,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void markCommonStretches()
         {
-            if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled)
+            if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled && m_controller.ReferenceActivity != null)
             {
                 IList<IActivity> activities = new List<IActivity>();
                 foreach (TrailResultWrapper t in SelectedItemsWrapper)
@@ -846,7 +852,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Always assume change
                 isChange = true;
             }
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
                 this.SetSummary(this.SelectedItemsWrapper);
                 TrailResultWrapper t = this.GetSummary();
@@ -1069,7 +1075,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            if (tr == null && m_controller.CurrentActivityTrailIsDisplayed)
+            if (tr == null && m_controller.CurrentActivityTrailIsSelected)
             {
                 tr = this.GetSummary().Result;
             }
@@ -1265,7 +1271,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
-                m_controller.Reset(false);
+                m_controller.Reset();
 
                 if (e.Modifiers != Keys.Shift)
                 {
@@ -1274,8 +1280,8 @@ namespace TrailsPlugin.UI.Activity {
                 else
                 {
                     System.Windows.Forms.ProgressBar progressBar = StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
-                    //Test trail detection - not documented
-                    IList<ActivityTrail> temp = m_controller.GetOrderedTrails(progressBar, true);
+                    //Test trail calculation time - not documented
+                    m_controller.ReCalcTrails(true, progressBar);
                     StopProgressBar();
                 }
             }
@@ -1426,9 +1432,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.referenceResultMenuItem.Enabled = true;
             }
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
-                this.addInBoundActivitiesMenuItem.Enabled = m_controller.CurrentActivityTrail.CanAddInbound;
+                this.addInBoundActivitiesMenuItem.Enabled = false;
+                foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
+                {
+                    this.addInBoundActivitiesMenuItem.Enabled |= at.CanAddInbound;
+                }
             }
             if (tr == null || tr.Activity == null)
             {
@@ -1549,11 +1559,11 @@ namespace TrailsPlugin.UI.Activity {
 
         void addInBoundActivitiesMenuItem_Click(object sender, System.EventArgs e)
         {
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
                 System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(1);
                 m_controller.CurrentClear(false);
-                foreach (ActivityTrail t in m_controller.CurrentActivityTrail_Multi)
+                foreach (ActivityTrail t in m_controller.CurrentActivityTrails)
                 {
                     t.AddInBoundResult(progressBar);
                 }
@@ -1579,10 +1589,14 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             try
             {
-                System.Windows.Forms.ProgressBar progressBar = StartProgressBar(1);
-                IList<IActivity> similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
-                    m_controller.ReferenceActivity, m_controller.Activities, progressBar);
-                StopProgressBar();
+                IList<IActivity> similarActivities = null;
+                if (m_controller.ReferenceActivity != null)
+                {
+                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(1);
+                    similarActivities = UniqueRoutes.GetUniqueRoutesForActivity(
+                        m_controller.ReferenceActivity, m_controller.Activities, progressBar);
+                    StopProgressBar();
+                }
                 if (similarActivities != null)
                 {
                     IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };

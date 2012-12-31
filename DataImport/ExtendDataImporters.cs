@@ -49,8 +49,9 @@ namespace TrailsPlugin.DataImport
                     if (TrailsPlugin.Data.Settings.SetNameAtImport &&
                         string.IsNullOrEmpty(activity.Name))
                     {
-                        m_controller.Activities = new List<IActivity> { activity };
-                        foreach (ActivityTrail at in m_controller.OrderedTrails)
+                        //Do not keep selection, sort find best
+                        m_controller.SetActivities(new List<IActivity> { activity }, false);
+                        foreach (ActivityTrail at in m_controller.OrderedTrails())
                         {
                             if (at.Status <= TrailOrderStatus.MatchPartial &&
                                 !at.Trail.Generated)

@@ -58,7 +58,7 @@ namespace TrailsPlugin.UI.Activity {
 
             InitializeComponent();
 
-            if (!Controller.TrailController.Instance.CurrentActivityTrailIsDisplayed)
+            if (!Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
                 m_addMode = true;
             }
@@ -70,7 +70,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                m_TrailToEdit = Controller.TrailController.Instance.CurrentActivityTrail.Trail;
+                m_TrailToEdit = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail;
                 this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
                 if (m_TrailToEdit.Generated)
                 {
@@ -104,6 +104,11 @@ namespace TrailsPlugin.UI.Activity {
             m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
 #endif
             m_trailResult = tr;
+            //It is possible that the trail result is not for the trail to edit (if more than one is selected)
+            if (tr != null && tr.m_activityTrail.Trail != Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail)
+            {
+                m_trailResult = null;
+            }
 
             ThemeChanged(visualTheme);
             UICultureChanged(culture);
@@ -231,7 +236,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        at.Reset();
+                        at.Init();
                         at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true, null);
                         if (TrailResultWrapper.ParentResults(at.ResultTreeList).Count > 0)
                         {
@@ -268,7 +273,7 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    at.Reset();
+                    at.Init();
                 }
             }
             EList.RowData = EditTrailRow.getEditTrailRows(m_TrailToEdit.TrailLocations, m_trailResult);
@@ -303,8 +308,8 @@ namespace TrailsPlugin.UI.Activity {
                 MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
                 return;
             }
-            if (m_addMode && !Controller.TrailController.Instance.AddTrail(m_TrailToEdit) ||
-                !m_addMode && !Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit))
+            if (m_addMode && !Controller.TrailController.Instance.AddTrail(m_TrailToEdit, null) ||
+                !m_addMode && !Controller.TrailController.Instance.UpdateTrail(m_TrailToEdit, null))
             {
                 MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UpdateFailed);
                 return;

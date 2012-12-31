@@ -143,10 +143,10 @@ namespace TrailsPlugin.UI.Activity
             enabled = (m_editTrail == null);//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
 
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
-                TrailName.Text = m_controller.CurrentActivityTrail.Trail.Name;
-                if (m_controller.CurrentActivityTrail_Multi.Count > 1)
+                TrailName.Text = m_controller.PrimaryCurrentActivityTrail.Trail.Name;
+                if (m_controller.CurrentActivityTrails.Count > 1)
                 {
                     TrailName.Text += " (*)";
                 }
@@ -156,7 +156,7 @@ namespace TrailsPlugin.UI.Activity
             {
                 TrailName.Text = Properties.Resources.Trail_NoTrailSelected;
             }
-            enabled = enabled && ((!m_controller.CurrentActivityTrailIsDisplayed) || !m_controller.CurrentActivityTrail.Trail.Generated);
+            enabled = enabled && ((!m_controller.CurrentActivityTrailIsSelected) || !m_controller.PrimaryCurrentActivityTrail.Trail.Generated);
             btnDelete.Enabled = enabled;
         }
 
@@ -182,8 +182,8 @@ namespace TrailsPlugin.UI.Activity
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
             }
-            else if ((m_editTrail == null) && this.m_controller.CurrentActivityTrailIsDisplayed &&
-               this.m_controller.CurrentActivityTrail.Trail.Generated)
+            else if ((m_editTrail == null) && this.m_controller.CurrentActivityTrailIsSelected &&
+               this.m_controller.PrimaryCurrentActivityTrail.Trail.Generated)
             {
                 //Just for convenience (the popup text next contradicts this currently)
                 btnEdit_Click(sender, e);
@@ -222,8 +222,8 @@ namespace TrailsPlugin.UI.Activity
 #endif
 
             if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) &&
-                m_controller.CurrentActivityTrailIsDisplayed &&
-                !m_controller.CurrentActivityTrail.Trail.Generated &&
+                m_controller.CurrentActivityTrailIsSelected &&
+                !m_controller.PrimaryCurrentActivityTrail.Trail.Generated &&
                 //Change: never replace points when editing trails
                 false)
             {
@@ -262,8 +262,8 @@ namespace TrailsPlugin.UI.Activity
 
 		private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (m_controller.CurrentActivityTrailIsDisplayed &&
-                MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.CurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
+            if (m_controller.CurrentActivityTrailIsSelected &&
+                MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
                 == DialogResult.Yes)
             {
 				m_controller.DeleteCurrentTrail();
@@ -369,7 +369,7 @@ namespace TrailsPlugin.UI.Activity
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             bool addCurrent = false;
-            if (m_controller.CurrentActivityTrailIsDisplayed && !m_controller.CurrentActivityTrail.Trail.Generated)
+            if (m_controller.CurrentActivityTrailIsSelected && !m_controller.PrimaryCurrentActivityTrail.Trail.Generated)
             {
                 if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
                     "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -378,7 +378,7 @@ namespace TrailsPlugin.UI.Activity
                 }
             }
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_view, m_layer, !addCurrent, m_controller.ReferenceTrailResult);
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
                 if (addCurrent)
                 {
@@ -445,16 +445,17 @@ namespace TrailsPlugin.UI.Activity
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
-            treeListPopup.Tree.RowData = m_controller.GetOrderedTrails(progressBar, false);
+            //Get the list of ordered activity trails, without forcing calculation
+            treeListPopup.Tree.RowData = m_controller.OrderedTrails();
             m_page.StopProgressBar();
             //Note: Just checking for current trail could modify the ordered list, so do this first
             System.Collections.IList currSel = null;
-            if (m_controller.CurrentActivityTrailIsDisplayed)
+            if (m_controller.CurrentActivityTrailIsSelected)
             {
-                currSel = new object[m_controller.CurrentActivityTrail_Multi.Count];
-                for (int i = 0; i < m_controller.CurrentActivityTrail_Multi.Count; i++)
+                currSel = new object[m_controller.CurrentActivityTrails.Count];
+                for (int i = 0; i < m_controller.CurrentActivityTrails.Count; i++)
                 {
-                    currSel[i] = m_controller.CurrentActivityTrail_Multi[i];
+                    currSel[i] = m_controller.CurrentActivityTrails[i];
                 }
             }
 #if ST_2_1
@@ -473,22 +474,34 @@ namespace TrailsPlugin.UI.Activity
         }
 
         /*******************************************************/
-		private void TrailName_ItemSelected(object sender, EventArgs e)
+        private void TrailName_ItemSelected(object sender, EventArgs e)
         {
-            ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
-            if(sender is TreeListPopup)
+            if (sender is TreeListPopup)
             {
                 ((TreeListPopup)sender).Hide();
             }
+
+            IList <ActivityTrail> ats = new List<ActivityTrail>();
+            if (m_selectTrailAddMode)
+            {
+                //Handle all the existing as selected too
+                foreach (ActivityTrail at in this.m_controller.CurrentActivityTrails)
+                {
+                    ats.Add(at);
+                }
+            }
+            ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
+            ats.Add(t);
+
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
-            m_controller.SetCurrentActivityTrail(t, m_selectTrailAddMode, progressBar);
+            m_controller.SetCurrentActivityTrail(ats, true, progressBar);
             m_page.StopProgressBar();
             m_page.RefreshData();
             m_page.RefreshControlState();
 
-           GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3*t.Trail.Radius);
+            GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3 * t.Trail.Radius);
             m_layer.SetLocation(area);
-		}
+        }
 
         private void TrailSelectorPanel_SizeChanged(object sender, EventArgs e) {
 			// autosize column doesn't seem to be working.

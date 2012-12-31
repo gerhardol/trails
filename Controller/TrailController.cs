@@ -36,22 +36,34 @@ namespace TrailsPlugin.Controller
 				if (m_instance == null)
                 {
 					m_instance = new TrailController();
-				}
+                }
 				return m_instance;
 			}
 		}
 
-		private TrailController()
-        {
-		}
-			 
         private IList<IActivity> m_activities = new List<IActivity>();
         private IList<ActivityTrail> m_currentActivityTrails = new List<ActivityTrail>();
-        private IList<Guid> m_lastTrailIds = new List<Guid>();
+        private IList<ActivityTrail> m_prevSelectedTrails = new List<ActivityTrail>();
+        private IList<ActivityTrail> m_prevActivityTrails = new List<ActivityTrail>();
+        
         private TrailResult m_referenceTrailResult = null;
-        private TrailResult m_lastReferenceTrailResult = null;
         private IActivity m_referenceActivity = null;
-        private IList<ActivityTrail> m_CurrentOrderedTrails = null;
+
+        private IList<ActivityTrail> m_CurrentOrderedTrails = new List<ActivityTrail>();
+        private ActivityTrail m_referenceActivityTrail;
+
+        private TrailController()
+        {
+            foreach (Trail trail in TrailData.AllTrails.Values)
+            {
+                ActivityTrail to = new ActivityTrail(this, trail);
+                this.m_CurrentOrderedTrails.Add(to);
+                if (trail.IsReference)
+                {
+                    this.m_referenceActivityTrail = to;
+                }
+            }
+        }
 
         //Update activities, should keep trail and reference
         public IList<IActivity> Activities
@@ -62,100 +74,76 @@ namespace TrailsPlugin.Controller
             }
             set
             {
-                this.ActivitiesNoAuto = value;
-                //TBD: Need to check trail and reference?
+                this.SetActivities(value, true, null);
             }
         }
 
         //Set activities, do not force calculation
-        public IList<IActivity> ActivitiesNoAuto
+        public void SetActivities(IList<IActivity> activities, bool keepSelectedTrail)
         {
-            set
+            SetActivities(activities, keepSelectedTrail, null);
+        }
+
+        public void SetActivities(IList<IActivity> activities, bool keepSelectedTrail, System.Windows.Forms.ProgressBar progressBar)
+        {
+            if (this.m_activities != activities)
             {
-                if (this.m_activities != value)
+                //Selection cannot be kept if reference activity cannot be kept
+                //keepSelectedTrail &= (this.m_referenceActivity == null) || (activities.Contains(this.m_referenceActivity));
+
+                if (activities == null || activities.Count == 1 && activities[0] == null)
                 {
-                    if (value == null || value.Count == 1 && value[0] == null)
-                    {
-                        this.m_activities.Clear();
-                    }
-                    else
-                    {
-                        this.m_activities = value;
-                    }
-                    this.Reset(true);
+                    this.m_activities.Clear();
                 }
+                else
+                {
+                    this.m_activities = activities;
+                }
+
+                if (!keepSelectedTrail)
+                {
+                    this.m_currentActivityTrails.Clear();
+                }
+                this.Reset();
+                //Make sure reference activity is 'reasonable' in case the reference trail is selected
+                this.checkReferenceActivity(progressBar);
+
+                //Calculate trails - at least InBounds, set aprpriate ActivityTrail
+                this.ReCalcTrails(false, progressBar);
             }
         }
 
         //Reset calculations, without changing selected activities
-        public void Reset(bool all)
+        public void Reset()
         {
-            if (m_CurrentOrderedTrails != null)
+            TrailResult.Reset();
+            foreach (ActivityTrail at in m_CurrentOrderedTrails)
             {
-                for (int i = 0; i < m_CurrentOrderedTrails.Count; i++)
-                {
-                    m_CurrentOrderedTrails[i].Reset();
-                }
-            }
-            m_CurrentOrderedTrails = null;
-            m_lastTrailIds.Clear();
-            foreach(ActivityTrail at in this.CurrentActivityTrail_Multi)
-            {
-                m_lastTrailIds.Add(at.Trail.Id);
-            }
-
-            if (all)
-            {
-                this.m_currentActivityTrails.Clear();
-                this.m_lastReferenceTrailResult = this.m_referenceTrailResult;
-                m_referenceActivity = null;
+                at.Init();
             }
         }
 
         //Used when no calculation is forced, ie displaying
-        public bool CurrentActivityTrailIsDisplayed
+        public bool CurrentActivityTrailIsSelected
         {
             get
             {
-                if (CurrentActivityTrail != null)
-                {
-                    //Avoid setting if there are "too many" activities
-                    //as this triggers building the result list, which can take a while to build
-                    if (m_currentActivityTrails[0].IsNoCalc)
-                    {
-                        return false;
-                    }
-                }
-                return m_currentActivityTrails.Count > 0;
+                return this.m_currentActivityTrails.Count > 0;
             }
         }
 
-        public IList<ActivityTrail> CurrentActivityTrail_Multi
+        public IList<ActivityTrail> CurrentActivityTrails
         {
             get
             {
-                if (CurrentActivityTrail != null)
-                {
-                    //Avoid setting if there are "too many" activities
-                    //as this triggers building the result list, which can take a while to build
-                    if (m_currentActivityTrails[0].IsNoCalc)
-                    {
-                        //TBD return null;
-                    }
-                }
                 return m_currentActivityTrails;
             }
         }
 
-        public ActivityTrail CurrentActivityTrail
+        public ActivityTrail PrimaryCurrentActivityTrail
         {
-            set
-            {
-                SetCurrentActivityTrail(value, false, null);
-            }
             get
             {
-                checkCurrentTrailOrdered(true);
                 if (m_currentActivityTrails.Count == 0)
                 {
                     return null;
@@ -167,28 +155,12 @@ namespace TrailsPlugin.Controller
             }
         }
 
-        private Trail CurrentTrail
-        {
-            get
-            {
-                checkCurrentTrailOrdered(true);
-                if (m_currentActivityTrails.Count == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return m_currentActivityTrails[0].Trail;
-                }
-            }
-        }
-
         public IList<TrailResultWrapper> CurrentResultTreeList
         {
             get
             {
                 IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
-                foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
+                foreach (ActivityTrail at in this.CurrentActivityTrails)
                 {
                     foreach (TrailResultWrapper tw in at.ResultTreeList)
                     {
@@ -203,7 +175,7 @@ namespace TrailsPlugin.Controller
         private TrailOrderStatus CurrentStatus()
         {
             TrailOrderStatus result = TrailOrderStatus.NoInfo;
-            foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
+            foreach (ActivityTrail at in this.CurrentActivityTrails)
             {
                 if (at.Status < result)
                 {
@@ -213,141 +185,193 @@ namespace TrailsPlugin.Controller
             return result;
         }
 
-        private void CurrentCalcResults()
+        private void SetCurrentActivityTrail(ActivityTrail activityTrail, bool manuallySet, System.Windows.Forms.ProgressBar progressBar)
         {
-            foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
-            {
-                at.CalcResults();
-            }
+            SetCurrentActivityTrail(new List <ActivityTrail>{activityTrail}, manuallySet, progressBar);
         }
 
-        public void SetCurrentActivityTrail(ActivityTrail value, bool addMode, System.Windows.Forms.ProgressBar progressBar)
+        public void SetCurrentActivityTrail(IList<ActivityTrail> activityTrails, bool manuallySet, System.Windows.Forms.ProgressBar progressBar)
         {
-            if (!addMode)
+            //Create a copy of the trails to set - could be the lists cleared
+            IList<ActivityTrail> activityTrails2 = new List<ActivityTrail>();
+            foreach (ActivityTrail to in activityTrails)
             {
-                m_currentActivityTrails.Clear();
+                activityTrails2.Add(to);
             }
 
-            foreach (ActivityTrail to in GetOrderedTrails(progressBar, false))
+            this.m_currentActivityTrails.Clear();
+            this.m_prevActivityTrails.Clear();
+            if (manuallySet)
             {
-                if (to.Trail != null && to.Trail.Id == value.Trail.Id)
+                this.m_prevSelectedTrails.Clear();
+            }
+
+            foreach (ActivityTrail to in activityTrails2)
+            {
+                this.m_currentActivityTrails.Add(to);
+                if (!to.Trail.Generated)
                 {
-                    m_currentActivityTrails.Add(to);
-                    //Trigger result recalculation if needed
-                    if (progressBar != null)
-                    {
-                        progressBar.Value = 0;
-                        progressBar.Maximum = this.m_activities.Count;
-                    }
-                    to.CalcResults(progressBar);
-                    break;
+                    this.m_prevActivityTrails.Add(to);
                 }
+                if (manuallySet)
+                {
+                    this.m_prevSelectedTrails.Add(to);
+                }
+
+                //Trigger result calculation, a current trail is always calculated
+                if (progressBar != null)
+                {
+                    progressBar.Value = 0;
+                    progressBar.Maximum = this.m_activities.Count;
+                }
+                to.CalcResults(progressBar);
             }
+
+            //Reference may have been changed
+            this.checkReferenceTrailResult(progressBar);
         }
 
-        private void checkCurrentTrailOrdered(bool checkRef)
+        private void CheckSetCurrentTrail(System.Windows.Forms.ProgressBar progressBar)
         {
             if (this.m_activities.Count > 0)
             {
-                if (m_currentActivityTrails.Count == 0 && m_activities.Count > 0)
+                if (this.m_currentActivityTrails.Count == 0)
                 {
-                    //If last used trail had results, use it
-                    foreach (Guid g in m_lastTrailIds)
+                    //If last selected trail still has results, use all the trails
+                    bool useSelected = false;
+                    foreach (ActivityTrail to in this.m_prevSelectedTrails)
                     {
-                        foreach (ActivityTrail to in OrderedTrails)
+                        if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
+                            to.IsNoCalc)
                         {
-                            //Avoid switch automatically to Reference, as this is the first in list and often to selected and then will stick
-                            //If Splits or HighScore is selected, follow it
-                            if (g == to.Trail.Id && !to.Trail.IsReference)
+                            //Try to get a better status, this is the trail the user wants
+                            to.CalcResults(progressBar);
+                        }
+                        //Assume fine if match also is not calculated
+                        if (to.Status <= TrailOrderStatus.MatchPartial)
+                        {
+                            useSelected = true;
+                        }
+                        break;
+                    }
+                    if (useSelected)
+                    {
+                        this.SetCurrentActivityTrail(this.m_prevSelectedTrails, false, progressBar);
+                    }
+                }
+
+                //Try last auto selected (that should not be generated)
+                if (this.m_currentActivityTrails.Count == 0)
+                {
+                    bool usePrev = false;
+                    foreach (ActivityTrail at in this.m_prevActivityTrails)
+                    {
+                        if (at.Status <= TrailOrderStatus.MatchPartial)
+                        {
+                            usePrev = true;
+                            break;
+                        }
+                    }
+                    if (usePrev)
+                    {
+                        this.SetCurrentActivityTrail(this.m_prevActivityTrails, false, progressBar);
+                    }
+                }
+
+                //Try matching name for reference activity
+                if (this.m_currentActivityTrails.Count == 0)
+                {
+                    if (this.m_referenceActivity != null &&
+                       !string.IsNullOrEmpty(m_referenceActivity.Name))
+                    {
+                        //Prev does not match, try matching names
+                        foreach (ActivityTrail to in this.OrderedTrails())
+                        {
+                            if (to.Trail.Name.StartsWith(this.m_referenceActivity.Name))
                             {
-                                if (to.Status <= TrailOrderStatus.InBoundMatchPartial)
+                                if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
+                                    to.IsNoCalc)
                                 {
-                                    //m_currentActivityTrails is empty, no need to check m_lastTrailIds.count > 1
-                                    this.SetCurrentActivityTrail(to, true, null);
+                                    //Try to get a better status, for a few trails
+                                    to.CalcResults(progressBar);
                                 }
+                                if (to.Status <= TrailOrderStatus.MatchPartial)
+                                {
+                                    this.SetCurrentActivityTrail(to, false, progressBar);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (this.m_currentActivityTrails.Count == 0)
+                {
+                    //Try to get the best match from non-auto trails
+                    //The ordered list should be basically sorted, so the best candidates should be first
+                    int recalc = 3;
+                    foreach (ActivityTrail to in this.OrderedTrails())
+                    {
+                        if (to.Status != TrailOrderStatus.MatchNoCalc)
+                        {
+                            if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
+                                to.IsNoCalc && recalc-- > 0)
+                            {
+                                //Try to get a better status, for a few trails
+                                to.CalcResults(progressBar);
+                            }
+                            if (to.Status <= TrailOrderStatus.MatchPartial)
+                            {
+                                this.SetCurrentActivityTrail(to, false, progressBar);
                                 break;
                             }
                         }
                     }
                 }
 
-                if (m_currentActivityTrails.Count == 0 &&
-                    OrderedTrails.Count > 0)
+                //Last resort, use Reference Activity
+                if (this.m_currentActivityTrails.Count == 0)
                 {
-                    if (checkRef)
+                    if (this.m_referenceActivityTrail.Status <= TrailOrderStatus.MatchPartial)
                     {
-                        checkReferenceActivity(false);
-                    }
-                    if (m_referenceActivity != null &&
-                        m_referenceActivity.Name != "")
-                    {
-                        //Try matching names
-                        foreach (ActivityTrail to in OrderedTrails)
-                        {
-                            if (to.Trail.Name == m_referenceActivity.Name)
-                            {
-                                if (to.IsInBounds)
-                                {
-                                    this.SetCurrentActivityTrail(to, false, null);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (m_currentActivityTrails.Count == 0 &&
-                    OrderedTrails.Count > 0)
-                {
-                    //The ordered list should have the best match first
-                    //(but results may not be calculated)
-                    this.SetCurrentActivityTrail(OrderedTrails[0], false, null);
-                }
-
-                //Reset Ref trail
-                foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
-                {
-                    if (at.Trail.IsReference &&
-                        m_referenceActivity != at.Trail.ReferenceActivityNoCalc)
-                    {
-                        at.Trail.ReferenceActivityNoCalc = null;
-                    }
-                }
-
-
-                foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
-                {
-                    //Precalculate results if not too heavy
-                    //Ref trail may require recalc, only recalc when requested
-                    if ((checkRef || !at.Trail.IsReference) &&
-                        this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
-                        at.Status >= TrailOrderStatus.MatchNoCalc)
-                    {
-                        at.CalcResults();
+                        this.SetCurrentActivityTrail(this.m_referenceActivityTrail, false, progressBar);
                     }
                 }
             }
         }
 
-        //The reference activity is normally related to the result
+        public void ReCalcTrails(bool reCalc, System.Windows.Forms.ProgressBar progressBar)
+        {
+            foreach (ActivityTrail at in m_CurrentOrderedTrails)
+            {
+                at.Init();
+                bool jumpProgress = true;
+                if (at.IsInBounds)
+                {
+
+                    if (reCalc ||
+                        this.m_activities.Count * TrailData.AllTrails.Values.Count <=
+                            Settings.MaxAutoCalcActivitiesTrails &&
+                        at.Trail.IsAutoTryAll)
+                    {
+                        at.CalcResults(progressBar);
+                        jumpProgress = false;
+                    }
+                }
+                if (jumpProgress && progressBar != null && progressBar.Value + this.m_activities.Count < progressBar.Maximum)
+                {
+                    progressBar.Value += this.m_activities.Count;
+                }
+            }
+            CheckSetCurrentTrail(progressBar);
+        }
+
         public IActivity ReferenceActivity
         {
-            //No special setter, same as result
+            //No special set, implicitly from switching activity or setting result
             get
             {
-                return checkReferenceActivity(true);
-            }
-        }
-
-        public TrailResult ReferenceTrailResultNoChecks
-        {
-            get
-            {
-                if (m_referenceTrailResult == null)
-                {
-                    return this.ReferenceTrailResult;
-                }
-                return m_referenceTrailResult;
+                return this.m_referenceActivity;
             }
         }
 
@@ -356,105 +380,82 @@ namespace TrailsPlugin.Controller
             set
             {
                 m_referenceTrailResult = value;
-                if (value != null)
+                if (value != null && this.m_referenceActivity != value.Activity)
                 {
-                    m_referenceActivity = value.Activity;
+                    this.m_referenceActivityTrail.Init();
+                    this.m_referenceActivity = value.Activity;
+                    this.m_referenceActivityTrail.Trail.ReferenceActivity = this.m_referenceActivity;
                 }
             }
             get
             {
-                checkCurrentTrailOrdered(false);
-                if (m_currentActivityTrails.Count == 0)
-                {
-                    m_referenceTrailResult = null;
-                }
-                else
-                {
-                    checkReferenceTrailResult(true);
-                }
-                return m_referenceTrailResult;
+                return this.m_referenceTrailResult;
             }
         }
 
-        public IActivity checkReferenceActivity(bool checkRef)
+        //check that the reference result is reasonable
+        //Called after activities are updated, before trail is selected/calculated
+        private IActivity checkReferenceActivity(System.Windows.Forms.ProgressBar progressBar)
         {
-            //The ref trail follows the activities if possible, set from other info otherwise
-            if (m_referenceActivity == null)
+            IActivity prevRefActivity = this.m_referenceActivity;
+            bool moreChecks = true;
+
+            //Should always follow the trail result, if it exists
+            if (m_referenceTrailResult != null)
             {
-                if (this.m_lastReferenceTrailResult != null)
+                if (this.m_activities.Contains(this.m_referenceTrailResult.Activity))
                 {
-                    //Check if last activity is still valid
-                    foreach (IActivity activity in m_activities)
-                    {
-                        if (activity == m_lastReferenceTrailResult.Activity)
-                        {
-                            m_referenceActivity = m_lastReferenceTrailResult.Activity;
-                            break;
-                        }
-                    }
+                    m_referenceActivity = m_referenceTrailResult.Activity;
+                    moreChecks = false;
+                }
+                else
+                {
+                    //Old result, not possible
+                    m_referenceTrailResult = null;
                 }
             }
 
-            //If only one activity - use it
-            if (m_referenceActivity == null && m_activities.Count == 1)
+            //If no longer in activities, reset (if set from result or not does not matter)
+            if (moreChecks && m_referenceActivity != null)
             {
-                m_referenceActivity = m_activities[0];
-            }
-
-            if (m_referenceActivity == null)
-            {
-                if (checkRef)
+                if (!this.m_activities.Contains(this.m_referenceActivity))
                 {
-                    checkCurrentTrailOrdered(false);
-                }
-                foreach (ActivityTrail at in this.CurrentActivityTrail_Multi)
-                {
-                    if (!at.Trail.IsReference)
-                    {
-                        //If trail is not reference, try the reference result
-                        TrailResult tr = checkReferenceTrailResult(checkRef);
-                        if (tr != null)
-                        {
-                            m_referenceActivity = tr.Activity;
-                        }
-                    }
-                    else if ((checkRef || !at.Trail.IsReference) &&
-                        this.m_activities.Count > 0 &&
-                        null != at.Trail.ReferenceActivityNoCalc)
-                    {
-                        //If reference trail, set the ref from the trail
-                        foreach (IActivity activity in this.m_activities)
-                        {
-                            if (activity == at.Trail.ReferenceActivityNoCalc)
-                            {
-                                m_referenceActivity = activity;
-                            }
-                        }
-                    }
+                    this.m_referenceActivity = null;
                 }
             }
 
             //Last resort, use first activity
+            //This also covers the trivial situation with only one activity
             if (m_referenceActivity == null && this.m_activities.Count > 0)
             {
                 m_referenceActivity = this.m_activities[0];
             }
 
+            //ref activity possibly changed - reset calculations
+            if (this.m_referenceActivity != null && this.m_referenceActivity != prevRefActivity)
+            {
+                bool calculated = this.m_referenceActivityTrail.Status != TrailOrderStatus.MatchNoCalc;
+                this.m_referenceActivityTrail.Init();
+                this.m_referenceActivityTrail.Trail.ReferenceActivity = m_referenceActivity;
+                if (calculated)
+                {
+                    this.m_referenceActivityTrail.CalcResults(progressBar);
+                }
+            }
+
             return m_referenceActivity;
         }
 
-        private TrailResult checkReferenceTrailResult(bool checkRef)
+        private TrailResult checkReferenceTrailResult(System.Windows.Forms.ProgressBar progressBar)
         {
-            //TBD: Rewrite IsReference handling
             if (m_currentActivityTrails.Count > 0)
             {
-                //Check that the ref is for current result
-                if ((checkRef || !this.CurrentTrail.IsReference) &&
-                    this.CurrentStatus() <= TrailOrderStatus.MatchPartial)
+                //Check that the ref is for current calculation
+                if (this.CurrentStatus() <= TrailOrderStatus.MatchPartial)
                 {
                     if (m_referenceTrailResult != null)
                     {
-                        //Check if ref is in all results
+                        //Check if ref is in all results (may have changed, Contains() will not work)
                         IList<TrailResultWrapper> trs = TrailResultWrapper.SelectedItems(this.CurrentResultTreeList,
                         new List<TrailResult> { m_referenceTrailResult });
                         if (trs.Count > 0)
@@ -466,159 +467,80 @@ namespace TrailsPlugin.Controller
                             m_referenceTrailResult = null;
                         }
                     }
-                    //Use last as backup
-                    if (m_referenceTrailResult == null && this.m_lastReferenceTrailResult != null)
-                    {
-                        IList<TrailResultWrapper> trs = TrailResultWrapper.SelectedItems(this.CurrentResultTreeList,
-                        new List<TrailResult> { this.m_lastReferenceTrailResult });
-                        if (trs.Count > 0)
-                        {
-                            m_referenceTrailResult = trs[0].Result;
-                        }
-
-                    }
                 }
 
-                //check that the ref is for current results
-                //if (m_referenceTrailResult != null && this.CurrentStatus() == TrailOrderStatus.Match)
-                //{
-                //    //Calculation may be redone - Contains() will not match
-                //    TrailResult newRef = null;
-                //    foreach (TrailResult tr in TrailResultWrapper.AllResults(this.CurrentResultTreeList))
-                //    {
-                //        if (m_referenceTrailResult.CompareTo(tr) == 0)
-                //        {
-                //            newRef = tr;
-                //            break;
-                //        }
-                //        //Try last ref as second option
-                //        if (this.m_lastReferenceTrailResult != null && m_lastReferenceTrailResult.CompareTo(tr) == 0)
-                //        {
-                //            newRef = tr;
-                //        }
-                //    }
-                //    m_referenceTrailResult = newRef;
-                //}
-
-                //If the reference result is not set, try a result for current activity
-                if (m_referenceTrailResult == null &&
-                    m_referenceActivity != null &&
-                    (checkRef || !this.CurrentTrail.IsReference) &&
+                //If the reference result is not set, try a result for current reference activity,
+                // secondly the first result
+                //No forced calculations, should already be done
+                if (this.m_referenceTrailResult == null &&
+                    this.m_referenceActivity != null &&
                     this.CurrentStatus() <= TrailOrderStatus.MatchPartial)
                 {
+                    TrailResult firstResult = null;
+
                     foreach (TrailResult tr in TrailResultWrapper.ParentResults(this.CurrentResultTreeList))
                     {
-                        if (tr.Activity.Equals(m_referenceActivity))
+                        if (firstResult == null)
                         {
-                            m_referenceTrailResult = tr;
+                            firstResult = tr;
+                        }
+                        if (this.m_referenceActivity.Equals(tr.Activity))
+                        {
+                            this.m_referenceTrailResult = tr;
                             break;
                         }
                     }
-                }
-
-                if (m_referenceTrailResult == null &&
-                    (checkRef || !this.CurrentTrail.IsReference) &&
-                    this.CurrentStatus() >= TrailOrderStatus.MatchNoCalc)
-                {
-                    this.CurrentCalcResults();
-                }
-                if (m_referenceTrailResult == null &&
-                    (checkRef || !this.CurrentTrail.IsReference) &&
-                    this.CurrentStatus() <= TrailOrderStatus.MatchPartial &&
-                    TrailResultWrapper.ParentResults(this.CurrentResultTreeList).Count > 0)
-                {
-                    m_referenceTrailResult = TrailResultWrapper.ParentResults(this.CurrentResultTreeList)[0];
+                    if (this.m_referenceTrailResult == null && firstResult != null)
+                    {
+                        this.m_referenceTrailResult = firstResult;
+                    }
                 }
             }
+
+            //Reference activity may have to be updated
+            checkReferenceActivity(progressBar);
+
             return m_referenceTrailResult;
         }
 
-        public IList<ActivityTrail> GetOrderedTrails(System.Windows.Forms.ProgressBar progressBar, bool force)
+        public IList<ActivityTrail> OrderedTrails()
         {
-            if (m_CurrentOrderedTrails == null)
-            {
-                getTrails(progressBar, force);
-            }
+            //Trail may be calculated in various situations, also when getting results,
+            //It is therefore easier to keep resort here
             ((List<ActivityTrail>)m_CurrentOrderedTrails).Sort();
             return m_CurrentOrderedTrails;
         }
 
-        public IList<ActivityTrail> OrderedTrails
-        {
-            get
-            {
-                return GetOrderedTrails(null, false);
-            }
-        }
-
-        private void getTrails(System.Windows.Forms.ProgressBar progressBar, bool force)
-        {
-            TrailResult.Reset();
-
-            m_CurrentOrderedTrails = new List<ActivityTrail>();
-            foreach (Trail trail in TrailData.AllTrails.Values)
-            {
-                ActivityTrail to = new ActivityTrail(this, trail);
-                if (to.IsInBounds)
-                {
-                    if (to.Status != TrailOrderStatus.MatchNoCalc &&
-                        (force ||
-                        this.m_activities.Count * TrailData.AllTrails.Values.Count <=
-                        Settings.MaxAutoCalcActivitiesTrails) &&
-                        trail.IsAutoTryAll)
-                    {
-                        to.CalcResults(progressBar);
-                    }
-                    else if (progressBar != null)
-                    {
-                        progressBar.Value += this.m_activities.Count;
-                    }
-                }
-                else if (progressBar != null)
-                {
-                    progressBar.Value += this.m_activities.Count;
-                }
-                m_CurrentOrderedTrails.Add(to);
-            }
-        }
-
         public void Clear()
         {
-            if (m_CurrentOrderedTrails != null)
+            foreach (ActivityTrail at in m_CurrentOrderedTrails)
             {
-                foreach (ActivityTrail t in m_CurrentOrderedTrails)
-                {
-                    t.Clear(false);
-                }
+                at.Clear(false);
             }
             //If the reference is no longer available, reset it when checking ref when using it
         }
 
         public void CurrentClear(bool onlyDisplay)
         {
-            foreach (ActivityTrail t in this.CurrentActivityTrail_Multi)
+            foreach (ActivityTrail t in this.CurrentActivityTrails)
             {
                 t.Clear(onlyDisplay);
             }
         }
 
-        private void NewTrail(Trail trail)
+        private void NewTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
-            ActivityTrail t = new ActivityTrail(this, trail);
-            this.SetCurrentActivityTrail(t, false, null);
-            this.CurrentCalcResults();
-            if (m_CurrentOrderedTrails == null)
-            {
-                getTrails(null, false);
-            }
-            m_CurrentOrderedTrails.Add(t);
+            ActivityTrail at = new ActivityTrail(this, trail);
+            this.m_CurrentOrderedTrails.Add(at);
+
+            this.SetCurrentActivityTrail(at, true, progressBar);
         }
 
-        public bool AddTrail(Trail trail)
+        public bool AddTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
             if (TrailData.InsertTrail(trail))
             {
-                NewTrail(trail);
+                NewTrail(trail, progressBar);
                 return true;
 			} 
             else
@@ -627,16 +549,19 @@ namespace TrailsPlugin.Controller
 			}
 		}
 
-		public bool UpdateTrail(Trail trail)
+        public bool UpdateTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
             if (TrailData.UpdateTrail(trail))
             {
-                //Assume the primary trail was edited
-                if (m_currentActivityTrails.Count > 0)
+                foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
                 {
-                    m_CurrentOrderedTrails.Remove(m_currentActivityTrails[0]);
+                    //Explicitly set - no checks for no of activities
+                    if (at.Trail == trail)
+                    {
+                        at.Init();
+                        at.CalcResults(progressBar);
+                    }
                 }
-                NewTrail(trail);
                 return true;
             }
             else
@@ -647,19 +572,21 @@ namespace TrailsPlugin.Controller
 
 		public bool DeleteCurrentTrail()
         {
-            if (m_currentActivityTrails.Count > 0 &&
-                TrailData.DeleteTrail(this.m_currentActivityTrails[0].Trail))
+            bool result = false;
+            if (m_currentActivityTrails.Count > 0)
             {
-                m_CurrentOrderedTrails.Remove(m_currentActivityTrails[0]);
-                m_currentActivityTrails[0] = null;
-                this.m_currentActivityTrails.RemoveAt(0);
-                this.m_lastTrailIds.RemoveAt(0);
-				return true;
-			} 
-            else
-            {
-				return false;
-			}			
-		}
+                //Only the primary trail deleted
+                ActivityTrail at = this.m_currentActivityTrails[0];
+                if (TrailData.DeleteTrail(at.Trail))
+                {
+                    this.m_CurrentOrderedTrails.Remove(at);
+                    this.m_currentActivityTrails.Remove(at);
+                    this.m_prevSelectedTrails.Remove(at);
+                    at = null;
+                    result = true;
+                }
+            }
+            return result;
+        }
 	}
 }

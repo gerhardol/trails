@@ -96,18 +96,6 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             return ++index;
         }
 
-        public static TrailsPlugin.Controller.TrailController Controller
-        {
-            get
-            {
-                if (m_controller == null)
-                {
-                    m_controller = TrailsPlugin.Controller.TrailController.Instance;
-                }
-                return m_controller;
-            }
-        }
-        private static TrailsPlugin.Controller.TrailController m_controller;
         private List<object> m_Criterias = new List<object>();
         private bool m_TemplateSelectionPlaceholderRegistered = false;
     }

@@ -61,7 +61,8 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 {
                     m_Activity = value;
                     //If activity is null, controler will handle the list as empty
-                    TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
+                    //Do not keep selection, sort find best
+                    TrailsPlugin.Controller.TrailController.Instance.SetActivities(new List<IActivity> { m_Activity }, false);
 
                     BuildNamedZones();
                 }
@@ -131,7 +132,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
             if (m_Activity != null)
             {
-                foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsFilterCriteriasProvider.Controller.OrderedTrails)
+                foreach (TrailsPlugin.Data.ActivityTrail trail in TrailsPlugin.Controller.TrailController.Instance.OrderedTrails())
                 {
                     //TrailResults
                     if (!trail.Trail.Generated &&

@@ -65,7 +65,6 @@ namespace TrailsPlugin {
             //If not found (or version lower), default settings are used
             if (settingsVersionCurrent <= settingsVersion)
             {
-                //m_data = new TrailsPlugin.Data.TrailData();
                 TrailsPlugin.Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
                 TrailsPlugin.Data.TrailData.ReadOptions(xmlDoc, nsmgr, pluginNode);
             }

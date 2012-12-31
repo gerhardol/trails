@@ -36,7 +36,7 @@ namespace TrailsPlugin.Data
 
         public Guid Id;
         public string Name;
-		private IList<TrailGPSLocation> m_trailLocations = new List<TrailGPSLocation>();
+		private IList<TrailGPSLocation> m_trailLocations = null;
         private float m_radius;
         private float m_minDistance = 0;
         private int   m_maxRequiredMisses = 0;
@@ -51,7 +51,6 @@ namespace TrailsPlugin.Data
         private bool m_generated = false;
 
         private IActivity m_referenceActivity = null;
-        private static Controller.TrailController m_controller = Controller.TrailController.Instance;
 
         public Trail(Guid Id)
         {
@@ -129,12 +128,17 @@ namespace TrailsPlugin.Data
                 //Refresh TrailPoints
                 if (m_isReference)
                 {
-                    checkReferenceChanged();
                     if (m_referenceActivity != null &&
-                        m_trailLocations.Count == 0)
+                        m_trailLocations == null)
                     {
                         m_trailLocations = TrailGpsPointsFromSplits(m_referenceActivity);
+                        m_gpsBounds = null;
                     }
+                }
+
+                if (this.m_trailLocations == null)
+                {
+                    this.m_trailLocations = new List<TrailGPSLocation>();
                 }
                 foreach (TrailGPSLocation t in this.m_trailLocations)
                 {
@@ -149,19 +153,22 @@ namespace TrailsPlugin.Data
             }
         }
 
-		public float Radius {
-			get {
-				return m_radius;
-			}
-			set {
-				m_radius = value;
+        public float Radius
+        {
+            get
+            {
+                return m_radius;
+            }
+            set
+            {
+                m_radius = value;
                 m_gpsBounds = null;
-                foreach (TrailGPSLocation t in this.m_trailLocations)
+                foreach (TrailGPSLocation t in this.TrailLocations)
                 {
-                    t.Radius=value;
+                    t.Radius = value;
                 }
             }
-		}
+        }
 
         //This property is not visible in the GUI
         public float MinDistance
@@ -281,49 +288,18 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                checkReferenceChanged();
-                return m_referenceActivity;
-            }
-        }
-
-        public IActivity ReferenceActivityNoCalc
-        {
-            get
-            {
                 return m_referenceActivity;
             }
             set
             {
                 if (m_referenceActivity != value)
                 {
+                    this.m_referenceActivity = value;
                     //Just reset, value is fetched when needed
-                    m_referenceActivity = null;
-                    m_gpsBounds = null;
+                    this.m_gpsBounds = null;
+                    this.m_trailLocations = null;
                 }
             }
-        }
-
-        private bool checkReferenceChanged()
-        {
-            bool result = false;
-            if (m_isReference)
-            {
-                IActivity refAct = m_controller.checkReferenceActivity(false);
-                if ((m_referenceActivity == null || refAct != m_referenceActivity) && refAct != null && 
-                    refAct.GPSRoute != null && refAct.GPSRoute.Count > 0)
-                {
-                    m_gpsBounds = null;
-                    m_referenceActivity = refAct;
-                    m_trailLocations = new List<TrailGPSLocation>();
-                    result = true;
-                }
-            }
-            return result;
-        }
-
-        public bool TrailChanged(IActivity activity)
-        {
-            return m_isReference && activity != m_referenceActivity && checkReferenceChanged();
         }
 
         public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps)
@@ -596,6 +572,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                //TBD handle Trails with no required locations
                 m_gpsBounds = null;
                 if (m_gpsBounds == null)
                 {
@@ -629,7 +606,7 @@ namespace TrailsPlugin.Data
 
         public override string ToString()
         {
-            return this.Name.ToString() + " " + this.m_gpsBounds + " " + this.m_trailLocations.Count;
+            return this.Name.ToString() + " " + this.m_gpsBounds + " " + this.TrailLocations.Count;
         }
 	}
 }

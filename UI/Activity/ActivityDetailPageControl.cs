@@ -136,7 +136,7 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 //Reselecting activities should not force updating calculations
-                m_controller.ActivitiesNoAuto = value;
+                m_controller.SetActivities(value, false, null); //TBD: create progressbar
 #if !ST_2_1
                 m_layerPoints.ClearOverlays();
                 m_layerRoutes.ClearOverlays();
@@ -206,9 +206,9 @@ namespace TrailsPlugin.UI.Activity {
             HidePage(); //defer updates
             m_controller.Clear();
 
-            //Initial calculation, to get progressbar
+            //TBD recalc? Initial calculation, to get progressbar
             System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(Data.TrailData.AllTrails.Values.Count * m_controller.Activities.Count);
-            IList<ActivityTrail> temp = m_controller.GetOrderedTrails(progressBar, false);
+            IList<ActivityTrail> temp = m_controller.OrderedTrails();
             this.StopProgressBar();
 
             //Update list first, so not refresh changes selection
@@ -248,15 +248,18 @@ namespace TrailsPlugin.UI.Activity {
             //Refreh map when visible
             //for reports view, also the separate Map could be updated
             if ((!m_isExpanded || isReportView)
-                && m_controller.CurrentActivityTrailIsDisplayed)
+                && m_controller.CurrentActivityTrailIsSelected)
             {
                 //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
                 //route
-                foreach (TrailGPSLocation point in m_controller.CurrentActivityTrail.Trail.TrailLocations)
+                foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
                 {
-                    points.Add(point);
+                    foreach (TrailGPSLocation point in at.Trail.TrailLocations)
+                    {
+                        points.Add(point);
+                    }
                 }
                 m_layerPoints.TrailPoints = points;
 

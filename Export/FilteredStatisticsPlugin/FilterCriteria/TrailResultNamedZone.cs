@@ -121,7 +121,8 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 }
                 else if (m_Activity != null)
                 {
-                    TrailsFilterCriteriasProvider.Controller.Activities = new List<IActivity> { m_Activity };
+                    //Do not keep selection, sort find best
+                    TrailsPlugin.Controller.TrailController.Instance.SetActivities(new List<IActivity> { m_Activity }, false);
                     foreach (TrailsPlugin.Data.TrailResult tr in TrailsPlugin.Data.TrailResultWrapper.ParentResults(m_Trail.ResultTreeList))
                     {
                         foreach(IValueRange<DateTime> t in tr.getSelInfo(false))

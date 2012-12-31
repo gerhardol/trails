@@ -627,7 +627,11 @@ namespace TrailsPlugin.UI.Activity {
                     StopProgressBar();
                     if (similarActivities != null)
                     {
-                        IList<IActivity> allActivities = new List<IActivity> { m_controller.ReferenceActivity };
+                        IList<IActivity> allActivities = new List<IActivity>();
+                        foreach (IActivity activity in m_controller.Activities)
+                        {
+                            allActivities.Add(activity);
+                        }
                         foreach (IActivity activity in similarActivities)
                         {
                             if (!m_controller.Activities.Contains(activity))

@@ -109,7 +109,7 @@ namespace TrailsPlugin.Data
             {
                 foreach (TrailGPSLocation t in this.TrailLocations)
                 {
-                    result.m_trailLocations.Add(new TrailGPSLocation(t));
+                    result.TrailLocations.Add(new TrailGPSLocation(t));
                 }
             }
             return result;

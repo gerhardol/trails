@@ -88,9 +88,6 @@ namespace TrailsPlugin.Controller
         {
             if (this.m_activities != activities)
             {
-                //Selection cannot be kept if reference activity cannot be kept
-                //keepSelectedTrail &= (this.m_referenceActivity == null) || (activities.Contains(this.m_referenceActivity));
-
                 if (activities == null || activities.Count == 1 && activities[0] == null)
                 {
                     this.m_activities.Clear();
@@ -231,51 +228,54 @@ namespace TrailsPlugin.Controller
             this.checkReferenceTrailResult(progressBar);
         }
 
+        private bool CheckSetCurrentList(IList<ActivityTrail> activityTrails, System.Windows.Forms.ProgressBar progressBar)
+        {
+            //If last selected trail still has results, use all the trails
+            bool useSelected = false;
+            foreach (ActivityTrail at in activityTrails)
+            {
+                if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
+                    at.IsNoCalc)
+                {
+                    //Try to get a better status, this is the trail the user wants
+                    at.CalcResults(progressBar);
+                }
+                //Assume fine if match also is not calculated
+                if (at.Status <= TrailOrderStatus.MatchPartial &&
+                    at.ResultTreeList.Count <= Settings.MaxAutoCalcResults)
+                {
+                    useSelected = true;
+                    break;
+                }
+            }
+            if (useSelected)
+            {
+                this.SetCurrentActivityTrail(activityTrails, false, progressBar);
+            }
+            return useSelected;
+        }
+
         private void CheckSetCurrentTrail(System.Windows.Forms.ProgressBar progressBar)
         {
             if (this.m_activities.Count > 0)
             {
+                if (this.m_currentActivityTrails.Count > 0)
+                {
+                    //Even if the selection is kept, it may not be calculated
+                    //Check that current selection is OK
+                    CheckSetCurrentList(this.m_currentActivityTrails, progressBar);
+                }
+
                 if (this.m_currentActivityTrails.Count == 0)
                 {
                     //If last selected trail still has results, use all the trails
-                    bool useSelected = false;
-                    foreach (ActivityTrail to in this.m_prevSelectedTrails)
-                    {
-                        if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
-                            to.IsNoCalc)
-                        {
-                            //Try to get a better status, this is the trail the user wants
-                            to.CalcResults(progressBar);
-                        }
-                        //Assume fine if match also is not calculated
-                        if (to.Status <= TrailOrderStatus.MatchPartial)
-                        {
-                            useSelected = true;
-                        }
-                        break;
-                    }
-                    if (useSelected)
-                    {
-                        this.SetCurrentActivityTrail(this.m_prevSelectedTrails, false, progressBar);
-                    }
+                    CheckSetCurrentList(this.m_prevSelectedTrails, progressBar);
                 }
 
                 //Try last auto selected (that should not be generated)
                 if (this.m_currentActivityTrails.Count == 0)
                 {
-                    bool usePrev = false;
-                    foreach (ActivityTrail at in this.m_prevActivityTrails)
-                    {
-                        if (at.Status <= TrailOrderStatus.MatchPartial)
-                        {
-                            usePrev = true;
-                            break;
-                        }
-                    }
-                    if (usePrev)
-                    {
-                        this.SetCurrentActivityTrail(this.m_prevActivityTrails, false, progressBar);
-                    }
+                    CheckSetCurrentList(this.m_prevActivityTrails, progressBar);
                 }
 
                 //Try matching name for reference activity
@@ -285,21 +285,11 @@ namespace TrailsPlugin.Controller
                        !string.IsNullOrEmpty(m_referenceActivity.Name))
                     {
                         //Prev does not match, try matching names
-                        foreach (ActivityTrail to in this.OrderedTrails())
+                        foreach (ActivityTrail at in this.OrderedTrails())
                         {
-                            if (to.Trail.Name.StartsWith(this.m_referenceActivity.Name))
+                            if (at.Trail.Name.StartsWith(this.m_referenceActivity.Name))
                             {
-                                if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
-                                    to.IsNoCalc)
-                                {
-                                    //Try to get a better status, for a few trails
-                                    to.CalcResults(progressBar);
-                                }
-                                if (to.Status <= TrailOrderStatus.MatchPartial)
-                                {
-                                    this.SetCurrentActivityTrail(to, false, progressBar);
-                                    break;
-                                }
+                                CheckSetCurrentList(new List<ActivityTrail> { at }, progressBar);
                             }
                         }
                     }
@@ -310,19 +300,13 @@ namespace TrailsPlugin.Controller
                     //Try to get the best match from non-auto trails
                     //The ordered list should be basically sorted, so the best candidates should be first
                     int recalc = 3;
-                    foreach (ActivityTrail to in this.OrderedTrails())
+                    foreach (ActivityTrail at in this.OrderedTrails())
                     {
-                        if (to.Status != TrailOrderStatus.MatchNoCalc)
+                        if (at.Status != TrailOrderStatus.MatchNoCalc)
                         {
-                            if (this.m_activities.Count <= Settings.MaxAutoCalcActitiesSingleTrail &&
-                                to.IsNoCalc && recalc-- > 0)
+                            if (this.CheckSetCurrentList(new List<ActivityTrail> { at }, progressBar) ||
+                                recalc-- <= 0)
                             {
-                                //Try to get a better status, for a few trails
-                                to.CalcResults(progressBar);
-                            }
-                            if (to.Status <= TrailOrderStatus.MatchPartial)
-                            {
-                                this.SetCurrentActivityTrail(to, false, progressBar);
                                 break;
                             }
                         }
@@ -332,10 +316,7 @@ namespace TrailsPlugin.Controller
                 //Last resort, use Reference Activity
                 if (this.m_currentActivityTrails.Count == 0)
                 {
-                    if (this.m_referenceActivityTrail.Status <= TrailOrderStatus.MatchPartial)
-                    {
-                        this.SetCurrentActivityTrail(this.m_referenceActivityTrail, false, progressBar);
-                    }
+                    this.CheckSetCurrentList(new List<ActivityTrail> { this.m_referenceActivityTrail }, progressBar);
                 }
             }
         }
@@ -344,7 +325,6 @@ namespace TrailsPlugin.Controller
         {
             foreach (ActivityTrail at in m_CurrentOrderedTrails)
             {
-                at.Init();
                 bool jumpProgress = true;
                 if (at.IsInBounds)
                 {
@@ -363,6 +343,7 @@ namespace TrailsPlugin.Controller
                     progressBar.Value += this.m_activities.Count;
                 }
             }
+            //Check that current trail is OK,
             CheckSetCurrentTrail(progressBar);
         }
 

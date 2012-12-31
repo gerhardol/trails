@@ -216,6 +216,11 @@ namespace TrailsPlugin.Data
             get { return m_MaxAutoCalcActivitiesSingleTrail; }
             set { m_MaxAutoCalcActivitiesSingleTrail = value; }
         }
+        public static int MaxAutoCalcResults
+        {
+            get { return 250; }
+            set {  }
+        }
         public static bool RestIsPause
         {
             get { return m_restLapIsPause; }
@@ -432,7 +437,10 @@ namespace TrailsPlugin.Data
                     if (m_MaxAutoCalcActivitiesTrails == 500) { m_MaxAutoCalcActivitiesTrails = 10000; }
                 }
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
-                if (attr.Length > 0) { m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr); }
+                if (attr.Length > 0) {
+                    m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr);
+                    if (m_MaxAutoCalcActivitiesTrails == 200) { m_MaxAutoCalcActivitiesTrails = 10000; }
+                }
 
                 attr = pluginNode.GetAttribute(xmlTags.sColumns);
                 if (attr.Length > 0)

@@ -301,6 +301,9 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 m_layerMarked.ClearOverlays();
                 m_layerRoutes.TrailRoutes = routes;
+
+                //Zoom to routes
+                m_layerRoutes.DoZoom();
             }
         }
 

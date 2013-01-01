@@ -248,13 +248,11 @@ namespace TrailsPlugin.UI.MapLayers
 
         public new void DoZoom(IGPSBounds area)
         {
-            if (m_showPage)
+            //Note no m_showPage here, can be done when creating tracks
+            base.DoZoom(area);
+            if (m_extraMapLayer != null)
             {
-                base.DoZoom(area);
-                if (m_extraMapLayer != null)
-                {
-                    m_extraMapLayer.DoZoom(area);
-                }
+                m_extraMapLayer.DoZoom(area);
             }
         }
 
@@ -264,6 +262,7 @@ namespace TrailsPlugin.UI.MapLayers
                 TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
             DoZoom(area);
         }
+
         public void SetLocationMarkedTracks()
         {
             IGPSBounds area = Union(TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes),

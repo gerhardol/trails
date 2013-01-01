@@ -287,7 +287,10 @@ namespace TrailsPlugin.Data
                         {
                             progressBar.Visible = visible;
                             progressBar.Maximum = HighScoreProgressMax;
-                            progressBar.Value = HighScoreProgressVal + 1;
+                            if (progressBar.Value + 1 < HighScoreProgressVal)
+                            {
+                                progressBar.Value = HighScoreProgressVal + 1;
+                            }
                         }
                     }
                 }

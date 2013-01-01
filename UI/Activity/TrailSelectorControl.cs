@@ -489,7 +489,14 @@ namespace TrailsPlugin.UI.Activity
                 }
             }
             ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
-            ats.Add(t);
+            if (ats.Contains(t))
+            {
+                ats.Remove(t);
+            }
+            else
+            {
+                ats.Add(t);
+            }
 
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
             m_controller.SetCurrentActivityTrail(ats, true, progressBar);

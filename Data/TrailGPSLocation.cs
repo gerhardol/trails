@@ -101,10 +101,14 @@ namespace TrailsPlugin.Data
             }
             set
             {
+                _cosmean = invalidLatLon;
                 _gpsLocation = value;
             }
         }
-        //TBD optimize cache location
+
+        //Note: These show up in profiling, but optimising will not improve much...
+        private const float invalidLatLon = 999;
+        private float _cosmean = invalidLatLon;
         public float LatitudeDegrees
         {
             get
@@ -203,17 +207,50 @@ namespace TrailsPlugin.Data
             public const string sRequired = "required";
         }
 
-		public float DistanceMetersToPoint(IGPSPoint point) {
-			GPSPoint thisPoint = new GPSPoint(
-				this.LatitudeDegrees,
-				this.LongitudeDegrees,
-				0);
+        public float DistanceMetersToPoint(IGPSPoint point)
+        {
+            GPSPoint thisPoint = new GPSPoint(
+                this.LatitudeDegrees,
+                this.LongitudeDegrees,
+                0);
             if (point == null)
             {
                 return float.MaxValue;
             }
-			return point.DistanceMetersToPoint(thisPoint);
-		}
+            return point.DistanceMetersToPoint(thisPoint);
+        }
+
+        public static float DistanceToSquare(float d)
+        {
+            const float radius = 6371009;
+            const float factor = radius * (float)(Math.PI / 180.0);
+            float d2 = d / factor;
+            return d2 * d2;
+        }
+
+        //Squared distance calculations, speedup calculations
+        public float DistanceMetersToPointSquared(IGPSPoint point)
+        {
+            //Use aproximate distance instead of details, improve performance (short distances)
+            //See http://en.wikipedia.org/wiki/Geographical_distance
+            //Use the trailp instead of average
+            if (_cosmean == invalidLatLon) { _cosmean = (float)Math.Cos(this.LatitudeDegrees * (float)(Math.PI / 180.0)); }
+            float dlat = point.LatitudeDegrees - this.LatitudeDegrees;
+            float dlon = point.LongitudeDegrees - this.LongitudeDegrees;
+            float result = dlat * dlat + dlon * dlon * _cosmean;
+
+            return result;
+        }
+
+        public static float DistanceMetersToPointGpsSquared(IGPSPoint point, IGPSPoint point2)
+        {
+            float _cosmean = (float)Math.Cos(point2.LatitudeDegrees * (float)(Math.PI / 180.0));
+            float dlat = point.LatitudeDegrees - point2.LatitudeDegrees;
+            float dlon = point.LongitudeDegrees - point2.LongitudeDegrees;
+            float result = dlat * dlat + dlon * dlon * _cosmean;
+
+            return result;
+        }
 
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius)
         {
@@ -228,6 +265,7 @@ namespace TrailsPlugin.Data
             float east = -180;
             float west = 180;
             bool enoughRequired = true;
+
             if (requiredCheck)
             {
                 int noRequired = 0;
@@ -245,14 +283,18 @@ namespace TrailsPlugin.Data
                     enoughRequired = false;
                 }
             }
+
             foreach (TrailGPSLocation g in list)
             {
                 if ((g.Required || !requiredCheck || !enoughRequired) && g.GpsLocation != null)
                 {
-                    north = Math.Max(north, g.GpsLocation.LatitudeDegrees);
-                    south = Math.Min(south, g.GpsLocation.LatitudeDegrees);
-                    east = Math.Max(east, g.GpsLocation.LongitudeDegrees);
-                    west = Math.Min(west, g.GpsLocation.LongitudeDegrees);
+                    float glat = g.GpsLocation.LatitudeDegrees;
+                    float glon = g.GpsLocation.LongitudeDegrees;
+
+                    north = Math.Max(north, glat);
+                    south = Math.Min(south, glat);
+                    east  = Math.Max(east, glon);
+                    west  = Math.Min(west, glon);
                 }
             }
             //Overlapping, could be an exception
@@ -265,6 +307,7 @@ namespace TrailsPlugin.Data
             {
                 radius = 100;
             }
+
             //Get approx degrees for the radius offset increasing/(decreasing) the bounds
             //The magic numbers are size of a degree at the equator
             //latitude increases about 1% at the poles
@@ -273,8 +316,9 @@ namespace TrailsPlugin.Data
             float lng = (float)(radius / 111132 / Math.Cos(Math.Abs(north) * Math.PI / 180));
             north += lat;
             south -= lat;
-            east += lng;
-            west -= lng;
+            east  += lng;
+            west  -= lng;
+
             //if radius is negative, area may have to be adjusted
             //With no required points, use center of trail
             if (north < south || requiredCheck && !enoughRequired)
@@ -289,6 +333,7 @@ namespace TrailsPlugin.Data
                 west = tmp;
                 east = tmp;
             }
+
             return new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
         }
 
@@ -311,6 +356,7 @@ namespace TrailsPlugin.Data
             }
             return subItemText;
         }
+
         public TrailGPSLocation setField(int subItemSelected, string s)
         {
             float pos = float.NaN;
@@ -358,6 +404,7 @@ namespace TrailsPlugin.Data
                         break;
                 }
             }
+            _cosmean = invalidLatLon;
             return result;
         }
 	}

@@ -565,6 +565,13 @@ namespace TrailsPlugin.Data
             PointInfo prevPoint = new PointInfo(-1, 0);
             PointInfo prevStartPoint = new PointInfo(-1, 0);
             int prevActivityMatchIndex = -1; //Next match cannot be lower than this
+
+            //Use "squared" distance internally, to speed up calculations
+            //Factors are not completely independent, but minimal effect
+            float radiusSq               = TrailGPSLocation.DistanceToSquare(radius);
+            float distHysteresisSqFactor = TrailGPSLocation.DistanceToSquare(30);
+            float distHysteresisSqMin    = TrailGPSLocation.DistanceToSquare(5);
+            float radiusSqFactor         = TrailGPSLocation.DistanceToSquare(2);
             
             //Required points misses - undocumented feature
             int currRequiredMisses = 0;
@@ -612,7 +619,7 @@ namespace TrailsPlugin.Data
                     PointInfo startPoint = new PointInfo(routeIndex,
                          distanceTrailToRoute(activity, trailgps, 0, routeIndex));
                     bool match = false;
-                    if (startPoint.dist < radius)
+                    if (startPoint.dist < radiusSq)
                     {
                         match = true;
                     }
@@ -625,7 +632,7 @@ namespace TrailsPlugin.Data
                             prevStartPoint.dist = distanceTrailToRoute(activity, trailgps, 0, prevStartPoint.index);
                         }
                         double d;
-                        if (0 < checkPass(radius,
+                        if (0 < checkPass(radiusSq,
                     routePoint(activity, prevStartPoint.index), prevStartPoint.dist,
                     routePoint(activity, startPoint.index), startPoint.dist,
                     trailgps[TrailIndex(trailgps, 0)]/*, dTrack[routeIndex].Value - dTrack[prevStartPointIndex].Value*/,
@@ -666,11 +673,11 @@ namespace TrailsPlugin.Data
 
                     //////////////////////////////////////
                     //Find the best GPS point for this result
-                    if (routeDist < radius)
+                    if (routeDist < radiusSq)
                     {
                         bool firstPoint = true;
                         float prevRouteDist = prevPoint.dist;
-                        float distHysteresis = Math.Max(radius / 30, 5);
+                        float distHysteresis = Math.Max(radiusSq / distHysteresisSqFactor, distHysteresisSqMin);
                         Stack<pInfo> info = new Stack<pInfo>();
                         float matchFactor = -1;
 
@@ -702,7 +709,7 @@ namespace TrailsPlugin.Data
                                     {
                                         //Check closest point
                                         routeFactor = pointInfo.checkPass(activity,
-                                           trailgps[TrailIndex(trailgps, currResultPoints.Count)], radius, ref closeDist);
+                                           trailgps[TrailIndex(trailgps, currResultPoints.Count)], radiusSq, ref closeDist);
                                     }
 
                                     if (closeDist < matchDist)
@@ -721,9 +728,9 @@ namespace TrailsPlugin.Data
                                 }
                             }
 
-                            if (routeDist >= radius || routeIndex >= activity.GPSRoute.Count - 1)
+                            if (routeDist >= radiusSq || routeIndex >= activity.GPSRoute.Count - 1)
                             {
-                                if (routeDist >= radius)
+                                if (routeDist >= radiusSq)
                                 {
                                     //No longer in radius, we have the best match
                                     //As we peeked on next, we have to set back the index
@@ -740,7 +747,7 @@ namespace TrailsPlugin.Data
                                         if (routeIndex > 0)
                                         {
                                             routeFactor = p.checkPass(activity,
-                                               trailgps[TrailIndex(trailgps, currResultPoints.Count)], radius, ref closeDist);
+                                               trailgps[TrailIndex(trailgps, currResultPoints.Count)], radiusSq, ref closeDist);
                                         }
 
                                         if (closeDist < matchDist)
@@ -791,7 +798,7 @@ namespace TrailsPlugin.Data
                     else if (trailgps.Count > 1 || currResultPoints.Count == 0 || routeIndex > currResultPoints[currResultPoints.Count - 1].matchPassBy)
                     {
                         double d;
-                        float factor = checkPass(radius,
+                        float factor = checkPass(radiusSq,
                             routePoint(activity, prevPoint.index), prevPoint.dist,
                             routePoint(activity, routeIndex), routeDist,
                             trailgps[TrailIndex(trailgps, currResultPoints.Count)],
@@ -832,7 +839,7 @@ namespace TrailsPlugin.Data
                     }
                     if (matchTime != null && matchTime == DateTime.MinValue)
                     {
-                        matchDist = radius * 2;
+                        matchDist = radiusSq * radiusSqFactor;
                     }
                 }
 
@@ -1097,7 +1104,8 @@ namespace TrailsPlugin.Data
                 && dt2 < radius * Math.Sqrt(2))
             {
                 //Law of cosines - get a1, angle at r1, the first point
-                double d12 = r1.DistanceMetersToPoint(r2);
+                //double d12 = r1.DistanceMetersToPoint(r2);
+                double d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
                 double a10 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
                 //This means the angle a1 must be +/- 90 degrees : cos(a1)>=0
@@ -1144,7 +1152,7 @@ namespace TrailsPlugin.Data
         //TBD optimize - no dramatic change though
         private static float distanceTrailToRoute(IActivity activity, IList<TrailGPSLocation> trailgps, int trailIndex, int routeIndex)
         {
-            return trailgps[TrailIndex(trailgps, trailIndex)].DistanceMetersToPoint(routePoint(activity, routeIndex));
+            return trailgps[TrailIndex(trailgps, trailIndex)].DistanceMetersToPointSquared(routePoint(activity, routeIndex));
         }
 
         private static bool isEndTrailPoint(IList<TrailGPSLocation> trailgps, int noOfTrailPoints)

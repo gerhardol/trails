@@ -104,6 +104,7 @@ namespace TrailsPlugin.Data
                 _gpsLocation = value;
             }
         }
+        //TBD optimize cache location
         public float LatitudeDegrees
         {
             get
@@ -218,6 +219,8 @@ namespace TrailsPlugin.Data
         {
             return getGPSBounds(list, radius, false);
         }
+
+        //TBD: Called often - not affecting so much but could be optimised
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius, bool requiredCheck)
         {
             float north = -85; //Limit in ST - No GPS outside

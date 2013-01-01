@@ -1292,6 +1292,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Test trail calculation time - not documented
                     System.Windows.Forms.ProgressBar progressBar = StartProgressBar(0);
+                    Controller.TrailController.Instance.ClearGpsBoundsCache();
                     m_controller.ReCalcTrails(true, progressBar);
                     StopProgressBar();
                 }

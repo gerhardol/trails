@@ -51,6 +51,7 @@ namespace TrailsPlugin.Controller
 
         private IList<ActivityTrail> m_CurrentOrderedTrails = new List<ActivityTrail>();
         private ActivityTrail m_referenceActivityTrail;
+        private IDictionary<IActivity, IGPSBounds> activityGps = new Dictionary<IActivity, IGPSBounds>();
 
         private TrailController()
         {
@@ -107,6 +108,48 @@ namespace TrailsPlugin.Controller
 
                 //Calculate trails - at least InBounds, set aprpriate ActivityTrail
                 this.ReCalcTrails(false, progressBar);
+            }
+        }
+
+        public IGPSBounds GpsBoundsCache(IActivity activity)
+        {
+            if (!activityGps.ContainsKey(activity))
+            {
+                activity.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
+                activityGps.Add(activity, GPSBounds.FromGPSRoute(activity.GPSRoute));
+            }
+            return activityGps[activity];
+        }
+
+        public void ClearGpsBoundsCache()
+        {
+            foreach (IActivity activity in activityGps.Keys)
+            {
+                //this.Activity_PropertyChanged(activity, null);
+                foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
+                {
+                    at.ClearResultsForActivity(activity);
+                }
+                activity.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
+            }
+            activityGps.Clear();
+        }
+
+        void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            //e is null at reset. For other this is called multiple times - only run once
+            if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
+            {
+                IActivity activity = sender as IActivity;
+                if(activity != null && activityGps.ContainsKey(activity))
+                {
+                    activityGps[activity] = null;
+                    //activity.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
+                    foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
+                    {
+                        at.ClearResultsForActivity(activity);
+                    }
+                }
             }
         }
 

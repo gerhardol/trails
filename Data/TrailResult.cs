@@ -191,19 +191,6 @@ namespace TrailsPlugin.Data
             }
             m_subResultInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
-
-            if (m_activity != null)
-            {
-                //Add activity listener if not already existing
-                if (!s_activities.ContainsKey(m_activity))
-                {
-                    s_activities.Add(m_activity, new trActivityInfo());
-                    m_activity.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-                    //Note: Remove listener when all results using it are removed only
-                    //aActivities[m_activity].activityColor = getColor(nextActivityColor++);
-                }
-                s_activities[m_activity].res.Add(this);
-            }
         }
 
         public IList<ChildTrailResult> getSplits()
@@ -299,33 +286,6 @@ namespace TrailsPlugin.Data
         {
             nextTrailColor = 1;
             //nextActivityColor = 1;
-            foreach (KeyValuePair<IActivity, trActivityInfo> a in s_activities)
-            {
-                TrailResult.Activity_PropertyChanged(a.Key, null);
-                a.Key.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-            }
-
-            s_activities.Clear();
-        }
-
-        static void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            //e is null at reset. For other this is called multiple times - only run once
-            if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
-            {
-                IActivity a = sender as IActivity;
-                if (s_activities != null && s_activities.ContainsKey(a) && s_activities[a].res != null)
-                {
-                    foreach (TrailResult tr in s_activities[a].res)
-                    {
-                        if (tr != null)
-                        {
-                            tr.Clear(false);
-                            //Charts cannot be updated from here, listener must be changed for that
-                        }
-                    }
-                }
-            }
         }
         #endregion
 
@@ -1931,6 +1891,7 @@ namespace TrailsPlugin.Data
             }
         }
 
+        //TBD optimise Minimize use of ElevationMetersTrack0() as well as GetInterpolatedValue() 
         //TODO timeofday
         public static bool UseNormalElevation = true; 
         private void calcGradeRunAdjustedTime(TrailResult refRes)
@@ -2657,7 +2618,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (!m_colorOverridden && s_activities.Count > 1 &&
+                if (!m_colorOverridden && Controller.TrailController.Instance.Activities.Count > 1 &&
                     (this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
                     return (this as ChildTrailResult).ParentResult.m_trailColor;
@@ -2763,20 +2724,6 @@ namespace TrailsPlugin.Data
                 return m_ActivityInfo;
             }
         }
-
-        private class trActivityInfo
-        {
-            public IList<TrailResult> res = new List<TrailResult>();
-            public Color activityColor = getColor(0);
-        }
-
-        private static IDictionary<IActivity, trActivityInfo> s_activities = new Dictionary<IActivity, trActivityInfo>();
-        //public static IList<TrailResult> TrailResultList(IActivity activity)
-        //{
-        //    trActivityInfo t = new trActivityInfo();
-        //    s_activities.TryGetValue(activity, out t);
-        //    return t.res;
-        //}
 
         //The Activity related tracks were previously cached. Kept as an uniform method to get
         //the tracks, if the Info cache handling is changed

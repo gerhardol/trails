@@ -555,7 +555,7 @@ namespace TrailsPlugin.Data
             {
                 if (activity != null && activity.GPSRoute != null)
                 {
-                    IGPSBounds gpsBounds = GPSBounds.FromGPSRoute(activity.GPSRoute);
+                    IGPSBounds gpsBounds = Controller.TrailController.Instance.GpsBoundsCache(activity);
                     result = this.IsInBounds(gpsBounds);
                     if (result)
                     {
@@ -572,6 +572,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                //TBD optimise
                 //TBD handle Trails with no required locations
                 m_gpsBounds = null;
                 if (m_gpsBounds == null)

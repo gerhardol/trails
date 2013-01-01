@@ -198,6 +198,20 @@ namespace TrailsPlugin.Data
             return results;
         }
 
+        public void ClearResultsForActivity(IActivity activity)
+        {
+            if (m_resultsListWrapper != null)
+            {
+                foreach (TrailResultWrapper t in m_resultsListWrapper)
+                {
+                    if (activity == t.Result.Activity)
+                    {
+                        t.Result.Clear(false);
+                    }
+                }
+            }
+        }
+
         //public void Sort()
         //{
         //    ((List<TrailResultWrapper>)ResultTreeList).Sort();
@@ -1126,6 +1140,8 @@ namespace TrailsPlugin.Data
             }
             return trailIndex;
         }
+
+        //TBD optimize - no dramatic change though
         private static float distanceTrailToRoute(IActivity activity, IList<TrailGPSLocation> trailgps, int trailIndex, int routeIndex)
         {
             return trailgps[TrailIndex(trailgps, trailIndex)].DistanceMetersToPoint(routePoint(activity, routeIndex));

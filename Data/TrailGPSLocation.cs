@@ -25,27 +25,19 @@ using System.Collections.Generic;
 
 namespace TrailsPlugin.Data
 {
-	public class TrailGPSLocation
+    public class TrailGPSLocation
     {
-        //If this is related from a track, save the time
-        //DateTime? m_dateTime;
-
-        //public TrailGPSLocation(DateTime time, ITimeValueEntry<IGPSPoint> t, String name, bool required)
-        //    : this(t.Value.LatitudeDegrees, t.Value.LongitudeDegrees, name, true)
-        //{
-        //    //m_dateTime = time;
-        //}
         public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required)
         {
             this._gpsPoint = gpsLoc;
+            this._LatitudeDegrees = _gpsPoint.LatitudeDegrees;
+            this._LongitudeDegrees = _gpsPoint.LongitudeDegrees;
             this._name = name;
             this._required = required;
         }
-        public TrailGPSLocation(IGPSPoint gpsLoc)
+        public TrailGPSLocation(IGPSPoint gpsLoc) :
+            this(gpsLoc, "", true)
         {
-            this._gpsPoint = gpsLoc;
-            this._name = "";
-            this._required = true;
         }
         
         public static IGPSPoint getGpsLoc(ZoneFiveSoftware.Common.Data.Fitness.IActivity activity, DateTime time)
@@ -65,6 +57,8 @@ namespace TrailsPlugin.Data
         public TrailGPSLocation(TrailGPSLocation trailLocation)
         {
             this._gpsPoint = trailLocation._gpsPoint;
+            this._LatitudeDegrees = _gpsPoint.LatitudeDegrees;
+            this._LongitudeDegrees = _gpsPoint.LongitudeDegrees;
             this._name = trailLocation._name;
             this._required = trailLocation._required;
             this._radius = trailLocation._radius;
@@ -99,10 +93,14 @@ namespace TrailsPlugin.Data
             {
                 _cosmean = invalidLatLon;
                 _gpsPoint = value;
+                this._LatitudeDegrees = _gpsPoint.LatitudeDegrees;
+                this._LongitudeDegrees = _gpsPoint.LongitudeDegrees;
             }
         }
 
-        //Note: These show up in profiling, but optimising will not improve much...
+        //Note: Use fields to improve performance (trail detection with like 5%)
+        //Setting the fields will not have any effect
+        public float _LatitudeDegrees;
         public float LatitudeDegrees
         {
             get
@@ -110,6 +108,7 @@ namespace TrailsPlugin.Data
                 return _gpsPoint.LatitudeDegrees;
             }
         }
+        public float _LongitudeDegrees;
         public float LongitudeDegrees
         {
             get
@@ -227,6 +226,8 @@ namespace TrailsPlugin.Data
             public const string sRequired = "required";
         }
 
+        /* Distance calculation */
+
         public float DistanceMetersToPoint(IGPSPoint point)
         {
             if (point == null)
@@ -236,33 +237,32 @@ namespace TrailsPlugin.Data
             return this._gpsPoint.DistanceMetersToPoint(point);
         }
 
-        public static float DistanceToSquare(float d)
-        {
-            const float radius = 6371009;
-            const float factor = radius * (float)(Math.PI / 180.0);
-            float d2 = d / factor;
-            return d2 * d2;
-        }
+        public const float DistanceToSquareScaling = RadToDeg / EarthRadius;
 
-        //Squared distance calculations, speedup calculations
+        //Squared scaled distance calculations, speedup calculations for trail detection
+        //Use (quite accurate) aproximate scaled squared distance instead of real distance, improve performance
+        //This is short distance, the result should be accurate
+        //See http://en.wikipedia.org/wiki/Geographical_distance
         private const float invalidLatLon = 999;
         private float _cosmean = invalidLatLon;
-        public float DistanceMetersToPointSquared(IGPSPoint point)
+        private const float DegToRad = (float)(Math.PI / 180.0);
+        private const float RadToDeg = (float)(180.0 / Math.PI);
+        private const float EarthRadius = 6371009;
+
+        public static float DistanceMetersToPointSquared(TrailGPSLocation trailp, IGPSPoint point)
         {
-            //Use aproximate distance instead of details, improve performance (short distances)
-            //See http://en.wikipedia.org/wiki/Geographical_distance
-            //Use the trailp instead of average
-            if (_cosmean == invalidLatLon) { _cosmean = (float)Math.Cos(this.LatitudeDegrees * (float)(Math.PI / 180.0)); }
-            float dlat = point.LatitudeDegrees - this.LatitudeDegrees;
-            float dlon = point.LongitudeDegrees - this.LongitudeDegrees;
-            float result = dlat * dlat + dlon * dlon * _cosmean;
+            //Use the trailp lat instead of average lat
+            if (trailp._cosmean == invalidLatLon) { trailp._cosmean = (float)Math.Cos(trailp._LatitudeDegrees * DegToRad); }
+            float dlat = point.LatitudeDegrees - trailp._LatitudeDegrees;
+            float dlon = point.LongitudeDegrees - trailp._LongitudeDegrees;
+            float result = dlat * dlat + dlon * dlon * trailp._cosmean;
 
             return result;
         }
 
         public static float DistanceMetersToPointGpsSquared(IGPSPoint point, IGPSPoint point2)
         {
-            float _cosmean = (float)Math.Cos(point2.LatitudeDegrees * (float)(Math.PI / 180.0));
+            float _cosmean = (float)Math.Cos(point2.LatitudeDegrees * DegToRad);
             float dlat = point.LatitudeDegrees - point2.LatitudeDegrees;
             float dlon = point.LongitudeDegrees - point2.LongitudeDegrees;
             float result = dlat * dlat + dlon * dlon * _cosmean;
@@ -413,9 +413,11 @@ namespace TrailsPlugin.Data
                 {
                     case 1:
                         _gpsPoint = new GPSPoint(this.LatitudeDegrees, pos, this.Elevation);
+                        this._LongitudeDegrees = pos;
                         break;
                     case 2:
                         _gpsPoint = new GPSPoint(pos, this.LongitudeDegrees, this.Elevation);
+                        this._LatitudeDegrees = pos;
                         break;
                     case 99:
                         //Not yet implemented

@@ -16,6 +16,9 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//Use scaled squared distance calculations. This is slightly less accurate, but minor difference for calculations.
+#define SQUARE_DISTANCE
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -417,10 +420,10 @@ namespace TrailsPlugin.Data
 
             public float checkPass(IActivity activity, TrailGPSLocation trailp, float radius, ref float closeDist)
             {
-                double dist;
+                float dist;
                 float routeFactor = ActivityTrail.checkPass(radius,
-                  routePoint(activity, this.index - 1), this.prevDist,
-                  routePoint(activity, this.index), this.dist,
+                  activity.GPSRoute[this.index - 1].Value, this.prevDist,
+                  activity.GPSRoute[this.index].Value, this.dist,
                   trailp,
                     /* dTrack[routeIndex].Value - dTrack[prevRouteIndex].Value, */
                   out dist);
@@ -567,21 +570,20 @@ namespace TrailsPlugin.Data
             PointInfo prevStartPoint = new PointInfo(-1, 0);
             int prevActivityMatchIndex = -1; //Next match cannot be lower than this
 
-            float radiusSq = radius;
-            float distHysteresisSqFactor = 30;
-            float distHysteresisSqMin = 5;
-            float radiusSqFactor = 2;
-            if (SquareDistance)
-            {
-#pragma warning disable 0162
-                //Use "squared" distance internally, to speed up calculations
-                //Factors are not completely independent, but minimal effect
-                radiusSq = TrailGPSLocation.DistanceToSquare(radius);
-                distHysteresisSqFactor *= distHysteresisSqFactor;
-                distHysteresisSqMin = TrailGPSLocation.DistanceToSquare(5);
-                radiusSqFactor *= radiusSqFactor;
-#pragma warning restore 0162
-            }
+#if SQUARE_DISTANCE
+            //Use "squared" distance internally, to speed up calculations
+            //Factors are not completely independent, but minimal effect
+            radius = (TrailGPSLocation.DistanceToSquareScaling * radius) * (TrailGPSLocation.DistanceToSquareScaling * radius);
+            float distHysteresisMin = (TrailGPSLocation.DistanceToSquareScaling * 5) * (TrailGPSLocation.DistanceToSquareScaling * 5);
+            const float distHysteresisFactor = 30*30;
+            const float radiusFactor = 2*2;
+            const float passByFactor = 10*10;
+#else
+            const float distHysteresisMin = 5;
+            const float distHysteresisFactor = 30;
+            const float radiusFactor = 2;
+            const float passByFactor = 10;
+#endif
             //Required points misses - undocumented feature
             int currRequiredMisses = 0;
             //Ignore short legs - undocumented feature
@@ -592,8 +594,10 @@ namespace TrailsPlugin.Data
                 dTrack = activity.GPSRoute.GetDistanceMetersTrack();
             }
 
+            int trailGpsIndex = 0;
             for (int routeIndex = 0; routeIndex < activity.GPSRoute.Count; routeIndex++)
             {
+
                 //////////////////////////////////////
                 //Shorten the trail if possible
 
@@ -626,9 +630,9 @@ namespace TrailsPlugin.Data
                     locationBounds[0].Contains((IGPSLocation)(activity.GPSRoute[routeIndex].Value)))
                 {
                     PointInfo startPoint = new PointInfo(routeIndex,
-                         distanceTrailToRoute(activity, trailgps, 0, routeIndex));
+                         distanceTrailToRoute(trailgps[0], activity, routeIndex));
                     bool match = false;
-                    if (startPoint.dist < radiusSq)
+                    if (startPoint.dist < radius)
                     {
                         match = true;
                     }
@@ -638,13 +642,14 @@ namespace TrailsPlugin.Data
                         {
                             //refresh cache
                             prevStartPoint.index = routeIndex - 1;
-                            prevStartPoint.dist = distanceTrailToRoute(activity, trailgps, 0, prevStartPoint.index);
+                            prevStartPoint.dist = distanceTrailToRoute(trailgps[0], activity, prevStartPoint.index);
                         }
-                        double d;
-                        if (0 < checkPass(radiusSq,
-                    routePoint(activity, prevStartPoint.index), prevStartPoint.dist,
-                    routePoint(activity, startPoint.index), startPoint.dist,
-                    trailgps[TrailIndex(trailgps, 0)]/*, dTrack[routeIndex].Value - dTrack[prevStartPointIndex].Value*/,
+                        float d;
+                        if (startPoint.dist < radius * passByFactor && 
+                            0 < checkPass(radius,
+                    activity.GPSRoute[prevStartPoint.index].Value, prevStartPoint.dist,
+                    activity.GPSRoute[startPoint.index].Value, startPoint.dist,
+                    trailgps[0]/*, dTrack[routeIndex].Value - dTrack[prevStartPointIndex].Value*/,
                     out d))
                         {
                             match = true;
@@ -654,6 +659,7 @@ namespace TrailsPlugin.Data
                     {
                         //Start over if we pass first point before all were found
                         currResultPoints.Clear();
+                        trailGpsIndex = 0;
                     }
                     prevStartPoint = startPoint;
                 }
@@ -671,22 +677,22 @@ namespace TrailsPlugin.Data
 
                 //Check if the point is in bounds, the distance to point is the heaviest calculation per point
                 //location bounds is aproximate, should cover the aproximate "checkPass" area
-                if (locationBounds[trailgps.Count==1 ? 0 : currResultPoints.Count].Contains((IGPSLocation)(activity.GPSRoute[routeIndex].Value)))
+                if (locationBounds[trailGpsIndex].Contains((IGPSLocation)(activity.GPSRoute[routeIndex].Value)))
                 {
-                    routeDist = distanceTrailToRoute(activity, trailgps, currResultPoints.Count, routeIndex);
+                    routeDist = distanceTrailToRoute(trailgps[trailGpsIndex], activity, routeIndex);
                     if (routeIndex > 0 && (prevPoint.index < 0 || routeIndex - prevPoint.index != 1 || prevPoint.dist == float.MaxValue))
                     {
                         prevPoint.index = routeIndex - 1;
-                        prevPoint.dist = distanceTrailToRoute(activity, trailgps, currResultPoints.Count, prevPoint.index);
+                        prevPoint.dist = distanceTrailToRoute(trailgps[trailGpsIndex], activity, prevPoint.index);
                     }
 
                     //////////////////////////////////////
                     //Find the best GPS point for this result
-                    if (routeDist < radiusSq)
+                    if (routeDist < radius)
                     {
                         bool firstPoint = true;
                         float prevRouteDist = prevPoint.dist;
-                        float distHysteresis = Math.Max(radiusSq / distHysteresisSqFactor, distHysteresisSqMin);
+                        float distHysteresis = Math.Max(radius / distHysteresisFactor, distHysteresisMin);
                         Stack<pInfo> info = new Stack<pInfo>();
                         float matchFactor = -1;
 
@@ -698,7 +704,7 @@ namespace TrailsPlugin.Data
                             if (!firstPoint)
                             {
                                 //avoid calculations...
-                                routeDist = distanceTrailToRoute(activity, trailgps, currResultPoints.Count, routeIndex);
+                                routeDist = distanceTrailToRoute(trailgps[trailGpsIndex], activity, routeIndex);
                             }
                             firstPoint = false;
 
@@ -718,7 +724,7 @@ namespace TrailsPlugin.Data
                                     {
                                         //Check closest point
                                         routeFactor = pointInfo.checkPass(activity,
-                                           trailgps[TrailIndex(trailgps, currResultPoints.Count)], radiusSq, ref closeDist);
+                                           trailgps[trailGpsIndex], radius, ref closeDist);
                                     }
 
                                     if (closeDist < matchDist)
@@ -737,9 +743,9 @@ namespace TrailsPlugin.Data
                                 }
                             }
 
-                            if (routeDist >= radiusSq || routeIndex >= activity.GPSRoute.Count - 1)
+                            if (routeDist >= radius || routeIndex >= activity.GPSRoute.Count - 1)
                             {
-                                if (routeDist >= radiusSq)
+                                if (routeDist >= radius)
                                 {
                                     //No longer in radius, we have the best match
                                     //As we peeked on next, we have to set back the index
@@ -753,10 +759,10 @@ namespace TrailsPlugin.Data
                                     {
                                         float routeFactor = -1;
                                         float closeDist = p.dist;
-                                        if (routeIndex > 0)
+                                        if (p.index > 0)
                                         {
                                             routeFactor = p.checkPass(activity,
-                                               trailgps[TrailIndex(trailgps, currResultPoints.Count)], radiusSq, ref closeDist);
+                                               trailgps[trailGpsIndex], radius, ref closeDist);
                                         }
 
                                         if (closeDist < matchDist)
@@ -804,14 +810,15 @@ namespace TrailsPlugin.Data
                     //Check for pass-by
                     //Setting a limit here like (routeDist < 10*radius) will improve detection time very slightly
                     //This handling is very sensitive, especially for single point trails, the reason for the check
-                    else if (trailgps.Count > 1 || currResultPoints.Count == 0 || routeIndex > currResultPoints[currResultPoints.Count - 1].matchPassBy)
+                    else if (routeDist < radius * passByFactor && prevPoint.index > 0 &&
+                        //xxx correct?
+                        (trailgps.Count > 1 || currResultPoints.Count == 0 || routeIndex > currResultPoints[currResultPoints.Count - 1].matchPassBy))
                     {
-                        double d;
-                        float factor = checkPass(radiusSq,
-                            routePoint(activity, prevPoint.index), prevPoint.dist,
-                            routePoint(activity, routeIndex), routeDist,
-                            trailgps[TrailIndex(trailgps, currResultPoints.Count)],
-                            /*, dTrack[routeIndex].Value - dTrack[prevRouteIndex].Value*/
+                        float d;
+                        float factor = checkPass(radius,
+                            activity.GPSRoute[prevPoint.index].Value, prevPoint.dist,
+                            activity.GPSRoute[routeIndex].Value, routeDist,
+                            trailgps[trailGpsIndex],
                             out d);
                         if (0 < factor)
                         {
@@ -832,7 +839,7 @@ namespace TrailsPlugin.Data
                 //Not meaningful for one point trails
                 if (matchTime == null && routeIndex >= activity.GPSRoute.Count - 1 && trailgps.Count > 1)
                 {
-                    bool required = trailgps[TrailIndex(trailgps, currResultPoints.Count)].Required;
+                    bool required = trailgps[trailGpsIndex].Required;
 
                     ///////////////////
                     //Last point check for non required points - automatic match, so search can restart
@@ -848,7 +855,7 @@ namespace TrailsPlugin.Data
                     }
                     if (matchTime != null && matchTime == DateTime.MinValue)
                     {
-                        matchDist = radiusSq * radiusSqFactor;
+                        matchDist = radius * radiusFactor;
                     }
                 }
 
@@ -869,9 +876,10 @@ namespace TrailsPlugin.Data
                 //Add found match to result 
                 if (matchTime != null)
                 {
-                    currResultPoints.Add(new TrailResultPointMeta(trailgps[TrailIndex(trailgps, currResultPoints.Count)],
+                    currResultPoints.Add(new TrailResultPointMeta(trailgps[trailGpsIndex],
                         (DateTime)matchTime,
                         matchIndex, lastMatchInRadiusIndex, lastMatchPassByIndex, matchDist));
+                    trailGpsIndex = trailgps.Count == 1 ? 0 : currResultPoints.Count;
 
                     //Clear cache, dist unknown to next point
                     prevPoint.index = -1;
@@ -960,6 +968,7 @@ namespace TrailsPlugin.Data
 
                         //Reset matches for trail detection
                         currResultPoints.Clear();
+                        trailGpsIndex = 0;
                     }
                     else
                     {
@@ -988,47 +997,6 @@ namespace TrailsPlugin.Data
                     prevPoint.dist = routeDist;
                 }
 
-//TODO remove - need for restart handling?
-#if OLD_TRAIL_RESTART
-                ////////////////////////////////////
-                //Determine where to start from
-                //At matches, the index is determined from type of match
-                //The normal case at no match is to continue with next routePoint
-                //At end points, non, the match may restart
-                if ((matchTime == null /*|| matchTime == DateTime.MinValue*/) &&
-                    routeIndex >= activity.GPSRoute.Count - 1 &&
-                         currResultPoints.Count > 0)// &&
-                        //!currResultPoints[currResultPoints.Count - 1].restart) 
-                {
-                    ////////////////////////////////////
-                    //We have reached the end without a match
-                    //If there are non-required previous, try dropping them and continue
-
-                    //Last req index that match for this activity
-                    bool matchNoReqToIgnore = false;
-                    for (int i = currResultPoints.Count - 1; i >= 0; i--)
-                    {
-                        if (!currResultPoints[i].restart && trailgps[TrailIndex(trailgps, i)].Required &&
-                            currResultPoints[i].index >= 0)
-                        {
-                            //prevActivityMatchIndex = currResultPoints[i].index;
-                            //reset routeIndex to last real match
-                            routeIndex = prevActivityMatchIndex;
-                            break;
-                        }
-                        else if (!currResultPoints[i].restart)
-                        {
-                            //Hide the non-required point
-                            currResultPoints[i].restart = true;
-                        }
-                    }
-                    if (matchNoReqToIgnore)
-                    {
-                        routeIndex = prevReqMatchIndex;
-                        prevPoint.index = -1;
-                    }
-                }
-#endif
                 //Route index cannot be lower than latest match
                 routeIndex = Math.Max(routeIndex, prevActivityMatchIndex);
 
@@ -1062,7 +1030,6 @@ namespace TrailsPlugin.Data
         //See TrailGPSLocation for details
         //This improves trail detection time with about 10%, but has currently some differences
         //In additition, the standard distance is useful for debugging 
-        private const bool SquareDistance = false;
  
         private static int getPrevMatchIndex(IList<TrailResultPointMeta> resultPoints)
         {
@@ -1097,42 +1064,43 @@ namespace TrailsPlugin.Data
 
             return prevMatchIndex;
         }
-        private static float checkPass(float radius, IGPSPoint r1, float dt1, IGPSPoint r2, float dt2, TrailGPSLocation trailp/*, float d12*/, out double d)
+
+        private static float checkPass(float radius, IGPSPoint r1, float dt1, IGPSPoint r2, float dt2, TrailGPSLocation trailp, out float d)
         {
-            //Optimise, not so important (float)Math.Sqrt(2); 
-            const float sqrt2 = 1.4142135623730950488016887242097F; 
-            d = double.MaxValue;
+#if SQUARE_DISTANCE
+            const int sqrt2 = 2;
+#else
+            //Optimise, accuracy is down to percent
+            const float sqrt2 = 1.4142135623730950488016887242097F;
+#endif
+            d = float.MaxValue;
             float factor = -1;
             if (r1 == null || r2 == null || trailp == null) return factor;
 
             //Check if the line goes via the "circle" if the sign changes
             //Also need to check close points that fit in a 45 deg tilted "square" where sign may not change
-            if (r1.LatitudeDegrees > trailp.LatitudeDegrees
-                                && r2.LatitudeDegrees < trailp.LatitudeDegrees
-                || r1.LatitudeDegrees < trailp.LatitudeDegrees
-                                && r2.LatitudeDegrees > trailp.LatitudeDegrees
-                || r1.LongitudeDegrees > trailp.LongitudeDegrees
-                                && r2.LongitudeDegrees < trailp.LongitudeDegrees
-                || r1.LongitudeDegrees < trailp.LongitudeDegrees
-                                && r2.LongitudeDegrees > trailp.LongitudeDegrees
-                || dt1 < radius * sqrt2
-                && dt2 < radius * sqrt2)
+
+            //Optimise for all conditions tested - property access takes some time
+            float tplat = trailp._LatitudeDegrees;
+            float tplon = trailp._LongitudeDegrees;
+            float r1lat = r1.LatitudeDegrees;
+            float r1lon = r1.LongitudeDegrees;
+            float r2lat = r2.LatitudeDegrees;
+            float r2lon = r2.LongitudeDegrees;
+            if (r1lat > tplat && r2lat < tplat ||
+                r1lat < tplat && r2lat > tplat ||
+                r1lon > tplon && r2lon < tplon ||
+                r1lon < tplon && r2lon > tplon ||
+                dt1 < radius * sqrt2 && dt2 < radius * sqrt2)
             {
                 //Law of cosines - get a1, angle at r1, the first point
-                float d12;
-                float a10;
-#pragma warning disable 0162
-                if (SquareDistance)
-                {
-                    d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
-                    a10 = (float)((dt1 + d12 - dt2) / (2 * dt1 * d12)); //xxx
-                }
-                else
-                {
-                    d12 = r1.DistanceMetersToPoint(r2);
-                    a10 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
-                }
-#pragma warning restore 0162
+#if SQUARE_DISTANCE
+                float d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
+                float a10 = (float)((dt1 + d12 - dt2) / (2 * Math.Sqrt(dt1 * d12)));
+#else
+                float d12 = r1.DistanceMetersToPoint(r2);
+                float a10 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
+#endif
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
                 //This means the angle a1 must be +/- 90 degrees : cos(a1)>=0
                 if (a10 > -0.001)
@@ -1140,11 +1108,11 @@ namespace TrailsPlugin.Data
                     //Rounding errors w GPS measurements
                     a10 = Math.Min(a10, 1);
                     a10 = Math.Max(a10, -1);
-                    double a1 = Math.Acos(a10);
+                    float a1 = (float)Math.Acos(a10);
                     //Dist from r1 to closest point on d1-d2 (called x)
-                    double d1x = Math.Abs(dt1 * Math.Cos(a1));
+                    float d1x = (float)Math.Abs(dt1 * Math.Cos(a1));
                     //Dist from t1 to x on line between d1-d2
-                    double dtx = dt1 * Math.Sin(a1);
+                    float dtx = dt1 * (float)Math.Sin(a1);
                     if (d1x < d12 && dtx < radius)
                     {
                         d = dtx;
@@ -1156,38 +1124,13 @@ namespace TrailsPlugin.Data
             return factor;
         }
 
-        private static IGPSPoint routePoint(IActivity activity, int index)
+        private static float distanceTrailToRoute(TrailGPSLocation t, IActivity activity, int routeIndex)
         {
-            if (index < 0 || index >= activity.GPSRoute.Count)
-            {
-                return null;
-            }
-            return activity.GPSRoute[index].Value;
-        }
-
-        private static int TrailIndex(IList<TrailGPSLocation> trailgps, int trailIndex)
-        {
-            //Single point trails (and wraparound if implemented) have special handling
-            if (trailgps.Count <= trailIndex)
-            {
-                trailIndex = 0;
-            }
-            return trailIndex;
-        }
-
-        //TBD optimize - no dramatic change though
-        private static float distanceTrailToRoute(IActivity activity, IList<TrailGPSLocation> trailgps, int trailIndex, int routeIndex)
-        {
-#pragma warning disable 0162
-            if (SquareDistance)
-            {
-                return trailgps[TrailIndex(trailgps, trailIndex)].DistanceMetersToPointSquared(routePoint(activity, routeIndex));
-            }
-            else
-            {
-                return trailgps[TrailIndex(trailgps, trailIndex)].DistanceMetersToPoint(routePoint(activity, routeIndex));
-            }
-#pragma warning restore 0162
+#if SQUARE_DISTANCE
+            return TrailGPSLocation.DistanceMetersToPointSquared(t, activity.GPSRoute[routeIndex].Value);
+#else
+            return t.DistanceMetersToPoint(activity.GPSRoute[routeIndex].Value);
+#endif
         }
 
         private static bool isEndTrailPoint(IList<TrailGPSLocation> trailgps, int noOfTrailPoints)

@@ -29,7 +29,7 @@ namespace TrailsPlugin.Utils {
                 //TODO: raise exception?
                 return new GPSPoint(0, 0, 0);
             }
-			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, 0);
+			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, float.NaN);
 		}
 
 		//public static IGPSLocation PointToLocation(IGPSPoint point) {

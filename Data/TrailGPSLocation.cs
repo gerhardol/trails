@@ -25,18 +25,40 @@ using System.Collections.Generic;
 
 namespace TrailsPlugin.Data
 {
-    public class TrailGPSLocation
+    public class TrailGPSLocation : GPSPoint
     {
-        public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required)
+        public TrailGPSLocation(float lat, float lon, float ele, string name, bool required, float radius)
+          : base(lat, lon, ele)
         {
-            this._gpsPoint = gpsLoc;
-            this._LatitudeDegrees = _gpsPoint.LatitudeDegrees;
-            this._LongitudeDegrees = _gpsPoint.LongitudeDegrees;
+            //this._gpsPoint = gpsLoc;
+            this._LatitudeDegrees = lat;
+            this._LongitudeDegrees = lon;
             this._name = name;
             this._required = required;
+            this._radius = radius;
+        }
+        public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required, float radius)
+            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, gpsLoc.ElevationMeters, name, required, 25)
+        {
+        }
+        public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required)
+            : this(gpsLoc, name, required, 25)
+        {
         }
         public TrailGPSLocation(IGPSPoint gpsLoc) :
             this(gpsLoc, "", true)
+        {
+        }
+        public TrailGPSLocation(TrailGPSLocation trailLocation)
+            : this(trailLocation.LatitudeDegrees, trailLocation.LongitudeDegrees, trailLocation.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
+        {
+        }
+        public TrailGPSLocation(TrailGPSLocation trailLocation, IGPSLocation gpsLoc)
+            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, trailLocation.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
+        {
+        }
+        public TrailGPSLocation(TrailGPSLocation trailLocation, IGPSPoint gpsLoc)
+            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, gpsLoc.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
         {
         }
         
@@ -54,19 +76,9 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        public TrailGPSLocation(TrailGPSLocation trailLocation)
-        {
-            this._gpsPoint = trailLocation._gpsPoint;
-            this._LatitudeDegrees = _gpsPoint.LatitudeDegrees;
-            this._LongitudeDegrees = _gpsPoint.LongitudeDegrees;
-            this._name = trailLocation._name;
-            this._required = trailLocation._required;
-            this._radius = trailLocation._radius;
-        }
-
         public override string ToString()
         {
-            return _name + " " + _required + " " + _gpsPoint;
+            return _name + " " + _required + " " +base.ToString()/* _gpsPoint*/;
         }
 
         private float _radius = 25;
@@ -82,47 +94,33 @@ namespace TrailsPlugin.Data
             }
         }
 
-        private IGPSPoint _gpsPoint;
-        public IGPSPoint GpsPoint
-        {
-            get
-            {
-                return _gpsPoint;
-            }
-            set
-            {
-                _cosmean = invalidLatLon;
-                _gpsPoint = value;
-                this._LatitudeDegrees = _gpsPoint.LatitudeDegrees;
-                this._LongitudeDegrees = _gpsPoint.LongitudeDegrees;
-            }
-        }
+        //private IGPSPoint _gpsPoint;
 
         //Note: Use fields to improve performance (trail detection with like 5%)
         //Setting the fields will not have any effect
         public float _LatitudeDegrees;
-        public float LatitudeDegrees
-        {
-            get
-            {
-                return _gpsPoint.LatitudeDegrees;
-            }
-        }
+        //public float LatitudeDegrees
+        //{
+        //    get
+        //    {
+        //        return _gpsPoint.LatitudeDegrees;
+        //    }
+        //}
         public float _LongitudeDegrees;
-        public float LongitudeDegrees
-        {
-            get
-            {
-                return _gpsPoint.LongitudeDegrees;
-            }
-        }
-        public float Elevation
-        {
-            get
-            {
-                return _gpsPoint.ElevationMeters;
-            }
-        }
+        //public float LongitudeDegrees
+        //{
+        //    get
+        //    {
+        //        return _gpsPoint.LongitudeDegrees;
+        //    }
+        //}
+        //public float Elevation
+        //{
+        //    get
+        //    {
+        //        return _gpsPoint.ElevationMeters;
+        //    }
+        //}
 
         private string _name;
         public string Name
@@ -198,10 +196,10 @@ namespace TrailsPlugin.Data
             a.Value = XmlConvert.ToString(this.LongitudeDegrees);
             TrailGPSLocationNode.Attributes.Append(a);
 
-            if (!float.IsNaN(this.Elevation))
+            if (!float.IsNaN(this.ElevationMeters))
             {
                 a = doc.CreateAttribute(xmlTags.sElevation);
-                a.Value = XmlConvert.ToString(this.Elevation);
+                a.Value = XmlConvert.ToString(this.ElevationMeters);
                 TrailGPSLocationNode.Attributes.Append(a);
             }
 
@@ -228,14 +226,14 @@ namespace TrailsPlugin.Data
 
         /* Distance calculation */
 
-        public float DistanceMetersToPoint(IGPSPoint point)
-        {
-            if (point == null)
-            {
-                return float.MaxValue;
-            }
-            return this._gpsPoint.DistanceMetersToPoint(point);
-        }
+        //public float DistanceMetersToPoint(IGPSPoint point)
+        //{
+        //    if (point == null)
+        //    {
+        //        return float.MaxValue;
+        //    }
+        //    return this._gpsPoint.DistanceMetersToPoint(point);
+        //}
 
         public const float DistanceToSquareScaling = RadToDeg / EarthRadius;
 
@@ -257,6 +255,7 @@ namespace TrailsPlugin.Data
             float dlon = point.LongitudeDegrees - trailp._LongitudeDegrees;
             float result = dlat * dlat + dlon * dlon * trailp._cosmean;
 
+            //xxxreturn EarthRadius*DegToRad*(float)Math.Sqrt( result);
             return result;
         }
 
@@ -267,6 +266,7 @@ namespace TrailsPlugin.Data
             float dlon = point.LongitudeDegrees - point2.LongitudeDegrees;
             float result = dlat * dlat + dlon * dlon * _cosmean;
 
+            //return EarthRadius * DegToRad * (float)Math.Sqrt(result);
             return result;
         }
 
@@ -304,10 +304,10 @@ namespace TrailsPlugin.Data
 
             foreach (TrailGPSLocation g in list)
             {
-                if ((g.Required || !requiredCheck || !enoughRequired) && g.GpsPoint != null)
+                if ((g.Required || !requiredCheck || !enoughRequired))
                 {
-                    float glat = g.GpsPoint.LatitudeDegrees;
-                    float glon = g.GpsPoint.LongitudeDegrees;
+                    float glat = g.LatitudeDegrees;
+                    float glon = g.LongitudeDegrees;
 
                     north = Math.Max(north, glat);
                     south = Math.Min(south, glat);
@@ -379,7 +379,7 @@ namespace TrailsPlugin.Data
         {
             float pos = float.NaN;
             int valid = 1;
-            TrailGPSLocation result = this;
+            TrailGPSLocation result = null;
             if (subItemSelected <= 2)
             {
                 //check valid numbers
@@ -412,16 +412,14 @@ namespace TrailsPlugin.Data
                 switch (subItemSelected)
                 {
                     case 1:
-                        _gpsPoint = new GPSPoint(this.LatitudeDegrees, pos, this.Elevation);
-                        this._LongitudeDegrees = pos;
+                        result = new TrailGPSLocation(this.LatitudeDegrees, pos, this.ElevationMeters, this._name, this._required, this._radius);
                         break;
                     case 2:
-                        _gpsPoint = new GPSPoint(pos, this.LongitudeDegrees, this.Elevation);
-                        this._LatitudeDegrees = pos;
+                        result = new TrailGPSLocation(pos, this._LongitudeDegrees, this.ElevationMeters, this._name, this._required, this._radius);
                         break;
                     case 99:
                         //Not yet implemented
-                        _gpsPoint = new GPSPoint(this.LatitudeDegrees, this.LongitudeDegrees, pos);
+                        result = new TrailGPSLocation(this.LatitudeDegrees, this._LongitudeDegrees, pos, this._name, this._required, this._radius);
                         break;
                     default:
                         this.Name = s;

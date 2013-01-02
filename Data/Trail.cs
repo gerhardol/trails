@@ -325,13 +325,7 @@ namespace TrailsPlugin.Data
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             foreach (TrailResultPoint t in info.Points)
             {
-                if (t.GpsPoint != null)
-                {
-                    result.Add(t);
-                }
-                else
-                {
-                }
+                result.Add(t);
             }
             return result;
         }

@@ -91,7 +91,7 @@ namespace TrailsPlugin.Data
             IGPSPoint t = TrailGPSLocation.getGpsLoc(tr.Activity, d1);
             if (t != null)
             {
-                this.TrailGPS.GpsPoint = t;
+                this.TrailGPS = new TrailGPSLocation(this.TrailGPS, t);
             }
             SetDistance(tr, d1);
         }

@@ -808,10 +808,8 @@ namespace TrailsPlugin.Data
 
                     ///////////
                     //Check for pass-by
-                    //Setting a limit here like (routeDist < 10*radius) will improve detection time very slightly
-                    //This handling is very sensitive, especially for single point trails, the reason for the check
+                    //This handling is very sensitivefor single point trails, the reason for the check below
                     else if (routeDist < radius * passByFactor && prevPoint.index > 0 &&
-                        //xxx correct?
                         (trailgps.Count > 1 || currResultPoints.Count == 0 || routeIndex > currResultPoints[currResultPoints.Count - 1].matchPassBy))
                     {
                         float d;
@@ -1098,7 +1096,8 @@ namespace TrailsPlugin.Data
                 float d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
                 float a10 = (float)((dt1 + d12 - dt2) / (2 * Math.Sqrt(dt1 * d12)));
 #else
-                float d12 = r1.DistanceMetersToPoint(r2);
+                float d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
+//                float d12 = r1.DistanceMetersToPoint(r2);
                 float a10 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
 #endif
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)

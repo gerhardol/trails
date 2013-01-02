@@ -331,7 +331,7 @@ namespace TrailsPlugin.UI.MapLayers
                         this._selectedWaypointOriginalLocation != null)
                     {
                         //New selection before old finished - set old location back
-                        this._selectedPointMoving.TrailPoint.GpsLocation = this._selectedWaypointOriginalLocation;
+                        this._selectedPointMoving.TrailPoint.GpsPoint = this._selectedWaypointOriginalLocation;
                         this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
                         //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
                     }
@@ -408,8 +408,8 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     //MapControl.RemoveOverlay(_selectedWaypointMoving);
                     Point p = new Point(m_clickToCenterOffset.X + e.Location.X, m_clickToCenterOffset.Y + e.Location.Y);
-                    IGPSLocation newGpsLocation = MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p);
-                    _selectedPointMoving.TrailPoint.GpsLocation = newGpsLocation;
+                    IGPSPoint newGpsLocation = Utils.GPS.LocationToPoint(MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p));
+                    _selectedPointMoving.TrailPoint.GpsPoint = newGpsLocation;
                     this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
                     //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
 
@@ -622,7 +622,7 @@ namespace TrailsPlugin.UI.MapLayers
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             foreach (TrailGPSLocation location in m_TrailPoints)
             {
-                IGPSPoint point = Utils.GPS.LocationToPoint(location.GpsLocation);
+                IGPSPoint point = Utils.GPS.LocationToPoint(location.GpsPoint);
                 PointMapMarker pointOverlay = new PointMapMarker(point, m_icon, MouseEvents, location);
                 if (MouseEvents)
                 {

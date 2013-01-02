@@ -415,7 +415,7 @@ namespace TrailsPlugin.UI.Activity
                     for (int i = 0; i < loc.Count; i++)
                     {
                         TrailGPSLocation loc1 = loc[i];
-                        IGPSLocation loc2 = dialog.Trail.TrailLocations[i].GpsLocation;
+                        IGPSLocation loc2 = dialog.Trail.TrailLocations[i].GpsPoint;
                         if (loc1.LatitudeDegrees != loc2.LatitudeDegrees
                                 || loc1.LongitudeDegrees != loc2.LongitudeDegrees)
                         {

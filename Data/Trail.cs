@@ -302,10 +302,10 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps)
+        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSPoint> gps)
         {
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
-            foreach (IGPSLocation g in gps)
+            foreach (IGPSPoint g in gps)
             {
                 results.Add(new TrailGPSLocation(g));
             }
@@ -325,7 +325,7 @@ namespace TrailsPlugin.Data
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             foreach (TrailResultPoint t in info.Points)
             {
-                if (t.GpsLocation != null)
+                if (t.GpsPoint != null)
                 {
                     result.Add(t);
                 }

@@ -475,12 +475,12 @@ namespace TrailsPlugin.UI.Activity {
                 bool sectionFound = false;
                 //Use pixels to get radius from zoom level, to get click limit. (Tests indicate the limit is about 7 pixels.) Affects pass-by trail detection too
                 float radius = Math.Max(1, m_layerMarked.getRadius(10));
-                IGPSLocation egps = m_layerRoutes.GetGps(e.Location);
+                IGPSPoint egps = Utils.GPS.LocationToPoint(m_layerRoutes.GetGps(e.Location));
 
                 if (m_currentSelectedMapLocation != null)
                 {
                     IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
-                    IList<IGPSLocation> trailgps = new List<IGPSLocation>{ m_currentSelectedMapLocation, egps };
+                    IList<IGPSPoint> trailgps = new List<IGPSPoint> { Utils.GPS.LocationToPoint(m_currentSelectedMapLocation), egps };
                     TrailOrderStatus status;
                     status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
 
@@ -539,7 +539,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Should be status message somehow here
                         //Debug where points are clicked
-                        m_layerPoints.TrailPoints = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { egps });
+                        m_layerPoints.TrailPoints = Trail.TrailGpsPointsFromGps(new List<IGPSPoint> { egps });
                     }
                 }
             }

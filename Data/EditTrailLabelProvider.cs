@@ -88,10 +88,10 @@ namespace TrailsPlugin.Data
             //        entry.Value.LatitudeDegrees,
             //        entry.Value.LongitudeDegrees);
             //}
-            IGPSLocation t = TrailGPSLocation.getGpsLoc(tr.Activity, d1);
+            IGPSPoint t = TrailGPSLocation.getGpsLoc(tr.Activity, d1);
             if (t != null)
             {
-                this.TrailGPS.GpsLocation = t;
+                this.TrailGPS.GpsPoint = t;
             }
             SetDistance(tr, d1);
         }

@@ -489,12 +489,12 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                sel = new TrailGPSLocation(m_layer.GetCenterMap());
+                sel = new TrailGPSLocation(Utils.GPS.LocationToPoint(m_layer.GetCenterMap()));
             }
             TrailGPSLocation add = new TrailGPSLocation(sel);
                 add.Name +=
                 " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
-            add.GpsLocation = m_layer.GetCenterMap();
+            add.GpsPoint = Utils.GPS.LocationToPoint(m_layer.GetCenterMap());
 
             //If a point is selected on the track, use it instead
             IList<IActivity> activities = new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity };
@@ -505,7 +505,7 @@ namespace TrailsPlugin.UI.Activity {
                 IList<TrailGPSLocation> loc = TrailSelectorControl.getGPS(this.Trail, activities, selectedGPS);
                 if (loc.Count > 0)
                 {
-                    add.GpsLocation = loc[0].GpsLocation;
+                    add.GpsPoint = loc[0].GpsPoint;
                 }
             }
 

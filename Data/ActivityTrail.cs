@@ -1097,9 +1097,10 @@ namespace TrailsPlugin.Data
 
             return prevMatchIndex;
         }
-
         private static float checkPass(float radius, IGPSPoint r1, float dt1, IGPSPoint r2, float dt2, TrailGPSLocation trailp/*, float d12*/, out double d)
         {
+            //Optimise, not so important (float)Math.Sqrt(2); 
+            const float sqrt2 = 1.4142135623730950488016887242097F; 
             d = double.MaxValue;
             float factor = -1;
             if (r1 == null || r2 == null || trailp == null) return factor;
@@ -1114,8 +1115,8 @@ namespace TrailsPlugin.Data
                                 && r2.LongitudeDegrees < trailp.LongitudeDegrees
                 || r1.LongitudeDegrees < trailp.LongitudeDegrees
                                 && r2.LongitudeDegrees > trailp.LongitudeDegrees
-                || dt1 < radius * Math.Sqrt(2)
-                && dt2 < radius * Math.Sqrt(2))
+                || dt1 < radius * sqrt2
+                && dt2 < radius * sqrt2)
             {
                 //Law of cosines - get a1, angle at r1, the first point
                 float d12;
@@ -1124,12 +1125,12 @@ namespace TrailsPlugin.Data
                 if (SquareDistance)
                 {
                     d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
-                    a10 = (float)((dt1 + d12 - dt2) / (2 * Math.Sqrt(dt1 * d12)));
+                    a10 = (float)((dt1 + d12 - dt2) / (2 * dt1 * d12)); //xxx
                 }
                 else
                 {
                     d12 = r1.DistanceMetersToPoint(r2);
-                    a10 = (dt1*dt1 +d12*d12 + dt2*dt2) / (2 * dt1 * d12);
+                    a10 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
                 }
 #pragma warning restore 0162
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)

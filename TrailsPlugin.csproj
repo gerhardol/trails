@@ -21,7 +21,7 @@
     </Reference>
   </ItemGroup>
   -->
-  <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
+  <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST3.0Profile') ">
     <Reference Include="ITrailExport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ITrailExport\bin\ST3.0Release\ITrailExport.dll</HintPath>

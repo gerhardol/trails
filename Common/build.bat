@@ -1,4 +1,4 @@
-REM Copyright (C) 2011 Gerhard Olsson
+REM Copyright (C) 2011-2013 Gerhard Olsson
 REM
 REM This library is free software; you can redistribute it and/or
 REM modify it under the terms of the GNU Lesser General Public
@@ -63,8 +63,11 @@ REM set stPlgoutdir=g:\Users\go\dev\web
 REM Vista+ / XP compatibility
 set C_APPDATA=%PROGRAMDATA%
 IF "%C_APPDATA%"=="" set C_APPDATA=%ALLUSERSPROFILE%\Application Data
-IF EXIST "%C_APPDATA%" GOTO COPY_REL
-GOTO END_COPY_REL
+IF EXIST "%C_APPDATA%" GOTO COPY_FILES
+GOTO END_COPY_FILES
+
+:COPY_FILES
+IF "%ConfigurationType%"=="Profile" GOTO COPY_PROFILE
 
 :COPY_REL
 set StTarget="%C_APPDATA%\%StPluginPath%\Update\%guid%\%ProjectName%"
@@ -72,7 +75,21 @@ IF NOT EXIST %StTarget% mkdir %StTarget%
 
 REM XCOPY depreciated in Vista, use for XP compatibility
 XCOPY  "%TargetDir%*.*" %StTarget% /I/Y/Q/E <NUL:
+GOTO END_COPY_FILES
 :END_COPY_REL
+
+:COPY_PROFILE
+IF EXIST %C_APPDATA%\%StPluginPath%\Update ECHO Delete %C_APPDATA%\%StPluginPath%\Update\%guid%
+set StTarget="%C_APPDATA%\%StPluginPath%\Installed\%guid%\%ProjectName%"
+IF NOT EXIST %StTarget% mkdir %StTarget%
+
+REM XCOPY depreciated in Vista, use for XP compatibility
+XCOPY  "%TargetDir%*.*"                                      %StTarget% /I/Y/Q/E <NUL:
+XCOPY  "%ProgramFiles%\Zone Five Software\SportTracks 3\*.*" %StTarget% /I/Y/Q <NUL:
+GOTO END_COPY_FILES
+:END_COPY_PROFILE
+
+:END_COPY_FILES
 
 REM generate the plugin.xml file
 ECHO ^<?xml version="1.0" encoding="utf-8" ?^> >  "%TargetDir%plugin.xml"
@@ -100,5 +117,6 @@ IF "%stPlgoutdir%"=="" GOTO END
 IF not EXIST "%stPlgoutdir%" GOTO END
 COPY "%stPlgFile%" "%stPlgoutdir%"
 :END_ZIP_PACKAGE
+GOTO END
 
 :END

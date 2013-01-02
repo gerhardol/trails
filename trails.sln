@@ -6,11 +6,14 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ST3.0Debug|Any CPU = ST3.0Debug|Any CPU
+		ST3.0Profile|Any CPU = ST3.0Profile|Any CPU
 		ST3.0Release|Any CPU = ST3.0Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Debug|Any CPU.ActiveCfg = ST3.0Debug|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Debug|Any CPU.Build.0 = ST3.0Debug|Any CPU
+		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Profile|Any CPU.ActiveCfg = ST3.0Profile|Any CPU
+		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Profile|Any CPU.Build.0 = ST3.0Profile|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Release|Any CPU.ActiveCfg = ST3.0Release|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Release|Any CPU.Build.0 = ST3.0Release|Any CPU
 	EndGlobalSection

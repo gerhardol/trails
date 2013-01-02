@@ -28,7 +28,7 @@
 	<StPluginVersion>2</StPluginVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug')) ">
+  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST3.0Profile')) ">
     <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</StartProgram>
 	<StPluginPath>ZoneFiveSoftware\SportTracks\3\Plugins</StPluginPath>
 	<StPluginVersion>3</StPluginVersion>
@@ -37,8 +37,11 @@
   <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST2.1Debug')) ">
     <ConfigurationType>Debug</ConfigurationType>
   </PropertyGroup>
-  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST2.1Release')) ">
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Profile') or ('$(Configuration)' == 'ST2.1Release')) ">
     <ConfigurationType>Release</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Profile')) ">
+    <ConfigurationType>Profile</ConfigurationType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -61,7 +64,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ST3.0Release|AnyCPU' ">
+  <PropertyGroup Condition=" (('$(Configuration)|$(Platform)' == 'ST3.0Release|AnyCPU') or ('$(Configuration)|$(Platform)' == 'ST3.0Profile|AnyCPU'))  ">
     <DefineConstants>$(DefineConstants);TRACE;ST_3_0</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -93,7 +96,7 @@
   </ItemGroup>
   -->
   <!-- references to ST API 3.0 -->
-  <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') ">
+  <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST3.0Profile') ">
     <Reference Include="Common.Data, Version=3.1.4415.14933, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath Condition="'$(Platform)' == 'x64' and Exists('$(ProgramFiles) (x86)')">$(ProgramFiles) (x86)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>

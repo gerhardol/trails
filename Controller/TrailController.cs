@@ -106,7 +106,7 @@ namespace TrailsPlugin.Controller
                 //Make sure reference activity is 'reasonable' in case the reference trail is selected
                 this.checkReferenceActivity(progressBar);
 
-                //Calculate trails - at least InBounds, set aprpriate ActivityTrail
+                //Calculate trails - at least InBounds, set apr0priate ActivityTrail
                 this.ReCalcTrails(false, progressBar);
             }
         }
@@ -373,7 +373,10 @@ namespace TrailsPlugin.Controller
                     val = progressBar.Value;
                 }
 
-                if (at.IsInBounds)
+                //Is InBounds is separated here to simplify profiling
+                //There is not much point in calculating generated trails
+                //(reference could maybe be interesting to see no of matches)
+                if (at.IsInBounds && at.Status != TrailOrderStatus.MatchNoCalc)
                 {
 
                     if (reCalc ||

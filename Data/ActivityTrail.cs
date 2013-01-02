@@ -808,7 +808,7 @@ namespace TrailsPlugin.Data
 
                     ///////////
                     //Check for pass-by
-                    //This handling is very sensitivefor single point trails, the reason for the check below
+                    //This handling is very sensitive for single point trails, extra check required
                     else if (routeDist < radius * passByFactor && prevPoint.index > 0 &&
                         (trailgps.Count > 1 || currResultPoints.Count == 0 || routeIndex > currResultPoints[currResultPoints.Count - 1].matchPassBy))
                     {
@@ -1079,8 +1079,8 @@ namespace TrailsPlugin.Data
             //Also need to check close points that fit in a 45 deg tilted "square" where sign may not change
 
             //Optimise for all conditions tested - property access takes some time
-            float tplat = trailp._LatitudeDegrees;
-            float tplon = trailp._LongitudeDegrees;
+            float tplat = trailp.LatitudeDegrees;
+            float tplon = trailp.LongitudeDegrees;
             float r1lat = r1.LatitudeDegrees;
             float r1lon = r1.LongitudeDegrees;
             float r2lat = r2.LatitudeDegrees;

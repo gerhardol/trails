@@ -30,9 +30,6 @@ namespace TrailsPlugin.Data
         public TrailGPSLocation(float lat, float lon, float ele, string name, bool required, float radius)
           : base(lat, lon, ele)
         {
-            //this._gpsPoint = gpsLoc;
-            this._LatitudeDegrees = lat;
-            this._LongitudeDegrees = lon;
             this._name = name;
             this._required = required;
             this._radius = radius;
@@ -93,34 +90,6 @@ namespace TrailsPlugin.Data
                 this._radius = value;
             }
         }
-
-        //private IGPSPoint _gpsPoint;
-
-        //Note: Use fields to improve performance (trail detection with like 5%)
-        //Setting the fields will not have any effect
-        public float _LatitudeDegrees;
-        //public float LatitudeDegrees
-        //{
-        //    get
-        //    {
-        //        return _gpsPoint.LatitudeDegrees;
-        //    }
-        //}
-        public float _LongitudeDegrees;
-        //public float LongitudeDegrees
-        //{
-        //    get
-        //    {
-        //        return _gpsPoint.LongitudeDegrees;
-        //    }
-        //}
-        //public float Elevation
-        //{
-        //    get
-        //    {
-        //        return _gpsPoint.ElevationMeters;
-        //    }
-        //}
 
         private string _name;
         public string Name
@@ -226,15 +195,6 @@ namespace TrailsPlugin.Data
 
         /* Distance calculation */
 
-        //public float DistanceMetersToPoint(IGPSPoint point)
-        //{
-        //    if (point == null)
-        //    {
-        //        return float.MaxValue;
-        //    }
-        //    return this._gpsPoint.DistanceMetersToPoint(point);
-        //}
-
         public const float DistanceToSquareScaling = RadToDeg / EarthRadius;
 
         //Squared scaled distance calculations, speedup calculations for trail detection
@@ -250,9 +210,9 @@ namespace TrailsPlugin.Data
         public static float DistanceMetersToPointSquared(TrailGPSLocation trailp, IGPSPoint point)
         {
             //Use the trailp lat instead of average lat
-            if (trailp._cosmean == invalidLatLon) { trailp._cosmean = (float)Math.Cos(trailp._LatitudeDegrees * DegToRad); }
-            float dlat = point.LatitudeDegrees - trailp._LatitudeDegrees;
-            float dlon = point.LongitudeDegrees - trailp._LongitudeDegrees;
+            if (trailp._cosmean == invalidLatLon) { trailp._cosmean = (float)Math.Cos(trailp.latitudeDegrees * DegToRad); }
+            float dlat = point.LatitudeDegrees - trailp.latitudeDegrees;
+            float dlon = point.LongitudeDegrees - trailp.longitudeDegrees;
             float result = dlat * dlat + dlon * dlon * trailp._cosmean;
 
             //xxxreturn EarthRadius*DegToRad*(float)Math.Sqrt( result);
@@ -306,8 +266,8 @@ namespace TrailsPlugin.Data
             {
                 if ((g.Required || !requiredCheck || !enoughRequired))
                 {
-                    float glat = g.LatitudeDegrees;
-                    float glon = g.LongitudeDegrees;
+                    float glat = g.latitudeDegrees;
+                    float glon = g.longitudeDegrees;
 
                     north = Math.Max(north, glat);
                     south = Math.Min(south, glat);
@@ -415,11 +375,11 @@ namespace TrailsPlugin.Data
                         result = new TrailGPSLocation(this.LatitudeDegrees, pos, this.ElevationMeters, this._name, this._required, this._radius);
                         break;
                     case 2:
-                        result = new TrailGPSLocation(pos, this._LongitudeDegrees, this.ElevationMeters, this._name, this._required, this._radius);
+                        result = new TrailGPSLocation(pos, this.LongitudeDegrees, this.ElevationMeters, this._name, this._required, this._radius);
                         break;
                     case 99:
                         //Not yet implemented
-                        result = new TrailGPSLocation(this.LatitudeDegrees, this._LongitudeDegrees, pos, this._name, this._required, this._radius);
+                        result = new TrailGPSLocation(this.LatitudeDegrees, this.LongitudeDegrees, pos, this._name, this._required, this._radius);
                         break;
                     default:
                         this.Name = s;

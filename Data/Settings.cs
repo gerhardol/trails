@@ -40,7 +40,7 @@ namespace TrailsPlugin.Data
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Ascending;
         private static bool m_SetNameAtImport = true;
         private static int m_MaxAutoCalcActivitiesTrails = 10000;
-        private static int m_MaxAutoCalcActivitiesSingleTrail = 200;
+        private static int m_MaxAutoCalcActivitiesSingleTrail = 10000;
         private static bool m_restLapIsPause = false;
         private static bool m_nonReqIsPause = false;
         private static bool m_resyncDiffAtTrailPoints = true;
@@ -439,7 +439,7 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
                 if (attr.Length > 0) {
                     m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr);
-                    if (m_MaxAutoCalcActivitiesTrails == 200) { m_MaxAutoCalcActivitiesTrails = 10000; }
+                    if (m_MaxAutoCalcActivitiesSingleTrail == 200) { m_MaxAutoCalcActivitiesSingleTrail = 10000; }
                 }
 
                 attr = pluginNode.GetAttribute(xmlTags.sColumns);

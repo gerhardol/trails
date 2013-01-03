@@ -129,7 +129,7 @@ namespace TrailsPlugin.Data
                 if (m_isReference)
                 {
                     if (m_referenceActivity != null &&
-                        m_trailLocations == null)
+                        (m_trailLocations == null || m_trailLocations.Count == 0))
                     {
                         m_trailLocations = TrailGpsPointsFromSplits(m_referenceActivity);
                         m_gpsBounds = null;
@@ -542,6 +542,20 @@ namespace TrailsPlugin.Data
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }
 
+        //The bounds to check for - smaller than real bounds
+        IGPSBounds m_gpsBounds = null;
+        private IGPSBounds GpsBounds
+        {
+            get
+            {
+                if (m_gpsBounds == null)
+                {
+                    m_gpsBounds = TrailGPSLocation.getGPSBounds(this.TrailLocations, -10 * m_radius, true);
+                }
+                return m_gpsBounds;
+            }
+        }
+
         public bool IsInBounds(IList<IActivity> acts)
         {
             bool result = false;
@@ -558,23 +572,6 @@ namespace TrailsPlugin.Data
                 }
             }
             return result;
-        }
-
-        //The bounds to check for - smaller than real bounds
-        IGPSBounds m_gpsBounds = null;
-        private IGPSBounds GpsBounds
-        {
-            get
-            {
-                //TBD optimise
-                //TBD handle Trails with no required locations
-                m_gpsBounds = null;
-                if (m_gpsBounds == null)
-                {
-                    m_gpsBounds = TrailGPSLocation.getGPSBounds(this.TrailLocations, -10 * m_radius, true);
-                }
-                return m_gpsBounds;
-            }
         }
 
 		private bool IsInBounds(IGPSBounds activityBounds)

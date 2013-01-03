@@ -556,25 +556,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public bool IsInBounds(IList<IActivity> acts)
-        {
-            bool result = false;
-            foreach (IActivity activity in acts)
-            {
-                if (activity != null && activity.GPSRoute != null)
-                {
-                    IGPSBounds gpsBounds = Controller.TrailController.Instance.GpsBoundsCache(activity);
-                    result = this.IsInBounds(gpsBounds);
-                    if (result)
-                    {
-                        break;
-                    }
-                }
-            }
-            return result;
-        }
-
-		private bool IsInBounds(IGPSBounds activityBounds)
+        private bool IsInBounds(IGPSBounds activityBounds)
         {
             if (null == activityBounds || this.TrailLocations.Count == 0)
             {
@@ -594,7 +576,31 @@ namespace TrailsPlugin.Data
                 new GPSLocation(activityBounds.SouthLatitudeDegrees - 0.01F, activityBounds.EastLongitudeDegrees + 0.01F));
             }
             return a2.Contains(this.GpsBounds);
-		}
+        }
+
+        public bool IsInBounds(IActivity activity)
+        {
+            bool result = false;
+            if (activity != null && activity.GPSRoute != null)
+            {
+                IGPSBounds gpsBounds = Controller.TrailController.Instance.GpsBoundsCache(activity);
+                result = this.IsInBounds(gpsBounds);
+            }
+            return result;
+        }
+
+        public IList<IActivity> InBoundActivities(IList<IActivity> acts)
+        {
+            IList<IActivity> result = new List<IActivity>();
+            foreach (IActivity activity in acts)
+            {
+                if (this.IsInBounds(activity))
+                {
+                    result.Add(activity);
+                }
+            }
+            return result;
+        }
 
         public override string ToString()
         {

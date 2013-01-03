@@ -159,11 +159,13 @@ namespace TrailsPlugin.Data
                 if (this.Status == TrailOrderStatus.NoInfo ||
                     m_trail.IsReference && this.Status == TrailOrderStatus.MatchNoCalc)
                 {
-                    if (m_trail.IsInBounds(m_controller.Activities) || 
+                    this.m_inBound = this.m_trail.InBoundActivities(m_controller.Activities);
+                    if (this.m_inBound.Count > 0 || 
                         m_trail.IsReference && m_trail.ReferenceActivity == null)
                     {
                         //Do not downgrade MatchNoCalc here
                         this.Status = TrailOrderStatus.InBoundNoCalc;
+                        this.m_noResCount[this.Status] = this.m_inBound.Count;
                     }
                     else
                     {
@@ -327,6 +329,11 @@ namespace TrailsPlugin.Data
                         }
                         MaxAllowedMisses = Math.Min(trailgps.Count - noNonReq, MaxAllowedMisses);
                     }
+                    //Calculate InBound information if not already done
+                    if (this.Status != TrailOrderStatus.InBoundNoCalc)
+                    {
+                        bool tmp = this.IsInBounds;
+                    }
                     foreach (IActivity activity in activities)
                     {
                         if (m_trail.TrailType == Trail.CalcType.Splits)
@@ -340,15 +347,8 @@ namespace TrailsPlugin.Data
                             TrailOrderStatus activityStatus = TrailOrderStatus.NoInfo;
                             if (trailgps.Count > 0)
                             {
-                                bool inBound = false;
-                                if (m_trail.IsInBounds(new List<IActivity> { activity }))
-                                {
-                                    inBound = true;
-                                    if (!m_inBound.Contains(activity))
-                                    {
-                                        m_inBound.Add(activity);
-                                    }
-                                }
+                                bool inBound = this.m_inBound.Contains(activity);
+
                                 //TODO: optimize prune (Intersect()) if MaxReq is set, to see that at least one point matches
                                 //As this is currently used when adding is used only for EditTrail, no concern
                                 if ((inBound || MaxAllowedMisses > 0) && activity.GPSRoute != null)
@@ -1455,13 +1455,11 @@ namespace TrailsPlugin.Data
                 }
                 name += ")";
             }
-            else if ((t.Status == TrailOrderStatus.InBound ||
-                t.Status == TrailOrderStatus.NotInBound) &&
-                t.m_noResCount.ContainsKey(t.Status))
+                //Other results
+            else if (t.m_noResCount.ContainsKey(t.Status))
             {
                 name += " (" + t.m_noResCount[t.Status] + ")";
             }
-            //Note: No result for InBoundNoCalc
             return name;
         }
     }

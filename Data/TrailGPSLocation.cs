@@ -197,17 +197,21 @@ namespace TrailsPlugin.Data
 
         public const float DistanceToSquareScaling = RadToDeg / EarthRadius;
 
-        //Squared scaled distance calculations, speedup calculations for trail detection
+        //Simple distance calculations, speedup calculations for trail detection
         //Use (quite accurate) aproximate scaled squared distance instead of real distance, improve performance
-        //This is short distance, the result should be accurate
+        //Actually, also the EarthRadius * DegToRad * (float)Math.Sqrt(result) could be eliminated,
+        //but this requires that all compare values must be converted to "scaled squared format" too. Very small improvement.
+
+        //Algorithm is for short distance, the result should be accurate
         //See http://en.wikipedia.org/wiki/Geographical_distance
+
         private const float invalidLatLon = 999;
         private float _cosmean = invalidLatLon;
         private const float DegToRad = (float)(Math.PI / 180.0);
         private const float RadToDeg = (float)(180.0 / Math.PI);
         private const float EarthRadius = 6371009;
 
-        public static float DistanceMetersToPointSquared(TrailGPSLocation trailp, IGPSPoint point)
+        public static float DistanceMetersToPointSimple(TrailGPSLocation trailp, IGPSPoint point)
         {
             //Use the trailp lat instead of average lat
             if (trailp._cosmean == invalidLatLon) { trailp._cosmean = (float)Math.Cos(trailp.latitudeDegrees * DegToRad); }
@@ -215,19 +219,17 @@ namespace TrailsPlugin.Data
             float dlon = point.LongitudeDegrees - trailp.longitudeDegrees;
             float result = dlat * dlat + dlon * dlon * trailp._cosmean;
 
-            //xxxreturn EarthRadius*DegToRad*(float)Math.Sqrt( result);
-            return result;
+            return EarthRadius * DegToRad * (float)Math.Sqrt(result);
         }
 
-        public static float DistanceMetersToPointGpsSquared(IGPSPoint point, IGPSPoint point2)
+        public static float DistanceMetersToPointGpsSimple(IGPSPoint point, IGPSPoint point2)
         {
             float _cosmean = (float)Math.Cos(point2.LatitudeDegrees * DegToRad);
             float dlat = point.LatitudeDegrees - point2.LatitudeDegrees;
             float dlon = point.LongitudeDegrees - point2.LongitudeDegrees;
             float result = dlat * dlat + dlon * dlon * _cosmean;
 
-            //return EarthRadius * DegToRad * (float)Math.Sqrt(result);
-            return result;
+            return EarthRadius * DegToRad * (float)Math.Sqrt(result);
         }
 
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius)

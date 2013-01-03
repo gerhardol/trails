@@ -15,9 +15,11 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
-
-//Use scaled squared distance calculations. This is slightly less accurate, but minor difference for calculations.
-#define SQUARE_DISTANCE
+//Use simpler distance calculations in trail calculations, speeds up. Calculations are relative anyway.
+#define SIMPLE_DISTANCE
+//Instead of real distances, use "scaled squared" distance calculations. This requires that compare values and factors are adjusted too.
+//The effect on performance is minimal though.
+//#define SQUARE_DISTANCE
 
 using System;
 using System.Collections.Generic;
@@ -1092,14 +1094,17 @@ namespace TrailsPlugin.Data
                 dt1 < radius * sqrt2 && dt2 < radius * sqrt2)
             {
                 //Law of cosines - get a1, angle at r1, the first point
+#if SIMPLE_DISTANCE
+                float d12 = TrailGPSLocation.DistanceMetersToPointGpsSimple(r1, r2);
+#else
+                float d12 = r1.DistanceMetersToPoint(r2);
+#endif
 #if SQUARE_DISTANCE
-                float d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
                 float a10 = (float)((dt1 + d12 - dt2) / (2 * Math.Sqrt(dt1 * d12)));
 #else
-                float d12 = TrailGPSLocation.DistanceMetersToPointGpsSquared(r1, r2);
-//                float d12 = r1.DistanceMetersToPoint(r2);
                 float a10 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
 #endif
+
                 //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
                 //This means the angle a1 must be +/- 90 degrees : cos(a1)>=0
                 if (a10 > -0.001)
@@ -1125,8 +1130,8 @@ namespace TrailsPlugin.Data
 
         private static float distanceTrailToRoute(TrailGPSLocation t, IActivity activity, int routeIndex)
         {
-#if SQUARE_DISTANCE
-            return TrailGPSLocation.DistanceMetersToPointSquared(t, activity.GPSRoute[routeIndex].Value);
+#if SIMPLE_DISTANCE
+            return TrailGPSLocation.DistanceMetersToPointSimple(t, activity.GPSRoute[routeIndex].Value);
 #else
             return t.DistanceMetersToPoint(activity.GPSRoute[routeIndex].Value);
 #endif

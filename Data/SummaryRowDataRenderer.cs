@@ -51,8 +51,7 @@ namespace TrailsPlugin.Data
                 else
                 {
                     Controller.TrailController controller = Controller.TrailController.Instance;
-                    if (controller.CurrentResultTreeList.Count > 1 && 
-                        wrapper.Result.Equals(controller.ReferenceTrailResult))
+                    if (wrapper.Result.Equals(controller.ReferenceTrailResult))
                     {
                         return System.Drawing.FontStyle.Italic;
                     }

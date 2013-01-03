@@ -315,7 +315,8 @@ namespace TrailsPlugin.UI.Activity {
                 return;
             }
             this.DialogResult = DialogResult.OK;
-			Close();
+
+            Close();
 		}
 
         void btnCopy_Click(object sender, System.EventArgs e)

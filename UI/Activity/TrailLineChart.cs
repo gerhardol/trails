@@ -1371,6 +1371,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
+
         public IList<Data.TrailResult> TrailResults
         {
             get

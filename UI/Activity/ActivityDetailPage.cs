@@ -105,7 +105,6 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             this.m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(OnViewSelectedItemsChanged);
 #endif
-            Controller.TrailController.Instance.ClearGpsBoundsCache();
             if (null != m_control)
             {
                 m_control.HidePage();

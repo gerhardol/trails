@@ -104,6 +104,7 @@ namespace TrailsPlugin.Data
             }
         }
 
+        //Clear all calculated data for the result, do not affect trail calculations
         public void Clear(bool onlyDisplay)
         {
             if (this.m_resultsListWrapper != null)
@@ -200,20 +201,6 @@ namespace TrailsPlugin.Data
             return this.m_resultsListWrapper;
         }
 
-        public void ClearResultsForActivity(IActivity activity)
-        {
-            if (m_resultsListWrapper != null)
-            {
-                foreach (TrailResultWrapper t in m_resultsListWrapper)
-                {
-                    if (activity == t.Result.Activity)
-                    {
-                        t.Result.Clear(false);
-                    }
-                }
-            }
-        }
-
         //public void Sort()
         //{
         //    ((List<TrailResultWrapper>)ResultTreeList).Sort();
@@ -245,6 +232,7 @@ namespace TrailsPlugin.Data
                 m_resultsListWrapper.Add(result);
                 //add children
                 result.getSplits();
+                //Note: status is not updated, cannot be better
             }
             //No progress update
         }

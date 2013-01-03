@@ -169,10 +169,8 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 m_showPage = value;
-                if (m_showPage)
-                {
-                    RefreshChart();
-                }
+                //refresh (if visible)
+                RefreshChart();
             }
         }
 
@@ -198,7 +196,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
                     btnExpand.BackgroundImage = CommonIcons.LowerHalf;
                 }
-                ShowPage = m_showPage;
+                this.RefreshChart();
                 //This could be changed to zoom to data only at changes
                 foreach (TrailLineChart t in m_lineCharts)
                 {
@@ -210,6 +208,16 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        public TrailResult ReferenceTrailResult
+        {
+            set
+            {
+                foreach (TrailLineChart t in m_lineCharts)
+                {
+                    t.ReferenceTrailResult = value;
+                }
+            }
+        }
         /////////////////////////////////////////////////////////////////////////////
         private void RefreshRows()
         {
@@ -270,13 +278,8 @@ namespace TrailsPlugin.UI.Activity {
                         chart.ShowPage = false;
                     }
                     m_multiChart.BeginUpdate();
-                    //m_multiChart.ShowPage = false;
                     m_multiChart.XAxisReferential = Data.Settings.XAxisValue;
                     IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                    if (isData)
-                    {
-                        m_multiChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
-                    }
                     m_multiChart.TrailResults = list;
                     foreach (LineChartTypes t in Data.Settings.MultiChartType)
                     {
@@ -340,7 +343,6 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             updateChart.XAxisReferential = Data.Settings.XAxisValue;
                             IList<Data.TrailResult> list = this.m_page.SelectedItems;
-                            updateChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                             updateChart.TrailResults = list;
                             if (!m_multipleGraphs && updateChart.ChartTypes.Count == 1)
                             {
@@ -367,7 +369,6 @@ namespace TrailsPlugin.UI.Activity {
                                                 replaceChart.ShowPage = false;
                                                 replaceChart.XAxisReferential = Data.Settings.XAxisValue;
                                                 IList<Data.TrailResult> list2 = this.m_page.SelectedItems;
-                                                replaceChart.ReferenceTrailResult = m_controller.ReferenceTrailResult;
                                                 replaceChart.TrailResults = list2;
                                                 if (!m_multipleGraphs)
                                                 {
@@ -453,7 +454,7 @@ namespace TrailsPlugin.UI.Activity {
             this.showToolBarMenuItem.Checked = Data.Settings.ShowChartToolBar;
         }
 
-        void RefreshChart(LineChartTypes t)
+        private void RefreshChart(LineChartTypes t)
         {
             if (m_multipleCharts)
             {
@@ -467,13 +468,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 Data.Settings.ChartType = t;
             }
-            RefreshChart();
+            this.RefreshChart();
         }
 
-        void RefreshChart(XAxisValue t)
+        private void RefreshChart(XAxisValue t)
         {
             Data.Settings.XAxisValue = t;
-            RefreshChart();
+            this.RefreshChart();
         }
 
         public void SetSelectedRegions(IList<TrailResultMarked> atr)
@@ -606,13 +607,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             Data.Settings.ResyncDiffAtTrailPoints = !Data.Settings.ResyncDiffAtTrailPoints;
             RefreshChartMenu();
-            m_page.RefreshData();
+            m_page.RefreshData(true);
         }
         private void adjustResyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.AdjustResyncDiffAtTrailPoints = !Data.Settings.AdjustResyncDiffAtTrailPoints;
             RefreshChartMenu();
-            m_page.RefreshData();
+            m_page.RefreshData(true);
         }
         private void syncChartAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -624,7 +625,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             Data.Settings.SmoothOverTrailPointsToggle();
             RefreshChartMenu();
-            m_controller.CurrentClear(true);
+            m_controller.CurrentReset(true);
             m_page.RefreshChart();
         }
         private void showToolBarMenuItem_Click(object sender, EventArgs e)

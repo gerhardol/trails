@@ -569,7 +569,7 @@ namespace TrailsPlugin.UI.Activity {
                     //Note: If more than one selected, will try to match all
                     at.Remove(atr, invertSelection);
                 }
-                m_page.RefreshData();
+                m_page.RefreshData(false);
                 m_page.RefreshControlState();
             }
         }
@@ -641,7 +641,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         //Set activities, keep trail/selection
                         m_controller.Activities = allActivities;
-                        m_page.RefreshData();
+                        m_page.RefreshData(false);
                         m_page.RefreshControlState();
                     }
                 }
@@ -810,7 +810,8 @@ namespace TrailsPlugin.UI.Activity {
                 if (cs.Selected != m_ColorSelectorResult.TrailColor)
                 {
                     m_ColorSelectorResult.TrailColor = cs.Selected;
-                    m_page.RefreshData();
+                    //Refresh in the case columns are sorted on the color...
+                    m_page.RefreshData(false);
                 }
             }
             m_ColorSelectorResult = null;
@@ -932,7 +933,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             //Set activities, keep trail/selection
             m_controller.Activities = allActivities;
-            m_page.RefreshData();
+            m_page.RefreshData(false);
             m_page.RefreshControlState();
         }
 
@@ -965,7 +966,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             //Set activities, keep trail/selection
             m_controller.Activities = allActivities;
-            m_page.RefreshData();
+            m_page.RefreshData(false);
             m_page.RefreshControlState();
             if (m_controller.ReferenceTrailResult != null && addActivities.Count>0)
             {
@@ -1170,7 +1171,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailsPlugin.Data.Settings.RestIsPause = true;
                     }
-                    m_page.RefreshData();
+                    m_page.RefreshData(true);
                 }
             }
             else if (e.KeyCode == Keys.C && e.Modifiers == Keys.Control)
@@ -1182,7 +1183,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Shift)
                 {
                     TrailsPlugin.Data.Settings.DiffUsingCommonStretches = !TrailsPlugin.Data.Settings.DiffUsingCommonStretches;
-                    m_page.RefreshData();
+                    m_page.RefreshData(true);
                 }
                 else
                 {
@@ -1196,7 +1197,7 @@ namespace TrailsPlugin.UI.Activity {
                     if (m_controller.ReferenceTrailResult != null)
                     {
                         m_controller.ReferenceTrailResult.SetDeviceElevation();
-                        m_page.RefreshData();
+                        m_page.RefreshData(true);
                     }
                 }
                 else if (e.Modifiers == Keys.Alt)
@@ -1204,13 +1205,13 @@ namespace TrailsPlugin.UI.Activity {
                     if (m_controller.ReferenceTrailResult != null)
                     {
                         m_controller.ReferenceTrailResult.SetDeviceElevationOffset();
-                        m_page.RefreshData();
+                        m_page.RefreshData(true);
                     }
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
                     TrailResult.UseNormalElevation = !TrailResult.UseNormalElevation;
-                    m_page.RefreshData();
+                    m_page.RefreshData(true);
                 }
             }
             else if (e.KeyCode == Keys.I)
@@ -1227,7 +1228,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailsPlugin.Data.Settings.NonReqIsPause = true;
                 }
-                m_page.RefreshData();
+                m_page.RefreshData(true);
             }
             else if (e.KeyCode == Keys.O)
             {
@@ -1275,13 +1276,11 @@ namespace TrailsPlugin.UI.Activity {
                                   Cursor.Current.Size.Width / 2,
                                         summaryListCursorLocationAtMouseMove.Y),
                               summaryListToolTip.AutoPopDelay);
-                m_page.RefreshData();
+                m_page.RefreshData(true);
             }
             else if (e.KeyCode == Keys.R)
             {
-                //Test trail calculation time - shift/ctrl internal, not documented
-                m_controller.Reset();
-
+                //Test trail calculation time
                 if (e.Modifiers == Keys.Control)
                 {
                     Controller.TrailController.Instance.ClearGpsBoundsCache();
@@ -1292,11 +1291,16 @@ namespace TrailsPlugin.UI.Activity {
                 if (!allRefresh)
                 {
                     progressCount = m_controller.Activities.Count;
+                    this.m_controller.CurrentReset(false);
+                }
+                else
+                {
+                    m_controller.Reset();
                 }
 
                 System.Windows.Forms.ProgressBar progressBar = StartProgressBar(progressCount);
-                m_page.RefreshData();
                 m_controller.ReCalcTrails(allRefresh, progressBar);
+                m_page.RefreshData(false);
                 StopProgressBar();
             }
             else if (e.KeyCode == Keys.S)
@@ -1304,7 +1308,8 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Control)
                 {
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice = !TrailsPlugin.Data.Settings.ResultSummaryIsDevice;
-                    m_page.RefreshData();
+                    //This is all dynamic, but we want to retrigger sort
+                    m_page.RefreshData(false);
                 }
                 else
                 {
@@ -1327,7 +1332,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == Keys.Control)
                 {
                     TrailResult.m_diffOnDateTime = !TrailResult.m_diffOnDateTime;
-                    m_page.RefreshData();
+                    m_page.RefreshData(true);
                 }
             }
             else if (e.KeyCode == Keys.U)
@@ -1343,7 +1348,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Shift)
                 {
                     Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
-                    m_page.RefreshData();
+                    m_page.RefreshData(false);
                 }
             }
         }
@@ -1577,13 +1582,13 @@ namespace TrailsPlugin.UI.Activity {
             if (m_controller.CurrentActivityTrailIsSelected)
             {
                 System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(0);
-                m_controller.CurrentClear(false);
+                m_controller.CurrentReset(false);
                 foreach (ActivityTrail t in m_controller.CurrentActivityTrails)
                 {
                     t.AddInBoundResult(progressBar);
                 }
                 this.StopProgressBar();
-                m_page.RefreshData();
+                m_page.RefreshData(false);
                 m_page.RefreshControlState();
             }
         }
@@ -1644,7 +1649,7 @@ namespace TrailsPlugin.UI.Activity {
         private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
         {
             TrailResult.IncreaseRunningGradeCalcMethod();
-            m_page.RefreshData();
+            m_page.RefreshData(true);
         }
     }
 }

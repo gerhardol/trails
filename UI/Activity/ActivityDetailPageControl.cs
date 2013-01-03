@@ -144,7 +144,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerRoutes.ClearOverlays();
                 m_layerMarked.ClearOverlays();
 #endif
-                RefreshData();
+                RefreshData(false);
                 RefreshControlState();
                 //RefreshChart();
                 if (value != null && value.Count == 1)
@@ -157,6 +157,10 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_showPage = false;
         public bool HidePage()
         {
+            return HidePage(true);
+        }
+        public bool HidePage(bool resetData)
+        {
             m_showPage = false;
 #if !ST_2_1
             m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
@@ -164,9 +168,15 @@ namespace TrailsPlugin.UI.Activity {
             m_layerPoints.HidePage();
             m_layerRoutes.HidePage();
             m_layerMarked.HidePage();
-            TrailSelector.ShowPage = false;
-            ResultList.ShowPage = false;
-            MultiCharts.ShowPage = false;
+            TrailSelector.ShowPage = false; //hide edit dialog if shown
+            ResultList.ShowPage = false; //No action
+            MultiCharts.ShowPage = false; //No action
+            if (resetData)
+            {
+                //Free memory by destroying all results
+                this.m_controller.Reset();
+                Controller.TrailController.Instance.ClearGpsBoundsCache();
+            }
             return true;
         }
 
@@ -174,12 +184,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool showPage = m_showPage;
             m_showPage = true;
+            TrailSelector.ShowPage = true; //No action
+            ResultList.ShowPage = true; //No action
+            MultiCharts.ShowPage = true; //Refresh chart
+            //Refresh the map overlays already set
             m_layerPoints.ShowPage(bookmark);
             m_layerRoutes.ShowPage(bookmark);
             m_layerMarked.ShowPage(bookmark);
-            TrailSelector.ShowPage = true;
-            ResultList.ShowPage = true;
-            MultiCharts.ShowPage = true;
 #if !ST_2_1
             //Avoid reregistering
             if (!showPage)
@@ -202,16 +213,24 @@ namespace TrailsPlugin.UI.Activity {
             TrailSelector.RefreshControlState();
         }
 
-        public void RefreshData()
+        //Refresh the data displayed, recalculate if needed
+        public void RefreshData(bool clearResults)
         {
             bool showPage = m_showPage;
-            HidePage(); //defer updates
-            m_controller.CurrentClear(false);
+            HidePage(false); //defer updates
+            if (clearResults)
+            {
+                //The trail results will be cleared
+                this.m_controller.Clear();
+            }
 
-            //Update list first, so not refresh changes selection
+            //Calculate results (not needed explicitly)
+            this.m_controller.ReCalcTrails(false, null);
             ResultList.RefreshList();
+            //Data could be updated and reference changed
+            MultiCharts.ReferenceTrailResult = this.m_controller.ReferenceTrailResult;
             RefreshRoute();
-            //Charts are refreshed when list is changed, no need for RefreshChart();
+            //Charts are refreshed in ShowPage, no need for RefreshChart();
             if (showPage)
             {
                 ShowPage("");
@@ -220,8 +239,10 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshChart()
         {
+            MultiCharts.ReferenceTrailResult = this.m_controller.ReferenceTrailResult;
             MultiCharts.RefreshChart();
         }
+
         public IList<TrailResult> SelectedItems
         {
             get
@@ -235,6 +256,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             return ResultList.StartProgressBar(val);
         }
+
         public void StopProgressBar()
         {
             ResultList.StopProgressBar();
@@ -314,6 +336,7 @@ namespace TrailsPlugin.UI.Activity {
                 return CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
             }
         }
+
         //Try to find if ST is mapping a certain activity
         public bool ViewSingleActivity(IActivity activity)
         {

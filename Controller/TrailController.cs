@@ -106,7 +106,7 @@ namespace TrailsPlugin.Controller
                 //Make sure reference activity is 'reasonable' in case the reference trail is selected
                 this.checkReferenceActivity(progressBar);
 
-                //Calculate trails - at least InBounds, set apr0priate ActivityTrail
+                //Calculate trails - at least InBounds, set apropriate ActivityTrail
                 this.ReCalcTrails(false, progressBar);
             }
         }
@@ -115,8 +115,13 @@ namespace TrailsPlugin.Controller
         {
             if (!activityGps.ContainsKey(activity))
             {
+                //activityGps controls if the property listener is added
                 activity.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-                activityGps.Add(activity, GPSBounds.FromGPSRoute(activity.GPSRoute));
+                activityGps.Add(activity, null);
+            }
+            if (this.activityGps[activity] == null)
+            {
+                this.activityGps[activity] = GPSBounds.FromGPSRoute(activity.GPSRoute);
             }
             return activityGps[activity];
         }
@@ -125,14 +130,9 @@ namespace TrailsPlugin.Controller
         {
             foreach (IActivity activity in activityGps.Keys)
             {
-                //this.Activity_PropertyChanged(activity, null);
-                foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
-                {
-                    at.ClearResultsForActivity(activity);
-                }
                 activity.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
             }
-            activityGps.Clear();
+            this.activityGps.Clear();
         }
 
         void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -141,15 +141,38 @@ namespace TrailsPlugin.Controller
             if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
             {
                 IActivity activity = sender as IActivity;
-                if(activity != null && activityGps.ContainsKey(activity))
+                if (activity != null && this.activityGps.ContainsKey(activity))
                 {
-                    activityGps[activity] = null;
-                    //activity.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-                    foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
-                    {
-                        at.ClearResultsForActivity(activity);
-                    }
+                    this.activityGps[activity] = null;
                 }
+                //all trails must be recalculated, there is no possibility to recalculate for one trail only
+                //(almost: Clear results for a certain activity followed by CalcTrail then sets status)
+                //As activities are edit in single view normally, recalc time is not an issue
+                //(except if results have been 
+                //(if a user auto edits, there could be seconds of slowdown).
+                this.Reset();
+                //Make sure reference activity is 'reasonable' in case the reference trail is selected
+                this.checkReferenceActivity(null);
+
+                //Calculate trails - at least InBounds, set apropriate ActivityTrail
+                this.ReCalcTrails(false, null);
+            }
+        }
+
+        public IList<ActivityTrail> OrderedTrails()
+        {
+            //Trail may be calculated in various situations, also when getting results,
+            //It is therefore easier to keep resort here
+            ((List<ActivityTrail>)m_CurrentOrderedTrails).Sort();
+            return m_CurrentOrderedTrails;
+        }
+
+        //Clear trail results, do not affect trail calculations
+        public void Clear()
+        {
+            foreach (ActivityTrail t in this.OrderedTrails())
+            {
+                t.Clear(false);
             }
         }
 
@@ -160,6 +183,15 @@ namespace TrailsPlugin.Controller
             foreach (ActivityTrail at in m_CurrentOrderedTrails)
             {
                 at.Init();
+            }
+            //activityGps handled separately
+        }
+
+        public void CurrentReset(bool onlyDisplay)
+        {
+            foreach (ActivityTrail t in this.CurrentActivityTrails)
+            {
+                t.Init();
             }
         }
 
@@ -488,7 +520,7 @@ namespace TrailsPlugin.Controller
                     {
                         //Check if ref is in all results (may have changed, Contains() will not work)
                         IList<TrailResultWrapper> trs = TrailResultWrapper.SelectedItems(this.CurrentResultTreeList,
-                        new List<TrailResult> { m_referenceTrailResult });
+                            new List<TrailResult> { m_referenceTrailResult });
                         if (trs.Count > 0)
                         {
                             m_referenceTrailResult = trs[0].Result;
@@ -532,22 +564,6 @@ namespace TrailsPlugin.Controller
             checkReferenceActivity(progressBar);
 
             return m_referenceTrailResult;
-        }
-
-        public IList<ActivityTrail> OrderedTrails()
-        {
-            //Trail may be calculated in various situations, also when getting results,
-            //It is therefore easier to keep resort here
-            ((List<ActivityTrail>)m_CurrentOrderedTrails).Sort();
-            return m_CurrentOrderedTrails;
-        }
-
-        public void CurrentClear(bool onlyDisplay)
-        {
-            foreach (ActivityTrail t in this.CurrentActivityTrails)
-            {
-                t.Clear(onlyDisplay);
-            }
         }
 
         private void NewTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
@@ -595,10 +611,11 @@ namespace TrailsPlugin.Controller
 		public bool DeleteCurrentTrail()
         {
             bool result = false;
-            if (m_currentActivityTrails.Count > 0)
+            ActivityTrail at = this.PrimaryCurrentActivityTrail;
+            if (at != null)
             {
                 //Only the primary trail deleted
-                ActivityTrail at = this.m_currentActivityTrails[0];
+                at.Init();
                 if (TrailData.DeleteTrail(at.Trail))
                 {
                     this.m_CurrentOrderedTrails.Remove(at);

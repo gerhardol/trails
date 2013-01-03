@@ -253,11 +253,20 @@ namespace TrailsPlugin.UI.Activity
 
         void editTrail_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //All update should update the controller data, now refresh the display
+            if (sender is EditTrail)
+            {
+                EditTrail dialog = sender as EditTrail; //Should be m_editTrail
+                if (dialog.DialogResult == DialogResult.OK)
+                {
+                    //Data is already calculated
+                    m_page.RefreshControlState();
+                    m_page.RefreshData(false);
+                }
+            }
+
             m_editTrail = null;
             m_layer.editTrail = null;
-
-            m_page.RefreshControlState();
-            m_page.RefreshData();
         }
 
 		private void btnDelete_Click(object sender, EventArgs e)
@@ -268,7 +277,7 @@ namespace TrailsPlugin.UI.Activity
             {
 				m_controller.DeleteCurrentTrail();
 				m_page.RefreshControlState();
-				m_page.RefreshData();
+				m_page.RefreshData(false);
 			}
 		}
 
@@ -501,7 +510,7 @@ namespace TrailsPlugin.UI.Activity
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
             m_controller.SetCurrentActivityTrail(ats, true, progressBar);
             m_page.StopProgressBar();
-            m_page.RefreshData();
+            m_page.RefreshData(false);
             m_page.RefreshControlState();
 
             GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3 * t.Trail.Radius);

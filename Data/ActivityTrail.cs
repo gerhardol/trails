@@ -188,19 +188,14 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                CalcResults(null);
-                return m_resultsListWrapper;
+                return ResultTreeListRows(null);
             }
         }
 
-        public IList<TrailResultWrapper> ResultTreeListRows()
+        public IList<TrailResultWrapper> ResultTreeListRows(System.Windows.Forms.ProgressBar progressBar)
         {
-            IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
-            foreach (TrailResultWrapper t in ResultTreeList)
-            {
-                results.Add(t);
-            }
-            return results;
+            this.CalcResults(progressBar);
+            return this.m_resultsListWrapper;
         }
 
         public void ClearResultsForActivity(IActivity activity)

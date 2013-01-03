@@ -206,7 +206,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool showPage = m_showPage;
             HidePage(); //defer updates
-            m_controller.Clear();
+            m_controller.CurrentClear(false);
 
             //Update list first, so not refresh changes selection
             ResultList.RefreshList();

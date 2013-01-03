@@ -282,7 +282,6 @@ namespace TrailsPlugin.Controller
                     //Try to get a better status, this is the trail the user wants
                     at.CalcResults(progressBar);
                 }
-                //Assume fine if match also is not calculated
                 if (at.Status <= TrailOrderStatus.MatchPartial &&
                     at.ResultTreeList.Count <= Settings.MaxAutoCalcResults)
                 {
@@ -541,15 +540,6 @@ namespace TrailsPlugin.Controller
             //It is therefore easier to keep resort here
             ((List<ActivityTrail>)m_CurrentOrderedTrails).Sort();
             return m_CurrentOrderedTrails;
-        }
-
-        public void Clear()
-        {
-            foreach (ActivityTrail at in m_CurrentOrderedTrails)
-            {
-                at.Clear(false);
-            }
-            //If the reference is no longer available, reset it when checking ref when using it
         }
 
         public void CurrentClear(bool onlyDisplay)

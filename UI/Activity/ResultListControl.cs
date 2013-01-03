@@ -1279,23 +1279,25 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R)
             {
+                //Test trail calculation time - shift/ctrl internal, not documented
                 m_controller.Reset();
 
-                if (e.Modifiers != Keys.Shift)
+                if (e.Modifiers == Keys.Control)
                 {
-                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(m_controller.Activities.Count);
-                    m_controller.ReCalcTrails(false, progressBar);
-                    StopProgressBar();
-                    m_page.RefreshData();
-                }
-                else
-                {
-                    //Test trail calculation time - not documented
-                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(0);
                     Controller.TrailController.Instance.ClearGpsBoundsCache();
-                    m_controller.ReCalcTrails(true, progressBar);
-                    StopProgressBar();
                 }
+
+                bool allRefresh = e.Modifiers == Keys.Shift;
+                int progressCount = 0;
+                if (!allRefresh)
+                {
+                    progressCount = m_controller.Activities.Count;
+                }
+
+                System.Windows.Forms.ProgressBar progressBar = StartProgressBar(progressCount);
+                m_page.RefreshData();
+                m_controller.ReCalcTrails(allRefresh, progressBar);
+                StopProgressBar();
             }
             else if (e.KeyCode == Keys.S)
             {

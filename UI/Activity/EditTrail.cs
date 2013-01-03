@@ -490,46 +490,50 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                sel = new TrailGPSLocation(Utils.GPS.LocationToPoint(m_layer.GetCenterMap()));
+                IGPSLocation l = m_layer.GetCenterMap();
+                sel = new TrailGPSLocation(l);
             }
-            TrailGPSLocation add = new TrailGPSLocation(sel, m_layer.GetCenterMap());
-                add.Name +=
-                " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
-
-            //If a point is selected on the track, use it instead
-            IList<IActivity> activities = new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity };
-            IList<IItemTrackSelectionInfo> selectedGPS = 
-                        TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, activities, true);
-            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
+            IGPSLocation p = m_layer.GetCenterMap();
+            if (p != null)
             {
-                IList<TrailGPSLocation> loc = TrailSelectorControl.getGPS(this.Trail, activities, selectedGPS);
-                if (loc.Count > 0)
+                TrailGPSLocation add = new TrailGPSLocation(sel, p);
+                add.Name += " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
+
+                //If a point is selected on the track, use it instead
+                IList<IActivity> activities = new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity };
+                IList<IItemTrackSelectionInfo> selectedGPS =
+                            TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, activities, true);
+                if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
                 {
-                    add = new TrailGPSLocation(add, loc[0]);
+                    IList<TrailGPSLocation> loc = TrailSelectorControl.getGPS(this.Trail, activities, selectedGPS);
+                    if (loc.Count > 0 && loc[0] != null)
+                    {
+                        add = new TrailGPSLocation(add, loc[0]);
+                    }
                 }
-            }
 
-            if (((IList<EditTrailRow>)EList.RowData).Count > 0)
-            {
-                ((IList<EditTrailRow>)EList.RowData).Insert(i + 1, new EditTrailRow(add));
-            }
-            else
-            {
-                EList.RowData = new List<EditTrailRow> { new EditTrailRow(add) };
-            }
+                if (((IList<EditTrailRow>)EList.RowData).Count > 0)
+                {
+                    ((IList<EditTrailRow>)EList.RowData).Insert(i + 1, new EditTrailRow(add));
+                }
+                else
+                {
+                    EList.RowData = new List<EditTrailRow> { new EditTrailRow(add) };
+                }
 
-            //Make ST see the update
-            EList.RowData = ((IList<EditTrailRow>)EList.RowData);
-            foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
-            {
-                //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
-                EList.SetChecked(t, t.TrailGPS.Required);
+                //Make ST see the update
+                EList.RowData = ((IList<EditTrailRow>)EList.RowData);
+                foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+                {
+                    //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
+                    EList.SetChecked(t, t.TrailGPS.Required);
+                }
+                EList.Refresh();
+                m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+                m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
+                m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
+                m_layer.Refresh();
             }
-            EList.Refresh();
-            m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
-            m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
-            m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { add };
-            m_layer.Refresh();
         }
 
         void EList_CheckedChanged(object sender, TreeList.ItemEventArgs e)

@@ -2970,7 +2970,9 @@ namespace TrailsPlugin.Data
 
         public override string ToString()
         {
-            return (this.m_startTime != null ? m_startTime.ToString() : "") + " " + this.TrailPointDateTime[0].ToShortTimeString() + " " + this.TrailPointDateTime.Count;
+            return (this.m_startTime != null ? m_startTime.ToString() : "") + " " +
+                ((this.TrailPointDateTime.Count == 0) ? "" : this.TrailPointDateTime[0].ToShortTimeString()) +
+                " " + this.TrailPointDateTime.Count;
         }
     }
 }

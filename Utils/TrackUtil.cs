@@ -18,6 +18,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using ZoneFiveSoftware.Common.Data.GPS;
 using TrailsPlugin.Data;
 using GpsRunningPlugin.Util;
 
@@ -119,5 +120,32 @@ namespace TrailsPlugin.Utils
             }
             return dateTime;
         }
+
+        public static IGPSPoint getGpsLoc(ZoneFiveSoftware.Common.Data.Fitness.IActivity activity, DateTime time)
+        {
+            IGPSPoint result = null;
+            if (activity != null && activity.GPSRoute != null && activity.GPSRoute.Count > 0)
+            {
+                ITimeValueEntry<IGPSPoint> p = activity.GPSRoute.GetInterpolatedValue(time);
+                if (null != p)
+                {
+                    result = p.Value;
+                }
+                else
+                {
+                    //This can happen if the activity starts before the GPS track
+                    if (time <= activity.GPSRoute.StartTime)
+                    {
+                        result = activity.GPSRoute[0].Value;
+                    }
+                    else if(time > activity.GPSRoute.EntryDateTime(activity.GPSRoute[activity.GPSRoute.Count-1]))
+                    {
+                        result = activity.GPSRoute[activity.GPSRoute.Count - 1].Value;
+                    }
+                }
+            }
+            return result;
+        }
+
     }
 }

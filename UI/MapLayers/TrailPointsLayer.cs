@@ -335,8 +335,12 @@ namespace TrailsPlugin.UI.MapLayers
                         this._selectedWaypointOriginalLocation != null)
                     {
                         //New selection before old finished - set old location back
-                        this._selectedPointMoving.TrailPoint = new TrailGPSLocation(this._selectedPointMoving.TrailPoint, this._selectedWaypointOriginalLocation);
-                        this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                        IGPSPoint p = this._selectedWaypointOriginalLocation;
+                        if (p != null)
+                        {
+                            this._selectedPointMoving.TrailPoint = new TrailGPSLocation(this._selectedPointMoving.TrailPoint, p);
+                            this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                        }
                         //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
                     }
                 }
@@ -412,14 +416,18 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     //MapControl.RemoveOverlay(_selectedWaypointMoving);
                     Point p = new Point(m_clickToCenterOffset.X + e.Location.X, m_clickToCenterOffset.Y + e.Location.Y);
-                    _selectedPointMoving.TrailPoint = new TrailGPSLocation(_selectedPointMoving.TrailPoint, MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p));
-                    this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
-                    //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                    IGPSLocation l = MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p);
+                    if (l != null)
+                    {
+                        _selectedPointMoving.TrailPoint = new TrailGPSLocation(_selectedPointMoving.TrailPoint, l);
+                        this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                        //pages[this].UpdatePointFromMap(_selectedPointMoving.TrailPoint);
 
-                    //Refresh this point. Only seem to be possible with refreshing all
-                    RefreshOverlays(true);
-                    //MapControl.AddOverlay(_selectedWaypointMoving);
-                    //MapControl.RefreshMap();
+                        //Refresh this point. Only seem to be possible with refreshing all
+                        RefreshOverlays(true);
+                        //MapControl.AddOverlay(_selectedWaypointMoving);
+                        //MapControl.RefreshMap();
+                    }
                 }
             }
         }

@@ -62,9 +62,17 @@ namespace TrailsPlugin.Data
         {
             TrailResultInfo indexes = new TrailResultInfo(activity, false);
             DateTime time = selInfo.MarkedTimes[0].Lower;
-            indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
+            IGPSPoint p = Utils.TrackUtil.getGpsLoc(activity, time);
+            if (p != null)
+            {
+                indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
+            }
             time = selInfo.MarkedTimes[0].Upper;
-            indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
+            p = Utils.TrackUtil.getGpsLoc(activity, time);
+            if (p != null)
+            {
+                indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
+            }
             if (indexes.Count >= 2)
             {
                 if (order == 1 || parent == null)

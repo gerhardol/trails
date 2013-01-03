@@ -302,12 +302,15 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSPoint> gps)
+        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps)
         {
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
-            foreach (IGPSPoint g in gps)
+            foreach (IGPSLocation g in gps)
             {
-                results.Add(new TrailGPSLocation(g));
+                if (g != null)
+                {
+                    results.Add(new TrailGPSLocation(g));
+                }
             }
             return results;
         }
@@ -366,14 +369,26 @@ namespace TrailsPlugin.Data
                     while (dist < track.Max)
                     {
                         DateTime time = track.GetTimeAtDistanceMeters(dist);
-                        results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
-                        dist = Math.Min(track.Max, dist + cDist);
+                        IGPSPoint p = Utils.TrackUtil.getGpsLoc(activity, time);
+                        if (p != null)
+                        {
+                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
+                            dist = Math.Min(track.Max, dist + cDist);
+                        }
+                        else
+                        {
+                            dist = track.Max;
+                        }
                     }
                 }
                 else
                 {
                     DateTime time = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackStart;
-                    results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, time)), time));
+                    IGPSPoint p = Utils.TrackUtil.getGpsLoc(activity, time);
+                    if (p != null)
+                    {
+                        results.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
+                    }
                 }
             }
             else
@@ -389,7 +404,11 @@ namespace TrailsPlugin.Data
                             name = "#" + (results.Points.Count + 1);
                         }
                         DateTime d = l.StartTime;
-                        results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), name, !l.Rest), d));
+                        IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
+                        if (t != null)
+                        {
+                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d));
+                        }
                     }
                 }
                 lastIsRestlap = activity.Laps[activity.Laps.Count - 1].Rest;
@@ -399,7 +418,18 @@ namespace TrailsPlugin.Data
             if (!onlyActiveLaps || !lastIsRestlap)
             {
                 DateTime d = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd;
-                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), activity.Name, !lastIsRestlap), d));
+                IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
+                if (t != null)
+                {
+                    results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, activity.Name, !lastIsRestlap), d));
+                }
+            }
+
+            //Special for activities without any GPS info
+            if (results.Count == 0 && activity.HasStartTime)
+            {
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(new GPSPoint(float.NaN, float.NaN, float.NaN), activity.Name, !lastIsRestlap), activity.StartTime));
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(new GPSPoint(float.NaN, float.NaN, float.NaN), activity.Name, !lastIsRestlap), activity.StartTime+activity.TotalTimeEntered));
             }
 
             return results;

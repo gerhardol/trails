@@ -34,16 +34,16 @@ namespace TrailsPlugin.Data
             this._required = required;
             this._radius = radius;
         }
-        public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required, float radius)
-            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, gpsLoc.ElevationMeters, name, required, 25)
-        {
-        }
         public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required)
-            : this(gpsLoc, name, required, 25)
+            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, gpsLoc.ElevationMeters, name, required, defaultRadius)
         {
         }
         public TrailGPSLocation(IGPSPoint gpsLoc) :
             this(gpsLoc, "", true)
+        {
+        }
+        public TrailGPSLocation(IGPSLocation gpsLoc) :
+            this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, float.NaN, "", true, defaultRadius)
         {
         }
         public TrailGPSLocation(TrailGPSLocation trailLocation)
@@ -59,26 +59,13 @@ namespace TrailsPlugin.Data
         {
         }
         
-        public static IGPSPoint getGpsLoc(ZoneFiveSoftware.Common.Data.Fitness.IActivity activity, DateTime time)
-        {
-            IGPSPoint result = null;
-            if (activity != null && activity.GPSRoute != null)
-            {
-                ITimeValueEntry<IGPSPoint> p = activity.GPSRoute.GetInterpolatedValue(time);
-                if (null != p)
-                {
-                    result = p.Value;
-                }
-            }
-            return result;
-        }
-
         public override string ToString()
         {
             return _name + " " + _required + " " +base.ToString()/* _gpsPoint*/;
         }
 
-        private float _radius = 25;
+        private const float defaultRadius = 25;
+        private float _radius;
         public float Radius
         {
             get
@@ -142,12 +129,21 @@ namespace TrailsPlugin.Data
                 elevation = Settings.parseFloat(node.Attributes[xmlTags.sElevation].Value);
             }
 
-            return new TrailGPSLocation(new GPSPoint(
-                Settings.parseFloat(node.Attributes[xmlTags.sLatitude].Value),
-                Settings.parseFloat(node.Attributes[xmlTags.sLongitude].Value),
-                elevation),
-                name, required
-            );
+            float lat = float.NaN;
+            if (null != node.Attributes[xmlTags.sLatitude] &&
+                null != node.Attributes[xmlTags.sLatitude].Value)
+            {
+                lat = Settings.parseFloat(node.Attributes[xmlTags.sLatitude].Value);
+            }
+
+            float lon = float.NaN;
+            if (null != node.Attributes[xmlTags.sLongitude] &&
+                null != node.Attributes[xmlTags.sLongitude].Value)
+            {
+                lon = Settings.parseFloat(node.Attributes[xmlTags.sLongitude].Value);
+            }
+
+            return new TrailGPSLocation(lat, lon, elevation, name, required, defaultRadius);
         }
 #endif
 

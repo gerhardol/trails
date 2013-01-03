@@ -449,13 +449,13 @@ namespace TrailsPlugin.Data
             return status;
         }
 
-        internal static TrailResultPoint GetClosestMatch(IActivity activity, IGPSPoint gps, float radius)
+        internal static TrailResultPoint GetClosestMatch(IActivity activity, IGPSLocation gps, float radius)
         {
             //A fix to get best point. 
             //Done rather that destroying trail detection furthe
             IList<TrailResultInfo> trailResults = new List<TrailResultInfo>(); //Unused
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>();
-            IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<ZoneFiveSoftware.Common.Data.GPS.IGPSPoint>{gps});
+            IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { gps });
             //Force all results to be incomplete, to match all matches along a track (to avoid best match is thrown away)
             GetTrailResultInfo(activity, trailgps, radius, false, 1, trailResults, incompleteResults);
 
@@ -485,7 +485,7 @@ namespace TrailsPlugin.Data
             return points[0];
         }
 
-        internal static TrailOrderStatus GetTrailResultInfo(IActivity activity, IList<IGPSPoint> gpsLoc,
+        internal static TrailOrderStatus GetTrailResultInfo(IActivity activity, IList<IGPSLocation> gpsLoc,
             float radius, bool bidirectional, IList<TrailResultInfo> trailResults)
         {
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>(); //unused

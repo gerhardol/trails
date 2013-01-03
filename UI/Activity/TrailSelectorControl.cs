@@ -319,7 +319,11 @@ namespace TrailsPlugin.UI.Activity
             }
             foreach (DateTime d in dates)
             {
-                result.Add(new TrailGPSLocation(TrailGPSLocation.getGpsLoc(activity, d), "", true));
+                IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
+                if (t != null)
+                {
+                    result.Add(new TrailGPSLocation(t, "", true));
+                }
             }
 
             return result;

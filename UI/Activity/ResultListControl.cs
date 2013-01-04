@@ -983,7 +983,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             //Cannot use ST controls for most part here
             System.Windows.Forms.Form p = new System.Windows.Forms.Form();
-            p.Size = new System.Drawing.Size(293, 105);
+            p.Size = new System.Drawing.Size(370, 105);
             ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
             ZoneFiveSoftware.Common.Visuals.TextBox AdjustDiffSplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
             System.Windows.Forms.Button b = new System.Windows.Forms.Button();
@@ -1005,7 +1005,7 @@ namespace TrailsPlugin.UI.Activity {
             pa.ThemeChanged(this.m_visualTheme);
             //p.ThemeChanged(this.m_visualTheme);
             AdjustDiffSplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
-            AdjustDiffSplitTimes_TextBox.Width = 200;
+            AdjustDiffSplitTimes_TextBox.Width = p.Width - 37;
             AdjustDiffSplitTimes_TextBox.Location = new System.Drawing.Point(10, 10);
 
             b.Click +=

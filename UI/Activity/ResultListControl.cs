@@ -680,8 +680,8 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 StopProgressBar();
+                //Mark route and chart
                 m_page.MarkTrack(aTrm);
-                m_page.SetSelectedRegions(aTrm);
             }
         }
 

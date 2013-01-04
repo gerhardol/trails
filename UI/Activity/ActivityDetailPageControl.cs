@@ -168,11 +168,11 @@ namespace TrailsPlugin.UI.Activity {
             m_layerPoints.HidePage();
             m_layerRoutes.HidePage();
             m_layerMarked.HidePage();
-            TrailSelector.ShowPage = false; //hide edit dialog if shown
             ResultList.ShowPage = false; //No action
             MultiCharts.ShowPage = false; //No action
             if (resetData)
             {
+                TrailSelector.ShowPage = false; //hide edit dialog if shown
                 //Free memory by destroying all results
                 this.m_controller.Reset();
                 Controller.TrailController.Instance.ClearGpsBoundsCache();

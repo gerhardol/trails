@@ -43,25 +43,23 @@ namespace TrailsPlugin.UI.MapLayers
             public PointMapMarker(TrailGPSLocation location, MapIcon icon, bool clickable)
                 : base(location, icon, clickable)
             {
-                trailPoint = location;
             }
 
-            private TrailGPSLocation trailPoint;
             public TrailGPSLocation TrailPoint
             {
                 get
                 {
-                    return trailPoint;
+                    return this.Location as TrailGPSLocation;
                 }
                 set
                 {
-                    this.trailPoint = value;
                     this.Location = value;
                 }
             }
+
             public override string ToString()
             {
-                return trailPoint.ToString();
+                return this.TrailPoint.ToString();
             }
         }
 
@@ -289,22 +287,18 @@ namespace TrailsPlugin.UI.MapLayers
                 if (this._selectedPointMoving != null)
                 {
                     if (this._selectedPointMoving != null &&
-                        this._selectedWaypointOriginalLocation != null)
+                        this._selectedPointOriginal != null)
                     {
                         //New selection before old finished - set old location back
-                        IGPSPoint p = this._selectedWaypointOriginalLocation;
-                        if (p != null)
-                        {
-                            this._selectedPointMoving.TrailPoint = new TrailGPSLocation(this._selectedPointMoving.TrailPoint, p);
-                            this.m_editTrail.UpdatePointFromMap(this._selectedPointMoving.TrailPoint);
-                        }
+                        this._selectedPointMoving.TrailPoint = this._selectedPointOriginal;
+                        this.m_editTrail.UpdatePointFromMap(this._selectedPointMoving.TrailPoint);
                     }
                 }
 
                 if (waypoint != null)
                 {
                     //Start - offset saved separately
-                    this._selectedWaypointOriginalLocation = waypoint.Location;
+                    this._selectedPointOriginal = waypoint.TrailPoint;
 
                     this._selectedPointMoving = waypoint;
                     this.m_editTrail.UpdatePointFromMap(this._selectedPointMoving.TrailPoint);
@@ -314,7 +308,7 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     //End or cancel
                     this._selectedPointMoving = null;
-                    this._selectedWaypointOriginalLocation = null;
+                    this._selectedPointOriginal = null;
                     this.MapControl.CanMouseDrag = true;
                     this.RefreshOverlays(true);
                 }
@@ -334,9 +328,10 @@ namespace TrailsPlugin.UI.MapLayers
                         e.Button == MouseButtons.None)
                     {
                         SetMovingWaypoint(selectedPoint);
+                        //Save offset from click to marker reference
                         Point midPoint = MapControl.MapProjection.GPSToPixel(MapControl.MapBounds.NorthWest,
-                            MapControl.Zoom, selectedPoint.Location);
-                        m_clickToCenterOffset = new Point(midPoint.X - e.Location.X, midPoint.Y - e.Location.Y);
+                            MapControl.Zoom, selectedPoint.TrailPoint);
+                        this.m_clickToCenterOffset = new Point(midPoint.X - e.Location.X, midPoint.Y - e.Location.Y);
                     }
                 }
                 else
@@ -353,7 +348,7 @@ namespace TrailsPlugin.UI.MapLayers
             if (this._selectedPointMoving != null)
             {
                 //Clear original location - no cancel
-                this._selectedWaypointOriginalLocation = null;
+                this._selectedPointOriginal = null;
             }
             SetMovingWaypoint(null);
         }
@@ -372,16 +367,13 @@ namespace TrailsPlugin.UI.MapLayers
                     //MapControl.RemoveOverlay(_selectedWaypointMoving);
                     Point p = new Point(m_clickToCenterOffset.X + e.Location.X, m_clickToCenterOffset.Y + e.Location.Y);
                     IGPSLocation l = MapControl.MapProjection.PixelToGPS(MapControl.MapBounds.NorthWest, MapControl.Zoom, p);
-                    if (l != null)
-                    {
-                        _selectedPointMoving.TrailPoint = new TrailGPSLocation(_selectedPointMoving.TrailPoint, l);
-                        this.m_editTrail.UpdatePointFromMap(_selectedPointMoving.TrailPoint);
+                    _selectedPointMoving.TrailPoint.GpsLoc = l;
+                    this.m_editTrail.UpdatePointFromMap(this._selectedPointMoving.TrailPoint);
 
-                        //Refresh this point. Only seem to be possible with refreshing all
-                        RefreshOverlays(true);
-                        //MapControl.AddOverlay(_selectedWaypointMoving);
-                        //MapControl.RefreshMap();
-                    }
+                    //Refresh this point. Only seem to be possible with refreshing all
+                    RefreshOverlays(true);
+                    //MapControl.AddOverlay(_selectedWaypointMoving);
+                    //MapControl.RefreshMap();
                 }
             }
         }
@@ -613,7 +605,8 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     //Remove overlays are not working properly, the Map is not very usable
                     m_extraMapLayer.MapControl.AddOverlays(addedOverlays);
-                }catch(Exception){}
+                }
+                catch(Exception){}
                 m_extraMapLayer.m_pointOverlays = newPointOverlays;
                 m_extraMapLayer.m_routeOverlays = newRouteOverlays;
             }
@@ -651,7 +644,7 @@ namespace TrailsPlugin.UI.MapLayers
         private static IDictionary<string, TrailPointsLayer> m_layers = new Dictionary<string, TrailPointsLayer>();
         private TrailPointsLayer m_extraMapLayer = null;
         private PointMapMarker _selectedPointMoving = null;
-        private IGPSPoint _selectedWaypointOriginalLocation = null;
+        private TrailGPSLocation _selectedPointOriginal = null;
         private Point m_clickToCenterOffset = Point.Empty;
         private EditTrail m_editTrail = null;
     }

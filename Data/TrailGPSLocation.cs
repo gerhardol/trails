@@ -50,18 +50,51 @@ namespace TrailsPlugin.Data
             : this(trailLocation.LatitudeDegrees, trailLocation.LongitudeDegrees, trailLocation.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
         {
         }
-        public TrailGPSLocation(TrailGPSLocation trailLocation, IGPSLocation gpsLoc)
-            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, trailLocation.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
-        {
-        }
-        public TrailGPSLocation(TrailGPSLocation trailLocation, IGPSPoint gpsLoc)
-            : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, gpsLoc.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
-        {
-        }
         
         public override string ToString()
         {
             return _name + " " + _required + " " +base.ToString()/* _gpsPoint*/;
+        }
+
+        //IGPSPoint does not allow direct modification of points
+        public IGPSPoint GpsPoint
+        {
+            set
+            {
+                if (value != null)
+                {
+                    if (!float.IsNaN(value.LatitudeDegrees))
+                    {
+                        this.latitudeDegrees = value.LatitudeDegrees;
+                    }
+                    if (!float.IsNaN(value.LongitudeDegrees))
+                    {
+                        this.longitudeDegrees = value.LongitudeDegrees;
+                    }
+                    if (!float.IsNaN(value.ElevationMeters))
+                    {
+                        this.elevationMeters = value.ElevationMeters;
+                    }
+                }
+            }
+        }
+
+        public IGPSLocation GpsLoc
+        {
+            set
+            {
+                if (value != null)
+                {
+                    if (!float.IsNaN(value.LatitudeDegrees))
+                    {
+                        this.latitudeDegrees = value.LatitudeDegrees;
+                    }
+                    if (!float.IsNaN(value.LongitudeDegrees))
+                    {
+                        this.longitudeDegrees = value.LongitudeDegrees;
+                    }
+                }
+            }
         }
 
         private const float defaultRadius = 25;
@@ -336,7 +369,6 @@ namespace TrailsPlugin.Data
         {
             float pos = float.NaN;
             int valid = 1;
-            TrailGPSLocation result = null;
             if (subItemSelected <= 2)
             {
                 //check valid numbers
@@ -369,14 +401,14 @@ namespace TrailsPlugin.Data
                 switch (subItemSelected)
                 {
                     case 1:
-                        result = new TrailGPSLocation(this.LatitudeDegrees, pos, this.ElevationMeters, this._name, this._required, this._radius);
+                        this.longitudeDegrees = pos;
                         break;
                     case 2:
-                        result = new TrailGPSLocation(pos, this.LongitudeDegrees, this.ElevationMeters, this._name, this._required, this._radius);
+                        this.latitudeDegrees = pos;
                         break;
                     case 99:
                         //Not yet implemented
-                        result = new TrailGPSLocation(this.LatitudeDegrees, this.LongitudeDegrees, pos, this._name, this._required, this._radius);
+                        this.elevationMeters = pos;
                         break;
                     default:
                         this.Name = s;
@@ -384,7 +416,7 @@ namespace TrailsPlugin.Data
                 }
             }
             _cosmean = invalidLatLon;
-            return result;
+            return this;
         }
 	}
 }

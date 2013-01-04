@@ -253,20 +253,12 @@ namespace TrailsPlugin.UI.Activity
 
         void editTrail_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //All update should update the controller data, now refresh the display
-            if (sender is EditTrail)
-            {
-                EditTrail dialog = sender as EditTrail; //Should be m_editTrail
-                if (dialog.DialogResult == DialogResult.OK)
-                {
-                    //Data is already calculated
-                    m_page.RefreshControlState();
-                    m_page.RefreshData(false);
-                }
-            }
-
+            //There is no need to check the sender or the result, edit form handles calculation and revert
             m_editTrail = null;
             m_layer.editTrail = null;
+
+            m_page.RefreshControlState();
+            m_page.RefreshData(false);
         }
 
 		private void btnDelete_Click(object sender, EventArgs e)

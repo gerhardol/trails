@@ -89,12 +89,10 @@ namespace TrailsPlugin.Data
             //        entry.Value.LongitudeDegrees);
             //}
             IGPSPoint t = Utils.TrackUtil.getGpsLoc(tr.Activity, d1);
-            if (t != null)
-            {
-                this.TrailGPS = new TrailGPSLocation(this.TrailGPS, t);
-            }
+            this.TrailGPS.GpsPoint = t;
             SetDistance(tr, d1);
         }
+
         public void UpdateRow(TrailResult tr, TrailGPSLocation t)
         {
             this.TrailGPS = t;

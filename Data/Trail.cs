@@ -428,8 +428,8 @@ namespace TrailsPlugin.Data
             //Special for activities without any GPS info
             if (results.Count == 0 && activity.HasStartTime)
             {
-                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(new GPSPoint(float.NaN, float.NaN, float.NaN), activity.Name, !lastIsRestlap), activity.StartTime));
-                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(new GPSPoint(float.NaN, float.NaN, float.NaN), activity.Name, !lastIsRestlap), activity.StartTime+activity.TotalTimeEntered));
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(float.NaN, float.NaN, float.NaN, activity.Name, true, 1), activity.StartTime));
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(float.NaN, float.NaN, float.NaN, activity.Name, true, 1), activity.StartTime + activity.TotalTimeEntered));
             }
 
             return results;

@@ -293,7 +293,8 @@ namespace TrailsPlugin.UI.Activity {
 
 		private void btnOk_Click(object sender, System.EventArgs e)
         {
-			if (TrailName.Text.Length == 0) {
+			if (string.IsNullOrEmpty(TrailName.Text))
+            {
 				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
 				return;
 			}

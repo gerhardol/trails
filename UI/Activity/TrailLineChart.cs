@@ -705,8 +705,8 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            //The fill colors are not related to trailcolor, that would lokk iffy
-                            chartColor = new ChartColors(tr.TrailColor, Color.FromArgb(0x78, 225, 225, 245), Color.FromArgb(0xc8, 197, 197, 197));
+                            //The fill colors are not related to trailcolor, that look iffy
+                            chartColor = new ChartColors(tr.TrailColor, Color.FromArgb(0x78, 200, 200, 205), Color.FromArgb(0xc8, 197, 197, 197));
                         }
 
                         //Add empty Dataseries even if no graphpoints. index must match results
@@ -716,6 +716,12 @@ namespace TrailsPlugin.UI.Activity {
                         dataLine.LineColor = chartColor.LineNormal;
                         dataLine.FillColor = chartColor.FillNormal;
                         dataLine.SelectedColor = chartColor.FillSelected;
+                        //Decrease visibility for "secondary" results
+                        if (i != 0)
+                        {
+                            dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - 20 * 0x1000000);
+                            dataLine.SelectedColor = Color.FromArgb(dataLine.SelectedColor.ToArgb() - 20 * 0x1000000);
+                        }
 
                         //Set chart type to Fill similar to ST for first result
                         if (m_ChartTypes[0] == chartType)
@@ -727,11 +733,6 @@ namespace TrailsPlugin.UI.Activity {
                         if (m_trailResults.Contains(tr))
                         {
                             MainChart.DataSeries.Add(dataLine);
-                            if (i != 0)
-                            {
-                                dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - 20 * 0x1000000);
-                                dataLine.SelectedColor = Color.FromArgb(dataLine.SelectedColor.ToArgb() - 20 * 0x1000000);
-                            }
                         }
 
                         if (tr is SummaryTrailResult)
@@ -1666,6 +1667,19 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (e.Axis is RightVerticalAxis || e.Axis is LeftVerticalAxis)
             {
+                //Select all charts for this axix
+                for (int i = 0; i < MainChart.DataSeries.Count; i++)
+                {
+                    //Clear all series, no line/fill check
+                    MainChart.DataSeries[i].ClearSelectedRegions();
+                    //For "single result" only select first series
+                    if (MainChart.DataSeries[i].ValueAxis == e.Axis)
+                    {
+                        MainChart.DataSeries[i].AddSelecedRegion(
+                            MainChart.DataSeries[i].XMin, MainChart.DataSeries[i].XMax);
+                    }
+                }
+
                 foreach (LineChartTypes chartType in m_ChartTypes)
                 {
                     if (m_axisCharts[chartType] == e.Axis)

@@ -326,7 +326,8 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //No TrailResult - use all possible matches
+        //No TrailResult - use all possible matches (if less than MaxSelectedSeries)
+        //Set for primary chart only
         public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
@@ -562,10 +563,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     for (int i = 0; i < MainChart.DataSeries.Count; i++)
                     {
-                        //Clear all series, no line/fill check
                         MainChart.DataSeries[i].ClearSelectedRegions();
-                        //For "single result" only select first series
-                        if (m_trailResults[i].Equals(tr))
+                        int resIndex = i % m_trailResults.Count;
+                        if (m_trailResults[resIndex].Equals(tr))
                         {
                             MainChart.DataSeries[i].AddSelecedRegion(
                                 MainChart.DataSeries[i].XMin, MainChart.DataSeries[i].XMax);

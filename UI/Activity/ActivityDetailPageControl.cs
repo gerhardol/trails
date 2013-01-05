@@ -483,7 +483,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_currentSelectedMapResult != m.TrailRes)
                 {
                     IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
-                    this.EnsureVisible(result, false);
+                    this.EnsureVisible(result, true);
                     //Could be new selection start
                     m_currentSelectedMapLocation = null;
                     m_currentSelectedMapRanges.Clear();

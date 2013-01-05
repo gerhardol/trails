@@ -223,7 +223,7 @@ namespace TrailsPlugin.Data
         public static void SetupYAxisFormatter(LineChartTypes axisType, IAxis axis, IActivity activity)
         {
             axis.SmartZoom = true;
-            axis.LabelColor = LineChartUtil.ChartColor[axisType];
+            axis.LabelColor = LineChartUtil.ChartColor[axisType].LineNormal;
             switch (axisType)
             {
                 case LineChartTypes.Cadence:
@@ -306,24 +306,38 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static readonly IDictionary<LineChartTypes, Color> ChartColor = new Dictionary<LineChartTypes, Color>()
+        public static readonly IDictionary<LineChartTypes, ChartColors> ChartColor = new Dictionary<LineChartTypes, ChartColors>()
             {
                 //Aproximate same as ST colors
-                {LineChartTypes.Speed, Color.FromArgb(32, 74, 135)},
-                {LineChartTypes.Pace, Color.FromArgb(32, 74, 135)},
-                {LineChartTypes.Elevation, Color.FromArgb(143, 89, 2)},
-                {LineChartTypes.Grade, Color.FromArgb(193, 125, 17)},
-                {LineChartTypes.HeartRateBPM, Color.Red},
-                {LineChartTypes.Cadence, Color.FromArgb(78, 154, 6)},
-                {LineChartTypes.Power, Color.FromArgb(92, 53, 102)},
+                {LineChartTypes.Speed, new ChartColors(Color.FromArgb(0x20, 0x4A, 0x87), Color.FromArgb(0xC6, 0xCD, 0xD8), Color.FromArgb(0x94, 0xA7, 0xC2))},
+                {LineChartTypes.Pace, new ChartColors(Color.FromArgb(0x20, 0x4A, 0x87), Color.FromArgb(0xC6, 0xCD, 0xD8), Color.FromArgb(0x94, 0xA7, 0xC2))},
+                {LineChartTypes.Elevation, new ChartColors(Color.FromArgb(0x8F, 0x59, 0x02), Color.FromArgb(0xE3, 0xD4, 0xBB), Color.FromArgb(0xC8, 0xAE, 0x83))},
+                {LineChartTypes.Grade, new ChartColors(Color.FromArgb(0xC1, 0x7D, 0x11), Color.FromArgb(0xEE, 0xDC, 0xBF), Color.FromArgb(0xE0, 0xBF, 0x8A))},
+                {LineChartTypes.HeartRateBPM, new ChartColors(/*Red*/ Color.FromArgb(0xCC, 0x00, 0x00), Color.FromArgb(0xF1, 0xBF, 0xBB), Color.FromArgb(0xE5, 0x84, 0x82))},
+                {LineChartTypes.Cadence, new ChartColors(Color.FromArgb(0x4E, 0x9A, 0x06), Color.FromArgb(0xD3, 0xE3, 0xBC), Color.FromArgb(0xD3, 0xE3, 0xBC))},
+                {LineChartTypes.Power, new ChartColors(Color.FromArgb(0x5C, 0x35, 0x66), Color.FromArgb(0xD7, 0xCB, 0xD3), Color.FromArgb(0xB0, 0x9D, 0xB2))},
                 //Private
-                {LineChartTypes.DiffTime, Color.DarkCyan},
-                {LineChartTypes.DiffDist, Color.CornflowerBlue},
-
-                {LineChartTypes.DeviceSpeed, Color.FromArgb(62, 65, 122)}, //LineChartTypes.Speed
-                {LineChartTypes.DevicePace, Color.FromArgb(62, 65, 122)}, //LineChartTypes.Pace, red
-                {LineChartTypes.DeviceElevation, Color.FromArgb(183, 70, 2)}, //LineChartTypes.Elevation
-                {LineChartTypes.DeviceDiffDist, Color.FromArgb(130, 132, 217)}, //LineChartTypes.DiffDist
+                {LineChartTypes.DiffTime, new ChartColors(/*DarkCyan*/ Color.FromArgb(0x00, 0x8B, 0x8B), Color.FromArgb(0x89, 0xE9, 0xFF), Color.FromArgb(0x4C, 0xDE, 0xFF))},
+                {LineChartTypes.DiffDist, new ChartColors(/*Color.CornflowerBlue*/ Color.FromArgb(0x64, 0x95, 0xED), Color.FromArgb(0x89, 0xE9, 0xFF), Color.FromArgb(0x4C, 0xDE, 0xFF))},
+                //Device, slightly red
+                {LineChartTypes.DeviceSpeed, new ChartColors(Color.FromArgb(0x3E, 0x41, 0x7A), Color.FromArgb(0xC6, 0xCD, 0xD8), Color.FromArgb(0x94, 0xA7, 0xC2))},
+                {LineChartTypes.DevicePace, new ChartColors(Color.FromArgb(0x3E, 0x41, 0x7A), Color.FromArgb(0xC6, 0xCD, 0xD8), Color.FromArgb(0x94, 0xA7, 0xC2))}, 
+                {LineChartTypes.DeviceElevation, new ChartColors(Color.FromArgb(0xB7, 0x46, 0x02), Color.FromArgb(0xE3, 0xD4, 0xBB), Color.FromArgb(0xC8, 0xAE, 0x83))},
+                {LineChartTypes.DeviceDiffDist, new ChartColors(Color.FromArgb(0x00, 0x8B, 0x8B), Color.FromArgb(0x89, 0xE9, 0xFF), Color.FromArgb(0x4C, 0xDE, 0xFF))},
             };
+    }
+
+    public class ChartColors
+    {
+        public ChartColors(Color LineNormal, Color FillNormal, Color FillSelected)
+        {
+            this.LineNormal = LineNormal;
+            this.FillNormal = FillNormal;
+            this.FillSelected = FillSelected;
+        }
+        public Color LineNormal;
+        public Color LineSelected;
+        public Color FillNormal;
+        public Color FillSelected;
     }
 }

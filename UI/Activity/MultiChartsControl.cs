@@ -169,6 +169,13 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 m_showPage = value;
+                if (!m_showPage)
+                {
+                    foreach (TrailLineChart t in m_lineCharts)
+                    {
+                        t.ShowPage = m_showPage;
+                    }
+                }
                 //refresh (if visible)
                 RefreshChart();
             }

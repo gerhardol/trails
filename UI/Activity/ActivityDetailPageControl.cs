@@ -576,10 +576,7 @@ namespace TrailsPlugin.UI.Activity {
                 MultiCharts.EnsureVisible(atr);
             }
         }
-        public void SetSelectedRegions(IList<TrailResultMarked> atr)
-        {
-            MultiCharts.SetSelectedRegions(atr);
-        }
+
 #if ST_2_1
 		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
 			get

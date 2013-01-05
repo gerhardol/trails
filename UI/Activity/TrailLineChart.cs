@@ -15,6 +15,9 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+//Charts look better if a line chart covers the fill chart
+#define SINGLE_RESULT_FILL_MODE
+
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -65,7 +68,9 @@ namespace TrailsPlugin.UI.Activity {
 
         const int MaxSelectedSeries = 5;
         private static SyncGraphMode syncGraph = SyncGraphMode.None;
-
+#if SINGLE_RESULT_FILL_MODE
+        private bool m_singleResultFillMode = false;
+#endif
         public TrailLineChart()
         {
             InitializeComponent();
@@ -216,31 +221,32 @@ namespace TrailsPlugin.UI.Activity {
                     LineChartTypes axisType = ChartToAxis(chartType);
                     if (axisType == chartType || !m_ChartTypes.Contains(axisType))
                     {
-                        m_axisCharts[axisType].LabelColor = LineChartUtil.ChartColor[axisType];
+                        m_axisCharts[axisType].LabelColor = LineChartUtil.ChartColor[axisType].LineNormal;
                     }
                 }
                 e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
                 //Get index for dataseries - same as for result
-                int i = -1;
-
+                TrailResult tr = null;
+                int seriesIndex = -1;
                 for (int j = 0; j < MainChart.DataSeries.Count; j++)
                 {
                     if (e.DataSeries.Equals(MainChart.DataSeries[j]))
                     {
-                        i = j;
+                        seriesIndex = j;
+#if SINGLE_RESULT_FILL_MODE
+                        if (m_singleResultFillMode && seriesIndex > 0)
+                        {
+                            //The Line series relates to first Fill series
+                            seriesIndex--;
+                        }
+#endif
+                        //Results must be added in order, so they can be resolved to result here
+                        tr = m_trailResults[seriesIndex % this.m_trailResults.Count];
                         break;
                     }
                 }
-                if (i >= 0)
+                if (tr != null)
                 {
-                    if (i==1 && MainChart.DataSeries[0].ChartType == ChartDataSeries.Type.Fill)
-                    {
-                        //Use the fill chart rather than the line chart (this normally not occurs)
-                        i = 0;
-                    }
-
-                    //Results must be added in order, so they can be resolved to result here
-                    TrailResult tr = m_trailResults[i % this.m_trailResults.Count];
 
                     IList<TrailResult> markResults = new List<TrailResult>();
                     //Reuse ZoomToSelection setting, to select all results
@@ -282,7 +288,7 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         //Assumes that not single results are set
-                        m_multiple.SetSeriesSelectedResultRange(i, regions);
+                        m_multiple.SetSeriesSelectedResultRange(seriesIndex, regions);
                     }
                     this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                     m_selectDataHandler = true;
@@ -295,17 +301,27 @@ namespace TrailsPlugin.UI.Activity {
             for (int i = 0; i < MainChart.DataSeries.Count; i++ )
             {
                 MainChart.DataSeries[i].ClearSelectedRegions();
-                //Do not mark the line chart related to fill chart
-                if (!(MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill))
+#if SINGLE_RESULT_FILL_MODE
+                //Do not mark the line chart related to fill chart - this is specially handled
+                if (!(m_singleResultFillMode && i == 1))
                 {
                     SetSeriesSelectedResultRange(i, false, regions);
                 }
+#endif
             }
         }
 
         //Mark a specific series
         public void SetSeriesSelectedResultRange(int i, bool clearAll, IList<float[]> regions)
         {
+#if SINGLE_RESULT_FILL_MODE
+            //The "fill" chart is 0, line is 1
+            //line chart should not be explicitly marked (m_singleResultFillMode mode)
+            if (m_singleResultFillMode && i == 1)
+            {
+                return;
+            }
+#endif
             if (ShowPage)
             {
                 if (m_selectDataHandler)
@@ -325,6 +341,13 @@ namespace TrailsPlugin.UI.Activity {
                     if (!clearAll)
                     {
                         MainChart.DataSeries[i].ClearSelectedRegions();
+#if SINGLE_RESULT_FILL_MODE
+                        //The "fill" chart is 0, line is 1
+                        if (m_singleResultFillMode && i == 0)
+                        {
+                            MainChart.DataSeries[1].ClearSelectedRegions();
+                        }
+#endif
                     }
                     if (regions != null && regions.Count > 0)
                     {
@@ -382,13 +405,13 @@ namespace TrailsPlugin.UI.Activity {
                             m_trailResults.Count < MaxSelectedSeries)
                         {
                             MainChart.DataSeries[i].ClearSelectedRegions();
+#if SINGLE_RESULT_FILL_MODE
                             //The "fill" chart is 0, line is 1
-                            if (i == 0 && MainChart.DataSeries.Count > 1 &&
-                                MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill)
+                            if (m_singleResultFillMode && i == 0)
                             {
                                 MainChart.DataSeries[1].ClearSelectedRegions();
                             }
-
+#endif
                             //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
                             float offset = 0;
                             if (m_trailResults[i] is ChildTrailResult)
@@ -417,15 +440,8 @@ namespace TrailsPlugin.UI.Activity {
                                 x1 = Math.Max(x1, (float)MainChart.XAxis.MinOriginValue);
                                 x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
 
-                                int index = i;
-                                if (i == 0 && MainChart.DataSeries.Count > 1 &&
-                                    MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill)
-                                {
-                                    //For line/fill graph
-                                    index = 1;
-                                }
-
-                                MainChart.DataSeries[index].SetSelectedRange(x1, x2);
+                                MainChart.DataSeries[i].SetSelectedRange(x1, x2);
+                                //Note, also in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
                             }
                         }
                     }
@@ -464,14 +480,8 @@ namespace TrailsPlugin.UI.Activity {
                                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
-                                    int index = i;
-                                    if (i == 0 && MainChart.DataSeries.Count > 1 &&
-                                        MainChart.DataSeries[i].ChartType == ChartDataSeries.Type.Fill)
-                                    {
-                                        //For line/fill graph
-                                        index = 1;
-                                    }
-                                    MainChart.DataSeries[index].AddSelecedRegion(ax[0], ax[1]);
+                                    MainChart.DataSeries[i].AddSelecedRegion(ax[0], ax[1]);
+                                    //Note, also in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
                                 }
                             }
                         }
@@ -597,9 +607,12 @@ namespace TrailsPlugin.UI.Activity {
                         //Clear all series, no line/fill check
                         MainChart.DataSeries[i].ClearSelectedRegions();
                         //For "single result" only select first series
-                        if (i < m_trailResults.Count &&
-                            m_trailResults[i].Equals(tr) &&
-                            MainChart.DataSeries[i].ChartType != ChartDataSeries.Type.Fill)
+                        if (m_trailResults[i].Equals(tr)
+#if SINGLE_RESULT_FILL_MODE
+                            //Note, also in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
+                            && !(m_singleResultFillMode && i == 1)
+#endif
+                           )
                         {
                             MainChart.DataSeries[i].AddSelecedRegion(
                                 MainChart.DataSeries[i].XMin, MainChart.DataSeries[i].XMax);
@@ -732,23 +745,36 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailResult tr = chartResults[i];
 
-                        Color chartLineColor;
-                        //Color for the graph - keep standard color if only one graph for the axis
+                        ChartColors chartColor;
+                        //Color for the graph - keep standard color if only one result displayed
                         if (m_trailResults.Count <= 1 || summarySpecialColor ||
                             Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
                         {
-                            chartLineColor = LineChartUtil.ChartColor[chartType];
+                            chartColor = LineChartUtil.ChartColor[chartType];
                         }
                         else
                         {
-                            chartLineColor = tr.TrailColor;
+                            //The fill colors look a little iffy, should be tuned to be used...
+                            chartColor = new ChartColors(tr.TrailColor,
+                                ControlPaint.Light(tr.TrailColor, 0.2F), ControlPaint.Light(tr.TrailColor, 0.01F));
                         }
 
                         //Add empty Dataseries even if no graphpoints. index must match results
                         ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
                         dataLine.ChartType = ChartDataSeries.Type.Line;
-                        dataLine.LineColor = chartLineColor;
-                        dataLine.SelectedColor = ControlPaint.Dark(chartLineColor, 0.01F);
+                        dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
+                        dataLine.LineColor = chartColor.LineNormal;
+                        dataLine.SelectedColor = chartColor.LineSelected;
+                        dataLine.FillColor = chartColor.FillNormal;
+                        dataLine.SelectedColor = chartColor.FillSelected;
+
+                        //Set chart type to Fill similar to ST with one result displayed
+#if !SINGLE_RESULT_FILL_MODE
+                        if (m_trailResults.Count == 1 && i == 0 && m_ChartTypes[0] == chartType)
+                        {
+                            dataLine.ChartType = ChartDataSeries.Type.Fill;
+                        }
+#endif
 
                         //Add to the chart only if result is visible
                         if (m_trailResults.Contains(tr))
@@ -790,23 +816,31 @@ namespace TrailsPlugin.UI.Activity {
 
                             if (graphPoints.Count > 1)
                             {
-                                Color chartFillColor = chartLineColor;
                                 ChartDataSeries dataFill = null;
 
-                                if (m_trailResults.Count == 1 && m_ChartTypes[0] == chartType && /*m_axisCharts[chartType] is LeftVerticalAxis && */
+#if SINGLE_RESULT_FILL_MODE
+                                if (m_trailResults.Count == 1 && m_ChartTypes[0] == chartType &&
                                     m_trailResults.Contains(tr))
                                 {
                                     // We must use 2 separate data series to overcome the display
-                                    //  bug in fill mode.  The main data series is normally rendered but the copy
+                                    //  issue in fill mode.  The main data series is normally rendered but the copy
                                     //  is set in Line mode to be displayed over the fill
-                                    dataFill = new ChartDataSeries(MainChart, MainChart.YAxis);
+                                    m_singleResultFillMode = true;
+
+                                    dataFill = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
                                     dataFill.ChartType = ChartDataSeries.Type.Fill;
-                                    dataFill.LineColor = dataLine.LineColor;
-                                    dataFill.SelectedColor = dataLine.SelectedColor;
-                                    dataFill.FillColor = Color.WhiteSmoke;
-                                    
-                                    MainChart.DataSeries.Add(dataFill);
+                                    dataFill.LineColor = chartColor.LineNormal;
+                                    dataFill.SelectedColor = chartColor.FillSelected;
+                                    dataFill.FillColor = chartColor.FillNormal;
+
+                                    //This is actually the primary series, Line is ignored
+                                    MainChart.DataSeries.Insert(0, dataFill);
                                 }
+                                else
+                                {
+                                    m_singleResultFillMode = false;
+                                }
+#endif
 
                                 //Get the actual graph for all displayed
                                 float syncGraphOffset = GetDataLine(tr, graphPoints, dataLine, dataFill, refGraphPoints);
@@ -1498,6 +1532,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.L)
             {
+                refreshData = true;
                 m_showTrailPoints = (e.Modifiers == Keys.Shift);
             }
             else if (e.KeyCode == Keys.P)
@@ -1525,6 +1560,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.T)
             {
+                refreshData = true;
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
             }
             IList<LineChartTypes> charts = new List<LineChartTypes>();
@@ -1560,7 +1596,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key];
+                        kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key].LineNormal;
                     }
                 }
             }

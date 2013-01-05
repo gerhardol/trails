@@ -211,6 +211,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             ResultList.RefreshControlState();
             TrailSelector.RefreshControlState();
+            MultiCharts.RefreshChartMenu();
         }
 
         //Refresh the data displayed, recalculate if needed

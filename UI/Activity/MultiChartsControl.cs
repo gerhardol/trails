@@ -414,7 +414,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void RefreshChartMenu()
+        public void RefreshChartMenu()
         {
             //TODO: disable if track exists (or ref for diff). 
             speedToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Speed);

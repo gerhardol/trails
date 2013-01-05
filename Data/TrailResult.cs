@@ -85,7 +85,7 @@ namespace TrailsPlugin.Data
         private float? m_predictDistance;
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
-        private Color m_trailColor = getColor(nextTrailColor++);
+        private ChartColors m_trailColor = getColor(nextTrailColor++);
         protected string m_toolTip;
         //Temporary? (undocumented)
         public static bool m_diffOnDateTime = false;
@@ -173,7 +173,7 @@ namespace TrailsPlugin.Data
             //a summary result is not related to an activity trail
             createTrailResult(null, 0, new TrailResultInfo(null, false), 0);
             m_toolTip = "";
-            m_trailColor = Color.Black;
+            m_trailColor = ColorUtil.SummaryColor;
         }
 
         private void createTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
@@ -218,11 +218,6 @@ namespace TrailsPlugin.Data
                             {
                                 TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
                                 ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, m_totalDistDiff);
-                                //if (aActivities.Count > 1)
-                                //{
-                                //    nextTrailColor--;
-                                //    tr.m_trailColor = this.m_trailColor;
-                                //}
                                 splits.Add(tr);
                             }
                         }
@@ -285,7 +280,6 @@ namespace TrailsPlugin.Data
         public static void Reset()
         {
             nextTrailColor = 1;
-            //nextActivityColor = 1;
         }
         #endregion
 
@@ -2596,25 +2590,10 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region Color
-        private static int nextTrailColor = 1;
-        //private static int nextActivityColor = 1;
-
-        //public Color ActivityColor
-        //{
-        //    get
-        //    {
-        //        trActivityInfo t = new trActivityInfo();
-        //        aActivities.TryGetValue(this.m_activity, out t);
-        //        if (t == null)
-        //        {
-        //            return Color.Brown;
-        //        }
-        //        return t.activityColor;
-        //    }
-        //}
+        private static int nextTrailColor = 0;
 
         private bool m_colorOverridden = false;
-        public Color TrailColor
+        public ChartColors ResultColor
         {
             get
             {
@@ -2635,30 +2614,10 @@ namespace TrailsPlugin.Data
             }
         }
 
-        private static Color getColor(int color)
+        private static ChartColors getColor(int color)
         {
-            switch (color % 10)
-            {
-                case 0: return Color.Blue;
-                case 1: return Color.Red;
-                case 2: return Color.Green;
-                case 3: return Color.Orange;
-                case 4: return Color.Plum;
-                case 5: return Color.HotPink;
-                case 6: return Color.Gold;
-                case 7: return Color.Silver;
-                case 8: return Color.YellowGreen;
-                case 9: return Color.Turquoise;
-            }
-            return Color.Black;
+            return ColorUtil.ResultColor[nextTrailColor % ColorUtil.ResultColor.Count];
         }
-
-        //private Color newColor()
-        //{
-        //    int color = nextIndex;
-        //    nextIndex = (nextIndex + 1) % 10;
-        //    return getColor(color);
-        //}
         #endregion
 
         /**********************************************************/

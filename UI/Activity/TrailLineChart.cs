@@ -215,7 +215,7 @@ namespace TrailsPlugin.UI.Activity {
                     LineChartTypes axisType = ChartToAxis(chartType);
                     if (axisType == chartType || !m_ChartTypes.Contains(axisType))
                     {
-                        m_axisCharts[axisType].LabelColor = LineChartUtil.ChartColor[axisType].LineNormal;
+                        m_axisCharts[axisType].LabelColor = ColorUtil.ChartColor[axisType].LineNormal;
                     }
                 }
                 e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
@@ -704,12 +704,11 @@ namespace TrailsPlugin.UI.Activity {
                         if (m_trailResults.Count <= 1 || summarySpecialColor ||
                             Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
                         {
-                            chartColor = LineChartUtil.ChartColor[chartType];
+                            chartColor = ColorUtil.ChartColor[chartType];
                         }
                         else
                         {
-                            //The fill colors are not related to trailcolor, that look iffy
-                            chartColor = new ChartColors(tr.TrailColor, Color.FromArgb(0x78, 200, 200, 205), Color.FromArgb(0xc8, 197, 197, 197));
+                            chartColor = tr.ResultColor;
                         }
 
                         //Add empty Dataseries even if no graphpoints. index must match results
@@ -827,7 +826,7 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
                         CommonResources.Images.Information16;
 #else
-                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11, trailPointResult.TrailColor));
+                        new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11, trailPointResult.ResultColor.LineNormal));
 #endif
                     double oldElapsed = double.MinValue;
                     foreach (DateTime t in trailPointResult.TrailPointDateTime)
@@ -1522,7 +1521,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        kp.Value.LabelColor = LineChartUtil.ChartColor[kp.Key].LineNormal;
+                        kp.Value.LabelColor = ColorUtil.ChartColor[kp.Key].LineNormal;
                     }
                 }
             }

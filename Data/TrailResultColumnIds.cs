@@ -252,7 +252,7 @@ namespace TrailsPlugin.Data {
             switch (id)
             {
                 case TrailResultColumnIds.Color:
-                    return x.TrailColor.ToArgb();
+                    return x.ResultColor.LineNormal.ToArgb();
                 case TrailResultColumnIds.Order:
                     //Order is set dynamically for parents, but used for children
                     return x.Order;

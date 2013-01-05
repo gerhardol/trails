@@ -53,7 +53,7 @@ namespace TrailsPlugin.Data
                 {
                     for (int y = 0; y < image.Height; y++)
                     {
-                        image.SetPixel(x, y, row.TrailColor);
+                        image.SetPixel(x, y, row.ResultColor.LineNormal);
                     }
                 }
                 return image;

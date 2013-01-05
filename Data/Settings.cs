@@ -22,6 +22,8 @@ using System.Globalization;
 using System.ComponentModel;
 using TrailsPlugin.UI.Activity;
 
+using TrailsPlugin.Utils;
+
 namespace TrailsPlugin.Data
 {
 	static class Settings

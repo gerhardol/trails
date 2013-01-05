@@ -763,7 +763,7 @@ namespace TrailsPlugin.UI.Activity {
                             cs.Width = 70;
                             cs.ThemeChanged(m_visualTheme);
                             cs.DesktopLocation = ((Control)sender).PointToScreen(((MouseEventArgs)e).Location);
-                            cs.Selected = tr.TrailColor;
+                            cs.Selected = tr.ResultColor.LineNormal;
                             m_ColorSelectorResult = tr;
                             cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);
                             cs.Show();
@@ -831,9 +831,9 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is ColorSelectorPopup && m_ColorSelectorResult != null)
             {
                 ColorSelectorPopup cs = sender as ColorSelectorPopup;
-                if (cs.Selected != m_ColorSelectorResult.TrailColor)
+                if (cs.Selected != m_ColorSelectorResult.ResultColor.LineNormal)
                 {
-                    m_ColorSelectorResult.TrailColor = cs.Selected;
+                    m_ColorSelectorResult.ResultColor = new Utils.ChartColors(cs.Selected);
                     //Refresh in the case columns are sorted on the color...
                     m_page.RefreshData(false);
                 }

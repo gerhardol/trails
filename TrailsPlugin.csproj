@@ -130,6 +130,7 @@
     <Compile Include="UI\Activity\ActivityDetailPageControl.Designer.cs">
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\ColorUtil.cs" />
     <Compile Include="Utils\Dialog.cs" />
     <Compile Include="Utils\GPS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -65,7 +65,7 @@ namespace TrailsPlugin.UI.MapLayers
             }
             foreach (IList<IGPSPoint> gp in tr.GpsPoints())
             {
-                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr, s + cSeparator + results.Count));
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.ResultColor.LineNormal, tr, s + cSeparator + results.Count));
             }
             return results;
         }
@@ -76,7 +76,7 @@ namespace TrailsPlugin.UI.MapLayers
             IList<TrailMapPolyline> results = new List<TrailMapPolyline>();
             foreach (IList<IGPSPoint> gp in tr.GpsPoints(sel))
             {
-                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth * 2, MarkedColor(tr.TrailColor), tr, "m" + cSeparator + results.Count));
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth * 2, MarkedColor(tr.ResultColor.LineNormal), tr, "m" + cSeparator + results.Count));
             }
             return results;
         }

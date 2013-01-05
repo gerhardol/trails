@@ -27,6 +27,7 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using TrailsPlugin.UI.MapLayers;
 #endif
 using TrailsPlugin.Data;
+using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity {
 	public partial class MultiChartsControl : UserControl {

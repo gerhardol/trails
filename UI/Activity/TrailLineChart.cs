@@ -424,7 +424,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrailResult tr = m_trailResults[i];
                         if (trm.trailResult == tr)
                         {
-                            IList<float[]> t = GetResultSelectionFromActivity(m_trailResults[i], trm.selInfo);
+                            IList<float[]> t = GetResultSelectionFromActivity(tr, trm.selInfo);
                             foreach (float[] ax in t)
                             {
                                 //Ignore ranges outside current range and malformed scales
@@ -436,7 +436,10 @@ namespace TrailsPlugin.UI.Activity {
                                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
-                                    MainChart.DataSeries[i].AddSelecedRegion(ax[0], ax[1]);
+                                    for (int j = i; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                                    {
+                                        MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
+                                    }
                                 }
                             }
                         }

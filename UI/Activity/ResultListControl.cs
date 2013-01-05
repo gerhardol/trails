@@ -212,6 +212,7 @@ namespace TrailsPlugin.UI.Activity {
 
             //By setting to null, the last used is selected, or some defaults
             SelectedItemsWrapper = null;
+            //this.m_beforeChangeSelectedItems = this.m_lastSelectedItems;
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
 
@@ -271,20 +272,21 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private System.Collections.IList m_prevSelectedItems = null;
+        private System.Collections.IList m_lastSelectedItems = null;
+        //private System.Collections.IList m_beforeChangeSelectedItems = null;
         //Wrap the table SelectedItems, from a generic type
         private IList<TrailResultWrapper> SelectedItemsWrapper
         {
             set
             {
                 IList<TrailResultWrapper> setValue = value;
-                if (null == setValue || !setValue.Equals(m_prevSelectedItems))
+                if (null == setValue || !setValue.Equals(m_lastSelectedItems))
                 {
                     if ((setValue == null || setValue.Count == 0))
                     {
                         //Get all current values in prev selection
                         setValue = TrailResultWrapper.SelectedItems(m_controller.CurrentResultTreeList,
-                            TrailResultWrapper.ParentResults(getTrailResultWrapperSelection(m_prevSelectedItems)));
+                            TrailResultWrapper.ParentResults(getTrailResultWrapperSelection(m_lastSelectedItems)));
                         if (null == setValue || setValue.Count == 0)
                         {
                             //get a result for the reference activity
@@ -375,6 +377,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             return getTrailResultRow(element, false);
         }
+
         public static TrailResult getTrailResultRow(object element, bool ensureParent)
         {
             TrailResultWrapper result = (TrailResultWrapper)element;
@@ -459,21 +462,22 @@ namespace TrailsPlugin.UI.Activity {
         bool selectSimilarSplits()
         {
             bool isChange = false;
-#if ST_2_1
-            this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-#else
-            this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-#endif
             if (Data.Settings.SelectSimilarResults && this.SelectedItemsRaw != null)
             {
-                //Note that selecting will scroll, changing offsets
+                //The implementation only supports adding new splits not deselecting
+                //Note that selecting will scroll, changing offsets why check what is clicked does not work well
                 int? lastSplitIndex = null;
                 bool isSingleIndex = false;
                 IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
                 foreach (TrailResultWrapper t in this.SelectedItemsWrapper)
                 {
                     int splitIndex = -1; //Index for parent, not for child(subsplit)
-                    if (t.Parent != null)
+                    if (t.Result is SummaryTrailResult)
+                    {
+                        //Summary, alway parent
+                        results.Add(t);
+                    }
+                    else if (t.Parent != null)
                     {
                         splitIndex = t.Result.Order;
                     }
@@ -483,7 +487,10 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         if (splitIndex < 0)
                         {
-                            results.Add(rtn);
+                            if (!results.Contains(rtn))
+                            {
+                                results.Add(rtn);
+                            }
                         }
                         else
                         {
@@ -491,17 +498,32 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 if (ctn.Result.Order == splitIndex)
                                 {
-                                    results.Add(ctn);
+                                    if (!results.Contains(ctn))
+                                    {
+                                        results.Add(ctn);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
                 if (results != SelectedItemsWrapper)
                 {
+#if ST_2_1
+                    this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+#else
+                    this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+#endif
                     this.SelectedItemsWrapper = results;
+#if ST_2_1
+                    this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+#else
+                    this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+#endif
                     isChange = true;
                 }
+
                 //If a single index is selected, let the reference follow the current result
                 if (isSingleIndex && this.m_controller.ReferenceTrailResult != null)
                 {
@@ -550,11 +572,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-#if ST_2_1
-            this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-#else
-            this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-#endif
             return isChange;
         }
 
@@ -758,7 +775,14 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 if (t.Result == tr)
                                 {
-                                    isMatch = true;
+                                    //Ignore clicking on summary, route is updated and no specific marking in chart
+                                    if (!(tr is SummaryTrailResult))
+                                    {
+                                        //if (!TrailResultWrapper.ParentResults(getTrailResultWrapperSelection(m_beforeChangeSelectedItems)).Contains(tr))
+                                        {
+                                             isMatch = true;
+                                        }
+                                    }
                                     break;
                                 }
                             }
@@ -773,9 +797,9 @@ namespace TrailsPlugin.UI.Activity {
                                 else
                                 {
                                     //The user can control what is selected - mark all
-                                    aTr = this.SelectedItems;
+                                    aTr = new List<TrailResult>{tr};
                                 }
-                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr));
+                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), this.SelectedItemsWrapper.Count > 1);
                             }
                         }
                     }
@@ -874,7 +898,16 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_page.RefreshChart();
             }
-            m_prevSelectedItems = summaryList.SelectedItems;
+                //Trails track display update
+            if (Data.Settings.ShowOnlyMarkedOnRoute)
+            {
+                this.m_page.RefreshRoute(isChange);
+            }
+
+            //Save items selected before the change (needed by ClickRow if several are marked)
+            //m_beforeChangeSelectedItems = m_lastSelectedItems;
+            //Save previous items for selecting at updates of results
+            m_lastSelectedItems = summaryList.SelectedItems;
         }
 
         bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)

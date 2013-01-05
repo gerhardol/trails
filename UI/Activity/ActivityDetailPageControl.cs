@@ -230,7 +230,7 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.RefreshList();
             //Data could be updated and reference changed
             MultiCharts.ReferenceTrailResult = this.m_controller.ReferenceTrailResult;
-            RefreshRoute();
+            RefreshRoute(true);
             //Charts are refreshed in ShowPage, no need for RefreshChart();
             if (showPage)
             {
@@ -263,7 +263,7 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.StopProgressBar();
         }
 
-        private void RefreshRoute()
+        public void RefreshRoute(bool doZoom)
         {
             //Refreh map when visible
             //for reports view, also the separate Map could be updated
@@ -284,49 +284,51 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerPoints.TrailPoints = points;
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
-                IList<TrailResult> results = TrailResultWrapper.ParentResults(m_controller.CurrentResultTreeList);
-                bool showAll = !Data.Settings.ShowOnlyMarkedOnRoute;
-                if (!showAll)
+                IList<TrailResult> results;
+                IList<TrailResult> selected = this.ResultList.SelectedItems;
+                if (!Data.Settings.ShowOnlyMarkedOnRoute ||
+                    (selected == null ||
+                    selected.Count == 1 && selected[0] is SummaryTrailResult))
                 {
-                    if (this.ResultList.SelectedItems == null)
+                    results = TrailResultWrapper.ParentResults(m_controller.CurrentResultTreeList);
+                }
+                else
+                {
+                    results = new List<TrailResult>();
+                    foreach (TrailResult tr in selected)
                     {
-                        showAll = true;
-                    }
-                    else
-                    {
-                        foreach (TrailResult tr in this.ResultList.SelectedItems)
+                        if (!(tr is SummaryTrailResult))
                         {
-                            if (tr is SummaryTrailResult)
-                            {
-                                showAll = true;
-                                break;
-                            }
+                            results.Add(tr);
                         }
                     }
                 }
+
                 foreach (TrailResult tr in results)
                 {
-                    if (showAll || this.ResultList.SelectedItems.Contains(tr))
+                    //Do not map activities displayed already by ST
+                    if (!ViewSingleActivity(tr.Activity))
                     {
-                        //Do not map activities displayed already by ST
-                        if (!ViewSingleActivity(tr.Activity))
+                        //Note: Possibly limit no of Trails shown, it slows down Gmaps some
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
                         {
-                            //Note: Possibly limit no of Trails shown, it slows down Gmaps some
-                            foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
-                            {
-                                m.Click += new MouseEventHandler(mapPoly_Click);
-                                routes.Add(m.key, m);
-                            }
+                            m.Click += new MouseEventHandler(mapPoly_Click);
+                            routes.Add(m.key, m);
                         }
                     }
                 }
+                //Clear marked routes (set separately, runs after) 
                 m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
                 m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 m_layerMarked.ClearOverlays();
+
                 m_layerRoutes.TrailRoutes = routes;
 
-                //Zoom to routes
-                m_layerRoutes.DoZoom();
+                if (doZoom)
+                {
+                    //Zoom to routes
+                    m_layerRoutes.DoZoom();
+                }
             }
         }
 
@@ -403,7 +405,6 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultMarked trm in atr)
                 {
                     if (m_view != null &&
-                        //m_view.RouteSelectionProvider != null &&
                       ViewSingleActivity(trm.trailResult.Activity))
                     {
                         //One ST activity is drawn with standard methods
@@ -419,7 +420,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        //Trails internal display of tracks
+                        //Trails display of tracks
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
                         {
                             if (!mresult.ContainsKey(m.key))
@@ -429,11 +430,6 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                }
-                //Trails track display update
-                if (Data.Settings.ShowOnlyMarkedOnRoute)
-                {
-                    this.RefreshRoute();
                 }
                 m_layerMarked.MarkedTrailRoutesNoShow = marked;
                 m_layerMarked.MarkedTrailRoutes = mresult;
@@ -448,7 +444,6 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (marked != null && marked.Count > 0 || 
                     mresult != null && mresult.Count > 0)
-                //if (atr != null && atr.Count > 0 || atrST.Count > 0)
                 {
                     if (Data.Settings.ZoomToSelection)
                     {

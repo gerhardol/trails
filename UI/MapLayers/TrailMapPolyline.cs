@@ -58,9 +58,14 @@ namespace TrailsPlugin.UI.MapLayers
         public static IList<TrailMapPolyline> GetTrailMapPolyline(TrailResult tr)
         {
             IList<TrailMapPolyline> results = new List<TrailMapPolyline>();
+            string s = "r";
+            if (tr is ChildTrailResult)
+            {
+                s = "c" + tr.Order;
+            }
             foreach (IList<IGPSPoint> gp in tr.GpsPoints())
             {
-                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr, "r" + cSeparator + results.Count));
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.TrailColor, tr, s + cSeparator + results.Count));
             }
             return results;
         }

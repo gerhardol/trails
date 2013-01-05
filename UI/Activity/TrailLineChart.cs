@@ -16,7 +16,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 //Charts look better if a line chart covers the fill chart
-#define SINGLE_RESULT_FILL_MODE
+//#define SINGLE_RESULT_FILL_MODE
 
 using System;
 using System.ComponentModel;
@@ -441,7 +441,7 @@ namespace TrailsPlugin.UI.Activity {
                                 x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
 
                                 MainChart.DataSeries[i].SetSelectedRange(x1, x2);
-                                //Note, also in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
+                                //Note, in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
                             }
                         }
                     }
@@ -481,7 +481,7 @@ namespace TrailsPlugin.UI.Activity {
                                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
                                     MainChart.DataSeries[i].AddSelecedRegion(ax[0], ax[1]);
-                                    //Note, also in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
+                                    //Note, in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
                                 }
                             }
                         }
@@ -609,7 +609,7 @@ namespace TrailsPlugin.UI.Activity {
                         //For "single result" only select first series
                         if (m_trailResults[i].Equals(tr)
 #if SINGLE_RESULT_FILL_MODE
-                            //Note, also in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
+                            //Note, in SINGLE_RESULT_FILL_MODE (m_singleResultFillMode), the Line graph is not selected
                             && !(m_singleResultFillMode && i == 1)
 #endif
                            )
@@ -692,6 +692,7 @@ namespace TrailsPlugin.UI.Activity {
                                 chartResults.Add(tr2);
                             }
                         }
+                        break;
                     }
                 }
 
@@ -754,9 +755,8 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            //The fill colors look a little iffy, should be tuned to be used...
-                            chartColor = new ChartColors(tr.TrailColor,
-                                ControlPaint.Light(tr.TrailColor, 0.2F), ControlPaint.Light(tr.TrailColor, 0.01F));
+                            //The fill colors are not related to trailcolor, that would lokk iffy
+                            chartColor = new ChartColors(tr.TrailColor, Color.FromArgb(0x78, 225, 225, 245), Color.FromArgb(0xc8, 197, 197, 197));
                         }
 
                         //Add empty Dataseries even if no graphpoints. index must match results
@@ -764,19 +764,20 @@ namespace TrailsPlugin.UI.Activity {
                         dataLine.ChartType = ChartDataSeries.Type.Line;
                         dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
                         dataLine.LineColor = chartColor.LineNormal;
-                        dataLine.SelectedColor = chartColor.LineSelected;
                         dataLine.FillColor = chartColor.FillNormal;
                         dataLine.SelectedColor = chartColor.FillSelected;
 
-                        //Set chart type to Fill similar to ST with one result displayed
-#if !SINGLE_RESULT_FILL_MODE
-                        if (m_trailResults.Count == 1 && i == 0 && m_ChartTypes[0] == chartType)
+                        //Set chart type to Fill similar to ST for first result
+                        if (m_ChartTypes[0] == chartType
+#if SINGLE_RESULT_FILL_MODE
+                            && m_trailResults.Count > 1
+#endif
+                            )
                         {
                             dataLine.ChartType = ChartDataSeries.Type.Fill;
                         }
-#endif
 
-                        //Add to the chart only if result is visible
+                        //Add to the chart only if result is visible (no "summary" results)
                         if (m_trailResults.Contains(tr))
                         {
                             MainChart.DataSeries.Add(dataLine);
@@ -819,7 +820,8 @@ namespace TrailsPlugin.UI.Activity {
                                 ChartDataSeries dataFill = null;
 
 #if SINGLE_RESULT_FILL_MODE
-                                if (m_trailResults.Count == 1 && m_ChartTypes[0] == chartType &&
+                                if (i==0 && m_ChartTypes[0] == chartType &&
+                                    m_trailResults.Count == 1 && 
                                     m_trailResults.Contains(tr))
                                 {
                                     // We must use 2 separate data series to overcome the display

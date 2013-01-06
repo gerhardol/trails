@@ -1,0 +1,7 @@
+syntax: glob
+.svn
+*.st3plugin
+obj/
+*.suo
+bin/
+_UpgradeReport_Files/

@@ -697,8 +697,9 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 StopProgressBar();
+
                 //Mark route and chart
-                m_page.MarkTrack(aTrm);
+                m_page.MarkTrack(aTrm, true, true);
             }
         }
 
@@ -799,7 +800,7 @@ namespace TrailsPlugin.UI.Activity {
                                     //The user can control what is selected - mark all
                                     aTr = new List<TrailResult>{tr};
                                 }
-                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), this.SelectedItemsWrapper.Count > 1);
+                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), this.SelectedItemsWrapper.Count > 1, false);
                             }
                         }
                     }
@@ -901,7 +902,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Trails track display update
             if (Data.Settings.ShowOnlyMarkedOnRoute)
             {
-                this.m_page.RefreshRoute(isChange);
+                this.m_page.RefreshRoute(false);
             }
 
             //Save items selected before the change (needed by ClickRow if several are marked)
@@ -1378,10 +1379,15 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     Data.Settings.ZoomToSelection = !Data.Settings.ZoomToSelection;
                 }
-                if (e.Modifiers == Keys.Shift)
+                else if (e.Modifiers == Keys.Shift)
                 {
                     Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
                     m_page.RefreshData(false);
+                }
+                else
+                {
+                    //Zoom to selected parts
+                    this.m_page.ZoomMarked();
                 }
             }
         }

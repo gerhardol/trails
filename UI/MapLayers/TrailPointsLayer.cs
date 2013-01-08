@@ -125,6 +125,7 @@ namespace TrailsPlugin.UI.MapLayers
                 RefreshOverlays(true);
             }
         }
+
         public IList<TrailGPSLocation> SelectedTrailPoints
         {
             set
@@ -139,6 +140,7 @@ namespace TrailsPlugin.UI.MapLayers
                 }
             }
         }
+
         public IDictionary<string, MapPolyline> TrailRoutes
         {
             set
@@ -186,6 +188,46 @@ namespace TrailsPlugin.UI.MapLayers
             return area1;
         }
 
+        public IGPSBounds RelevantArea()
+        {
+            IGPSBounds area = null;
+            if (m_TrailRoutes.Count > 0)
+            {
+                area = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
+            }
+            if (m_TrailPoints.Count > 0)
+            {
+                //All points currently have the same radius
+                float highlightRadius = m_TrailPoints[0].Radius;
+                IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * highlightRadius);
+                area = this.Union(area, area2);
+            }
+            if (m_MarkedTrailRoutes.Count > 0 || m_MarkedTrailRoutesNoShow.Count > 0)
+            {
+                IGPSBounds area2 = Union(TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes),
+                    TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
+                area = this.Union(area, area2);
+            }
+            return area;
+        }
+
+        public void EnsureVisible()
+        {
+            this.EnsureVisible(this.RelevantArea());
+        }
+
+        public new void EnsureVisible(IGPSBounds area)
+        {
+            if (m_showPage)
+            {
+                base.EnsureVisible(area);
+                if (m_extraMapLayer != null)
+                {
+                    m_extraMapLayer.EnsureVisible(area);
+                }
+            }
+        }
+
         public new void SetLocation(IGPSBounds area)
         {
             if (m_showPage)
@@ -201,18 +243,7 @@ namespace TrailsPlugin.UI.MapLayers
         //Zoom to "relevant" contents (normally done when activities are updated)
         public void DoZoom()
         {
-            if (m_TrailRoutes.Count > 0)
-            {
-                IGPSBounds area1 = TrailMapPolyline.getGPSBounds(m_TrailRoutes);
-                if (m_TrailPoints.Count > 0)
-                {
-                    //All points currently have the same radius
-                    float highlightRadius = m_TrailPoints[0].Radius;
-                    IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * highlightRadius);
-                    area1 = Union(area1, area2);
-                }
-                DoZoom(area1);
-            }
+            this.DoZoom(this.RelevantArea());
         }
 
         public new void DoZoom(IGPSBounds area)
@@ -223,20 +254,6 @@ namespace TrailsPlugin.UI.MapLayers
             {
                 m_extraMapLayer.DoZoom(area);
             }
-        }
-
-        public void DoZoomMarkedTracks()
-        {
-            IGPSBounds area = Union(TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes),
-                TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
-            DoZoom(area);
-        }
-
-        public void SetLocationMarkedTracks()
-        {
-            IGPSBounds area = Union(TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutes),
-                TrailMapPolyline.getGPSBounds(m_MarkedTrailRoutesNoShow));
-            SetLocation(area);
         }
 
         public void ZoomIn()

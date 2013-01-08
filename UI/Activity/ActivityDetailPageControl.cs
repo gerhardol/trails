@@ -263,7 +263,7 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.StopProgressBar();
         }
 
-        public void RefreshRoute(bool doZoom)
+        public void RefreshRoute(bool zoomOrVisible)
         {
             //Refreh map when visible
             //for reports view, also the separate Map could be updated
@@ -324,10 +324,17 @@ namespace TrailsPlugin.UI.Activity {
 
                 m_layerRoutes.TrailRoutes = routes;
 
-                if (doZoom)
+                if (zoomOrVisible)
                 {
-                    //Zoom to routes
-                    m_layerRoutes.DoZoom();
+                    if (Data.Settings.ZoomToSelection)
+                    {
+                        m_layerRoutes.DoZoom();
+                    }
+                    else
+                    {
+                        //Make routes are visible
+                        this.m_layerRoutes.EnsureVisible();
+                    }
                 }
             }
         }
@@ -389,12 +396,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
         
-        public void MarkTrack(IList<TrailResultMarked> atr)
-        {
-            MarkTrack(atr, true);
-        }
-
-        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart)
+        public void MarkTrack(IList<TrailResultMarked> atr, bool markChart, bool zoom)
         {
 #if !ST_2_1
             if (m_showPage)
@@ -442,25 +444,14 @@ namespace TrailsPlugin.UI.Activity {
                 m_view.RouteSelectionProvider.SelectedItems = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, null, false);
                 m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
 
-                if (marked != null && marked.Count > 0 || 
-                    mresult != null && mresult.Count > 0)
+                if (zoom && Data.Settings.ZoomToSelection)
                 {
-                    if (Data.Settings.ZoomToSelection)
-                    {
-                        this.m_layerMarked.DoZoomMarkedTracks();
-                    }
-                    else
-                    {
-                        this.m_layerMarked.SetLocationMarkedTracks();
-                    }
+                    this.m_layerMarked.DoZoom();
                 }
-                else if (Data.Settings.ShowOnlyMarkedOnRoute)
+                else
                 {
-                    this.m_layerRoutes.DoZoom();
-                }
-                else if (!markChart)
-                {
-                    this.m_layerPoints.DoZoom();
+                    //Make sure it is visible
+                    this.m_layerMarked.EnsureVisible();
                 }
 
                 //Mark chart
@@ -470,6 +461,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 #endif
+        }
+
+        private void ZoomMarked()
+        {
+            this.m_layerMarked.DoZoom();
         }
 
         private TrailResult m_currentSelectedMapResult = null;
@@ -526,7 +522,7 @@ namespace TrailsPlugin.UI.Activity {
                             m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
                         }
                         MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo });
-                        MarkTrack(m_currentSelectedMapRanges, true);
+                        MarkTrack(m_currentSelectedMapRanges, true, false);
                         sectionFound = true;
                         m_currentSelectedMapLocation = null;
                     }

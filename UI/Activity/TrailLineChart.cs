@@ -261,8 +261,9 @@ namespace TrailsPlugin.UI.Activity {
                     m_selectDataHandler = false;
 
                     bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
+
                     //Mark route track, but not chart
-                    m_page.MarkTrack(results, false);
+                    m_page.MarkTrack(results, false, true);
                     m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
                     //TODO: Should also zoom chart

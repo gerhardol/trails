@@ -107,6 +107,20 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
+        public void EnsureVisible(IGPSBounds area)
+        {
+            if (area != null)
+            {
+                double zoom = this.MapControl.Zoom;
+                if (!this.MapControl.MapBounds.Contains(area))
+                {
+                    area = this.MapControl.MapBounds.Union(area);
+                    zoom = Math.Max(zoom, this.MapControl.ComputeZoomToFit(area));
+                    this.MapControl.SetLocation(area.Center, zoom);
+                }
+            }
+        }
+
         public IGPSLocation GetCenterMap()
         {
             IGPSLocation centerLocation = MapControl.MapProjection.PixelToGPS(MapControl.Center, MapControl.Zoom, new Point(0, 0));

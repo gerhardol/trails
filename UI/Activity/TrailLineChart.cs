@@ -690,7 +690,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             refChartType = ChartToAxis(chartType);
                         }
-                        if (refChartType == syncGraphOffsetChartType)
+                        if (refChartType == syncGraphOffsetChartType && ReferenceTrailResult != null)
                         {
                             refGraphPoints = GetSmoothedActivityTrack(ReferenceTrailResult, refChartType, ReferenceTrailResult);
                         }

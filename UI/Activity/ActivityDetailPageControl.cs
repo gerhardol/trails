@@ -463,7 +463,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        private void ZoomMarked()
+        public void ZoomMarked()
         {
             this.m_layerMarked.DoZoom();
         }

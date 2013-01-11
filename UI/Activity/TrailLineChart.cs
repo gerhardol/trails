@@ -718,12 +718,6 @@ namespace TrailsPlugin.UI.Activity {
                         dataLine.LineColor = chartColor.LineNormal;
                         dataLine.FillColor = chartColor.FillNormal;
                         dataLine.SelectedColor = chartColor.FillSelected;
-                        //Decrease visibility for "secondary" results
-                        if (i != 0)
-                        {
-                            //dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - 20 * 0x1000000);
-                            //dataLine.SelectedColor = Color.FromArgb(dataLine.SelectedColor.ToArgb() - 20 * 0x1000000);
-                        }
 
                         //Set chart type to Fill similar to ST for first result
                         if (m_ChartTypes[0] == chartType)

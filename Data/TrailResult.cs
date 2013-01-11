@@ -85,7 +85,7 @@ namespace TrailsPlugin.Data
         private float? m_predictDistance;
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
-        private ChartColors m_trailColor = getColor(nextTrailColor++);
+        private ChartColors m_trailColor = null;
         protected string m_toolTip;
         //Temporary? (undocumented)
         public static bool m_diffOnDateTime = false;
@@ -279,7 +279,7 @@ namespace TrailsPlugin.Data
 
         public static void Reset()
         {
-            nextTrailColor = 1;
+            nextTrailColor = 0;
         }
         #endregion
 
@@ -2600,10 +2600,15 @@ namespace TrailsPlugin.Data
                 if (!m_colorOverridden && Controller.TrailController.Instance.Activities.Count > 1 &&
                     (this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
-                    return (this as ChildTrailResult).ParentResult.m_trailColor;
+                    return (this as ChildTrailResult).ParentResult.ResultColor;
                 }
                 else
                 {
+                    if (this.m_trailColor == null)
+                    {
+                        //Wait to create the color, to get consistent colors before resorting
+                        this.m_trailColor = getColor(nextTrailColor++);
+                    }
                     return this.m_trailColor;
                 }
             }

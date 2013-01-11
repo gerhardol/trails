@@ -714,7 +714,6 @@ namespace TrailsPlugin.UI.Activity {
 
                         //Add empty Dataseries even if no graphpoints. index must match results
                         ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
-                        dataLine.ChartType = ChartDataSeries.Type.Line;
                         dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
                         dataLine.LineColor = chartColor.LineNormal;
                         dataLine.FillColor = chartColor.FillNormal;
@@ -722,14 +721,18 @@ namespace TrailsPlugin.UI.Activity {
                         //Decrease visibility for "secondary" results
                         if (i != 0)
                         {
-                            dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - 20 * 0x1000000);
-                            dataLine.SelectedColor = Color.FromArgb(dataLine.SelectedColor.ToArgb() - 20 * 0x1000000);
+                            //dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - 20 * 0x1000000);
+                            //dataLine.SelectedColor = Color.FromArgb(dataLine.SelectedColor.ToArgb() - 20 * 0x1000000);
                         }
 
                         //Set chart type to Fill similar to ST for first result
                         if (m_ChartTypes[0] == chartType)
                         {
                             dataLine.ChartType = ChartDataSeries.Type.Fill;
+                        }
+                        else
+                        {
+                            dataLine.ChartType = ChartDataSeries.Type.Line;
                         }
 
                         //Add to the chart only if result is visible (no "summary" results)

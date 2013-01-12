@@ -118,14 +118,25 @@ namespace TrailsPlugin.Data {
         public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
         public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
 
+        //Used by Settings at start
+        public static string DefaultSortColumn()
+        {
+            return TrailResultColumnIds.StartTime;
+        }
+
         public static IList<string> DefaultColumns()
         {
             IList<string> activityPageColumns = new List<string>();
             activityPageColumns.Add(TrailResultColumnIds.Order);
             activityPageColumns.Add(TrailResultColumnIds.StartTime);
             activityPageColumns.Add(TrailResultColumnIds.Duration);
-            activityPageColumns.Add(TrailResultColumnIds.AvgHR);
+            activityPageColumns.Add(TrailResultColumnIds.Distance);
             activityPageColumns.Add(TrailResultColumnIds.AvgSpeedPace);
+            activityPageColumns.Add(TrailResultColumnIds.AvgHR);
+            activityPageColumns.Add(TrailResultColumnIds.MaxHR);
+            activityPageColumns.Add(TrailResultColumnIds.Ascent);
+            activityPageColumns.Add(TrailResultColumnIds.GradeRunAdjustedPace);
+            activityPageColumns.Add(TrailResultColumnIds.Name);
             return activityPageColumns;
         }
 #if ST_2_1

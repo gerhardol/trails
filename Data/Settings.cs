@@ -38,8 +38,8 @@ namespace TrailsPlugin.Data
         private static bool m_ShowChartToolBar = true;
         private static bool m_SelectSimilarResults = false;
         private static bool m_addCurrentCategory = false;
-        private static string m_summaryViewSortColumn = TrailResultColumnIds.Order;
-        private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Ascending;
+        private static string m_summaryViewSortColumn = TrailResultColumnIds.DefaultSortColumn();
+        private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Descending;
         private static bool m_SetNameAtImport = true;
         private static int m_MaxAutoCalcActivitiesTrails = 10000;
         private static int m_MaxAutoCalcActivitiesSingleTrail = 10000;
@@ -367,10 +367,6 @@ namespace TrailsPlugin.Data
                     }
                 }
                 catch { }
-                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
-                if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
-                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
-                if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
                 attr = pluginNode.GetAttribute(xmlTags.SelectSimilarResults);
                 if (attr.Length > 0) { m_SelectSimilarResults = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
@@ -457,6 +453,13 @@ namespace TrailsPlugin.Data
                         m_activityPageColumns.Add(column);
                     }
                 }
+                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
+                if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
+                else if (m_activityPageColumns != null && m_activityPageColumns.Count > 1)
+                { m_summaryViewSortColumn = m_activityPageColumns[1]; }
+                
+                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
+                if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
 
                 attr = pluginNode.GetAttribute(xmlTags.sMultiChartType);
                 if (attr.Length > 0)

@@ -807,11 +807,20 @@ namespace TrailsPlugin.UI.Activity {
                     //Create list summary from resulting datalines
                     if (summaryDataLine != null)
                     {
-                        if (summarySeries.Count > 1)
+                        if (summarySeries.Count == 1)
+                        {
+                            //Cannot create a summary from one line, just copy the original
+                            foreach (KeyValuePair<float, PointF> kv in summarySeries[0].Points)
+                            {
+                                summaryDataLine.Points.Add(kv.Key, kv.Value);
+                            }
+                        }
+                        else
                         {
                             //Only add if more than one one result
                             this.getCategoryAverage(summaryDataLine, summarySeries);
                         }
+
                     }
                 }  //for all axis
 

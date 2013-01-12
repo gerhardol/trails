@@ -700,39 +700,53 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailResult tr = chartResults[i];
 
-                        ChartColors chartColor;
-                        //Color for the graph - keep standard color if only one result displayed
-                        if (m_trailResults.Count <= 1 || summarySpecialColor ||
-                            Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
-                        {
-                            chartColor = ColorUtil.ChartColor[chartType];
-                        }
-                        else
-                        {
-                            chartColor = tr.ResultColor;
-                        }
-
-                        //Add empty Dataseries even if no graphpoints. index must match results
                         ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
-                        dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
-                        dataLine.LineColor = chartColor.LineNormal;
-                        dataLine.FillColor = chartColor.FillNormal;
-                        dataLine.SelectedColor = chartColor.FillSelected;
-
-                        //Set chart type to Fill similar to ST for first result
-                        if (m_ChartTypes[0] == chartType)
-                        {
-                            dataLine.ChartType = ChartDataSeries.Type.Fill;
-                        }
-                        else
-                        {
-                            dataLine.ChartType = ChartDataSeries.Type.Line;
-                        }
 
                         //Add to the chart only if result is visible (no "summary" results)
                         if (m_trailResults.Contains(tr))
                         {
+                            //Note: Add empty Dataseries even if no graphpoints. index must match results
                             MainChart.DataSeries.Add(dataLine);
+
+                            //Update display only data
+
+                            dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
+                            {
+                                ChartColors chartColor;
+                                //Color for the graph - keep standard color if only one result displayed
+                                if (m_trailResults.Count <= 1 || summarySpecialColor ||
+                                    Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
+                                {
+                                    chartColor = ColorUtil.ChartColor[chartType];
+                                }
+                                else
+                                {
+                                    chartColor = tr.ResultColor;
+                                }
+
+                                dataLine.LineColor = chartColor.LineNormal;
+                                dataLine.FillColor = chartColor.FillNormal;
+                                dataLine.SelectedColor = chartColor.FillSelected;
+                            }
+
+                            //Decrease alpha for many activities
+                            if (m_trailResults.Count > 1)
+                            {
+                                int alpha = dataLine.FillColor.A - m_trailResults.Count * 3;
+                                alpha = Math.Min(alpha, 0x77); //Color.FromArgb should take uint...
+                                alpha = Math.Max(alpha, 0x10);
+                                dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - (dataLine.FillColor.A - alpha) * 0x1000000);
+                            }
+
+                            //Set chart type to Fill similar to ST for first result
+                            if (m_ChartTypes[0] == chartType)
+                            {
+                                dataLine.ChartType = ChartDataSeries.Type.Fill;
+                            }
+                            else
+                            {
+                                dataLine.ChartType = ChartDataSeries.Type.Line;
+                            }
                         }
 
                         if (tr is SummaryTrailResult)

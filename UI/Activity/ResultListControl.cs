@@ -619,6 +619,10 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.m_page.RefreshChart();
             }
+            if (Data.Settings.ShowOnlyMarkedOnRoute)
+            {
+                this.m_page.RefreshRoute(false);
+            }
             RefreshControlState();
         }
 

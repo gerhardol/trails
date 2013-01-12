@@ -221,7 +221,10 @@ namespace TrailsPlugin.Data
         public static int MaxAutoCalcResults
         {
             get { return 250; }
-            set {  }
+        }
+        public static int MaxAutoSelectSplits
+        {
+            get { return 25; }
         }
         public static bool RestIsPause
         {

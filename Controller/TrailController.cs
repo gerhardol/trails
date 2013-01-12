@@ -386,10 +386,25 @@ namespace TrailsPlugin.Controller
                     }
                 }
 
-                //Last resort, use Reference Activity
+                //Last resort, use Reference Activity or Splits
                 if (this.m_currentActivityTrails.Count == 0)
                 {
-                    this.CheckSetCurrentList(new List<ActivityTrail> { this.m_referenceActivityTrail }, progressBar);
+                    if (this.m_activities.Count > Settings.MaxAutoSelectSplits)
+                    {
+                        //Many activities, select Reference Activity
+                        this.CheckSetCurrentList(new List<ActivityTrail> { this.m_referenceActivityTrail }, progressBar);
+                    }
+                    else
+                    {
+                        foreach (ActivityTrail at in this.OrderedTrails())
+                        {
+                            if (at.Trail.IsSplits)
+                            {
+                                this.CheckSetCurrentList(new List<ActivityTrail> { at }, progressBar);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }

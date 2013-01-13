@@ -58,10 +58,10 @@ namespace TrailsPlugin.UI.Activity {
         private ITheme m_visualTheme;
         private ActivityDetailPageControl m_page;
         private MultiChartsControl m_multiple;
-        private bool m_selectDataHandler = true; //Event handler is enabled by default
+        //private bool m_selectDataHandler = true; //Event handler is enabled by default
         private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
-        private TrailPointsLayer m_layer;
+        private bool m_CtrlPressed = false;
 
         const int MaxSelectedSeries = 5;
         private static SyncGraphMode syncGraph = SyncGraphMode.None;
@@ -98,11 +98,10 @@ namespace TrailsPlugin.UI.Activity {
             fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
         }
 
-        public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple, TrailPointsLayer layer)
+        public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple)
         {
             m_page = page;
             m_multiple = multiple;
-            m_layer = layer;
         }
 
         public void ThemeChanged(ITheme visualTheme)
@@ -203,10 +202,7 @@ namespace TrailsPlugin.UI.Activity {
         void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
             //Note: MainChart_SelectData fires before and after this event
-        }
-
-        void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
-        {
+            this.m_MouseDownLocation = Point.Empty;
             if (e != null && e.DataSeries != null && m_page != null)
             {
                 //Reset color on axis
@@ -219,6 +215,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 e.DataSeries.ValueAxis.LabelColor = Color.Black;// e.DataSeries.SelectedColor;
+
                 //Get index for dataseries - same as for result
                 int seriesIndex = -1;
                 for (int j = 0; j < MainChart.DataSeries.Count; j++)
@@ -231,7 +228,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 if (seriesIndex >= 0)
                 {
-                    //Results must be added in order, so they can be resolved to result here
+                    //Series must be added in order, so they can be resolved to result here
                     TrailResult tr = m_trailResults[seriesIndex % this.m_trailResults.Count];
 
                     IList<TrailResult> markResults = new List<TrailResult>();
@@ -257,16 +254,14 @@ namespace TrailsPlugin.UI.Activity {
                         IValueRangeSeries<DateTime> t2 = GetResultRegions(tr2, regions);
                         results.Add(new Data.TrailResultMarked(tr2, t2));
                     }
-                    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                    m_selectDataHandler = false;
+                    //this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                    //m_selectDataHandler = false;
 
                     bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
 
                     //Mark route track, but not chart
                     m_page.MarkTrack(results, false, true);
-                    m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
-
-                    //TODO: Should also zoom chart
+                    //m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
                     if (markAll)
                     {
@@ -275,31 +270,36 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         //Assumes that not single results are set
-                        m_multiple.SetSeriesSelectedResultRange(seriesIndex, regions);
+                        m_multiple.SetSelectedResultRange(seriesIndex, regions);
                     }
-                    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                    m_selectDataHandler = true;
+                    //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                    //m_selectDataHandler = true;
                 }
             }
         }
+
+        //void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
+        //{
+        //}
 
         public void SetSelectedResultRange(IList<float[]> regions)
         {
             for (int i = 0; i < MainChart.DataSeries.Count; i++ )
             {
                 MainChart.DataSeries[i].ClearSelectedRegions();
+                this.SetSelectedResultRange(i, false, regions);
             }
         }
 
         //Mark a specific series
-        public void SetSeriesSelectedResultRange(int i, bool clearAll, IList<float[]> regions)
+        public void SetSelectedResultRange(int i, bool clearAll, IList<float[]> regions)
         {
             if (ShowPage)
             {
-                if (m_selectDataHandler)
-                {
-                    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                }
+                //if (m_selectDataHandler)
+                //{
+                //    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                //}
                 if (clearAll)
                 {
                     foreach (ChartDataSeries t in MainChart.DataSeries)
@@ -316,14 +316,15 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     if (regions != null && regions.Count > 0)
                     {
-                        MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
-                        MainChart.DataSeries[i].EnsureSelectedRangeVisible(); //Not working?
+                        //MainChart.DataSeries[i].SetSelectedRange(regions[0][0], regions[regions.Count - 1][1]);
+                        //MainChart.DataSeries[i].EnsureSelectedRangeVisible(); //Not working?
+                        this.SetSelectedResultRegions(i, regions);
                     }
                 }
-                if (m_selectDataHandler)
-                {
-                    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                }
+                //if (m_selectDataHandler)
+                //{
+                //    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                //}
             }
         }
 
@@ -400,7 +401,9 @@ namespace TrailsPlugin.UI.Activity {
                                 x2 = Math.Min(x2, (float)MainChart.XAxis.MaxOriginFarValue);
 
                                 MainChart.DataSeries[i].SetSelectedRange(x1, x2);
+                                MainChart.DataSeries[i].EnsureSelectedRangeVisible();
                             }
+                            this.SetSelectedResultRegions(i, l);
                         }
                     }
                 }
@@ -408,6 +411,27 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //only mark in chart, no range/summary
+        private void SetSelectedResultRegions(int result, IList<float[]> regions)
+        {
+            foreach (float[] ax in regions)
+            {
+                //Ignore ranges outside current range and malformed scales
+                if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
+                    MainChart.XAxis.MinOriginValue > float.MinValue &&
+                    ax[1] > MainChart.XAxis.MinOriginValue &&
+                    MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                {
+                    ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
+                    ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
+
+                    for (int j = result; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    {
+                        MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
+                    }
+                }
+            }
+        }
+
         public void SetSelectedRegions(IList<TrailResultMarked> atr)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
@@ -427,23 +451,7 @@ namespace TrailsPlugin.UI.Activity {
                         if (trm.trailResult == tr)
                         {
                             IList<float[]> t = GetResultSelectionFromActivity(tr, trm.selInfo);
-                            foreach (float[] ax in t)
-                            {
-                                //Ignore ranges outside current range and malformed scales
-                                if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
-                                    MainChart.XAxis.MinOriginValue > float.MinValue &&
-                                    ax[1] > MainChart.XAxis.MinOriginValue &&
-                                    MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
-                                {
-                                    ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
-                                    ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
-
-                                    for (int j = i; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
-                                    {
-                                        MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
-                                    }
-                                }
-                            }
+                            this.SetSelectedResultRegions(i, t);
                         }
                     }
                 }
@@ -1385,6 +1393,11 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        void MainChart_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            this.m_CtrlPressed = false;
+        }
+
         void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             bool smoothChanged = false;
@@ -1394,6 +1407,7 @@ namespace TrailsPlugin.UI.Activity {
             bool refreshData = false;
             bool clearRefreshData = true;
 
+            this.m_CtrlPressed = e.Modifiers == Keys.Control;
             if (e.KeyCode == Keys.Home)
             {
                 smoothChanged = true;
@@ -1668,29 +1682,55 @@ namespace TrailsPlugin.UI.Activity {
 
         void ShowSmoothToolTip(LineChartTypes chartType)
         {
-            if (summaryListCursorLocationAtMouseMove != null)
+            if (m_cursorLocationAtMouseMove != null)
             {
                 summaryListToolTip.Show(
                     GetDefaultSmooth(chartType).ToString(),
                     this,
-                    new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                    new System.Drawing.Point(m_cursorLocationAtMouseMove.X +
                                   Cursor.Current.Size.Width / 2,
-                                        summaryListCursorLocationAtMouseMove.Y),
+                                        m_cursorLocationAtMouseMove.Y),
                    summaryListToolTip.AutoPopDelay);
             }
         }
 
-        private System.Drawing.Point summaryListCursorLocationAtMouseMove;
+        private Point m_MouseDownLocation;
+        void MainChart_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (!this.m_CtrlPressed)
+            {
+                this.m_MouseDownLocation = e.Location;
+            }
+            else
+            {
+                this.m_MouseDownLocation = Point.Empty;
+            }
+        }
+
+        void MainChart_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            //Clear selections, unless Ctrl was selected or 
+            if (this.m_MouseDownLocation != Point.Empty && this.m_MouseDownLocation == e.Location)
+            {
+                for (int j = 0; j < MainChart.DataSeries.Count; j++)
+                {
+                    MainChart.DataSeries[j].ClearSelectedRegions();
+                }
+            }
+
+        }
+
+        private System.Drawing.Point m_cursorLocationAtMouseMove;
         void MainChart_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            summaryListCursorLocationAtMouseMove = e.Location;
+            m_cursorLocationAtMouseMove = e.Location;
         }
 
         void MainChart_SelectAxisLabel(object sender, ChartBase.AxisEventArgs e)
         {
             if (e.Axis is RightVerticalAxis || e.Axis is LeftVerticalAxis)
             {
-                //Select all charts for this axix
+                //Select all charts for this axis
                 for (int i = 0; i < MainChart.DataSeries.Count; i++)
                 {
                     //Clear all series, no line/fill check

@@ -56,7 +56,7 @@ namespace TrailsPlugin.UI.Activity {
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
         {
 #else
-        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view, TrailPointsLayer layer)
+        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
         {
             m_view = view;
 #endif
@@ -64,7 +64,7 @@ namespace TrailsPlugin.UI.Activity {
             m_controller = controller;
             foreach (TrailLineChart t in m_lineCharts)
             {
-                t.SetControl(m_page, this, layer);
+                t.SetControl(m_page, this);
             }
         }
 
@@ -508,11 +508,11 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
         //Update a specific dataseries, called from one TrailLineChart to all other
-        public void SetSeriesSelectedResultRange(int i, IList<float[]> regions)
+        public void SetSelectedResultRange(int i, IList<float[]> regions)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSeriesSelectedResultRange(i, true, regions);
+                chart.SetSelectedResultRange(i, true, regions);
             }
         }
         public void EnsureVisible(IList<TrailResult> atr)

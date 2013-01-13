@@ -104,7 +104,7 @@ namespace TrailsPlugin.UI.Activity {
 
             TrailSelector.SetControl(this, m_controller, m_view, m_layerPoints);
             ResultList.SetControl(this, m_controller, m_view);
-            MultiCharts.SetControl(this, m_controller, m_view, m_layerMarked);
+            MultiCharts.SetControl(this, m_controller, m_view);
 #if ST_2_1
 			SplitContainer sc = DailyActivitySplitter;
             if (sc != null)

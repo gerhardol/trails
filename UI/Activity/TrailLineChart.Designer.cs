@@ -188,11 +188,14 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.Name = "MainChart";
             this.MainChart.Size = new System.Drawing.Size(394, 1);
             this.MainChart.TabIndex = 0;
-            this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(this.MainChart_SelectData);
+            //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(this.MainChart_SelectData);
             this.MainChart.SelectingData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(this.MainChart_SelectingData);
             this.MainChart.SelectAxisLabel += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectAxisLabelHandler(this.MainChart_SelectAxisLabel);
             this.MainChart.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainChart_KeyDown);
+            this.MainChart.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainChart_KeyUp);
+            this.MainChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseDown);
             this.MainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseMove);
+            this.MainChart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseUp);
             // 
             // chartContextMenu
             // 

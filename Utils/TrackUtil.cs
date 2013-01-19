@@ -16,9 +16,13 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
+using System.Collections.Generic;
+
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
+using ZoneFiveSoftware.Common.Visuals.Fitness;
+
 using TrailsPlugin.Data;
 using GpsRunningPlugin.Util;
 
@@ -147,5 +151,89 @@ namespace TrailsPlugin.Utils
             return result;
         }
 
+        /*******************************************************/
+
+        private static float[] GetSingleSelection(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<DateTime> v)
+        {
+            DateTime d1 = v.Lower;
+            DateTime d2 = v.Upper;
+            if (xIsTime)
+            {
+                return GetSingleSelectionFromResult(tr, ReferenceTrailResult, d1, d2);
+            }
+            else
+            {
+                double t1 = tr.getDistResult(d1);
+                double t2 = tr.getDistResult(d2);
+                return GetSingleSelectionFromResult(tr, ReferenceTrailResult, t1, t2);
+            }
+        }
+
+        private static float[] GetSingleSelection(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<double> v)
+        {
+            //Note: Selecting in Route gives unpaused distance, but this should be handled in the selection
+            if (xIsTime)
+            {
+                DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
+                d1 = tr.getDateTimeFromDistActivity(v.Lower);
+                d2 = tr.getDateTimeFromDistActivity(v.Upper);
+                return GetSingleSelectionFromResult(tr, ReferenceTrailResult, d1, d2);
+            }
+            else
+            {
+                double t1 = tr.getDistResultFromDistActivity(v.Lower);
+                double t2 = tr.getDistResultFromDistActivity(v.Upper);
+                return GetSingleSelectionFromResult(tr, ReferenceTrailResult, t1, t2);
+            }
+        }
+
+        private static float[] GetSingleSelectionFromResult(TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1, DateTime d2)
+        {
+            float x1 = float.MaxValue, x2 = float.MinValue;
+            //Convert to distance display unit, Time is always in seconds
+            x1 = (float)(tr.getTimeResult(d1));
+            x2 = (float)(tr.getTimeResult(d2));
+            return new float[] { x1, x2 };
+        }
+
+        private static float[] GetSingleSelectionFromResult(TrailResult tr, TrailResult ReferenceTrailResult, double t1, double t2)
+        {
+            float x1 = float.MaxValue, x2 = float.MinValue;
+            //distance is for result, then to display units
+            x1 = (float)TrackUtil.DistanceConvertFrom(t1, ReferenceTrailResult);
+            x2 = (float)TrackUtil.DistanceConvertFrom(t2, ReferenceTrailResult);
+            return new float[] { x1, x2 };
+        }
+
+        internal static IList<float[]> GetResultSelectionFromActivity(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IItemTrackSelectionInfo sel)
+        {
+            IList<float[]> result = new List<float[]>();
+
+            //Currently only one range but several regions in the chart can be selected
+            //Only use one of the selections
+            if (sel.MarkedTimes != null)
+            {
+                foreach (IValueRange<DateTime> v in sel.MarkedTimes)
+                {
+                    result.Add(GetSingleSelection(xIsTime, tr, ReferenceTrailResult, v));
+                }
+            }
+            else if (sel.MarkedDistances != null)
+            {
+                foreach (IValueRange<double> v in sel.MarkedDistances)
+                {
+                    result.Add(GetSingleSelection(xIsTime, tr, ReferenceTrailResult, v));
+                }
+            }
+            else if (sel.SelectedTime != null)
+            {
+                result.Add(GetSingleSelection(xIsTime, tr, ReferenceTrailResult, sel.SelectedTime));
+            }
+            else if (sel.SelectedDistance != null)
+            {
+                result.Add(GetSingleSelection(xIsTime, tr, ReferenceTrailResult, sel.SelectedDistance));
+            }
+            return result;
+        }
     }
 }

@@ -235,5 +235,132 @@ namespace TrailsPlugin.Utils
             }
             return result;
         }
+
+        /*************************************************/
+        //From a value in the chart, get "real" elapsed
+        //TODO: incorrect around trail points
+        private static float GetResyncOffsetTime(TrailResult tr, TrailResult ReferenceTrailResult, float elapsed)
+        {
+            float nextElapsed;
+            int currOffsetIndex = 0;
+            return elapsed - GetResyncOffset(true, true, tr, ReferenceTrailResult, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
+
+        private static float GetResyncOffsetDist(TrailResult tr, TrailResult ReferenceTrailResult, float elapsed)
+        {
+            float nextElapsed;
+            int currOffsetIndex = 0;
+            return elapsed - GetResyncOffset(false, true, tr, ReferenceTrailResult, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
+
+        //private static float GetResyncOffset(XAxisValue XAxisReferential, bool elapsedIsRef, TrailResult tr, float elapsed)
+        //{
+        //    float nextElapsed;
+        //    float startOffset;
+        //    int currOffsetIndex = 0;
+        //    return GetResyncOffset(XAxisReferential, false, tr, elapsed, out nextElapsed, out startOffset, ref currOffsetIndex);
+        //}
+
+        public static float GetResyncOffset(bool xIsTime, bool elapsedIsRef, TrailResult tr, TrailResult ReferenceTrailResult, float elapsed, out float nextElapsed)
+        {
+            //Possibility to cache the index
+            int currOffsetIndex = 0;
+            return GetResyncOffset(xIsTime, elapsedIsRef, tr, ReferenceTrailResult, elapsed, out nextElapsed, ref currOffsetIndex);
+        }
+
+        public static float GetResyncOffset(bool xIsTime, bool elapsedIsRef, TrailResult tr, TrailResult ReferenceTrailResult, float elapsed, out float nextElapsed, ref int currOffsetIndex)
+        {
+            IList<double> trElapsed;
+            IList<double> trOffset;
+            IList<double> refElapsed;
+            float offset = 0;
+            nextElapsed = float.MaxValue;
+            if (Data.Settings.SyncChartAtTrailPoints)
+            {
+                if (xIsTime)
+                {
+                    trElapsed = tr.TrailPointTime0(ReferenceTrailResult);
+                    trOffset = tr.TrailPointTimeOffset0(ReferenceTrailResult);
+                    refElapsed = ReferenceTrailResult.TrailPointTime0(ReferenceTrailResult);
+                }
+                else
+                {
+                    trElapsed = tr.TrailPointDist0(ReferenceTrailResult);
+                    trOffset = tr.TrailPointDistOffset01(ReferenceTrailResult);
+                    refElapsed = ReferenceTrailResult.TrailPointDist0(ReferenceTrailResult);
+                }
+
+                if (trElapsed.Count == refElapsed.Count)
+                {
+                    if (elapsedIsRef)
+                    {
+                        while (currOffsetIndex < refElapsed.Count - 1 && elapsed >= refElapsed[currOffsetIndex + 1])
+                        {
+                            currOffsetIndex++;
+                        }
+                        if (currOffsetIndex < trElapsed.Count - 1)
+                        {
+                            nextElapsed = (float)trElapsed[currOffsetIndex + 1];
+                        }
+                    }
+                    else
+                    {
+                        while (currOffsetIndex < trElapsed.Count - 1 &&
+                            //compare must be using same type here to avoid end effects
+                            elapsed > (float)trElapsed[currOffsetIndex + 1])
+                        {
+                            currOffsetIndex++;
+                        }
+                        if (currOffsetIndex < refElapsed.Count - 1)
+                        {
+                            nextElapsed = (float)refElapsed[currOffsetIndex + 1];
+                        }
+                    }
+                    if (currOffsetIndex > 1)
+                    {
+                    }
+                    float startOffset;
+                    if (currOffsetIndex < trOffset.Count)
+                    {
+                        startOffset = (float)trOffset[currOffsetIndex];
+                    }
+                    else
+                    {
+                        startOffset = 0;
+                    }
+                    if (currOffsetIndex < refElapsed.Count)
+                    {
+                        offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]) + startOffset);
+                    }
+                }
+            }
+            return offset;
+        }
+        /****************************************************/
+
+        public static IValueRangeSeries<DateTime> GetResultRegions(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IList<float[]> regions)
+        {
+            IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();
+            foreach (float[] at in regions)
+            {
+                DateTime d1;
+                DateTime d2;
+                if (xIsTime)
+                {
+                    d1 = tr.getDateTimeFromTimeResult(GetResyncOffsetTime(tr, ReferenceTrailResult, at[0]));
+                    d2 = tr.getDateTimeFromTimeResult(GetResyncOffsetTime(tr, ReferenceTrailResult, at[1]));
+                }
+                else
+                {
+
+                    d1 = tr.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(GetResyncOffsetDist(tr, ReferenceTrailResult, at[0]), ReferenceTrailResult));
+                    d2 = tr.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(GetResyncOffsetDist(tr, ReferenceTrailResult, at[1]), ReferenceTrailResult));
+                }
+                t.Add(new ValueRange<DateTime>(d1, d2));
+            }
+            return t;
+        }
+
+
     }
 }

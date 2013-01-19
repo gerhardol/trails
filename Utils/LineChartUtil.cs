@@ -28,6 +28,8 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Chart;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+
+using TrailsPlugin.Data;
 using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Utils
@@ -304,6 +306,122 @@ namespace TrailsPlugin.Utils
                         break;
                     }
             }
+        }
+
+        /************************************************/
+        /// <summary>
+        /// Some chartTypes share axis. Could be changeable in the chart
+        /// </summary>
+        /// <param name="chart"></param>
+        /// <returns></returns>
+        public static LineChartTypes ChartToAxis(LineChartTypes chart)
+        {
+            LineChartTypes axis = chart;
+
+            if (chart == LineChartTypes.DeviceSpeed)
+            {
+                axis = LineChartTypes.Speed;
+            }
+            else if (chart == LineChartTypes.DevicePace)
+            {
+                axis = LineChartTypes.Pace;
+            }
+            else if (chart == LineChartTypes.DeviceElevation)
+            {
+                axis = LineChartTypes.Elevation;
+            }
+            else if (chart == LineChartTypes.DeviceDiffDist)
+            {
+                axis = LineChartTypes.DiffDist;
+            }
+
+            return axis;
+        }
+
+        public static INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart, TrailResult refRes)
+        {
+            // Fail safe
+            INumericTimeDataSeries track = new NumericTimeDataSeries();
+
+            switch (lineChart)
+            {
+                case LineChartTypes.Cadence:
+                    {
+                        track = result.CadencePerMinuteTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.Elevation:
+                    {
+                        track = result.ElevationMetersTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.HeartRateBPM:
+                    {
+                        track = result.HeartRatePerMinuteTrack0(refRes);
+                        break;
+                    }
+                //case LineChartTypes.HeartRatePercentMax:
+                //    {
+                //        track = result.HeartRatePerMinutePercentMaxTrack;
+                //        break;
+                //    }
+                case LineChartTypes.Power:
+                    {
+                        track = result.PowerWattsTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.Grade:
+                    {
+                        track = result.GradeTrack0(refRes);
+                        break;
+                    }
+
+                case LineChartTypes.Speed:
+                    {
+                        track = result.SpeedTrack0(refRes);
+                        break;
+                    }
+
+                case LineChartTypes.Pace:
+                    {
+                        track = result.PaceTrack0(refRes);
+                        break;
+                    }
+
+                case LineChartTypes.DiffTime:
+                    {
+                        track = result.DiffTimeTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.DiffDist:
+                    {
+                        track = result.DiffDistTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.DeviceSpeed:
+                case LineChartTypes.DevicePace:
+                    {
+                        track = result.DeviceSpeedPaceTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.DeviceElevation:
+                    {
+                        track = result.DeviceElevationTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.DeviceDiffDist:
+                    {
+                        track = result.DeviceDiffDistTrack0(refRes);
+                        break;
+                    }
+
+                default:
+                    {
+                        Debug.Assert(false);
+                        break;
+                    }
+            }
+            return track;
         }
     }
 }

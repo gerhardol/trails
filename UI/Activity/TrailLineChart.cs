@@ -213,8 +213,8 @@ namespace TrailsPlugin.UI.Activity {
         //Fires about every 33ms when selecting
         void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
-            //TBD: Let update rate depend on number of chart activities
-            //if (DateTime.Now.Subtract(this.m_lastSelectingTime).TotalMilliseconds > 300)
+            //Let update rate depend on number of chart activities, less choppy update
+            if (DateTime.Now.Subtract(this.m_lastSelectingTime).TotalMilliseconds >= 33*this.m_trailResults.Count)
             {
                 MainChart_SelectingData(this.m_selectedDataSetries, true, false);
             }
@@ -295,22 +295,28 @@ namespace TrailsPlugin.UI.Activity {
 
                 float[] range = new float[2] { 0, 0 };
                 this.MainChart.DataSeries[this.m_selectedDataSetries].GetSelectedRange(out range[0], out range[1]);
-                if (selecting)
+
+                if (range != null && regions != null &&
+                    //Clear when first time selecting if all is selected
+                    (this.m_selectedStartRange == null && !selecting ||
+                    //Selection decreasing from first selection
+                   this.m_selectedStartRange != null && (range[1] - range[0] < this.m_selectedStartRange[1] - this.m_selectedStartRange[0])))
                 {
-                    if (range != null && this.m_selectedStartRange != null && regions != null &&
-                        range[1] - range[0] < this.m_selectedStartRange[1] - this.m_selectedStartRange[0])
+                    foreach (float[] r in regions)
                     {
-                        foreach (float[] r in regions)
+                        if (float.IsNaN(range[1]) && r[0] <= range[0] && r[1] >= range[0])
                         {
-                            if (r[0] <= range[0] && r[1] >= range[1])
-                            {
-                                r[0] = range[0];
-                                r[1] = range[1];
-                            }
+                            r[0] = range[0];
+                            r[1] = range[0];
+                        }
+                        else if (r[0] <= range[0] && r[1] >= range[1])
+                        {
+                            r[0] = range[0];
+                            r[1] = range[1];
                         }
                     }
                 }
-                else
+                if (!selecting)
                 {
                     if (!this.m_endSelect)
                     {
@@ -400,7 +406,7 @@ namespace TrailsPlugin.UI.Activity {
         //This is combined to reduced the number of chart-multi-chart combimations
         public void SetSelectedResultRange(int i, bool clearAll, IList<float[]> regions, float[] range)
         {
-            if(i < 0)
+            if (i < 0)
             {
                 //Use recursion to set all  series
                 for (int j = 0; j < MainChart.DataSeries.Count; j++)
@@ -538,7 +544,7 @@ namespace TrailsPlugin.UI.Activity {
                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
-                    for (int j = result; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    for (int j = result % m_trailResults.Count; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
                     {
                         MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
                     }
@@ -555,7 +561,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
                     range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
-                    for (int j = result; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    for (int j = result % m_trailResults.Count; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
                     {
                         MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
                         MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
@@ -759,8 +765,7 @@ namespace TrailsPlugin.UI.Activity {
                             MainChart.DataSeries.Add(dataLine);
 
                             //Update display only data
-
-                            //xxx weird average for time, distance - what is up with pace? Set to Change for Time/Dist?
+                            //It could be possible to add basis for dataseries in .Data, to only recalc the points. Not so much gain
                             dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
                             {
                                 ChartColors chartColor;
@@ -777,7 +782,7 @@ namespace TrailsPlugin.UI.Activity {
 
                                 dataLine.LineColor = chartColor.LineNormal;
                                 dataLine.FillColor = chartColor.FillNormal;
-                                dataLine.SelectedColor = chartColor.FillSelected;
+                                dataLine.SelectedColor = chartColor.FillSelected; //The selected fill color only
                             }
 
                             //Decrease alpha for many activities

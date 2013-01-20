@@ -512,11 +512,11 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //Update all (-1) or a specific dataseries, called from one TrailLineChart to all other
-        public void SetSelectedResultRange(int i, IList<float[]> regions, float[] range)
+        public void SetSelectedResultRange(int seriesIndex, IList<float[]> regions, float[] range)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRange(i, true, regions, range);
+                chart.SetSelectedResultRange(seriesIndex, true, regions, range);
             }
         }
 

@@ -293,7 +293,7 @@ namespace TrailsPlugin.UI.Activity {
                 IList<float[]> regions;
                 this.MainChart.DataSeries[this.m_selectedDataSetries].GetSelectedRegions(out regions);
 
-                float[] range = new float[2] { 0, 0 };
+                float[] range = new float[2];
                 this.MainChart.DataSeries[this.m_selectedDataSetries].GetSelectedRange(out range[0], out range[1]);
 
                 if (range != null && regions != null &&
@@ -382,31 +382,21 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ClearSelectedRegions()
         {
-            if (this.MainChart != null && this.MainChart.DataSeries != null &&
-                    this.MainChart.DataSeries.Count > 0)
+            if (this.MainChart != null && this.MainChart.DataSeries != null)
             {
 
-                foreach (ChartDataSeries c in MainChart.DataSeries)
+                foreach (ChartDataSeries c in this.MainChart.DataSeries)
                 {
                     c.ClearSelectedRegions();
                 }
             }
         }
 
-        //public void SetSelectedResultRange(IList<float[]> regions, float[] range)
-        //{
-        //    for (int i = 0; i < MainChart.DataSeries.Count; i++ )
-        //    {
-        //        MainChart.DataSeries[i].ClearSelectedRegions();
-        //        this.SetSelectedResultRange(i, false, regions, range);
-        //    }
-        //}
-
         //Mark all or a specific series
         //This is combined to reduced the number of chart-multi-chart combimations
-        public void SetSelectedResultRange(int i, bool clearAll, IList<float[]> regions, float[] range)
+        public void SetSelectedResultRange(int seriesIndex, bool clearAll, IList<float[]> regions, float[] range)
         {
-            if (i < 0)
+            if (seriesIndex < 0)
             {
                 //Use recursion to set all  series
                 for (int j = 0; j < MainChart.DataSeries.Count; j++)
@@ -427,15 +417,15 @@ namespace TrailsPlugin.UI.Activity {
                     //Note: This is not clearing ranges
                     this.ClearSelectedRegions();
                 }
-                if (MainChart.DataSeries != null && MainChart.DataSeries.Count > i)
+                if (MainChart.DataSeries != null && seriesIndex < MainChart.DataSeries.Count)
                 {
                     if (!clearAll)
                     {
-                        MainChart.DataSeries[i].ClearSelectedRegions();
+                        MainChart.DataSeries[seriesIndex].ClearSelectedRegions();
                     }
                     if (regions != null && regions.Count > 0)
                     {
-                        this.SetSelectedResultRegions(i, regions, range);
+                        this.SetSelectedResultRegions(this.SeriesIndexToResult(seriesIndex), regions, range);
                     }
                 }
                 //if (m_selectDataHandler)
@@ -450,7 +440,6 @@ namespace TrailsPlugin.UI.Activity {
         public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
-                    MainChart.DataSeries.Count > 0 &&
                 m_trailResults.Count > 0)
             {
                 this.ClearSelectedRegions();
@@ -485,14 +474,14 @@ namespace TrailsPlugin.UI.Activity {
                 //update the result
                 if (regions != null && regions.Count > 0)
                 {
-                    for (int i = 0; i < m_trailResults.Count; i++)
+                    for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
                     {
-                        TrailResult tr = this.m_trailResults[i];
+                        TrailResult tr = this.m_trailResults[resultIndex];
                         if (tr.Activity == sel.Activity || 
                             m_trailResults.Count < MaxSelectedSeries)
                         {
 
-                            MainChart.DataSeries[i].ClearSelectedRegions();
+                            MainChart.DataSeries[resultIndex].ClearSelectedRegions();
                             //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
                             float offset = 0;
                             if (tr is ChildTrailResult)
@@ -523,7 +512,7 @@ namespace TrailsPlugin.UI.Activity {
                                 range[0] -= offset;
                                 range[1] -= offset;
                             }
-                            this.SetSelectedResultRegions(i, regions, range);
+                            this.SetSelectedResultRegions(resultIndex, regions, range);
                         }
                     }
                 }
@@ -531,7 +520,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //only mark in chart, no range/summary
-        private void SetSelectedResultRegions(int result, IList<float[]> regions, float[] range)
+        private void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
         {
             foreach (float[] ax in regions)
             {
@@ -544,7 +533,7 @@ namespace TrailsPlugin.UI.Activity {
                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
-                    for (int j = result % m_trailResults.Count; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    for (int j = SeriesIndexToResult(resultIndex); j < MainChart.DataSeries.Count; j += m_trailResults.Count)
                     {
                         MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
                     }
@@ -561,7 +550,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
                     range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
-                    for (int j = result % m_trailResults.Count; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    for (int j = SeriesIndexToResult(resultIndex); j < MainChart.DataSeries.Count; j += m_trailResults.Count)
                     {
                         MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
                         MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
@@ -580,9 +569,9 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultMarked trm in atr)
                 {
                     //Set the matching time distance for the activity
-                    for (int i = 0; i < m_trailResults.Count; i++)
+                    for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
                     {
-                        TrailResult tr = m_trailResults[i];
+                        TrailResult tr = m_trailResults[resultIndex];
                         if (trm.trailResult == tr)
                         {
                             IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, trm.selInfo);
@@ -591,7 +580,7 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
                             }
-                            this.SetSelectedResultRegions(i, regions, range);
+                            this.SetSelectedResultRegions(resultIndex, regions, range);
                         }
                     }
                 }
@@ -605,14 +594,22 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (TrailResult tr in atr)
                 {
+                    int resultIndex = -1;
                     for (int i = 0; i < MainChart.DataSeries.Count; i++)
                     {
                         MainChart.DataSeries[i].ClearSelectedRegions();
-                        int resIndex = i % m_trailResults.Count;
-                        if (m_trailResults[resIndex].Equals(tr))
+                        if (m_trailResults[SeriesIndexToResult(i)].Equals(tr))
                         {
-                            MainChart.DataSeries[i].AddSelecedRegion(
-                                MainChart.DataSeries[i].XMin, MainChart.DataSeries[i].XMax);
+                            resultIndex = SeriesIndexToResult(i);
+                            break;
+                        }
+                    }
+                    if (resultIndex >= 0)
+                    {
+                        for (int j = resultIndex; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                        {
+                            MainChart.DataSeries[j].AddSelecedRegion(
+                                                    MainChart.DataSeries[j].XMin, MainChart.DataSeries[j].XMax);
                         }
                     }
                 }
@@ -656,6 +653,21 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             return m_hasValues[chartType];
+        }
+
+        private int SeriesIndexToResult(int seriesIndex)
+        {
+            return seriesIndex % this.m_trailResults.Count;
+        }
+
+        private int[] ResultIndexToSeries(int resultIndex)
+        {
+            int[] indexes = new int[MainChart.DataSeries.Count / this.m_trailResults.Count];
+            for (int i = 0; i < indexes.Length; i++)
+            {
+                indexes[i] = this.SeriesIndexToResult(resultIndex) + i * this.m_trailResults.Count;
+            }
+            return indexes;
         }
 
         virtual protected void SetupDataSeries()

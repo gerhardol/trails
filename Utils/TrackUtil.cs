@@ -31,7 +31,6 @@ namespace TrailsPlugin.Utils
     public static class TrackUtil
     {
         /**********************************/
-        //Static methods
 
         internal static float getDistFromDateTime(IDistanceDataTrack distTrack, DateTime t)
         {
@@ -153,7 +152,7 @@ namespace TrailsPlugin.Utils
 
         /*******************************************************/
 
-        private static float[] GetSingleSelection(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<DateTime> v)
+        public static float[] GetSingleSelection(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<DateTime> v)
         {
             DateTime d1 = v.Lower;
             DateTime d2 = v.Upper;
@@ -336,6 +335,7 @@ namespace TrailsPlugin.Utils
             }
             return offset;
         }
+
         /****************************************************/
 
         public static IValueRangeSeries<DateTime> GetResultRegions(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IList<float[]> regions)

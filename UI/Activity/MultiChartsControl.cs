@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
 
+using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
 #if !ST_2_1
@@ -485,6 +486,14 @@ namespace TrailsPlugin.UI.Activity {
             this.RefreshChart();
         }
 
+        public void ClearSelectedRegions()
+        {
+            foreach (TrailLineChart chart in m_lineCharts)
+            {
+                chart.ClearSelectedRegions();
+            }
+        }
+
         public void SetSelectedRegions(IList<TrailResultMarked> atr)
         {
             foreach (TrailLineChart chart in m_lineCharts)
@@ -492,29 +501,25 @@ namespace TrailsPlugin.UI.Activity {
                 chart.SetSelectedRegions(atr);
             }
         }
+
         //Used as callback when selected from chart - should be only for single activity
-        public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel)
+        public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedRange(asel);
+                chart.SetSelectedRange(asel, rangeTime);
             }
         }
-        public void SetSelectedResultRange(IList<float[]> regions)
+
+        //Update all (-1) or a specific dataseries, called from one TrailLineChart to all other
+        public void SetSelectedResultRange(int i, IList<float[]> regions, float[] range)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRange(regions);
+                chart.SetSelectedResultRange(i, true, regions, range);
             }
         }
-        //Update a specific dataseries, called from one TrailLineChart to all other
-        public void SetSelectedResultRange(int i, IList<float[]> regions)
-        {
-            foreach (TrailLineChart chart in m_lineCharts)
-            {
-                chart.SetSelectedResultRange(i, true, regions);
-            }
-        }
+
         public void EnsureVisible(IList<TrailResult> atr)
         {
             foreach (TrailLineChart chart in m_lineCharts)
@@ -543,10 +548,12 @@ namespace TrailsPlugin.UI.Activity {
         {
             RefreshChart(LineChartTypes.Speed);
         }
+
         private void paceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Pace);
         }
+
         private void speedPaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.SpeedPace);
@@ -571,6 +578,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             RefreshChart(LineChartTypes.Grade);
         }
+
         private void powerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Power);
@@ -580,22 +588,27 @@ namespace TrailsPlugin.UI.Activity {
         {
             RefreshChart(LineChartTypes.DiffTime);
         }
+
         private void diffDistToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DiffDist);
         }
+
         private void diffDistTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DiffDistTime);
         }
+
         private void deviceSpeedPaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceSpeedPace);
         }
+
         private void deviceElevationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceElevation);
         }
+
         private void deviceDiffToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceDiffDist);
@@ -617,18 +630,21 @@ namespace TrailsPlugin.UI.Activity {
             RefreshChartMenu();
             m_page.RefreshData(true);
         }
+
         private void adjustResyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.AdjustResyncDiffAtTrailPoints = !Data.Settings.AdjustResyncDiffAtTrailPoints;
             RefreshChartMenu();
             m_page.RefreshData(true);
         }
+
         private void syncChartAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.SyncChartAtTrailPoints = !Data.Settings.SyncChartAtTrailPoints;
             RefreshChartMenu();
             m_page.RefreshChart();
         }
+
         private void chartSmoothMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.SmoothOverTrailPointsToggle();
@@ -636,6 +652,7 @@ namespace TrailsPlugin.UI.Activity {
             m_controller.CurrentReset(true);
             m_page.RefreshChart();
         }
+
         private void showToolBarMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.ShowChartToolBar = !Data.Settings.ShowChartToolBar;
@@ -654,10 +671,12 @@ namespace TrailsPlugin.UI.Activity {
                 Expand(sender, e);
             }
         }
+
         void TrailLineChart_Resize(object sender, System.EventArgs e)
         {
             this.RefreshRows();
         }
+
         private void ChartBanner_MenuClicked(object sender, EventArgs e)
         {
             ChartBanner.ContextMenuStrip.Width = 100;

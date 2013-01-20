@@ -471,6 +471,14 @@ namespace TrailsPlugin.UI.Activity {
         private TrailResult m_currentSelectedMapResult = null;
         private IGPSLocation m_currentSelectedMapLocation = null;
         private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>();
+
+        public void ClearCurrentSelectedOnRoute()
+        {
+            m_currentSelectedMapLocation = null;
+            m_currentSelectedMapRanges.Clear();
+            m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+        }
+
         void mapPoly_Click(object sender, MouseEventArgs e)
         {
             if (sender is TrailMapPolyline)
@@ -481,9 +489,7 @@ namespace TrailsPlugin.UI.Activity {
                     IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
                     this.EnsureVisible(result, true);
                     //Could be new selection start
-                    m_currentSelectedMapLocation = null;
-                    m_currentSelectedMapRanges.Clear();
-                    m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                    this.ClearCurrentSelectedOnRoute();
                 }
                 m_currentSelectedMapResult = m.TrailRes;
 
@@ -521,8 +527,8 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
                         }
-                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo });
-                        MarkTrack(m_currentSelectedMapRanges, true, false);
+                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
+                        MarkTrack(m_currentSelectedMapRanges, false, false);
                         sectionFound = true;
                         m_currentSelectedMapLocation = null;
                     }
@@ -548,7 +554,8 @@ namespace TrailsPlugin.UI.Activity {
                         TrailsItemTrackSelectionInfo sel = new TrailsItemTrackSelectionInfo();
                         sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time);
                         sel.Activity = m.TrailRes.Activity;
-                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { sel });
+                        ValueRange<DateTime> time = new ValueRange<DateTime>(t.Time, t.Time);
+                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
                     }
                     else
                     {
@@ -657,7 +664,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null)
                 {
                     IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities, true);
-                    MultiCharts.SetSelectedRange(selectedGPS);
+                    MultiCharts.SetSelectedRange(selectedGPS, null);
                 }
             }
         }

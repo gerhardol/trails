@@ -388,7 +388,8 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (ChartDataSeries c in this.MainChart.DataSeries)
                 {
                     c.ClearSelectedRegions();
-                }
+                    //Ranges cannot be cleared without clearing dataseries...
+               }
             }
         }
 
@@ -435,8 +436,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //No TrailResult - use all possible matches (if less than MaxSelectedSeries)
-        //Set for primary chart only
+        //Set for the charts matching the result
         public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
@@ -460,7 +460,7 @@ namespace TrailsPlugin.UI.Activity {
                 //With single results, this can be done, but for multi results per activity this can be incorrect
                 IList<float[]> regions = null;
                 IList<TrailResult> t = TrailResultWrapper.ParentResults(Controller.TrailController.Instance.CurrentResultTreeList);
-                foreach(TrailResult tr in t)
+                foreach (TrailResult tr in t)
                 {
                     if (tr.Activity == sel.Activity)
                     {
@@ -477,26 +477,9 @@ namespace TrailsPlugin.UI.Activity {
                     for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
                     {
                         TrailResult tr = this.m_trailResults[resultIndex];
-                        if (tr.Activity == sel.Activity || 
-                            m_trailResults.Count < MaxSelectedSeries)
+                        if (tr.Activity == sel.Activity /*|| 
+                            m_trailResults.Count < MaxSelectedSeries*/)
                         {
-
-                            MainChart.DataSeries[resultIndex].ClearSelectedRegions();
-                            //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
-                            float offset = 0;
-                            if (tr is ChildTrailResult)
-                            {
-                                TrailResult trp = (tr as ChildTrailResult).ParentResult;
-                                if (XAxisReferential == XAxisValue.Time)
-                                {
-                                    offset = (float)(tr.StartTime - trp.StartTime).TotalSeconds;
-                                }
-                                else
-                                {
-                                    offset = (float)TrackUtil.DistanceConvertFrom(tr.StartDist - trp.StartDist, ReferenceTrailResult);
-                                }
-                            }
-
                             float[] range = null;
                             if (rangeTime == null)
                             {
@@ -507,11 +490,32 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
                             }
-                            if (range != null)
+
+                            //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
+                            if (tr is ChildTrailResult)
                             {
-                                range[0] -= offset;
-                                range[1] -= offset;
+                                float offset = 0;
+                                TrailResult trp = (tr as ChildTrailResult).ParentResult;
+                                if (XAxisReferential == XAxisValue.Time)
+                                {
+                                    offset = (float)(tr.StartTime - trp.StartTime).TotalSeconds;
+                                }
+                                else
+                                {
+                                    offset = (float)TrackUtil.DistanceConvertFrom(tr.StartDist - trp.StartDist, ReferenceTrailResult);
+                                }
+                                if (range != null)
+                                {
+                                    range[0] -= offset;
+                                    range[1] -= offset;
+                                }
+                                foreach (float[] r in regions)
+                                {
+                                    r[0] -= offset;
+                                    r[1] -= offset;
+                                }
                             }
+
                             this.SetSelectedResultRegions(resultIndex, regions, range);
                         }
                     }
@@ -533,7 +537,7 @@ namespace TrailsPlugin.UI.Activity {
                     ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
                     ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
 
-                    for (int j = SeriesIndexToResult(resultIndex); j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    foreach (int j in ResultIndexToSeries(resultIndex))
                     {
                         MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
                     }
@@ -550,7 +554,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
                     range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
-                    for (int j = SeriesIndexToResult(resultIndex); j < MainChart.DataSeries.Count; j += m_trailResults.Count)
+                    foreach (int j in ResultIndexToSeries(resultIndex))
                     {
                         MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
                         MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
@@ -604,13 +608,10 @@ namespace TrailsPlugin.UI.Activity {
                             break;
                         }
                     }
-                    if (resultIndex >= 0)
+                    foreach (int j in ResultIndexToSeries(resultIndex))
                     {
-                        for (int j = resultIndex; j < MainChart.DataSeries.Count; j += m_trailResults.Count)
-                        {
-                            MainChart.DataSeries[j].AddSelecedRegion(
-                                                    MainChart.DataSeries[j].XMin, MainChart.DataSeries[j].XMax);
-                        }
+                        MainChart.DataSeries[j].AddSelecedRegion(
+                                                MainChart.DataSeries[j].XMin, MainChart.DataSeries[j].XMax);
                     }
                 }
             }
@@ -662,6 +663,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private int[] ResultIndexToSeries(int resultIndex)
         {
+            if (resultIndex < 0) { return new int[0]; }
             int[] indexes = new int[MainChart.DataSeries.Count / this.m_trailResults.Count];
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -789,6 +791,7 @@ namespace TrailsPlugin.UI.Activity {
                                 }
                                 else
                                 {
+                                    //TBD? other color for children (at least if only one selected)
                                     chartColor = tr.ResultColor;
                                 }
 

@@ -374,11 +374,10 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (this.MainChart != null && this.MainChart.DataSeries != null)
             {
-
                 foreach (ChartDataSeries c in this.MainChart.DataSeries)
                 {
                     c.ClearSelectedRegions();
-                    //Ranges cannot be cleared without clearing dataseries...
+                    //Note: Ranges cannot be cleared without clearing dataseries...
                }
             }
         }
@@ -470,17 +469,7 @@ namespace TrailsPlugin.UI.Activity {
                         if (tr.Activity == sel.Activity /*|| 
                             m_trailResults.Count < MaxSelectedSeries*/)
                         {
-                            float[] range = null;
-                            if (rangeTime != null)
-                            {
-                                range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
-                            }
-                            else
-                            {
-                                //Only one range can be selected - select last (select all will select regions too)
-                                //As this origins from ST Route only one region is set
-                                range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
-                            }
+                            IList<float[]> regions2 = regions;
 
                             //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
                             if (tr is ChildTrailResult)
@@ -495,19 +484,27 @@ namespace TrailsPlugin.UI.Activity {
                                 {
                                     offset = (float)TrackUtil.DistanceConvertFrom(tr.StartDist - trp.StartDist, ReferenceTrailResult);
                                 }
-                                if (range != null)
-                                {
-                                    range[0] -= offset;
-                                    range[1] -= offset;
-                                }
+                                //Note: Range is already correct
+                                regions2 = new List<float[]>();
                                 foreach (float[] r in regions)
                                 {
-                                    r[0] -= offset;
-                                    r[1] -= offset;
+                                    regions2.Add(new float[2]{r[0] - offset, r[1] - offset});
                                 }
                             }
 
-                            this.SetSelectedResultRegions(resultIndex, regions, range);
+                            float[] range = null;
+                            if (rangeTime != null)
+                            {
+                                range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
+                            }
+                            else
+                            {
+                                //Only one range can be selected - select last (select all will select regions too)
+                                //As this origins from ST Route only one region is set
+                                range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
+                            }
+
+                            this.SetSelectedResultRegions(resultIndex, regions2, range);
                         }
                     }
                 }
@@ -1560,6 +1557,7 @@ namespace TrailsPlugin.UI.Activity {
             //Clear selections, unless Ctrl was selected or selection done or mouse moved
             if (this.m_MouseDownLocation != Point.Empty && this.m_MouseDownLocation == e.Location)
             {
+                this.m_page.ClearCurrentSelectedOnRoute();
                 this.m_multiple.ClearSelectedRegions();
             }
             this.m_MouseDownLocation = Point.Empty;

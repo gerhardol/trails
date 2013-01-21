@@ -271,16 +271,15 @@ namespace TrailsPlugin.UI.Activity {
 
         void MainChart_SelectingData(int seriesIndex, bool selecting, bool endSelect)
         {
-            if (this.m_selectedDataSetries >= 0)
+            if (seriesIndex >= 0)
             {
                 //Series must be added in order, so they can be resolved to result here
-                TrailResult tr = m_trailResults[seriesIndex % this.m_trailResults.Count];
+                TrailResult tr = m_trailResults[this.SeriesIndexToResult(seriesIndex)];
 
                 IList<TrailResult> markResults = new List<TrailResult>();
                 //Reuse ZoomToSelection setting, to select all results
-                if (Data.Settings.ZoomToSelection || tr is SummaryTrailResult)
+                if (/*Data.Settings.ZoomToSelection ||*/ tr is SummaryTrailResult)
                 {
-                    markResults = new List<TrailResult>();
                     foreach (TrailResult tr2 in this.TrailResults)
                     {
                         markResults.Add(tr2);
@@ -288,13 +287,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    markResults = new List<TrailResult> { tr };
+                    markResults.Add(tr);
                 }
                 IList<float[]> regions;
-                this.MainChart.DataSeries[this.m_selectedDataSetries].GetSelectedRegions(out regions);
+                this.MainChart.DataSeries[seriesIndex].GetSelectedRegions(out regions);
 
                 float[] range = new float[2];
-                this.MainChart.DataSeries[this.m_selectedDataSetries].GetSelectedRange(out range[0], out range[1]);
+                this.MainChart.DataSeries[seriesIndex].GetSelectedRange(out range[0], out range[1]);
 
                 if (range != null && regions != null &&
                     //Clear when first time selecting if all is selected
@@ -333,27 +332,18 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     IValueRangeSeries<DateTime> t2 = TrackUtil.GetResultRegions(XAxisReferential == XAxisValue.Time, tr2, this.ReferenceTrailResult, regions);
                     //Add ranges if single set, then it is a part of a new selection
-                    if (range != null)
+                    if (!selecting && range != null)
                     {
-                        float? t = null;
-                        if (float.IsNaN(range[0]) && !float.IsNaN(range[1]))
-                        {
-                            t = range[1];
-                        }
-                        else if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
-                        {
-                            t = range[0];
-                        }
-                        if (t != null)
+                        if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
                         {
                             DateTime time;
                             if (XAxisReferential == XAxisValue.Time)
                             {
-                                time = tr2.getDateTimeFromTimeResult((float)t);
+                                time = tr2.getDateTimeFromTimeResult(range[0]);
                             }
                             else
                             {
-                                time = tr2.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo((float)t, this.ReferenceTrailResult));
+                                time = tr2.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(range[0], this.ReferenceTrailResult));
                             }
                             //Add a one second duration, otherwise rhere will be a complicated shared/Marked times combination
                             t2.Add(new ValueRange<DateTime> ( time, time.AddSeconds(1) ));
@@ -481,14 +471,15 @@ namespace TrailsPlugin.UI.Activity {
                             m_trailResults.Count < MaxSelectedSeries*/)
                         {
                             float[] range = null;
-                            if (rangeTime == null)
+                            if (rangeTime != null)
                             {
-                                //Only one range can be selected - select all
-                                range = new float[2] { regions[0][0], regions[regions.Count - 1][1] };
+                                range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
                             }
                             else
                             {
-                                range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
+                                //Only one range can be selected - select last (select all will select regions too)
+                                //As this origins from ST Route only one region is set
+                                range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
                             }
 
                             //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset

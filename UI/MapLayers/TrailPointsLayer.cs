@@ -597,7 +597,7 @@ namespace TrailsPlugin.UI.MapLayers
             foreach (TrailGPSLocation location in m_TrailPoints)
             {
                 PointMapMarker pointOverlay = new PointMapMarker(location, m_icon, MouseEvents);
-                if (this.MouseEvents)
+                if (this.MouseEvents && location.Name != "DebugNotClickableDebug")
                 {
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
                     pointOverlay.MouseUp += new MouseEventHandler(pointOverlay_MouseUp);

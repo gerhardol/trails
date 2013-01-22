@@ -502,9 +502,13 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
                     IList<IGPSLocation> trailgps = new List<IGPSLocation> { m_currentSelectedMapLocation, egps };
-                    TrailOrderStatus status;
-                    status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
-
+                    TrailOrderStatus status = TrailOrderStatus.NoInfo;
+                    int i = 4;
+                    while (status != TrailOrderStatus.Match && i-- > 0)
+                    {
+                        status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
+                        radius *= 2;
+                    }
                     if (status == TrailOrderStatus.Match)
                     {
                         DateTime t1 = trailResults[0].Points[0].Time;
@@ -536,14 +540,24 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Should be status message somehow here
                         //Debug where points are clicked
-                        m_layerPoints.TrailPoints = Trail.TrailGpsPointsFromGps(trailgps);
+                        IList<TrailGPSLocation> points = Trail.TrailGpsPointsFromGps(trailgps);
+                        points[0].Radius = radius/2;
+                        points[0].Name = "DebugNotClickableDebug"; //Hack to avoid clicks
+                        points[1].Name = "DebugNotClickableDebug";
+                        //m_layerPoints.TrailPoints = points;
                     }
                 }
 
                 //Show position on chart at "first click" or section not found
                 if (!sectionFound)
                 {
-                    TrailResultPoint t = ActivityTrail.GetClosestMatch(m.TrailRes.Activity, egps, radius);
+                    TrailResultPoint t = null;
+                    int i = 4;
+                    while (t == null && i-- > 0)
+                    {
+                        t= ActivityTrail.GetClosestMatch(m.TrailRes.Activity, egps, radius);
+                        radius *= 2;
+                    }
                     if (t != null)
                     {
                         //Use new section only when match found
@@ -561,7 +575,10 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Should be status message somehow here
                         //Debug where points are clicked
-                        m_layerPoints.TrailPoints = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { egps });
+                        IList<TrailGPSLocation> points = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { egps });
+                        points[0].Radius = radius/2;
+                        points[0].Name = "DebugNotClickableDebug"; //Hack to avoid clicks
+                        //m_layerPoints.TrailPoints = points;
                     }
                 }
             }

@@ -73,7 +73,7 @@ namespace TrailsPlugin.UI.Activity {
         private float[] m_selectedStartRange = null;
         private int m_selectedDataSetries = -1;
  
-        const int MaxSelectedSeries = 5;
+        const int MaxSelectedSeries = 6;
         private static SyncGraphMode syncGraph = SyncGraphMode.None;
         public TrailLineChart()
         {
@@ -276,6 +276,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Series must be added in order, so they can be resolved to result here
                 TrailResult tr = m_trailResults[this.SeriesIndexToResult(seriesIndex)];
 
+                bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                 IList<TrailResult> markResults = new List<TrailResult>();
                 //Reuse ZoomToSelection setting, to select all results
                 if (/*Data.Settings.ZoomToSelection ||*/ tr is SummaryTrailResult)
@@ -287,6 +288,8 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
+                    //If not summary set only mark selected
+                    markAll = false;
                     markResults.Add(tr);
                 }
                 IList<float[]> regions;
@@ -303,13 +306,15 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     foreach (float[] r in regions)
                     {
-                        if (float.IsNaN(range[1]) && r[0] <= range[0] && r[1] >= range[0])
+                        if (!selecting && float.IsNaN(range[1]) && r[0] <= range[0] && r[1] >= range[0])
                         {
+                            //First selection, second not yet set, clicking in selected region
                             r[0] = range[0];
                             r[1] = range[0];
                         }
                         else if (r[0] <= range[0] && r[1] >= range[1])
                         {
+                            //Selection decreasing
                             r[0] = range[0];
                             r[1] = range[1];
                         }
@@ -319,10 +324,12 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (!this.m_endSelect)
                     {
+                        //Save start range
                         this.m_selectedStartRange = range;
                     }
                     else
                     {
+                        //Clear at end (should not be required)
                         this.m_selectedStartRange = null;
                     }
                 }
@@ -353,8 +360,6 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 //this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 //m_selectDataHandler = false;
-
-                bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
 
                 //Mark route track, but not chart
                 m_page.MarkTrack(results, false, true);

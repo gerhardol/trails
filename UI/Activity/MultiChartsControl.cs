@@ -516,7 +516,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRange(seriesIndex, true, regions, range);
+                chart.SetSelectedResultRegions(seriesIndex, regions, range);
             }
         }
 

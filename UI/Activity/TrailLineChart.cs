@@ -369,6 +369,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     seriesIndex = -1;
                 }
+                m_multiple.ClearSelectedRegions();
                 m_multiple.SetSelectedResultRange(seriesIndex, regions, range);
                 //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 //m_selectDataHandler = true;
@@ -384,49 +385,6 @@ namespace TrailsPlugin.UI.Activity {
                     c.ClearSelectedRegions();
                     //Note: Ranges cannot be cleared without clearing dataseries...
                }
-            }
-        }
-
-        //Mark all or a specific series
-        //This is combined to reduced the number of chart-multi-chart combimations
-        public void SetSelectedResultRange(int seriesIndex, bool clearAll, IList<float[]> regions, float[] range)
-        {
-            if (seriesIndex < 0)
-            {
-                //Use recursion to set all  series
-                for (int j = 0; j < MainChart.DataSeries.Count; j++)
-                {
-                    MainChart.DataSeries[j].ClearSelectedRegions();
-                    this.SetSelectedResultRange(j, false, regions, range);
-                }
-            }
-
-            else if (ShowPage)
-            {
-                //if (m_selectDataHandler)
-                //{
-                //    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                //}
-                if (clearAll)
-                {
-                    //Note: This is not clearing ranges
-                    this.ClearSelectedRegions();
-                }
-                if (MainChart.DataSeries != null && seriesIndex < MainChart.DataSeries.Count)
-                {
-                    if (!clearAll)
-                    {
-                        MainChart.DataSeries[seriesIndex].ClearSelectedRegions();
-                    }
-                    if (regions != null && regions.Count > 0)
-                    {
-                        this.SetSelectedResultRegions(this.SeriesIndexToResult(seriesIndex), regions, range);
-                    }
-                }
-                //if (m_selectDataHandler)
-                //{
-                //    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                //}
             }
         }
 
@@ -516,43 +474,66 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //only mark in chart, no range/summary
-        private void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
+        //Mark the series for all or a specific result
+        //Note: Clear should be done prior to the call
+        public void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
         {
-            foreach (float[] ax in regions)
+            if (ShowPage)
             {
-                //Ignore ranges outside current range and malformed scales
-                if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
-                    MainChart.XAxis.MinOriginValue > float.MinValue &&
-                    ax[1] > MainChart.XAxis.MinOriginValue &&
-                    MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                //if (m_selectDataHandler)
+                //{
+                //    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                //}
+                if (resultIndex < 0)
                 {
-                    ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
-                    ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
-
-                    foreach (int j in ResultIndexToSeries(resultIndex))
+                    //Use recursion to set all series
+                    for (int j = 0; j < MainChart.DataSeries.Count; j++)
                     {
-                        MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
+                        this.SetSelectedResultRegions(j, regions, range);
                     }
                 }
-            }
-
-            if (range != null)
-            {
-                //Ignore ranges outside current range and malformed scales
-                if (range[0] < MainChart.XAxis.MaxOriginFarValue &&
-                    MainChart.XAxis.MinOriginValue > float.MinValue &&
-                    range[1] > MainChart.XAxis.MinOriginValue &&
-                    MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                if (regions != null && regions.Count > 0)
                 {
-                    range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
-                    range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
-                    foreach (int j in ResultIndexToSeries(resultIndex))
+                    foreach (float[] ax in regions)
                     {
-                        MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
-                        MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
+                        //Ignore ranges outside current range and malformed scales
+                        if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
+                            MainChart.XAxis.MinOriginValue > float.MinValue &&
+                            ax[1] > MainChart.XAxis.MinOriginValue &&
+                            MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                        {
+                            ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
+                            ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
+
+                            foreach (int j in ResultIndexToSeries(resultIndex))
+                            {
+                                MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
+                            }
+                        }
                     }
                 }
+
+                if (range != null)
+                {
+                    //Ignore ranges outside current range and malformed scales
+                    if (range[0] < MainChart.XAxis.MaxOriginFarValue &&
+                        MainChart.XAxis.MinOriginValue > float.MinValue &&
+                        range[1] > MainChart.XAxis.MinOriginValue &&
+                        MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                    {
+                        range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
+                        range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
+                        foreach (int j in ResultIndexToSeries(resultIndex))
+                        {
+                            MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
+                            MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
+                        }
+                    }
+                }
+                //if (m_selectDataHandler)
+                //{
+                //    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                //}
             }
         }
 

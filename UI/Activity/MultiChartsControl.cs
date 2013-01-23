@@ -528,6 +528,14 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        public void ShowGeneralToolTip(string s)
+        {
+            if (this.m_multiChart != null && this.m_multiChart.Visible)
+            {
+                this.m_multiChart.ShowGeneralToolTip(s);
+            }
+        }
+
         public bool ShowChartToolBar
         {
             set

@@ -477,7 +477,10 @@ namespace TrailsPlugin.UI.Activity {
             m_currentSelectedMapLocation = null;
             m_currentSelectedMapRanges.Clear();
             m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-        }
+#if DEBUG_CLICKED_ROUTES
+            this.m_layerMarked.TrailPoints = new List<TrailGPSLocation>(); ; //Debug finding clicks
+#endif
+            }
 
         void mapPoly_Click(object sender, MouseEventArgs e)
         {
@@ -503,7 +506,7 @@ namespace TrailsPlugin.UI.Activity {
                     IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
                     IList<IGPSLocation> trailgps = new List<IGPSLocation> { m_currentSelectedMapLocation, egps };
                     TrailOrderStatus status = TrailOrderStatus.NoInfo;
-                    int i = 4;
+                    int i = 5;
                     while (status != TrailOrderStatus.Match && i-- > 0)
                     {
                         status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
@@ -538,13 +541,15 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        //Should be status message somehow here
+#if DEBUG_CLICKED_ROUTES
                         //Debug where points are clicked
                         IList<TrailGPSLocation> points = Trail.TrailGpsPointsFromGps(trailgps);
                         points[0].Radius = radius/2;
                         points[0].Name = "DebugNotClickableDebug"; //Hack to avoid clicks
                         points[1].Name = "DebugNotClickableDebug";
-                        //m_layerPoints.TrailPoints = points;
+                        this.m_layerMarked.TrailPoints = points;
+#endif
+                        this.MultiCharts.ShowGeneralToolTip("Failed to find section match");
                     }
                 }
 
@@ -552,7 +557,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (!sectionFound)
                 {
                     TrailResultPoint t = null;
-                    int i = 4;
+                    int i = 4; //Smaller max then for "trail" detection, max around 8m
                     while (t == null && i-- > 0)
                     {
                         t= ActivityTrail.GetClosestMatch(m.TrailRes.Activity, egps, radius);
@@ -573,12 +578,14 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        //Should be status message somehow here
+#if DEBUG_CLICKED_ROUTES
                         //Debug where points are clicked
                         IList<TrailGPSLocation> points = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { egps });
                         points[0].Radius = radius/2;
                         points[0].Name = "DebugNotClickableDebug"; //Hack to avoid clicks
-                        //m_layerPoints.TrailPoints = points;
+                        this.m_layerMarked.TrailPoints = points;
+#endif
+                        this.MultiCharts.ShowGeneralToolTip("Failed to find match on route");
                     }
                 }
             }

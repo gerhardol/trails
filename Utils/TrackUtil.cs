@@ -152,6 +152,38 @@ namespace TrailsPlugin.Utils
 
         /*******************************************************/
 
+        public static void GetDistanceTimeSelection(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, float[] x, ref float dist, ref float time)
+        {
+            if (xIsTime)
+            {
+                time += x[1] - x[0];
+                DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
+                d1 = tr.getDateTimeFromTimeResult(x[0]);
+                d2 = tr.getDateTimeFromTimeResult(x[1]);
+                double t1 = tr.getDistResult(d1);
+                double t2 = tr.getDistResult(d2);
+                dist += (float)(t2 - t1);
+            }
+            else
+            {
+                float x1 = float.MaxValue, x2 = float.MinValue;
+                //distance is for result, then to display units
+                x1 = (float)TrackUtil.DistanceConvertFrom(x[0], ReferenceTrailResult);
+                x2 = (float)TrackUtil.DistanceConvertFrom(x[1], ReferenceTrailResult);
+                dist += (float)(x2 - x1);
+
+                DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
+                d1 = tr.getDateTimeFromDistResult(x[0]);
+                d2 = tr.getDateTimeFromDistResult(x[1]);
+
+                double t1 = tr.getTimeResult(d1);
+                double t2 = tr.getTimeResult(d2);
+                time += (float)(t2 - t1);
+            }
+        }
+
+        /*******************************************************/
+
         public static float[] GetSingleSelection(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<DateTime> v)
         {
             DateTime d1 = v.Lower;

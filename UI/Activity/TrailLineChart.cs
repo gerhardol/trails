@@ -373,6 +373,24 @@ namespace TrailsPlugin.UI.Activity {
                 m_multiple.SetSelectedResultRange(seriesIndex, regions, range);
                 //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 //m_selectDataHandler = true;
+
+                if (!selecting && this.m_endSelect && !(tr is SummaryTrailResult))
+                {
+                    //TBD summary result, multiple result?
+                    float dist = 0;
+                    float time = 0;
+                    foreach (float[] r in regions)
+                    {
+                        TrackUtil.GetDistanceTimeSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, r, ref dist, ref time);
+                    }
+                    if (time > 0)
+                    {
+                        float speed = dist / time;
+                        string s = UnitUtil.PaceOrSpeed.ToString(speed, tr.Activity, "U");
+                        this.ShowGeneralToolTip(s);
+                        this.MainChart.DataSeries[seriesIndex].ValueAxis.Data = null;
+                    }
+                }
             }
         }
 
@@ -871,9 +889,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (syncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
                 {
-                    summaryListToolTip.Show(syncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount, this, //TODO: Translate
-                      new System.Drawing.Point(10 + Cursor.Current.Size.Width / 2, 10),
-                      summaryListToolTip.AutoPopDelay);
+                    ShowGeneralToolTip(syncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
                 }
 
                 ///////TrailPoints
@@ -1523,6 +1539,13 @@ namespace TrailsPlugin.UI.Activity {
                                         m_cursorLocationAtMouseMove.Y),
                    summaryListToolTip.AutoPopDelay);
             }
+        }
+
+        public void ShowGeneralToolTip(string s)
+        {
+            summaryListToolTip.Show(s, this, //TODO: Relate to axis?
+                new System.Drawing.Point(10 + Cursor.Current.Size.Width / 2, 10),
+                summaryListToolTip.AutoPopDelay);
         }
 
         void MainChart_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)

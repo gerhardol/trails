@@ -574,7 +574,16 @@ namespace TrailsPlugin.UI.Activity {
                         sel.SelectedTime = new ValueRange<DateTime>(t.Time, t.Time);
                         sel.Activity = m.TrailRes.Activity;
                         ValueRange<DateTime> time = new ValueRange<DateTime>(t.Time, t.Time);
-                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
+                        IList<IItemTrackSelectionInfo> asel = null;
+                        if (m_currentSelectedMapRanges.Count > 0)
+                        {
+                            asel = new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo };
+                        }
+                        else
+                        {
+                            asel = new List<IItemTrackSelectionInfo>();
+                        }
+                        MultiCharts.SetSelectedRange(asel, time);
                     }
                     else
                     {
@@ -682,10 +691,11 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is ISelectionProvider<IItemTrackSelectionInfo>)
             {
                 m_currentSelectedMapResult = null; //new result set
+                this.ClearCurrentSelectedOnRoute();
                 m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 //m_view.RouteSelectionProvider.SelectedItems
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
-                if (selected != null)
+                if (selected != null && selected.SelectedItems.Count > 0)
                 {
                     IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities, true);
                     MultiCharts.SetSelectedRange(selectedGPS, null);

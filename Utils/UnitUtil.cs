@@ -664,6 +664,7 @@ namespace GpsRunningPlugin.Util
                     str = s.ToString();
                     //if (fmt.Equals("g") && str.StartsWith("0:")) { str = str.Substring(2); } //Day part is optional
                     if (fmt.Equals("g") && str.StartsWith("00:")) { str = str.Substring(3); } //Hour, not minutes
+                    if (fmt.Equals("mm:ss") && s.Hours == 0 && s.Days == 0) { str = str.Substring(3); }
                     if (fractionals > 0)
                     {
                         if (s.Milliseconds > 0)

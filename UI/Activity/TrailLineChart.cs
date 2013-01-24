@@ -377,19 +377,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (!selecting && this.m_endSelect && !(tr is SummaryTrailResult))
                 {
                     //TBD summary result, multiple result?
-                    float dist = 0;
-                    float time = 0;
-                    foreach (float[] r in regions)
-                    {
-                        TrackUtil.GetDistanceTimeSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, r, ref dist, ref time);
-                    }
-                    if (time > 0)
-                    {
-                        float speed = dist / time;
-                        string s = UnitUtil.PaceOrSpeed.ToString(speed, tr.Activity, "U");
-                        this.ShowGeneralToolTip(s);
-                        this.MainChart.DataSeries[seriesIndex].ValueAxis.Data = null;
-                    }
+                    this.ShowSpeedToolTip(tr, regions);
                 }
             }
         }
@@ -403,6 +391,76 @@ namespace TrailsPlugin.UI.Activity {
                     c.ClearSelectedRegions();
                     //Note: Ranges cannot be cleared without clearing dataseries...
                }
+            }
+        }
+
+        //Mark the series for all or a specific result
+        //Note: Clear should be done prior to the call
+        public void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
+        {
+            if (ShowPage)
+            {
+                //if (m_selectDataHandler)
+                //{
+                //    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                //}
+                if (resultIndex < 0)
+                {
+                    //Use recursion to set all series
+                    for (int j = 0; j < MainChart.DataSeries.Count; j++)
+                    {
+                        this.SetSelectedResultRegions(j, regions, range);
+                    }
+                    return;
+                }
+
+                if (regions != null && regions.Count > 0)
+                {
+                    foreach (float[] ax in regions)
+                    {
+                        //Ignore ranges outside current range and malformed scales
+                        if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
+                            MainChart.XAxis.MinOriginValue > float.MinValue &&
+                            ax[1] > MainChart.XAxis.MinOriginValue &&
+                            MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                        {
+                            ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
+                            ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
+
+                            foreach (int j in ResultIndexToSeries(resultIndex))
+                            {
+                                MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
+                            }
+                        }
+                    }
+                }
+
+                if (range != null)
+                {
+                    //Ignore ranges outside current range and malformed scales
+                    if (range[0] < MainChart.XAxis.MaxOriginFarValue &&
+                        MainChart.XAxis.MinOriginValue > float.MinValue &&
+                        range[1] > MainChart.XAxis.MinOriginValue &&
+                        MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
+                    {
+                        range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
+                        range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
+                        if (range[1] == range[0] && XAxisReferential != XAxisValue.Time)
+                        {
+                            //xxx bug?
+                            //range[1] += 0.01F;
+                        }
+                        foreach (int j in ResultIndexToSeries(resultIndex))
+                        {
+                            MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
+                            //MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
+                        }
+                    }
+                }
+                //if (m_selectDataHandler)
+                //{
+                //    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
+                //}
             }
         }
 
@@ -441,117 +499,74 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
+                //TBD If selecting in the default activity that is not a result, convert activity distance to result regions
+
                 //update the result
                 if (regions != null && regions.Count > 0)
                 {
+                    //check which results that are relevant
+                    IList<int> trs = new List<int>();
                     for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
                     {
                         TrailResult tr = this.m_trailResults[resultIndex];
                         if (tr.Activity == sel.Activity /*|| 
                             m_trailResults.Count < MaxSelectedSeries*/)
                         {
-                            IList<float[]> regions2 = regions;
+                            trs.Add(resultIndex);
+                        }
+                    }
+                    if (trs.Count == 0 && this.m_trailResults.Count == 1)
+                    {
+                        //TBD this is not handling subsplits selectected correctly
+                        trs.Add(0);
+                    }
 
-                            //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
-                            if (tr is ChildTrailResult)
-                            {
-                                float offset = 0;
-                                TrailResult trp = (tr as ChildTrailResult).ParentResult;
-                                if (XAxisReferential == XAxisValue.Time)
-                                {
-                                    offset = (float)(tr.StartTime - trp.StartTime).TotalSeconds;
-                                }
-                                else
-                                {
-                                    offset = (float)TrackUtil.DistanceConvertFrom(tr.StartDist - trp.StartDist, ReferenceTrailResult);
-                                }
-                                //Note: Range is already correct
-                                regions2 = new List<float[]>();
-                                foreach (float[] r in regions)
-                                {
-                                    regions2.Add(new float[2]{r[0] - offset, r[1] - offset});
-                                }
-                            }
+                    foreach (int resultIndex in trs)
+                    {
+                        TrailResult tr = this.m_trailResults[resultIndex];
 
-                            float[] range = null;
-                            if (rangeTime != null)
+                        IList<float[]> regions2 = regions;
+
+                        //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
+                        if (tr is ChildTrailResult)
+                        {
+                            float offset = 0;
+                            TrailResult trp = (tr as ChildTrailResult).ParentResult;
+                            if (XAxisReferential == XAxisValue.Time)
                             {
-                                range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
+                                offset = (float)(tr.StartTime - trp.StartTime).TotalSeconds;
                             }
                             else
                             {
-                                //Only one range can be selected - select last (select all will select regions too)
-                                //As this origins from ST Route only one region is set
-                                range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
+                                offset = (float)TrackUtil.DistanceConvertFrom(tr.StartDist - trp.StartDist, ReferenceTrailResult);
                             }
-
-                            this.SetSelectedResultRegions(resultIndex, regions2, range);
-                        }
-                    }
-                }
-            }
-        }
-
-        //Mark the series for all or a specific result
-        //Note: Clear should be done prior to the call
-        public void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
-        {
-            if (ShowPage)
-            {
-                //if (m_selectDataHandler)
-                //{
-                //    this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                //}
-                if (resultIndex < 0)
-                {
-                    //Use recursion to set all series
-                    for (int j = 0; j < MainChart.DataSeries.Count; j++)
-                    {
-                        this.SetSelectedResultRegions(j, regions, range);
-                    }
-                }
-                if (regions != null && regions.Count > 0)
-                {
-                    foreach (float[] ax in regions)
-                    {
-                        //Ignore ranges outside current range and malformed scales
-                        if (ax[0] < MainChart.XAxis.MaxOriginFarValue &&
-                            MainChart.XAxis.MinOriginValue > float.MinValue &&
-                            ax[1] > MainChart.XAxis.MinOriginValue &&
-                            MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
-                        {
-                            ax[0] = Math.Max(ax[0], (float)MainChart.XAxis.MinOriginValue);
-                            ax[1] = Math.Min(ax[1], (float)MainChart.XAxis.MaxOriginFarValue);
-
-                            foreach (int j in ResultIndexToSeries(resultIndex))
+                            //Note: Range is already correct
+                            regions2 = new List<float[]>();
+                            foreach (float[] r in regions)
                             {
-                                MainChart.DataSeries[j].AddSelecedRegion(ax[0], ax[1]);
+                                regions2.Add(new float[2] { r[0] - offset, r[1] - offset });
                             }
                         }
-                    }
-                }
 
-                if (range != null)
-                {
-                    //Ignore ranges outside current range and malformed scales
-                    if (range[0] < MainChart.XAxis.MaxOriginFarValue &&
-                        MainChart.XAxis.MinOriginValue > float.MinValue &&
-                        range[1] > MainChart.XAxis.MinOriginValue &&
-                        MainChart.XAxis.MaxOriginFarValue < float.MaxValue)
-                    {
-                        range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
-                        range[1] = Math.Min(range[1], (float)MainChart.XAxis.MaxOriginFarValue);
-                        foreach (int j in ResultIndexToSeries(resultIndex))
+                        float[] range = null;
+                        if (rangeTime != null)
                         {
-                            MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
-                            MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
+                            range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
+                        }
+                        else
+                        {
+                            //Only one range can be selected - select last (select all will select regions too)
+                            //As this origins from ST Route only one region is set
+                            range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
+                        }
+
+                        this.SetSelectedResultRegions(resultIndex, regions2, range);
+                        if (tr.Activity == sel.Activity)
+                        {
+                            this.ShowSpeedToolTip(tr, regions);
                         }
                     }
                 }
-                //if (m_selectDataHandler)
-                //{
-                //    this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                //}
             }
         }
 
@@ -577,6 +592,7 @@ namespace TrailsPlugin.UI.Activity {
                                 range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
                             }
                             this.SetSelectedResultRegions(resultIndex, regions, range);
+                            this.ShowSpeedToolTip(tr, regions);
                         }
                     }
                 }
@@ -1538,6 +1554,26 @@ namespace TrailsPlugin.UI.Activity {
                                   Cursor.Current.Size.Width / 2,
                                         m_cursorLocationAtMouseMove.Y),
                    summaryListToolTip.AutoPopDelay);
+            }
+        }
+
+        private void ShowSpeedToolTip(TrailResult tr, IList<float[]> regions)
+        {
+            if (!(tr is SummaryTrailResult))
+            {
+                //TBD summary result, multiple result?
+                float dist = 0;
+                float time = 0;
+                foreach (float[] r in regions)
+                {
+                    TrackUtil.GetDistanceTimeSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, r, ref dist, ref time);
+                }
+                if (time > 0)
+                {
+                    float speed = dist / time;
+                    string s = UnitUtil.PaceOrSpeed.ToString(speed, tr.Activity, "mm:ssU");
+                    this.ShowGeneralToolTip(s);
+                }
             }
         }
 

@@ -168,13 +168,13 @@ namespace TrailsPlugin.Utils
             {
                 float x1 = float.MaxValue, x2 = float.MinValue;
                 //distance is for result, then to display units
-                x1 = (float)TrackUtil.DistanceConvertFrom(x[0], ReferenceTrailResult);
-                x2 = (float)TrackUtil.DistanceConvertFrom(x[1], ReferenceTrailResult);
+                x1 = (float)TrackUtil.DistanceConvertTo(x[0], ReferenceTrailResult);
+                x2 = (float)TrackUtil.DistanceConvertTo(x[1], ReferenceTrailResult);
                 dist += (float)(x2 - x1);
 
                 DateTime d1 = DateTime.MinValue, d2 = DateTime.MinValue;
-                d1 = tr.getDateTimeFromDistResult(x[0]);
-                d2 = tr.getDateTimeFromDistResult(x[1]);
+                d1 = tr.getDateTimeFromDistResult(x1);
+                d2 = tr.getDateTimeFromDistResult(x2);
 
                 double t1 = tr.getTimeResult(d1);
                 double t2 = tr.getTimeResult(d2);

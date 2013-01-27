@@ -172,6 +172,7 @@ namespace TrailsPlugin.Data
                                     DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper);
                                     AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
                                 }
+                                tmpSel.MarkedDistances = null;
                             }
                             catch { }
                         }
@@ -180,6 +181,7 @@ namespace TrailsPlugin.Data
                             try
                             {
                                 AddMarkedOrSelectedTime(tmpSel, singleSelection, selected[i].SelectedTime.Lower, selected[i].SelectedTime.Upper);
+                                tmpSel.SelectedTime = null;
                             }
                             catch { }
                         }
@@ -191,6 +193,7 @@ namespace TrailsPlugin.Data
                                 DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower);
                                 DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper);
                                 AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
+                                tmpSel.SelectedDistance = null;
                             }
                             catch { }
                         }
@@ -267,27 +270,24 @@ namespace TrailsPlugin.Data
             //Use SelectedTime with only one selection and 0 span - valueRanges will not handle it
             //Add 1s if not possible
             IValueRange<double> vd = new ValueRange<double>(d1, d2);
-            if (tmpSel.MarkedDistances == null)
+            if (singleSelection && (tmpSel.MarkedDistances == null || tmpSel.MarkedDistances.Count == 0))
             {
-                tmpSel.MarkedDistances = new ValueRangeSeries<double>();
+                //Could add to selected, single point marked
+                tmpSel.SelectedDistance = vd;
+                tmpSel.MarkedDistances = null;
             }
-            int currAdd = tmpSel.MarkedDistances.Count;
-            tmpSel.MarkedDistances.Add(vd);
-            if (tmpSel.MarkedDistances.Count == currAdd)
+            else
             {
-                //Could not add to ranges, add Selected
-                if (singleSelection && tmpSel.MarkedDistances.Count == 0)
+                if (tmpSel.MarkedDistances == null)
                 {
-                    //Could add to selected
-                    tmpSel.SelectedDistance = vd;
-                    tmpSel.MarkedDistances = null;
+                    tmpSel.MarkedDistances = new ValueRangeSeries<double>();
                 }
-                else
+                if (vd.Lower == vd.Upper)
                 {
-                    //fake, add second
+                    //fake, add a meter
                     vd = new ValueRange<double>(vd.Lower, vd.Upper + 1);
-                    tmpSel.MarkedDistances.Add(vd);
                 }
+                tmpSel.MarkedDistances.Add(vd);
             }
         }
 

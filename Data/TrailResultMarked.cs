@@ -26,15 +26,15 @@ namespace TrailsPlugin.Data {
         //Mark all
         public TrailResultMarked(TrailResult tr)
         {
-            trailResult = tr;
-            selInfo.MarkedTimes = tr.getSelInfo(true);
-            selInfo.Activity = tr.Activity;
+            this.trailResult = tr;
+            this.selInfo.MarkedTimes = tr.getSelInfo(true);
+            this.selInfo.Activity = tr.Activity;
         }
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
         {
-            trailResult = tr;
-            selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(t, tr.Pauses);
-            selInfo.Activity = tr.Activity;
+            this.trailResult = tr;
+            this.selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(t, tr.Pauses);
+            this.selInfo.Activity = tr.Activity;
         }
         //Note: IItemTrackSelectionInfo uses Activity distances, avoid...
         //public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)
@@ -44,9 +44,13 @@ namespace TrailsPlugin.Data {
         //}
         public TrailResultMarked(TrailResult tr, IItemTrackSelectionInfo t)
         {
-            trailResult = tr;
-            selInfo.SetFromSelection(t, tr.Activity);
-            selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(selInfo.MarkedTimes, tr.Pauses);
+            this.trailResult = tr;
+            this.selInfo.SetFromSelection(t, tr.Activity);
+            if (selInfo.MarkedTimes != null)
+            {
+                selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(selInfo.MarkedTimes, tr.Pauses);
+            }
+            //Note that SelectedTime can still include paused time
         }
         public TrailResult trailResult;
         public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();
@@ -60,6 +64,7 @@ namespace TrailsPlugin.Data {
             }
             return result;
         }
+
         public static Data.TrailsItemTrackSelectionInfo SelInfoUnion(IList<TrailResultMarked> atrm)
         {
             Data.TrailsItemTrackSelectionInfo result = new Data.TrailsItemTrackSelectionInfo();
@@ -70,6 +75,7 @@ namespace TrailsPlugin.Data {
             }
             return result;
         }
+
         public static IList<TrailResult> getTrailResult(IList<TrailResultMarked> atr)
         {
             IList<TrailResult> trr = new List<TrailResult>();

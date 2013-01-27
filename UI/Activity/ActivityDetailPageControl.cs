@@ -490,7 +490,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_currentSelectedMapResult != m.TrailRes)
                 {
                     IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
-                    this.EnsureVisible(result, true);
+                    this.EnsureVisible(result, false);
                     //Could be new selection start
                     this.ClearCurrentSelectedOnRoute();
                 }
@@ -583,6 +583,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             asel = new List<IItemTrackSelectionInfo>();
                         }
+                        asel.Add(sel);
                         MultiCharts.SetSelectedResultRegions(asel, time);
                     }
                     else

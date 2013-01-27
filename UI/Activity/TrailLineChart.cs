@@ -598,7 +598,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
 
                         float[] range = null;
-                        if (rangeTime != null)
+                        if (rangeTime != null && ! (tr is SummaryTrailResult))
                         {
                             range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
                         }

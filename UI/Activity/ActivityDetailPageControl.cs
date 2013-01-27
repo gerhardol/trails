@@ -457,7 +457,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Mark chart
                 if (markChart)
                 {
-                    MultiCharts.SetSelectedRegions(atr);
+                    MultiCharts.SetSelectedResultRegions(atr);
                 }
             }
 #endif
@@ -534,7 +534,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
                         }
-                        MultiCharts.SetSelectedRange(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
+                        MultiCharts.SetSelectedResultRegions(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
                         MarkTrack(m_currentSelectedMapRanges, false, false);
                         sectionFound = true;
                         m_currentSelectedMapLocation = null;
@@ -583,7 +583,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             asel = new List<IItemTrackSelectionInfo>();
                         }
-                        MultiCharts.SetSelectedRange(asel, time);
+                        MultiCharts.SetSelectedResultRegions(asel, time);
                     }
                     else
                     {
@@ -698,7 +698,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null && selected.SelectedItems.Count > 0)
                 {
                     IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, this.ViewActivities, true);
-                    MultiCharts.SetSelectedRange(selectedGPS, null);
+                    MultiCharts.SetSelectedResultRegions(selectedGPS, null);
                 }
             }
         }

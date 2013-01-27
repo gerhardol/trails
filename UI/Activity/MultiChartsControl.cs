@@ -494,29 +494,29 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void SetSelectedRegions(IList<TrailResultMarked> atr)
+        public void SetSelectedResultRegions(IList<TrailResultMarked> atr)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedRegions(atr);
+                chart.SetSelectedResultRegions(atr);
             }
         }
 
         //Used as callback when selected from chart - should be only for single activity
-        public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
+        public void SetSelectedResultRegions(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedRange(asel, rangeTime);
+                chart.SetSelectedResultRegions(asel, rangeTime);
             }
         }
 
         //Update all (-1) or a specific dataseries, called from one TrailLineChart to all other
-        public void SetSelectedResultRange(int seriesIndex, IList<float[]> regions, float[] range)
+        public void SetSelectedResultRange(int resultIndex, IList<float[]> regions, float[] range)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRegions(seriesIndex, regions, range);
+                chart.SetSelectedResultRegions(resultIndex, regions, range);
             }
         }
 

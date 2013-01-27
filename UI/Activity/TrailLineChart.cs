@@ -330,19 +330,15 @@ namespace TrailsPlugin.UI.Activity {
                 //Find if a selection has decreased
                 bool clearDecreased = false;
                 if (range != null && regions != null && this.m_selectedStartRange != null &&
-                    !float.IsNaN(range[0]) && !float.IsNaN(this.m_selectedStartRange[0]) &&
-                    (
-                    //If first was "new", check if regions not expanding at both sides
-                     float.IsNaN(m_selectedStartRange[1]) || float.IsNaN(range[1]) ||
-                    //Selection decreasing from first selection
-                    (this.m_selectedStartRange[0] < range[0] || range[1] < this.m_selectedStartRange[1])))
+                    !float.IsNaN(range[0]) && !float.IsNaN(this.m_selectedStartRange[0]))
                 {
-                    foreach (float[] r in regions)
+                    if (float.IsNaN(m_selectedStartRange[1]) || float.IsNaN(range[1]))
                     {
-                        if (float.IsNaN(m_selectedStartRange[1]) || float.IsNaN(range[1]))
+                        //If first was "new", check if regions not expanding at both sides
+                        foreach (float[] r in regions)
                         {
-                            if (r[0] <= range[0] && range[0] <  r[1] ||
-                                r[0] <  range[0] && range[0] <= r[1])
+                            if (r[0] <= range[0] && range[0] < r[1] ||
+                                r[0] < range[0] && range[0] <= r[1])
                             {
                                 //First selection, second not yet set, clicking in selected region
                                 r[0] = range[0];
@@ -357,13 +353,20 @@ namespace TrailsPlugin.UI.Activity {
                                 clearDecreased = true;
                             }
                         }
-                        else if (r[0] <= range[0] && range[1] <  r[1] || 
-                                 r[0] <  range[0] && range[1] <= r[1])
+                    }
+                    else if (this.m_selectedStartRange[0] < range[0] || range[1] < this.m_selectedStartRange[1])
+                    //Selection decreasing from first selection
+                    {
+                        foreach (float[] r in regions)
                         {
-                            //Selection decreasing
-                            r[0] = range[0];
-                            r[1] = range[1];
-                            clearDecreased = true;
+                            if (r[0] <= range[0] && range[1] < r[1] ||
+                                     r[0] < range[0] && range[1] <= r[1])
+                            {
+                                //Selection decreasing
+                                r[0] = range[0];
+                                r[1] = range[1];
+                                clearDecreased = true;
+                            }
                         }
                     }
                 }
@@ -403,11 +406,16 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.MarkTrack(results, false, true);
                 m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
+                int resultIndex;
                 if (markAll)
                 {
-                    seriesIndex = -1;
+                    resultIndex = -1;
                 }
-                m_multiple.SetSelectedResultRange(seriesIndex, regions, range);
+                else
+                {
+                    resultIndex = SeriesIndexToResult(seriesIndex);
+                }
+                m_multiple.SetSelectedResultRange(resultIndex, regions, range);
                 //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 //m_selectDataHandler = true;
 
@@ -432,7 +440,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //Mark the series for all or a specific result
-        //Note: Clear should be done prior to the call
+        //Note: Clear should be done prior to the call, regions are added only
         public void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
         {
             if (ShowPage)
@@ -506,7 +514,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //Set for the charts matching the result
-        public void SetSelectedRange(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
+        public void SetSelectedResultRegions(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
                 m_trailResults.Count > 0)
@@ -611,7 +619,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void SetSelectedRegions(IList<TrailResultMarked> atr)
+        public void SetSelectedResultRegions(IList<TrailResultMarked> atr)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
                     MainChart.DataSeries.Count > 0 &&

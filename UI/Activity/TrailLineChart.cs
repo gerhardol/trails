@@ -221,7 +221,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Fires before and after selection
+        //Fires before and after selection, also when just clicking
         void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
             float[] range = null;
@@ -280,13 +280,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             //Clear if starting a new selection and ctrl is not pressed
-            //Also when clicking without selecting
             if (!this.m_endSelect && this.m_MouseDownLocation != Point.Empty)
             {
                 this.m_multiple.ClearSelectedRegions();
                 this.m_page.ClearCurrentSelectedOnRoute();
             }
             this.m_MouseDownLocation = Point.Empty;
+
+            //Select in charts etc only with current series. Use range instead of e 
             if (range != null && !float.IsNaN(range[0]))
             {
                 MainChart_SelectingData(this.m_selectedDataSetries, range, false, this.m_endSelect);
@@ -325,35 +326,50 @@ namespace TrailsPlugin.UI.Activity {
                     range = new float[2];
                     this.MainChart.DataSeries[seriesIndex].GetSelectedRange(out range[0], out range[1]);
                 }
-                if(float.IsNaN(range[1]))// && range[1] < range[0])
-                {
-                }
+
                 //Find if a selection has decreased
+                bool clearDecreased = false;
                 if (range != null && regions != null && this.m_selectedStartRange != null &&
-                    !float.IsNaN(range[0]) && !float.IsNaN(range[1]) &&
-                    //Clear when first time selecting if all is selected
-                    (!selecting ||
-                    //If first was "new" check if regions not expanding at both sides
-                     float.IsNaN(m_selectedStartRange[1]) || // && (range[0] < m_selectedStartRange[0] && range[1] > m_selectedStartRange[0])
+                    !float.IsNaN(range[0]) && !float.IsNaN(this.m_selectedStartRange[0]) &&
+                    (
+                    //If first was "new", check if regions not expanding at both sides
+                     float.IsNaN(m_selectedStartRange[1]) || float.IsNaN(range[1]) ||
                     //Selection decreasing from first selection
-                    //!float.IsNaN(m_selectedStartRange[1]) &&
-                    (range[1] - range[0] < this.m_selectedStartRange[1] - this.m_selectedStartRange[0])))
+                    (this.m_selectedStartRange[0] < range[0] || range[1] < this.m_selectedStartRange[1])))
                 {
                     foreach (float[] r in regions)
                     {
-                        if (!selecting && float.IsNaN(range[1]) && r[0] <= range[0] && r[1] >= range[0])
+                        if (float.IsNaN(m_selectedStartRange[1]) || float.IsNaN(range[1]))
                         {
-                            //First selection, second not yet set, clicking in selected region
-                            r[0] = range[0];
-                            r[1] = range[0];
+                            if (r[0] <= range[0] && range[0] <  r[1] ||
+                                r[0] <  range[0] && range[0] <= r[1])
+                            {
+                                //First selection, second not yet set, clicking in selected region
+                                r[0] = range[0];
+                                if (!float.IsNaN(range[1]))
+                                {
+                                    r[1] = range[1];
+                                }
+                                else
+                                {
+                                    r[1] = range[0];
+                                }
+                                clearDecreased = true;
+                            }
                         }
-                        else if (r[0] <= range[0] && r[1] >= range[1])
+                        else if (r[0] <= range[0] && range[1] <  r[1] || 
+                                 r[0] <  range[0] && range[1] <= r[1])
                         {
                             //Selection decreasing
                             r[0] = range[0];
                             r[1] = range[1];
+                            clearDecreased = true;
                         }
                     }
+                }
+                if (clearDecreased)
+                {
+                    this.m_multiple.ClearSelectedRegions();
                 }
 
                 IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
@@ -1620,17 +1636,6 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.m_MouseDownLocation = Point.Empty;
             }
-        }
-
-        void MainChart_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            //Clear selections, unless Ctrl was selected or selection done or mouse moved
-            if (this.m_MouseDownLocation != Point.Empty && this.m_MouseDownLocation == e.Location)
-            {
-                this.m_page.ClearCurrentSelectedOnRoute();
-                this.m_multiple.ClearSelectedRegions();
-            }
-            this.m_MouseDownLocation = Point.Empty;
         }
 
         void MainChart_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)

@@ -494,11 +494,12 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void SetSelectedResultRegions(IList<TrailResultMarked> atr)
+        //Update all (-1) or a specific result (with dataseries), called from one TrailLineChart to all other
+        public void SetSelectedResultRange(int resultIndex, IList<float[]> regions, float[] range)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRegions(atr);
+                chart.SetSelectedResultRegions(resultIndex, regions, range);
             }
         }
 
@@ -511,12 +512,11 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Update all (-1) or a specific dataseries, called from one TrailLineChart to all other
-        public void SetSelectedResultRange(int resultIndex, IList<float[]> regions, float[] range)
+        public void SetSelectedResultRegions(IList<TrailResultMarked> atr)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRegions(resultIndex, regions, range);
+                chart.SetSelectedResultRegions(atr);
             }
         }
 

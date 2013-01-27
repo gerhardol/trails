@@ -632,7 +632,7 @@ namespace TrailsPlugin.UI.Activity {
                     for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
                     {
                         TrailResult tr = m_trailResults[resultIndex];
-                        if (trm.trailResult == tr)
+                        if (trm.trailResult.Activity == tr.Activity)
                         {
                             IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, trm.selInfo);
                             float[] range = null;

@@ -30,18 +30,28 @@ namespace TrailsPlugin.Data {
             this.selInfo.MarkedTimes = tr.getSelInfo(true);
             this.selInfo.Activity = tr.Activity;
         }
+
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
         {
             this.trailResult = tr;
             this.selInfo.MarkedTimes = TrailsItemTrackSelectionInfo.excludePauses(t, tr.Pauses);
             this.selInfo.Activity = tr.Activity;
         }
+
+        public TrailResultMarked(TrailResult tr, IValueRange<DateTime> t)
+        {
+            this.trailResult = tr;
+            this.selInfo.SelectedTime = t; //include pauses
+            this.selInfo.Activity = tr.Activity;
+        }
+
         //Note: IItemTrackSelectionInfo uses Activity distances, avoid...
         //public TrailResultMarked(TrailResult tr, IValueRangeSeries<double> t)
         //{
         //    trailResult = tr;
         //    selInfo.MarkedDistances = t;
         //}
+
         public TrailResultMarked(TrailResult tr, IItemTrackSelectionInfo t)
         {
             this.trailResult = tr;
@@ -52,6 +62,7 @@ namespace TrailsPlugin.Data {
             }
             //Note that SelectedTime can still include paused time
         }
+
         public TrailResult trailResult;
         public Data.TrailsItemTrackSelectionInfo selInfo = new Data.TrailsItemTrackSelectionInfo();
 

@@ -534,7 +534,9 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(time);
                         }
-                        MultiCharts.SetSelectedResultRegions(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
+                        //xxx MultiCharts.SetSelectedResultRegions(new List<IItemTrackSelectionInfo> { m_currentSelectedMapRanges[0].selInfo }, time);
+                        TrailResultMarked markedRange = new TrailResultMarked(m.TrailRes, time);
+                        MultiCharts.SetSelectedResultRegions(m_currentSelectedMapRanges, markedRange);
                         MarkTrack(m_currentSelectedMapRanges, false, false);
                         sectionFound = true;
                         m_currentSelectedMapLocation = null;
@@ -584,7 +586,9 @@ namespace TrailsPlugin.UI.Activity {
                             asel = new List<IItemTrackSelectionInfo>();
                         }
                         asel.Add(sel);
-                        MultiCharts.SetSelectedResultRegions(asel, time);
+                        TrailResultMarked markedRange = new TrailResultMarked(m.TrailRes, time);
+                        MultiCharts.SetSelectedResultRegions(m_currentSelectedMapRanges, markedRange);
+                        //MultiCharts.SetSelectedResultRegions(asel, time);
                     }
                     else
                     {
@@ -760,56 +764,72 @@ namespace TrailsPlugin.UI.Activity {
                     IList<IActivity> activities = this.ViewActivities; //Should be ViewSingleActivity
 
                     IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, activities, true);
-                    IList<IItemTrackSelectionInfo> selectedGPS2 = new List<IItemTrackSelectionInfo>();
-                    foreach (IItemTrackSelectionInfo t in selectedGPS)
+                    foreach(IItemTrackSelectionInfo t in selectedGPS)
                     {
-                        selectedGPS2.Add(t);
-                    }
-                    foreach (TrailResultMarked trm in m_currentSelectedMapRanges)
-                    {
-                        selectedGPS.Add(trm.selInfo);
-                    }
-                    //TBD some copy&paste programming. Use TrailResultMarked to chart?
-                    IValueRange<DateTime> rangeTime = null;
-                    foreach (IItemTrackSelectionInfo t in selectedGPS2)
-                    {
-                        if (t.SelectedTime != null)
+                        if(this.m_currentSelectedMapRanges.Count == 0)
                         {
-                            rangeTime = t.SelectedTime;
-                            if (m_currentSelectedMapRanges.Count == 0)
-                            {
-                                IValueRangeSeries<DateTime> t2 = new ValueRangeSeries<DateTime>();
-                                t2.Add(rangeTime);
-                                TrailResultMarked trm = new TrailResultMarked(trSel, t2);
-                                m_currentSelectedMapRanges.Add(trm);
-                            }
-                            else
-                            {
-                                m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(rangeTime);
-                            }
+                            this.m_currentSelectedMapRanges.Add(new TrailResultMarked(trSel,t));
+                        }
+                        else
+                        {
+                            this.m_currentSelectedMapRanges[0].selInfo.Union(t);
+                        }
+                    }
+                    TrailResultMarked markedRange = null;
+                    if (selectedGPS.Count > 0)
+                    {
+                        markedRange = new TrailResultMarked(trSel, selectedGPS[selectedGPS.Count - 1]);
+                    }
+                    //IList<IItemTrackSelectionInfo> selectedGPS2 = new List<IItemTrackSelectionInfo>();
+                    //foreach (IItemTrackSelectionInfo t in selectedGPS)
+                    //{
+                    //    selectedGPS2.Add(t);
+                    //}
+                    //foreach (TrailResultMarked trm in m_currentSelectedMapRanges)
+                    //{
+                    //    selectedGPS.Add(trm.selInfo);
+                    //}
+                    ////TBD some copy&paste programming. Use TrailResultMarked to chart?
+                    //IValueRange<DateTime> rangeTime = null;
+                    //foreach (IItemTrackSelectionInfo t in selectedGPS2)
+                    //{
+                    //    if (t.SelectedTime != null)
+                    //    {
+                    //        rangeTime = t.SelectedTime;
+                    //        if (m_currentSelectedMapRanges.Count == 0)
+                    //        {
+                    //            IValueRangeSeries<DateTime> t2 = new ValueRangeSeries<DateTime>();
+                    //            t2.Add(rangeTime);
+                    //            TrailResultMarked trm = new TrailResultMarked(trSel, t2);
+                    //            m_currentSelectedMapRanges.Add(trm);
+                    //        }
+                    //        else
+                    //        {
+                    //            m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(rangeTime);
+                    //        }
 
-                            MultiCharts.SetSelectedResultRegions(selectedGPS, rangeTime);
-                        }
-                        if (t.MarkedTimes != null)
-                        {
-                            foreach (IValueRange<DateTime> ti in t.MarkedTimes)
-                            {
-                                rangeTime = ti;
-                                if (m_currentSelectedMapRanges.Count == 0)
-                                {
-                                    IValueRangeSeries<DateTime> t2 = new ValueRangeSeries<DateTime>();
-                                    t2.Add(rangeTime);
-                                    TrailResultMarked trm = new TrailResultMarked(trSel, t2);
-                                    m_currentSelectedMapRanges.Add(trm);
-                                }
-                                else
-                                {
-                                    m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(rangeTime);
-                                }
-                            }
-                        }
-                    }
-                    MultiCharts.SetSelectedResultRegions(selectedGPS, rangeTime);
+                    //        MultiCharts.SetSelectedResultRegions(selectedGPS, rangeTime);
+                    //    }
+                    //    if (t.MarkedTimes != null)
+                    //    {
+                    //        foreach (IValueRange<DateTime> ti in t.MarkedTimes)
+                    //        {
+                    //            rangeTime = ti;
+                    //            if (m_currentSelectedMapRanges.Count == 0)
+                    //            {
+                    //                IValueRangeSeries<DateTime> t2 = new ValueRangeSeries<DateTime>();
+                    //                t2.Add(rangeTime);
+                    //                TrailResultMarked trm = new TrailResultMarked(trSel, t2);
+                    //                m_currentSelectedMapRanges.Add(trm);
+                    //            }
+                    //            else
+                    //            {
+                    //                m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(rangeTime);
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    MultiCharts.SetSelectedResultRegions(this.m_currentSelectedMapRanges, markedRange);
                     RouteSelectionProvider_SelectedItemsUpdate(this.m_currentSelectedMapRanges);
                 }
             }

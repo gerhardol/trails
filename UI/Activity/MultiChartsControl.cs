@@ -503,15 +503,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Used as callback when selected from chart - should be only for single activity
-        public void SetSelectedResultRegions(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
-        {
-            foreach (TrailLineChart chart in m_lineCharts)
-            {
-                chart.SetSelectedResultRegions(asel, rangeTime);
-            }
-        }
-
         public void SetSelectedResultRegions(IList<TrailResultMarked> atr, TrailResultMarked markedRange)
         {
             foreach (TrailLineChart chart in m_lineCharts)

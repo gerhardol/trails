@@ -513,106 +513,34 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Set for the charts matching the result
-        public void SetSelectedResultRegions(IList<IItemTrackSelectionInfo> asel, IValueRange<DateTime> rangeTime)
+        private void SetSelectedResultRegions(TrailResultMarked trm, bool isRegion, ref bool toolTipShown)
         {
-            if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
-                m_trailResults.Count > 0)
+            //Set the matching time distance for the activity
+            for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
             {
-                this.ClearSelectedRegions();
-
-                //This is used for single activity, when selected on the route
-                Data.TrailsItemTrackSelectionInfo sel = new Data.TrailsItemTrackSelectionInfo();
-                foreach (IItemTrackSelectionInfo trm in asel)
+                TrailResult tr = m_trailResults[resultIndex];
+                if (trm.trailResult.Activity == tr.Activity || this.m_trailResults.Count == 1)
                 {
-                    sel.Union(trm);
-                    if (trm is TrailsItemTrackSelectionInfo)
+                    if (tr is SummaryTrailResult)
                     {
-                        sel.Activity = (trm as TrailsItemTrackSelectionInfo).Activity;
+                        tr = this.ReferenceTrailResult;
                     }
-                }
-
-                //Set the matching time distance for the activity
-                //TBD: Time/dist need the TrailResult related to the current results...
-                //With single results, this can be done, but for multi results per activity this can be incorrect
-                IList<float[]> regions = null;
-                IList<TrailResult> t = TrailResultWrapper.ParentResults(Controller.TrailController.Instance.CurrentResultTreeList);
-                foreach (TrailResult tr in t)
-                {
-                    if (tr.Activity == sel.Activity)
+                    IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, trm.selInfo);
+                    if (isRegion)
                     {
-                        regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, sel);
+                        this.SetSelectedResultRegions(resultIndex, regions, null);
+                        if (!toolTipShown && trm.trailResult == tr)
+                        {
+                            //While more than one result may be shown, only one tooltip
+                            this.ShowSpeedToolTip(tr, regions);
+                            toolTipShown = true;
+                        }
+                    }
+                    else
+                    {
                         if (regions != null && regions.Count > 0)
                         {
-                            break;
-                        }
-                    }
-                }
-                //TBD If selecting in the default activity that is not a result, convert activity distance to result regions
-
-                //update the result
-                if (regions != null && regions.Count > 0 || rangeTime != null)
-                {
-                    //check which results that are relevant
-                    IList<int> trs = new List<int>();
-                    for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
-                    {
-                        TrailResult tr = this.m_trailResults[resultIndex];
-                        if (tr.Activity == sel.Activity /*|| 
-                            m_trailResults.Count < MaxSelectedSeries*/)
-                        {
-                            trs.Add(resultIndex);
-                        }
-                    }
-                    if (trs.Count == 0 && this.m_trailResults.Count == 1)
-                    {
-                        //TBD this is not handling subsplits selectected correctly
-                        trs.Add(0);
-                    }
-
-                    foreach (int resultIndex in trs)
-                    {
-                        TrailResult tr = this.m_trailResults[resultIndex];
-
-                        IList<float[]> regions2 = regions;
-
-                        //The result is for the main result. Instead of calculating GetResultSelectionFromActivity() for each subsplit, find the offset
-                        if (tr is ChildTrailResult && regions != null)
-                        {
-                            float offset = 0;
-                            TrailResult trp = (tr as ChildTrailResult).ParentResult;
-                            if (XAxisReferential == XAxisValue.Time)
-                            {
-                                offset = (float)(tr.StartTime - trp.StartTime).TotalSeconds;
-                            }
-                            else
-                            {
-                                offset = (float)TrackUtil.DistanceConvertFrom(tr.StartDist - trp.StartDist, ReferenceTrailResult);
-                            }
-                            //Note: Range is already correct
-                            regions2 = new List<float[]>();
-                            foreach (float[] r in regions)
-                            {
-                                regions2.Add(new float[2] { r[0] - offset, r[1] - offset });
-                            }
-                        }
-
-                        float[] range = null;
-                        if (rangeTime != null && ! (tr is SummaryTrailResult))
-                        {
-                            range = TrackUtil.GetSingleSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, rangeTime);
-                        }
-                        else if(regions != null)
-                        {
-                            //Only one range can be selected - select last (select all will select regions too)
-                            //As this origins from ST Route only one region is set
-                            range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
-                        }
-
-                        this.SetSelectedResultRegions(resultIndex, regions2, range);
-                        if (tr.Activity == sel.Activity)
-                        {
-                            this.ShowSpeedToolTip(tr, regions);
+                            this.SetSelectedResultRegions(resultIndex, null, regions[regions.Count - 1]);
                         }
                     }
                 }
@@ -626,41 +554,15 @@ namespace TrailsPlugin.UI.Activity {
                 m_trailResults.Count > 0)
             {
                 this.ClearSelectedRegions();
+                bool toolTipShown = false;
                 foreach (TrailResultMarked trm in atr)
                 {
-                    //Set the matching time distance for the activity
-                    for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
-                    {
-                        TrailResult tr = m_trailResults[resultIndex];
-                        if (trm.trailResult.Activity == tr.Activity)
-                        {
-                            IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, trm.selInfo);
-                            //float[] range = null;
-                            //if (regions != null && regions.Count > 0)
-                            //{
-                            //    range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
-                            //}
-                            this.SetSelectedResultRegions(resultIndex, regions, null);
-                            this.ShowSpeedToolTip(tr, regions);
-                        }
-                    }
+                    SetSelectedResultRegions(trm, true, ref toolTipShown);
                 }
 
-                if(markedRange != null)
+                if (markedRange != null)
                 {
-                    //Set the matching time distance for the activity
-                    for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
-                    {
-                        TrailResult tr = m_trailResults[resultIndex];
-                        if (markedRange.trailResult.Activity == tr.Activity)
-                        {
-                            IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, markedRange.selInfo);
-                            if (regions != null && regions.Count > 0)
-                            {
-                                this.SetSelectedResultRegions(resultIndex, null, regions[regions.Count-1]);
-                            }
-                        }
-                    }
+                    SetSelectedResultRegions(markedRange, false, ref toolTipShown);
                 }
             }
         }

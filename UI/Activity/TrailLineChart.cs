@@ -575,9 +575,9 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResult tr in atr)
                 {
                     int resultIndex = -1;
+                    this.ClearSelectedRegions();
                     for (int i = 0; i < MainChart.DataSeries.Count; i++)
                     {
-                        MainChart.DataSeries[i].ClearSelectedRegions();
                         if (m_trailResults[SeriesIndexToResult(i)].Equals(tr))
                         {
                             resultIndex = SeriesIndexToResult(i);
@@ -1574,11 +1574,10 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (this.m_multipleCharts && (e.Axis is RightVerticalAxis || e.Axis is LeftVerticalAxis))
             {
+                this.ClearSelectedRegions();
                 //Select all charts for this axis
                 for (int i = 0; i < MainChart.DataSeries.Count; i++)
                 {
-                    //Clear all series, no line/fill check
-                    MainChart.DataSeries[i].ClearSelectedRegions();
                     //For "single result" only select first series
                     if (MainChart.DataSeries[i].ValueAxis == e.Axis)
                     {

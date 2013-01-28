@@ -452,7 +452,25 @@ namespace TrailsPlugin.UI.Activity {
             if (selected2.Count <= 1)
             {
                 //0 or 1 selected, use summary instead
-                selected2 = m_controller.CurrentResultTreeList;
+                if (selected2.Count == 0 || !(selected2[0].Result is ChildTrailResult))
+                {
+                    selected2 = m_controller.CurrentResultTreeList;
+                }
+                else
+                {
+                    TrailResultWrapper tr = selected2[0];
+                    selected2 = new List<TrailResultWrapper>();
+                    foreach (TrailResultWrapper rtn in m_controller.CurrentResultTreeList)
+                    {
+                        foreach (TrailResultWrapper ctn in rtn.Children)
+                        {
+                            if (tr.Result.Order == ctn.Result.Order)
+                            {
+                                selected2.Add(ctn);
+                            }
+                        }
+                    }
+                }
             }
             m_summary.SetSummary(selected2);
             //TODO: Splits
@@ -478,7 +496,7 @@ namespace TrailsPlugin.UI.Activity {
                     int splitIndex = -1; //Index for parent, not for child(subsplit)
                     if (t.Result is SummaryTrailResult)
                     {
-                        //Summary, alway parent
+                        //Summary, always parent
                         results.Add(t);
                     }
                     else if (t.Parent != null)

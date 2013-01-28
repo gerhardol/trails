@@ -619,7 +619,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void SetSelectedResultRegions(IList<TrailResultMarked> atr)
+        public void SetSelectedResultRegions(IList<TrailResultMarked> atr, TrailResultMarked markedRange)
         {
             if (ShowPage && MainChart != null && MainChart.DataSeries != null &&
                     MainChart.DataSeries.Count > 0 &&
@@ -635,13 +635,30 @@ namespace TrailsPlugin.UI.Activity {
                         if (trm.trailResult.Activity == tr.Activity)
                         {
                             IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, trm.selInfo);
-                            float[] range = null;
+                            //float[] range = null;
+                            //if (regions != null && regions.Count > 0)
+                            //{
+                            //    range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
+                            //}
+                            this.SetSelectedResultRegions(resultIndex, regions, null);
+                            this.ShowSpeedToolTip(tr, regions);
+                        }
+                    }
+                }
+
+                if(markedRange != null)
+                {
+                    //Set the matching time distance for the activity
+                    for (int resultIndex = 0; resultIndex < m_trailResults.Count; resultIndex++)
+                    {
+                        TrailResult tr = m_trailResults[resultIndex];
+                        if (markedRange.trailResult.Activity == tr.Activity)
+                        {
+                            IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, markedRange.selInfo);
                             if (regions != null && regions.Count > 0)
                             {
-                                range = new float[2] { regions[regions.Count - 1][0], regions[regions.Count - 1][1] };
+                                this.SetSelectedResultRegions(resultIndex, null, regions[regions.Count-1]);
                             }
-                            this.SetSelectedResultRegions(resultIndex, regions, range);
-                            this.ShowSpeedToolTip(tr, regions);
                         }
                     }
                 }

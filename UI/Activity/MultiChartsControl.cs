@@ -512,11 +512,11 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void SetSelectedResultRegions(IList<TrailResultMarked> atr)
+        public void SetSelectedResultRegions(IList<TrailResultMarked> atr, TrailResultMarked markedRange)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.SetSelectedResultRegions(atr);
+                chart.SetSelectedResultRegions(atr, markedRange);
             }
         }
 

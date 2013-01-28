@@ -451,7 +451,12 @@ namespace TrailsPlugin.UI.Activity {
                 //Mark chart, normally done from ResultList
                 if (markChart)
                 {
-                    MultiCharts.SetSelectedResultRegions(atr);
+                    TrailResultMarked range = null;
+                    if (atr.Count > 0)
+                    {
+                        range = atr[atr.Count - 1];
+                    }
+                    MultiCharts.SetSelectedResultRegions(atr, range);
                 }
             }
 #endif

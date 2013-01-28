@@ -794,16 +794,16 @@ namespace TrailsPlugin.UI.Activity {
                             if (isMatch)
                             {
                                 IList<TrailResult> aTr = new List<TrailResult>();
-                                if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                                //if (TrailsPlugin.Data.Settings.SelectSimilarResults)
                                 {
                                     //Select the single row only
                                     aTr.Add(tr);
                                 }
-                                else
-                                {
-                                    //The user can control what is selected - mark all
-                                    aTr = new List<TrailResult>{tr};
-                                }
+                                //else
+                                //{
+                                //    //The user can control what is selected - mark all
+                                //    aTr = new List<TrailResult>{tr};
+                                //}
                                 m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), this.SelectedItemsWrapper.Count > 1, false);
                             }
                         }

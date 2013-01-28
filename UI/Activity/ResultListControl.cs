@@ -133,6 +133,10 @@ namespace TrailsPlugin.UI.Activity {
             set
             {
                 _showPage = value;
+                if (!value)
+                {
+                    //TBD: Hide HS/PP popups if shown
+                }
             }
         }
 

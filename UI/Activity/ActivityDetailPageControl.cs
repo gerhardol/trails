@@ -436,10 +436,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerMarked.MarkedTrailRoutesNoShow = marked;
                 m_layerMarked.MarkedTrailRoutes = mresult;
 
-                //ST internal marking, use common marking
-                //Only one activity, OK to merge selections on one track
-                TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(atrST);
-                RouteSelectionProvider_SelectedItemsUpdate(result, this.ViewActivities);
+                RouteSelectionProvider_SelectedItemsUpdate(atrST);
 
                 if (zoom && Data.Settings.ZoomToSelection)
                 {
@@ -467,7 +464,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private TrailResult m_currentSelectedMapResult = null;
         private IGPSLocation m_currentSelectedMapLocation = null;
-        private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>();
+        private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>(); //Note that Count is 0 or 1 now
 
         public void ClearCurrentSelectedOnRoute()
         {
@@ -477,7 +474,7 @@ namespace TrailsPlugin.UI.Activity {
 #if DEBUG_CLICKED_ROUTES
             this.m_layerMarked.TrailPoints = new List<TrailGPSLocation>(); ; //Debug finding clicks
 #endif
-            RouteSelectionProvider_SelectedItemsUpdate(null, null);
+            RouteSelectionProvider_SelectedItemsUpdate(null);
         }
 
         void mapPoly_Click(object sender, MouseEventArgs e)
@@ -686,23 +683,34 @@ namespace TrailsPlugin.UI.Activity {
         }
         
 #if !ST_2_1
-        void RouteSelectionProvider_SelectedItemsUpdate(IItemTrackSelectionInfo sel, IList<IActivity> activities)
+        void RouteSelectionProvider_SelectedItemsUpdate(IList<TrailResultMarked> res)
         {
-            TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(m_currentSelectedMapRanges);
             IList<IItemTrackSelectionInfo> sels;
-            if (sel == null)
+            if (res == null)
             {
                 sels = new List<IItemTrackSelectionInfo>();
             }
             else
             {
-                sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { result }, activities, false);
+                //ST internal marking, use common marking
+                //Only one activity, OK to merge selections on one track
+                TrailsItemTrackSelectionInfo sel = TrailResultMarked.SelInfoUnion(res);
+                IList<IActivity> activities = new List<IActivity>();
+                foreach (TrailResultMarked trm in res)
+                {
+                    if (!activities.Contains(trm.selInfo.Activity))
+                    {
+                        activities.Add(trm.selInfo.Activity);
+                    }
+                }
+                sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { sel }, activities, false);
             }
             //Deactivate ST callback
             m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
             m_view.RouteSelectionProvider.SelectedItems = sels;
             m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
         }
+
         void RouteSelectionProvider_SelectedItemsChanged(object sender, EventArgs e)
         {
             if (sender is ISelectionProvider<IItemTrackSelectionInfo>)
@@ -745,10 +753,10 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null && selected.SelectedItems.Count > 0)
                 {
                     IList<IActivity> activities = this.ViewActivities; //Should be ViewSingleActivity
-                    
+
                     IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, activities, true);
                     IList<IItemTrackSelectionInfo> selectedGPS2 = new List<IItemTrackSelectionInfo>();
-                    foreach(IItemTrackSelectionInfo t in selectedGPS)
+                    foreach (IItemTrackSelectionInfo t in selectedGPS)
                     {
                         selectedGPS2.Add(t);
                     }
@@ -756,15 +764,48 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         selectedGPS.Add(trm.selInfo);
                     }
-                    //TBD fix structures
-                    foreach(IItemTrackSelectionInfo t in selectedGPS2)
+                    //TBD some copy&paste programming. Use TrailResultMarked to chart?
+                    IValueRange<DateTime> rangeTime = null;
+                    foreach (IItemTrackSelectionInfo t in selectedGPS2)
                     {
-                        m_currentSelectedMapRanges.Add( new TrailResultMarked(trSel,t));
-                    }
-                    TrailsItemTrackSelectionInfo result = TrailResultMarked.SelInfoUnion(m_currentSelectedMapRanges);
-                    RouteSelectionProvider_SelectedItemsUpdate(result, activities);
+                        if (t.SelectedTime != null)
+                        {
+                            rangeTime = t.SelectedTime;
+                            if (m_currentSelectedMapRanges.Count == 0)
+                            {
+                                IValueRangeSeries<DateTime> t2 = new ValueRangeSeries<DateTime>();
+                                t2.Add(rangeTime);
+                                TrailResultMarked trm = new TrailResultMarked(trSel, t2);
+                                m_currentSelectedMapRanges.Add(trm);
+                            }
+                            else
+                            {
+                                m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(rangeTime);
+                            }
 
-                    MultiCharts.SetSelectedResultRegions(selectedGPS, selectedGPS[selectedGPS.Count-1].SelectedTime);
+                            MultiCharts.SetSelectedResultRegions(selectedGPS, rangeTime);
+                        }
+                        if (t.MarkedTimes != null)
+                        {
+                            foreach (IValueRange<DateTime> ti in t.MarkedTimes)
+                            {
+                                rangeTime = ti;
+                                if (m_currentSelectedMapRanges.Count == 0)
+                                {
+                                    IValueRangeSeries<DateTime> t2 = new ValueRangeSeries<DateTime>();
+                                    t2.Add(rangeTime);
+                                    TrailResultMarked trm = new TrailResultMarked(trSel, t2);
+                                    m_currentSelectedMapRanges.Add(trm);
+                                }
+                                else
+                                {
+                                    m_currentSelectedMapRanges[0].selInfo.MarkedTimes.Add(rangeTime);
+                                }
+                            }
+                        }
+                    }
+                    MultiCharts.SetSelectedResultRegions(selectedGPS, rangeTime);
+                    RouteSelectionProvider_SelectedItemsUpdate(this.m_currentSelectedMapRanges);
                 }
             }
         }

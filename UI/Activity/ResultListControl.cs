@@ -47,6 +47,7 @@ namespace TrailsPlugin.UI.Activity {
         private ITheme m_visualTheme;
         private Controller.TrailController m_controller;
         private TrailResultWrapper m_summary;
+        private TrailResult m_lastSelectedTrailResult = null;
 
 #if !ST_2_1
         private IDailyActivityView m_view = null;
@@ -826,7 +827,27 @@ namespace TrailsPlugin.UI.Activity {
                                 //    //The user can control what is selected - mark all
                                 //    aTr = new List<TrailResult>{tr};
                                 //}
-                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), this.SelectedItemsWrapper.Count > 1, false);
+                                bool markChart = false;
+                                if (tr == this.m_lastSelectedTrailResult)
+                                {
+                                    markChart = true;
+                                }
+                                else
+                                {
+                                    //foreach (TrailResultWrapper t in SelectedItemsWrapper)
+                                    //{
+                                    //    foreach (TrailResultWrapper t2 in SelectedItemsWrapper)
+                                    //    {
+                                    //        if (t != t2 && t.Result.ResultColor == t2.Result.ResultColor)
+                                    //        {
+                                    //            markChart = true;
+                                    //            break;
+                                    //        }
+                                    //    }
+                                    //}
+                                    this.m_lastSelectedTrailResult = tr;
+                                }
+                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), markChart, false);
                             }
                         }
                     }

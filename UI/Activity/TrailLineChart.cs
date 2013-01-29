@@ -214,7 +214,7 @@ namespace TrailsPlugin.UI.Activity {
         void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
             //Let update rate depend on number of chart activities, less choppy update
-            if (DateTime.Now.Subtract(this.m_lastSelectingTime).TotalMilliseconds >= 33*this.m_trailResults.Count)
+            if (DateTime.Now.Subtract(this.m_lastSelectingTime).TotalMilliseconds >= Math.Min(500, 33*this.m_trailResults.Count))
             {
                 this.BeginUpdate();
                 this.m_lastSelectingTime = DateTime.Now;

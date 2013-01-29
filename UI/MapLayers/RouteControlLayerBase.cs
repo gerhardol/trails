@@ -99,11 +99,17 @@ namespace TrailsPlugin.UI.MapLayers
             if (area != null)
             {
                 double zoom = this.MapControl.Zoom;
+                double newZoom = zoom;
                 if (!this.MapControl.MapBounds.Contains(area))
                 {
-                    zoom = Math.Max(zoom, this.MapControl.ComputeZoomToFit(area));
+                    newZoom = Math.Max(zoom, this.MapControl.ComputeZoomToFit(area));
                 }
-                this.MapControl.SetLocation(area.Center, zoom);
+                if (newZoom != zoom ||
+                    Math.Abs(area.Center.LatitudeDegrees - this.MapControl.MapBounds.Center.LatitudeDegrees) / area.LatitudeDegrees > 0.03F ||
+                    Math.Abs(area.Center.LongitudeDegrees - this.MapControl.MapBounds.Center.LongitudeDegrees) / area.LongitudeDegrees > 0.03F)
+                {
+                    this.MapControl.SetLocation(area.Center, newZoom);
+                }
             }
         }
 
@@ -123,7 +129,8 @@ namespace TrailsPlugin.UI.MapLayers
 
         public IGPSLocation GetCenterMap()
         {
-            IGPSLocation centerLocation = MapControl.MapProjection.PixelToGPS(MapControl.Center, MapControl.Zoom, new Point(0, 0));
+            IGPSLocation centerLocation = this.MapControl.MapBounds.Center;
+                // MapControl.MapProjection.PixelToGPS(MapControl.Center, MapControl.Zoom, new Point(0, 0));
             return centerLocation;
         }
 
@@ -131,8 +138,18 @@ namespace TrailsPlugin.UI.MapLayers
         {
             if (area != null)
             {
-                this.MapControl.SetLocation(area.Center,
-                this.MapControl.ComputeZoomToFit(area));
+                double zoom = this.MapControl.Zoom;
+                //An area slightly larger than requested, to avoid zoom to often
+                float latOffset = area.LatitudeDegrees*0.05F;
+                float lonOffset = area.LongitudeDegrees*0.05F;
+                IGPSBounds area2 = new GPSBounds(new GPSLocation(area.NorthLatitudeDegrees + latOffset, area.WestLongitudeDegrees - lonOffset),
+                    new GPSLocation(area.SouthLatitudeDegrees - latOffset, area.EastLongitudeDegrees + lonOffset));
+                double newZoom = this.MapControl.ComputeZoomToFit(area2);
+                //Avoid constantly calling SetLocation, slows down
+                if (!this.MapControl.MapBounds.Contains(area) || Math.Abs(zoom-newZoom) > 2)
+                {
+                    this.MapControl.SetLocation(area.Center, newZoom);
+                }
             }
         }
 

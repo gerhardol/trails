@@ -69,8 +69,9 @@ namespace TrailsPlugin.UI.Activity {
 
         //selecting in the chart
         private DateTime m_lastSelectingTime = DateTime.MinValue;
+        private DateTime m_lastMarkingRouteTime = DateTime.MinValue;
         private bool m_endSelect = false;
-        private float[] m_selectedStartRange = null;
+        private float[] m_prevSelectedRange = null;
         private int m_selectedDataSetries = -1;
  
         const int MaxSelectedSeries = 6;
@@ -205,11 +206,11 @@ namespace TrailsPlugin.UI.Activity {
             MainChart.Focus();
         }
 
-        void copyChartMenuItem_Click(object sender, EventArgs e)
-        {
-            //Not visible menu item
-            //MainChart.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-        }
+        //void copyChartMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    //Not visible menu item
+        //    //MainChart.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+        //}
 
         //Fires about every 33ms when selecting
         void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
@@ -217,7 +218,10 @@ namespace TrailsPlugin.UI.Activity {
             //Let update rate depend on number of chart activities, less choppy update
             if (DateTime.Now.Subtract(this.m_lastSelectingTime).TotalMilliseconds >= 33*this.m_trailResults.Count)
             {
+                this.BeginUpdate();
+                this.m_lastSelectingTime = DateTime.Now;
                 MainChart_SelectingData(this.m_selectedDataSetries, null, true, false);
+                this.EndUpdate();
             }
         }
 
@@ -228,6 +232,7 @@ namespace TrailsPlugin.UI.Activity {
 
             this.m_selectedDataSetries = -1;
 
+            this.BeginUpdate();
             if (e != null && e.DataSeries != null)
             {
                 range = new float[2];
@@ -241,12 +246,12 @@ namespace TrailsPlugin.UI.Activity {
                 if (!this.m_endSelect)
                 {
                     //Save start range, to shrink if changed
-                    this.m_selectedStartRange = range;
+                    this.m_prevSelectedRange = range;
                 }
                 else
                 {
                     //Clear at end (should not be required)
-                    this.m_selectedStartRange = null;
+                    this.m_prevSelectedRange = null;
                 }
 
                 if (!this.m_endSelect)
@@ -279,20 +284,22 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+            bool rangeIsValid = range != null && !float.IsNaN(range[0]);
             //Clear if starting a new selection and ctrl is not pressed
             if (!this.m_endSelect && this.m_MouseDownLocation != Point.Empty)
             {
-                this.m_multiple.ClearSelectedRegions();
+                this.m_multiple.ClearSelectedRegions(!rangeIsValid);
                 this.m_page.ClearCurrentSelectedOnRoute();
             }
             this.m_MouseDownLocation = Point.Empty;
 
             //Select in charts etc only with current series. Use range instead of e 
-            if (range != null && !float.IsNaN(range[0]))
+            if (rangeIsValid)
             {
                 MainChart_SelectingData(this.m_selectedDataSetries, range, false, this.m_endSelect);
             }
             this.m_endSelect = !this.m_endSelect;
+            this.EndUpdate();
         }
 
         void MainChart_SelectingData(int seriesIndex, float[] range, bool selecting, bool endSelect)
@@ -329,18 +336,18 @@ namespace TrailsPlugin.UI.Activity {
 
                 //Find if a selection has decreased
                 bool clearDecreased = false;
-                if (range != null && regions != null && this.m_selectedStartRange != null &&
-                    !float.IsNaN(range[0]) && !float.IsNaN(this.m_selectedStartRange[0]))
+                if (range != null && regions != null && this.m_prevSelectedRange != null &&
+                    !float.IsNaN(range[0]) && !float.IsNaN(this.m_prevSelectedRange[0]))
                 {
-                    if (float.IsNaN(m_selectedStartRange[1]) || float.IsNaN(range[1]))
+                    if (float.IsNaN(this.m_prevSelectedRange[1]))
                     {
-                        //If first was "new", check if regions not expanding at both sides
+                        //First selection, second not yet set, clicking in selected region: clear it
+                        //m_prevSelectedRange and range should be the same
                         foreach (float[] r in regions)
                         {
-                            if (r[0] <= range[0] && range[0] < r[1] ||
-                                r[0] < range[0] && range[0] <= r[1])
+                            if (r[0] <= range[0] && range[0] <  r[1] ||
+                                r[0] <  range[0] && range[0] <= r[1])
                             {
-                                //First selection, second not yet set, clicking in selected region
                                 r[0] = range[0];
                                 if (!float.IsNaN(range[1]))
                                 {
@@ -354,13 +361,17 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    else if (this.m_selectedStartRange[0] < range[0] || range[1] < this.m_selectedStartRange[1])
-                    //Selection decreasing from first selection
+                    //TBD some check what of m_prevSelectedRange/range should be used
+                    //Range was selected when clicking in the chart
+                    else if (!float.IsNaN(range[1]) && 
+                        (this.m_prevSelectedRange[0] < range[0] || 
+                          range[1] < this.m_prevSelectedRange[1]))
+                    //range decreasing from prev range, decrease region
                     {
                         foreach (float[] r in regions)
                         {
-                            if (r[0] <= range[0] && range[1] < r[1] ||
-                                     r[0] < range[0] && range[1] <= r[1])
+                            if (r[0] <= range[0] && range[1] <  r[1] ||
+                                r[0] <  range[0] && range[1] <= r[1])
                             {
                                 //Selection decreasing
                                 r[0] = range[0];
@@ -372,8 +383,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 if (clearDecreased)
                 {
-                    this.m_multiple.ClearSelectedRegions();
+                    this.m_multiple.ClearSelectedRegions(false);
                 }
+                this.m_prevSelectedRange = range;
 
                 IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
                 foreach (TrailResult tr2 in markResults)
@@ -403,7 +415,12 @@ namespace TrailsPlugin.UI.Activity {
                 //m_selectDataHandler = false;
 
                 //Mark route track, but not chart
-                m_page.MarkTrack(results, false, true);
+                //Decrease update rate some, this is choppy
+                if (this.m_endSelect || DateTime.Now.Subtract(this.m_lastMarkingRouteTime).TotalMilliseconds >= 300)
+                {
+                    this.m_lastMarkingRouteTime = DateTime.Now;
+                    m_page.MarkTrack(results, false, true);
+                }
                 m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
                 int resultIndex;
@@ -427,14 +444,23 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void ClearSelectedRegions()
+        public void ClearSelectedRegions(bool clearRange)
         {
             if (this.MainChart != null && this.MainChart.DataSeries != null)
             {
                 foreach (ChartDataSeries c in this.MainChart.DataSeries)
                 {
+                    //Optimize clear range, as this is slow
+                    if (clearRange)
+                    {
+                        float[] range = new float[2];
+                        c.GetSelectedRange(out range[0], out range[1]);
+                        if (!float.IsNaN(range[0]) || !float.IsNaN(range[1]))
+                        {
+                            c.SetSelectedRange(float.NaN, float.NaN);
+                        }
+                    }
                     c.ClearSelectedRegions();
-                    c.SetSelectedRange(float.NaN, float.NaN);
                }
             }
         }
@@ -501,8 +527,15 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         foreach (int j in ResultIndexToSeries(resultIndex))
                         {
-                            MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
-                            MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
+                            //Checking what is already set does not seem to improve much
+                            //float[] range2 = new float[2];
+                            //MainChart.DataSeries[j].GetSelectedRange(out range2[0], out range2[1]);
+                            //if (range[0] != range2[0] || range[1] != range2[1])
+                            {
+                                //This is the slow part of this routine
+                                MainChart.DataSeries[j].SetSelectedRange(range[0], range[1]);
+                                MainChart.DataSeries[j].EnsureSelectedRangeVisible(); //Not working?
+                            }
                         }
                     }
                 }
@@ -553,7 +586,7 @@ namespace TrailsPlugin.UI.Activity {
                     MainChart.DataSeries.Count > 0 &&
                 m_trailResults.Count > 0)
             {
-                this.ClearSelectedRegions();
+                this.ClearSelectedRegions(markedRange == null);
                 bool toolTipShown = false;
                 foreach (TrailResultMarked trm in atr)
                 {
@@ -575,7 +608,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResult tr in atr)
                 {
                     int resultIndex = -1;
-                    this.ClearSelectedRegions();
+                    this.ClearSelectedRegions(true);
                     for (int i = 0; i < MainChart.DataSeries.Count; i++)
                     {
                         if (m_trailResults[SeriesIndexToResult(i)].Equals(tr))
@@ -1574,7 +1607,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (this.m_multipleCharts && (e.Axis is RightVerticalAxis || e.Axis is LeftVerticalAxis))
             {
-                this.ClearSelectedRegions();
+                this.ClearSelectedRegions(true);
                 //Select all charts for this axis
                 for (int i = 0; i < MainChart.DataSeries.Count; i++)
                 {

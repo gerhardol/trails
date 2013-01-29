@@ -486,11 +486,11 @@ namespace TrailsPlugin.UI.Activity {
             this.RefreshChart();
         }
 
-        public void ClearSelectedRegions()
+        public void ClearSelectedRegions(bool clearRange)
         {
             foreach (TrailLineChart chart in m_lineCharts)
             {
-                chart.ClearSelectedRegions();
+                chart.ClearSelectedRegions(clearRange);
             }
         }
 

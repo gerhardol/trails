@@ -206,14 +206,6 @@ namespace TrailsPlugin.UI.Activity {
                     btnExpand.BackgroundImage = CommonIcons.LowerHalf;
                 }
                 this.RefreshChart();
-                //This could be changed to zoom to data only at changes
-                foreach (TrailLineChart t in m_lineCharts)
-                {
-                    if (t.ShowPage)
-                    {
-                        t.ZoomToData();
-                    }
-                }
             }
         }
 
@@ -315,12 +307,13 @@ namespace TrailsPlugin.UI.Activity {
 
                     if (!m_multiChart.AnyData())
                     {
+                        m_multiChart.ShowPage = false;
                         m_multiChart.LeftChartType = speedPaceChart;
                         m_multiChart.ShowPage = true;
                     }
                     this.ChartBanner.Text = LineChartUtil.ChartTypeString(m_multiChart.LeftChartType) + " / " +
                     LineChartUtil.XAxisValueString(m_multiChart.XAxisReferential);
-                    m_multiChart.EndUpdate();
+                    m_multiChart.EndUpdate(true);
                 }
                 else
                 {
@@ -385,14 +378,14 @@ namespace TrailsPlugin.UI.Activity {
                                                     LineChartUtil.XAxisValueString(replaceChart.XAxisReferential);
                                                 }
                                                 replaceChart.ShowPage = visible;
-                                                replaceChart.EndUpdate();
+                                                replaceChart.EndUpdate(true);
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        updateChart.EndUpdate();
+                        updateChart.EndUpdate(true);
                     }
                 }
                 RefreshRows();

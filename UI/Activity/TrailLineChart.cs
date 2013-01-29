@@ -89,7 +89,6 @@ namespace TrailsPlugin.UI.Activity {
 #else
             this.MainChart.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
 #endif
-            MainChart.YAxis.SmartZoom = true;
             copyChartMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
             copyChartMenuItem.Visible = false;
 #if !ST_2_1
@@ -194,8 +193,8 @@ namespace TrailsPlugin.UI.Activity {
 
         private void ZoomToContentButton_Click(object sender, EventArgs e)
         {
-			//this.ZoomToData();
             MainChart.AutozoomToData(true);
+            MainChart.Refresh();
             MainChart.Focus();
         }
 
@@ -203,7 +202,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             MainChart.AutozoomToData(true);
             MainChart.Refresh();
-            MainChart.Focus();
         }
 
         //void copyChartMenuItem_Click(object sender, EventArgs e)
@@ -221,7 +219,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.BeginUpdate();
                 this.m_lastSelectingTime = DateTime.Now;
                 MainChart_SelectingData(this.m_selectedDataSetries, null, true, false);
-                this.EndUpdate();
+                this.EndUpdate(false);
             }
         }
 
@@ -299,7 +297,7 @@ namespace TrailsPlugin.UI.Activity {
                 MainChart_SelectingData(this.m_selectedDataSetries, range, false, this.m_endSelect);
             }
             this.m_endSelect = !this.m_endSelect;
-            this.EndUpdate();
+            this.EndUpdate(false);
         }
 
         void MainChart_SelectingData(int seriesIndex, float[] range, bool selecting, bool endSelect)
@@ -623,6 +621,7 @@ namespace TrailsPlugin.UI.Activity {
                                                 MainChart.DataSeries[j].XMin, MainChart.DataSeries[j].XMax);
                     }
                 }
+                this.MainChart.Focus();
             }
         }
 
@@ -949,7 +948,6 @@ namespace TrailsPlugin.UI.Activity {
                         }
                     }
                 }
-                ZoomToData();
             }
 		}
 
@@ -1218,8 +1216,13 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_refTrailResult != value)
                 {
                     m_refTrailResult = value;
-                    SetupAxes();
-                    SetupDataSeries();
+                    if (this.ShowPage)
+                    {
+                        this.BeginUpdate();
+                        SetupAxes();
+                        SetupDataSeries();
+                        this.EndUpdate(false);
+                    }
                 }
             }
         }
@@ -1243,8 +1246,13 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         m_trailResults = value;
                     }
-                    SetupAxes();
-                    SetupDataSeries();
+                    if (this.ShowPage)
+                    {
+                        this.BeginUpdate();
+                        SetupAxes();
+                        SetupDataSeries();
+                        this.EndUpdate(false);
+                    }
                 }
             }
         }
@@ -1638,12 +1646,23 @@ namespace TrailsPlugin.UI.Activity {
 
         public bool BeginUpdate()
         {
-			return MainChart.BeginUpdate();
+            if (this.ShowPage)
+            {
+                return this.MainChart.BeginUpdate();
+            }
+            return false;
 		}
 
-		public void EndUpdate()
+		public void EndUpdate(bool zoom)
         {
-			MainChart.EndUpdate();
+            if (this.ShowPage)
+            {
+                if (zoom)
+                {
+                    this.ZoomToData();
+                }
+                this.MainChart.EndUpdate();
+            }
 		}
 	}
 }

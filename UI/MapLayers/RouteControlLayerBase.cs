@@ -130,7 +130,6 @@ namespace TrailsPlugin.UI.MapLayers
         public IGPSLocation GetCenterMap()
         {
             IGPSLocation centerLocation = this.MapControl.MapBounds.Center;
-                // MapControl.MapProjection.PixelToGPS(MapControl.Center, MapControl.Zoom, new Point(0, 0));
             return centerLocation;
         }
 

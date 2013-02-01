@@ -226,12 +226,12 @@ namespace TrailsPlugin.Data {
 
         public static int Compare(TrailResult x, TrailResult y)
         {
-            if (x.Activity == null)
+            if (x == null || x.Activity == null)
             {
                 //Summary
                 return 1;
             }
-            if (y.Activity == null)
+            if (y == null || y.Activity == null)
             {
                 return -1;
             }

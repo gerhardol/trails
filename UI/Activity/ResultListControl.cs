@@ -796,7 +796,7 @@ namespace TrailsPlugin.UI.Activity {
                             cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);
                             cs.Show();
                         }
-                        else
+                        else if (tr != null)
                         {
                             bool isMatch = false;
                             foreach (TrailResultWrapper t in SelectedItemsWrapper)
@@ -828,7 +828,8 @@ namespace TrailsPlugin.UI.Activity {
                                 //    aTr = new List<TrailResult>{tr};
                                 //}
                                 bool markChart = false;
-                                if (tr == this.m_lastSelectedTrailResult)
+                                if (tr.CompareTo(this.m_lastSelectedTrailResult) == 0 &&
+                                    this.SelectedItemsWrapper.Count > 1)
                                 {
                                     markChart = true;
                                 }

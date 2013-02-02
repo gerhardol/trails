@@ -61,6 +61,9 @@ namespace TrailsPlugin.UI.Activity
         ActivityDetailPageControl m_page;
         private EditTrail m_editTrail = null;
         private bool m_selectTrailAddMode;
+        //private bool m_CtrlPressed = false;
+
+        /*********************************************/
 
         public TrailSelectorControl()
         {
@@ -442,6 +445,19 @@ namespace TrailsPlugin.UI.Activity
             showEditDialog(dialog);
         }
 
+        /***************************************************************************/
+
+        //The following is not working, KeyUp is never seen
+        //Key down could be used with any other key, which is not intuitive...
+        //void TrailName_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        //{
+        //    this.m_CtrlPressed = false;
+        //}
+
+        //void TrailName_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        //{
+        //    this.m_CtrlPressed = e.Modifiers == Keys.Control;
+        //}
 
         private void TrailName_ButtonClick(object sender, EventArgs e)
         {
@@ -485,7 +501,7 @@ namespace TrailsPlugin.UI.Activity
             }
 
             IList <ActivityTrail> ats = new List<ActivityTrail>();
-            if (m_selectTrailAddMode)
+            if (m_selectTrailAddMode /*|| this.m_CtrlPressed*/)
             {
                 //Handle all the existing as selected too
                 foreach (ActivityTrail at in this.m_controller.CurrentActivityTrails)

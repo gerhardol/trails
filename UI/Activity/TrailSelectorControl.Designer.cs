@@ -98,6 +98,8 @@
             this.TrailName.TabIndex = 15;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TrailName.ButtonClick += new System.EventHandler(this.TrailName_ButtonClick);
+            //this.TrailName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TrailName_KeyDown);
+            //this.TrailName.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TrailName_KeyUp);
             // 
             // btnAdd
             // 

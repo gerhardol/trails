@@ -116,13 +116,18 @@ namespace TrailsPlugin.Data
             }
         }
 
-		public Data.Trail Trail
+        public Data.Trail Trail
         {
-			get
+            get
             {
-				return m_trail;
-			}
-		}
+                return m_trail;
+            }
+            set
+            {
+                m_trail = value;
+            }
+        }
+
         public int ActivityCount
         {
             get

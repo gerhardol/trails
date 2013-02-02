@@ -78,6 +78,13 @@ namespace TrailsPlugin.UI.Activity {
         private TrailPointsLayer m_layerMarked = null;
 #endif
 
+        private TrailResult m_currentSelectedMapResult = null;
+        private IGPSLocation m_currentSelectedMapLocation = null;
+        //Marked on Trails marking
+        private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>(); //Note that Count is 0 or 1 now
+        //Selected on ST drawn activities
+        private IList<IItemTrackSelectionInfo> m_currentItemTrackSelected = new List<IItemTrackSelectionInfo>();
+
 #if ST_2_1
         public ActivityDetailPageControl()
         {
@@ -159,6 +166,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             return HidePage(true);
         }
+
         public bool HidePage(bool resetData)
         {
             m_showPage = false;
@@ -467,19 +475,16 @@ namespace TrailsPlugin.UI.Activity {
             this.m_layerMarked.DoZoom();
         }
 
-        private TrailResult m_currentSelectedMapResult = null;
-        private IGPSLocation m_currentSelectedMapLocation = null;
-        private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>(); //Note that Count is 0 or 1 now
-
         public void ClearCurrentSelectedOnRoute()
         {
             m_currentSelectedMapLocation = null;
             m_currentSelectedMapRanges.Clear();
+            this.m_currentItemTrackSelected.Clear();
             m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
 #if DEBUG_CLICKED_ROUTES
             this.m_layerMarked.TrailPoints = new List<TrailGPSLocation>(); ; //Debug finding clicks
 #endif
-            RouteSelectionProvider_SelectedItemsUpdate(null);
+            RouteSelectionProvider_SelectedItemsUpdate(this.m_currentItemTrackSelected);
         }
 
         void mapPoly_Click(object sender, MouseEventArgs e)
@@ -676,6 +681,14 @@ namespace TrailsPlugin.UI.Activity {
         }
         
 #if !ST_2_1
+        void RouteSelectionProvider_SelectedItemsUpdate(IList<IItemTrackSelectionInfo> sels)
+        {
+            //Deactivate ST callback
+            m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+            m_view.RouteSelectionProvider.SelectedItems = sels;
+            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+        }
+
         void RouteSelectionProvider_SelectedItemsUpdate(IList<TrailResultMarked> res)
         {
             IList<IItemTrackSelectionInfo> sels;
@@ -698,17 +711,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { sel }, activities, false);
             }
-            //Deactivate ST callback
-            m_view.RouteSelectionProvider.SelectedItemsChanged -= new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
-            m_view.RouteSelectionProvider.SelectedItems = sels;
-            m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+            RouteSelectionProvider_SelectedItemsUpdate(sels);
         }
 
         void RouteSelectionProvider_SelectedItemsChanged(object sender, EventArgs e)
         {
             if (sender is ISelectionProvider<IItemTrackSelectionInfo>)
             {
-                //m_view.RouteSelectionProvider.SelectedItems
                 ISelectionProvider<IItemTrackSelectionInfo> selected = sender as ISelectionProvider<IItemTrackSelectionInfo>;
 
                 TrailResult trSel = null; //(one of) the selected results, used to check changes
@@ -750,6 +759,7 @@ namespace TrailsPlugin.UI.Activity {
                     IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, activities, true);
                     foreach(IItemTrackSelectionInfo t in selectedGPS)
                     {
+                        //Only one item in the list
                         if(this.m_currentSelectedMapRanges.Count == 0)
                         {
                             this.m_currentSelectedMapRanges.Add(new TrailResultMarked(trSel,t));
@@ -765,7 +775,12 @@ namespace TrailsPlugin.UI.Activity {
                         markedRange = new TrailResultMarked(trSel, selectedGPS[selectedGPS.Count - 1]);
                     }
                     MultiCharts.SetSelectedResultRegions(this.m_currentSelectedMapRanges, markedRange);
-                    RouteSelectionProvider_SelectedItemsUpdate(this.m_currentSelectedMapRanges);
+                    foreach (IItemTrackSelectionInfo sel in selected.SelectedItems)
+                    {
+                        //As the selection can be made outside the trail result, the complete activity is saved (no conversion error
+                        this.m_currentItemTrackSelected.Add(sel);
+                    }
+                    RouteSelectionProvider_SelectedItemsUpdate(this.m_currentItemTrackSelected);
                 }
             }
         }

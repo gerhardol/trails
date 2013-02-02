@@ -253,6 +253,10 @@ namespace TrailsPlugin.Controller
                 {
                     result = at.Status;
                 }
+                if (result == TrailOrderStatus.Match)
+                {
+                    break;
+                }
             }
             return result;
         }
@@ -577,61 +581,52 @@ namespace TrailsPlugin.Controller
             return m_referenceTrailResult;
         }
 
-        private void NewTrail(Trail trail, bool keepSelection, System.Windows.Forms.ProgressBar progressBar)
+        /***********************************************************/
+
+        private void NewTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
             ActivityTrail at = new ActivityTrail(this, trail);
             this.m_CurrentOrderedTrails.Add(at);
 
-            if (keepSelection)
-            {
-                this.m_currentActivityTrails.Insert(0, at);
-            }
-            else
-            {
-                //Select this trail
-                this.m_currentActivityTrails.Clear();
-                this.m_currentActivityTrails.Add(at);
-            }
+            //Select this trail
+            this.m_currentActivityTrails.Clear();
+            this.m_currentActivityTrails.Add(at);
             this.SetCurrentActivityTrail(this.m_currentActivityTrails, true, progressBar);
         }
 
         public bool AddTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
+            bool result = false;
             if (TrailData.InsertTrail(trail))
             {
-                NewTrail(trail, false, progressBar);
-                return true;
+                NewTrail(trail, progressBar);
+                result = true;
 			} 
             else
             {
-				return false;
+				result = false;
 			}
+            return result;
 		}
 
         public bool UpdateTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
+            bool result = false;
             if (TrailData.UpdateTrail(trail))
             {
-                ActivityTrail old = null;
                 foreach (ActivityTrail at in this.m_CurrentOrderedTrails)
                 {
                     if (at.Trail.Id == trail.Id)
                     {
-                        old = at;
+                        at.Trail = trail;
+                        at.Init();
                         break;
                     }
                 }
-                if (old != null)
-                {
-                    this.DeleteTrail(old);
-                    this.NewTrail(trail, true, progressBar);
-                }
-                return true;
+                this.SetCurrentActivityTrail(this.m_currentActivityTrails, true, progressBar);
+                result = true;
             }
-            else
-            {
-                return false;
-            }
+            return result;
 		}
 
         public bool DeleteCurrentTrail()

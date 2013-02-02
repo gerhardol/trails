@@ -36,6 +36,7 @@ namespace TrailsPlugin.UI.Activity {
 		protected ITheme m_visualTheme;
 		protected bool m_addMode;
 		protected Data.Trail m_TrailToEdit; //Scratch, the copy of the trail add or newly created
+        private ActivityDetailPageControl m_page = null;
 #if ST_2_1
         private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
 #else
@@ -93,12 +94,13 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, Object view, bool addMode)
 #else
-        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, IDailyActivityView view, 
-            TrailPointsLayer layer, bool addMode, TrailResult tr)
+        public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, ActivityDetailPageControl page, 
+            IDailyActivityView view, TrailPointsLayer layer, bool addMode, TrailResult tr)
 #endif
             : this (addMode)
         {
 #if !ST_2_1
+            this.m_page = page;
             m_view = view;
             m_layer = layer;
             m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
@@ -316,6 +318,8 @@ namespace TrailsPlugin.UI.Activity {
                 return;
             }
             this.DialogResult = DialogResult.OK;
+            //Successful: Clear marking on route (otherwise same point could be added again)
+            this.m_page.ClearCurrentSelectedOnRoute();
 
             Close();
 		}

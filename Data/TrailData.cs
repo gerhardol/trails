@@ -104,22 +104,26 @@ namespace TrailsPlugin.Data
 
         public static bool UpdateTrail(Data.Trail trail)
         {
-			foreach (Trail t in m_AllTrails.Values) {
-				if (t.Name == trail.Name && t.Id != trail.Id) {
+			foreach (Trail t in m_AllTrails.Values)
+            {
+				if (t.Name == trail.Name && t.Id != trail.Id)
+                {
 					return false;
 				}
 			}
 
             if (m_AllTrails.ContainsKey(trail.Id))
             {
-                m_AllTrails.Remove(trail.Id);
-				m_AllTrails.Add(trail.Id, trail);
+				m_AllTrails[trail.Id] = trail;
 				Plugin.WriteExtensionData();
 				return true;
-			} else {
+			} 
+            else 
+            {
 				return false;
 			}
 		}
+
         public static bool DeleteTrail(Data.Trail trail)
         {
             if (m_AllTrails.ContainsKey(trail.Id))
@@ -127,7 +131,9 @@ namespace TrailsPlugin.Data
                 m_AllTrails.Remove(trail.Id);
 				Plugin.WriteExtensionData();
 				return true;
-			} else {
+			}
+            else
+            {
 				return false;
 			}
 		}

@@ -255,28 +255,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-
-        //Wrapper for ST2
-        private System.Collections.IList SelectedItemsRaw
-        {
-            set
-            {
-#if ST_2_1
-                    summaryList.Selected  = value;
-#else
-                summaryList.SelectedItems = value;
-#endif
-            }
-            get
-            {
-#if ST_2_1
-                return summaryList.Selected;
-#else
-                return summaryList.SelectedItems;
-#endif
-            }
-        }
-
         private System.Collections.IList m_lastSelectedItems = null;
         //private System.Collections.IList m_beforeChangeSelectedItems = null;
         //Wrap the table SelectedItems, from a generic type
@@ -316,7 +294,11 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 //Set value, let callback update m_prevSelectedItems and refresh chart
-                SelectedItemsRaw = (List<TrailResultWrapper>)setValue;
+#if ST_2_1
+                summaryList.Selected  = (List<TrailResultWrapper>)setValue;
+#else
+                summaryList.SelectedItems = (List<TrailResultWrapper>)setValue;
+#endif
                 //foreach (TrailResultWrapper t in setValue)
                 //{
                 //    if (t.Result is ChildTrailResult)
@@ -333,7 +315,12 @@ namespace TrailsPlugin.UI.Activity {
             }
             get
             {
-                return getTrailResultWrapperSelection(this.SelectedItemsRaw);
+#if ST_2_1
+                System.Collections.IList SelectedItemsRaw = summaryList.Selected;
+#else
+                System.Collections.IList SelectedItemsRaw = summaryList.SelectedItems;
+#endif
+                return getTrailResultWrapperSelection(SelectedItemsRaw);
             }
         }
 
@@ -485,14 +472,15 @@ namespace TrailsPlugin.UI.Activity {
         bool selectSimilarSplits()
         {
             bool isChange = false;
-            if (Data.Settings.SelectSimilarResults && this.SelectedItemsRaw != null)
+            IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
+            if (Data.Settings.SelectSimilarResults && atr != null)
             {
                 //The implementation only supports adding new splits not deselecting
                 //Note that selecting will scroll, changing offsets why check what is clicked does not work well
                 int? lastSplitIndex = null;
                 bool isSingleIndex = false;
                 IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
-                foreach (TrailResultWrapper t in this.SelectedItemsWrapper)
+                foreach (TrailResultWrapper t in atr)
                 {
                     int splitIndex = -1; //Index for parent, not for child(subsplit)
                     if (t.Result is SummaryTrailResult)
@@ -600,10 +588,10 @@ namespace TrailsPlugin.UI.Activity {
 
         void excludeSelectedResults(bool invertSelection)
         {
-            if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0 &&
+            IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
+            if (atr != null && atr.Count > 0 &&
                 m_controller.CurrentResultTreeList.Count > 0)
             {
-                IList<TrailResultWrapper> atr = this.SelectedItemsWrapper;
                 foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
                 {
                     //Note: If more than one selected, will try to match all
@@ -616,7 +604,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void selectAll()
         {
-            System.Collections.IList all = new List<TrailResultWrapper>();
+            IList<TrailResultWrapper> all = new List<TrailResultWrapper>();
             if (m_controller.CurrentActivityTrailIsSelected)
             {
                 foreach (TrailResultWrapper t in m_controller.CurrentResultTreeList)
@@ -627,7 +615,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            this.SelectedItemsRaw = all;
+            this.SelectedItemsWrapper = all;
         }
 
         void copyTable()
@@ -1146,23 +1134,27 @@ namespace TrailsPlugin.UI.Activity {
             p.ShowDialog();
         }
 
-        TrailResult GetSelectedTrailResults()
+        private TrailResult GetSelectedTrailResults()
         {
             TrailResult tr = null;
-            if (this.SelectedItemsRaw.Count == 1)
+            IList<TrailResult> atr = this.SelectedItems;
+            if (atr != null)
             {
-                //One selected use (regardless if summary/regular)
-                tr = this.SelectedItems[0];
-            }
-            else
-            {
-                //More than one or 0: use summary
-                foreach (TrailResult t in this.SelectedItems)
+                if (atr.Count == 1)
                 {
-                    if (t is SummaryTrailResult)
+                    //One selected use (regardless if summary/regular)
+                    tr = atr[0];
+                }
+                else
+                {
+                    //More than one or 0: use summary
+                    foreach (TrailResult t in atr)
                     {
-                        tr = t;
-                        break;
+                        if (t is SummaryTrailResult)
+                        {
+                            tr = t;
+                            break;
+                        }
                     }
                 }
             }
@@ -1648,9 +1640,9 @@ namespace TrailsPlugin.UI.Activity {
         void limitActivityMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
-            if (this.SelectedItemsRaw != null && this.SelectedItemsRaw.Count > 0)
+            IList<TrailResult> atr = this.SelectedItems;
+            if (atr != null && atr.Count > 0)
             {
-                IList<TrailResult> atr = this.SelectedItems;
                 IList<IActivity> aAct = new List<IActivity>();
                 foreach (TrailResult tr in atr)
                 {

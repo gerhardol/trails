@@ -252,6 +252,7 @@ namespace TrailsPlugin.UI.Activity {
             MultiCharts.RefreshChart();
         }
 
+        //Parents for selected results
         public IList<TrailResult> SelectedItems
         {
             get

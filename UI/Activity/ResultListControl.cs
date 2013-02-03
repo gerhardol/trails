@@ -56,7 +56,7 @@ namespace TrailsPlugin.UI.Activity {
         public ResultListControl()
         {
             InitializeComponent();
-            m_summary = new TrailResultWrapper();
+            this.m_summary = new TrailResultWrapper();
         }
 #if ST_2_1
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
@@ -64,10 +64,10 @@ namespace TrailsPlugin.UI.Activity {
 #else
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
         {
-            m_view = view;
+            this.m_view = view;
 #endif
-            m_page = page;
-            m_controller = controller;
+            this.m_page = page;
+            this.m_controller = controller;
 
             InitControls();
 #if ST_2_1
@@ -99,7 +99,7 @@ namespace TrailsPlugin.UI.Activity {
             this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.summaryListToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
 
-            ((TrailResultLabelProvider)summaryList.LabelProvider).Controller = m_controller;
+            ((TrailResultLabelProvider)this.summaryList.LabelProvider).Controller = m_controller;
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -124,17 +124,17 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ThemeChanged(ITheme visualTheme)
         {
-            m_visualTheme = visualTheme;
-            summaryList.ThemeChanged(visualTheme);
+            this.m_visualTheme = visualTheme;
+            this.summaryList.ThemeChanged(visualTheme);
         }
 
         private bool _showPage = false;
         public bool ShowPage
         {
-            get { return _showPage; }
+            get { return this._showPage; }
             set
             {
-                _showPage = value;
+                this._showPage = value;
                 if (!value)
                 {
                     //TBD: Hide HS/PP popups if shown
@@ -144,8 +144,8 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshColumns()
         {
-            summaryList.Columns.Clear();
-            int plusMinusSize = summaryList.ShowPlusMinus ? 15 : 0;
+            this.summaryList.Columns.Clear();
+            int plusMinusSize = this.summaryList.ShowPlusMinus ? 15 : 0;
 
             //Permanent fields
             foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
@@ -156,7 +156,7 @@ namespace TrailsPlugin.UI.Activity {
                     columnDef.Width + plusMinusSize,
                     columnDef.Align
                 );
-                summaryList.Columns.Add(column);
+                this.summaryList.Columns.Add(column);
                 plusMinusSize = 0;
             }
             foreach (string id in Data.Settings.ActivityPageColumns)
@@ -176,13 +176,13 @@ namespace TrailsPlugin.UI.Activity {
                             columnDef.Width + plusMinusSize,
                             columnDef.Align
                         );
-                        summaryList.Columns.Add(column);
+                        this.summaryList.Columns.Add(column);
                         plusMinusSize = 0;
                         break;
                     }
                 }
             }
-            summaryList.NumLockedColumns = Data.Settings.ActivityPageNumFixedColumns;
+            this.summaryList.NumLockedColumns = Data.Settings.ActivityPageNumFixedColumns;
         }
 
         public void RefreshControlState()
@@ -199,7 +199,7 @@ namespace TrailsPlugin.UI.Activity {
                 RefreshColumns();
 
                 summaryList_Sort();
-                ((TrailResultLabelProvider)summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
+                ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
             }
             else
             {
@@ -209,14 +209,14 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
                 this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-                summaryList.RowData = null;
+                this.summaryList.RowData = null;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
                 // controller is set below: this.m_controller.SelectedResults = null;
             }
 
             //By setting to null, the last used is selected, or some defaults
-            SelectedResultWrapper = null;
+            this.SelectedResultWrapper = null;
             //this.m_beforeChangeSelectedItems = this.m_lastSelectedItems;
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
@@ -230,14 +230,14 @@ namespace TrailsPlugin.UI.Activity {
                 int minRows = 2;
                 const int maxRows = 8;
                 int listRows = minRows;
-                if (summaryList.RowData != null)
+                if (this.summaryList.RowData != null)
                 {
-                    listRows = ((IList<TrailResultWrapper>)summaryList.RowData).Count;
+                    listRows = ((IList<TrailResultWrapper>)this.summaryList.RowData).Count;
                 }
                 int setRows = Math.Max(minRows, listRows);
                 setRows = Math.Min(maxRows, setRows);
                 int displayRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
-                if (summaryList.HorizontalScroll.Enabled)
+                if (this.summaryList.HorizontalScroll.Enabled)
                 {
                     //About one row hidden
                     displayRows--;
@@ -296,11 +296,11 @@ namespace TrailsPlugin.UI.Activity {
                 //Set value, let callback update m_prevSelectedItems and refresh chart
 #if ST_2_1
                 this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-                summaryList.Selected  = (List<TrailResultWrapper>)setValue;
+                this.summaryList.Selected  = (List<TrailResultWrapper>)setValue;
                 this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
                 this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-                summaryList.SelectedItems = (List<TrailResultWrapper>)setValue;
+                this.summaryList.SelectedItems = (List<TrailResultWrapper>)setValue;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
                 this.m_controller.SelectedResults = TrailResultWrapper.Results(setValue);
@@ -321,9 +321,9 @@ namespace TrailsPlugin.UI.Activity {
             get
             {
 #if ST_2_1
-                System.Collections.IList SelectedItemsRaw = summaryList.Selected;
+                System.Collections.IList SelectedItemsRaw = this.summaryList.Selected;
 #else
-                System.Collections.IList SelectedItemsRaw = summaryList.SelectedItems;
+                System.Collections.IList SelectedItemsRaw = this.summaryList.SelectedItems;
 #endif
                 return getTrailResultWrapperSelection(SelectedItemsRaw);
             }
@@ -345,7 +345,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (atr != null && atr.Count > 0)
             {
-                summaryList.EnsureVisible(atr[0]);
+                this.summaryList.EnsureVisible(atr[0]);
             }
         }
 
@@ -408,7 +408,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_controller.CurrentActivityTrailIsSelected)
             {
-                summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
+                this.summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
                 IList<TrailResultWrapper> atr = m_controller.CurrentResultTreeList;
@@ -428,11 +428,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
 #if ST_2_1
                 this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-                summaryList.RowData = atr;
+                this.summaryList.RowData = atr;
                 this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
                 this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-                summaryList.RowData = atr;
+                this.summaryList.RowData = atr;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
                 this.m_controller.SelectedResults = null;
@@ -534,19 +534,9 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
-                if (results != SelectedResultWrapper)
+                if (results != this.SelectedResultWrapper)
                 {
-//#if ST_2_1
-//                    this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-//#else
-//                    this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
-//#endif
                     this.SelectedResultWrapper = results;
-//#if ST_2_1
-//                    this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-//#else
-//                    this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-//#endif
                     isChange = true;
                 }
 
@@ -635,7 +625,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void copyTable()
         {
-            summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+            this.summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
         void selectSimilarSplitsChanged()
@@ -704,7 +694,7 @@ namespace TrailsPlugin.UI.Activity {
             if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled && m_controller.ReferenceActivity != null)
             {
                 IList<IActivity> activities = new List<IActivity>();
-                foreach (TrailResultWrapper t in SelectedResultWrapper)
+                foreach (TrailResultWrapper t in this.SelectedResultWrapper)
                 {
                     if (t.Result.Activity != null && !activities.Contains(t.Result.Activity))
                     {
@@ -764,7 +754,7 @@ namespace TrailsPlugin.UI.Activity {
                     object row;
                     TreeList.RowHitState hit;
                     //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
-                    row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
+                    row = this.summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
                     if (row != null && hit == TreeList.RowHitState.Row)
                     {
                         TrailResult tr = getTrailResultRow(row);
@@ -802,7 +792,7 @@ namespace TrailsPlugin.UI.Activity {
                         else if (tr != null)
                         {
                             bool isMatch = false;
-                            foreach (TrailResultWrapper t in SelectedResultWrapper)
+                            foreach (TrailResultWrapper t in this.SelectedResultWrapper)
                             {
                                 if (t.Result == tr)
                                 {
@@ -866,7 +856,7 @@ namespace TrailsPlugin.UI.Activity {
                 object row;
                 TreeList.RowHitState hit;
                 //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
-                row = summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
+                row = this.summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
                 if (row != null && hit == TreeList.RowHitState.Row)
                 {
                     Guid view = GUIDs.DailyActivityView;
@@ -911,7 +901,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.ColumnEventArgs e)
         {
-            summaryList_ColumnHeaderMouseClick(sender, e.Column);
+            this.summaryList_ColumnHeaderMouseClick(sender, e.Column);
         }
 
         private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
@@ -922,7 +912,7 @@ namespace TrailsPlugin.UI.Activity {
                        ListSortDirection.Descending : ListSortDirection.Ascending;
             }
             TrailsPlugin.Data.Settings.SummaryViewSortColumn = e.Id;
-            summaryList_Sort();
+            this.summaryList_Sort();
         }
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
@@ -939,18 +929,18 @@ namespace TrailsPlugin.UI.Activity {
                 //Always assume change
                 isChange = true;
             }
-            if (m_controller.CurrentActivityTrailIsSelected)
+            if (this.m_controller.CurrentActivityTrailIsSelected)
             {
                 this.SetSummary(this.SelectedResultWrapper);
                 TrailResultWrapper t = this.GetSummary();
                 if (t != null)
                 {
-                    summaryList.RefreshElements(new List<TrailResultWrapper>{t});
+                    this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
                 }
             }
             if (isChange)
             {
-                m_page.RefreshChart();
+                this.m_page.RefreshChart();
             }
                 //Trails track display update
             if (Data.Settings.ShowOnlyMarkedOnRoute)
@@ -961,7 +951,7 @@ namespace TrailsPlugin.UI.Activity {
             //Save items selected before the change (needed by ClickRow if several are marked)
             //m_beforeChangeSelectedItems = m_lastSelectedItems;
             //Save previous items for selecting at updates of results
-            m_lastSelectedItems = summaryList.SelectedItems;
+            this.m_lastSelectedItems = this.summaryList.SelectedItems;
         }
 
         bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)
@@ -1361,13 +1351,13 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailResult.IncreaseRunningGradeCalcMethod();
                 }
-                summaryListToolTip.Show(Data.Settings.RunningGradeAdjustMethod.ToString(),
-                              summaryList,
-                              new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                this.summaryListToolTip.Show(Data.Settings.RunningGradeAdjustMethod.ToString(),
+                              this.summaryList,
+                              new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
                                   Cursor.Current.Size.Width / 2,
-                                        summaryListCursorLocationAtMouseMove.Y),
-                              summaryListToolTip.AutoPopDelay);
-                m_page.RefreshData(true);
+                                        this.summaryListCursorLocationAtMouseMove.Y),
+                              this.summaryListToolTip.AutoPopDelay);
+                this.m_page.RefreshData(true);
             }
             else if (e.KeyCode == Keys.R)
             {
@@ -1469,40 +1459,40 @@ namespace TrailsPlugin.UI.Activity {
         {
             m_mouseClickArgs = e;
             TreeList.RowHitState rowHitState;
-            TrailResultWrapper entry = (TrailResultWrapper)summaryList.RowHitTest(e.Location, out rowHitState);
-            if (entry == summaryListLastEntryAtMouseMove)
+            TrailResultWrapper entry = (TrailResultWrapper)this.summaryList.RowHitTest(e.Location, out rowHitState);
+            if (entry == this.summaryListLastEntryAtMouseMove)
                 return;
             else
-                summaryListToolTip.Hide(summaryList);
-            summaryListLastEntryAtMouseMove = entry;
-            summaryListCursorLocationAtMouseMove = e.Location;
+                this.summaryListToolTip.Hide(this.summaryList);
+            this.summaryListLastEntryAtMouseMove = entry;
+            this.summaryListCursorLocationAtMouseMove = e.Location;
 
             if (entry != null)
-                summaryListToolTipTimer.Start();
+                this.summaryListToolTipTimer.Start();
             else
-                summaryListToolTipTimer.Stop();
+                this.summaryListToolTipTimer.Stop();
         }
         private void summaryList_MouseLeave(object sender, EventArgs e)
         {
-            summaryListToolTipTimer.Stop();
-            summaryListToolTip.Hide(summaryList);
+            this.summaryListToolTipTimer.Stop();
+            this.summaryListToolTip.Hide(this.summaryList);
         }
 
         private void ToolTipTimer_Tick(object sender, EventArgs e)
         {
-            summaryListToolTipTimer.Stop();
+            this.summaryListToolTipTimer.Stop();
 
-            if (summaryListLastEntryAtMouseMove != null &&
-                summaryListCursorLocationAtMouseMove != null &&
-                !summaryListTooltipDisabled)
+            if (this.summaryListLastEntryAtMouseMove != null &&
+                this.summaryListCursorLocationAtMouseMove != null &&
+                !this.summaryListTooltipDisabled)
             {
-                string tt = summaryListLastEntryAtMouseMove.Result.ToolTip;
-                summaryListToolTip.Show(tt,
-                              summaryList,
-                              new System.Drawing.Point(summaryListCursorLocationAtMouseMove.X +
+                string tt = this.summaryListLastEntryAtMouseMove.Result.ToolTip;
+                this.summaryListToolTip.Show(tt,
+                              this.summaryList,
+                              new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
                                   Cursor.Current.Size.Width / 2,
-                                        summaryListCursorLocationAtMouseMove.Y),
-                              summaryListToolTip.AutoPopDelay);
+                                        this.summaryListCursorLocationAtMouseMove.Y),
+                              this.summaryListToolTip.AutoPopDelay);
             }
         }
 
@@ -1513,7 +1503,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 object row = null;
                 TreeList.RowHitState dummy;
-                row = summaryList.RowHitTest(m_mouseClickArgs.Location, out dummy);
+                row = this.summaryList.RowHitTest(m_mouseClickArgs.Location, out dummy);
                 if (row != null)
                 {
                     tr = getTrailResultRow(row, ensureParent);

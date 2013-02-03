@@ -88,7 +88,9 @@ namespace TrailsPlugin.Utils
         }
         public ChartColors(Color LineNormal)
         {
+            //Manually set color
             this.LineNormal = LineNormal;
+            //Auto colors look strange, use gray instead
             this.FillNormal = Color.FromArgb(0x78, 200, 200, 205);
             this.FillSelected = Color.FromArgb(0xc8, 197, 197, 197);
         }

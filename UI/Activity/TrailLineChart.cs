@@ -182,26 +182,26 @@ namespace TrailsPlugin.UI.Activity {
         private void ZoomOutButton_Click(object sender, EventArgs e)
         {
             MainChart.ZoomOut();
-            MainChart.Focus();
+            //MainChart.Focus();
         }
 
         private void ZoomInButton_Click(object sender, EventArgs e)
         {
             MainChart.ZoomIn();
-            MainChart.Focus();
+            //MainChart.Focus();
         }
 
         private void ZoomToContentButton_Click(object sender, EventArgs e)
         {
             MainChart.AutozoomToData(true);
             MainChart.Refresh();
-            MainChart.Focus();
+            //MainChart.Focus();
         }
 
  		public void ZoomToData()
         {
             MainChart.AutozoomToData(true);
-            MainChart.Refresh();
+            //MainChart.Refresh();
         }
 
         //void copyChartMenuItem_Click(object sender, EventArgs e)
@@ -789,6 +789,8 @@ namespace TrailsPlugin.UI.Activity {
                             //Update display only data
                             //It could be possible to add basis for dataseries in .Data, to only recalc the points. Not so much gain
                             dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
+
+                            //Set colors
                             {
                                 ChartColors chartColor;
                                 //Color for the graph - keep standard color if only one result displayed
@@ -803,18 +805,18 @@ namespace TrailsPlugin.UI.Activity {
                                     chartColor = tr.ResultColor;
                                 }
 
+                                //Decrease alpha for many activities for fill (but not selected)
+                                if (m_trailResults.Count > 1)
+                                {
+                                    int alpha = chartColor.FillNormal.A - m_trailResults.Count * 3;
+                                    alpha = Math.Min(alpha, 0x77);
+                                    alpha = Math.Max(alpha, 0x10);
+                                    chartColor.FillNormal = Color.FromArgb(alpha, chartColor.FillNormal.R, chartColor.FillNormal.G, chartColor.FillNormal.B);
+                                }
+
                                 dataLine.LineColor = chartColor.LineNormal;
                                 dataLine.FillColor = chartColor.FillNormal;
                                 dataLine.SelectedColor = chartColor.FillSelected; //The selected fill color only
-                            }
-
-                            //Decrease alpha for many activities
-                            if (m_trailResults.Count > 1)
-                            {
-                                int alpha = dataLine.FillColor.A - m_trailResults.Count * 3;
-                                alpha = Math.Min(alpha, 0x77); //Color.FromArgb should take uint...
-                                alpha = Math.Max(alpha, 0x10);
-                                dataLine.FillColor = Color.FromArgb(dataLine.FillColor.ToArgb() - (dataLine.FillColor.A - alpha) * 0x1000000);
                             }
 
                             //Set chart type to Fill similar to ST for first result
@@ -1575,7 +1577,7 @@ namespace TrailsPlugin.UI.Activity {
                 float time = 0;
                 foreach (float[] r in regions)
                 {
-                    TrackUtil.GetDistanceTimeSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, r, ref dist, ref time);
+                    TrackUtil.GetDistanceTimeSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, r, (float)this.MainChart.XAxis.MinOriginValue, (float)this.MainChart.XAxis.MaxOriginFarValue, ref dist, ref time);
                 }
                 if (time > 0)
                 {

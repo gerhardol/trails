@@ -280,7 +280,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     m_multiChart.BeginUpdate();
                     m_multiChart.XAxisReferential = Data.Settings.XAxisValue;
-                    IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                    IList<Data.TrailResult> list = this.m_controller.SelectedResults;
                     m_multiChart.TrailResults = list;
                     foreach (LineChartTypes t in Data.Settings.MultiChartType)
                     {
@@ -344,7 +344,7 @@ namespace TrailsPlugin.UI.Activity {
                         if (visible && isData)
                         {
                             updateChart.XAxisReferential = Data.Settings.XAxisValue;
-                            IList<Data.TrailResult> list = this.m_page.SelectedItems;
+                            IList<Data.TrailResult> list = this.m_controller.SelectedResults;
                             updateChart.TrailResults = list;
                             if (!m_multipleGraphs && updateChart.ChartTypes.Count == 1)
                             {
@@ -370,7 +370,7 @@ namespace TrailsPlugin.UI.Activity {
                                                 replaceChart.BeginUpdate();
                                                 replaceChart.ShowPage = false;
                                                 replaceChart.XAxisReferential = Data.Settings.XAxisValue;
-                                                IList<Data.TrailResult> list2 = this.m_page.SelectedItems;
+                                                IList<Data.TrailResult> list2 = this.m_controller.SelectedResults;
                                                 replaceChart.TrailResults = list2;
                                                 if (!m_multipleGraphs)
                                                 {

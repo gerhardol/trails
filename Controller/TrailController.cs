@@ -556,7 +556,7 @@ namespace TrailsPlugin.Controller
                 {
                     TrailResult firstResult = null;
 
-                    foreach (TrailResult tr in TrailResultWrapper.ParentResults(this.CurrentResultTreeList))
+                    foreach (TrailResult tr in TrailResultWrapper.Results(this.CurrentResultTreeList))
                     {
                         if (firstResult == null)
                         {
@@ -579,6 +579,21 @@ namespace TrailsPlugin.Controller
             checkReferenceActivity(progressBar);
 
             return m_referenceTrailResult;
+        }
+
+        /***********************************************************/
+
+        private IList<TrailResult> m_selectedResults = null;
+        public IList<TrailResult> SelectedResults
+        {
+            get
+            {
+                return this.m_selectedResults;
+            }
+            set
+            {
+                this.m_selectedResults = value;
+            }
         }
 
         /***********************************************************/

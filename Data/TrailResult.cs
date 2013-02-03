@@ -58,6 +58,7 @@ namespace TrailsPlugin.Data
             }
         }
 
+        //HighScore
         public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
             this(activityTrail, par, order, indexes, distDiff)
         {
@@ -1826,7 +1827,7 @@ namespace TrailsPlugin.Data
             {
                 Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
             }
-            foreach (TrailResult t in TrailResultWrapper.AllResults(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
+            foreach (TrailResult t in TrailResultWrapper.IncludeSubResults(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
             {
                 t.m_gradeRunAdjustedTime = null;
             }
@@ -2597,20 +2598,46 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (!m_colorOverridden && Controller.TrailController.Instance.Activities.Count > 1 &&
-                    (this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                ChartColors result = null;
+
+                if (!m_colorOverridden &&
+                    (this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent &&
+                    Controller.TrailController.Instance.SelectedResults != null &&
+                    Controller.TrailController.Instance.SelectedResults.Count > 1)
                 {
-                    return (this as ChildTrailResult).ParentResult.ResultColor;
+                    bool useParentColor = false;
+                    //Find if any other trailresult with this parent exists
+                    foreach (TrailResult tr in Controller.TrailController.Instance.SelectedResults)
+                    {
+                        TrailResult parent = tr;
+                        if (parent is ChildTrailResult)
+                        {
+                            parent = (parent as ChildTrailResult).ParentResult;
+                        }
+                        if ((this as ChildTrailResult).ParentResult != parent)
+                        {
+                            useParentColor = true;
+                            break;
+                        }
+                    }
+
+                    if (useParentColor)
+                    {
+                        result = (this as ChildTrailResult).ParentResult.ResultColor;
+                    }
                 }
-                else
+
+                if (result == null)
                 {
                     if (this.m_trailColor == null)
                     {
                         //Wait to create the color, to get consistent colors before resorting
                         this.m_trailColor = getColor(nextTrailColor++);
                     }
-                    return this.m_trailColor;
+                    result = this.m_trailColor;
                 }
+
+                return result;
             }
             set
             {

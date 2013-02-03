@@ -145,6 +145,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Reselecting activities updates calculations
                 System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(0);
                 m_controller.SetActivities(value, false, progressBar);
+
                 this.StopProgressBar();
 #if !ST_2_1
                 m_layerPoints.ClearOverlays();
@@ -252,15 +253,13 @@ namespace TrailsPlugin.UI.Activity {
             MultiCharts.RefreshChart();
         }
 
-        //Parents for selected results
-        public IList<TrailResult> SelectedItems
-        {
-            get
-            {
-                return this.ResultList.SelectedItems;
-            }
-            //set { this.ResultList.SelectedItems = value; }
-        }
+        //public IList<TrailResult> SelectedItems
+        //{
+        //    get
+        //    {
+        //        return this.ResultList.SelectedItems;
+        //    }
+        //}
 
         public System.Windows.Forms.ProgressBar StartProgressBar(int val)
         {
@@ -294,12 +293,12 @@ namespace TrailsPlugin.UI.Activity {
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                 IList<TrailResult> results;
-                IList<TrailResult> selected = this.ResultList.SelectedItems;
+                IList<TrailResult> selected = this.m_controller.SelectedResults;
                 if (!Data.Settings.ShowOnlyMarkedOnRoute ||
                     (selected == null ||
                     selected.Count == 1 && selected[0] is SummaryTrailResult))
                 {
-                    results = TrailResultWrapper.ParentResults(m_controller.CurrentResultTreeList);
+                    results = TrailResultWrapper.Results(m_controller.CurrentResultTreeList);
                 }
                 else
                 {
@@ -725,7 +724,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null)
                 {
                     //Note: All results, not just the displayed
-                    IList<TrailResult> t = TrailResultWrapper.ParentResults(Controller.TrailController.Instance.CurrentResultTreeList);
+                    IList<TrailResult> t = TrailResultWrapper.Results(Controller.TrailController.Instance.CurrentResultTreeList);
                     foreach (IItemTrackSelectionInfo sel in selected.SelectedItems)
                     {
                         foreach (TrailResult tr in t)

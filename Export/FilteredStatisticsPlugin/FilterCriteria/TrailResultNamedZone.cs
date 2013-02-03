@@ -123,7 +123,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 {
                     //Do not keep selection, sort find best
                     TrailsPlugin.Controller.TrailController.Instance.SetActivities(new List<IActivity> { m_Activity }, false);
-                    foreach (TrailsPlugin.Data.TrailResult tr in TrailsPlugin.Data.TrailResultWrapper.ParentResults(m_Trail.ResultTreeList))
+                    foreach (TrailsPlugin.Data.TrailResult tr in TrailsPlugin.Data.TrailResultWrapper.Results(m_Trail.ResultTreeList))
                     {
                         foreach(IValueRange<DateTime> t in tr.getSelInfo(false))
                         {

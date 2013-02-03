@@ -1181,9 +1181,9 @@ namespace TrailsPlugin.Data
                 }
                 foreach (TrailResultWrapper tr in selected)
                 {
-                    if (TrailResultWrapper.ParentResults(this.ResultTreeList).Contains(tr.Result))
+                    if (TrailResultWrapper.Results(this.ResultTreeList).Contains(tr.Result))
                     {
-                        TrailResultWrapper.ParentResults(this.ResultTreeList).Remove(tr.Result);
+                        TrailResultWrapper.Results(this.ResultTreeList).Remove(tr.Result);
                     }
                     if (ResultTreeList.Contains(tr))
                     {
@@ -1232,11 +1232,11 @@ namespace TrailsPlugin.Data
                 if (sortValue == null)
                 {
                     sortValue = 0;
-                    foreach (Data.TrailResult tr in TrailResultWrapper.ParentResults(this.ResultTreeList))
+                    foreach (Data.TrailResult tr in TrailResultWrapper.Results(this.ResultTreeList))
                     {
                         sortValue += tr.DistDiff;
                     }
-                    sortValue = sortValue / (float)Math.Pow(TrailResultWrapper.ParentResults(this.ResultTreeList).Count, 1.5);
+                    sortValue = sortValue / (float)Math.Pow(TrailResultWrapper.Results(this.ResultTreeList).Count, 1.5);
 
                 }
                 return (float)sortValue;
@@ -1429,7 +1429,7 @@ namespace TrailsPlugin.Data
             if (t.Status == TrailOrderStatus.Match ||
                 t.Status == TrailOrderStatus.MatchPartial)
             {
-                name += " (" + TrailResultWrapper.ParentResults(t.ResultTreeList).Count + ")";
+                name += " (" + TrailResultWrapper.Results(t.ResultTreeList).Count + ")";
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {

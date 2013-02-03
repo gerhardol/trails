@@ -158,7 +158,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     //Generated results. Only HighScore is interesting
                     if (trail.Trail.TrailType  == TrailsPlugin.Data.Trail.CalcType.HighScore && trail.Status <= TrailsPlugin.Data.TrailOrderStatus.MatchNoCalc)
                     {
-                        foreach (TrailsPlugin.Data.TrailResult tr in TrailsPlugin.Data.TrailResultWrapper.ParentResults(trail.ResultTreeList))
+                        foreach (TrailsPlugin.Data.TrailResult tr in TrailsPlugin.Data.TrailResultWrapper.Results(trail.ResultTreeList))
                         {
                             namedZones.Add(new TrailResultNamedZone(trail, tr));
                         }

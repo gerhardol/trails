@@ -198,12 +198,12 @@ namespace TrailsPlugin.Data
         /// <summary>
         /// Return only Parent results (not the Splits/SubResults)
         /// </summary>
-        public static IList<TrailResult> ParentResults(IList<TrailResultWrapper> tn)
+        public static IList<TrailResult> Results(IList<TrailResultWrapper> tn)
         {
             return TrailResultWrapper.GetTrailResults(tn, false);
         }
 
-        public static IList<TrailResult> AllResults(IList<TrailResultWrapper> tn)
+        public static IList<TrailResult> IncludeSubResults(IList<TrailResultWrapper> tn)
         {
             return TrailResultWrapper.GetTrailResults(tn, true);
         }

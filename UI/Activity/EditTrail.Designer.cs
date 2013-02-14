@@ -49,6 +49,7 @@
             this.btnZDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.chkCompleteActivity = new System.Windows.Forms.CheckBox();
             this.Panel.SuspendLayout();
             this.EList.SuspendLayout();
             this.SuspendLayout();
@@ -77,19 +78,6 @@
             this.toolTip.SetToolTip(this.chkTwoWay, ">Two-way match");
             this.chkTwoWay.UseVisualStyleBackColor = true;
             // 
-            // chkAutoTryAll
-            // 
-            this.chkAutoTryAll.AutoSize = true;
-            this.chkAutoTryAll.Checked = true;
-            this.chkAutoTryAll.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutoTryAll.Location = new System.Drawing.Point(231, 302);
-            this.chkAutoTryAll.Name = "chkAutoTryAll";
-            this.chkAutoTryAll.Size = new System.Drawing.Size(15, 14);
-            this.chkAutoTryAll.TabIndex = 27;
-            this.toolTip.SetToolTip(this.chkAutoTryAll, ">Auto TryAll");
-            this.chkAutoTryAll.UseVisualStyleBackColor = true;
-            this.chkAutoTryAll.Visible = false;
-            // 
             // chkName
             // 
             this.chkName.AutoSize = true;
@@ -98,9 +86,35 @@
             this.chkName.Location = new System.Drawing.Point(210, 302);
             this.chkName.Name = "chkName";
             this.chkName.Size = new System.Drawing.Size(15, 14);
-            this.chkName.TabIndex = 28;
+            this.chkName.TabIndex = 27;
             this.toolTip.SetToolTip(this.chkName, ">Name match");
             this.chkName.UseVisualStyleBackColor = true;
+            // 
+            // chkCompleteActivity
+            // 
+            this.chkCompleteActivity.AutoSize = true;
+            this.chkCompleteActivity.Checked = true;
+            this.chkCompleteActivity.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkCompleteActivity.Location = new System.Drawing.Point(231, 302);
+            this.chkCompleteActivity.Name = "chkCompleteActivity";
+            this.chkCompleteActivity.Size = new System.Drawing.Size(15, 14);
+            this.chkCompleteActivity.TabIndex = 28;
+            this.toolTip.SetToolTip(this.chkCompleteActivity, ">Complete Activity");
+            this.chkCompleteActivity.UseVisualStyleBackColor = true;
+            this.chkCompleteActivity.Visible = false;
+            // 
+            // chkAutoTryAll
+            // 
+            this.chkAutoTryAll.AutoSize = true;
+            this.chkAutoTryAll.Checked = true;
+            this.chkAutoTryAll.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkAutoTryAll.Location = new System.Drawing.Point(252, 302);
+            this.chkAutoTryAll.Name = "chkAutoTryAll";
+            this.chkAutoTryAll.Size = new System.Drawing.Size(15, 14);
+            this.chkAutoTryAll.TabIndex = 29;
+            this.toolTip.SetToolTip(this.chkAutoTryAll, ">Auto TryAll");
+            this.chkAutoTryAll.UseVisualStyleBackColor = true;
+            this.chkAutoTryAll.Visible = false;
             // 
             // btnCopy
             // 
@@ -566,6 +580,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(421, 328);
+            this.Controls.Add(this.chkCompleteActivity);
             this.Controls.Add(this.btnReverse);
             this.Controls.Add(this.chkName);
             this.Controls.Add(this.chkAutoTryAll);
@@ -619,6 +634,7 @@
         private System.Windows.Forms.CheckBox chkAutoTryAll;
         private System.Windows.Forms.CheckBox chkName;
         private ZoneFiveSoftware.Common.Visuals.Button btnReverse;
+        private System.Windows.Forms.CheckBox chkCompleteActivity;
 
 	}
 }

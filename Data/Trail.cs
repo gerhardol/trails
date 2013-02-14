@@ -44,6 +44,7 @@ namespace TrailsPlugin.Data
         private bool m_isReference = false;
         private bool m_isTemporary = false;
         private bool m_isNameMatch = false;
+        private bool m_isCompleteActivity = true;
         private bool m_isAutoTryAll = true;
 
         private CalcType m_CalcType = Trail.CalcType.TrailPoints;
@@ -272,6 +273,18 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public bool IsCompleteActivity
+        {
+            get
+            {
+                return m_isCompleteActivity;
+            }
+            set
+            {
+                m_isCompleteActivity = value;
+            }
+        }
+
         public bool IsAutoTryAll
         {
             get
@@ -490,6 +503,10 @@ namespace TrailsPlugin.Data
             {
                 trail.IsNameMatch = XmlConvert.ToBoolean(node.Attributes[xmlTags.sNameMatch].Value);
             }
+            if (node.Attributes[xmlTags.sCompleteActivity] != null)
+            {
+                trail.IsCompleteActivity = XmlConvert.ToBoolean(node.Attributes[xmlTags.sCompleteActivity].Value);
+            }
             if (node.Attributes[xmlTags.sAutoTryAll] != null)
             {
                 trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
@@ -545,6 +562,12 @@ namespace TrailsPlugin.Data
                 a.Value = XmlConvert.ToString(this.IsNameMatch);
                 trailNode.Attributes.Append(a);
             }
+            if (this.IsCompleteActivity)
+            {
+                a = doc.CreateAttribute(xmlTags.sCompleteActivity);
+                a.Value = XmlConvert.ToString(this.IsCompleteActivity);
+                trailNode.Attributes.Append(a);
+            }
             if (!this.IsAutoTryAll)
             {
                 a = doc.CreateAttribute(xmlTags.sAutoTryAll);
@@ -568,6 +591,7 @@ namespace TrailsPlugin.Data
             public const string sMaxRequiredMisses = "maxRequiredMisses";
             public const string sBiDirectional = "bidirectional";
             public const string sNameMatch = "namematch";
+            public const string sCompleteActivity = "completeactivity";
             public const string sAutoTryAll = "autotryall";
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }

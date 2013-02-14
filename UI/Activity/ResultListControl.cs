@@ -1321,6 +1321,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = true;
                 }
+                this.summaryList.Refresh();
                 //Only in table, no need to refresh
             }
             else if (e.KeyCode == Keys.P)

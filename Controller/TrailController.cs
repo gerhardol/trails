@@ -359,7 +359,7 @@ namespace TrailsPlugin.Controller
                 if (this.m_currentActivityTrails.Count == 0)
                 {
                     if (this.m_referenceActivity != null &&
-                       !string.IsNullOrEmpty(m_referenceActivity.Name))
+                       !string.IsNullOrEmpty(this.m_referenceActivity.Name))
                     {
                         //Prev does not match, try matching names
                         foreach (ActivityTrail at in this.OrderedTrails())

@@ -31,6 +31,7 @@ namespace TrailsPlugin.Data
 {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
+        //Normal result
         public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes)
             : this(activityTrail, null, order, indexes, indexes.DistDiff, indexes.Reverse)
         { }
@@ -51,7 +52,7 @@ namespace TrailsPlugin.Data
             : base(null, null)
         {
             TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-            base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue);
+            base.Element = new TrailResult(activityTrail, order, indexes, 0);
             //Children are not created by default
             //getSplits();
         }
@@ -77,12 +78,12 @@ namespace TrailsPlugin.Data
             {
                 if (order == 1 || parent == null)
                 {
-                    base.Element = new TrailResult(activityTrail, order, indexes, float.MaxValue, tt);
+                    base.Element = new TrailResult(activityTrail, order, indexes, 0, tt);
                 }
                 else
                 {
                     base.Parent = parent;
-                    base.Element = new ChildTrailResult(activityTrail, parent.Result, order, indexes, float.MaxValue, tt);
+                    base.Element = new ChildTrailResult(activityTrail, parent.Result, order, indexes, 0, tt);
                     parent.Children.Add(this);
                     parent.m_children.Add(this);
                 }
@@ -102,6 +103,7 @@ namespace TrailsPlugin.Data
             ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows, false));
         }
 
+        //SubResults
         private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
             : base(par, ele) { }
 

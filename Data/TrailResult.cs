@@ -147,7 +147,7 @@ namespace TrailsPlugin.Data
             this.m_reverse = reverse;
         }
 
-        //Results from Splits
+        //Results from Splits (and internal)
         public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
         {
             createTrailResult(activityTrail, order, indexes, distDiff);
@@ -172,7 +172,7 @@ namespace TrailsPlugin.Data
         public TrailResult()
         {
             //a summary result is not related to an activity trail
-            createTrailResult(null, 0, new TrailResultInfo(null, false), 0);
+            createTrailResult(null, 0, new TrailResultInfo(null, false), float.NaN);
             m_toolTip = "";
             m_trailColor = ColorUtil.SummaryColor;
         }
@@ -218,7 +218,7 @@ namespace TrailsPlugin.Data
                             if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
                                 TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
-                                ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, m_totalDistDiff);
+                                ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, t.DistDiff);
                                 splits.Add(tr);
                             }
                         }

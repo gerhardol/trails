@@ -157,6 +157,10 @@ namespace TrailsPlugin.Data
         }
 
         private DateTime m_time;
+        /// <summary>
+        /// The time the point was hit, DateTime.MinValue for "invalid" points
+        /// TBD: Change "invalid" handling to something else than MinValue, to handle routes without time somehow
+        /// </summary>
         public DateTime Time
         {
             get

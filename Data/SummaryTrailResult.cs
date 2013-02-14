@@ -44,16 +44,52 @@ namespace TrailsPlugin.Data
             this.m_order = list.Count;
         }
 
+        private bool average = true;
+        private delegate double FieldGetter(TrailResult tr);
+
+        private double GetSummary(FieldGetter field, bool skipZero)
+        {
+            int skip = 0;
+            double a = 0;
+            double tot = 0;
+            int i = 0;
+            for (i = 0; i < this.results.Count; i++)
+            {
+                double x = field(this.results[i]);
+                if (skipZero && x == 0)
+                {
+                    skip++;
+                }
+                else
+                {
+                    if (average)
+                    {
+                        tot += x;
+                    }
+                    else
+                    {
+                        //standard deviation
+                        double ap = a;
+                        a += (x - ap) / (i + 1);
+                        tot += (x - a) * (x - ap);
+                    }
+                }
+            }
+
+            tot = tot / NoOfResults(skip);
+            if (!average)
+            {
+                tot = Math.Sqrt(tot);
+            }
+
+            return tot;
+        }
+
         public override double StartDist
         {
             get
             {
-                double tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.StartDist;
-                }
-                return tot / NoOfResults(0);
+                return this.GetSummary(delegate(TrailResult tr) { return tr.StartDist; }, false);
             }
         }
 
@@ -61,12 +97,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                TimeSpan tot = TimeSpan.Zero;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.Duration;
-                }
-                return TimeSpan.FromSeconds(tot.TotalSeconds / NoOfResults(0));
+                return TimeSpan.FromSeconds(this.GetSummary(delegate(TrailResult tr) { return tr.Duration.TotalSeconds; }, false));
             }
         }
 
@@ -74,12 +105,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                TimeSpan tot = TimeSpan.Zero;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.GradeRunAdjustedTime;
-                }
-                return TimeSpan.FromSeconds(tot.TotalSeconds / NoOfResults(0));
+                return TimeSpan.FromSeconds(this.GetSummary(delegate(TrailResult tr) { return tr.GradeRunAdjustedTime.TotalSeconds; }, false));
             }
         }
         
@@ -87,12 +113,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                double tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.Distance;
-                }
-                return tot / NoOfResults(0);
+                return this.GetSummary(delegate(TrailResult tr) { return tr.Distance; }, false);
             }
         }
 
@@ -100,17 +121,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                int skip = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    if (t.AvgCadence == 0)
-                    {
-                        skip++;
-                    }
-                    tot += t.AvgCadence;
-                }
-                return tot / NoOfResults(skip);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.AvgCadence; }, true);
             }
         }
 
@@ -118,17 +129,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                int skip=0;
-                foreach (TrailResult t in this.results)
-                {
-                    if (t.AvgHR == 0)
-                    {
-                        skip++;
-                    }
-                    tot += t.AvgHR;
-                }
-                return tot / NoOfResults(skip);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.AvgHR; }, true);
             }
         }
 
@@ -136,17 +137,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                int skip = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    if (t.MaxHR == 0)
-                    {
-                        skip++;
-                    }
-                    tot += t.MaxHR;
-                }
-                return tot / NoOfResults(skip);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.MaxHR; }, true);
             }
         }
 
@@ -154,12 +145,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                double tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.Ascent;
-                }
-                return tot / NoOfResults(0);
+                return this.GetSummary(delegate(TrailResult tr) { return tr.Ascent; }, false);
             }
         }
 
@@ -167,12 +153,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                double tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.Descent;
-                }
-                return tot / NoOfResults(0);
+                return this.GetSummary(delegate(TrailResult tr) { return tr.Descent; }, false);
             }
         }
 
@@ -180,12 +161,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                double tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.ElevChg;
-                }
-                return tot / NoOfResults(0);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.ElevChg; }, false);
             }
         }
 
@@ -193,17 +169,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                int skip = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    if (t.AvgPower == 0)
-                    {
-                        skip++;
-                    }
-                    tot += t.AvgPower;
-                }
-                return tot / NoOfResults(skip);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.AvgPower; }, true);
             }
         }
 
@@ -211,12 +177,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.AscAvgGrade;
-                }
-                return tot / NoOfResults(0);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.AscAvgGrade; }, false);
             }
         }
 
@@ -224,12 +185,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.DescAvgGrade;
-                }
-                return tot / NoOfResults(0);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.DescAvgGrade; }, false);
             }
         }
 
@@ -237,12 +193,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                double tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.FastestPace;
-                }
-                return tot / NoOfResults(0);
+                return this.GetSummary(delegate(TrailResult tr) { return tr.FastestPace; }, false);
             }
         }
 
@@ -250,14 +201,11 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                float tot = 0;
-                foreach (TrailResult t in this.results)
-                {
-                    tot += t.FastestSpeed;
-                }
-                return tot / NoOfResults(0);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.FastestSpeed; }, false);
             }
         }
+
+        /************************************/
 
         private int NoOfResults(int skip)
         {
@@ -285,6 +233,7 @@ namespace TrailsPlugin.Data
                 return activities;
             }
         }
+
         public IList<TrailResult> Results
         {
             get

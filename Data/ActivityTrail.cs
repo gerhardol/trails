@@ -819,7 +819,7 @@ namespace TrailsPlugin.Data
                             //if setting matchIndex to prev point, following matches can match but give loop issues
                             matchPoint = new TrailResultPointMeta(trailgps[trailGpsIndex], matchTime,
                                 routeIndex, -1, routeIndex, (float)d);
-                            prevMatchIndex = routeIndex;
+                            prevMatchIndex = routeIndex-1;
                         }
                     }
                 }

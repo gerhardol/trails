@@ -1203,7 +1203,7 @@ namespace TrailsPlugin.Data
                     sortValue = 0;
                     foreach (Data.TrailResult tr in TrailResultWrapper.Results(this.ResultTreeList))
                     {
-                        sortValue += tr.DistDiff;
+                        sortValue += tr.SortQuality;
                     }
                     sortValue = sortValue / (float)Math.Pow(TrailResultWrapper.Results(this.ResultTreeList).Count, 1.5);
 

@@ -292,10 +292,16 @@ namespace TrailsPlugin.Data
             get { return m_activity; }
         }
         //Distance error used to sort results
-        public float DistDiff
+        public float SortQuality
         {
             get { return (float)(m_totalDistDiff / Math.Pow(m_subResultInfo.Count, 1.5)); }
         }
+
+        public float DistDiff
+        {
+            get { return m_totalDistDiff; }
+        }
+
         public int Order
         {
             get
@@ -307,6 +313,7 @@ namespace TrailsPlugin.Data
                 m_order = value;
             }
         }
+
         public bool Reverse
         {
             get
@@ -314,7 +321,9 @@ namespace TrailsPlugin.Data
                 return m_reverse;
             }
         }
+
         /****************************************************************/
+
         public virtual TimeSpan Duration
         {
             get
@@ -328,6 +337,7 @@ namespace TrailsPlugin.Data
                 return this.getTimeSpanResult(EndTime);
             }
         }
+
         public virtual double Distance
         {
             get
@@ -359,6 +369,7 @@ namespace TrailsPlugin.Data
                 return StartTime.ToLocalTime().TimeOfDay;
             }
         }
+
         public TimeSpan EndTimeOfDay
         {
             get
@@ -401,6 +412,7 @@ namespace TrailsPlugin.Data
                 return (DateTime)m_startTime;
             }
         }
+
         public DateTime EndTime
         {
             get

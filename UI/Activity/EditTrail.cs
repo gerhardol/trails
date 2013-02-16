@@ -225,8 +225,8 @@ namespace TrailsPlugin.UI.Activity {
                 //}
                 if (recalculate || this.m_trailResult == null)
                 {
-                    ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, m_TrailToEdit);
-                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, m_TrailToEdit.MaxRequiredMisses, true, null);
+                    ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, this.m_TrailToEdit);
+                    at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, this.m_TrailToEdit.MaxRequiredMisses, true, null);
                     if (TrailResultWrapper.Results(at.ResultTreeList).Count > 0)
                     {
                         this.m_trailResult = TrailResultWrapper.Results(at.ResultTreeList)[0];
@@ -274,7 +274,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             IList<EditTrailRow> l = EditTrailRow.getEditTrailRows(this.m_TrailToEdit, this.m_trailResult);
+            int sel = EList_SelectedRow(); //Get one of the selected, if any
             this.EList.RowData = l;
+            if (sel >= 0)
+            {
+                //This is incorrect if the trail was reversed
+                this.EList.SelectedItems = new object[] { l[sel] };
+            }
 
             foreach (EditTrailRow t in (IList<EditTrailRow>)this.EList.RowData)
             {
@@ -803,6 +809,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.btnUp.Enabled = false;
                 this.btnDown.Enabled = false;
             }
+
             if (this.EList.SelectedItems.Count > 0)
             {
                 IList selected = EList.SelectedItems;
@@ -826,6 +833,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.btnDelete.Enabled = false;
             }
+
             if (!this.m_updatingFromMap)
             {
                 this.m_layer.SelectedTrailPoints = EditTrailRow.getTrailGPSLocation(result);

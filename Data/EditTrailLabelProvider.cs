@@ -114,11 +114,12 @@ namespace TrailsPlugin.Data
                 i = tr.TrailPointDateTime.Count - 1 - i;
                 inc = -1;
             }
+
             foreach (TrailGPSLocation t in tgps.TrailLocations)
             {
-                i += inc;
                 EditTrailRow row = new EditTrailRow(t, tr, i);
                 result.Add(row);
+                i += inc;
             }
             return result;
         }

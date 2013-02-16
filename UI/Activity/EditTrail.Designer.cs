@@ -101,7 +101,7 @@
             this.chkCompleteActivity.TabIndex = 28;
             this.toolTip.SetToolTip(this.chkCompleteActivity, ">Complete Activity");
             this.chkCompleteActivity.UseVisualStyleBackColor = true;
-            this.chkCompleteActivity.Visible = false;
+            this.chkCompleteActivity.Visible = true;
             // 
             // chkAutoTryAll
             // 

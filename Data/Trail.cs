@@ -44,7 +44,7 @@ namespace TrailsPlugin.Data
         private bool m_isReference = false;
         private bool m_isTemporary = false;
         private bool m_isNameMatch = false;
-        private bool m_isCompleteActivity = true;
+        private bool m_isCompleteActivity = false;
         private bool m_isAutoTryAll = true;
 
         private CalcType m_CalcType = Trail.CalcType.TrailPoints;
@@ -98,6 +98,7 @@ namespace TrailsPlugin.Data
             result.m_maxRequiredMisses = this.m_maxRequiredMisses;
             result.BiDirectional = this.BiDirectional;
             result.IsNameMatch = this.IsNameMatch;
+            result.IsCompleteActivity = this.IsCompleteActivity;
             result.IsAutoTryAll = this.IsAutoTryAll;
             result.IsTemporary = this.IsTemporary;
 

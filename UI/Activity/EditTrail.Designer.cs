@@ -44,8 +44,6 @@
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.lblRadius = new System.Windows.Forms.Label();
             this.Radius = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            this.btnZUp = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.btnZDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
@@ -273,8 +271,6 @@
             this.Panel.Controls.Add(this.btnDelete, 6, 1);
             this.Panel.Controls.Add(this.lblRadius, 1, 2);
             this.Panel.Controls.Add(this.Radius, 2, 2);
-            this.Panel.Controls.Add(this.btnZUp, 3, 2);
-            this.Panel.Controls.Add(this.btnZDown, 4, 2);
             this.Panel.Controls.Add(this.btnUp, 5, 2);
             this.Panel.Controls.Add(this.btnDown, 6, 2);
             this.Panel.Controls.Add(this.EList, 1, 3);
@@ -427,52 +423,6 @@
             this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.Radius.LostFocus += new System.EventHandler(this.Radius_LostFocus);
             // 
-            // btnZUp
-            // 
-            this.btnZUp.BackColor = System.Drawing.Color.Transparent;
-            this.btnZUp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnZUp.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnZUp.CenterImage = null;
-            this.btnZUp.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnZUp.HyperlinkStyle = false;
-            this.btnZUp.ImageMargin = 2;
-            this.btnZUp.LeftImage = null;
-            this.btnZUp.Location = new System.Drawing.Point(334, 30);
-            this.btnZUp.Name = "btnZUp";
-            this.btnZUp.Padding = new System.Windows.Forms.Padding(2);
-            this.btnZUp.PushStyle = true;
-            this.btnZUp.RightImage = null;
-            this.btnZUp.Size = new System.Drawing.Size(19, 19);
-            this.btnZUp.TabIndex = 21;
-            this.btnZUp.Text = "A";
-            this.btnZUp.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnZUp.TextLeftMargin = 2;
-            this.btnZUp.TextRightMargin = 2;
-            this.btnZUp.Click += new System.EventHandler(this.btnZUp_Click);
-            // 
-            // btnZDown
-            // 
-            this.btnZDown.BackColor = System.Drawing.Color.Transparent;
-            this.btnZDown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnZDown.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
-            this.btnZDown.CenterImage = null;
-            this.btnZDown.DialogResult = System.Windows.Forms.DialogResult.None;
-            this.btnZDown.HyperlinkStyle = false;
-            this.btnZDown.ImageMargin = 2;
-            this.btnZDown.LeftImage = null;
-            this.btnZDown.Location = new System.Drawing.Point(359, 30);
-            this.btnZDown.Name = "btnZDown";
-            this.btnZDown.Padding = new System.Windows.Forms.Padding(2);
-            this.btnZDown.PushStyle = true;
-            this.btnZDown.RightImage = null;
-            this.btnZDown.Size = new System.Drawing.Size(19, 19);
-            this.btnZDown.TabIndex = 22;
-            this.btnZDown.Text = "Z";
-            this.btnZDown.TextAlign = System.Drawing.StringAlignment.Center;
-            this.btnZDown.TextLeftMargin = 2;
-            this.btnZDown.TextRightMargin = 2;
-            this.btnZDown.Click += new System.EventHandler(this.btnZDown_Click);
-            // 
             // btnUp
             // 
             this.btnUp.BackColor = System.Drawing.Color.Transparent;
@@ -622,8 +572,6 @@
         private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
 		private System.Windows.Forms.Label lblRadius;
         private ZoneFiveSoftware.Common.Visuals.TextBox editBox;
-        private ZoneFiveSoftware.Common.Visuals.Button btnZUp;
-        private ZoneFiveSoftware.Common.Visuals.Button btnZDown;
         private ZoneFiveSoftware.Common.Visuals.Button btnUp;
         private ZoneFiveSoftware.Common.Visuals.Button btnDown;
         private ZoneFiveSoftware.Common.Visuals.Button btnCopy;

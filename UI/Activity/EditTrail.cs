@@ -125,14 +125,6 @@ namespace TrailsPlugin.UI.Activity {
             btnDelete.BackgroundImage = CommonIcons.Delete;
             btnDelete.Text = "";
             btnDelete.Enabled = false;
-            btnZUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.ZoomOut16;
-            btnZUp.Text = "";
-            //btnZUp.Enabled = false;
-            btnZUp.Visible = false;
-            btnZDown.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.ZoomIn16;
-            btnZDown.Text = "";
-            //btnZDown.Enabled = false;
-            btnZDown.Visible = false;
             btnUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
             btnUp.Text = "";
             btnUp.Enabled = false;
@@ -741,6 +733,7 @@ namespace TrailsPlugin.UI.Activity {
                 e.Handled = true;
             }
         }
+
         private void btnDelete_Click(object sender, EventArgs e)
         {
             EList_DeleteRow();
@@ -751,15 +744,6 @@ namespace TrailsPlugin.UI.Activity {
             MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_EditRow);
         }
 
-        private void btnZUp_Click(object sender, EventArgs e)
-        {
-            m_layer.ZoomOut();
-        }
-
-        private void btnZDown_Click(object sender, EventArgs e)
-        {
-            m_layer.ZoomIn();
-        }
         private void btnUp_Click(object sender, EventArgs e)
         {
             moveRow(1);
@@ -769,6 +753,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             moveRow(-1);
         }
+
         private void moveRow(int isUp)
         {
             if (EList.SelectedItems.Count == 1)
@@ -797,6 +782,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
+
         private void btnAdd_Click(object sender, EventArgs e)
         {
             EList_AddRow();

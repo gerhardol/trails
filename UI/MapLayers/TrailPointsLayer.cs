@@ -136,7 +136,7 @@ namespace TrailsPlugin.UI.MapLayers
                     //Assume all points have the same radius
                     float highlightRadius = value[0].Radius;
                     GPSBounds area = TrailGPSLocation.getGPSBounds(value, 4 * highlightRadius);
-                    this.SetLocation(area);
+                    this.DoZoom(area);
                 }
             }
         }

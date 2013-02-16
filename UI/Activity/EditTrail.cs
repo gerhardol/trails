@@ -496,13 +496,13 @@ namespace TrailsPlugin.UI.Activity {
             if (((IList<EditTrailRow>)this.EList.RowData).Count > 0)
             {
                 sel = new TrailGPSLocation(((IList<EditTrailRow>)this.EList.RowData)[i].TrailGPS);
+                sel.GpsLoc = new GPSLocation(sel.LatitudeDegrees+0.0001F, sel.LongitudeDegrees+0.0001F);
             }
             else
             {
                 IGPSLocation l = m_layer.GetCenterMap();
                 sel = new TrailGPSLocation(l);
             }
-            sel.GpsLoc = m_layer.GetCenterMap();
 
             sel.Name += " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;
 

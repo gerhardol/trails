@@ -679,7 +679,7 @@ namespace TrailsPlugin.Data
                         float distHysteresis = Math.Max(radius / distHysteresisFactor, distHysteresisMin);//Used as const
 
                         float matchFactor = -1;
-                        float matchDist = routeDist;
+                        float matchDist = float.MaxValue; //Set to max, to update correctly for first point
                         int matchIndex = routeIndex;
 
                         Stack<pInfo> info = new Stack<pInfo>();
@@ -924,6 +924,7 @@ namespace TrailsPlugin.Data
                                 resultInfo.Points.Insert(0, new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0));
                                 i = activity.GPSRoute.Count-1;
                                 resultInfo.Points.Add(new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]), i, i, i, 0));
+                                //Note: Setting of prevMatchIndex, allow multiple loops...
                             }
                             trailResults.Add(resultInfo);
 

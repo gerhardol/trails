@@ -299,7 +299,26 @@ namespace TrailsPlugin.Data
 
         public virtual float DistDiff
         {
-            get { return m_totalDistDiff; }
+            get
+            {
+                if (this is ChildTrailResult && this.m_subResultInfo.Count > 0 && this.m_subResultInfo.Points[0].Time != DateTime.MinValue)
+                {
+                    return this.m_subResultInfo.Points[0].DistDiff;
+                }
+                return m_totalDistDiff;
+            }
+        }
+
+        public float PointDiff(int i)
+        {
+            if (i < m_subResultInfo.Count)
+            {
+                return this.m_subResultInfo.Points[i].DistDiff;
+            }
+            else
+            {
+                return float.NaN;
+            }
         }
 
         public int Order

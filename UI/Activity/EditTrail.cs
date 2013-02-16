@@ -209,7 +209,7 @@ namespace TrailsPlugin.UI.Activity {
                     m_updatingFromMap = true;
                     this.EList.SelectedItems = new object[] { list[i] };
                     m_updatingFromMap = false;
-                    EList.RefreshElements(this.EList.SelectedItems);
+                    this.EList.RefreshElements(this.EList.SelectedItems);
                     break;
                 }
             }
@@ -413,6 +413,7 @@ namespace TrailsPlugin.UI.Activity {
             EList.Columns.Add(new TreeList.Column("Distance", CommonResources.Text.LabelDistance, 60, StringAlignment.Far));
             cTimeCol = EList.Columns.Count;
             EList.Columns.Add(new TreeList.Column("Time", CommonResources.Text.LabelTime, 60, StringAlignment.Far));
+            EList.Columns.Add(new TreeList.Column("Diff", "Diff", 60, StringAlignment.Far)); //TBD Translate
 
             RefreshResult(false);
 
@@ -474,7 +475,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            EList.Refresh();
+            this.EList.Refresh();
         }
 
         private void EList_AddRow()
@@ -482,9 +483,9 @@ namespace TrailsPlugin.UI.Activity {
             int i = EList_SelectedRow();
             if (i < 0)
             {
-                if (((IList<EditTrailRow>)EList.RowData).Count > 0)
+                if (((IList<EditTrailRow>)this.EList.RowData).Count > 0)
                 {
-                    i = ((IList<EditTrailRow>)EList.RowData).Count - 1;
+                    i = ((IList<EditTrailRow>)this.EList.RowData).Count - 1;
                 }
                 else
                 {
@@ -492,9 +493,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             TrailGPSLocation sel;
-            if (((IList<EditTrailRow>)EList.RowData).Count > 0)
+            if (((IList<EditTrailRow>)this.EList.RowData).Count > 0)
             {
-                sel = ((IList<EditTrailRow>)EList.RowData)[i].TrailGPS;
+                sel = ((IList<EditTrailRow>)this.EList.RowData)[i].TrailGPS;
             }
             else
             {
@@ -518,24 +519,25 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 
-            if (((IList<EditTrailRow>)EList.RowData).Count > 0)
+            if (((IList<EditTrailRow>)this.EList.RowData).Count > 0)
             {
-                ((IList<EditTrailRow>)EList.RowData).Insert(i + 1, new EditTrailRow(sel));
+                ((IList<EditTrailRow>)this.EList.RowData).Insert(i + 1, new EditTrailRow(sel));
             }
             else
             {
-                EList.RowData = new List<EditTrailRow> { new EditTrailRow(sel) };
+                this.EList.RowData = new List<EditTrailRow> { new EditTrailRow(sel) };
             }
 
             //Make ST see the update
-            EList.RowData = ((IList<EditTrailRow>)EList.RowData);
-            foreach (EditTrailRow t in (IList<EditTrailRow>)EList.RowData)
+            this.EList.RowData = ((IList<EditTrailRow>)this.EList.RowData);
+            foreach (EditTrailRow t in (IList<EditTrailRow>)this.EList.RowData)
             {
                 //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
-                EList.SetChecked(t, t.TrailGPS.Required);
+                this.EList.SetChecked(t, t.TrailGPS.Required);
             }
-            EList.Refresh();
-            m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
+            this.EList.Refresh();
+
+            m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)this.EList.RowData);
             m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
             m_layer.SelectedTrailPoints = new List<TrailGPSLocation> { sel };
             m_layer.Refresh();

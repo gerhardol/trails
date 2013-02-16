@@ -311,6 +311,8 @@ namespace TrailsPlugin.Data {
                     return x.GradeRunAdjustedTime.TotalSeconds;
                 case TrailResultColumnIds.GradeRunAdjustedPace:
                     return x.GradeRunAdjustedSpeed;
+                case TrailResultColumnIds.Diff:
+                    return x.DistDiff;
                 default:
                     return x.Order;
             }

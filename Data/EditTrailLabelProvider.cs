@@ -31,11 +31,13 @@ namespace TrailsPlugin.Data
         private int m_trailPointIndex;
         internal double? m_distance;
         internal double? m_time;
+        internal double m_diff = float.NaN;
         
         public EditTrailRow(TrailGPSLocation loc)
         {
             m_gpsLoc = loc;
         }
+
         private EditTrailRow(TrailGPSLocation loc, TrailResult tr, int i)
             : this(loc)
         {
@@ -53,6 +55,7 @@ namespace TrailsPlugin.Data
                     d = tr.TrailPointDateTime[m_trailPointIndex];
                 }
                 SetDistance(tr, d);
+                this.m_diff = tr.PointDiff(i);
             }
         }
 
@@ -109,6 +112,7 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
+
         public static IList<TrailGPSLocation> getTrailGPSLocation(IList<EditTrailRow> rowData)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
@@ -121,6 +125,7 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
+
         public TrailGPSLocation TrailGPS
         {
             get
@@ -167,6 +172,9 @@ namespace TrailsPlugin.Data
                     {
                         return "";
                     }
+                case "Diff":
+                    return UnitUtil.Elevation.ToString(row.m_diff, "u");
+
                 default:
                     return base.GetText(row.TrailGPS, column);
             }

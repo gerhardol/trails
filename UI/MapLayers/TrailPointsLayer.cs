@@ -602,7 +602,10 @@ namespace TrailsPlugin.UI.MapLayers
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
                     pointOverlay.MouseUp += new MouseEventHandler(pointOverlay_MouseUp);
                 }
-                newPointOverlays.Add(location, pointOverlay);
+                if(!newPointOverlays.ContainsKey(location))
+                {
+                    newPointOverlays.Add(location, pointOverlay);
+                }
                 addedOverlays.Add(pointOverlay);
             }
             // Draw overlay

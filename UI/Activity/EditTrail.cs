@@ -30,8 +30,10 @@ using TrailsPlugin.Data;
 using TrailsPlugin.UI.MapLayers;
 using GpsRunningPlugin.Util;
 
-namespace TrailsPlugin.UI.Activity {
-	public partial class EditTrail : Form {
+namespace TrailsPlugin.UI.Activity
+{
+	public partial class EditTrail : Form
+    {
 
 		protected ITheme m_visualTheme;
 		protected bool m_addMode;
@@ -219,10 +221,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (Controller.TrailController.Instance.ReferenceActivity != null)
             {
-                //if (recalculate)
-                //{
-                //    m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
-                //}
                 if (recalculate || this.m_trailResult == null)
                 {
                     ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, this.m_TrailToEdit);
@@ -303,9 +301,6 @@ namespace TrailsPlugin.UI.Activity {
 				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
 				return;
 			}
-            //m_TrailToEdit contains the scratchpad of trail.
-            //However TrailPoints uses the row (with meta data, could be a separate cache)
-            //m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
 
             Data.Trail trail = Data.TrailData.GetFromName(this.TrailName.Text);
             if (trail != null && (this.m_addMode ||
@@ -519,13 +514,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 
+            EditTrailRow newRow = new EditTrailRow(sel);
             if (((IList<EditTrailRow>)this.EList.RowData).Count > 0)
             {
-                ((IList<EditTrailRow>)this.EList.RowData).Insert(i + 1, new EditTrailRow(sel));
+                ((IList<EditTrailRow>)this.EList.RowData).Insert(i + 1, newRow);
             }
             else
             {
-                this.EList.RowData = new List<EditTrailRow> { new EditTrailRow(sel) };
+                this.EList.RowData = new List<EditTrailRow> { newRow };
             }
 
             //Make ST see the update
@@ -535,6 +531,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
                 this.EList.SetChecked(t, t.TrailGPS.Required);
             }
+            this.EList.SelectedItems = new object[] { newRow };
             this.EList.Refresh();
 
             this.m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)this.EList.RowData);
@@ -576,7 +573,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             this.presentRadius();
             //Refresh on map
-            this.m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
+            this.m_layer.TrailPoints = this.m_TrailToEdit.TrailLocations;
         }
 
         private void ValidateEdit()
@@ -587,8 +584,8 @@ namespace TrailsPlugin.UI.Activity {
                 try
                 {
                     double dist = UnitUtil.Distance.Parse(editBox.Text);
-                    DateTime d1 = m_trailResult.getDateTimeFromDistActivity((float)dist);
-                    t[m_rowDoubleClickSelected].UpdateRow(m_trailResult, d1);
+                    DateTime d1 = this.m_trailResult.getDateTimeFromDistActivity((float)dist);
+                    t[this.m_rowDoubleClickSelected].UpdateRow(this.m_trailResult, d1);
                 }
                 catch { }
             }
@@ -655,11 +652,11 @@ namespace TrailsPlugin.UI.Activity {
                 // Check the subitem clicked
                 //TODO: Not handling resize (scrolling) correctly
                 int nStart = this.m_lastMouseArg.Location.X;// EList.PointToScreen(m_lastMouseArg.Location).X;
-                int spos = EList.Location.X;
+                int spos = this.EList.Location.X;
                 int epos = spos;
                 for (int i = 0; i < EList.Columns.Count; i++)
                 {
-                    epos += EList.Columns[i].Width;
+                    epos += this.EList.Columns[i].Width;
                     if (nStart >= spos && nStart < epos)
                     {
                         this.m_subItemSelected = i;
@@ -671,9 +668,9 @@ namespace TrailsPlugin.UI.Activity {
                 //Only edit first rows
                 if (this.m_subItemSelected <= cTimeCol)
                 {
-                    this.m_subItemText = (new EditTrailLabelProvider()).GetText(t, EList.Columns[this.m_subItemSelected]);
+                    this.m_subItemText = (new EditTrailLabelProvider()).GetText(t, this.EList.Columns[this.m_subItemSelected]);
                     ///The positioning is incorrect, set at header
-                    int rowHeight = EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
+                    int rowHeight = this.EList.HeaderRowHeight;// (EList.Height - EList.HeaderRowHeight) / ((IList<TrailGPSLocation>)EList.RowData).Count;
                     int yTop = 0;// EList.HeaderRowHeight + rowSelected * rowHeight;
                     this.editBox.Size = new System.Drawing.Size(epos - spos, rowHeight);
                     this.editBox.Location = new System.Drawing.Point(spos - 1, yTop);
@@ -766,7 +763,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (this.EList.SelectedItems.Count == 1)
             {
-                IList selected = EList.SelectedItems;
+                IList selected = this.EList.SelectedItems;
                 IList<EditTrailRow> result = (IList<EditTrailRow>)this.EList.RowData;
                 if (selected != null && selected.Count > 0)
                 {
@@ -774,7 +771,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         for (int i = result.Count - 1; i >= 0; i--)
                         {
-                            EditTrailRow r = (EditTrailRow)((IList<EditTrailRow>)EList.RowData)[i];
+                            EditTrailRow r = (EditTrailRow)((IList<EditTrailRow>)this.EList.RowData)[i];
                             if ((isUp < 0 && i-isUp<result.Count ||
                                 isUp > 0 && i-isUp>=0) &&
                                 selected[j].Equals(r))

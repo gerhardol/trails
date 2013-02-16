@@ -117,6 +117,7 @@ namespace TrailsPlugin.Data {
         public const string PredictDistance = "PredictDistance";
         public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
         public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
+        public const string Diff = "Diff";
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -214,6 +215,7 @@ namespace TrailsPlugin.Data {
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelDuration, "", 60, StringAlignment.Far));
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             }
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, "Diff" + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             return columnDefs;
 		}
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()

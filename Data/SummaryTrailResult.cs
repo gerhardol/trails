@@ -85,6 +85,7 @@ namespace TrailsPlugin.Data
             return tot;
         }
 
+        //TBD: Cache summary results. Profiling indicates minor difference
         public override double StartDist
         {
             get
@@ -202,6 +203,14 @@ namespace TrailsPlugin.Data
             get
             {
                 return (float)this.GetSummary(delegate(TrailResult tr) { return tr.FastestSpeed; }, false);
+            }
+        }
+
+        public override float DistDiff
+        {
+            get
+            {
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.DistDiff; }, false);
             }
         }
 

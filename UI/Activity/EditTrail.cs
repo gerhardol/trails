@@ -495,7 +495,7 @@ namespace TrailsPlugin.UI.Activity {
             TrailGPSLocation sel;
             if (((IList<EditTrailRow>)this.EList.RowData).Count > 0)
             {
-                sel = ((IList<EditTrailRow>)this.EList.RowData)[i].TrailGPS;
+                sel = new TrailGPSLocation(((IList<EditTrailRow>)this.EList.RowData)[i].TrailGPS);
             }
             else
             {

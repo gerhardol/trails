@@ -28,7 +28,7 @@ namespace TrailsPlugin.Data
     class EditTrailRow
     {
         private TrailGPSLocation m_gpsLoc;
-        private int m_trailPointIndex;
+        private int m_resultPointIndex;
         internal double? m_distance;
         internal double? m_time;
         internal double m_diff = float.NaN;
@@ -41,21 +41,17 @@ namespace TrailsPlugin.Data
         private EditTrailRow(TrailGPSLocation loc, TrailResult tr, int i)
             : this(loc)
         {
-            m_trailPointIndex = i;
+            this.m_resultPointIndex = i;
             if (tr != null && tr.TrailPointDateTime.Count > 0)
             {
-                if (tr.Reverse)
-                {
-                    m_trailPointIndex = tr.TrailPointDateTime.Count - 1 - m_trailPointIndex;
-                }
                 DateTime d = DateTime.MinValue;
                 if (tr.TrailPointDateTime != null &&
-                tr.TrailPointDateTime.Count > m_trailPointIndex && m_trailPointIndex >= 0)
+                tr.TrailPointDateTime.Count > m_resultPointIndex && m_resultPointIndex >= 0)
                 {
-                    d = tr.TrailPointDateTime[m_trailPointIndex];
+                    d = tr.TrailPointDateTime[m_resultPointIndex];
                 }
                 SetDistance(tr, d);
-                this.m_diff = tr.PointDiff(i);
+                this.m_diff = tr.PointDiff(this.m_resultPointIndex);
             }
         }
 
@@ -99,15 +95,29 @@ namespace TrailsPlugin.Data
         public void UpdateRow(TrailResult tr, TrailGPSLocation t)
         {
             this.TrailGPS = t;
-            SetDistance(tr, tr.TrailPointDateTime[m_trailPointIndex]);
+            SetDistance(tr, tr.TrailPointDateTime[m_resultPointIndex]);
         }
 
-        public static IList<EditTrailRow> getEditTrailRows(IList<TrailGPSLocation> tgps, TrailResult tr)
+        public static IList<EditTrailRow> getEditTrailRows(Trail tgps, TrailResult tr)
         {
             IList<EditTrailRow> result = new List<EditTrailRow>();
-            foreach (TrailGPSLocation t in tgps)
+            int i = 0;
+            int inc = 1;
+            //The result index may not match the trailGPS index
+            if (tgps.IsCompleteActivity)
             {
-                EditTrailRow row = new EditTrailRow(t, tr, result.Count);
+                //An extra point at start/end has been added compared to the trail points
+                i = 1;
+            }
+            if (tr.Reverse)
+            {
+                i = tr.TrailPointDateTime.Count - 1 - i;
+                inc = -1;
+            }
+            foreach (TrailGPSLocation t in tgps.TrailLocations)
+            {
+                i += inc;
+                EditTrailRow row = new EditTrailRow(t, tr, i);
                 result.Add(row);
             }
             return result;

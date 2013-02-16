@@ -69,8 +69,8 @@ namespace TrailsPlugin.Data
         public TrailResultInfo CopySlice(int i, int j)
         {
             TrailResultInfo result = new TrailResultInfo(this.Activity, this.Reverse);
-            result.Points.Add(new TrailResultPoint(Points[i]));
-            result.Points.Add(new TrailResultPoint(Points[j]));
+            result.Points.Add(new TrailResultPoint(this.Points[i]));
+            result.Points.Add(new TrailResultPoint(this.Points[j]));
             return result;
         }
         public IList<DateTime> CopyTime()

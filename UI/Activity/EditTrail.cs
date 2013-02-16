@@ -193,7 +193,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void UpdatePointFromMap(TrailGPSLocation point)
         {
-            IList<EditTrailRow> list = (IList<EditTrailRow>)EList.RowData;
+            IList<EditTrailRow> list = (IList<EditTrailRow>)this.EList.RowData;
             for (int i = 0; i < list.Count; i++)
             {
                 if (point == list[i].TrailGPS)
@@ -273,7 +273,9 @@ namespace TrailsPlugin.UI.Activity {
                     at.Init();
                 }
             }
-            this.EList.RowData = EditTrailRow.getEditTrailRows(this.m_TrailToEdit.TrailLocations, this.m_trailResult);
+            IList<EditTrailRow> l = EditTrailRow.getEditTrailRows(this.m_TrailToEdit, this.m_trailResult);
+            this.EList.RowData = l;
+
             foreach (EditTrailRow t in (IList<EditTrailRow>)this.EList.RowData)
             {
                 //Note: For reverse results, this is incorrect (but reverse results are only for incomplete, so no impact)
@@ -425,7 +427,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     for (int j = selected.Count - 1; j >= 0; j--)
                     {
-                        IList<EditTrailRow> list = ((IList<EditTrailRow>)EList.RowData);
+                        IList<EditTrailRow> list = ((IList<EditTrailRow>)this.EList.RowData);
                         for (int i = 0; i < list.Count; i++)
                         {
                             //Only first selected

@@ -501,12 +501,12 @@ namespace TrailsPlugin.Data
                     //startDistance = this.ActivityDistanceMetersTrack.GetInterpolatedValue(StartDateTime).Value -
                     //    this.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime).Value;
                     float startDistance = -1000; //Negative to see it in list
-                    if (i >= 0 && this.m_activityTrail != null && i < this.m_activityTrail.Trail.TrailLocations.Count)
+                    if (i >= 0 && this.m_activityTrail != null && i < this.m_subResultInfo.Count)
                     {
                         ITimeValueEntry<IGPSPoint> entry = this.Activity.GPSRoute.GetInterpolatedValue(StartTime);
                         if (entry != null)
                         {
-                            startDistance = this.m_activityTrail.Trail.TrailLocations[i].DistanceMetersToPoint(entry.Value);
+                            startDistance = this.m_subResultInfo.Points[i].DistanceMetersToPoint(entry.Value);
                         }
                     }
                     return startDistance;

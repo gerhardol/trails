@@ -135,9 +135,10 @@ namespace TrailsPlugin
         static public string fileCircle(int sizeX, int sizeY, Color color)
         {
             Size iconSize;
-            return fileCircle(sizeX, sizeY, color, out iconSize);
+            return fileCircle(sizeX, sizeY, color, false, out iconSize);
         }
-        static public string fileCircle(int sizeX, int sizeY, Color color, out Size iconSize)
+
+        static public string fileCircle(int sizeX, int sizeY, Color color, bool centerPoint, out Size iconSize)
         {
             string basePath = Plugin.GetApplication().
 #if ST_2_1
@@ -167,7 +168,12 @@ namespace TrailsPlugin
             if (1 != sizeX % 2) { sizeX++; }
             if (1 != sizeY % 2) { sizeY++; }
             iconSize = new Size(sizeX, sizeY);
-            string filePath = basePath + "circle-" + color + sizeX+"_"+sizeY + ".png";
+            string filePath = basePath + "circle-" + color + sizeX+"_"+sizeY;
+            if (centerPoint)
+            {
+                filePath += "_center";
+            }
+            filePath += ".png";
             if (!File.Exists(filePath))
             {
                 //No version handling other than filename
@@ -178,15 +184,21 @@ namespace TrailsPlugin
                     myBitmap.Width - brushSize, myBitmap.Height - brushSize));
                 myGraphics.DrawEllipse(new Pen(Color.Black, 1), new Rectangle(1, 1, 
                     myBitmap.Width - 2, myBitmap.Height - 2));
+                if (centerPoint)
+                {
+                    const int midSize = 2;
+                    myGraphics.DrawEllipse(new Pen(color, midSize), new Rectangle(sizeX / 2 - midSize, sizeY / 2 - midSize, 1 + midSize * 2, 1 + midSize * 2));
+                }
                 FileStream myFileOut = new FileStream(filePath, FileMode.Create);
                 myBitmap.Save(myFileOut, ImageFormat.Png);
                 myFileOut.Close();
             }
             return filePath;
         }
-        static public string Circle(int sizeX, int sizeY, out Size iconSize)
+
+        static public string Circle(int sizeX, int sizeY, bool centerPoint, out Size iconSize)
         {
-            return "file://" + fileCircle(sizeX, sizeY, Color.Red, out iconSize);
+            return "file://" + fileCircle(sizeX, sizeY, Color.Red, centerPoint, out iconSize);
         }
 	}
 }

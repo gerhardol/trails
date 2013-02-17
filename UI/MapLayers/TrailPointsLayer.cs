@@ -483,7 +483,7 @@ namespace TrailsPlugin.UI.MapLayers
             return radius;
         }
 
-        private static MapIcon getCircle(IMapControl mapControl, float radius)
+        private static MapIcon getCircle(IMapControl mapControl, float radius, bool centerPoint)
         {
             //Get pixel Size for icon - can differ X and Y
             //Calculate to radius, use point at apropriate distance to get meters->pixels
@@ -496,9 +496,13 @@ namespace TrailsPlugin.UI.MapLayers
                 new Point(0, circlePixelSize / 2)));
             int sizeInPixelsX = (int)(circlePixelSize * radius / point0.DistanceMetersToPoint(pointX));
             int sizeInPixelsY = (int)(circlePixelSize * radius / point0.DistanceMetersToPoint(pointY));
+            if (sizeInPixelsX < 15 || sizeInPixelsY < 15)
+            {
+                centerPoint = false;
+            }
 
             Size iconSize;
-            string fileURL = TrailsPlugin.CommonIcons.Circle(sizeInPixelsX, sizeInPixelsY, out iconSize);
+            string fileURL = TrailsPlugin.CommonIcons.Circle(sizeInPixelsX, sizeInPixelsY, centerPoint, out iconSize);
             return new MapIcon(fileURL, iconSize, new Point(iconSize.Width / 2, iconSize.Height / 2));
         }
 
@@ -591,7 +595,7 @@ namespace TrailsPlugin.UI.MapLayers
             {
                 //All points have the same radius, at least now
                 float highlightRadius = m_TrailPoints[0].Radius;
-                m_icon = getCircle(this.MapControl, highlightRadius);
+                m_icon = getCircle(this.MapControl, highlightRadius, this.MouseEvents);
             }
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             foreach (TrailGPSLocation location in m_TrailPoints)

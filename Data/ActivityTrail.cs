@@ -949,6 +949,11 @@ namespace TrailsPlugin.Data
                                 IncompleteTrailResult result = new IncompleteTrailResult(activity, currResultPoints, reverse);
                                 incompleteResults.Add(result);
                             }
+                            if (trailgps.Count == 1)
+                            {
+                                //For one point trail, the same applies to the first match as for the end point (see above)
+                                prevMatchIndex = Math.Max(prevMatchIndex, getFirstMatchRadius(currResultPoints));
+                            }
                             if (maxResultPoints <= 0)
                             {
                                 //No match, abort further matches

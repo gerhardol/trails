@@ -1582,7 +1582,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (time > 0)
                 {
                     float speed = dist / time;
-                    string s = UnitUtil.PaceOrSpeed.ToString(speed, tr.Activity, "mm:ssU");
+                    string s = UnitUtil.PaceOrSpeed.ToString(speed, tr.Activity, "U");
                     this.ShowGeneralToolTip(s);
                 }
             }

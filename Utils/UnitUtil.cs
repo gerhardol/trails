@@ -622,6 +622,7 @@ namespace GpsRunningPlugin.Util
         }
 
         /*********************************************************************************/
+        //Hanndle Duration, not DateTime
         public static class Time
         {
             //This class handles Time as in "Time for activities" rather than "Time of day"
@@ -664,7 +665,7 @@ namespace GpsRunningPlugin.Util
                     str = s.ToString();
                     //if (fmt.Equals("g") && str.StartsWith("0:")) { str = str.Substring(2); } //Day part is optional
                     if (fmt.Equals("g") && str.StartsWith("00:")) { str = str.Substring(3); } //Hour, not minutes
-                    if (fmt.Equals("mm:ss") && s.Hours == 0 && s.Days == 0) { str = str.Substring(3); }
+                    if ((fmt.Equals("") || fmt.Equals("mm:ss")) && s.Hours == 0 && s.Days == 0) { str = str.Substring(3); }
                     if (fractionals > 0)
                     {
                         if (s.Milliseconds > 0)
@@ -1009,7 +1010,7 @@ namespace GpsRunningPlugin.Util
 
             private static Length.Units Unit { get { return getDistUnit(true); } }
             public static int DefaultDecimalPrecision { get { return 1; } } //Not really applicable
-            private static string DefFmt { get { return ""; } } //Same tweaks as for time
+            private static string DefFmt { get { return "g"; } } //Same tweaks as for duration/time
             public static Length GetLength(IActivity activity)
             {
                 Length du;

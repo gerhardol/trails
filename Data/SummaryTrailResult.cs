@@ -42,6 +42,7 @@ namespace TrailsPlugin.Data
         {
             this.results = list; //must not be summary...
             this.m_order = list.Count;
+            this.Clear(false);
         }
 
         private delegate double FieldGetter(TrailResult tr);

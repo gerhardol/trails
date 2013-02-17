@@ -1313,13 +1313,13 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.O)
             {
-                if (e.Modifiers == Keys.Shift)
+                if (e.Modifiers == Keys.Control)
                 {
-                    TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = false;
+                    TrailsPlugin.Data.Settings.ResultSummaryStdDev = !TrailsPlugin.Data.Settings.ResultSummaryStdDev;
                 }
                 else
                 {
-                    TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = true;
+                    TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = !TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint;
                 }
                 this.summaryList.Refresh();
                 //Only in table, no need to refresh

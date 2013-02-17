@@ -144,7 +144,7 @@ namespace TrailsPlugin.Data
         public double AvgPaceStdDev(out double stdDev)
         {
             double a = this.GetSummary(delegate(TrailResult tr) { return 1 / tr.AvgSpeed; }, false, true, out stdDev);
-            stdDev = 1 / stdDev; //Convert back
+            stdDev = 1 / stdDev; //Convert back to speed
             return this.AvgSpeed; //Return average, not "median"
         }
 
@@ -166,7 +166,7 @@ namespace TrailsPlugin.Data
             double s;
             double a = this.GetSummary(delegate(TrailResult tr) { return tr.GradeRunAdjustedTime.TotalSeconds; }, false, true, out s);
             stdDev = TimeSpan.FromSeconds(s);
-            return TimeSpan.FromSeconds(a); //Return average, not "median"
+            return TimeSpan.FromSeconds(a);
         }
 
         public double DiffStdDev(out double stdDev)

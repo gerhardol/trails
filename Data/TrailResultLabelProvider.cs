@@ -69,7 +69,7 @@ namespace TrailsPlugin.Data
             Data.TrailResult row = TrailsPlugin.UI.Activity.ResultListControl.getTrailResultRow(element);
 
             //Some special for Summary
-            if (row is SummaryTrailResult)
+            if (TrailsPlugin.Data.Settings.ResultSummaryStdDev && row is SummaryTrailResult)
             {
                 SummaryTrailResult row2 = row as SummaryTrailResult;
                 if (row2.Results.Count > 1)

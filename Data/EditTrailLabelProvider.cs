@@ -109,7 +109,7 @@ namespace TrailsPlugin.Data
                 //An extra point at start/end has been added compared to the trail points
                 i = 1;
             }
-            if (tr.Reverse)
+            if (tr != null && tr.Reverse)
             {
                 i = tr.TrailPointDateTime.Count - 1 - i;
                 inc = -1;

@@ -88,8 +88,58 @@ namespace TrailsPlugin.Data
                                 double a;
                                 double s;
                                 a = row2.DistanceStdDev(out s);
-                                return UnitUtil.Distance.ToString(a, "") + " σ" + UnitUtil.Elevation.ToString(s, "");
+                                return UnitUtil.Distance.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Elevation.ToString(s, m_controller.ReferenceActivity, "");
                             }
+                        case TrailResultColumnIds.AvgPace:
+                            {
+                                double a;
+                                double s;
+                                a = row2.AvgPaceStdDev(out s);
+                                return UnitUtil.Pace.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(s, m_controller.ReferenceActivity, "");
+                            }
+                        case TrailResultColumnIds.AvgSpeed:
+                            {
+                                double a;
+                                double s;
+                                a = row2.AvgSpeedStdDev(out s);
+                                return UnitUtil.Speed.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Speed.ToString(s, m_controller.ReferenceActivity, "");
+                            }
+                        case TrailResultColumnIds.AvgSpeedPace:
+                            {
+                                double a;
+                                double s;
+                                if (UnitUtil.PaceOrSpeed.IsPace(m_controller.ReferenceActivity))
+                                {
+                                    a = row2.AvgPaceStdDev(out s);
+                                    return UnitUtil.Pace.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(s, m_controller.ReferenceActivity, "");
+                                }
+                                else
+                                {
+                                    a = row2.AvgSpeedStdDev(out s);
+                                    return UnitUtil.Speed.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Speed.ToString(s, m_controller.ReferenceActivity, "");
+                                }
+                            }
+                        //case TrailResultColumnIds.GradeRunAdjustedTime:
+                        //    {
+                        //        TimeSpan a;
+                        //        TimeSpan s;
+                        //        a = row2.GradeRunAdjustedTimeStdDev(out s);
+                        //        return UnitUtil.Time.ToString(a, "") + " σ" + UnitUtil.Time.ToString(s, "");
+                        //    }
+                        //case TrailResultColumnIds.GradeRunAdjustedPace:
+                        //    {
+                        //        double a;
+                        //        double s;
+                        //        a = row2.GradeRunAdjustedPaceStdDev(out s);
+                        //        return UnitUtil.Pace.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(s, m_controller.ReferenceActivity, "");
+                        //    }
+                        //case TrailResultColumnIds.Diff:
+                        //    {
+                        //        double a;
+                        //        double s;
+                        //        a = row2.DiffStdDev(out s);
+                        //        return UnitUtil.Elevation.ToString(a, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Elevation.ToString(s, m_controller.ReferenceActivity, "");
+                        //    }
                         default:
                             break;
                     }

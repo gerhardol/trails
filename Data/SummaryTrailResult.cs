@@ -115,9 +115,9 @@ namespace TrailsPlugin.Data
         public TimeSpan DurationStdDev(out TimeSpan stdDev)
         {
             double s;
-            TimeSpan a = TimeSpan.FromSeconds(this.GetSummary(delegate(TrailResult tr) { return tr.Duration.TotalSeconds; }, false, out s));
+            double a = this.GetSummary(delegate(TrailResult tr) { return tr.Duration.TotalSeconds; }, false, out s);
             stdDev = TimeSpan.FromSeconds(s);
-            return a;
+            return TimeSpan.FromSeconds(a);
         }
 
         public override TimeSpan GradeRunAdjustedTime
@@ -139,6 +139,39 @@ namespace TrailsPlugin.Data
         public double DistanceStdDev(out double stdDev)
         {
             return this.GetSummary(delegate(TrailResult tr) { return tr.Distance; }, false, true, out stdDev);
+        }
+
+        public double AvgPaceStdDev(out double stdDev)
+        {
+            double a = this.GetSummary(delegate(TrailResult tr) { return 1 / tr.AvgSpeed; }, false, true, out stdDev);
+            stdDev = 1 / stdDev; //Convert back
+            return this.AvgSpeed; //Return average, not "median"
+        }
+
+        public double AvgSpeedStdDev(out double stdDev)
+        {
+            double a = this.GetSummary(delegate(TrailResult tr) { return tr.AvgSpeed; }, false, true, out stdDev);
+            return this.AvgSpeed; //Return average, not "median"
+        }
+
+        public double GradeRunAdjustedPaceStdDev(out double stdDev)
+        {
+            double a = this.GetSummary(delegate(TrailResult tr) { return 1 / tr.GradeRunAdjustedSpeed; }, false, true, out stdDev);
+            stdDev = 1 / stdDev; //Convert back
+            return this.AvgSpeed; //Return average, not "median"
+        }
+
+        public TimeSpan GradeRunAdjustedTimeStdDev(out TimeSpan stdDev)
+        {
+            double s;
+            double a = this.GetSummary(delegate(TrailResult tr) { return tr.GradeRunAdjustedTime.TotalSeconds; }, false, true, out s);
+            stdDev = TimeSpan.FromSeconds(s);
+            return TimeSpan.FromSeconds(a); //Return average, not "median"
+        }
+
+        public double DiffStdDev(out double stdDev)
+        {
+            return this.GetSummary(delegate(TrailResult tr) { return tr.DistDiff; }, false, true, out stdDev);
         }
 
         public override float AvgCadence

@@ -297,7 +297,7 @@ namespace TrailsPlugin.Data
             get { return (float)(m_totalDistDiff / Math.Pow(m_subResultInfo.Count, 1.5)); }
         }
 
-        public virtual float DistDiff
+        public virtual float Diff
         {
             get
             {

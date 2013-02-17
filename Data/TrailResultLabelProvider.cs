@@ -208,7 +208,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.GradeRunAdjustedPace:
                     return UnitUtil.Pace.ToString(row.GradeRunAdjustedSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.Diff:
-                    return UnitUtil.Elevation.ToString(row.DistDiff, "");
+                    return UnitUtil.Elevation.ToString(row.Diff, "");
                 default:
                     if (row.Activity == null) return null;
                     return base.GetText(row.Activity, column);

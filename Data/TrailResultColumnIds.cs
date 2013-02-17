@@ -312,7 +312,7 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.GradeRunAdjustedPace:
                     return x.GradeRunAdjustedSpeed;
                 case TrailResultColumnIds.Diff:
-                    return x.DistDiff;
+                    return x.Diff;
                 default:
                     return x.Order;
             }

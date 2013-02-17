@@ -171,7 +171,7 @@ namespace TrailsPlugin.Data
 
         public double DiffStdDev(out double stdDev)
         {
-            return this.GetSummary(delegate(TrailResult tr) { return tr.DistDiff; }, false, true, out stdDev);
+            return this.GetSummary(delegate(TrailResult tr) { return tr.Diff; }, false, true, out stdDev);
         }
 
         public override float AvgCadence
@@ -262,11 +262,11 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public override float DistDiff
+        public override float Diff
         {
             get
             {
-                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.DistDiff; }, false);
+                return (float)this.GetSummary(delegate(TrailResult tr) { return tr.Diff; }, false);
             }
         }
 

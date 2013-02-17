@@ -68,6 +68,34 @@ namespace TrailsPlugin.Data
         {
             Data.TrailResult row = TrailsPlugin.UI.Activity.ResultListControl.getTrailResultRow(element);
 
+            //Some special for Summary
+            if (row is SummaryTrailResult)
+            {
+                SummaryTrailResult row2 = row as SummaryTrailResult;
+                if (row2.Results.Count > 1)
+                {
+                    switch (column.Id)
+                    {
+                        case TrailResultColumnIds.Duration:
+                            {
+                                TimeSpan a;
+                                TimeSpan s;
+                                a = row2.DurationStdDev(out s);
+                                return UnitUtil.Time.ToString(a, "") + " σ" + UnitUtil.Time.ToString(s, "");
+                            }
+                        case TrailResultColumnIds.Distance:
+                            {
+                                double a;
+                                double s;
+                                a = row2.DistanceStdDev(out s);
+                                return UnitUtil.Distance.ToString(a, "") + " σ" + UnitUtil.Elevation.ToString(s, "");
+                            }
+                        default:
+                            break;
+                    }
+                }
+            }
+
             switch (column.Id)
             {
                 case TrailResultColumnIds.Order:

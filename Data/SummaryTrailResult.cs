@@ -44,15 +44,27 @@ namespace TrailsPlugin.Data
             this.m_order = list.Count;
         }
 
-        private bool average = true;
         private delegate double FieldGetter(TrailResult tr);
 
         private double GetSummary(FieldGetter field, bool skipZero)
+        {
+            double stdDev;
+            return GetSummary(field, skipZero, false, out  stdDev);
+        }
+
+        private double GetSummary(FieldGetter field, bool skipZero, out double stdDev)
+        {
+            return GetSummary(field, skipZero, true, out stdDev);
+        }
+
+        private double GetSummary(FieldGetter field, bool skipZero, bool getStdDev, out double stdDev)
         {
             int skip = 0;
             double a = 0;
             double tot = 0;
             int i = 0;
+            stdDev = 0;
+
             for (i = 0; i < this.results.Count; i++)
             {
                 double x = field(this.results[i]);
@@ -62,24 +74,22 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    if (average)
-                    {
-                        tot += x;
-                    }
-                    else
+                    tot += x;
+                    if (getStdDev)
                     {
                         //standard deviation
                         double ap = a;
                         a += (x - ap) / (i + 1);
-                        tot += (x - a) * (x - ap);
+                        stdDev += (x - a) * (x - ap);
                     }
                 }
             }
 
             tot = tot / NoOfResults(skip);
-            if (!average)
+            if (getStdDev)
             {
-                tot = Math.Sqrt(tot);
+                stdDev = stdDev / NoOfResults(skip);
+                stdDev = Math.Sqrt(stdDev);
             }
 
             return tot;
@@ -102,6 +112,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public TimeSpan DurationStdDev(out TimeSpan stdDev)
+        {
+            double s;
+            TimeSpan a = TimeSpan.FromSeconds(this.GetSummary(delegate(TrailResult tr) { return tr.Duration.TotalSeconds; }, false, out s));
+            stdDev = TimeSpan.FromSeconds(s);
+            return a;
+        }
+
         public override TimeSpan GradeRunAdjustedTime
         {
             get
@@ -109,13 +127,18 @@ namespace TrailsPlugin.Data
                 return TimeSpan.FromSeconds(this.GetSummary(delegate(TrailResult tr) { return tr.GradeRunAdjustedTime.TotalSeconds; }, false));
             }
         }
-        
+
         public override double Distance
         {
             get
             {
                 return this.GetSummary(delegate(TrailResult tr) { return tr.Distance; }, false);
             }
+        }
+
+        public double DistanceStdDev(out double stdDev)
+        {
+            return this.GetSummary(delegate(TrailResult tr) { return tr.Distance; }, false, true, out stdDev);
         }
 
         public override float AvgCadence

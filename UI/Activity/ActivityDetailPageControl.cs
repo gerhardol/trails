@@ -740,11 +740,8 @@ namespace TrailsPlugin.UI.Activity {
                 //Note: the selection is occasionally zero when starting selecting
                 if (m_currentSelectedMapResult != null && trSel != null && m_currentSelectedMapResult != trSel)
                 {
-                    if (trSel != null)
-                    {
-                        IList<TrailResult> result = new List<TrailResult> { trSel };
-                        this.EnsureVisible(result, false);
-                    }
+                    IList<TrailResult> result = new List<TrailResult> { trSel };
+                    this.EnsureVisible(result, false);
                     //Could be new selection start
                     this.ClearCurrentSelectedOnRoute();
                 }
@@ -752,7 +749,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Forget last clicked "multi route"
                 m_currentSelectedMapLocation = null;
 
-                if (selected != null && selected.SelectedItems.Count > 0)
+                if (selected != null && selected.SelectedItems.Count > 0 && trSel != null)
                 {
                     IList<IActivity> activities = this.ViewActivities; //Should be ViewSingleActivity
 

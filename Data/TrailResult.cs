@@ -1215,24 +1215,24 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if(m_predictDistance==null)
+                if (m_predictDistance == null)
                 {
-                           if (TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
-            {
- IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t = 
-     TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
-     new List<IActivity>{this.Activity},new List<double>{this.Duration.TotalSeconds},new List<double>{this.Distance},new List<double>{Settings.PredictDistance},null);
-                               if(t!=null && t.Count>0&&t[0]!=null)
-                               {
-                                   m_predictDistance=(float)t[0].predicted[0].new_time;
-                               }
-                           }
-                if(m_predictDistance==null)
-                {
-                    m_predictDistance=float.NaN;
+                    if (TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+                    {
+                        IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
+                            TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
+                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, null);
+                        if (t != null && t.Count > 0 && t[0] != null)
+                        {
+                            m_predictDistance = (float)t[0].predicted[0].new_time;
+                        }
+                    }
+                    if (m_predictDistance == null)
+                    {
+                        m_predictDistance = float.NaN;
+                    }
                 }
-            }
-            return (float)m_predictDistance;
+                return (float)m_predictDistance;
             }
         }
 #endregion

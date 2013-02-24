@@ -217,7 +217,6 @@ namespace TrailsPlugin.UI.Activity {
 
             //By setting to null, the last used is selected, or some defaults
             this.SelectedResultWrapper = null;
-            //this.m_beforeChangeSelectedItems = this.m_lastSelectedItems;
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
 
@@ -304,6 +303,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
                 this.m_controller.SelectedResults = TrailResultWrapper.Results(setValue);
+                this.SetSummary(setValue);
                 //foreach (TrailResultWrapper t in setValue)
                 //{
                 //    if (t.Result is ChildTrailResult)
@@ -421,7 +421,6 @@ namespace TrailsPlugin.UI.Activity {
                     tr.Sort();
                 }
 
-                this.SetSummary(this.SelectedResultWrapper);
                 if (atr.Count > 0)
                 {
                     atr.Insert(0, this.GetSummary());
@@ -1009,7 +1008,6 @@ namespace TrailsPlugin.UI.Activity {
             }
             m_page.RefreshData(false);
             this.SelectedResultWrapper = selected;
-            this.SetSummary(selected);
         }
 
         private enum InsertCategoryTypes { CurrentCategory, SelectedTree, All };
@@ -1349,8 +1347,10 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.F)
             {
-                //TBD xxx
-                elevationFix();
+                if (e.Modifiers == Keys.Control)
+                {
+                    elevationFix();
+                }
             }
             else if (e.KeyCode == Keys.I)
             {

@@ -1813,6 +1813,22 @@ namespace TrailsPlugin.Data
             return 0;
         }
 
+        internal int SetExternalElevation(INumericTimeDataSeries eTrack)
+        {
+            INumericTimeDataSeries elevationTrack0 = copySmoothTrack(eTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+                   new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+            float offset = this.ElevationMetersTrack.Avg - elevationTrack0.Avg;
+            for (int i = 0; i < elevationTrack0.Count; i++)
+            {
+                elevationTrack0.SetValueAt(i, elevationTrack0[i].Value + offset);
+            }
+
+            this.Clear(false);
+            this.m_elevationMetersTrack0 = elevationTrack0;
+
+            return 0;
+        }
+
         public INumericTimeDataSeries DeviceDiffDistTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);

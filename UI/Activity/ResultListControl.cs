@@ -972,19 +972,61 @@ namespace TrailsPlugin.UI.Activity {
             if (this.addCurrentCategoryMenuItem.Checked &&
                 m_controller.ReferenceTrailResult != null)
             {
-                addCurrentCategory(false);
+                this.addActivityFromCategory(this.getCurrentCategory(InsertCategoryTypes.CurrentCategory));
             }
         }
 
-        void addCurrentCategory(bool addAll)
+        private void elevationFix()
         {
-            IList<IActivity> allActivities = new List<IActivity>();
-            foreach (IActivity activity in m_controller.Activities)
+            IList<TrailResultWrapper> selected = new List<TrailResultWrapper>();
+            foreach (TrailResultWrapper trw in m_controller.CurrentResultTreeList)
             {
-                allActivities.Add(activity);
+                IActivity activity = trw.Result.Activity;
+                if (activity.ElevationMetersTrack == null || activity.ElevationMetersTrack.Count == 0)
+                {
+                    DateTime start = trw.Result.StartTime;
+                    DateTime end = trw.Result.EndTime;
+                    foreach (IActivity activity2 in Plugin.GetApplication().Logbook.Activities)
+                    {
+                        if (activity2.ElevationMetersTrack != null && activity2.ElevationMetersTrack.Count > 0)
+                        {
+                            //aprox end
+                            DateTime start2 = activity2.ElevationMetersTrack.StartTime;
+                            DateTime end2 = start2.AddSeconds(activity2.ElevationMetersTrack.TotalElapsedSeconds);
+                            if (start2 >= start && start2 <= end ||
+                                start >= start2 && start <= end2)
+                            {
+                                trw.Result.SetExternalElevation(activity2.ElevationMetersTrack);
+                                selected.Add(trw);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    selected.Add(trw);
+                }
             }
+            m_page.RefreshData(false);
+            this.SelectedResultWrapper = selected;
+            this.SetSummary(selected);
+        }
+
+        private enum InsertCategoryTypes { CurrentCategory, SelectedTree, All };
+        IActivityCategory getCurrentCategory(InsertCategoryTypes addAll)
+        {
             IActivityCategory cat = null;
-            if (!addAll)
+            if (addAll == InsertCategoryTypes.SelectedTree && m_controller.ReferenceActivity != null)
+            {
+                cat = m_controller.ReferenceActivity.Category;
+                IActivityCategory cat0 = cat.Parent;
+                while (cat0.Parent != null)
+                {
+                    cat = cat0;
+                    cat0 = cat0.Parent;
+                }
+            }
+            else if (addAll == InsertCategoryTypes.CurrentCategory)
             {
                 if (m_controller.ReferenceActivity == null ||
                     Plugin.GetApplication().DisplayOptions.SelectedCategoryFilter != Plugin.GetApplication().Logbook.ActivityCategories[0] &&
@@ -998,6 +1040,16 @@ namespace TrailsPlugin.UI.Activity {
                     //Use the category for the activity
                     cat = m_controller.ReferenceActivity.Category;
                 }
+            }
+            return cat;
+        }
+
+        void addActivityFromCategory(IActivityCategory cat)
+        {
+            IList<IActivity> allActivities = new List<IActivity>();
+            foreach (IActivity activity in m_controller.Activities)
+            {
+                allActivities.Add(activity);
             }
             foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
             {
@@ -1295,9 +1347,24 @@ namespace TrailsPlugin.UI.Activity {
                     m_page.RefreshData(true);
                 }
             }
+            else if (e.KeyCode == Keys.F)
+            {
+                //TBD xxx
+                elevationFix();
+            }
             else if (e.KeyCode == Keys.I)
             {
-                addCurrentCategory(e.Modifiers == Keys.Shift);
+                InsertCategoryTypes c = InsertCategoryTypes.CurrentCategory;
+                if (e.Modifiers == Keys.Shift)
+                {
+                    c = InsertCategoryTypes.All;
+                }
+                else if (e.Modifiers == Keys.Control)
+                {
+                    c = InsertCategoryTypes.SelectedTree;
+                }
+
+                this.addActivityFromCategory(this.getCurrentCategory(c));
             }
             else if (e.KeyCode == Keys.N)
             {

@@ -17,6 +17,16 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 //Used in both Trails and Matrix plugin
 
+//Use ST distance calculations in trail calculations, slows down
+//#define NO_SIMPLE_DISTANCE
+
+//Instead of real distances, use "scaled squared" distance calculations. This requires that compare values and factors are adjusted too.
+//The effect on performance is minimal though.
+//#define SQUARE_DISTANCE
+#if NO_SIMPLE_DISTANCE
+#undef SQUARE_DISTANCE
+#endif
+
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using System.Xml;
@@ -224,9 +234,14 @@ namespace TrailsPlugin.Data
 
         /* Distance calculation */
 
+#if NO_SIMPLE_DISTANCE
+#else
+#if SQUARE_DISTANCE
         public const float DistanceToSquareScaling = RadToDeg / EarthRadius;
-
+        private const float RadToDeg = (float)(180.0 / Math.PI);
+#endif
         //Simple distance calculations, speedup calculations for trail detection
+        //Do not override standard DistanceMetersToPoint(), slower and used in certain places
         //Use (quite accurate) aproximate scaled squared distance instead of real distance, improve performance
         //Actually, also the EarthRadius * DegToRad * (float)Math.Sqrt(result) could be eliminated,
         //but this requires that all compare values must be converted to "scaled squared format" too. Very small improvement.
@@ -237,30 +252,108 @@ namespace TrailsPlugin.Data
         private const float invalidLatLon = 999;
         private float _cosmean = invalidLatLon;
         private const float DegToRad = (float)(Math.PI / 180.0);
-        private const float RadToDeg = (float)(180.0 / Math.PI);
         private const float EarthRadius = 6371009;
+#endif
 
+        //Note: Faster to keep this static then 
         public static float DistanceMetersToPointSimple(TrailGPSLocation trailp, IGPSPoint point)
         {
+#if NO_SIMPLE_DISTANCE
+            return trailp.DistanceMetersToPoint(point);
+#else
             //Use the trailp lat instead of average lat
             if (trailp._cosmean == invalidLatLon) { trailp._cosmean = (float)Math.Cos(trailp.latitudeDegrees * DegToRad); }
             float dlat = point.LatitudeDegrees - trailp.latitudeDegrees;
             float dlon = point.LongitudeDegrees - trailp.longitudeDegrees;
             float result = dlat * dlat + dlon * dlon * trailp._cosmean;
 
+#if SQUARE_DISTANCE
+            return result;
+#else
             return EarthRadius * DegToRad * (float)Math.Sqrt(result);
+#endif
+#endif
         }
 
         public static float DistanceMetersToPointGpsSimple(IGPSPoint point, IGPSPoint point2)
         {
+#if NO_SIMPLE_DISTANCE
+            return point.DistanceMetersToPoint(point2);
+#else
             float _cosmean = (float)Math.Cos(point2.LatitudeDegrees * DegToRad);
             float dlat = point.LatitudeDegrees - point2.LatitudeDegrees;
             float dlon = point.LongitudeDegrees - point2.LongitudeDegrees;
             float result = dlat * dlat + dlon * dlon * _cosmean;
 
+#if SQUARE_DISTANCE
+            return result;
+#else
             return EarthRadius * DegToRad * (float)Math.Sqrt(result);
+#endif
+#endif
         }
 
+        public static float checkPass(float radius, IGPSPoint r1, float dt1, IGPSPoint r2, float dt2, TrailGPSLocation trailp, out float d)
+        {
+#if SQUARE_DISTANCE
+            const int sqrt2 = 2;
+#else
+            //Optimise, accuracy is down to percent
+            const float sqrt2 = 1.4142135623730950488016887242097F;
+#endif
+            d = float.MaxValue;
+            float factor = -1;
+            if (r1 == null || r2 == null || trailp == null) return factor;
+
+            //Check if the line goes via the "circle" if the sign changes
+            //Also need to check close points that fit in a 45 deg tilted "square" where sign may not change
+
+            //Optimise for all conditions tested - property access takes some time
+            float tplat = trailp.latitudeDegrees;
+            float tplon = trailp.longitudeDegrees;
+            float r1lat = r1.LatitudeDegrees;
+            float r1lon = r1.LongitudeDegrees;
+            float r2lat = r2.LatitudeDegrees;
+            float r2lon = r2.LongitudeDegrees;
+            if (r1lat > tplat && r2lat < tplat ||
+                r1lat < tplat && r2lat > tplat ||
+                r1lon > tplon && r2lon < tplon ||
+                r1lon < tplon && r2lon > tplon ||
+                dt1 < radius * sqrt2 && dt2 < radius * sqrt2)
+            {
+                //Law of cosines - get a1, angle at r1, the first point
+                float d12 = TrailGPSLocation.DistanceMetersToPointGpsSimple(r1, r2);
+#if SQUARE_DISTANCE
+                float a1_0 = (float)((dt1 + d12 - dt2) / (2 * Math.Sqrt(dt1 * d12)));
+#else
+                float a1_0 = (dt1 * dt1 + d12 * d12 - dt2 * dt2) / (2 * dt1 * d12);
+#endif
+
+                //Point is in circle if closest point is between r1&r2 and it is in circle (neither r1 nor r2 is)
+                //This means the angle a1 must be +/- 90 degrees : cos(a1)>=0
+                if (a1_0 > -0.001)
+                {
+                    //Rounding errors w GPS measurements
+                    a1_0 = Math.Min(a1_0, 1);
+                    a1_0 = Math.Max(a1_0, -1);
+                    float a1 = (float)Math.Acos(a1_0);
+                    //x is closest point to t on r1-r2 
+                    //Dist from r1 to x
+                    float d1x = (float)Math.Abs(dt1 * a1_0); //a1_0 = (float)Math.Cos(a1);
+                    //Dist from t1 to x
+                    float dtx = dt1 * (float)Math.Sin(a1);
+                    if (d1x < d12 && dtx < radius)
+                    {
+                        d = dtx;
+                        factor = (float)(d1x / d12);
+                        //Return factor, to return best aproximation from r1
+                    }
+                }
+            }
+            return factor;
+        }
+
+/*****************************************************************************/
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius)
         {
             return getGPSBounds(list, radius, false);

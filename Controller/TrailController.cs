@@ -167,12 +167,7 @@ namespace TrailsPlugin.Controller
             return m_CurrentOrderedTrails;
         }
 
-        //Clear trail results, do not affect trail calculations
-        public void Clear()
-        {
-            this.Clear(false);
-        }
-
+        //Clear trail results
         public void Clear(bool onlyDisplay)
         {
             foreach (ActivityTrail t in this.OrderedTrails())

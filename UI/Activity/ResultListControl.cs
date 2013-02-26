@@ -941,7 +941,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.m_page.RefreshChart();
             }
-                //Trails track display update
+            //Trails track display update
             if (Data.Settings.ShowOnlyMarkedOnRoute)
             {
                 this.m_page.RefreshRoute(false);
@@ -1008,6 +1008,11 @@ namespace TrailsPlugin.UI.Activity {
             }
             m_page.RefreshData(false);
             this.SelectedResultWrapper = selected;
+            if (Data.Settings.ShowOnlyMarkedOnRoute)
+            {
+                this.m_page.RefreshRoute(false);
+            }
+            this.m_page.RefreshChart();
         }
 
         private enum InsertCategoryTypes { CurrentCategory, SelectedTree, All };
@@ -1349,7 +1354,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    elevationFix();
+                    this.elevationFix();
                 }
             }
             else if (e.KeyCode == Keys.I)

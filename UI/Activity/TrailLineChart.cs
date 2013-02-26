@@ -1408,10 +1408,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (clearRefreshData)
                 {
-                    foreach (TrailResult t in TrailResults)
-                    {
-                        t.Clear(true);
-                    }
+                    Controller.TrailController.Instance.Clear(true);
                 }
                 m_page.RefreshControlState();
                 m_page.RefreshChart();

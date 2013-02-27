@@ -150,13 +150,13 @@ namespace TrailsPlugin.UI.Activity
             this.chkTemporaryTrail.Checked = this.m_TrailToEdit.IsTemporary;
             this.chkName.Checked = this.m_TrailToEdit.IsNameMatch;
             this.chkCompleteActivity.Checked = this.m_TrailToEdit.IsCompleteActivity;
-            this.chkAutoTryAll.Checked = this.m_TrailToEdit.IsAutoTryAll;
+            //this.chkAutoTryAll.Checked = this.m_TrailToEdit.IsAutoTryAll;
 
             this.chkTwoWay.CheckedChanged += new System.EventHandler(this.chkTwoWay_CheckedChanged);
             this.chkTemporaryTrail.CheckedChanged += new System.EventHandler(this.chkTemporaryTrail_CheckedChanged);
             this.chkName.CheckedChanged += new System.EventHandler(this.chkName_CheckedChanged);
             this.chkCompleteActivity.CheckedChanged += new System.EventHandler(this.chkCompleteActivity_CheckedChanged);
-            this.chkAutoTryAll.CheckedChanged += new System.EventHandler(this.chkAutoTryAll_CheckedChanged);
+            //this.chkAutoTryAll.CheckedChanged += new System.EventHandler(this.chkAutoTryAll_CheckedChanged);
 #if ST_2_1
             this.EList.SelectedChanged += new System.EventHandler(EList_SelectedItemsChanged);
 #else
@@ -190,7 +190,7 @@ namespace TrailsPlugin.UI.Activity
             this.toolTip.SetToolTip(this.chkTwoWay, "Two-way Match");
             this.toolTip.SetToolTip(this.chkName, "Match by Name");
             this.toolTip.SetToolTip(this.chkCompleteActivity, "Match Complete Activity");
-            this.toolTip.SetToolTip(this.chkAutoTryAll, "Calculate Trail in automatic updates");
+            //this.toolTip.SetToolTip(this.chkAutoTryAll, "Calculate Trail in automatic updates");
         }
 
         public void UpdatePointFromMap(TrailGPSLocation point)
@@ -869,9 +869,9 @@ namespace TrailsPlugin.UI.Activity
             this.m_TrailToEdit.IsCompleteActivity = !this.m_TrailToEdit.IsCompleteActivity;
         }
 
-        private void chkAutoTryAll_CheckedChanged(object sender, EventArgs e)
-        {
-            this.m_TrailToEdit.IsAutoTryAll = !this.m_TrailToEdit.IsAutoTryAll;
-        }
+        //private void chkAutoTryAll_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    this.m_TrailToEdit.IsAutoTryAll = !this.m_TrailToEdit.IsAutoTryAll;
+        //}
     }
 }

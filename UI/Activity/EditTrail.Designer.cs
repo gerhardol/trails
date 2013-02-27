@@ -29,7 +29,7 @@
             this.chkTwoWay = new System.Windows.Forms.CheckBox();
             this.chkName = new System.Windows.Forms.CheckBox();
             this.chkCompleteActivity = new System.Windows.Forms.CheckBox();
-            this.chkAutoTryAll = new System.Windows.Forms.CheckBox();
+            //this.chkAutoTryAll = new System.Windows.Forms.CheckBox();
             this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnRefresh = new ZoneFiveSoftware.Common.Visuals.Button();
@@ -102,16 +102,16 @@
             // 
             // chkAutoTryAll
             // 
-            this.chkAutoTryAll.AutoSize = true;
-            this.chkAutoTryAll.Checked = true;
-            this.chkAutoTryAll.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAutoTryAll.Location = new System.Drawing.Point(252, 302);
-            this.chkAutoTryAll.Name = "chkAutoTryAll";
-            this.chkAutoTryAll.Size = new System.Drawing.Size(15, 14);
-            this.chkAutoTryAll.TabIndex = 29;
-            this.toolTip.SetToolTip(this.chkAutoTryAll, ">Auto TryAll");
-            this.chkAutoTryAll.UseVisualStyleBackColor = true;
-            this.chkAutoTryAll.Visible = false;
+            //this.chkAutoTryAll.AutoSize = true;
+            //this.chkAutoTryAll.Checked = true;
+            //this.chkAutoTryAll.CheckState = System.Windows.Forms.CheckState.Checked;
+            //this.chkAutoTryAll.Location = new System.Drawing.Point(252, 302);
+            //this.chkAutoTryAll.Name = "chkAutoTryAll";
+            //this.chkAutoTryAll.Size = new System.Drawing.Size(15, 14);
+            //this.chkAutoTryAll.TabIndex = 29;
+            //this.toolTip.SetToolTip(this.chkAutoTryAll, ">Auto TryAll");
+            //this.chkAutoTryAll.UseVisualStyleBackColor = true;
+            //this.chkAutoTryAll.Visible = false;
             // 
             // btnCopy
             // 
@@ -535,7 +535,7 @@
             this.Controls.Add(this.chkCompleteActivity);
             this.Controls.Add(this.btnReverse);
             this.Controls.Add(this.chkName);
-            this.Controls.Add(this.chkAutoTryAll);
+            //this.Controls.Add(this.chkAutoTryAll);
             this.Controls.Add(this.chkTwoWay);
             this.Controls.Add(this.chkTemporaryTrail);
             this.Controls.Add(this.btnExport);
@@ -579,7 +579,7 @@
         private ZoneFiveSoftware.Common.Visuals.Button btnRefresh;
         private System.Windows.Forms.CheckBox chkTemporaryTrail;
         private System.Windows.Forms.CheckBox chkTwoWay;
-        private System.Windows.Forms.CheckBox chkAutoTryAll;
+        //private System.Windows.Forms.CheckBox chkAutoTryAll;
         private System.Windows.Forms.CheckBox chkName;
         private ZoneFiveSoftware.Common.Visuals.Button btnReverse;
         private System.Windows.Forms.CheckBox chkCompleteActivity;

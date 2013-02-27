@@ -1823,7 +1823,14 @@ namespace TrailsPlugin.Data
                 elevationTrack0.SetValueAt(i, elevationTrack0[i].Value + offset);
             }
 
+            INumericTimeDataSeries t = this.m_deviceElevationTrack0;
+            if (t == null || t.Count==0)
+            {
+                //Save "original" data as device track
+                t = this.m_elevationMetersTrack0;
+            }
             this.Clear(false);
+            this.m_deviceElevationTrack0 = t;
             this.m_elevationMetersTrack0 = elevationTrack0;
 
             return 0;

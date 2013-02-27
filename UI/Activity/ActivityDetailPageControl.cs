@@ -321,7 +321,10 @@ namespace TrailsPlugin.UI.Activity {
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
                         {
                             m.Click += new MouseEventHandler(mapPoly_Click);
-                            routes.Add(m.key, m);
+                            if (!routes.ContainsKey(m.key))
+                            {
+                                routes.Add(m.key, m);
+                            }
                         }
                     }
                 }

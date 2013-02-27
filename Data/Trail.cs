@@ -45,7 +45,7 @@ namespace TrailsPlugin.Data
         private bool m_isTemporary = false;
         private bool m_isNameMatch = false;
         private bool m_isCompleteActivity = false;
-        private bool m_isAutoTryAll = true;
+        //private bool m_isAutoTryAll = true;
 
         private CalcType m_CalcType = Trail.CalcType.TrailPoints;
         private bool m_splits = false;
@@ -99,7 +99,7 @@ namespace TrailsPlugin.Data
             result.BiDirectional = this.BiDirectional;
             result.IsNameMatch = this.IsNameMatch;
             result.IsCompleteActivity = this.IsCompleteActivity;
-            result.IsAutoTryAll = this.IsAutoTryAll;
+            //result.IsAutoTryAll = this.IsAutoTryAll;
             result.IsTemporary = this.IsTemporary;
 
             if (this.TrailType == CalcType.Splits && activity != null && this.TrailLocations.Count == 0)
@@ -286,17 +286,17 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public bool IsAutoTryAll
-        {
-            get
-            {
-                return m_isAutoTryAll;
-            }
-            set
-            {
-                m_isAutoTryAll = value;
-            }
-        }
+        //public bool IsAutoTryAll
+        //{
+        //    get
+        //    {
+        //        return m_isAutoTryAll;
+        //    }
+        //    set
+        //    {
+        //        m_isAutoTryAll = value;
+        //    }
+        //}
 
         public IActivity ReferenceActivity
         {
@@ -508,10 +508,10 @@ namespace TrailsPlugin.Data
             {
                 trail.IsCompleteActivity = XmlConvert.ToBoolean(node.Attributes[xmlTags.sCompleteActivity].Value);
             }
-            if (node.Attributes[xmlTags.sAutoTryAll] != null)
-            {
-                trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
-            }
+            //if (node.Attributes[xmlTags.sAutoTryAll] != null)
+            //{
+            //    trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
+            //}
             trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
@@ -569,12 +569,12 @@ namespace TrailsPlugin.Data
                 a.Value = XmlConvert.ToString(this.IsCompleteActivity);
                 trailNode.Attributes.Append(a);
             }
-            if (!this.IsAutoTryAll)
-            {
-                a = doc.CreateAttribute(xmlTags.sAutoTryAll);
-                a.Value = XmlConvert.ToString(this.IsAutoTryAll);
-                trailNode.Attributes.Append(a);
-            }
+            //if (!this.IsAutoTryAll)
+            //{
+            //    a = doc.CreateAttribute(xmlTags.sAutoTryAll);
+            //    a.Value = XmlConvert.ToString(this.IsAutoTryAll);
+            //    trailNode.Attributes.Append(a);
+            //}
             foreach (TrailGPSLocation point in this.TrailLocations)
             {
                 trailNode.AppendChild(point.ToXml(doc));
@@ -593,7 +593,7 @@ namespace TrailsPlugin.Data
             public const string sBiDirectional = "bidirectional";
             public const string sNameMatch = "namematch";
             public const string sCompleteActivity = "completeactivity";
-            public const string sAutoTryAll = "autotryall";
+            //public const string sAutoTryAll = "autotryall";
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }
 

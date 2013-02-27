@@ -1231,6 +1231,10 @@ namespace TrailsPlugin.Data
             {
                 return this.Status > to2.Status ? 1 : -1;
             }
+            else if (this.Trail.TrailPriority != to2.Trail.TrailPriority)
+            {
+                return (this.Trail.TrailPriority < to2.Trail.TrailPriority) ? 1 : -1;
+            }
             else if (this.Status == TrailOrderStatus.InBoundNoCalc)
             {
                 return this.m_inBound.Count < to2.m_inBound.Count ? 1 : -1;

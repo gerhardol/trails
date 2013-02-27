@@ -39,6 +39,7 @@ namespace TrailsPlugin.Data
             trail.Generated = true;
             trail.IsSplits = true;
             trail.TrailType = Trail.CalcType.Splits;
+            trail.TrailPriority = -9;
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
@@ -46,6 +47,7 @@ namespace TrailsPlugin.Data
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.Generated = true;
             trail.IsReference = true;
+            trail.TrailPriority = -9;
             allTrails.Add(trail.Id, trail);
 
             //HighScore Trail
@@ -53,6 +55,7 @@ namespace TrailsPlugin.Data
             trail.Name = Properties.Resources.HighScore_Trail;
             trail.Generated = true;
             trail.TrailType = Trail.CalcType.HighScore;
+            trail.TrailPriority = -9;
             allTrails.Add(trail.Id, trail);
 
             return allTrails;

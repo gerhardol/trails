@@ -432,7 +432,7 @@ namespace TrailsPlugin.Controller
                     if (reCalc ||
                         this.m_activities.Count * TrailData.AllTrails.Values.Count <=
                             Settings.MaxAutoCalcActivitiesTrails &&
-                        at.Trail.IsAutoTryAll)
+                        at.Trail.TrailPriority >= -1)
                     {
                         at.CalcResults(progressBar);
                     }

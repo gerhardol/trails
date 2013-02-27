@@ -45,6 +45,7 @@ namespace TrailsPlugin.Data
         private bool m_isTemporary = false;
         private bool m_isNameMatch = false;
         private bool m_isCompleteActivity = false;
+        private int m_trailPriority = 0;
         //private bool m_isAutoTryAll = true;
 
         private CalcType m_CalcType = Trail.CalcType.TrailPoints;
@@ -298,6 +299,18 @@ namespace TrailsPlugin.Data
         //    }
         //}
 
+        public int TrailPriority
+        {
+            get
+            {
+                return m_trailPriority;
+            }
+            set
+            {
+                m_trailPriority = value;
+            }
+        }
+
         public IActivity ReferenceActivity
         {
             get
@@ -512,6 +525,10 @@ namespace TrailsPlugin.Data
             //{
             //    trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
             //}
+            if (node.Attributes[xmlTags.sTrailPriority] != null)
+            {
+                trail.TrailPriority = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sTrailPriority].Value);
+            }
             trail.TrailLocations.Clear();
 			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
 				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
@@ -575,6 +592,12 @@ namespace TrailsPlugin.Data
             //    a.Value = XmlConvert.ToString(this.IsAutoTryAll);
             //    trailNode.Attributes.Append(a);
             //}
+            if (this.TrailPriority != 0)
+            {
+                a = doc.CreateAttribute(xmlTags.sTrailPriority);
+                a.Value = XmlConvert.ToString(this.TrailPriority);
+                trailNode.Attributes.Append(a);
+            }
             foreach (TrailGPSLocation point in this.TrailLocations)
             {
                 trailNode.AppendChild(point.ToXml(doc));
@@ -593,6 +616,7 @@ namespace TrailsPlugin.Data
             public const string sBiDirectional = "bidirectional";
             public const string sNameMatch = "namematch";
             public const string sCompleteActivity = "completeactivity";
+            public const string sTrailPriority = "trailpriority";
             //public const string sAutoTryAll = "autotryall";
             public const string sTrailGPSLocation = "TrailGPSLocation";
         }

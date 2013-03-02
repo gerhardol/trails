@@ -1319,14 +1319,14 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (this.m_controller.ReferenceTrailResult != null)
                     {
-                        TrailResult.DeviceElevationFromOther = !TrailResult.DeviceElevationFromOther;
+                        TrailsPlugin.Data.Settings.DeviceElevationFromOther = !TrailsPlugin.Data.Settings.DeviceElevationFromOther;
                         this.m_page.RefreshData(true);
                         this.m_page.RefreshChart();
                     }
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
-                    TrailResult.UseDeviceElevationForCalc = !TrailResult.UseDeviceElevationForCalc;
+                    TrailsPlugin.Data.Settings.UseDeviceElevationForCalc = !TrailsPlugin.Data.Settings.UseDeviceElevationForCalc;
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }

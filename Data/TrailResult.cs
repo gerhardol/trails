@@ -1513,7 +1513,7 @@ namespace TrailsPlugin.Data
         public INumericTimeDataSeries CalcElevationMetersTrack0(TrailResult refRes)
         {
             INumericTimeDataSeries etrack = null;
-            if (UseDeviceElevationForCalc)
+            if (TrailsPlugin.Data.Settings.UseDeviceElevationForCalc)
             {
                 etrack = this.DeviceElevationTrack0(this.m_cacheTrackRef);
             }
@@ -1765,7 +1765,6 @@ namespace TrailsPlugin.Data
             return deviceElevationTrack0;
         }
 
-        public static bool DeviceElevationFromOther = false;
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes, int eleSmooth)
         {
             checkCacheRef(refRes);
@@ -1777,7 +1776,7 @@ namespace TrailsPlugin.Data
                     deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, eleSmooth,
                        new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 }
-                else if (DeviceElevationFromOther)
+                else if (TrailsPlugin.Data.Settings.DeviceElevationFromOther)
                 {
                     //Get device elevation from other activity
                     foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
@@ -2012,7 +2011,6 @@ namespace TrailsPlugin.Data
 
         //TBD optimise Minimize use of ElevationMetersTrack0() as well as GetInterpolatedValue() 
         //TODO timeofday
-        public static bool UseDeviceElevationForCalc = false; 
         private void calcGradeRunAdjustedTime(TrailResult refRes)
         {
             checkCacheRef(refRes);

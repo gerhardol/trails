@@ -57,6 +57,8 @@ namespace TrailsPlugin.Data
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
         private static float m_predictDistance = 10000;
         private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
+        private static bool m_deviceElevationFromOther = false;
+        private static bool m_useDeviceElevationForCalc = false;
         private static float[,] m_AdjustDiffSplitTimes = null;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
@@ -353,6 +355,29 @@ namespace TrailsPlugin.Data
                 m_RunningGradeAdjustMethod = value;
             }
         }
+        public static bool DeviceElevationFromOther
+        {
+            get
+            {
+                return m_deviceElevationFromOther;
+            }
+            set
+            {
+                m_deviceElevationFromOther = value;
+            }
+        }
+        public static bool UseDeviceElevationForCalc
+        {
+            get
+            {
+                return m_useDeviceElevationForCalc;
+            }
+            set
+            {
+                m_useDeviceElevationForCalc = value;
+            }
+        }
+
         ///
         ///Make diff to ideal time adjusted to grade
         public static float[,] AdjustDiffSplitTimes
@@ -441,6 +466,10 @@ namespace TrailsPlugin.Data
                 catch { }
                 attr = pluginNode.GetAttribute(xmlTags.PredictDistance);
                 if (attr.Length > 0) { m_predictDistance = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sDeviceElevationFromOther);
+                if (attr.Length > 0) { DeviceElevationFromOther = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sUseDeviceElevationForCalc);
+                if (attr.Length > 0) { UseDeviceElevationForCalc = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sRunningGradeAdjustMethod);
                 try
                 {
@@ -579,6 +608,8 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
             pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
             pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_predictDistance));
+            pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_deviceElevationFromOther));
+            pluginNode.SetAttribute(xmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_useDeviceElevationForCalc));
             pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
             String colText = null;
             //if (m_AdjustDiffSplitTimes != null)
@@ -655,7 +686,9 @@ namespace TrailsPlugin.Data
             public const string sRunningGradeAdjustMethod = "sRunningGradeAdjustMethod";
             public const string sAdjustDiffSplitTimes = "sAdjustDiffSplitTimes";
             public const string sResultSummaryStdDev = "sResultSummaryStdDev";
- 
+            public const string sDeviceElevationFromOther = "sDeviceElevationFromOther";
+            public const string sUseDeviceElevationForCalc = "sUseDeviceElevationForCalc";
+
             public const string sColumns = "sColumns";
         }
 

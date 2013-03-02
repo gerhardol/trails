@@ -65,7 +65,6 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_CtrlPressed = false;
         private Point m_MouseDownLocation;
         private System.Drawing.Point m_cursorLocationAtMouseMove;
-        internal static float FixedSyncGraphMode = 0;//Fix....
 
         //selecting in the chart
         private DateTime m_lastSelectingTime = DateTime.MinValue;
@@ -75,7 +74,7 @@ namespace TrailsPlugin.UI.Activity {
         private int m_selectedDataSetries = -1;
  
         const int MaxSelectedSeries = 6;
-        private static SyncGraphMode syncGraph = SyncGraphMode.None;
+        public static SyncGraphMode SyncGraph = SyncGraphMode.None;
         public TrailLineChart()
         {
             InitializeComponent();
@@ -761,7 +760,7 @@ namespace TrailsPlugin.UI.Activity {
                     INumericTimeDataSeries refGraphPoints = null;
                     LineChartTypes refChartType = chartType;
 
-                    if (syncGraph != SyncGraphMode.None)
+                    if (SyncGraph != SyncGraphMode.None)
                     {
                         if (chartType != LineChartUtil.ChartToAxis(chartType) && m_ChartTypes.Contains(LineChartUtil.ChartToAxis(chartType)))
                         {
@@ -905,9 +904,9 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }  //for all axis
 
-                if (syncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
+                if (SyncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
                 {
-                    ShowGeneralToolTip(syncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
+                    ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
                 }
 
                 ///////TrailPoints
@@ -965,8 +964,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
             }
-            float syncGraphOffset = LineChartUtil.getSyncGraphOffset(graphPoints, refGraphPoints, syncGraph);
-            TrailLineChart.FixedSyncGraphMode = syncGraphOffset;
+            float syncGraphOffset = LineChartUtil.getSyncGraphOffset(graphPoints, refGraphPoints, SyncGraph);
 
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
@@ -1294,25 +1292,30 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (e.Modifiers == Keys.Shift)
                     {
-                        if (syncGraph <= SyncGraphMode.None)
+                        if (SyncGraph <= SyncGraphMode.None)
                         {
-                            syncGraph = SyncGraphMode.Max;
+                            SyncGraph = SyncGraphMode.Max;
                         }
                         else
                         {
-                            syncGraph--;
+                            SyncGraph--;
                         }
                     }
                     else
                     {
-                        if (syncGraph >= SyncGraphMode.Max)
+                        if (SyncGraph >= SyncGraphMode.Max)
                         {
-                            syncGraph = SyncGraphMode.None;
+                            SyncGraph = SyncGraphMode.None;
                         }
                         else
                         {
-                            syncGraph++;
+                            SyncGraph++;
                         }
+                    }
+                    //This tooltip is shown at setup -show explicitly here
+                    if (SyncGraph == SyncGraphMode.None)
+                    {
+                        ShowGeneralToolTip(SyncGraph.ToString()); //TODO: Translate
                     }
                 }
             }

@@ -135,7 +135,7 @@ namespace TrailsPlugin.Data
         private static IActivity m_cacheTrackActivity;
         private static IDictionary<IActivity, IItemTrackSelectionInfo[]> m_commonStretches;
         private static ActivityInfoOptions m_TrailActivityInfoOptions;
-        internal IList<IActivity> SameTimeActivities = null;
+        //internal IList<IActivity> SameTimeActivities = null;
         #endregion
 
         /**********************************************************/
@@ -1187,7 +1187,7 @@ namespace TrailsPlugin.Data
             get
             {
                 float value = 0;
-                INumericTimeDataSeries elevationTrack = ElevationMetersTrack0(m_cacheTrackRef);
+                INumericTimeDataSeries elevationTrack = CalcElevationMetersTrack0(m_cacheTrackRef);
                 if (elevationTrack != null && elevationTrack.Count > 1)
                 {
                     value = (float)UnitUtil.Elevation.ConvertTo(
@@ -1241,7 +1241,7 @@ namespace TrailsPlugin.Data
         #region tracks
         private bool checkCacheRef(TrailResult refRes)
         {
-            if (refRes == null || refRes != m_cacheTrackRef)
+            if (refRes == null || refRes != this.m_cacheTrackRef)
             {
                 //Clear cache where ref (possibly null) has been used
                 Clear(true);
@@ -1510,6 +1510,20 @@ namespace TrailsPlugin.Data
             return m_distanceMetersTrack0;
         }
 
+        public INumericTimeDataSeries CalcElevationMetersTrack0(TrailResult refRes)
+        {
+            INumericTimeDataSeries etrack = null;
+            if (UseDeviceElevationForCalc)
+            {
+                etrack = this.DeviceElevationTrack0(this.m_cacheTrackRef);
+            }
+            if (etrack == null || etrack.Count == 0)
+            {
+                return this.ElevationMetersTrack0(this.m_cacheTrackRef);
+            }
+            return etrack;
+        }
+
         public INumericTimeDataSeries ElevationMetersTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1526,8 +1540,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_gradeTrack0 == null)
             {
+                //xxx calculate from CalcElevation, handle pauses
+                //TBD Use smoothed Elevation track, then calc grade
                 m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
                     new Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
+                //float pDist = 0;
+                //float pEle = 0;
+                //bool first = true;
+                //foreach (ITimeValueEntry<float> entry in this.CalcElevationMetersTrack0(refRes)
+                //{
+                //    flot dist = this.
             }
             return m_gradeTrack0;
         }
@@ -1710,34 +1732,81 @@ namespace TrailsPlugin.Data
             return m_deviceSpeedPaceTrack0;
         }
 
+        public INumericTimeDataSeries DeviceElevationTrack0()
+        {
+            return DeviceElevationTrack0(this.m_cacheTrackRef, TrailActivityInfoOptions.ElevationSmoothingSeconds);
+        }
+
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes)
         {
             return DeviceElevationTrack0(refRes, TrailActivityInfoOptions.ElevationSmoothingSeconds);
         }
 
+        private INumericTimeDataSeries DeviceElevationTrackFromActivity(TrailResult refRes, IActivity activity, int eleSmooth)
+        {
+            INumericTimeDataSeries deviceElevationTrack0 = null;
+            if (activity != null && activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 1)
+            {
+                //aprox end
+                const int maxTimeDiff = 5;
+                DateTime start2 = activity.ElevationMetersTrack.StartTime.AddSeconds(maxTimeDiff);
+                DateTime end2 = start2.AddSeconds(activity.ElevationMetersTrack.TotalElapsedSeconds - maxTimeDiff);
+                if (start2 <= this.StartTime && this.EndTime <= end2)
+                {
+                    deviceElevationTrack0 = copySmoothTrack(activity.ElevationMetersTrack, true, eleSmooth,
+                           new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                    float offset = LineChartUtil.getSyncGraphOffset(deviceElevationTrack0, this.ElevationMetersTrack0(refRes), UI.Activity.TrailLineChart.SyncGraph); 
+                    for (int i = 0; i < deviceElevationTrack0.Count; i++)
+                    {
+                        deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + offset);
+                    }
+                }
+            }
+            return deviceElevationTrack0;
+        }
+
+        public static bool DeviceElevationFromOther = false;
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes, int eleSmooth)
         {
             checkCacheRef(refRes);
             if (m_deviceElevationTrack0 == null || eleSmooth != TrailActivityInfoOptions.ElevationSmoothingSeconds)
             {
-                INumericTimeDataSeries deviceElevationTrack0 = new NumericTimeDataSeries();
+                INumericTimeDataSeries deviceElevationTrack0 = null;
                 if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
                 {
                     deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, eleSmooth,
                        new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 }
-                else if (this.SameTimeActivities != null)
+                else if (DeviceElevationFromOther)
                 {
-                    foreach (IActivity activity in this.SameTimeActivities)
+                    //Get device elevation from other activity
+                    foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                     {
-                        if (activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 0)
+                        IActivity activity = trw.Result.Activity;
+                        deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, eleSmooth);
+                        if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
                         {
-                            deviceElevationTrack0 = copySmoothTrack(activity.ElevationMetersTrack, true, eleSmooth,
-                               new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                            break;
+                        }
+                    }
+                    if (deviceElevationTrack0 == null)
+                    {
+                        //TBD: Can "similar" activities be preferred?
+                        foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
+                        {
+                            deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, eleSmooth);
+                            if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
 
+                if (deviceElevationTrack0 == null)
+                {
+                    deviceElevationTrack0 = new NumericTimeDataSeries();
+                }
                 if (TrailActivityInfoOptions.ElevationSmoothingSeconds == eleSmooth)
                 {
                     m_deviceElevationTrack0 = deviceElevationTrack0;
@@ -1751,6 +1820,7 @@ namespace TrailsPlugin.Data
             return m_deviceElevationTrack0;
         }
 
+        //Set elevation track (TBD gps?) from the "calculated" elevation track
         internal int SetDeviceElevation()
         {
             INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(this.m_cacheTrackRef, 0);
@@ -1799,42 +1869,42 @@ namespace TrailsPlugin.Data
             return 0;
         }
 
-        internal int SetDeviceElevationOffset()
-        {
-            if (this.Activity != null && this.Activity.ElevationMetersTrack != null &&
-                this.Activity.ElevationMetersTrack.Count > 0 && Settings.ChartType == LineChartTypes.Elevation &&
-                UI.Activity.TrailLineChart.FixedSyncGraphMode != 0)
-            {
-                for (int i = 0; i < this.ElevationMetersTrack.Count; i++)
-                {
-                    this.ElevationMetersTrack.SetValueAt(i, this.ElevationMetersTrack[i].Value - UI.Activity.TrailLineChart.FixedSyncGraphMode);
-                }
-            }
-            return 0;
-        }
+        //internal int SetDeviceElevationOffset()
+        //{
+        //    if (this.Activity != null && this.Activity.ElevationMetersTrack != null &&
+        //        this.Activity.ElevationMetersTrack.Count > 0 && Settings.ChartType == LineChartTypes.Elevation &&
+        //        UI.Activity.TrailLineChart.FixedSyncGraphMode != 0)
+        //    {
+        //        for (int i = 0; i < this.ElevationMetersTrack.Count; i++)
+        //        {
+        //            this.ElevationMetersTrack.SetValueAt(i, this.ElevationMetersTrack[i].Value - UI.Activity.TrailLineChart.FixedSyncGraphMode);
+        //        }
+        //    }
+        //    return 0;
+        //}
 
-        internal int SetExternalElevation(INumericTimeDataSeries eTrack)
-        {
-            INumericTimeDataSeries elevationTrack0 = copySmoothTrack(eTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                   new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
-            float offset = this.ElevationMetersTrack.Avg - elevationTrack0.Avg;
-            for (int i = 0; i < elevationTrack0.Count; i++)
-            {
-                elevationTrack0.SetValueAt(i, elevationTrack0[i].Value + offset);
-            }
+        //internal int SetExternalElevation(INumericTimeDataSeries eTrack)
+        //{
+        //    INumericTimeDataSeries elevationTrack0 = copySmoothTrack(eTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+        //           new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+        //    float offset = this.ElevationMetersTrack.Avg - elevationTrack0.Avg;
+        //    for (int i = 0; i < elevationTrack0.Count; i++)
+        //    {
+        //        elevationTrack0.SetValueAt(i, elevationTrack0[i].Value + offset);
+        //    }
 
-            INumericTimeDataSeries t = this.m_deviceElevationTrack0;
-            if (t == null || t.Count==0)
-            {
-                //Save "original" data as device track
-                t = this.m_elevationMetersTrack0;
-            }
-            this.Clear(false);
-            this.m_deviceElevationTrack0 = t;
-            this.m_elevationMetersTrack0 = elevationTrack0;
+        //    INumericTimeDataSeries t = this.m_deviceElevationTrack0;
+        //    if (t == null || t.Count==0)
+        //    {
+        //        //Save "original" data as device track
+        //        t = this.m_elevationMetersTrack0;
+        //    }
+        //    this.Clear(false);
+        //    this.m_deviceElevationTrack0 = t;
+        //    this.m_elevationMetersTrack0 = elevationTrack0;
 
-            return 0;
-        }
+        //    return 0;
+        //}
 
         public INumericTimeDataSeries DeviceDiffDistTrack0(TrailResult refRes)
         {
@@ -1942,7 +2012,7 @@ namespace TrailsPlugin.Data
 
         //TBD optimise Minimize use of ElevationMetersTrack0() as well as GetInterpolatedValue() 
         //TODO timeofday
-        public static bool UseNormalElevation = true; 
+        public static bool UseDeviceElevationForCalc = false; 
         private void calcGradeRunAdjustedTime(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1957,16 +2027,8 @@ namespace TrailsPlugin.Data
                 float prevVal = 0;
                 float? prevElev = null;
                 float prevDist = 0;
-                INumericTimeDataSeries eleTrack;
-                if (UseNormalElevation)
-                {
-                    eleTrack = this.ElevationMetersTrack0(this.m_cacheTrackRef);
-                }
-                else
-                {
-                    eleTrack = this.DeviceElevationTrack0(this.m_cacheTrackRef);
-                }
-
+                INumericTimeDataSeries eleTrack = this.CalcElevationMetersTrack0(this.m_cacheTrackRef);
+                
                 foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                 {
                     //TODO insert when sparse

@@ -428,7 +428,8 @@ namespace TrailsPlugin.Utils
         {
             float syncGraphOffset = 0;
             if (graphPoints != refGraphPoints &&
-                refGraphPoints != null && refGraphPoints.Count > 1)
+                refGraphPoints != null && refGraphPoints.Count > 1 &&
+                graphPoints != null && graphPoints.Count > 1)
             {
                 switch (syncGraph)
                 {

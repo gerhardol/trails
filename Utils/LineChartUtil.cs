@@ -68,7 +68,7 @@ namespace TrailsPlugin.Utils
         Distance //NotUsedInTrails
     }
 
-    public class LineChartUtil
+    public static class LineChartUtil
     {
         public static string SmoothOverTrailBordersString(SmoothOverTrailBorders t)
         {
@@ -422,6 +422,45 @@ namespace TrailsPlugin.Utils
                     }
             }
             return track;
+        }
+
+        public static float getSyncGraphOffset(INumericTimeDataSeries graphPoints, INumericTimeDataSeries refGraphPoints, SyncGraphMode syncGraph)
+        {
+            float syncGraphOffset = 0;
+            if (graphPoints != refGraphPoints &&
+                refGraphPoints != null && refGraphPoints.Count > 1)
+            {
+                switch (syncGraph)
+                {
+                    case SyncGraphMode.None:
+                        break;
+                    case SyncGraphMode.Start:
+                        syncGraphOffset = refGraphPoints[0].Value - graphPoints[0].Value;
+                        break;
+                    case SyncGraphMode.End:
+                        syncGraphOffset = refGraphPoints[refGraphPoints.Count - 1].Value - graphPoints[graphPoints.Count - 1].Value;
+                        break;
+                    case SyncGraphMode.Average:
+                        syncGraphOffset = refGraphPoints.Avg - graphPoints.Avg;
+                        break;
+                    case SyncGraphMode.Min:
+                        syncGraphOffset = refGraphPoints.Min - graphPoints.Min;
+                        break;
+                    case SyncGraphMode.Max:
+                        syncGraphOffset = refGraphPoints.Max - graphPoints.Max;
+                        break;
+                    default:
+                        {
+                            Debug.Assert(false);
+                            break;
+                        }
+                }
+                if (float.IsNaN(syncGraphOffset) || float.IsInfinity(syncGraphOffset))
+                {
+                    syncGraphOffset = 0;
+                }
+            }
+            return syncGraphOffset;
         }
     }
 }

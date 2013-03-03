@@ -1317,12 +1317,9 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    if (this.m_controller.ReferenceTrailResult != null)
-                    {
-                        TrailsPlugin.Data.Settings.DeviceElevationFromOther = !TrailsPlugin.Data.Settings.DeviceElevationFromOther;
-                        this.m_page.RefreshData(true);
-                        this.m_page.RefreshChart();
-                    }
+                    TrailsPlugin.Data.Settings.DeviceElevationFromOther = !TrailsPlugin.Data.Settings.DeviceElevationFromOther;
+                    this.m_page.RefreshData(true);
+                    this.m_page.RefreshChart();
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {

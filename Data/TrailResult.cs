@@ -1749,8 +1749,8 @@ namespace TrailsPlugin.Data
             {
                 //aprox end
                 const int maxTimeDiff = 5;
-                DateTime start2 = activity.ElevationMetersTrack.StartTime.AddSeconds(maxTimeDiff);
-                DateTime end2 = start2.AddSeconds(activity.ElevationMetersTrack.TotalElapsedSeconds - maxTimeDiff);
+                DateTime start2 = activity.ElevationMetersTrack.StartTime.AddSeconds(-maxTimeDiff);
+                DateTime end2 = start2.AddSeconds(activity.ElevationMetersTrack.TotalElapsedSeconds + maxTimeDiff);
                 if (start2 <= this.StartTime && this.EndTime <= end2)
                 {
                     deviceElevationTrack0 = copySmoothTrack(activity.ElevationMetersTrack, true, eleSmooth,

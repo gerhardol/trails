@@ -1524,6 +1524,11 @@ namespace TrailsPlugin.Data
             return etrack;
         }
 
+        public INumericTimeDataSeries ElevationMetersTrack0()
+        {
+            return this.ElevationMetersTrack0(this.m_cacheTrackRef);
+        }
+
         public INumericTimeDataSeries ElevationMetersTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);

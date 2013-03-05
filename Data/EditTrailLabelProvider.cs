@@ -30,6 +30,7 @@ namespace TrailsPlugin.Data
         private TrailGPSLocation m_gpsLoc;
         private int m_resultPointIndex;
         internal double? m_distance;
+        internal double? m_elevation;
         internal double? m_time;
         internal double m_diff = float.NaN;
         
@@ -69,9 +70,16 @@ namespace TrailsPlugin.Data
             {
                 try
                 {
+                    //Elapsed time/distance is for the activity
                     m_distance = UnitUtil.Distance.ConvertFrom(tr.getDistActivity(d1), tr.Activity);
-                    //Elapsed time is for the activity
                     m_time = tr.getTimeActivity(d1);
+                    //Could use activity info cache elevation too
+                    INumericTimeDataSeries track = tr.ElevationMetersTrack0();
+                    if (track != null && track.Count > 1 &&
+                        d1 >= track.StartTime && d1 <= track.EntryDateTime(track[track.Count - 1]))
+                    {
+                        m_elevation = track.GetInterpolatedValue(d1).Value;
+                    }
                 }
                 catch 
                 { }
@@ -165,6 +173,9 @@ namespace TrailsPlugin.Data
             Data.EditTrailRow row = (EditTrailRow)(element);
             switch (column.Id)
             {
+                case "Required":
+                    return null;
+
                 case "Distance":
                     if (row.m_distance != null)
                     {
@@ -183,10 +194,28 @@ namespace TrailsPlugin.Data
                     {
                         return "";
                     }
+                case "ResultElevation":
+                    if(row.m_elevation==null || float.IsNaN((float)row.m_elevation))
+                    {
+                        return "";
+                    }
+                    else
+                    {
+                        return UnitUtil.Elevation.ToString((double)row.m_elevation, "u");
+                    }
                 case "Diff":
                     return UnitUtil.Elevation.ToString(row.m_diff, "u");
 
-                default:
+                case "ElevationMeters":
+                    if (float.IsNaN(row.TrailGPS.ElevationMeters))
+                    {
+                        return "";
+                    }
+                    else
+                    {
+                        return UnitUtil.Elevation.ToString(row.TrailGPS.ElevationMeters, "u");
+                    }
+                default: //All TrailGPS
                     return base.GetText(row.TrailGPS, column);
             }
         }

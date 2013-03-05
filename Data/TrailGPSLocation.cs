@@ -445,11 +445,16 @@ namespace TrailsPlugin.Data
             switch (subItemSelected)
             {
                 case 0:
+                    subItemText = null;
+                    break;
                 case 1:
                     subItemText = this.LongitudeDegrees.ToString();
                     break;
                 case 2:
                     subItemText = this.LatitudeDegrees.ToString();
+                    break;
+                case 4:
+                    subItemText = GpsRunningPlugin.Util.UnitUtil.Elevation.ToString(this.ElevationMeters);
                     break;
                 default:
                     subItemText = this.Name;
@@ -486,7 +491,17 @@ namespace TrailsPlugin.Data
             }
             else if (subItemSelected == 3)
             {
+                //Name
                 valid = 0;
+            }
+            else if (subItemSelected == 4)
+            {
+                //Elevation
+                pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
+                if (!float.IsNaN(pos))
+                {
+                    valid = 0;
+                }
             }
 
             if (valid == 0)
@@ -499,8 +514,7 @@ namespace TrailsPlugin.Data
                     case 2:
                         this.latitudeDegrees = pos;
                         break;
-                    case 99:
-                        //Not yet implemented
+                    case 4:
                         this.elevationMeters = pos;
                         break;
                     default:

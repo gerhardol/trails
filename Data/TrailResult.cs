@@ -1535,21 +1535,52 @@ namespace TrailsPlugin.Data
             return m_elevationMetersTrack0;
         }
 
+        public static bool CalculateGrade = false;
         public INumericTimeDataSeries GradeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
             if (m_gradeTrack0 == null)
             {
-                //xxx calculate from CalcElevation, handle pauses
-                //TBD Use smoothed Elevation track, then calc grade
-                m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
-                //float pDist = 0;
-                //float pEle = 0;
-                //bool first = true;
-                //foreach (ITimeValueEntry<float> entry in this.CalcElevationMetersTrack0(refRes)
-                //{
-                //    flot dist = this.
+                //Some temporary handling of Grade. The standard ST Grade smooth grade after finding grade which smooth too much
+                //Use smoothed elevation instead should give better representaion, but it seems like to need some combination
+                //Put in cadence track, to compare for now
+                //if (!CalculateGrade)
+                {
+                    m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+                        new Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
+                }
+                if (CalculateGrade && this.Activity.CadencePerMinuteTrack==null)
+                //else
+                {
+                    //Use smoothed Elevation track, then calc grade
+                    float pDist = 0;
+                    float pEle = 0;
+                    double pTime = 0;
+                    bool first = true;
+                    INumericTimeDataSeries track = this.CalcElevationMetersTrack0(refRes);
+                    m_cadencePerMinuteTrack0 = new NumericTimeDataSeries();
+                    foreach (ITimeValueEntry<float> entry in track)
+                    {
+                        DateTime d = track.EntryDateTime(entry);
+                        float dist = this.getDistResult(d);
+                        float ele = entry.Value;
+                        double time = this.getTimeResult(d);
+                        if (!first)
+                        {
+                            first = false;
+                            if (dist > pDist && time > pTime)
+                            {
+                                //TBD slow speed smooth
+                                m_cadencePerMinuteTrack0.Add(d, 100 * (ele - pEle) / (dist - pDist));
+                            }
+                        }
+                        first = false;
+                        pDist = dist;
+                        pEle = ele;
+                        pTime = time;
+
+                    }
+                }
             }
             return m_gradeTrack0;
         }

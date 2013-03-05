@@ -1330,7 +1330,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.F)
             {
-                //Unofficial
+                //Unofficial shortcuts
                 if (e.Modifiers == Keys.Control)
                 {
                     if (this.m_controller.ReferenceTrailResult != null)
@@ -1339,11 +1339,12 @@ namespace TrailsPlugin.UI.Activity {
                         this.m_page.RefreshData(true);
                     }
                 }
-                //else if (e.Modifiers == Keys.Shift)
-                //{
-                //    m_controller.ReferenceTrailResult.SetDeviceElevationOffset();
-                //    m_page.RefreshData(true);
-                //}
+                else if (e.Modifiers == Keys.Alt)
+                {
+                    TrailResult.CalculateGrade = !TrailResult.CalculateGrade;
+                    m_page.RefreshData(true);
+                    this.m_page.RefreshChart();
+                }
             }
             else if (e.KeyCode == Keys.I)
             {

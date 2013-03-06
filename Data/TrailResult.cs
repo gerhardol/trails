@@ -618,6 +618,29 @@ namespace TrailsPlugin.Data
             }
             return dateTime;
         }
+
+        //As elevation source can be configured, keep it here
+        public double? getElevation(DateTime d1)
+        {
+            //Could use activity info cache elevation too
+            double? elevation = null;
+            INumericTimeDataSeries track = this.ElevationMetersTrack0();
+            if (track != null && track.Count > 1 &&
+                d1 >= track.StartTime && d1 <= track.EntryDateTime(track[track.Count - 1]))
+            {
+                elevation = track.GetInterpolatedValue(d1).Value;
+            }
+            else
+            {
+                track = ActivityInfoCache.Instance.GetInfo(this.Activity).SmoothedElevationTrack;
+                if (track != null && track.Count > 1 &&
+                    d1 >= track.StartTime && d1 <= track.EntryDateTime(track[track.Count - 1]))
+                {
+                    elevation = track.GetInterpolatedValue(d1).Value;
+                }
+            }
+            return elevation;
+        }
         #endregion
 
         /**********************************************************/

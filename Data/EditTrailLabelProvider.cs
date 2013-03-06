@@ -73,13 +73,7 @@ namespace TrailsPlugin.Data
                     //Elapsed time/distance is for the activity
                     m_distance = UnitUtil.Distance.ConvertFrom(tr.getDistActivity(d1), tr.Activity);
                     m_time = tr.getTimeActivity(d1);
-                    //Could use activity info cache elevation too
-                    INumericTimeDataSeries track = tr.ElevationMetersTrack0();
-                    if (track != null && track.Count > 1 &&
-                        d1 >= track.StartTime && d1 <= track.EntryDateTime(track[track.Count - 1]))
-                    {
-                        m_elevation = track.GetInterpolatedValue(d1).Value;
-                    }
+                    m_elevation = tr.getElevation(d1);
                 }
                 catch 
                 { }

@@ -46,8 +46,7 @@ namespace TrailsPlugin.UI.Activity
         private IDailyActivityView m_view;
 #endif
         private TrailResult m_trailResult;
-        private /*readonly*/ int cDistCol;
-        private /*readonly*/ int cTimeCol;
+        private /*readonly*/ int cMaxEditColumn;
 
         private MouseEventArgs m_lastMouseArg = null;
         private string m_subItemText;
@@ -400,15 +399,16 @@ namespace TrailsPlugin.UI.Activity
 
             this.EList.Columns.Clear();
             this.EList.CheckBoxes = true;
-            this.EList.Columns.Add(new TreeList.Column("Required", Properties.Resources.Required, 20, StringAlignment.Far));
-            this.EList.Columns.Add(new TreeList.Column("LongitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Longitude, 70, StringAlignment.Far));
-            this.EList.Columns.Add(new TreeList.Column("LatitudeDegrees", Properties.Resources.UI_Activity_EditTrail_Latitude, 70, StringAlignment.Far));
-            this.EList.Columns.Add(new TreeList.Column("Name", CommonResources.Text.LabelName, 80, StringAlignment.Near));
-            this.cDistCol = EList.Columns.Count;
-            this.EList.Columns.Add(new TreeList.Column("Distance", CommonResources.Text.LabelDistance, 60, StringAlignment.Far));
-            this.cTimeCol = EList.Columns.Count;
-            this.EList.Columns.Add(new TreeList.Column("Time", CommonResources.Text.LabelTime, 60, StringAlignment.Far));
-            this.EList.Columns.Add(new TreeList.Column("Diff", "Diff", 60, StringAlignment.Far)); //TBD Translate
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Required, Properties.Resources.Required, 20, StringAlignment.Far));
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.LongitudeDegrees, Properties.Resources.UI_Activity_EditTrail_Longitude, 70, StringAlignment.Far));
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.LatitudeDegrees, Properties.Resources.UI_Activity_EditTrail_Latitude, 70, StringAlignment.Far));
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Name, CommonResources.Text.LabelName, 80, StringAlignment.Near));
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.ElevationMeters, CommonResources.Text.LabelElevation, 60, StringAlignment.Far));
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Distance, CommonResources.Text.LabelDistance, 60, StringAlignment.Far));
+            this.cMaxEditColumn = EList.Columns.Count;
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Time, CommonResources.Text.LabelTime, 60, StringAlignment.Far));
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Diff, "Diff", 60, StringAlignment.Far)); //TBD Translate
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.ResultElevation, CommonResources.Text.LabelElevation, 60, StringAlignment.Far));
 
             RefreshResult(false);
 
@@ -579,7 +579,7 @@ namespace TrailsPlugin.UI.Activity
         private void ValidateEdit()
         {
             IList<EditTrailRow> t = (IList<EditTrailRow>)this.EList.RowData;
-            if (this.m_subItemSelected == cDistCol)
+            if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.Distance)
             {
                 try
                 {
@@ -589,7 +589,7 @@ namespace TrailsPlugin.UI.Activity
                 }
                 catch { }
             }
-            else if (this.m_subItemSelected == cTimeCol)
+            else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.Time)
             {
                 try
                 {
@@ -601,10 +601,27 @@ namespace TrailsPlugin.UI.Activity
             }
             else
             {
+                //TrailGPS fields
+                if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.LatitudeDegrees)
+                {
+                    t[this.m_rowDoubleClickSelected].TrailGPS.SetLatitude(editBox.Text);
+                }
+                else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.LongitudeDegrees)
+                {
+                    t[this.m_rowDoubleClickSelected].TrailGPS.SetLongitude(editBox.Text);
+                }
+                else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.Name)
+                {
+                    t[this.m_rowDoubleClickSelected].TrailGPS.Name = editBox.Text;
+                }
+                else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.ElevationMeters)
+                {
+                    t[this.m_rowDoubleClickSelected].TrailGPS.SetElevation(editBox.Text);
+                }
                 //Note: result need to be recalculated to be accurate. However, the recalc could find other results,
-                //let the user do this manually
+                //let the user request recalc manually
                 t[this.m_rowDoubleClickSelected].UpdateRow(this.m_trailResult,
-                    t[this.m_rowDoubleClickSelected].TrailGPS.setField(this.m_subItemSelected, editBox.Text));
+                    t[this.m_rowDoubleClickSelected].TrailGPS);
             }
             this.EList.RowData = t;
             this.m_layer.TrailPoints = this.m_TrailToEdit.TrailLocations;
@@ -666,7 +683,7 @@ namespace TrailsPlugin.UI.Activity
                     spos = epos;
                 }
                 //Only edit first rows
-                if (this.m_subItemSelected <= cTimeCol)
+                if (this.m_subItemSelected <= cMaxEditColumn)
                 {
                     this.m_subItemText = (new EditTrailLabelProvider()).GetText(t, this.EList.Columns[this.m_subItemSelected]);
                     ///The positioning is incorrect, set at header

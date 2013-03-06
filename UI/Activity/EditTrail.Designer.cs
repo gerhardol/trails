@@ -218,7 +218,7 @@
             this.btnOk.HyperlinkStyle = false;
             this.btnOk.ImageMargin = 2;
             this.btnOk.LeftImage = null;
-            this.btnOk.Location = new System.Drawing.Point(283, 297);
+            this.btnOk.Location = new System.Drawing.Point(394, 297);
             this.btnOk.Name = "btnOk";
             this.btnOk.PushStyle = true;
             this.btnOk.RightImage = null;
@@ -239,7 +239,7 @@
             this.btnCancel.HyperlinkStyle = false;
             this.btnCancel.ImageMargin = 2;
             this.btnCancel.LeftImage = null;
-            this.btnCancel.Location = new System.Drawing.Point(368, 297);
+            this.btnCancel.Location = new System.Drawing.Point(476, 297);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.PushStyle = true;
             this.btnCancel.RightImage = null;
@@ -495,7 +495,7 @@
             this.EList.RowSeparatorLines = true;
             this.EList.ShowLines = false;
             this.EList.ShowPlusMinus = false;
-            this.EList.Size = new System.Drawing.Size(449, 233);
+            this.EList.Size = new System.Drawing.Size(569, 233);
             this.EList.TabIndex = 11;
             this.EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
             this.EList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EList_KeyDown);
@@ -529,7 +529,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(455, 325);
+            this.ClientSize = new System.Drawing.Size(555, 325);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.chkCompleteActivity);

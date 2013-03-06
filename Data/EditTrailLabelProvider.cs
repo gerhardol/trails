@@ -173,10 +173,10 @@ namespace TrailsPlugin.Data
             Data.EditTrailRow row = (EditTrailRow)(element);
             switch (column.Id)
             {
-                case "Required":
+                case EditTrailColumnIds.Required:
                     return null;
 
-                case "Distance":
+                case EditTrailColumnIds.Distance:
                     if (row.m_distance != null)
                     {
                         return UnitUtil.Distance.ToString((double)row.m_distance, "u", false);
@@ -185,7 +185,7 @@ namespace TrailsPlugin.Data
                     {
                         return "";
                     }
-                case "Time":
+                case EditTrailColumnIds.Time:
                     if (row.m_time != null)
                     {
                         return UnitUtil.Time.ToString((double)row.m_time);
@@ -194,7 +194,7 @@ namespace TrailsPlugin.Data
                     {
                         return "";
                     }
-                case "ResultElevation":
+                case EditTrailColumnIds.ResultElevation:
                     if(row.m_elevation==null || float.IsNaN((float)row.m_elevation))
                     {
                         return "";
@@ -203,10 +203,10 @@ namespace TrailsPlugin.Data
                     {
                         return UnitUtil.Elevation.ToString((double)row.m_elevation, "u");
                     }
-                case "Diff":
+                case EditTrailColumnIds.Diff:
                     return UnitUtil.Elevation.ToString(row.m_diff, "u");
 
-                case "ElevationMeters":
+                case EditTrailColumnIds.ElevationMeters:
                     if (float.IsNaN(row.TrailGPS.ElevationMeters))
                     {
                         return "";
@@ -221,5 +221,18 @@ namespace TrailsPlugin.Data
         }
 
         #endregion
+    }
+
+    public class EditTrailColumnIds
+    {
+        public const string Required = "Required";
+        public const string LongitudeDegrees = "LongitudeDegrees";
+        public const string LatitudeDegrees = "LatitudeDegrees";
+        public const string Name = "Name";
+        public const string ElevationMeters = "ElevationMeters";
+        public const string Distance = "Distance";
+        public const string Time = "Time";
+        public const string Diff = "Diff";
+        public const string ResultElevation = "ResultElevation";
     }
 }

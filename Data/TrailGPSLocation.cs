@@ -147,8 +147,63 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //This code is shared in other plugins
+        //Special set functions - GPSLocation could be "new"
+        public void SetLatitude(string s)
+        {
+            float pos = float.NaN;
+            //check valid numbers
+            try
+            {
+                if (!float.TryParse(s, out pos))
+                {
+                    pos = float.NaN;
+                }
+            }
+            catch
+            {
+                pos = float.NaN;
+            }
+            if (!float.IsNaN(pos) && 180 < Math.Abs(pos))
+            {
+                this.latitudeDegrees = pos;
+                _cosmean = invalidLatLon;
+            }
+        }
+
+        public void SetLongitude(string s)
+        {
+            float pos = float.NaN;
+            //check valid numbers
+            try
+            {
+                if (!float.TryParse(s, out pos))
+                {
+                    pos = float.NaN;
+                }
+            }
+            catch
+            {
+                pos = float.NaN;
+            }
+            if (!float.IsNaN(pos) && 85 < Math.Abs(pos))
+            {
+                this.longitudeDegrees = pos;
+                _cosmean = invalidLatLon;
+            }
+        }
+
+        public void SetElevation(string s)
+        {
+            float pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
+            if (!float.IsNaN(pos))
+            {
+
+                this.elevationMeters = pos;
+            }
+        }
+
 #if TRAILSPLUGIN
+        //This code is shared in other plugins
         static public TrailGPSLocation FromXml(XmlNode node)
         {
             string name = "";
@@ -437,93 +492,5 @@ namespace TrailsPlugin.Data
 
             return new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
         }
-
-        // Some temporary handling, no bother proper
-        public string getField(int subItemSelected)
-        {
-            string subItemText;
-            switch (subItemSelected)
-            {
-                case 0:
-                    subItemText = null;
-                    break;
-                case 1:
-                    subItemText = this.LongitudeDegrees.ToString();
-                    break;
-                case 2:
-                    subItemText = this.LatitudeDegrees.ToString();
-                    break;
-                case 4:
-                    subItemText = GpsRunningPlugin.Util.UnitUtil.Elevation.ToString(this.ElevationMeters);
-                    break;
-                default:
-                    subItemText = this.Name;
-                    break;
-            }
-            return subItemText;
-        }
-
-        public TrailGPSLocation setField(int subItemSelected, string s)
-        {
-            float pos = float.NaN;
-            int valid = 1;
-            if (subItemSelected <= 2)
-            {
-                //check valid numbers
-                try
-                {
-                    if (!float.TryParse(s, out pos))
-                    {
-                        pos = float.NaN;
-                    }
-                }
-                catch
-                {
-                    pos = float.NaN;
-                }
-                if (!float.IsNaN(pos)
-                    || subItemSelected == 1 && 85 < Math.Abs(pos)
-                    || subItemSelected == 2 && 180 < Math.Abs(pos)
-                    )
-                {
-                    valid = 0;
-                }
-            }
-            else if (subItemSelected == 3)
-            {
-                //Name
-                valid = 0;
-            }
-            else if (subItemSelected == 4)
-            {
-                //Elevation
-                pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
-                if (!float.IsNaN(pos))
-                {
-                    valid = 0;
-                }
-            }
-
-            if (valid == 0)
-            {
-                switch (subItemSelected)
-                {
-                    case 1:
-                        this.longitudeDegrees = pos;
-                        break;
-                    case 2:
-                        this.latitudeDegrees = pos;
-                        break;
-                    case 4:
-                        this.elevationMeters = pos;
-                        break;
-                    default:
-                        this.Name = s;
-                        break;
-                }
-            }
-            _cosmean = invalidLatLon;
-            return this;
-        }
-	}
+    }
 }

@@ -411,7 +411,7 @@ namespace TrailsPlugin.Data
         private TrailOrderStatus CalcInboundResults(IActivity activity, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, int MaxRequiredMisses, bool reverse, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
-            TrailOrderStatus status = CalcTrail(activity, trailgps, locationBounds, this.Trail.Radius, this.Trail.MinDistance, MaxRequiredMisses, reverse, 0, this.Trail.IsCompleteActivity, trailResults, m_incompleteResults, progressBar);
+            TrailOrderStatus status = CalcTrail(activity, null, trailgps, locationBounds, this.Trail.Radius, this.Trail.MinDistance, MaxRequiredMisses, reverse, 0, this.Trail.IsCompleteActivity, trailResults, m_incompleteResults, progressBar);
 
             foreach (TrailResultInfo resultInfo in trailResults)
             {
@@ -433,7 +433,7 @@ namespace TrailsPlugin.Data
             return status;
         }
 
-        internal static TrailResultPoint GetClosestMatch(IActivity activity, IGPSLocation gps, float radius)
+        internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, IGPSLocation gps, float radius)
         {
             //A fix to get best point. 
             //Done rather that destroying trail detection furthe
@@ -441,7 +441,7 @@ namespace TrailsPlugin.Data
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>();
             IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { gps });
             //Force all results to be incomplete, to match all matches along a track (to avoid best match is thrown away)
-            GetTrailResultInfo(activity, trailgps, radius, false, 1, trailResults, incompleteResults);
+            GetTrailResultInfo(activity, pauses, trailgps, radius, false, 1, trailResults, incompleteResults);
 
             IList<TrailResultPoint> points = new List<TrailResultPoint>();
             foreach (TrailResultInfo l in trailResults)
@@ -469,13 +469,13 @@ namespace TrailsPlugin.Data
             return points[0];
         }
 
-        internal static TrailOrderStatus GetTrailResultInfo(IActivity activity, IList<IGPSLocation> gpsLoc,
+        internal static TrailOrderStatus GetTrailResultInfo(IActivity activity, IValueRangeSeries<DateTime> pauses, IList<IGPSLocation> gpsLoc,
             float radius, bool bidirectional, IList<TrailResultInfo> trailResults)
         {
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>(); //unused
             IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(gpsLoc);
 
-            TrailOrderStatus status = GetTrailResultInfo(activity, trailgps, radius, bidirectional, 0, trailResults, incompleteResults);
+            TrailOrderStatus status = GetTrailResultInfo(activity, pauses, trailgps, radius, bidirectional, 0, trailResults, incompleteResults);
 
             //Sort best match first
             ((List<TrailResultInfo>)trailResults).Sort();
@@ -483,7 +483,7 @@ namespace TrailsPlugin.Data
             return status;
         }
 
-        private static TrailOrderStatus GetTrailResultInfo(IActivity activity, IList<TrailGPSLocation> trailgps,
+        private static TrailOrderStatus GetTrailResultInfo(IActivity activity, IValueRangeSeries<DateTime> pauses, IList<TrailGPSLocation> trailgps,
             float radius, bool bidirectional, int maxPoints, IList<TrailResultInfo> trailResults, IList<ActivityTrail.IncompleteTrailResult> incompleteResults)
         {
             TrailOrderStatus status = TrailOrderStatus.NoInfo;
@@ -494,7 +494,7 @@ namespace TrailsPlugin.Data
                 locationBounds.Add(TrailGPSLocation.getGPSBounds(new List<TrailGPSLocation> { l }, 10 * radius));
             }
 
-            status = CalcTrail(activity, trailgps, locationBounds,
+            status = CalcTrail(activity, pauses, trailgps, locationBounds,
                 radius, 0, 0, false, maxPoints, false, trailResults, incompleteResults, null);
             if (bidirectional && trailgps.Count > 1 && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
             {
@@ -505,7 +505,7 @@ namespace TrailsPlugin.Data
                     trailgpsReverse.Add(trailgps[i]);
                     locationBoundsReverse.Add(locationBounds[i]);
                 }
-                TrailOrderStatus status2 = CalcTrail(activity, trailgpsReverse, locationBoundsReverse,
+                TrailOrderStatus status2 = CalcTrail(activity, pauses, trailgpsReverse, locationBoundsReverse,
                     radius, 0, 0, true, maxPoints, false, trailResults, incompleteResults, null);
                 status = BestCalcStatus(status, status2);
             }
@@ -526,7 +526,7 @@ namespace TrailsPlugin.Data
         /// <param name="incompleteResults"></param>
         /// <param name="progressBar"></param>
         /// <returns></returns>
-        private static TrailOrderStatus CalcTrail(IActivity activity, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, 
+        private static TrailOrderStatus CalcTrail(IActivity activity, IValueRangeSeries<DateTime> pauses, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, 
             float radius, float minDistance, int MaxRequiredMisses, bool reverse, int maxResultPoints, bool isComplete,
             IList<TrailResultInfo> trailResults, IList<IncompleteTrailResult> incompleteResults, System.Windows.Forms.ProgressBar progressBar)
         {
@@ -632,6 +632,11 @@ namespace TrailsPlugin.Data
                     if (minDistance > 0 && matchPoint.Time != DateTime.MinValue && currResult.CurrMatches > 0 && dTrack != null && currResult.LastMatchIndex >= 0 && matchPoint.index > 0 &&
                               minDistance > (dTrack[matchPoint.index].Value - dTrack[currResult.LastMatchIndex].Value))
                     {
+                        matchPoint = null;
+                    }
+                    else if (pauses != null && matchPoint.Time != DateTime.MinValue && ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(matchPoint.Time, pauses))
+                    {
+                        //selection outside the interesting bounds
                         matchPoint = null;
                     }
                     else

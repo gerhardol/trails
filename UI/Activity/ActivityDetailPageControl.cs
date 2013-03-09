@@ -517,7 +517,7 @@ namespace TrailsPlugin.UI.Activity {
                     int i = 5;
                     while (status != TrailOrderStatus.Match && i-- > 0)
                     {
-                        status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, trailgps, radius, true, trailResults);
+                        status = ActivityTrail.GetTrailResultInfo(m.TrailRes.Activity, m.TrailRes.ExternalPauses, trailgps, radius, true, trailResults);
                         radius *= 2;
                     }
                     if (status == TrailOrderStatus.Match)
@@ -563,13 +563,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Show position on chart at "first click" or section not found
-                if (!sectionFound)
+                else
+                    //if (!sectionFound)
                 {
                     TrailResultPoint t = null;
                     int i = 4; //Smaller max then for "trail" detection, max around 8m
                     while (t == null && i-- > 0)
                     {
-                        t = ActivityTrail.GetClosestMatch(m.TrailRes.Activity, egps, radius);
+                        t = ActivityTrail.GetClosestMatch(m.TrailRes.Activity, m.TrailRes.ExternalPauses, egps, radius);
                         radius *= 2;
                     }
                     if (t != null)

@@ -507,6 +507,10 @@ namespace GpsRunningPlugin.Util
 
             public static double Parse(string p)
             {
+                if (string.IsNullOrEmpty(p))
+                {
+                    return double.NaN;
+                }
                 Length.Units unit = Unit;
                 return Length.ParseDistanceMeters(p, ref unit);
             }

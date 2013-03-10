@@ -27,14 +27,16 @@ namespace TrailsPlugin.Data
 	public static class TrailData 
     {
         private static SortedList<Guid, Data.Trail> m_AllTrails = defaultTrails();
-        
+        public static Data.Trail ElevationPointsTrail;
+   
         private static SortedList<Guid, Data.Trail> defaultTrails()
         {
             SortedList<Guid, Data.Trail> allTrails = new SortedList<Guid, Data.Trail>();
             //GUIDs could be dynamic or constants too
+            Data.Trail trail;
 
             //Splits Trail
-            Data.Trail trail = new Data.Trail(GUIDs.SplitsTrail);
+            trail = new Data.Trail(GUIDs.SplitsTrail);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.Generated = true;
             trail.IsSplits = true;
@@ -58,25 +60,42 @@ namespace TrailsPlugin.Data
             trail.TrailPriority = -9;
             allTrails.Add(trail.Id, trail);
 
+            //ElevationPoints Trail
+            trail = new Data.Trail(GUIDs.ElevationPointsTrail);
+            trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation;
+            trail.Generated = true;
+            trail.TrailType = Trail.CalcType.ElevationPoints;
+            trail.TrailPriority = -9;
+            trail.TrailLocations = new List<TrailGPSLocation>();
+            allTrails.Add(trail.Id, trail);
+            ElevationPointsTrail = trail;
+
             return allTrails;
         }
 
-		public static SortedList<Guid, Data.Trail> AllTrails
+        public static SortedList<Guid, Data.Trail> AllTrails
         {
-			get
+            get
             {
-				return m_AllTrails;
-			}
-		}
+                return m_AllTrails;
+            }
+        }
 
-        //A separate cache will require that m_AllTrails/m_referenceTrail_Activity is init in the same structure
-        //public static Data.Trail ReferenceTrail_Activity
-        //{
-        //    get
-        //    {
-        //        return m_referenceTrail_Activity;
-        //    }
-        //}
+        private static void AddElevationPoints(Data.Trail trail)
+        {
+            if (!trail.Generated)
+            {
+                foreach (TrailGPSLocation t in trail.TrailLocations)
+                {
+                    if (!trail.Generated && !float.IsNaN(t.ElevationMeters))
+                    {
+                        TrailGPSLocation l = new TrailGPSLocation(t);
+                        l.Name = trail.Name;
+                        ElevationPointsTrail.TrailLocations.Add(l);
+                    }
+                }
+            }
+        }
 
         public static Trail GetFromName(string trailName)
         {
@@ -101,6 +120,7 @@ namespace TrailsPlugin.Data
             }
             trail.Id = System.Guid.NewGuid();
             m_AllTrails.Add(trail.Id, trail);
+            AddElevationPoints(trail);
             Plugin.WriteExtensionData();
             return true;
         }
@@ -118,7 +138,12 @@ namespace TrailsPlugin.Data
             if (m_AllTrails.ContainsKey(trail.Id))
             {
 				m_AllTrails[trail.Id] = trail;
-				Plugin.WriteExtensionData();
+                ElevationPointsTrail.TrailLocations.Clear();
+                foreach (Trail t in m_AllTrails.Values)
+                {
+                    AddElevationPoints(t);
+                }
+                Plugin.WriteExtensionData();
 				return true;
 			} 
             else 
@@ -132,7 +157,12 @@ namespace TrailsPlugin.Data
             if (m_AllTrails.ContainsKey(trail.Id))
             {
                 m_AllTrails.Remove(trail.Id);
-				Plugin.WriteExtensionData();
+                ElevationPointsTrail.TrailLocations.Clear();
+                foreach (Trail t in m_AllTrails.Values)
+                {
+                    AddElevationPoints(t);
+                }
+                Plugin.WriteExtensionData();
 				return true;
 			}
             else
@@ -140,6 +170,7 @@ namespace TrailsPlugin.Data
 				return false;
 			}
 		}
+
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
             String attr;
@@ -155,6 +186,7 @@ namespace TrailsPlugin.Data
             {
                 Data.Trail trail = Data.Trail.FromXml(node);
                 m_AllTrails.Add(trail.Id, trail);
+                AddElevationPoints(trail);
             }
         }
 
@@ -171,6 +203,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
 
         }
+
         private static class xmlTags
         {
             public const string tTrails = "tTrails";

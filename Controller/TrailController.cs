@@ -426,7 +426,7 @@ namespace TrailsPlugin.Controller
                 //Is InBounds is separated here to simplify profiling
                 //There is not much point in calculating generated trails
                 //(reference could maybe be interesting to see no of matches)
-                if (at.IsInBounds && at.Status != TrailOrderStatus.MatchNoCalc)
+                if (at.IsInBounds && at.Status != TrailOrderStatus.MatchNoCalc && at.Trail.TrailType != Trail.CalcType.ElevationPoints)
                 {
 
                     if (reCalc ||

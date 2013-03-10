@@ -48,5 +48,6 @@ namespace TrailsPlugin {
         public static readonly Guid SplitsTrail    = new Guid("30681520-b220-11e0-a00b-0800200c9a66");
         public static readonly Guid ReferenceTrail = new Guid("30681521-b220-11e0-a00b-0800200c9a66");
         public static readonly Guid HighScoreTrail = new Guid("30681522-b220-11e0-a00b-0800200c9a66");
+        public static readonly Guid ElevationPointsTrail = new Guid("e5e19350-89c3-11e2-9e96-0800200c9a66");
     }
 }

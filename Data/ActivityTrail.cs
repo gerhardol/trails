@@ -81,6 +81,11 @@ namespace TrailsPlugin.Data
                 //By default, always match
                 this.m_status = TrailOrderStatus.MatchNoCalc;
             }
+            else if (this.m_trail.TrailType == Trail.CalcType.ElevationPoints)
+            {
+                //By default, never match
+                this.m_status = TrailOrderStatus.NotInstalled;
+            }
             else if (this.m_trail.IsReference)
             {
                 if (this.m_trail.ReferenceActivity != null && this.m_trail.ReferenceActivity.GPSRoute != null)
@@ -303,7 +308,7 @@ namespace TrailsPlugin.Data
                 {
                     IList<TrailGPSLocation> trailgps = null;
                     IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
-                    if (m_trail.TrailType == Trail.CalcType.TrailPoints)
+                    if (m_trail.TrailType == Trail.CalcType.TrailPoints || m_trail.TrailType == Trail.CalcType.ElevationPoints)
                     {
                         trailgps = m_trail.TrailLocations;
                         int noNonReq = 0;
@@ -333,7 +338,7 @@ namespace TrailsPlugin.Data
                         else
                         {
                             TrailOrderStatus activityStatus = TrailOrderStatus.NoInfo;
-                            if (trailgps.Count > 0)
+                            if (trailgps != null && trailgps.Count > 0)
                             {
                                 bool inBound = this.m_inBound.Contains(activity);
 
@@ -433,15 +438,39 @@ namespace TrailsPlugin.Data
             return status;
         }
 
+        internal static IList<TrailResultPoint> CalcElevationPoints(IActivity activity, IValueRangeSeries<DateTime> pauses)
+        {
+            IList<TrailResultPoint> result = new List<TrailResultPoint>();
+            foreach (TrailGPSLocation l in TrailData.ElevationPointsTrail.TrailLocations)
+            {
+                IList<TrailResultPoint> points = ActivityTrail.GetClosestMatches(activity, pauses, l);
+                foreach (TrailResultPoint t in points)
+                {
+                    if (t.Time > DateTime.MinValue)
+                    {
+                        result.Add(t);
+                    }
+                }
+            }
+            ((List<TrailResultPoint>)result).Sort();
+            return result;
+        }
+
         internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, IGPSLocation gps, float radius)
+        {
+            TrailGPSLocation trailgps = new TrailGPSLocation(gps);
+            trailgps.Radius = radius;
+            return GetClosestMatch(activity, pauses, trailgps);
+        }
+
+        internal static IList<TrailResultPoint> GetClosestMatches(IActivity activity, IValueRangeSeries<DateTime> pauses, TrailGPSLocation trailgps)
         {
             //A fix to get best point. 
             //Done rather that destroying trail detection furthe
             IList<TrailResultInfo> trailResults = new List<TrailResultInfo>(); //Unused
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>();
-            IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(new List<IGPSLocation> { gps });
             //Force all results to be incomplete, to match all matches along a track (to avoid best match is thrown away)
-            GetTrailResultInfo(activity, pauses, trailgps, radius, false, 1, trailResults, incompleteResults);
+            GetTrailResultInfo(activity, pauses, new List<TrailGPSLocation>{trailgps}, trailgps.Radius, false, 1, trailResults, incompleteResults);
 
             IList<TrailResultPoint> points = new List<TrailResultPoint>();
             foreach (TrailResultInfo l in trailResults)
@@ -461,6 +490,12 @@ namespace TrailsPlugin.Data
                     }
                 }
             }
+            return points;
+        }
+
+        internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, TrailGPSLocation trailgps)
+        {
+            IList<TrailResultPoint> points = GetClosestMatches(activity, pauses, trailgps);
             ((List<TrailResultPoint>)points).Sort();
             if (points.Count == 0)
             {

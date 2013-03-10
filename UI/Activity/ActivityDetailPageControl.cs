@@ -504,13 +504,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 m_currentSelectedMapResult = m.TrailRes;
 
-                bool sectionFound = false;
+                //bool sectionFound = false;
                 //Use pixels to get radius from zoom level, to get click limit. (Tests indicate the limit is about 7 pixels.) Affects pass-by trail detection too
                 float radius = Math.Max(1, m_layerMarked.getRadius(10));
                 IGPSLocation egps = m_layerRoutes.GetGps(e.Location);
 
                 if (m_currentSelectedMapLocation != null)
                 {
+                    //A previous match existed, try to find a section
                     IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
                     IList<IGPSLocation> trailgps = new List<IGPSLocation> { m_currentSelectedMapLocation, egps };
                     TrailOrderStatus status = TrailOrderStatus.NoInfo;
@@ -545,7 +546,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrailResultMarked markedRange = new TrailResultMarked(m.TrailRes, time);
                         MultiCharts.SetSelectedResultRegions(m_currentSelectedMapRanges, markedRange);
                         MarkTrack(m_currentSelectedMapRanges, false, false);
-                        sectionFound = true;
+                        //sectionFound = true;
                         m_currentSelectedMapLocation = null;
                     }
                     else
@@ -564,6 +565,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 //Show position on chart at "first click" or section not found
                 else
+                    //Disable "show on chart if not found" as this hides the tooltip too
                     //if (!sectionFound)
                 {
                     TrailResultPoint t = null;

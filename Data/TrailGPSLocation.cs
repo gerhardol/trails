@@ -195,11 +195,8 @@ namespace TrailsPlugin.Data
         public void SetElevation(string s)
         {
             float pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
-            if (!float.IsNaN(pos))
-            {
-
-                this.elevationMeters = pos;
-            }
+            //Allow Nan here
+            this.elevationMeters = pos;
         }
 
 #if TRAILSPLUGIN

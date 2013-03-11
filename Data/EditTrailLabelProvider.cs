@@ -89,15 +89,21 @@ namespace TrailsPlugin.Data
             //        entry.Value.LatitudeDegrees,
             //        entry.Value.LongitudeDegrees);
             //}
-            IGPSPoint t = Utils.TrackUtil.getGpsLoc(tr.Activity, d1);
-            this.TrailGPS.GpsPoint = t;
-            SetDistance(tr, d1);
+            if (tr != null)
+            {
+                IGPSPoint t = Utils.TrackUtil.getGpsLoc(tr.Activity, d1);
+                this.TrailGPS.GpsPoint = t;
+                SetDistance(tr, d1);
+            }
         }
 
         public void UpdateRow(TrailResult tr, TrailGPSLocation t)
         {
             this.TrailGPS = t;
-            SetDistance(tr, tr.TrailPointDateTime[m_resultPointIndex]);
+            if (tr != null && m_resultPointIndex < tr.TrailPointDateTime.Count)
+            {
+                SetDistance(tr, tr.TrailPointDateTime[m_resultPointIndex]);
+            }
         }
 
         public static IList<EditTrailRow> getEditTrailRows(Trail tgps, TrailResult tr)

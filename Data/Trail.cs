@@ -143,10 +143,15 @@ namespace TrailsPlugin.Data
                 {
                     this.m_trailLocations = new List<TrailGPSLocation>();
                 }
-                foreach (TrailGPSLocation t in this.m_trailLocations)
+                if (this.TrailType != CalcType.ElevationPoints)
                 {
-                    t.Radius = this.m_radius;
+                    //TBD this may not be required at all
+                    foreach (TrailGPSLocation t in this.m_trailLocations)
+                    {
+                        t.Radius = this.m_radius;
+                    }
                 }
+
                 return m_trailLocations;
             }
             set

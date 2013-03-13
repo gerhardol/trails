@@ -596,9 +596,9 @@ namespace TrailsPlugin.UI.MapLayers
                 {
                     this.m_icon.radius = location.Radius;
                     this.m_icon.scaling = this.MapControl.Zoom;
-                    this.m_icon.icon = getCircle(this.MapControl, this.m_icon.radius, this.MouseEvents);
+                    this.m_icon.icon = getCircle(this.MapControl, this.m_icon.radius, true);
                 }
-                PointMapMarker pointOverlay = new PointMapMarker(location, m_icon.icon, MouseEvents);
+                PointMapMarker pointOverlay = new PointMapMarker(location, m_icon.icon, MouseEvents && (this.m_editTrail != null));
                 if (this.MouseEvents && location.Name != "DebugNotClickableDebug")
                 {
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);

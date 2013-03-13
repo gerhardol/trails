@@ -90,7 +90,9 @@ namespace TrailsPlugin.Data
                     if (!trail.Generated && !float.IsNaN(t.ElevationMeters))
                     {
                         TrailGPSLocation l = new TrailGPSLocation(t);
-                        l.Name = trail.Name;
+                        l.Name = trail.Name + " " + GpsRunningPlugin.Util.UnitUtil.Elevation.ToString(l.Radius, "u");
+                        //Set the trail radius to one of the points
+                        ElevationPointsTrail.Radius = l.Radius;
                         ElevationPointsTrail.TrailLocations.Add(l);
                     }
                 }

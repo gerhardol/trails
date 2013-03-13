@@ -120,8 +120,6 @@ namespace TrailsPlugin.UI.MapLayers
             set
             {
                 m_TrailPoints = value;
-                //Change scaling, if radius changes
-                m_scalingChanged = true;
                 RefreshOverlays(true);
             }
         }
@@ -133,7 +131,7 @@ namespace TrailsPlugin.UI.MapLayers
                 //Set selected area to include selected points, including radius and some more
                 if (value.Count > 0)
                 {
-                    //Assume all points have the same radius
+                    //Normal trails all have the same radius, should not be much difference anyway
                     float highlightRadius = value[0].Radius;
                     GPSBounds area = TrailGPSLocation.getGPSBounds(value, 4 * highlightRadius);
                     this.DoZoom(area);
@@ -197,7 +195,7 @@ namespace TrailsPlugin.UI.MapLayers
             }
             if (m_TrailPoints.Count > 0)
             {
-                //All points currently have the same radius
+                //Normal trails all have the same radius, should not be much difference anyway
                 float highlightRadius = m_TrailPoints[0].Radius;
                 IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * highlightRadius);
                 area = this.Union(area, area2);
@@ -591,16 +589,16 @@ namespace TrailsPlugin.UI.MapLayers
             }
 
             //TrailPoints
-            if ((m_scalingChanged || null == m_icon) && m_TrailPoints.Count > 0)
-            {
-                //All points have the same radius, at least now
-                float highlightRadius = m_TrailPoints[0].Radius;
-                m_icon = getCircle(this.MapControl, highlightRadius, this.MouseEvents);
-            }
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             foreach (TrailGPSLocation location in m_TrailPoints)
             {
-                PointMapMarker pointOverlay = new PointMapMarker(location, m_icon, MouseEvents);
+                if (this.m_icon.icon == null || this.m_icon.radius != location.Radius || this.m_icon.scaling != this.MapControl.Zoom)
+                {
+                    this.m_icon.radius = location.Radius;
+                    this.m_icon.scaling = this.MapControl.Zoom;
+                    this.m_icon.icon = getCircle(this.MapControl, this.m_icon.radius, this.MouseEvents);
+                }
+                PointMapMarker pointOverlay = new PointMapMarker(location, m_icon.icon, MouseEvents);
                 if (this.MouseEvents && location.Name != "DebugNotClickableDebug")
                 {
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
@@ -653,8 +651,15 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
+        private class MapIconCache
+        {
+            public MapIcon icon = null;
+            public double scaling = 0;
+            public float radius = 0;
+        }
+
         private bool m_scalingChanged = false;
-        MapIcon m_icon = null;
+        MapIconCache m_icon = new MapIconCache(); //Cache one icon, normally the same for all in a trail
         private bool m_routeSettingsChanged = false;
         private IDictionary<IGPSPoint, IMapOverlay> m_pointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
         private IDictionary<IList<IGPSPoint>, IMapOverlay> m_routeOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();

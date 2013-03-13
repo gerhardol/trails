@@ -110,9 +110,11 @@ namespace TrailsPlugin.Data
             }
             else
             {
+                result.m_trailLocations = new List<TrailGPSLocation>(); 
                 foreach (TrailGPSLocation t in this.TrailLocations)
                 {
-                    result.TrailLocations.Add(new TrailGPSLocation(t));
+                    TrailGPSLocation t2 = new TrailGPSLocation(t);
+                    result.m_trailLocations.Add(t2);
                 }
             }
             return result;
@@ -143,14 +145,6 @@ namespace TrailsPlugin.Data
                 {
                     this.m_trailLocations = new List<TrailGPSLocation>();
                 }
-                if (this.TrailType != CalcType.ElevationPoints)
-                {
-                    //TBD this may not be required at all
-                    foreach (TrailGPSLocation t in this.m_trailLocations)
-                    {
-                        t.Radius = this.m_radius;
-                    }
-                }
 
                 return m_trailLocations;
             }
@@ -171,9 +165,13 @@ namespace TrailsPlugin.Data
             {
                 m_radius = value;
                 m_gpsBounds = null;
-                foreach (TrailGPSLocation t in this.TrailLocations)
+                if (this.TrailType != CalcType.ElevationPoints)
                 {
-                    t.Radius = value;
+                    //Normal trails all have the same radius, for now
+                    foreach (TrailGPSLocation t in this.TrailLocations)
+                    {
+                        t.Radius = value;
+                    }
                 }
             }
         }
@@ -334,14 +332,14 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps)
+        public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps, float radius)
         {
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();
             foreach (IGPSLocation g in gps)
             {
                 if (g != null)
                 {
-                    results.Add(new TrailGPSLocation(g));
+                    results.Add(new TrailGPSLocation(g, radius));
                 }
             }
             return results;
@@ -544,6 +542,9 @@ namespace TrailsPlugin.Data
                         "#" + trail.TrailLocations.Count;
                 }
 			}
+            //Set radius - not stored per trail point
+            trail.Radius = trail.m_radius;
+
 			return trail;
 		}
 

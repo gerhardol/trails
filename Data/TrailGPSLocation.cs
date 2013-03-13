@@ -44,18 +44,22 @@ namespace TrailsPlugin.Data
             this._required = required;
             this._radius = radius;
         }
+
         public TrailGPSLocation(IGPSPoint gpsLoc, string name, bool required)
             : this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, gpsLoc.ElevationMeters, name, required, defaultRadius)
         {
         }
+
         public TrailGPSLocation(IGPSPoint gpsLoc) :
             this(gpsLoc, "", true)
         {
         }
-        public TrailGPSLocation(IGPSLocation gpsLoc) :
-            this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, float.NaN, "", true, defaultRadius)
+
+        public TrailGPSLocation(IGPSLocation gpsLoc, float radius) :
+            this(gpsLoc.LatitudeDegrees, gpsLoc.LongitudeDegrees, float.NaN, "", true, radius)
         {
         }
+
         public TrailGPSLocation(TrailGPSLocation trailLocation)
             : this(trailLocation.LatitudeDegrees, trailLocation.LongitudeDegrees, trailLocation.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
         {
@@ -238,6 +242,7 @@ namespace TrailsPlugin.Data
                 lon = Settings.parseFloat(node.Attributes[xmlTags.sLongitude].Value);
             }
 
+            //Note that radius must be set from trail
             return new TrailGPSLocation(lat, lon, elevation, name, required, defaultRadius);
         }
 #endif

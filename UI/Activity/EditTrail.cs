@@ -496,7 +496,7 @@ namespace TrailsPlugin.UI.Activity
             else
             {
                 IGPSLocation l = m_layer.GetCenterMap();
-                sel = new TrailGPSLocation(l);
+                sel = new TrailGPSLocation(l, this.m_TrailToEdit.Radius);
             }
 
             sel.Name += " " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionNew;

@@ -458,7 +458,7 @@ namespace TrailsPlugin.Data
 
         internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, IGPSLocation gps, float radius)
         {
-            TrailGPSLocation trailgps = new TrailGPSLocation(gps);
+            TrailGPSLocation trailgps = new TrailGPSLocation(gps, radius);
             trailgps.Radius = radius;
             return GetClosestMatch(activity, pauses, trailgps);
         }
@@ -508,7 +508,7 @@ namespace TrailsPlugin.Data
             float radius, bool bidirectional, IList<TrailResultInfo> trailResults)
         {
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>(); //unused
-            IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(gpsLoc);
+            IList<TrailGPSLocation> trailgps = Trail.TrailGpsPointsFromGps(gpsLoc, radius);
 
             TrailOrderStatus status = GetTrailResultInfo(activity, pauses, trailgps, radius, bidirectional, 0, trailResults, incompleteResults);
 

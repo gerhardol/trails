@@ -1010,12 +1010,17 @@ namespace TrailsPlugin.Data
                     }
                     if (isComplete)
                     {
-                        int i = 0;
-                        TrailResultPointMeta p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0);
+                        int i;
+                        TrailResultPointMeta p;
+
+                        i = 0;
+                        p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0);
+                        p.SetElevation(""); //No elevation point
                         resultInfo.Points.Insert(0, p);
 
                         i = activity.GPSRoute.Count - 1;
                         p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]), i, 1, i, 0);
+                        p.SetElevation("");
                         resultInfo.Points.Add(p);
 
                         //Note: No update of prevMatchIndex, allow multiple loops
@@ -1051,7 +1056,7 @@ namespace TrailsPlugin.Data
             }
             else
             {
-                //Intermediate point
+                // First/Intermediate point
             }
 
             if (trailgps.Count == 1)

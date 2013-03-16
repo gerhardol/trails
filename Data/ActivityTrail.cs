@@ -633,20 +633,27 @@ namespace TrailsPlugin.Data
                 //////////////////////////////
                 //All GPS points tested but search should maybe match
                 //Not meaningful for one point trails
-                if (routeIndex >= (activity_GPSRoute_Count - 1) && matchPoint == null && trailgps.Count > 1)
+                if (routeIndex >= (activity_GPSRoute_Count - 1) && matchPoint == null)
                 {
-                    bool required = trailgps[currResult.NextTrailGpsIndex].Required;
                     bool match = false;
-                    ///////////////////
-                    //Last point check for non required points - automatic match, so search can restart
-                    if (!required)
+                    if (trailgps.Count > 1)
                     {
-                        match = true;
+                        bool required = trailgps[currResult.NextTrailGpsIndex].Required;
+                        ///////////////////
+                        //Last point check for non required points - automatic match, so search can restart
+                        if (!required)
+                        {
+                            match = true;
+                        }
+                        else if (currResult.currRequiredMisses < MaxRequiredMisses)
+                        {
+                            //OK to miss this point. Set automatic match to start looking at prev match
+                            currResult.currRequiredMisses++;
+                            match = true;
+                        }
                     }
-                    else if (currResult.currRequiredMisses < MaxRequiredMisses)
+                    else if (isComplete && currResult.CurrMatches == 1)
                     {
-                        //OK to miss this point. Set automatic match to start looking at prev match
-                        currResult.currRequiredMisses++;
                         match = true;
                     }
 
@@ -972,7 +979,7 @@ namespace TrailsPlugin.Data
                 (maxResultPoints > 0 && maxResultPoints >= currResult.CurrMatches))
             {
                 //A result must have at least two matches, otherwise it is not possible to get distance etc
-                if (currResult.CurrMatches >= 2) //|| currResult.CurrMatches == 1 && isComplete)
+                if (currResult.CurrMatches >= 2 || currResult.CurrMatches == 1 && isComplete)
                 {
                     if (currResult.CurrMatches < currResult.Points.Count)
                     {

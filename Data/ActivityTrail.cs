@@ -676,9 +676,10 @@ namespace TrailsPlugin.Data
                     }
                     else
                     {
-                        routeIndex = updateResults(activity, currResult, trailResults, incompleteResults,
+                        int nextMatchIndex = updateResults(activity, currResult, trailResults, incompleteResults,
                             trailgps, maxResultPoints, ref currRequiredMisses, reverse, isComplete,
                             matchPoint, ref status);
+                        routeIndex = nextMatchIndex - 1; //routeIndex is always increased
                         //Clear cache, dist unknown to next point
                         prevPoint.index = -1;
                     }
@@ -925,7 +926,7 @@ namespace TrailsPlugin.Data
                 ///////////
                 //Check for pass-by
                 //This handling is very sensitive for single point trails, extra check required
-                else if (routeDist < radius * passByFactor && prevPoint.index >= 0 && routeIndex >= currResult.LastMatchOutsideRadius)
+                else if (routeDist < radius * passByFactor && prevPoint.index >= 0 && routeIndex > currResult.LastMatchOutsideRadius)
                 {
                     float d;
                     float factor = TrailGPSLocation.checkPass(radius,
@@ -964,9 +965,11 @@ namespace TrailsPlugin.Data
             currResult.Add(matchPoint);
 
             //Lowest value for next start point, updated at OK matches
-            //Also check if this is a partial or incomplete trail match
-            int prevMatchIndex = currResult.LastMatchIndex;
+            //Next match must at least be at last OK match (but may be in same radius)
+            //(If this was an automatic match (-1), set back the routeIndex)
+            int nextMatchIndex = currResult.NextOkMatch();
 
+            //(Possibly) update status for intermediate/incomplete results
             if (currResult.CurrMatches > 0)
             {
                 //At least one point match
@@ -980,7 +983,7 @@ namespace TrailsPlugin.Data
                 (maxResultPoints > 0 && maxResultPoints >= currResult.CurrMatches))
             {
                 //A result must have at least two matches, otherwise it is not possible to get distance etc
-                if (currResult.CurrMatches >= 2)
+                if (currResult.CurrMatches >= 2) //|| currResult.CurrMatches == 1 && isComplete)
                 {
                     if (currResult.CurrMatches < currResult.Points.Count)
                     {
@@ -1026,14 +1029,6 @@ namespace TrailsPlugin.Data
                         //Note: No update of prevMatchIndex, allow multiple loops
                     }
                     trailResults.Add(resultInfo);
-
-                    //To avoid "detection loops", the potential start for next trail must be after 
-                    //the first possible match for the first trail point
-                    //There must be some matches in the current result points
-                    prevMatchIndex = Math.Max(prevMatchIndex, currResult.FirstMatchOutsideRadius);
-
-                    //Actually, prevActivityMatchIndex could be set to getFirstMatchRadius() to allow overlapping results
-                    //Will decrease trail detection time slightly
                 }
                 else
                 {
@@ -1047,7 +1042,7 @@ namespace TrailsPlugin.Data
                     if (maxResultPoints <= 0)
                     {
                         //No match, abort further matches
-                        prevMatchIndex = activity.GPSRoute.Count;
+                        nextMatchIndex = activity.GPSRoute.Count;
                     }
                 }
 
@@ -1056,18 +1051,10 @@ namespace TrailsPlugin.Data
             }
             else
             {
-                // First/Intermediate point
+                // First/Intermediate point (no action)
             }
 
-            if (trailgps.Count == 1)
-            {
-                //For one point trail, the same applies to the first match as for the end point (also incomplete)
-                prevMatchIndex = Math.Max(prevMatchIndex, currResult.LastMatchOutsideRadius);
-            }
-
-            //Next match must at least be at last OK match (but may be in same radius)
-            //(If this was an automatic match (-1), set back the routeIndex)
-            return prevMatchIndex;
+            return nextMatchIndex;
         }
 
         /*********************************************************************************/
@@ -1089,17 +1076,32 @@ namespace TrailsPlugin.Data
             public int NextTrailGpsIndex = 0;
             private int noOfTrailGps;
 
-            public int FirstMatchOutsideRadius = -1;
-            public int LastMatchOutsideRadius = -1;
+            private int nextOkMatch = 0; //Next point to match OK
+            private int firstMatchOutsideRadius = -1; //For first point - avoid loops
+            public int LastMatchOutsideRadius = -1; //Previous match
             public int LastMatchIndex = -1;
-            public int CurrMatches = 0;
+
+            public int CurrMatches = 0; //Real matches (auto match excluded)
             public bool NextIsEndTrailPoint = false;
 
             public void Add(TrailResultPointMeta t)
             {
+                if (this.noOfTrailGps > 1)
+                {
+                    this.NextTrailGpsIndex = this.Points.Count + 1;
+                    if (this.Points.Count + 2 >= this.noOfTrailGps)
+                    {
+                        this.NextIsEndTrailPoint = true;
+                    }
+                }
+                else
+                {
+                    //Note: this.NextTrailGpsIndex is always 0
+                    this.NextIsEndTrailPoint = true;
+                }
+
                 if (t.index > -1 && t.Time > DateTime.MinValue)
                 {
-                    this.CurrMatches++;
                     if (this.SingleFirstMatch >= 0)
                     {
                         //No longer single index
@@ -1110,39 +1112,54 @@ namespace TrailsPlugin.Data
                         this.SingleFirstMatch = this.Points.Count;
                         this.checkSingleFirstMatch = true;
                     }
-                    if (this.FirstMatchOutsideRadius == -1)
+                    if (this.CurrMatches == 0)
                     {
-                        this.FirstMatchOutsideRadius = t.nextMatchOutsideRadius;
+                        this.firstMatchOutsideRadius = t.nextMatchOutsideRadius;
                     }
                     this.LastMatchIndex = t.index;
                     this.LastMatchOutsideRadius = t.nextMatchOutsideRadius;
+
+                    if (t.nextOkMatch < 0)
+                    {
+                        this.nextOkMatch = 0;
+                    }
+                    else
+                    {
+                        this.nextOkMatch = t.nextOkMatch;
+                    }
+
+                    if (this.NextIsEndTrailPoint || this.noOfTrailGps == 1)
+                    {
+                        //To avoid "detection loops", the potential start for next trail must be after 
+                        //the first possible match for the first trail point
+                        //For one point trail, the same applies to the first match as for the end point (also incomplete)
+                        this.nextOkMatch = Math.Max(this.nextOkMatch, this.firstMatchOutsideRadius);
+                    }
+
+                    this.CurrMatches++;
                 }
                 this.Points.Add(t);
-                if (this.noOfTrailGps > 1)
-                {
-                    this.NextTrailGpsIndex = this.Points.Count;
-                    if (this.Points.Count + 1 >= this.noOfTrailGps)
-                    {
-                        this.NextIsEndTrailPoint = true;
-                    }
-                }
-                else
-                {
-                    this.NextIsEndTrailPoint = true;
-                }
             }
 
+            public int NextOkMatch()
+            {
+                return this.nextOkMatch;
+            }
+
+            //Clear when "shortening" trails
             public void Clear(int index)
             {
                 this.Clear();
-                this.FirstMatchOutsideRadius = index;
+                this.firstMatchOutsideRadius = index;
                 this.LastMatchOutsideRadius = index;
                 this.LastMatchIndex = index;
+                this.nextOkMatch = index;
             }
 
             public void Clear()
             {
                 this.Points.Clear();
+
                 this.CurrMatches = 0;
                 this.NextTrailGpsIndex = 0;
                 this.SingleFirstMatch = -1;

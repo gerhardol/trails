@@ -29,8 +29,8 @@ namespace TrailsPlugin.Data
 	public class ActivityTrail : IComparable
     {
         private Controller.TrailController m_controller;
-		private Data.Trail m_trail;
-        private IList<Data.TrailResultWrapper> m_resultsListWrapper = null;
+		private Trail m_trail;
+        private IList<TrailResultWrapper> m_resultsListWrapper = null;
         private TrailOrderStatus m_status;
 
         private IList<IncompleteTrailResult> m_incompleteResults;
@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         private IList<IActivity> m_inBound = new List<IActivity>();
         private bool m_canAddInbound = true;
 
-        public ActivityTrail(Controller.TrailController controller, Data.Trail trail)
+        public ActivityTrail(Controller.TrailController controller, Trail trail)
         {
             this.m_controller = controller;
             this.m_trail = trail;
@@ -547,6 +547,7 @@ namespace TrailsPlugin.Data
 
             return status;
         }
+
         /// <summary>
         /// Calculate trail result points for one activity for a certain set of points (Trail)
         /// </summary>
@@ -565,7 +566,6 @@ namespace TrailsPlugin.Data
             float radius, float minDistance, int MaxRequiredMisses, bool reverse, int maxResultPoints, bool isComplete,
             IList<TrailResultInfo> trailResults, IList<IncompleteTrailResult> incompleteResults, System.Windows.Forms.ProgressBar progressBar)
         {
-            TrailOrderStatus status = TrailOrderStatus.NoInfo;
             CurrentResult currResult = new CurrentResult(trailgps);
 
             //Cache information about previous distances and index
@@ -597,8 +597,6 @@ namespace TrailsPlugin.Data
             const float passByFactor = 10;
 #endif
 
-            //Required points misses - undocumented feature
-            int currRequiredMisses = 0;
             //Ignore short legs - undocumented feature
             IDistanceDataTrack dTrack = null;
             if (minDistance > 0)
@@ -645,10 +643,10 @@ namespace TrailsPlugin.Data
                     {
                         match = true;
                     }
-                    else if (currRequiredMisses < MaxRequiredMisses)
+                    else if (currResult.currRequiredMisses < MaxRequiredMisses)
                     {
                         //OK to miss this point. Set automatic match to start looking at prev match
-                        currRequiredMisses++;
+                        currResult.currRequiredMisses++;
                         match = true;
                     }
 
@@ -677,8 +675,7 @@ namespace TrailsPlugin.Data
                     else
                     {
                         int nextMatchIndex = updateResults(activity, currResult, trailResults, incompleteResults,
-                            trailgps, maxResultPoints, ref currRequiredMisses, reverse, isComplete,
-                            matchPoint, ref status);
+                            maxResultPoints, reverse, isComplete, matchPoint);
                         routeIndex = nextMatchIndex - 1; //routeIndex is always increased
                         //Clear cache, dist unknown to next point
                         prevPoint.index = -1;
@@ -694,7 +691,7 @@ namespace TrailsPlugin.Data
                 IncompleteTrailResult incompleteResult = new IncompleteTrailResult(activity, currResult.Points, reverse);
                 incompleteResults.Add(incompleteResult);
             }
-            return status;
+            return currResult.status;
         }
 
         /////////////////////////////////////////////////////////////////////////////////
@@ -958,8 +955,7 @@ namespace TrailsPlugin.Data
         }
 
         private static int updateResults(IActivity activity, CurrentResult currResult, IList<TrailResultInfo> trailResults, IList<IncompleteTrailResult> incompleteResults,
-            IList<TrailGPSLocation> trailgps, int maxResultPoints, ref int currRequiredMisses, bool reverse, bool isComplete,
-            TrailResultPointMeta matchPoint, ref TrailOrderStatus status)
+            int maxResultPoints, bool reverse, bool isComplete, TrailResultPointMeta matchPoint)
         {
             bool isEnd = currResult.NextIsEndTrailPoint;
             currResult.Add(matchPoint);
@@ -968,13 +964,6 @@ namespace TrailsPlugin.Data
             //Next match must at least be at last OK match (but may be in same radius)
             //(If this was an automatic match (-1), set back the routeIndex)
             int nextMatchIndex = currResult.NextOkMatch();
-
-            //(Possibly) update status for intermediate/incomplete results
-            if (currResult.CurrMatches > 0)
-            {
-                //At least one point match
-                status = BestCalcStatus(status, TrailOrderStatus.InBoundMatchPartial);
-            }
 
             //////////////////////////////
             //End point
@@ -987,13 +976,13 @@ namespace TrailsPlugin.Data
                 {
                     if (currResult.CurrMatches < currResult.Points.Count)
                     {
-                        status = BestCalcStatus(status, TrailOrderStatus.MatchPartial);
+                        currResult.status = BestCalcStatus(currResult.status, TrailOrderStatus.MatchPartial);
                     }
                     else
                     {
-                        status = BestCalcStatus(status, TrailOrderStatus.Match);
+                        currResult.status = BestCalcStatus(currResult.status, TrailOrderStatus.Match);
                         //OK to reset misses only at full match
-                        currRequiredMisses = 0;
+                        currResult.currRequiredMisses = 0;
                     }
 
                     TrailResultInfo resultInfo = new TrailResultInfo(activity, reverse);
@@ -1084,6 +1073,10 @@ namespace TrailsPlugin.Data
             public int CurrMatches = 0; //Real matches (auto match excluded)
             public bool NextIsEndTrailPoint = false;
 
+            //Required points misses - undocumented feature
+            public int currRequiredMisses = 0;
+            public TrailOrderStatus status = TrailOrderStatus.NoInfo;
+
             public void Add(TrailResultPointMeta t)
             {
                 if (this.noOfTrailGps > 1)
@@ -1135,6 +1128,10 @@ namespace TrailsPlugin.Data
                         //For one point trail, the same applies to the first match as for the end point (also incomplete)
                         this.nextOkMatch = Math.Max(this.nextOkMatch, this.firstMatchOutsideRadius);
                     }
+
+                    //(Possibly) update status for intermediate/incomplete results
+                    //At least one point match
+                    status = BestCalcStatus(status, TrailOrderStatus.InBoundMatchPartial);
 
                     this.CurrMatches++;
                 }

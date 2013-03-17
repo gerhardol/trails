@@ -693,6 +693,39 @@ namespace TrailsPlugin.Data
             } //foreach gps point
 
             ///////////////////////////////////////
+            //Multiple "Complete" results does not make much sense, merge them and add start/end
+            if (isComplete && trailResults != null && trailResults.Count > 0)
+            {
+                DateTime pDate = DateTime.MaxValue;
+                TrailResultInfo resultInfo = new TrailResultInfo(activity, reverse);
+                foreach (TrailResultInfo r in trailResults)
+                {
+                    foreach (TrailResultPointMeta t in r.Points)
+                    {
+                        if (t.Time != pDate)
+                        {
+                            resultInfo.Points.Add(t);
+                        }
+                        pDate = t.Time;
+                    }
+                }
+                int i;
+                TrailResultPointMeta p;
+
+                i = 0;
+                p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0);
+                p.SetElevation(""); //No elevation point
+                resultInfo.Points.Insert(0, p);
+
+                i = activity.GPSRoute.Count - 1;
+                p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]), i, 1, i, 0);
+                p.SetElevation("");
+                resultInfo.Points.Add(p);
+
+                trailResults.Clear();
+                trailResults.Add(resultInfo);
+            }
+            ///////////////////////////////////////
             //Possible last incomple result
             //InBoundMatchPartial updated for all incomplete results
             if (currResult.CurrMatches > 0 && !reverse || currResult.CurrMatches > 1)
@@ -1009,23 +1042,23 @@ namespace TrailsPlugin.Data
                         //}
                         resultInfo.Points.Add(point);
                     }
-                    if (isComplete)
-                    {
-                        int i;
-                        TrailResultPointMeta p;
+                    //if (isComplete)
+                    //{
+                    //    int i;
+                    //    TrailResultPointMeta p;
 
-                        i = 0;
-                        p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0);
-                        p.SetElevation(""); //No elevation point
-                        resultInfo.Points.Insert(0, p);
+                    //    i = 0;
+                    //    p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0);
+                    //    p.SetElevation(""); //No elevation point
+                    //    //resultInfo.Points.Insert(0, p);
 
-                        i = activity.GPSRoute.Count - 1;
-                        p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]), i, 1, i, 0);
-                        p.SetElevation("");
-                        resultInfo.Points.Add(p);
+                    //    i = activity.GPSRoute.Count - 1;
+                    //    p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]), i, 1, i, 0);
+                    //    p.SetElevation("");
+                    //    //resultInfo.Points.Add(p);
 
-                        //Note: No update of prevMatchIndex, allow multiple loops
-                    }
+                    //    //Note: No update of prevMatchIndex, allow multiple loops
+                    //}
                     trailResults.Add(resultInfo);
                 }
                 else

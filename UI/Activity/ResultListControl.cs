@@ -1311,7 +1311,13 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.E)
             {
-                if (e.Modifiers == Keys.Control)
+                if (e.Modifiers == (Keys.Shift | Keys.Control))
+                {
+                    TrailsPlugin.Data.Settings.UseTrailElevationAdjust = !TrailsPlugin.Data.Settings.UseTrailElevationAdjust;
+                    this.m_page.RefreshData(true);
+                    this.m_page.RefreshChart();
+                }
+                else if (e.Modifiers == Keys.Control)
                 {
                     this.selectResultsWithDeviceElevation();
                 }

@@ -102,6 +102,10 @@ namespace TrailsPlugin.Data
             result.IsCompleteActivity = this.IsCompleteActivity;
             //result.IsAutoTryAll = this.IsAutoTryAll;
             result.IsTemporary = this.IsTemporary;
+            if (!this.m_generated)
+            {
+                result.m_trailPriority = this.m_trailPriority;
+            }
 
             if (this.TrailType == CalcType.Splits && activity != null && this.TrailLocations.Count == 0)
             {

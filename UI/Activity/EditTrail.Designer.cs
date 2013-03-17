@@ -29,11 +29,11 @@
             this.chkTwoWay = new System.Windows.Forms.CheckBox();
             this.chkName = new System.Windows.Forms.CheckBox();
             this.chkCompleteActivity = new System.Windows.Forms.CheckBox();
-            //this.chkAutoTryAll = new System.Windows.Forms.CheckBox();
             this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnRefresh = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnReverse = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.numericSortPrio = new System.Windows.Forms.NumericUpDown();
             this.btnOk = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
             this.Panel = new System.Windows.Forms.TableLayoutPanel();
@@ -48,6 +48,7 @@
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.editBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSortPrio)).BeginInit();
             this.Panel.SuspendLayout();
             this.EList.SuspendLayout();
             this.SuspendLayout();
@@ -99,19 +100,6 @@
             this.chkCompleteActivity.TabIndex = 28;
             this.toolTip.SetToolTip(this.chkCompleteActivity, ">Complete Activity");
             this.chkCompleteActivity.UseVisualStyleBackColor = true;
-            // 
-            // chkAutoTryAll
-            // 
-            //this.chkAutoTryAll.AutoSize = true;
-            //this.chkAutoTryAll.Checked = true;
-            //this.chkAutoTryAll.CheckState = System.Windows.Forms.CheckState.Checked;
-            //this.chkAutoTryAll.Location = new System.Drawing.Point(252, 302);
-            //this.chkAutoTryAll.Name = "chkAutoTryAll";
-            //this.chkAutoTryAll.Size = new System.Drawing.Size(15, 14);
-            //this.chkAutoTryAll.TabIndex = 29;
-            //this.toolTip.SetToolTip(this.chkAutoTryAll, ">Auto TryAll");
-            //this.chkAutoTryAll.UseVisualStyleBackColor = true;
-            //this.chkAutoTryAll.Visible = false;
             // 
             // btnCopy
             // 
@@ -209,6 +197,16 @@
             this.toolTip.SetToolTip(this.btnReverse, "<Reverse Trail");
             this.btnReverse.Click += new System.EventHandler(this.btnReverse_Click);
             // 
+            // numericUpDown1
+            // 
+            this.numericSortPrio.Location = new System.Drawing.Point(251, 298);
+            this.numericSortPrio.Name = "numericUpDown1";
+            this.numericSortPrio.Size = new System.Drawing.Size(40, 20);
+            this.numericSortPrio.TabIndex = 23;
+            this.toolTip.SetToolTip(this.numericSortPrio, ">SortPriority");
+            this.numericSortPrio.Minimum = int.MinValue;
+            //this.numericSortPrio.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            // 
             // btnOk
             // 
             this.btnOk.BackColor = System.Drawing.Color.Transparent;
@@ -283,7 +281,7 @@
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.Panel.Size = new System.Drawing.Size(455, 325);
+            this.Panel.Size = new System.Drawing.Size(555, 325);
             this.Panel.TabIndex = 9;
             // 
             // lblTrail
@@ -315,7 +313,7 @@
             this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TrailName.Size = new System.Drawing.Size(239, 19);
+            this.TrailName.Size = new System.Drawing.Size(359, 19);
             this.TrailName.TabIndex = 1;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TrailName.LostFocus += new System.EventHandler(this.TrailName_LostFocus);
@@ -330,7 +328,7 @@
             this.btnAdd.HyperlinkStyle = false;
             this.btnAdd.ImageMargin = 2;
             this.btnAdd.LeftImage = null;
-            this.btnAdd.Location = new System.Drawing.Point(359, 5);
+            this.btnAdd.Location = new System.Drawing.Point(479, 5);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
             this.btnAdd.PushStyle = true;
@@ -353,7 +351,7 @@
             this.btnEdit.HyperlinkStyle = false;
             this.btnEdit.ImageMargin = 2;
             this.btnEdit.LeftImage = null;
-            this.btnEdit.Location = new System.Drawing.Point(384, 5);
+            this.btnEdit.Location = new System.Drawing.Point(504, 5);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
             this.btnEdit.PushStyle = true;
@@ -376,7 +374,7 @@
             this.btnDelete.HyperlinkStyle = false;
             this.btnDelete.ImageMargin = 2;
             this.btnDelete.LeftImage = null;
-            this.btnDelete.Location = new System.Drawing.Point(409, 5);
+            this.btnDelete.Location = new System.Drawing.Point(529, 5);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Padding = new System.Windows.Forms.Padding(2);
             this.btnDelete.PushStyle = true;
@@ -418,7 +416,7 @@
             this.Radius.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.Radius.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.Radius.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.Radius.Size = new System.Drawing.Size(239, 19);
+            this.Radius.Size = new System.Drawing.Size(359, 19);
             this.Radius.TabIndex = 20;
             this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.Radius.LostFocus += new System.EventHandler(this.Radius_LostFocus);
@@ -433,7 +431,7 @@
             this.btnUp.HyperlinkStyle = false;
             this.btnUp.ImageMargin = 2;
             this.btnUp.LeftImage = null;
-            this.btnUp.Location = new System.Drawing.Point(384, 30);
+            this.btnUp.Location = new System.Drawing.Point(504, 30);
             this.btnUp.Name = "btnUp";
             this.btnUp.Padding = new System.Windows.Forms.Padding(2);
             this.btnUp.PushStyle = true;
@@ -456,7 +454,7 @@
             this.btnDown.HyperlinkStyle = false;
             this.btnDown.ImageMargin = 2;
             this.btnDown.LeftImage = null;
-            this.btnDown.Location = new System.Drawing.Point(409, 30);
+            this.btnDown.Location = new System.Drawing.Point(529, 30);
             this.btnDown.Name = "btnDown";
             this.btnDown.Padding = new System.Windows.Forms.Padding(2);
             this.btnDown.PushStyle = true;
@@ -532,10 +530,10 @@
             this.ClientSize = new System.Drawing.Size(555, 325);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.numericSortPrio);
             this.Controls.Add(this.chkCompleteActivity);
             this.Controls.Add(this.btnReverse);
             this.Controls.Add(this.chkName);
-            //this.Controls.Add(this.chkAutoTryAll);
             this.Controls.Add(this.chkTwoWay);
             this.Controls.Add(this.chkTemporaryTrail);
             this.Controls.Add(this.btnExport);
@@ -549,6 +547,7 @@
             this.Text = "EditTrail";
             this.Activated += new System.EventHandler(this.EditTrail_Activated);
             this.Shown += new System.EventHandler(this.EditTrail_Shown);
+            ((System.ComponentModel.ISupportInitialize)(this.numericSortPrio)).EndInit();
             this.Panel.ResumeLayout(false);
             this.Panel.PerformLayout();
             this.EList.ResumeLayout(false);
@@ -583,6 +582,7 @@
         private System.Windows.Forms.CheckBox chkName;
         private ZoneFiveSoftware.Common.Visuals.Button btnReverse;
         private System.Windows.Forms.CheckBox chkCompleteActivity;
+        private System.Windows.Forms.NumericUpDown numericSortPrio;
 
 	}
 }

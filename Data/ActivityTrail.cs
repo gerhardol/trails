@@ -453,6 +453,8 @@ namespace TrailsPlugin.Data
                 }
             }
             ((List<TrailResultPoint>)result).Sort();
+            //The sort is done with latest first, reverse
+            ((List<TrailResultPoint>)result).Reverse();
             return result;
         }
 

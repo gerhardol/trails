@@ -41,7 +41,7 @@ namespace TrailsPlugin.Data
             trail.Generated = true;
             trail.IsSplits = true;
             trail.TrailType = Trail.CalcType.Splits;
-            trail.TrailPriority = -9;
+            trail.TrailPriority = -11;
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
@@ -49,7 +49,7 @@ namespace TrailsPlugin.Data
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.Generated = true;
             trail.IsReference = true;
-            trail.TrailPriority = -9;
+            trail.TrailPriority = -10;
             allTrails.Add(trail.Id, trail);
 
             //HighScore Trail
@@ -57,7 +57,7 @@ namespace TrailsPlugin.Data
             trail.Name = Properties.Resources.HighScore_Trail;
             trail.Generated = true;
             trail.TrailType = Trail.CalcType.HighScore;
-            trail.TrailPriority = -9;
+            trail.TrailPriority = -100;
             allTrails.Add(trail.Id, trail);
 
             //ElevationPoints Trail
@@ -65,7 +65,7 @@ namespace TrailsPlugin.Data
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation;
             trail.Generated = true;
             trail.TrailType = Trail.CalcType.ElevationPoints;
-            trail.TrailPriority = -9;
+            trail.TrailPriority = -101;
             trail.TrailLocations = new List<TrailGPSLocation>();
             allTrails.Add(trail.Id, trail);
             ElevationPointsTrail = trail;

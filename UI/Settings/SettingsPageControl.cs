@@ -47,7 +47,7 @@ namespace TrailsPlugin.UI.Settings
         {
             txtDefaultRadius.Text = UnitUtil.Elevation.ToString(Data.Settings.DefaultRadius, "u");
             txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
-            boxStoppedCategory.Text = Data.Settings.ExcludeStoppedCategory;
+            boxStoppedCategory.Text = Data.Settings.GetExcludeStoppedCategory;
             this.boxPredictDistance.Text = UnitUtil.Distance.ToString(Data.Settings.PredictDistance, "u");
         }
         public void ThemeChanged(ITheme visualTheme)
@@ -103,7 +103,7 @@ namespace TrailsPlugin.UI.Settings
 
         void boxStoppedCategory_LostFocus(object sender, System.EventArgs e)
         {
-            Data.Settings.ExcludeStoppedCategory = boxStoppedCategory.Text;
+            Data.Settings.SetExcludeStoppedCategory(boxStoppedCategory.Text);
         }
 
         private void boxPredictDistance_LostFocus(object sender, EventArgs e)

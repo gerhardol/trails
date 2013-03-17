@@ -54,6 +54,7 @@ namespace TrailsPlugin.Data
         private static bool m_resultSummaryIsDevice = false;
         private static bool m_resultSummaryStdDev = false;
         private static String[] m_excludeStoppedCategory = new String[0];
+        private static String[] m_barometricDevices = new String[0];
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
         private static float m_predictDistance = 10000;
         private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
@@ -287,7 +288,19 @@ namespace TrailsPlugin.Data
         public static String[] ExcludeStoppedCategory
         {
             get { return m_excludeStoppedCategory; }
-            //set { m_excludeStoppedCategory = value; }
+        }
+
+        public static String GetExcludeStoppedCategory
+        {
+            get
+            {
+                string s = "";
+                foreach (string i in m_excludeStoppedCategory)
+                {
+                    s += i + ';';
+                }
+                return s;
+            }
         }
 
         public static void SetExcludeStoppedCategory(string s)
@@ -299,6 +312,37 @@ namespace TrailsPlugin.Data
             else
             {
                 m_excludeStoppedCategory = s.Split(';');
+            }
+        }
+
+        public static String[] BarometricDevices
+        {
+            get { return m_barometricDevices; }
+            //set { m_excludeStoppedCategory = value; }
+        }
+
+        public static String GetBarometricDevices
+        {
+            get
+            {
+                string s = "";
+                foreach (string i in m_barometricDevices)
+                {
+                    s += i + ';';
+                }
+                return s;
+            }
+        }
+
+        public static void SetBarometricDevices(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                m_barometricDevices = new string[0];
+            }
+            else
+            {
+                m_barometricDevices = s.Split(';');
             }
         }
 
@@ -486,6 +530,8 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
                 if (attr.Length > 0) { SetExcludeStoppedCategory(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.BarometricDevices);
+                if (attr.Length > 0) { SetBarometricDevices(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.SmoothOverTrailPoints);
                 try
                 {
@@ -635,12 +681,8 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.OnlyReferenceRight, XmlConvert.ToString(m_onlyReferenceRight));
             pluginNode.SetAttribute(xmlTags.ZoomToSelection, XmlConvert.ToString(m_zoomToSelection));
             pluginNode.SetAttribute(xmlTags.ShowOnlyMarkedOnRoute, XmlConvert.ToString(m_showOnlyMarkedOnRoute));
-            string s = "";
-            foreach(string i in m_excludeStoppedCategory)
-            {
-                s+=i+';';
-            }
-            pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, s);
+            pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, GetExcludeStoppedCategory);
+            pluginNode.SetAttribute(xmlTags.BarometricDevices, GetBarometricDevices);
             pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
             pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_predictDistance));
             pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_deviceElevationFromOther));
@@ -717,6 +759,7 @@ namespace TrailsPlugin.Data
             public const string ZoomToSelection = "ZoomToSelection";
             public const string ShowOnlyMarkedOnRoute = "ShowOnlyMarkedOnRoute";
             public const string ExcludeStoppedCategory = "ExcludeStoppedCategory";
+            public const string BarometricDevices = "BarometricDevices";
             public const string SmoothOverTrailPoints = "SmoothOverTrailPoints";
             public const string PredictDistance = "PredictDistance1";
             public const string sRunningGradeAdjustMethod = "sRunningGradeAdjustMethod";

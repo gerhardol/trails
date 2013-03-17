@@ -34,39 +34,46 @@ namespace TrailsPlugin.UI.Settings
     {
 		public SettingsPageControl()
         {
-			InitializeComponent();
-            presentSettings();
+            this.InitializeComponent();
+            this.presentSettings();
             if (!TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 this.lblPredictDistance.Enabled = false;
                 this.boxPredictDistance.Enabled = false;
             }
+            this.lblAdjustElevationAtImport.Visible = false;
+            this.txtAdjustElevationAtImport.Visible = false;
 		}
 
         private void presentSettings()
         {
-            txtDefaultRadius.Text = UnitUtil.Elevation.ToString(Data.Settings.DefaultRadius, "u");
-            txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
-            boxStoppedCategory.Text = Data.Settings.GetExcludeStoppedCategory;
+            this.txtDefaultRadius.Text = UnitUtil.Elevation.ToString(Data.Settings.DefaultRadius, "u");
+            this.txtSetNameAtImport.Checked = Data.Settings.SetNameAtImport;
+            this.boxStoppedCategory.Text = Data.Settings.GetExcludeStoppedCategory;
+            this.boxBarometricDevices.Text = Data.Settings.GetBarometricDevices;
+            this.txtAdjustElevationAtImport.Checked = Data.Settings.SetAdjustElevationAtImport;
             this.boxPredictDistance.Text = UnitUtil.Distance.ToString(Data.Settings.PredictDistance, "u");
         }
         public void ThemeChanged(ITheme visualTheme)
         {
-			PluginInfoBanner.ThemeChanged(visualTheme);
-			PluginInfoPanel.ThemeChanged(visualTheme);
-			txtDefaultRadius.ThemeChanged(visualTheme);
-            boxStoppedCategory.ThemeChanged(visualTheme);
+            this.PluginInfoBanner.ThemeChanged(visualTheme);
+            this.PluginInfoPanel.ThemeChanged(visualTheme);
+            this.txtDefaultRadius.ThemeChanged(visualTheme);
+            this.boxStoppedCategory.ThemeChanged(visualTheme);
+            this.boxBarometricDevices.ThemeChanged(visualTheme);
             this.boxPredictDistance.ThemeChanged(visualTheme);
 		}
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
-            lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
+            this.lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
             //Not working
             //toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
-            
-            lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
+
+            this.lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
             this.lblStoppedCategory.Text = "Stopped Category Override" + ":"; //TODO: Translate 
-            presentSettings();
+            this.lblBarometricDevices.Text = "Barometric Devices" + ":"; //TODO: Translate 
+            this.lblAdjustElevationAtImport.Text = "Adjust Elevation at Import"; //TODO: Translate
+            this.presentSettings();
 
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
             this.lblHighScore.Text = Integration.HighScore.CompabilityText;
@@ -92,7 +99,7 @@ namespace TrailsPlugin.UI.Settings
             {
                 MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
             }
-            presentSettings();
+            this.presentSettings();
         }
 
         void txtSetNameAtImport_CheckedChanged(object sender, System.EventArgs e)
@@ -106,6 +113,17 @@ namespace TrailsPlugin.UI.Settings
             Data.Settings.SetExcludeStoppedCategory(boxStoppedCategory.Text);
         }
 
+        void boxBarometricDevices_LostFocus(object sender, System.EventArgs e)
+        {
+            Data.Settings.SetExcludeStoppedCategory(boxBarometricDevices.Text);
+        }
+
+        void txtAdjustElevationAtImport_CheckedChanged(object sender, System.EventArgs e)
+        {
+            Data.Settings.SetAdjustElevationAtImport = txtAdjustElevationAtImport.Checked;
+            presentSettings();
+        }
+        
         private void boxPredictDistance_LostFocus(object sender, EventArgs e)
         {
             float result;

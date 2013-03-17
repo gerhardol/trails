@@ -32,6 +32,10 @@
             this.txtSetNameAtImport = new System.Windows.Forms.CheckBox();
             this.lblStoppedCategory = new System.Windows.Forms.Label();
             this.boxStoppedCategory = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblBarometricDevices = new System.Windows.Forms.Label();
+            this.boxBarometricDevices = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblAdjustElevationAtImport = new System.Windows.Forms.Label();
+            this.txtAdjustElevationAtImport = new System.Windows.Forms.CheckBox();
             this.lblUniqueRoutes = new System.Windows.Forms.Label();
             this.lblHighScore = new System.Windows.Forms.Label();
             this.lblPerformancePredictor = new System.Windows.Forms.Label();
@@ -74,13 +78,17 @@
             this.tableLayoutPanel1.Controls.Add(this.txtSetNameAtImport, 1, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblStoppedCategory, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.boxStoppedCategory, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 9);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 12);
+            this.tableLayoutPanel1.Controls.Add(this.lblBarometricDevices, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.boxBarometricDevices, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.lblAdjustElevationAtImport, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.txtAdjustElevationAtImport, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 11);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 13);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 14);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -90,12 +98,14 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 200);
@@ -199,6 +209,57 @@
             this.boxStoppedCategory.TabIndex = 5;
             this.boxStoppedCategory.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.boxStoppedCategory.LostFocus += new System.EventHandler(this.boxStoppedCategory_LostFocus);
+            // 
+            // lblBarometricDevice
+            // 
+            this.lblBarometricDevices.AutoSize = true;
+            this.lblBarometricDevices.Location = new System.Drawing.Point(3, 73);
+            this.lblBarometricDevices.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblBarometricDevices.Name = "lblBarometricDevice";
+            this.lblBarometricDevices.Size = new System.Drawing.Size(95, 13);
+            this.lblBarometricDevices.TabIndex = 4;
+            this.lblBarometricDevices.Text = "<BarometricDevices";
+            // 
+            // boxBarometricDevices
+            // 
+            this.boxBarometricDevices.AcceptsReturn = false;
+            this.boxBarometricDevices.AcceptsTab = false;
+            this.boxBarometricDevices.BackColor = System.Drawing.Color.White;
+            this.boxBarometricDevices.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxBarometricDevices.ButtonImage = null;
+            this.boxBarometricDevices.Location = new System.Drawing.Point(150, 70);
+            this.boxBarometricDevices.Margin = new System.Windows.Forms.Padding(0);
+            this.boxBarometricDevices.MaxLength = 32767;
+            this.boxBarometricDevices.Multiline = false;
+            this.boxBarometricDevices.Name = "boxBarometricDevices";
+            this.boxBarometricDevices.ReadOnly = false;
+            this.boxBarometricDevices.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxBarometricDevices.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxBarometricDevices.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxBarometricDevices.Size = new System.Drawing.Size(100, 19);
+            this.boxBarometricDevices.TabIndex = 5;
+            this.boxBarometricDevices.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxBarometricDevices.LostFocus += new System.EventHandler(this.boxBarometricDevices_LostFocus);
+            // 
+            // lblAdjustElevationAtImport
+            // 
+            this.lblAdjustElevationAtImport.AutoSize = true;
+            this.lblAdjustElevationAtImport.Location = new System.Drawing.Point(3, 53);
+            this.lblAdjustElevationAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblAdjustElevationAtImport.Name = "lblAdjustElevationAtImport";
+            this.lblAdjustElevationAtImport.Size = new System.Drawing.Size(96, 13);
+            this.lblAdjustElevationAtImport.TabIndex = 0;
+            this.lblAdjustElevationAtImport.Text = "<AdjustElevationAtImport";
+            // 
+            // txtAdjustElevationAtImport
+            // 
+            this.txtAdjustElevationAtImport.AutoSize = true;
+            this.txtAdjustElevationAtImport.Location = new System.Drawing.Point(153, 53);
+            this.txtAdjustElevationAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.txtAdjustElevationAtImport.Name = "txtAdjustElevationAtImport";
+            this.txtAdjustElevationAtImport.Size = new System.Drawing.Size(15, 14);
+            this.txtAdjustElevationAtImport.TabIndex = 0;
+            this.txtAdjustElevationAtImport.CheckedChanged += new System.EventHandler(this.txtAdjustElevationAtImport_CheckedChanged);
             // 
             // lblUniqueRoutes
             // 
@@ -315,6 +376,10 @@
         //private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Label lblStoppedCategory;
         private ZoneFiveSoftware.Common.Visuals.TextBox boxStoppedCategory;
+        private System.Windows.Forms.Label lblBarometricDevices;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxBarometricDevices;
+        private System.Windows.Forms.Label lblAdjustElevationAtImport;
+        private System.Windows.Forms.CheckBox txtAdjustElevationAtImport;
         private System.Windows.Forms.Label lblUniqueRoutes;
         private System.Windows.Forms.Label lblHighScore;
         private System.Windows.Forms.Label lblPerformancePredictor;

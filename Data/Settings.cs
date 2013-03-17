@@ -41,6 +41,7 @@ namespace TrailsPlugin.Data
         private static string m_summaryViewSortColumn = TrailResultColumnIds.DefaultSortColumn();
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Descending;
         private static bool m_SetNameAtImport = true;
+        private static bool m_SetAdjustElevationAtImport = false;
         private static int m_MaxAutoCalcActivitiesTrails = 10000;
         private static int m_MaxAutoCalcActivitiesSingleTrail = 10000;
         private static bool m_restLapIsPause = false;
@@ -54,7 +55,7 @@ namespace TrailsPlugin.Data
         private static bool m_resultSummaryIsDevice = false;
         private static bool m_resultSummaryStdDev = false;
         private static String[] m_excludeStoppedCategory = new String[0];
-        private static String[] m_barometricDevices = new String[0];
+        private static String[] m_barometricDevices = new String[2] {"Edge", "GB-580"};
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
         private static float m_predictDistance = 10000;
         private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
@@ -225,6 +226,12 @@ namespace TrailsPlugin.Data
         {
             get { return m_SetNameAtImport; }
             set { m_SetNameAtImport = value; }
+        }
+
+        public static bool SetAdjustElevationAtImport
+        {
+            get { return m_SetAdjustElevationAtImport; }
+            set { m_SetAdjustElevationAtImport = value; }
         }
 
         public static int MaxAutoCalcActivitiesTrails

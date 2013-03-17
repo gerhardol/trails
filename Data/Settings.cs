@@ -318,7 +318,6 @@ namespace TrailsPlugin.Data
         public static String[] BarometricDevices
         {
             get { return m_barometricDevices; }
-            //set { m_excludeStoppedCategory = value; }
         }
 
         public static String GetBarometricDevices

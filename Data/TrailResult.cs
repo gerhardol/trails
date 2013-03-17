@@ -1815,23 +1815,27 @@ namespace TrailsPlugin.Data
         {
             INumericTimeDataSeries deviceElevationTrack0 = null;
             //TBD devices at import?, configure
-            string DevNames = "580";
             if (activity != null)
             {
                 INumericTimeDataSeries sourceTrack = null;
                 if (activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 1)
                 {
-                    //Separate elevation track, prefer it
+                    //Separate elevation track, prefer it, assume Barometric
                     sourceTrack = activity.ElevationMetersTrack;
                 }
-                else 
-                    if (activity.GPSRoute != null && activity.GPSRoute.Count > 1 &&
-                    activity.Metadata.Source.Contains(DevNames))
+                else if (activity.GPSRoute != null && activity.GPSRoute.Count > 1)
                 {
-                    sourceTrack = new NumericTimeDataSeries();
-                    foreach (ITimeValueEntry<IGPSPoint> g in activity.GPSRoute)
+                    foreach (string devName in Settings.BarometricDevices)
                     {
-                        sourceTrack.Add(activity.GPSRoute.EntryDateTime(g), g.Value.ElevationMeters);
+                        if (activity.Metadata.Source.Contains(devName))
+                        {
+                            sourceTrack = new NumericTimeDataSeries();
+                            foreach (ITimeValueEntry<IGPSPoint> g in activity.GPSRoute)
+                            {
+                                sourceTrack.Add(activity.GPSRoute.EntryDateTime(g), g.Value.ElevationMeters);
+                            }
+                            break;
+                        }
                     }
                 }
                 if (sourceTrack != null)

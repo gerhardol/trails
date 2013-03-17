@@ -367,6 +367,11 @@ namespace TrailsPlugin.Controller
                             if (at.Trail.Name.StartsWith(this.m_referenceActivity.Name))
                             {
                                 CheckSetCurrentList(new List<ActivityTrail> { at }, progressBar);
+                                if (this.m_currentActivityTrails.Count > 0)
+                                {
+                                    //Use first match, ordered trails should have best first
+                                    break;
+                                }
                             }
                         }
                     }

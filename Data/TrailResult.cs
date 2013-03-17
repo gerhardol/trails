@@ -1856,7 +1856,6 @@ namespace TrailsPlugin.Data
             return deviceElevationTrack0;
         }
 
-        public static bool UseTrailElevationAdjust = true; //xxx
         public INumericTimeDataSeries DeviceElevationTrack0()
         {
             return DeviceElevationTrack0(this.m_cacheTrackRef, TrailActivityInfoOptions.ElevationSmoothingSeconds, true);
@@ -1873,7 +1872,7 @@ namespace TrailsPlugin.Data
             if (m_deviceElevationTrack0 == null || eleSmooth != TrailActivityInfoOptions.ElevationSmoothingSeconds)
             {
                 INumericTimeDataSeries deviceElevationTrack0 = null; //TBD include the full track, then cut it - for adjustment
-                bool trimSource = !UseTrailElevationAdjust && trim;
+                bool trimSource = !TrailsPlugin.Data.Settings.UseTrailElevationAdjust && trim;
                 if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
                 {
                     deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, trimSource, eleSmooth,
@@ -1909,7 +1908,7 @@ namespace TrailsPlugin.Data
                 {
                     deviceElevationTrack0 = new NumericTimeDataSeries();
                 }
-                else if (UseTrailElevationAdjust)
+                else if (TrailsPlugin.Data.Settings.UseTrailElevationAdjust)
                 {
                     //Note that deviceElevationTrack0 is extended, to set elevationOffset as good as possible
                     IList<DateEle> elevationOffset = new List<DateEle>();

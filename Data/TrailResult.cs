@@ -709,131 +709,138 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
-                {
-                    return (this as ChildTrailResult).ParentResult.Pauses;
-                }
                 if (m_pauses == null)
                 {
-                    m_pauses = new ValueRangeSeries<DateTime>();
-                    IValueRangeSeries<DateTime> actPause;
-                    actPause = Info.NonMovingTimes;
-                    foreach (ValueRange<DateTime> t in actPause)
+                    if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                     {
-                        m_pauses.Add(t);
-                    }
+                        m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
 
-                    if (Settings.RestIsPause)
-                    {
-                        //Check for active laps first
-                        bool isActive = false;
-                        if (this.Activity != null && this.Activity.Laps != null)
-                        {
-                            foreach (ILapInfo lap in Activity.Laps)
-                            {
-                                if (!lap.Rest)
-                                {
-                                    isActive = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (isActive)
-                        {
-                            for (int i = 0; i < Activity.Laps.Count; i++)
-                            {
-                                ILapInfo lap = Activity.Laps[i];
-                                if (lap.Rest)
-                                {
-                                    DateTime upper;
-                                    if (i < Activity.Laps.Count - 1)
-                                    {
-                                        upper = Activity.Laps[i + 1].StartTime;
-                                        if (!Activity.Laps[i + 1].Rest)
-                                        {
-                                            upper -= TimeSpan.FromSeconds(1);
-                                        }
-                                        //Fix: Lap start time is in seconds, precision could be lost
-                                        DateTime upper2 = lap.StartTime.Add(lap.TotalTime);
-                                        if (upper.Millisecond == 0 &&  Math.Abs((upper2 - upper).TotalSeconds) < 2)
-                                        {
-                                            upper = upper2;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        upper = Info.EndTime;
-                                    }
-                                    m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, upper));
-                                }
-                            }
-                        }
                     }
-                    if (Settings.RestIsPause)
+                    else
                     {
-                        for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
+                        m_pauses = new ValueRangeSeries<DateTime>();
+                        IValueRangeSeries<DateTime> actPause;
+                        actPause = Info.NonMovingTimes;
+                        foreach (ValueRange<DateTime> t in actPause)
                         {
-                            if (i < this.m_subResultInfo.Points.Count &&
-                                !this.m_subResultInfo.Points[i].Required &&
-                                this.TrailPointDateTime[i] > DateTime.MinValue)
+                            m_pauses.Add(t);
+                        }
+
+                        if (Settings.RestIsPause)
+                        {
+                            //Check for active laps first
+                            bool isActive = false;
+                            if (this.Activity != null && this.Activity.Laps != null)
                             {
-                                DateTime lower = this.TrailPointDateTime[i];
-                                DateTime upper = this.EndTime;
-                                while (i < this.TrailPointDateTime.Count &&
-                                    i < this.m_subResultInfo.Points.Count &&
-                                    (!this.m_subResultInfo.Points[i].Required ||
-                                    this.TrailPointDateTime[i] == DateTime.MinValue))
+                                foreach (ILapInfo lap in Activity.Laps)
                                 {
-                                    i++;
+                                    if (!lap.Rest)
+                                    {
+                                        isActive = true;
+                                        break;
+                                    }
                                 }
-                                if (i < this.TrailPointDateTime.Count &&
+                            }
+                            if (isActive)
+                            {
+                                for (int i = 0; i < Activity.Laps.Count; i++)
+                                {
+                                    ILapInfo lap = Activity.Laps[i];
+                                    if (lap.Rest)
+                                    {
+                                        DateTime upper;
+                                        if (i < Activity.Laps.Count - 1)
+                                        {
+                                            upper = Activity.Laps[i + 1].StartTime;
+                                            if (!Activity.Laps[i + 1].Rest)
+                                            {
+                                                upper -= TimeSpan.FromSeconds(1);
+                                            }
+                                            //Fix: Lap start time is in seconds, precision could be lost
+                                            DateTime upper2 = lap.StartTime.Add(lap.TotalTime);
+                                            if (upper.Millisecond == 0 && Math.Abs((upper2 - upper).TotalSeconds) < 2)
+                                            {
+                                                upper = upper2;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            upper = Info.EndTime;
+                                        }
+                                        m_pauses.Add(new ValueRange<DateTime>(lap.StartTime, upper));
+                                    }
+                                }
+                            }
+                        }
+                        if (Settings.RestIsPause)
+                        {
+                            for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
+                            {
+                                if (i < this.m_subResultInfo.Points.Count &&
+                                    !this.m_subResultInfo.Points[i].Required &&
                                     this.TrailPointDateTime[i] > DateTime.MinValue)
                                 {
-                                    upper = this.TrailPointDateTime[i];
+                                    DateTime lower = this.TrailPointDateTime[i];
+                                    DateTime upper = this.EndTime;
+                                    while (i < this.TrailPointDateTime.Count &&
+                                        i < this.m_subResultInfo.Points.Count &&
+                                        (!this.m_subResultInfo.Points[i].Required ||
+                                        this.TrailPointDateTime[i] == DateTime.MinValue))
+                                    {
+                                        i++;
+                                    }
+                                    if (i < this.TrailPointDateTime.Count &&
+                                        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                    {
+                                        upper = this.TrailPointDateTime[i];
+                                    }
+                                    m_pauses.Add(new ValueRange<DateTime>(lower, upper));
                                 }
-                                m_pauses.Add(new ValueRange<DateTime>(lower, upper));
                             }
+                            //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
+                            //if (m_activityTrail.Trail.IsSplits)
+                            //{
+                            //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
+                            //}
+                            //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
+                            //{
+                            //    if (i < trailLocations.Count &&
+                            //        !trailLocations[i].Required &&
+                            //        this.TrailPointDateTime[i] > DateTime.MinValue)
+                            //    {
+                            //        DateTime lower = this.TrailPointDateTime[i];
+                            //        DateTime upper = this.EndTime;
+                            //        while (i < this.TrailPointDateTime.Count &&
+                            //            i < trailLocations.Count &&
+                            //            (!trailLocations[i].Required ||
+                            //            this.TrailPointDateTime[i] == DateTime.MinValue))
+                            //        {
+                            //            i++;
+                            //        }
+                            //        if (i < this.TrailPointDateTime.Count &&
+                            //            this.TrailPointDateTime[i] > DateTime.MinValue)
+                            //        {
+                            //            upper = this.TrailPointDateTime[i];
+                            //        }
+                            //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                            //    }
+                            //}
                         }
-                        //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                        //if (m_activityTrail.Trail.IsSplits)
+                        //if (ParentResult != null)
                         //{
-                        //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
-                        //}
-                        //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
-                        //{
-                        //    if (i < trailLocations.Count &&
-                        //        !trailLocations[i].Required &&
-                        //        this.TrailPointDateTime[i] > DateTime.MinValue)
+                        //    if (this.ParentResult.StartDateTime_0 < this.StartDateTime_0)
                         //    {
-                        //        DateTime lower = this.TrailPointDateTime[i];
-                        //        DateTime upper = this.EndTime;
-                        //        while (i < this.TrailPointDateTime.Count &&
-                        //            i < trailLocations.Count &&
-                        //            (!trailLocations[i].Required ||
-                        //            this.TrailPointDateTime[i] == DateTime.MinValue))
-                        //        {
-                        //            i++;
-                        //        }
-                        //        if (i < this.TrailPointDateTime.Count &&
-                        //            this.TrailPointDateTime[i] > DateTime.MinValue)
-                        //        {
-                        //            upper = this.TrailPointDateTime[i];
-                        //        }
-                        //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                        //        m_pauses.Add(new ValueRange<DateTime>(this.ParentResult.StartDateTime_0, this.StartDateTime_0));
+                        //    }
+                        //    if (this.EndDateTime_0 < this.ParentResult.EndDateTime_0)
+                        //    {
+                        //        m_pauses.Add(new ValueRange<DateTime>(this.EndDateTime_0, this.ParentResult.EndDateTime_0));
                         //    }
                         //}
                     }
-                    //if (ParentResult != null)
-                    //{
-                    //    if (this.ParentResult.StartDateTime_0 < this.StartDateTime_0)
-                    //    {
-                    //        m_pauses.Add(new ValueRange<DateTime>(this.ParentResult.StartDateTime_0, this.StartDateTime_0));
-                    //    }
-                    //    if (this.EndDateTime_0 < this.ParentResult.EndDateTime_0)
-                    //    {
-                    //        m_pauses.Add(new ValueRange<DateTime>(this.EndDateTime_0, this.ParentResult.EndDateTime_0));
-                    //    }
-                    //}
+                    //ExternalPauses
+                    //m_pauses.Add(new ValueRange<DateTime>(DateTime.MinValue, this.StartTime.AddSeconds(-1)));
+                    //m_pauses.Add(new ValueRange<DateTime>(this.EndTime.AddSeconds(1), DateTime.MaxValue));
                 }
                 return m_pauses;
             }
@@ -1470,8 +1477,22 @@ namespace TrailsPlugin.Data
             return track;
         }
 
-        //Copy a track and apply smoothing
+        /// <summary>
+        /// Copy a track, trim and apply smoothing
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="insert"></param>
+        /// <param name="smooth"></param>
+        /// <param name="convert"></param>
+        /// <param name="refRes"></param>
+        /// <returns></returns>
+
         public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, int smooth, Convert convert, TrailResult refRes)
+        {
+            return copySmoothTrack(source, insert, true, smooth, convert, refRes);
+        }
+
+        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, bool trim, int smooth, Convert convert, TrailResult refRes)
         {
             IActivity refActivity = null;
             if (refRes != null)
@@ -1492,7 +1513,7 @@ namespace TrailsPlugin.Data
                 foreach (ITimeValueEntry<float> t in source)
                 {
                     DateTime dateTime = source.EntryDateTime(t);
-                    if (this.StartTime <= dateTime && dateTime <= this.EndTime &&
+                    if (!trim || this.StartTime <= dateTime && dateTime <= this.EndTime &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                     {
                         uint elapsed = t.ElapsedSeconds;
@@ -1502,7 +1523,7 @@ namespace TrailsPlugin.Data
                             oldElapsed = (int)elapsed;
                         }
                     }
-                    if (dateTime > this.EndTime)
+                    if (trim && dateTime > this.EndTime)
                     {
                         break;
                     }
@@ -1791,48 +1812,70 @@ namespace TrailsPlugin.Data
             return m_deviceSpeedPaceTrack0;
         }
 
-        public INumericTimeDataSeries DeviceElevationTrack0()
-        {
-            return DeviceElevationTrack0(this.m_cacheTrackRef, TrailActivityInfoOptions.ElevationSmoothingSeconds);
-        }
-
-        public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes)
-        {
-            return DeviceElevationTrack0(refRes, TrailActivityInfoOptions.ElevationSmoothingSeconds);
-        }
-
-        private INumericTimeDataSeries DeviceElevationTrackFromActivity(TrailResult refRes, IActivity activity, int eleSmooth)
+        private INumericTimeDataSeries DeviceElevationTrackFromActivity(TrailResult refRes, IActivity activity, bool trim, int eleSmooth)
         {
             INumericTimeDataSeries deviceElevationTrack0 = null;
-            if (activity != null && activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 1)
+            //TBD devices at import?, configure
+            string DevNames = "580";
+            if (activity != null)
             {
-                //aprox end
-                const int maxTimeDiff = 5;
-                DateTime start2 = activity.ElevationMetersTrack.StartTime.AddSeconds(-maxTimeDiff);
-                DateTime end2 = start2.AddSeconds(activity.ElevationMetersTrack.TotalElapsedSeconds + maxTimeDiff);
-                if (start2 <= this.StartTime && this.EndTime <= end2)
+                INumericTimeDataSeries sourceTrack = null;
+                if (activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 1)
                 {
-                    deviceElevationTrack0 = copySmoothTrack(activity.ElevationMetersTrack, true, eleSmooth,
-                           new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
-                    float offset = LineChartUtil.getSyncGraphOffset(deviceElevationTrack0, this.ElevationMetersTrack0(refRes), UI.Activity.TrailLineChart.SyncGraph); 
-                    for (int i = 0; i < deviceElevationTrack0.Count; i++)
+                    //Separate elevation track, prefer it
+                    sourceTrack = activity.ElevationMetersTrack;
+                }
+                else 
+                    if (activity.GPSRoute != null && activity.GPSRoute.Count > 1 &&
+                    activity.Metadata.Source.Contains(DevNames))
+                {
+                    sourceTrack = new NumericTimeDataSeries();
+                    foreach (ITimeValueEntry<IGPSPoint> g in activity.GPSRoute)
                     {
-                        deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + offset);
+                        sourceTrack.Add(activity.GPSRoute.EntryDateTime(g), g.Value.ElevationMeters);
+                    }
+                }
+                if (sourceTrack != null)
+                {
+                    //aprox end
+                    const int maxTimeDiff = 5;
+                    DateTime start2 = sourceTrack.StartTime.AddSeconds(-maxTimeDiff);
+                    DateTime end2 = start2.AddSeconds(sourceTrack.TotalElapsedSeconds + maxTimeDiff);
+                    if (start2 <= this.StartTime && this.EndTime <= end2)
+                    {
+                        deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
+                               new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                        float offset = LineChartUtil.getSyncGraphOffset(deviceElevationTrack0, this.ElevationMetersTrack0(refRes), UI.Activity.TrailLineChart.SyncGraph);
+                        for (int i = 0; i < deviceElevationTrack0.Count; i++)
+                        {
+                            deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + offset);
+                        }
                     }
                 }
             }
             return deviceElevationTrack0;
         }
 
-        public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes, int eleSmooth)
+        public static bool UseTrailElevationAdjust = true; //xxx
+        public INumericTimeDataSeries DeviceElevationTrack0()
+        {
+            return DeviceElevationTrack0(this.m_cacheTrackRef, TrailActivityInfoOptions.ElevationSmoothingSeconds, true);
+        }
+
+        public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes)
+        {
+            return DeviceElevationTrack0(refRes, TrailActivityInfoOptions.ElevationSmoothingSeconds, true);
+        }
+
+        public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes, int eleSmooth, bool trim)
         {
             checkCacheRef(refRes);
             if (m_deviceElevationTrack0 == null || eleSmooth != TrailActivityInfoOptions.ElevationSmoothingSeconds)
             {
-                INumericTimeDataSeries deviceElevationTrack0 = null;
+                INumericTimeDataSeries deviceElevationTrack0 = null; //TBD include the full track, then cut it - for adjustment
                 if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
                 {
-                    deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, eleSmooth,
+                    deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, !UseTrailElevationAdjust && trim, eleSmooth,
                        new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 }
                 else if (TrailsPlugin.Data.Settings.DeviceElevationFromOther)
@@ -1841,7 +1884,7 @@ namespace TrailsPlugin.Data
                     foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                     {
                         IActivity activity = trw.Result.Activity;
-                        deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, eleSmooth);
+                        deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, !UseTrailElevationAdjust && trim, eleSmooth);
                         if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
                         {
                             break;
@@ -1852,7 +1895,7 @@ namespace TrailsPlugin.Data
                         //TBD: Can "similar" activities be preferred?
                         foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                         {
-                            deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, eleSmooth);
+                            deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, !UseTrailElevationAdjust && trim, eleSmooth);
                             if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
                             {
                                 break;
@@ -1865,6 +1908,90 @@ namespace TrailsPlugin.Data
                 {
                     deviceElevationTrack0 = new NumericTimeDataSeries();
                 }
+                else if (UseTrailElevationAdjust)
+                {
+                    //Note that deviceElevationTrack0 is extended, to set elevationOffset as good as possible
+                    IList<DateEle> elevationOffset = new List<DateEle>();
+                    if (!this.m_activityTrail.Trail.IsReference)
+                    {
+                        elevationOffset = getElevationOffsets(deviceElevationTrack0, this.m_subResultInfo.Points);
+                        //for (int i = 0; i < this.m_subResultInfo.Count; i++)
+                        //{
+                        //    TrailResultPoint t = this.m_subResultInfo.Points[i];
+                        //    addElePoints(deviceElevationTrack0, elevationOffset, t);
+                        //}
+                    }
+
+                    if (elevationOffset.Count == 0)
+                    {
+                        //Get the results on the complete activity, to match better
+                        IList<TrailResultPoint> points = ActivityTrail.CalcElevationPoints(this.Activity, null);
+                        //foreach(TrailResultPoint t in points)
+                        {
+                            elevationOffset = getElevationOffsets(deviceElevationTrack0, points);
+                            //float ele = 0;
+                            ////TBD outside? extend some?
+                            //if (d1 < deviceElevationTrack0.StartTime)
+                            //{
+                            //    ele = deviceElevationTrack0[0].Value;
+                            //}
+                            //else if (deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[deviceElevationTrack0.Count - 1]) < d1)
+                            //{
+                            //    ele = deviceElevationTrack0[deviceElevationTrack0.Count - 1].Value;
+                            //}
+                            //else
+                            //{
+                            //    try
+                            //    {
+                            //        ele = deviceElevationTrack0.GetInterpolatedValue(d1).Value;
+                            //    }
+                            //    catch { }
+                            //}
+                            //DateEle e = new DateEle(d1, t.ElevationMeters - ele);
+                            //elevationOffset.Add(e);
+                        }
+                    }
+                    
+                    //Trim only, insert and smooth already done
+                    deviceElevationTrack0 = copySmoothTrack(deviceElevationTrack0, false, true, 0,
+                        new Convert(ConvertNone), this.m_cacheTrackRef);
+
+                    //Correct the elevation track from the offset, by time
+                    //(assume that all error is changed over time)
+                    if (elevationOffset.Count > 0)
+                    {
+                        int eleIndex = 0;
+                        for (int i = 0; i < deviceElevationTrack0.Count; i++)
+                        {
+                            DateTime t = deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[i]);
+                            float e;
+                            while (elevationOffset[eleIndex].Date < t)
+                            {
+                                if (eleIndex >= elevationOffset.Count - 1)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    eleIndex++;
+                                }
+                            }
+                            if (eleIndex > 0 /*&& elevationOffset[eleIndex].Date >= t*/)
+                            {
+                                //interpolate between points, extrapolate after last
+                                double k = (t - elevationOffset[eleIndex-1].Date).TotalSeconds / (elevationOffset[eleIndex].Date - elevationOffset[eleIndex - 1].Date).TotalSeconds;
+                                e = (float)((1 - k) * elevationOffset[eleIndex - 1].elevation + k * elevationOffset[eleIndex].elevation);
+                            }
+                            else
+                            {
+                                //Before or on first point (possibly single point), no extrapolation
+                                e = elevationOffset[eleIndex].elevation;
+                            }
+                            deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + e);
+                        }
+                    }
+                }
+
                 if (TrailActivityInfoOptions.ElevationSmoothingSeconds == eleSmooth)
                 {
                     m_deviceElevationTrack0 = deviceElevationTrack0;
@@ -1878,10 +2005,79 @@ namespace TrailsPlugin.Data
             return m_deviceElevationTrack0;
         }
 
+        private IList<DateEle> getElevationOffsets(INumericTimeDataSeries deviceElevationTrack0, IList<TrailResultPoint> points)
+        {
+            //Find matches at elevationpoints for current trail
+            IList<DateEle> elevationOffset = new List<DateEle>();
+            foreach (TrailResultPoint t in points)
+            {
+                if (!float.IsNaN(t.ElevationMeters))
+                {
+                    DateTime d1 = t.Time;
+                    if (d1 != DateTime.MinValue)
+                    {
+                        float ele = float.NaN;
+                        const int extendSeconds = 60;
+                        //deviceElevationTrack0 is not trimmed and therefore "maximum" size
+                        if (deviceElevationTrack0.StartTime <= d1 && d1 <= deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[deviceElevationTrack0.Count - 1]))
+                        {
+                            try
+                            {
+                                ele = deviceElevationTrack0.GetInterpolatedValue(d1).Value;
+                            }
+                            catch { }
+                        }
+                        else
+                        {
+                            //Allow some extending, if the elevation track is not matching completely (separate start for instance)
+                            double offset;
+                            int index = -1;
+                            offset = (deviceElevationTrack0.StartTime - d1).TotalSeconds;
+                            if (offset >= 0 && offset <= extendSeconds)
+                            {
+                                index = 0;
+                            }
+                            else
+                            {
+                                index = deviceElevationTrack0.Count - 1;
+                                offset = (d1 - deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[index])).TotalSeconds;
+                                if (offset < 0 && offset > extendSeconds)
+                                {
+                                    index = -1;
+                                }
+                            }
+                            if (index >= 0)
+                            {
+                                ele = deviceElevationTrack0[index].Value;
+                            }
+                        }
+                        if (ele != float.NaN)
+                        {
+                            DateEle e = new DateEle(d1, t.ElevationMeters - ele);
+                            elevationOffset.Add(e);
+                        }
+                    }
+                }
+            }
+            return elevationOffset;
+        }
+
+        private class DateEle
+        {
+                internal DateEle(DateTime Date, float elevation)
+                {
+                    this.Date = Date;
+                    this.elevation = elevation;
+                }
+
+                internal DateTime Date;
+                internal float elevation;
+        }
+
         //Set elevation track (TBD gps?) from the "calculated" elevation track
         internal int SetDeviceElevation()
         {
-            INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(this.m_cacheTrackRef, 0);
+            INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(this.m_cacheTrackRef, 0, false);
             if (eTrack != null && eTrack.Count > 0 &&
                 this.Activity != null &&
                 this.GPSRoute != null && this.GPSRoute.Count > 0)

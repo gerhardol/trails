@@ -23,7 +23,6 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-            this.components = new System.ComponentModel.Container();
             this.PluginInfoPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
@@ -40,7 +39,6 @@
             this.boxPredictDistance = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
-            //this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.PluginInfoPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -126,7 +124,7 @@
             this.lblDefaultRadius.Location = new System.Drawing.Point(3, 33);
             this.lblDefaultRadius.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblDefaultRadius.Name = "lblDefaultRadius";
-            this.lblDefaultRadius.Size = new System.Drawing.Size(80, 13);
+            this.lblDefaultRadius.Size = new System.Drawing.Size(86, 13);
             this.lblDefaultRadius.TabIndex = 0;
             this.lblDefaultRadius.Text = "<Default Radius:";
             // 
@@ -174,10 +172,10 @@
             // lblStoppedCategory
             // 
             this.lblStoppedCategory.AutoSize = true;
-            this.lblStoppedCategory.Location = new System.Drawing.Point(3, 213);
+            this.lblStoppedCategory.Location = new System.Drawing.Point(3, 73);
             this.lblStoppedCategory.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblStoppedCategory.Name = "lblStoppedCategory";
-            this.lblStoppedCategory.Size = new System.Drawing.Size(96, 13);
+            this.lblStoppedCategory.Size = new System.Drawing.Size(95, 13);
             this.lblStoppedCategory.TabIndex = 4;
             this.lblStoppedCategory.Text = "<StoppedCategory";
             // 
@@ -188,7 +186,7 @@
             this.boxStoppedCategory.BackColor = System.Drawing.Color.White;
             this.boxStoppedCategory.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxStoppedCategory.ButtonImage = null;
-            this.boxStoppedCategory.Location = new System.Drawing.Point(0, 246);
+            this.boxStoppedCategory.Location = new System.Drawing.Point(150, 70);
             this.boxStoppedCategory.Margin = new System.Windows.Forms.Padding(0);
             this.boxStoppedCategory.MaxLength = 32767;
             this.boxStoppedCategory.Multiline = false;
@@ -200,7 +198,7 @@
             this.boxStoppedCategory.Size = new System.Drawing.Size(100, 19);
             this.boxStoppedCategory.TabIndex = 5;
             this.boxStoppedCategory.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.boxStoppedCategory.LostFocus += new System.EventHandler(boxStoppedCategory_LostFocus);
+            this.boxStoppedCategory.LostFocus += new System.EventHandler(this.boxStoppedCategory_LostFocus);
             // 
             // lblUniqueRoutes
             // 
@@ -235,10 +233,10 @@
             // lblPredictDistance
             // 
             this.lblPredictDistance.AutoSize = true;
-            this.lblPredictDistance.Location = new System.Drawing.Point(3, 33);
+            this.lblPredictDistance.Location = new System.Drawing.Point(3, 193);
             this.lblPredictDistance.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblPredictDistance.Name = "lblPredictDistance";
-            this.lblPredictDistance.Size = new System.Drawing.Size(80, 13);
+            this.lblPredictDistance.Size = new System.Drawing.Size(91, 13);
             this.lblPredictDistance.TabIndex = 0;
             this.lblPredictDistance.Text = "<PredictDistance:";
             // 
@@ -249,7 +247,7 @@
             this.boxPredictDistance.BackColor = System.Drawing.Color.White;
             this.boxPredictDistance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxPredictDistance.ButtonImage = null;
-            this.boxPredictDistance.Location = new System.Drawing.Point(150, 30);
+            this.boxPredictDistance.Location = new System.Drawing.Point(150, 190);
             this.boxPredictDistance.Margin = new System.Windows.Forms.Padding(0);
             this.boxPredictDistance.MaxLength = 32767;
             this.boxPredictDistance.Multiline = false;
@@ -268,7 +266,7 @@
             this.lblCopyright.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblCopyright, 2);
             this.lblCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCopyright.Location = new System.Drawing.Point(3, 190);
+            this.lblCopyright.Location = new System.Drawing.Point(3, 220);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(350, 20);
             this.lblCopyright.TabIndex = 1;
@@ -278,9 +276,9 @@
             // 
             this.lblLicense.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblLicense, 2);
-            this.lblLicense.Location = new System.Drawing.Point(3, 226);
+            this.lblLicense.Location = new System.Drawing.Point(3, 240);
             this.lblLicense.Name = "lblLicense";
-            this.lblLicense.Size = new System.Drawing.Size(350, 20);
+            this.lblLicense.Size = new System.Drawing.Size(350, 39);
             this.lblLicense.TabIndex = 3;
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
     "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +

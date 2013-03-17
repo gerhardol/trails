@@ -53,7 +53,7 @@ namespace TrailsPlugin.Data
         private static bool m_showOnlyMarkedOnRoute = false;
         private static bool m_resultSummaryIsDevice = false;
         private static bool m_resultSummaryStdDev = false;
-        private static string m_excludeStoppedCategory = "";
+        private static String[] m_excludeStoppedCategory = new String[0];
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
         private static float m_predictDistance = 10000;
         private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
@@ -284,10 +284,22 @@ namespace TrailsPlugin.Data
             set { m_onlyReferenceRight = value; }
         }
 
-        public static string ExcludeStoppedCategory
+        public static String[] ExcludeStoppedCategory
         {
             get { return m_excludeStoppedCategory; }
-            set { m_excludeStoppedCategory = value; }
+            //set { m_excludeStoppedCategory = value; }
+        }
+
+        public static void SetExcludeStoppedCategory(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                m_excludeStoppedCategory = new string[0];
+            }
+            else
+            {
+                m_excludeStoppedCategory = s.Split(';');
+            }
         }
 
         public static bool StartDistOffsetFromStartPoint
@@ -473,7 +485,7 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.ShowOnlyMarkedOnRoute);
                 if (attr.Length > 0) { ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
-                if (attr.Length > 0) { ExcludeStoppedCategory = attr; }
+                if (attr.Length > 0) { SetExcludeStoppedCategory(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.SmoothOverTrailPoints);
                 try
                 {
@@ -623,7 +635,12 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.OnlyReferenceRight, XmlConvert.ToString(m_onlyReferenceRight));
             pluginNode.SetAttribute(xmlTags.ZoomToSelection, XmlConvert.ToString(m_zoomToSelection));
             pluginNode.SetAttribute(xmlTags.ShowOnlyMarkedOnRoute, XmlConvert.ToString(m_showOnlyMarkedOnRoute));
-            pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, m_excludeStoppedCategory);
+            string s = "";
+            foreach(string i in m_excludeStoppedCategory)
+            {
+                s+=i+';';
+            }
+            pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, s);
             pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
             pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_predictDistance));
             pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_deviceElevationFromOther));

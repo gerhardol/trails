@@ -647,14 +647,13 @@ namespace TrailsPlugin.Data
         #region basic tracks
         bool isIncludeStoppedCategory(IActivityCategory category)
         {
-            if (category == null || Settings.ExcludeStoppedCategory == null || Settings.ExcludeStoppedCategory == "")
+            if (category == null || Settings.ExcludeStoppedCategory == null || Settings.ExcludeStoppedCategory.Length == 0)
             {
                 return true;
             }
             else
             {
-                String[] values = Settings.ExcludeStoppedCategory.Split(';');
-                foreach (String name in values)
+                foreach (String name in Settings.ExcludeStoppedCategory)
                 {
                     if (name.Contains(category.Name))
                     {

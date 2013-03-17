@@ -1873,9 +1873,10 @@ namespace TrailsPlugin.Data
             if (m_deviceElevationTrack0 == null || eleSmooth != TrailActivityInfoOptions.ElevationSmoothingSeconds)
             {
                 INumericTimeDataSeries deviceElevationTrack0 = null; //TBD include the full track, then cut it - for adjustment
+                bool trimSource = !UseTrailElevationAdjust && trim;
                 if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
                 {
-                    deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, !UseTrailElevationAdjust && trim, eleSmooth,
+                    deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, trimSource, eleSmooth,
                        new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                 }
                 else if (TrailsPlugin.Data.Settings.DeviceElevationFromOther)
@@ -1884,7 +1885,7 @@ namespace TrailsPlugin.Data
                     foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                     {
                         IActivity activity = trw.Result.Activity;
-                        deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, !UseTrailElevationAdjust && trim, eleSmooth);
+                        deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, trimSource, eleSmooth);
                         if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
                         {
                             break;
@@ -1895,7 +1896,7 @@ namespace TrailsPlugin.Data
                         //TBD: Can "similar" activities be preferred?
                         foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                         {
-                            deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, !UseTrailElevationAdjust && trim, eleSmooth);
+                            deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(refRes, activity, trimSource, eleSmooth);
                             if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
                             {
                                 break;
@@ -1915,47 +1916,21 @@ namespace TrailsPlugin.Data
                     if (!this.m_activityTrail.Trail.IsReference)
                     {
                         elevationOffset = getElevationOffsets(deviceElevationTrack0, this.m_subResultInfo.Points);
-                        //for (int i = 0; i < this.m_subResultInfo.Count; i++)
-                        //{
-                        //    TrailResultPoint t = this.m_subResultInfo.Points[i];
-                        //    addElePoints(deviceElevationTrack0, elevationOffset, t);
-                        //}
                     }
 
                     if (elevationOffset.Count == 0)
                     {
                         //Get the results on the complete activity, to match better
                         IList<TrailResultPoint> points = ActivityTrail.CalcElevationPoints(this.Activity, null);
-                        //foreach(TrailResultPoint t in points)
-                        {
-                            elevationOffset = getElevationOffsets(deviceElevationTrack0, points);
-                            //float ele = 0;
-                            ////TBD outside? extend some?
-                            //if (d1 < deviceElevationTrack0.StartTime)
-                            //{
-                            //    ele = deviceElevationTrack0[0].Value;
-                            //}
-                            //else if (deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[deviceElevationTrack0.Count - 1]) < d1)
-                            //{
-                            //    ele = deviceElevationTrack0[deviceElevationTrack0.Count - 1].Value;
-                            //}
-                            //else
-                            //{
-                            //    try
-                            //    {
-                            //        ele = deviceElevationTrack0.GetInterpolatedValue(d1).Value;
-                            //    }
-                            //    catch { }
-                            //}
-                            //DateEle e = new DateEle(d1, t.ElevationMeters - ele);
-                            //elevationOffset.Add(e);
-                        }
+                        elevationOffset = getElevationOffsets(deviceElevationTrack0, points);
                     }
-                    
-                    //Trim only, insert and smooth already done
-                    deviceElevationTrack0 = copySmoothTrack(deviceElevationTrack0, false, true, 0,
-                        new Convert(ConvertNone), this.m_cacheTrackRef);
 
+                    if (trim)
+                    {
+                        //Trim only, insert and smooth already done
+                        deviceElevationTrack0 = copySmoothTrack(deviceElevationTrack0, false, true, 0,
+                            new Convert(ConvertNone), this.m_cacheTrackRef);
+                    }
                     //Correct the elevation track from the offset, by time
                     //(assume that all error is changed over time)
                     if (elevationOffset.Count > 0)
@@ -2082,6 +2057,7 @@ namespace TrailsPlugin.Data
                 this.Activity != null &&
                 this.GPSRoute != null && this.GPSRoute.Count > 0)
             {
+                //TBD Set on complete activity tracks, check activity limits
                 IGPSRoute gpsRoute = new GPSRoute();
                 INumericTimeDataSeries eleTrack = new NumericTimeDataSeries();
                 foreach (ITimeValueEntry<IGPSPoint> g in this.GPSRoute)

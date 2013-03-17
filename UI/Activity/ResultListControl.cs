@@ -1347,6 +1347,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
+                    //Put alternatively calculated grade in Cadence
                     TrailResult.CalculateGrade = !TrailResult.CalculateGrade;
                     m_page.RefreshData(true);
                     this.m_page.RefreshChart();

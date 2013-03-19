@@ -411,6 +411,23 @@ namespace TrailsPlugin.Data
         }
 
 /*****************************************************************************/
+        //static utilities to get the areas for a set of points (not always a complete trail)
+
+        //Get location bounds for a set of points
+        public static int LocationBounds(IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, float radius)
+        {
+            int noNonReq = 0;
+            foreach (TrailGPSLocation l in trailgps)
+            {
+                if (!l.Required)
+                {
+                    noNonReq++;
+                }
+                locationBounds.Add(TrailGPSLocation.getGPSBounds(new List<TrailGPSLocation> { l }, radius));
+            }
+            return noNonReq;
+        }
+
         public static GPSBounds getGPSBounds(IList<TrailGPSLocation> list, float radius)
         {
             return getGPSBounds(list, radius, false);

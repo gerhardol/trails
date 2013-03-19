@@ -308,18 +308,11 @@ namespace TrailsPlugin.Data
                 {
                     IList<TrailGPSLocation> trailgps = null;
                     IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
-                    if (m_trail.TrailType == Trail.CalcType.TrailPoints || m_trail.TrailType == Trail.CalcType.ElevationPoints)
+                    if (m_trail.TrailType == Trail.CalcType.TrailPoints || 
+                        m_trail.TrailType == Trail.CalcType.ElevationPoints)
                     {
                         trailgps = m_trail.TrailLocations;
-                        int noNonReq = 0;
-                        foreach (TrailGPSLocation l in trailgps)
-                        {
-                            if (!l.Required)
-                            {
-                                noNonReq++;
-                            }
-                            locationBounds.Add(TrailGPSLocation.getGPSBounds(new List<TrailGPSLocation> { l }, 10 * this.m_trail.Radius));
-                        }
+                        int noNonReq = TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * this.m_trail.Radius);
                         MaxAllowedMisses = Math.Min(trailgps.Count - noNonReq, MaxAllowedMisses);
                     }
                     //Calculate InBound information if not already done
@@ -526,10 +519,7 @@ namespace TrailsPlugin.Data
             TrailOrderStatus status = TrailOrderStatus.NoInfo;
 
             IList<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds> locationBounds = new List<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds>();
-            foreach (TrailGPSLocation l in trailgps)
-            {
-                locationBounds.Add(TrailGPSLocation.getGPSBounds(new List<TrailGPSLocation> { l }, 10 * radius));
-            }
+            TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * radius); 
 
             status = CalcTrail(activity, pauses, trailgps, locationBounds,
                 radius, 0, 0, false, maxPoints, false, trailResults, incompleteResults, null);
@@ -548,6 +538,27 @@ namespace TrailsPlugin.Data
             }
 
             return status;
+        }
+
+        public TrailResult CalcTrailCompleteResult(IActivity activity)
+        {
+            TrailResult tr = null;
+            IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
+            IList<IncompleteTrailResult> incompleteResults = new List<IncompleteTrailResult>();
+            IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
+            IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
+            int noNonReq = TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * this.m_trail.Radius);
+            int MaxAllowedMisses = Math.Min(trailgps.Count - noNonReq, m_trail.MaxRequiredMisses);
+
+            CalcTrail(activity, null, this.Trail.TrailLocations, locationBounds,
+this.Trail.Radius, this.Trail.MinDistance, 0, false, MaxAllowedMisses, true, 
+trailResults, incompleteResults, null);
+            if(trailResults.Count > 0)
+            {
+                TrailResultWrapper result = new TrailResultWrapper(this, 0, trailResults[0]);
+                tr = result.Result;
+            }
+            return tr;
         }
 
         /// <summary>

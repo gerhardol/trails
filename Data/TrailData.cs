@@ -40,6 +40,7 @@ namespace TrailsPlugin.Data
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.Generated = true;
             trail.IsSplits = true;
+            trail.IsCompleteActivity = true;
             trail.TrailType = Trail.CalcType.Splits;
             trail.TrailPriority = -11;
             allTrails.Add(trail.Id, trail);
@@ -49,6 +50,7 @@ namespace TrailsPlugin.Data
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.Generated = true;
             trail.IsReference = true;
+            trail.IsCompleteActivity = true;
             trail.TrailPriority = -10;
             allTrails.Add(trail.Id, trail);
 

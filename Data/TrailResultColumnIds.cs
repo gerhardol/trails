@@ -118,6 +118,11 @@ namespace TrailsPlugin.Data {
         public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
         public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
         public const string Diff = "Diff";
+        public const string VAM = "VAM";
+
+        //TBD to translate
+        public const string DiffPresent = "Diff";
+        public const string AverageAscentSpeed_VAM = "Average Ascending Speed (VAM)";
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -215,7 +220,8 @@ namespace TrailsPlugin.Data {
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelDuration, "", 60, StringAlignment.Far));
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             }
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, "Diff" + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, AverageAscentSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", "", 70, StringAlignment.Far));
             return columnDefs;
 		}
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
@@ -313,6 +319,8 @@ namespace TrailsPlugin.Data {
                     return x.GradeRunAdjustedSpeed;
                 case TrailResultColumnIds.Diff:
                     return x.Diff;
+                case TrailResultColumnIds.AverageAscentSpeed_VAM:
+                    return x.ElevChg/x.Duration.TotalHours;
                 default:
                     return x.Order;
             }

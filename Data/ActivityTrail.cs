@@ -725,12 +725,12 @@ trailResults, incompleteResults, null);
 
                 i = 0;
                 p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.StartTime, i, i, i, 0);
-                p.SetElevation(""); //No elevation point
+                p.SetElevation(float.NaN); //No elevation point
                 resultInfo.Points.Insert(0, p);
 
                 i = activity.GPSRoute.Count - 1;
                 p = new TrailResultPointMeta(new TrailGPSLocation(activity.GPSRoute[i].Value), activity.GPSRoute.EntryDateTime(activity.GPSRoute[i]), i, 1, i, 0);
-                p.SetElevation("");
+                p.SetElevation(float.NaN);
                 resultInfo.Points.Add(p);
 
                 trailResults.Clear();

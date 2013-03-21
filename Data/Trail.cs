@@ -478,7 +478,7 @@ namespace TrailsPlugin.Data
             foreach (Data.TrailGPSLocation t in t1)
             {
                 //Do not set elevation automatically
-                t.SetElevation("");
+                t.SetElevation(float.NaN);
             }
             return t1;
         }

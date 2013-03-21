@@ -196,12 +196,18 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public void SetElevation(string s)
+        //Set protected field (allow NaN)
+        public void SetElevation(float pos)
         {
-            float pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
-            //Allow Nan here
             this.elevationMeters = pos;
         }
+
+        //public void SetElevation(string s)
+        //{
+        //    float pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
+        //    //Allow Nan here
+        //    this.elevationMeters = pos;
+        //}
 
 #if TRAILSPLUGIN
         //This code is shared in other plugins

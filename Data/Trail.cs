@@ -466,6 +466,12 @@ namespace TrailsPlugin.Data
                 results.Points.Add(new TrailResultPoint(new TrailGPSLocation(float.NaN, float.NaN, float.NaN, activity.Name, true, 1), activity.StartTime + activity.TotalTimeEntered));
             }
 
+            //A trail created from splits should not define elevation points
+            foreach (TrailGPSLocation t in results.Points)
+            {
+                t.SetElevation(float.NaN);
+            }
+
             return results;
         }
 

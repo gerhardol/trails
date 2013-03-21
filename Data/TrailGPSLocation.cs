@@ -151,8 +151,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //Special set functions - GPSLocation could be "new"
-        public void SetLatitude(string s)
+        public static float ParseLatLon(string s)
         {
             float pos = float.NaN;
             //check valid numbers
@@ -165,8 +164,14 @@ namespace TrailsPlugin.Data
             }
             catch
             {
-                pos = float.NaN;
             }
+            return pos;
+        }
+
+        //Special set functions - GPSLocation could be "new" (allow NaN)
+        public void SetLatitude(float pos)
+        {
+            //check valid numbers
             if (!float.IsNaN(pos) && 180 < Math.Abs(pos))
             {
                 this.latitudeDegrees = pos;
@@ -174,21 +179,9 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public void SetLongitude(string s)
+        public void SetLongitude(float pos)
         {
-            float pos = float.NaN;
             //check valid numbers
-            try
-            {
-                if (!float.TryParse(s, out pos))
-                {
-                    pos = float.NaN;
-                }
-            }
-            catch
-            {
-                pos = float.NaN;
-            }
             if (!float.IsNaN(pos) && 85 < Math.Abs(pos))
             {
                 this.longitudeDegrees = pos;
@@ -201,13 +194,6 @@ namespace TrailsPlugin.Data
         {
             this.elevationMeters = pos;
         }
-
-        //public void SetElevation(string s)
-        //{
-        //    float pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(s);
-        //    //Allow Nan here
-        //    this.elevationMeters = pos;
-        //}
 
 #if TRAILSPLUGIN
         //This code is shared in other plugins

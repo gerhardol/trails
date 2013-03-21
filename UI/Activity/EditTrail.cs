@@ -607,11 +607,13 @@ namespace TrailsPlugin.UI.Activity
                 //TrailGPS fields
                 if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.LatitudeDegrees)
                 {
-                    t[this.m_rowDoubleClickSelected].TrailGPS.SetLatitude(editBox.Text);
+                    float pos = TrailGPSLocation.ParseLatLon(editBox.Text);
+                    t[this.m_rowDoubleClickSelected].TrailGPS.SetLatitude(pos);
                 }
                 else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.LongitudeDegrees)
                 {
-                    t[this.m_rowDoubleClickSelected].TrailGPS.SetLongitude(editBox.Text);
+                    float pos = TrailGPSLocation.ParseLatLon(editBox.Text);
+                    t[this.m_rowDoubleClickSelected].TrailGPS.SetLongitude(pos);
                 }
                 else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.Name)
                 {
@@ -619,7 +621,9 @@ namespace TrailsPlugin.UI.Activity
                 }
                 else if (this.EList.Columns[this.m_subItemSelected].Id == EditTrailColumnIds.ElevationMeters)
                 {
-                    t[this.m_rowDoubleClickSelected].TrailGPS.SetElevation(editBox.Text);
+                    //Allow NaN
+                    float pos = (float)GpsRunningPlugin.Util.UnitUtil.Elevation.Parse(editBox.Text);
+                    t[this.m_rowDoubleClickSelected].TrailGPS.SetElevation(pos);
                 }
                 //Note: result need to be recalculated to be accurate. However, the recalc could find other results,
                 //let the user request recalc manually

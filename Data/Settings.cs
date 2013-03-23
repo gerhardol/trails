@@ -304,7 +304,14 @@ namespace TrailsPlugin.Data
                 string s = "";
                 foreach (string i in m_excludeStoppedCategory)
                 {
-                    s += i + ';';
+                    if(!string.IsNullOrEmpty(i))
+                    {
+                        s += i + ';';
+                    }
+                }
+                if (!string.IsNullOrEmpty(s))
+                {
+                    s = s.Remove(s.Length - 1);
                 }
                 return s;
             }
@@ -334,7 +341,14 @@ namespace TrailsPlugin.Data
                 string s = "";
                 foreach (string i in m_barometricDevices)
                 {
-                    s += i + ';';
+                    if (!string.IsNullOrEmpty(i))
+                    {
+                        s += i + ';';
+                    }
+                }
+                if (!string.IsNullOrEmpty(s))
+                {
+                    s = s.Remove(s.Length - 1);
                 }
                 return s;
             }

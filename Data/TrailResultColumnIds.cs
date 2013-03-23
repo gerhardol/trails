@@ -122,7 +122,7 @@ namespace TrailsPlugin.Data {
 
         //TBD to translate
         public const string DiffPresent = "Diff";
-        public const string AverageAscentSpeed_VAM = "Average Ascending Speed (VAM)";
+        public const string AscendingSpeed_VAM = "Ascending Speed (VAM)";
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -221,7 +221,7 @@ namespace TrailsPlugin.Data {
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             }
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, AverageAscentSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", "", 70, StringAlignment.Far));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", "", 70, StringAlignment.Far));
             return columnDefs;
 		}
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
@@ -319,7 +319,7 @@ namespace TrailsPlugin.Data {
                     return x.GradeRunAdjustedSpeed;
                 case TrailResultColumnIds.Diff:
                     return x.Diff;
-                case TrailResultColumnIds.AverageAscentSpeed_VAM:
+                case TrailResultColumnIds.AscendingSpeed_VAM:
                     return x.ElevChg/x.Duration.TotalHours;
                 default:
                     return x.Order;

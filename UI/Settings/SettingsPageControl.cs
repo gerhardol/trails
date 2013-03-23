@@ -41,8 +41,6 @@ namespace TrailsPlugin.UI.Settings
                 this.lblPredictDistance.Enabled = false;
                 this.boxPredictDistance.Enabled = false;
             }
-            this.lblAdjustElevationAtImport.Visible = false;
-            this.txtAdjustElevationAtImport.Visible = false;
 		}
 
         private void presentSettings()
@@ -78,13 +76,13 @@ namespace TrailsPlugin.UI.Settings
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
             this.lblHighScore.Text = Integration.HighScore.CompabilityText;
             this.lblPerformancePredictor.Text = Integration.PerformancePredictor.CompabilityText;
-            this.lblPredictDistance.Text = "Predict Time for Distance:";
+            this.lblPredictDistance.Text = "Predict Time for Distance:";  //TODO: Translate
 
             //Some untranslated strings....
             this.lblLicense.Text = "\r\nTrails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
                 "rg/licenses/lgpl.html.";
-            this.lblCopyright.Text = "Copyright Brendan Doherty 2009, Gerhard Olsson 2010-2012";
+            this.lblCopyright.Text = "Copyright Brendan Doherty 2009, Gerhard Olsson 2010-2013";
             this.PluginInfoBanner.Text = "Plugin Information";
         }
 
@@ -134,8 +132,7 @@ namespace TrailsPlugin.UI.Settings
             }
             else
             {
-                //TODO: Translate
-                MessageBox.Show("Incorrect distance format");
+                MessageBox.Show("Incorrect distance format"); //TODO: Translate
             }
             presentSettings();
         }

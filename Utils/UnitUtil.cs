@@ -464,6 +464,10 @@ namespace GpsRunningPlugin.Util
                 }
                 return du;
             }
+            public static bool isDefaultUnit(IActivity activity)
+            {
+                return (GetUnit(activity) == Length.Units.Meter);
+            }
 
             public static string ToString(double p)
             {
@@ -626,7 +630,7 @@ namespace GpsRunningPlugin.Util
         }
 
         /*********************************************************************************/
-        //Hanndle Duration, not DateTime
+        //Handle Duration, not DateTime
         public static class Time
         {
             //This class handles Time as in "Time for activities" rather than "Time of day"
@@ -744,6 +748,10 @@ namespace GpsRunningPlugin.Util
                     du = Unit;
                 }
                 return du;
+            }
+            public static bool isDefaultUnit(IActivity activity)
+            {
+                return (GetUnit(activity) == Length.Units.Meter);
             }
 
             public static string ToString(double p)

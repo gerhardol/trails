@@ -463,28 +463,10 @@ namespace TrailsPlugin.UI.MapLayers
         //    }
         //}
 
-        /// <summary>
-        /// Get a radius for a trail matching a minimum number of pixels
-        /// </summary>
-        /// <param name="minPixels"></param>
-        /// <returns></returns>
-        public float getRadius(int minPixels)
+        private static void pixelSize(IMapControl mapControl, out float x, out float y)
         {
-            const int circlePixelSize = 1000;
-            IGPSPoint point0 = Utils.GPS.LocationToPoint(this.MapControl.MapProjection.PixelToGPS(this.MapControl.Center, this.MapControl.Zoom,
-                new Point(0, 0)));
-            IGPSPoint pointX = Utils.GPS.LocationToPoint(this.MapControl.MapProjection.PixelToGPS(this.MapControl.Center, this.MapControl.Zoom,
-                new Point(circlePixelSize / 2, 0)));
-            IGPSPoint pointY = Utils.GPS.LocationToPoint(this.MapControl.MapProjection.PixelToGPS(this.MapControl.Center, this.MapControl.Zoom,
-                new Point(0, circlePixelSize / 2)));
-            float radius = minPixels * Math.Max(point0.DistanceMetersToPoint(pointX), point0.DistanceMetersToPoint(pointY)) / (float)circlePixelSize;
-            return radius;
-        }
-
-        private static MapIcon getCircle(IMapControl mapControl, float radius, bool centerPoint)
-        {
-            //Get pixel Size for icon - can differ X and Y
-            //Calculate to radius, use point at apropriate distance to get meters->pixels
+            //Use an "arbitrary" circlePixelSize to find the distance/size for a pixel - can differ X and Y
+            //TBD: Cache per zoom level
             const int circlePixelSize = 1000;
             IGPSPoint point0 = Utils.GPS.LocationToPoint(mapControl.MapProjection.PixelToGPS(mapControl.Center, mapControl.Zoom,
                 new Point(0, 0)));
@@ -492,8 +474,29 @@ namespace TrailsPlugin.UI.MapLayers
                 new Point(circlePixelSize / 2, 0)));
             IGPSPoint pointY = Utils.GPS.LocationToPoint(mapControl.MapProjection.PixelToGPS(mapControl.Center, mapControl.Zoom,
                 new Point(0, circlePixelSize / 2)));
-            int sizeInPixelsX = (int)(circlePixelSize * radius / point0.DistanceMetersToPoint(pointX));
-            int sizeInPixelsY = (int)(circlePixelSize * radius / point0.DistanceMetersToPoint(pointY));
+            x = Math.Max(1, (float)circlePixelSize / point0.DistanceMetersToPoint(pointX));
+            y = Math.Max(1, (float)circlePixelSize / point0.DistanceMetersToPoint(pointY));
+        }
+
+        /// <summary>
+        /// Get a radius for a trail matching a minimum number of pixels
+        /// </summary>
+        /// <param name="minPixels"></param>
+        /// <returns></returns>
+        public float getRadius(int pixels)
+        {
+            float x, y;
+            pixelSize(this.MapControl, out x, out y);
+            float radius = pixels * Math.Max(1/x, 1/y);
+            return radius;
+        }
+
+        private static MapIcon getCircle(IMapControl mapControl, float radius, bool centerPoint)
+        {
+            float x, y;
+            pixelSize(mapControl, out x, out y);
+            int sizeInPixelsX = (int)(x * radius);
+            int sizeInPixelsY = (int)(y * radius);
             if (sizeInPixelsX < 15 || sizeInPixelsY < 15)
             {
                 centerPoint = false;

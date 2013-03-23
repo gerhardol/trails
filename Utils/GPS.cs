@@ -20,8 +20,10 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data.GPS;
 
-namespace TrailsPlugin.Utils {
-	public class GPS {
+namespace TrailsPlugin.Utils
+{
+	public class GPS
+    {
 		public static IGPSPoint LocationToPoint(IGPSLocation location)
         {
             if (location == null)
@@ -31,10 +33,6 @@ namespace TrailsPlugin.Utils {
             }
 			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, float.NaN);
 		}
-
-		//public static IGPSLocation PointToLocation(IGPSPoint point) {
-		//	return new GPSLocation(point.LatitudeDegrees, point.LongitudeDegrees);
-		//}
 
 #if !ST_2_1
         public static IGPSBounds GetBounds(IList<IList<IGPSPoint>> trks)

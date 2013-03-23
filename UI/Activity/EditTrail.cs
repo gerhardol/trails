@@ -410,7 +410,7 @@ namespace TrailsPlugin.UI.Activity
             this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Distance, CommonResources.Text.LabelDistance, 60, StringAlignment.Far));
             this.cMaxEditColumn = EList.Columns.Count;
             this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Time, CommonResources.Text.LabelTime, 60, StringAlignment.Far));
-            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Diff, "Diff", 60, StringAlignment.Far)); //TBD Translate
+            this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.Diff, TrailResultColumnIds.Diff, 60, StringAlignment.Far));
             this.EList.Columns.Add(new TreeList.Column(EditTrailColumnIds.ResultElevation, CommonResources.Text.LabelElevation, 60, StringAlignment.Far));
 
             RefreshResult(false);

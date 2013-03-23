@@ -435,7 +435,6 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (!selecting && endSelect && !(tr is SummaryTrailResult))
                 {
-                    //TBD summary result, multiple result?
                     this.ShowSpeedToolTip(tr, regions);
                 }
             }

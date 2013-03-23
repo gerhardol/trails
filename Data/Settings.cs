@@ -529,9 +529,11 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
                 if (attr.Length > 0) { m_addCurrentCategory = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
-                if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
+                if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); } 
                 attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
                 if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.SetAdjustElevationAtImport);
+                if (attr.Length > 0) { SetAdjustElevationAtImport = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.RestLapIsPause);
                 if (attr.Length > 0) { RestIsPause = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.NonReqIsPause);
@@ -693,6 +695,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.SelectSimilarResults, XmlConvert.ToString(m_SelectSimilarResults));
             pluginNode.SetAttribute(xmlTags.AddCurrentActivity, XmlConvert.ToString(m_addCurrentCategory));
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
+            pluginNode.SetAttribute(xmlTags.SetAdjustElevationAtImport, XmlConvert.ToString(m_SetAdjustElevationAtImport));
             pluginNode.SetAttribute(xmlTags.RestLapIsPause, XmlConvert.ToString(m_restLapIsPause));
             pluginNode.SetAttribute(xmlTags.NonReqIsPause, XmlConvert.ToString(m_nonReqIsPause));
             pluginNode.SetAttribute(xmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_resyncDiffAtTrailPoints));
@@ -770,6 +773,7 @@ namespace TrailsPlugin.Data
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
             public const string MaxAutoCalcActivitiesSingleTrail = "MaxAutoCalcActivitiesSingleTrail";
             public const string SetNameAtImport = "SetNameAtImport";
+            public const string SetAdjustElevationAtImport = "SetAdjustElevationAtImport";
             public const string RestLapIsPause = "RestIsPause";
             public const string NonReqIsPause = "NonReqIsPause";
             public const string ResyncDiffAtTrailPoints = "ResyncDiffAtTrailPoints";

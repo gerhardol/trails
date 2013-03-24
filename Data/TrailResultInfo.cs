@@ -116,6 +116,14 @@ namespace TrailsPlugin.Data
         }
     }
 
+    public class SortResultPointsByTime : IComparer<TrailResultPoint>
+    {
+        public int Compare(TrailResultPoint x, TrailResultPoint y)
+        {
+            return x.Time < y.Time ? -1 : 1;
+        }
+    }
+
     public class TrailResultPoint : TrailGPSLocation, IComparable
     {
         //public TrailResultPoint(DateTime time, string name, bool active, float distDiff)

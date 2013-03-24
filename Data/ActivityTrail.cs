@@ -445,9 +445,8 @@ namespace TrailsPlugin.Data
                     }
                 }
             }
-            ((List<TrailResultPoint>)result).Sort();
-            //The sort is done with latest first, reverse
-            ((List<TrailResultPoint>)result).Reverse();
+            SortResultPointsByTime s = new SortResultPointsByTime();
+            ((List<TrailResultPoint>)result).Sort(s);
             return result;
         }
 

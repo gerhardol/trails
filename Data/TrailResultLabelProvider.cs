@@ -210,7 +210,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Diff:
                     return UnitUtil.Elevation.ToString(row.Diff, "");
                 case TrailResultColumnIds.VAM:
-                    return UnitUtil.Elevation.ToString(row.ElevChg/row.Duration.TotalHours, "");
+                    return UnitUtil.Elevation.ToString(row.VAM, "");
                 default:
                     if (row.Activity == null) return null;
                     return base.GetText(row.Activity, column);

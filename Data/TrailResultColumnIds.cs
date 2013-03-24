@@ -320,7 +320,7 @@ namespace TrailsPlugin.Data {
                 case TrailResultColumnIds.Diff:
                     return x.Diff;
                 case TrailResultColumnIds.AscendingSpeed_VAM:
-                    return x.ElevChg/x.Duration.TotalHours;
+                    return x.VAM;
                 default:
                     return x.Order;
             }

@@ -1232,6 +1232,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public virtual double VAM //Ascending speed
+        {
+            get
+            {
+                return this.ElevChg / this.Duration.TotalHours;
+            }
+        }
+
         public IActivityCategory Category
         {
             get

@@ -46,11 +46,13 @@ namespace TrailsPlugin.DataImport
                 {
                     IActivity activity = (IActivity)item;
                     Controller.TrailController m_controller = Controller.TrailController.Instance;
-                    if (TrailsPlugin.Data.Settings.SetNameAtImport &&
-                        string.IsNullOrEmpty(activity.Name))
+                    bool setName = (TrailsPlugin.Data.Settings.SetNameAtImport &&
+                        string.IsNullOrEmpty(activity.Name));
+                    if (setName)
                     {
                         //Do not keep selection, sort find best
                         m_controller.SetActivities(new List<IActivity> { activity }, false);
+
                         foreach (ActivityTrail at in m_controller.OrderedTrails())
                         {
                             if (at.Status <= TrailOrderStatus.MatchPartial &&
@@ -67,6 +69,60 @@ namespace TrailsPlugin.DataImport
 
         public void AfterImport(IList added, IList updated)
         {
+            //Only added, not updated
+            foreach (object item in added)
+            {
+                if (item is IActivity)
+                {
+                    IActivity activity = (IActivity)item;
+                    Controller.TrailController m_controller = Controller.TrailController.Instance;
+                    //Set for non barometric devices only
+                    bool setEle = false;
+                    if (TrailsPlugin.Data.Settings.SetAdjustElevationAtImport)
+                    {
+                        foreach (string devName in Settings.BarometricDevices)
+                        {
+                            if (activity.Metadata.Source.Contains(devName))
+                            {
+                                setEle = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (setEle)
+                    {
+                        //Do not keep selection, sort find best
+                        m_controller.SetActivities(new List<IActivity> { activity }, false);
+
+                        foreach (ActivityTrail at in m_controller.OrderedTrails())
+                        {
+                            if (at.Trail.IsSplits)
+                            {
+                                at.CalcResults(null);
+                            }
+                            if (at.Status == TrailOrderStatus.Match)
+                            {
+                                TrailResult tr = null;
+                                if (!at.Trail.IsCompleteActivity)
+                                {
+                                    //Recalculate, to get "full" result
+                                    tr = at.CalcTrailCompleteResult(activity);
+                                }
+                                else if (at.ResultTreeList.Count > 0)
+                                {
+                                    tr = at.ResultTreeList[0].Result;
+                                }
+                                if (tr != null)
+                                {
+                                    tr.SetDeviceElevation(true);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

@@ -420,7 +420,7 @@ namespace TrailsPlugin.Data
                         }
                         if (m_startTime == DateTime.MinValue)
                         {
-                            m_startTime = Info.ActualTrackStart;
+                            m_startTime = this.Info.ActualTrackStart;
                             if (m_startTime == DateTime.MinValue)
                             {
                                 m_startTime = this.Activity.StartTime;
@@ -982,7 +982,7 @@ namespace TrailsPlugin.Data
                 }
                 else if (this.Activity != null)
                 {
-                    string s = string.Format("{0} {1} {2}", Activity.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
+                    string s = string.Format("{0} {1} {2}", this.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
                     if (m_diffOnDateTime)
                     {
                         s += " " + Activity.Metadata.Source;
@@ -1220,10 +1220,12 @@ namespace TrailsPlugin.Data
                 INumericTimeDataSeries elevationTrack = CalcElevationMetersTrack0(this.m_cacheTrackRef);
                 if (elevationTrack != null && elevationTrack.Count > 1)
                 {
-                    value = (float)UnitUtil.Elevation.ConvertTo(
-                        elevationTrack[elevationTrack.Count - 1].Value -
-                        elevationTrack[0].Value,
-                        this.m_cacheTrackRef.Activity);
+                    value = elevationTrack[elevationTrack.Count - 1].Value - elevationTrack[0].Value;
+                    if (!UnitUtil.Elevation.isDefaultUnit(this.m_cacheTrackRef.Activity))
+                    {
+                        //Already in display unit, convert back
+                        value = (float)UnitUtil.Elevation.ConvertTo(value, this.m_cacheTrackRef.Activity);
+                    }
                 }
                 return value;
             }
@@ -1304,20 +1306,33 @@ namespace TrailsPlugin.Data
         //It was originally added as an attempt to handle selections and improve averages etc
         internal class InsertValues<T>
         {
-            TrailResult result;
+            DateTime startTime;
+            DateTime endTime;
+            IValueRangeSeries<DateTime> pauses;
+            IList<TrailResultPoint> points;
+
             ITimeDataSeries<T> track;
             ITimeDataSeries<T> source;
 
-            public InsertValues(TrailResult t, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+            public InsertValues(DateTime startTime, DateTime endTime, IValueRangeSeries<DateTime> pauses, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
             {
-                this.result = t;
+                this.startTime = startTime;
+                this.endTime = endTime;
+                this.pauses = pauses;
+                this.points = null;
                 this.track = track;
                 this.source = source;
             }
+            public InsertValues(TrailResult result, ITimeDataSeries<T> track, ITimeDataSeries<T> source) :
+                this(result.StartTime, result.EndTime, result.Pauses, track, source)
+            {
+                this.points = result.m_subResultInfo.Points;
+            }
+
             public void insertValues(DateTime atime)
             {
-                if (atime >= result.StartTime && atime <= result.EndTime &&
-                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, result.Pauses))
+                if (atime >= this.startTime && atime <= this.endTime &&
+                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
                 {
                     ITimeValueEntry<T> interpolatedP = this.source.GetInterpolatedValue(atime);
                     if (interpolatedP != null)
@@ -1330,20 +1345,22 @@ namespace TrailsPlugin.Data
                     }
                 }
             }
+
             public ITimeDataSeries<T> insertValues()
             {
                 //Insert points around pauses and points
                 //This is needed to get the track match the cut-up activity
                 //(otherwise for instance start point need to be added)
 
+#if ST_BEFORE_3_0_4205
                 //Bug in ST 3.0.4205 not resorting
                 int noPoints = track.Count;
-
+#endif
                 //start/end should be included from points, but prepare for changes...
-                insertValues(result.StartTime);
-                insertValues(result.EndTime);
+                insertValues(startTime);
+                insertValues(endTime);
 
-                foreach (IValueRange<DateTime> p in result.Pauses)
+                foreach (IValueRange<DateTime> p in pauses)
                 {
                     if (p.Lower > DateTime.MinValue)
                     {
@@ -1351,19 +1368,24 @@ namespace TrailsPlugin.Data
                     }
                     insertValues(p.Upper.AddSeconds(1));
                 }
-                foreach (TrailResultPoint t in result.m_subResultInfo.Points)
+
+                if (this.points != null)
                 {
-                    DateTime dateTime = t.Time;
-                    if (dateTime > DateTime.MinValue)
+                    foreach (TrailResultPoint t in points)
                     {
-                        insertValues(dateTime.AddSeconds(-1));
-                        insertValues(dateTime);
+                        DateTime dateTime = t.Time;
+                        if (dateTime > DateTime.MinValue)
+                        {
+                            insertValues(dateTime.AddSeconds(-1));
+                            insertValues(dateTime);
+                        }
                     }
                 }
 
+#if ST_BEFORE_3_0_4205
                 if (noPoints > 0)
                 {
-                    //AllowMultipleAtSameTime=false does not work in 3.0.4205
+                    //AllowMultipleAtSameTime=false does not work in and before 3.0.4205
                     bool reSort = false;
                     for (int i = noPoints; i < track.Count; i++)
                     {
@@ -1383,14 +1405,15 @@ namespace TrailsPlugin.Data
                                 dic.Add(g.ElapsedSeconds, g);
                             }
                         }
-                        DateTime startTime = track.StartTime;
+                        DateTime startTimeTrack = track.StartTime;
                         track.Clear();
                         foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
                         {
-                            track.Add(startTime.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
+                            track.Add(startTimeTrack.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
                         }
                     }
                 }
+#endif
                 //Return the original track, the typecasting must work
                 return this.track;
             }
@@ -1399,7 +1422,7 @@ namespace TrailsPlugin.Data
         //copy the relevant part to a new track
         private INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
         {
-            return copySmoothTrack(source, true, 0, new Convert(ConvertNone), m_cacheTrackRef);
+            return copySmoothTrack(source, false, 0, new Convert(ConvertNone), m_cacheTrackRef);
         }
 
         //Convert to/from internal format to display format
@@ -1489,10 +1512,10 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, int smooth, Convert convert, TrailResult refRes)
         {
-            return copySmoothTrack(source, insert, true, smooth, convert, refRes);
+            return copySmoothTrack(source, false, true, smooth, convert, refRes);
         }
 
-        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, bool trim, int smooth, Convert convert, TrailResult refRes)
+        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, bool trimToResult, int smooth, Convert convert, TrailResult refRes)
         {
             IActivity refActivity = null;
             if (refRes != null)
@@ -1503,18 +1526,54 @@ namespace TrailsPlugin.Data
             track.AllowMultipleAtSameTime = false;
             if (source != null)
             {
+                DateTime startTime;
+                DateTime endTime;
+                IValueRangeSeries<DateTime> pauses;
+                if(trimToResult)
+                {
+                    startTime = this.StartTime;
+                    pauses = this.Pauses;
+                    endTime = this.EndTime;
+                }
+                else if (this.Activity != null)
+                {
+                    //(normally)elevation handling, trim to activity
+                    //startTime = this.Activity.StartTime;
+                    startTime = this.Info.ActualTrackStart;
+                    pauses = this.Activity.TimerPauses;
+                    //endTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(startTime, this.Activity.TotalTimeEntered, pauses);
+                    endTime = this.Info.ActualTrackEnd;
+                }
+                else
+                {
+                    //should not occur
+                    startTime = DateTime.MinValue;
+                    pauses = new ValueRangeSeries<DateTime>();
+                    endTime = DateTime.MaxValue;
+                }
+
                 if (insert)
                 {
                     //Insert values around borders, to limit effects when track is chopped
                     //Do this before other additions, so start is StartTime for track
-                    //track = (INumericTimeDataSeries)(new InsertValues<float>(this, track, source)).insertValues();
+                    InsertValues<float> iv;
+                    if (trimToResult)
+                    {
+                        iv = new InsertValues<float>(this, track, source);
+                    }
+                    else
+                    {
+                        iv = new InsertValues<float>(startTime, endTime, pauses, track, source);
+                    }
+                    track = (INumericTimeDataSeries)iv.insertValues();
                 }
+
                 int oldElapsed = int.MinValue;
                 foreach (ITimeValueEntry<float> t in source)
                 {
                     DateTime dateTime = source.EntryDateTime(t);
-                    if (!trim || this.StartTime <= dateTime && dateTime <= this.EndTime &&
-                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
+                    if (startTime <= dateTime && dateTime <= endTime &&
+                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, pauses))
                     {
                         uint elapsed = t.ElapsedSeconds;
                         if (elapsed > oldElapsed)
@@ -1523,7 +1582,7 @@ namespace TrailsPlugin.Data
                             oldElapsed = (int)elapsed;
                         }
                     }
-                    if (trim && dateTime > this.EndTime)
+                    if (dateTime > this.EndTime)
                     {
                         break;
                     }
@@ -1665,7 +1724,7 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_speedTrack0 == null)
             {
-                m_speedTrack0 = copySmoothTrack(this.SpeedTrack, false, TrailActivityInfoOptions.SpeedSmoothingSeconds,
+                m_speedTrack0 = copySmoothTrack(this.SpeedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
                                  new Convert(UnitUtil.Speed.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_speedTrack0;
@@ -1683,35 +1742,49 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    if (!PaceTrackIsGradeAdjustedPaceAvg)
+                    //Calculate a grade adjusted track
+                    paceTrack = new NumericTimeDataSeries();
+                    if (!TrailResult.PaceTrackIsGradeAdjustedPaceAvg)
                     {
                         //Show pace, as it was flat
                         this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
-                        paceTrack = new NumericTimeDataSeries();
-                        foreach (ginfo t in m_grades)
+                        if (this.m_grades.Count > 1)
                         {
-                            //Add first point too?
-                            if (t.time > 0)
+                            if (this.m_grades[0].time > 0)
                             {
-                                paceTrack.Add(t.dateTime, t.dist / t.time / t.q);
+                                //xxx OK?
+                                paceTrack.Add(this.m_grades[0].dateTime, this.m_grades[0].dist / this.m_grades[0].time / this.m_grades[0].q);
+                            }
+                            foreach (ginfo t in m_grades)
+                            {
+                                if (t.time > 0)
+                                {
+                                    paceTrack.Add(t.dateTime, t.dist / t.time / t.q);
+                                }
                             }
                         }
                     }
                     else
                     {
                         //Show pace as it should have been with "even" pace"
-                        paceTrack = new NumericTimeDataSeries();
+                        //Undocumented
                         INumericTimeDataSeries timeTrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
-                        for (int i = 1; i < timeTrack.Count; i++)
+                        if (this.m_grades.Count > 1)
                         {
-                            ginfo t = this.m_grades[i];
-                            paceTrack.Add(t.dateTime, t.dist / (timeTrack[i].Value - timeTrack[i - 1].Value));
+                            if (this.m_grades[0].time > 0)
+                            {
+                                paceTrack.Add(this.m_grades[0].dateTime, this.m_grades[0].dist / this.m_grades[0].time / this.m_grades[0].q);
+                            }
+                            for (int i = 1; i < timeTrack.Count; i++)
+                            {
+                                ginfo t = this.m_grades[i];
+                                paceTrack.Add(t.dateTime, t.dist / (timeTrack[i].Value - timeTrack[i - 1].Value));
+                            }
                         }
                     }
-
                 }
                 //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
-                m_paceTrack0 = copySmoothTrack(paceTrack, false, TrailActivityInfoOptions.SpeedSmoothingSeconds,
+                m_paceTrack0 = copySmoothTrack(paceTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
                                 new Convert(ConvertNone), this.m_cacheTrackRef);
                 for (int i = 0; i < m_paceTrack0.Count; i++)
                 {
@@ -1808,7 +1881,6 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries DeviceElevationTrackFromActivity(IActivity activity, bool trim, int eleSmooth)
         {
             INumericTimeDataSeries deviceElevationTrack0 = null;
-            //TBD devices at import?, configure
             if (activity != null)
             {
                 INumericTimeDataSeries sourceTrack = null;
@@ -1834,10 +1906,9 @@ namespace TrailsPlugin.Data
                 }
                 if (sourceTrack != null && sourceTrack.Count>1)
                 {
-                    //aprox end
-                    const int maxTimeDiff = 5;
+                    const int maxTimeDiff = 15;
                     DateTime start2 = sourceTrack.StartTime.AddSeconds(-maxTimeDiff);
-                    DateTime end2 = start2.AddSeconds(sourceTrack.TotalElapsedSeconds + maxTimeDiff);
+                    DateTime end2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(start2, TimeSpan.FromSeconds(sourceTrack.TotalElapsedSeconds+2*maxTimeDiff), this.Activity.TimerPauses);
                     if (start2 <= this.StartTime && this.EndTime <= end2)
                     {
                         deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
@@ -1848,22 +1919,22 @@ namespace TrailsPlugin.Data
             return deviceElevationTrack0;
         }
 
-        //Unused(?) align of a track, previously in DeviceElevationTrackFromActivity
-        private void AdjustToGraphSync(TrailResult refRes, INumericTimeDataSeries deviceElevationTrack0)
-        {
-            float offset = LineChartUtil.getSyncGraphOffset(deviceElevationTrack0, this.ElevationMetersTrack0(refRes), UI.Activity.TrailLineChart.SyncGraph);
-            for (int i = 0; i < deviceElevationTrack0.Count; i++)
-            {
-                deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + offset);
-            }
-        }
+        //Unused align of a track, previously in DeviceElevationTrackFromActivity
+        //private void AdjustToGraphSync(TrailResult refRes, INumericTimeDataSeries deviceElevationTrack0)
+        //{
+        //    float offset = LineChartUtil.getSyncGraphOffset(deviceElevationTrack0, this.ElevationMetersTrack0(refRes), UI.Activity.TrailLineChart.SyncGraph);
+        //    for (int i = 0; i < deviceElevationTrack0.Count; i++)
+        //    {
+        //        deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + offset);
+        //    }
+        //}
 
         public INumericTimeDataSeries DeviceElevationTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
             if (m_deviceElevationTrack0 == null)
             {
-                m_deviceElevationTrack0 = DeviceElevationTrack0(TrailActivityInfoOptions.ElevationSmoothingSeconds, true);
+                m_deviceElevationTrack0 = DeviceElevationTrack0(TrailActivityInfoOptions.ElevationSmoothingSeconds, true, TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
             }
             return m_deviceElevationTrack0;
         }
@@ -1873,10 +1944,11 @@ namespace TrailsPlugin.Data
             return this.DeviceElevationTrack0(this.m_cacheTrackRef);
         }
 
-        private INumericTimeDataSeries DeviceElevationTrack0(int eleSmooth, bool trim)
+        private INumericTimeDataSeries DeviceElevationTrack0(int eleSmooth, bool trimToResult, bool adjustElevation)
         {
-            INumericTimeDataSeries deviceElevationTrack0 = null; //TBD include the full track, then cut it - for adjustment
-            bool trimSource = !TrailsPlugin.Data.Settings.UseTrailElevationAdjust && trim;
+            INumericTimeDataSeries deviceElevationTrack0 = null;
+            //include the activity track with UseTrailElevationAdjust, then cut it - for adjustment
+            bool trimSource = !TrailsPlugin.Data.Settings.UseTrailElevationAdjust && trimToResult;
             if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
             {
                 deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, trimSource, eleSmooth,
@@ -1918,14 +1990,11 @@ namespace TrailsPlugin.Data
             {
                 deviceElevationTrack0 = new NumericTimeDataSeries();
             }
-            else if (TrailsPlugin.Data.Settings.UseTrailElevationAdjust)
+            else if (adjustElevation)
             {
                 //Note that deviceElevationTrack0 is extended, to set elevationOffset as good as possible
                 IList<DateEle> elevationOffset = new List<DateEle>();
-                if (!this.m_activityTrail.Trail.IsReference)
-                {
-                    elevationOffset = getElevationOffsets(deviceElevationTrack0, this.m_subResultInfo.Points);
-                }
+                elevationOffset = getElevationOffsets(deviceElevationTrack0, this.m_subResultInfo.Points);
 
                 if (elevationOffset.Count == 0)
                 {
@@ -1934,13 +2003,13 @@ namespace TrailsPlugin.Data
                     elevationOffset = getElevationOffsets(deviceElevationTrack0, points);
                 }
 
-                if (trim)
+                if (trimToResult)
                 {
-                    //Trim only, insert and smooth already done
-                    deviceElevationTrack0 = copySmoothTrack(deviceElevationTrack0, false, true, 0,
+                    //Trim, insert (as start/end changes), smooth already done
+                    deviceElevationTrack0 = copySmoothTrack(deviceElevationTrack0, true, true, 0,
                         new Convert(ConvertNone), this.m_cacheTrackRef);
                 }
-                //Correct the elevation track from the offset, by time
+                //Correct the elevation track from the offset (already in display unit), by time
                 //(assume that all error is changed over time)
                 if (elevationOffset.Count > 0)
                 {
@@ -1963,19 +2032,19 @@ namespace TrailsPlugin.Data
                         if (eleIndex > 0 /*&& elevationOffset[eleIndex].Date >= t*/)
                         {
                             //interpolate between points, extrapolate after last
-                            double k = (t - elevationOffset[eleIndex - 1].Date).TotalSeconds / (elevationOffset[eleIndex].Date - elevationOffset[eleIndex - 1].Date).TotalSeconds;
-                            e = (float)((1 - k) * elevationOffset[eleIndex - 1].elevation + k * elevationOffset[eleIndex].elevation);
+                            float k = (float)((t - elevationOffset[eleIndex - 1].Date).TotalSeconds / (elevationOffset[eleIndex].Date - elevationOffset[eleIndex - 1].Date).TotalSeconds);
+                            e = ((1 - k) * elevationOffset[eleIndex - 1].elevation + k * elevationOffset[eleIndex].elevation);
                         }
                         else
                         {
                             //Before or on first point (possibly single point), no extrapolation
                             e = elevationOffset[eleIndex].elevation;
                         }
-                        deviceElevationTrack0.SetValueAt(i, deviceElevationTrack0[i].Value + e);
+                        e += deviceElevationTrack0[i].Value;
+                        deviceElevationTrack0.SetValueAt(i, e);
                     }
                 }
             }
-
             return deviceElevationTrack0;
         }
 
@@ -1983,6 +2052,11 @@ namespace TrailsPlugin.Data
         {
             //Find matches at elevationpoints for current trail
             IList<DateEle> elevationOffset = new List<DateEle>();
+            IActivity refAct = null;
+            if(this.m_cacheTrackRef != null)
+            {
+                refAct = this.m_cacheTrackRef.Activity;
+            }
             foreach (TrailResultPoint t in points)
             {
                 if (!float.IsNaN(t.ElevationMeters))
@@ -2027,7 +2101,14 @@ namespace TrailsPlugin.Data
                         }
                         if (ele != float.NaN)
                         {
-                            DateEle e = new DateEle(d1, t.ElevationMeters - ele);
+                            //elevation track is already in display unit
+                            float eleOffset = t.ElevationMeters;
+                            if (!UnitUtil.Elevation.isDefaultUnit(refAct))
+                            {
+                                eleOffset = (float)UnitUtil.Elevation.ConvertFrom(eleOffset, refAct);
+                            }
+                            eleOffset -= ele;
+                            DateEle e = new DateEle(d1, eleOffset);
                             elevationOffset.Add(e);
                         }
                     }
@@ -2048,54 +2129,68 @@ namespace TrailsPlugin.Data
                 internal float elevation;
         }
 
-        //Set elevation track (TBD gps?) from the "calculated" elevation track
-        internal int SetDeviceElevation()
+        //Set GPS elevation from the "calculated" elevation track
+        internal bool SetDeviceElevation(bool adjustElevation)
         {
-            INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(0, false);
-            if (eTrack != null && eTrack.Count > 0 &&
-                this.Activity != null &&
-                this.GPSRoute != null && this.GPSRoute.Count > 0)
+            bool result = false;
+            //Get a track adjusted for the activity
+            INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(0, false, adjustElevation);
+            if (eTrack != null && eTrack.Count > 1)
             {
-                //TBD Set on complete activity tracks, check activity limits
-                IGPSRoute gpsRoute = new GPSRoute();
-                INumericTimeDataSeries eleTrack = new NumericTimeDataSeries();
-                foreach (ITimeValueEntry<IGPSPoint> g in this.GPSRoute)
+                // possibly converted to display unit (for Imperal/feet users). Change back to SI unit
+                if (!UnitUtil.Elevation.isDefaultUnit(this.Activity))
                 {
-                    DateTime d1 = this.GPSRoute.EntryDateTime(g);
-                    ITimeValueEntry<float> val = eTrack.GetInterpolatedValue(d1);
-                    float? ele = null;
-                    if (val == null)
+                    for (int i = 0; i < eTrack.Count; i++)
                     {
-                        if (d1 < eTrack.StartTime)
+                        eTrack.SetValueAt(i, (float)UnitUtil.Elevation.ConvertTo(eTrack[i].Value, this.Activity));
+                    }
+                }
+
+                if (this.Activity != null &&
+                 this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 1)
+                {
+                    IGPSRoute gpsRoute = new GPSRoute();
+                    foreach (ITimeValueEntry<IGPSPoint> g in this.Activity.GPSRoute)
+                    {
+                        DateTime d1 = this.Activity.GPSRoute.EntryDateTime(g);
+                        ITimeValueEntry<float> val = eTrack.GetInterpolatedValue(d1);
+                        float ele = float.NaN;
+                        if (val != null)
                         {
-                            ele = eTrack[0].Value;
-                        }
-                        else if (d1 > eTrack.EntryDateTime(eTrack[eTrack.Count - 1]))
-                        {
-                            ele = eTrack[eTrack.Count - 1].Value;
+                            ele = val.Value;
                         }
                         else
                         {
-                            //Should not happen...
-                            //ele = eTrack[0].Value;
+                            //The elevation track should include (almost) all points, just some extensions
+                            if (d1 < eTrack.StartTime)
+                            {
+                                ele = eTrack[0].Value;
+                            }
+                            else if (d1 > eTrack.EntryDateTime(eTrack[eTrack.Count - 1]))
+                            {
+                                ele = eTrack[eTrack.Count - 1].Value;
+                            }
+                            else
+                            {
+                                //Should not happen, ignore point...
+                            }
+                        }
+
+                        if (ele != float.NaN)
+                        {
+                            //ele += UI.Activity.TrailLineChart.FixedSyncGraphMode;
+                            IGPSPoint g2 = new GPSPoint(g.Value.LatitudeDegrees, g.Value.LongitudeDegrees, ele);
+                            gpsRoute.Add(d1, g2);
                         }
                     }
-                    else
-                    {
-                        ele = val.Value;
-                    }
-                    if (ele != null)
-                    {
-                        //ele += UI.Activity.TrailLineChart.FixedSyncGraphMode;
-                        IGPSPoint g2 = new GPSPoint(g.Value.LatitudeDegrees, g.Value.LongitudeDegrees, (float)ele);
-                        gpsRoute.Add(d1, g.Value);
-                        eleTrack.Add(d1, (float)ele);
-                    }
+                    this.Activity.GPSRoute = gpsRoute;
                 }
-                //TBD this.Activity.GPSRoute = gpsRoute;
-                this.Activity.ElevationMetersTrack = eleTrack;
+
+                //Elevation track is not updated now
+                //this.Activity.ElevationMetersTrack = eTrack;
+                result = true;
             }
-            return 0;
+            return result;
         }
 
         //internal int SetDeviceElevationOffset()
@@ -2155,7 +2250,7 @@ namespace TrailsPlugin.Data
                             {
                                 start2 = t2.Value;
                             }
-                            float val = (float)UnitUtil.Elevation.ConvertFrom(-t.Value + t2.Value - (float)start2);
+                            float val = (float)UnitUtil.Elevation.ConvertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
                             m_deviceDiffDistTrack0.Add(dateTime, val);
                         }
                     }
@@ -2240,7 +2335,6 @@ namespace TrailsPlugin.Data
         }
 
         //TBD optimise Minimize use of ElevationMetersTrack0() as well as GetInterpolatedValue() 
-        //TODO timeofday
         private void calcGradeRunAdjustedTime(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -2268,20 +2362,24 @@ namespace TrailsPlugin.Data
 
                     if (t2 != null)
                     {
-                        float elev = (float)UnitUtil.Elevation.ConvertFrom(t2.Value);//convert back...
+                        float ele = t2.Value;
+                        if (!UnitUtil.Elevation.isDefaultUnit(this.Activity))
+                        {
+                            ele = (float)UnitUtil.Elevation.ConvertFrom(ele, this.Activity);//convert back...
+                        }
                         //This point is valid, at least for next
                         if (prevElev != null)
                         {
                             if (dist - prevDist > 0)
                             {
-                                float g = (elev - (float)prevElev) / (dist - prevDist); //grade
+                                float g = (ele - (float)prevElev) / (dist - prevDist); //grade
                                 q = RunningGradeAdjustMethodClass.getGradeFactor(g, time, prevTime, dist, prevDist);
                             }
                         }
                         else
                         {
                         }
-                        prevElev = elev;
+                        prevElev = ele;
                     }
                     else
                     {
@@ -2354,17 +2452,21 @@ namespace TrailsPlugin.Data
                         predictTime = (float)(this.Duration.TotalSeconds + (predictTime - newTime));
                         i++;
                     }
+#if TRACE
                     if (i > 3)
                     { }
+#endif
                     foreach (ginfo t in m_grades)
                     {
                         m_gradeRunAdjustedTimeAvg.Add(t.dateTime, t.adjTime);
+#if TRACE
                         if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) > 4)
                         {
                         }
                         if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) <2)
                         {
                         }
+#endif
                     }
                 }
             }

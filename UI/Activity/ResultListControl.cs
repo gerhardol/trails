@@ -1341,7 +1341,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (this.m_controller.ReferenceTrailResult != null)
                     {
-                        this.m_controller.ReferenceTrailResult.SetDeviceElevation();
+                        this.m_controller.ReferenceTrailResult.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
                         this.m_page.RefreshData(true);
                     }
                 }

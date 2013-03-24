@@ -752,7 +752,6 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 foreach (LineChartTypes chartType in chartTypes)
                 {
-                    
                     //LineChartTypes chartType = m_ChartTypes[k];
                     ChartDataSeries summaryDataLine = null;
                     IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
@@ -962,6 +961,25 @@ namespace TrailsPlugin.UI.Activity {
             else
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
+                //Make sure distance track has start/end, otherwise may 30s valid data not be shown
+                DateTime time = graphPoints.StartTime;
+                if (dataPoints.StartTime < time)
+                {
+                    ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
+                    if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
+                    {
+                        dataPoints.Add(time, yValueEntry.Value);
+                    }
+                }
+                time = graphPoints.StartTime.AddSeconds(graphPoints.TotalElapsedSeconds);
+                if (dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds) > time)
+                {
+                    ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
+                    if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
+                    {
+                        dataPoints.Add(time, yValueEntry.Value);
+                    }
+                }
             }
             float syncGraphOffset = LineChartUtil.getSyncGraphOffset(graphPoints, refGraphPoints, SyncGraph);
 

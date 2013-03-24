@@ -1341,8 +1341,16 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (this.m_controller.ReferenceTrailResult != null)
                     {
-                        this.m_controller.ReferenceTrailResult.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
-                        this.m_page.RefreshData(true);
+                        IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
+                        if (atr != null && atr.Count > 0 &&
+                            m_controller.CurrentResultTreeList.Count > 0)
+                        {
+                            foreach (TrailResultWrapper trw in atr)
+                            {
+                               trw.Result.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
+                            }
+                            m_page.RefreshData(true);
+                        }
                     }
                 }
                 else if (e.Modifiers == Keys.Alt)

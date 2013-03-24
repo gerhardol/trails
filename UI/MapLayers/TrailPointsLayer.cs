@@ -474,8 +474,8 @@ namespace TrailsPlugin.UI.MapLayers
                 new Point(circlePixelSize / 2, 0)));
             IGPSPoint pointY = Utils.GPS.LocationToPoint(mapControl.MapProjection.PixelToGPS(mapControl.Center, mapControl.Zoom,
                 new Point(0, circlePixelSize / 2)));
-            x = Math.Max(1, (float)circlePixelSize / point0.DistanceMetersToPoint(pointX));
-            y = Math.Max(1, (float)circlePixelSize / point0.DistanceMetersToPoint(pointY));
+            x = (float)circlePixelSize / point0.DistanceMetersToPoint(pointX);
+            y = (float)circlePixelSize / point0.DistanceMetersToPoint(pointY);
         }
 
         /// <summary>

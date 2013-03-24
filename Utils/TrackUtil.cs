@@ -276,45 +276,28 @@ namespace TrailsPlugin.Utils
 
         /*************************************************/
         //From a value in the chart, get "real" elapsed
-        //TODO: incorrect around trail points
+        //TBD: incorrect around trail points
         private static float GetResyncOffsetTime(TrailResult tr, TrailResult ReferenceTrailResult, float elapsed)
         {
             float nextElapsed;
-            int currOffsetIndex = 0;
-            return elapsed - GetResyncOffset(true, true, tr, ReferenceTrailResult, elapsed, out nextElapsed, ref currOffsetIndex);
+            return elapsed - GetResyncOffset(true, tr, ReferenceTrailResult, elapsed, out nextElapsed);
         }
 
         private static float GetResyncOffsetDist(TrailResult tr, TrailResult ReferenceTrailResult, float elapsed)
         {
             float nextElapsed;
-            int currOffsetIndex = 0;
-            return elapsed - GetResyncOffset(false, true, tr, ReferenceTrailResult, elapsed, out nextElapsed, ref currOffsetIndex);
+            return elapsed - GetResyncOffset(false, tr, ReferenceTrailResult, elapsed, out nextElapsed);
         }
 
-        //private static float GetResyncOffset(XAxisValue XAxisReferential, bool elapsedIsRef, TrailResult tr, float elapsed)
-        //{
-        //    float nextElapsed;
-        //    float startOffset;
-        //    int currOffsetIndex = 0;
-        //    return GetResyncOffset(XAxisReferential, false, tr, elapsed, out nextElapsed, out startOffset, ref currOffsetIndex);
-        //}
-
-        public static float GetResyncOffset(bool xIsTime, bool elapsedIsRef, TrailResult tr, TrailResult ReferenceTrailResult, float elapsed, out float nextElapsed)
+        public static float GetResyncOffset(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, float elapsed, out float nextElapsed)
         {
-            //Possibility to cache the index
-            int currOffsetIndex = 0;
-            return GetResyncOffset(xIsTime, elapsedIsRef, tr, ReferenceTrailResult, elapsed, out nextElapsed, ref currOffsetIndex);
-        }
-
-        public static float GetResyncOffset(bool xIsTime, bool elapsedIsRef, TrailResult tr, TrailResult ReferenceTrailResult, float elapsed, out float nextElapsed, ref int currOffsetIndex)
-        {
-            IList<double> trElapsed;
-            IList<double> trOffset;
-            IList<double> refElapsed;
             float offset = 0;
             nextElapsed = float.MaxValue;
             if (Data.Settings.SyncChartAtTrailPoints)
             {
+                IList<float> trElapsed;
+                IList<float> trOffset;
+                IList<float> refElapsed;
                 if (xIsTime)
                 {
                     trElapsed = tr.TrailPointTime0(ReferenceTrailResult);
@@ -324,52 +307,34 @@ namespace TrailsPlugin.Utils
                 else
                 {
                     trElapsed = tr.TrailPointDist0(ReferenceTrailResult);
-                    trOffset = tr.TrailPointDistOffset01(ReferenceTrailResult);
+                    trOffset = tr.TrailPointDistOffset0(ReferenceTrailResult);
                     refElapsed = ReferenceTrailResult.TrailPointDist0(ReferenceTrailResult);
                 }
 
-                if (trElapsed.Count == refElapsed.Count)
+                int currOffsetIndex = 0;
+                while (currOffsetIndex < trElapsed.Count && currOffsetIndex < refElapsed.Count &&
+                    (float.IsNaN(trElapsed[currOffsetIndex]) || elapsed > trElapsed[currOffsetIndex]))
                 {
-                    if (elapsedIsRef)
+                    if (!float.IsNaN(trElapsed[currOffsetIndex]) && !float.IsNaN(refElapsed[currOffsetIndex]))
                     {
-                        while (currOffsetIndex < refElapsed.Count - 1 && elapsed >= refElapsed[currOffsetIndex + 1])
+                        offset = refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex];
+                        if (currOffsetIndex < trOffset.Count && !float.IsNaN(trOffset[currOffsetIndex]))
                         {
-                            currOffsetIndex++;
-                        }
-                        if (currOffsetIndex < trElapsed.Count - 1)
-                        {
-                            nextElapsed = (float)trElapsed[currOffsetIndex + 1];
+                            offset += trOffset[currOffsetIndex];
                         }
                     }
-                    else
+                    currOffsetIndex++;
+                }
+                //currOffsetIndex is at least one step over already
+                while (currOffsetIndex < trElapsed.Count && currOffsetIndex < refElapsed.Count &&
+                    (float.IsNaN(trElapsed[currOffsetIndex]) || float.IsNaN(refElapsed[currOffsetIndex]) ||
+                    elapsed < trElapsed[currOffsetIndex]))
+                {
+                    if (!float.IsNaN(trElapsed[currOffsetIndex]) && !float.IsNaN(refElapsed[currOffsetIndex]))
                     {
-                        while (currOffsetIndex < trElapsed.Count - 1 &&
-                            //compare must be using same type here to avoid end effects
-                            elapsed > (float)trElapsed[currOffsetIndex + 1])
-                        {
-                            currOffsetIndex++;
-                        }
-                        if (currOffsetIndex < refElapsed.Count - 1)
-                        {
-                            nextElapsed = (float)refElapsed[currOffsetIndex + 1];
-                        }
+                        nextElapsed = refElapsed[currOffsetIndex];
                     }
-                    if (currOffsetIndex > 1)
-                    {
-                    }
-                    float startOffset;
-                    if (currOffsetIndex < trOffset.Count)
-                    {
-                        startOffset = (float)trOffset[currOffsetIndex];
-                    }
-                    else
-                    {
-                        startOffset = 0;
-                    }
-                    if (currOffsetIndex < refElapsed.Count)
-                    {
-                        offset = (float)((refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex]) + startOffset);
-                    }
+                    currOffsetIndex++;
                 }
             }
             return offset;

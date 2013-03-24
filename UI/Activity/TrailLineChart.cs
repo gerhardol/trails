@@ -961,7 +961,8 @@ namespace TrailsPlugin.UI.Activity {
             else
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
-                //Make sure distance track has start/end, otherwise may 30s valid data not be shown
+                //TBD (fix in DistTrack?) 
+                //Make sure distance track has start/end for graphpoints, otherwise may 30s valid data not be shown
                 DateTime time = graphPoints.StartTime;
                 if (dataPoints.StartTime < time)
                 {
@@ -972,7 +973,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 time = graphPoints.StartTime.AddSeconds(graphPoints.TotalElapsedSeconds);
-                if (dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds) > time)
+                if (time < dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds))
                 {
                     ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
                     if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
@@ -1008,7 +1009,7 @@ namespace TrailsPlugin.UI.Activity {
                     float nextXvalue = float.MaxValue;
                     if (Data.Settings.SyncChartAtTrailPoints)
                     {
-                        xValue += TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, false, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
+                        xValue += TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
                     }
                     if (oldElapsedEntry < elapsedEntry &&
                         (!Data.Settings.SyncChartAtTrailPoints ||

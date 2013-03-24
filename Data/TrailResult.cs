@@ -883,12 +883,13 @@ namespace TrailsPlugin.Data
                     float distance = 0;
                     uint oldElapsed = 0;
 
-                    m_distanceMetersTrack.Add(StartTime, distance);
-                    m_startDistance = TrackUtil.getDistFromDateTime(m_activityDistanceMetersTrack, StartTime);
+                    //Add a point at result start, also if no Dist point is set
+                    m_distanceMetersTrack.Add(this.StartTime, distance);
+                    m_startDistance = TrackUtil.getDistFromDateTime(m_activityDistanceMetersTrack, this.StartTime);
                     //Prune search
                     //Note that the distance track may not start at result StartTime
                     while (i < m_activityDistanceMetersTrack.Count &&
-                        this.StartTime > m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
+                        this.StartTime >= m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
                     {
                         i++;
                     }
@@ -1750,11 +1751,6 @@ namespace TrailsPlugin.Data
                         this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
                         if (this.m_grades.Count > 1)
                         {
-                            if (this.m_grades[0].time > 0)
-                            {
-                                //xxx OK?
-                                paceTrack.Add(this.m_grades[0].dateTime, this.m_grades[0].dist / this.m_grades[0].time / this.m_grades[0].q);
-                            }
                             foreach (ginfo t in m_grades)
                             {
                                 if (t.time > 0)
@@ -1771,10 +1767,6 @@ namespace TrailsPlugin.Data
                         INumericTimeDataSeries timeTrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
                         if (this.m_grades.Count > 1)
                         {
-                            if (this.m_grades[0].time > 0)
-                            {
-                                paceTrack.Add(this.m_grades[0].dateTime, this.m_grades[0].dist / this.m_grades[0].time / this.m_grades[0].q);
-                            }
                             for (int i = 1; i < timeTrack.Count; i++)
                             {
                                 ginfo t = this.m_grades[i];
@@ -1783,9 +1775,15 @@ namespace TrailsPlugin.Data
                         }
                     }
                 }
+                //TBD due to insertion at start/end and rounding of seconds, distance may look strange
+                paceTrack.RemoveAt(paceTrack.Count - 1);
+                paceTrack.RemoveAt(0);
                 //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
                 m_paceTrack0 = copySmoothTrack(paceTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
                                 new Convert(ConvertNone), this.m_cacheTrackRef);
+                //float xxx = m_paceTrack0[m_paceTrack0.Count - 1].Value;
+                //ginfo gxxx = m_grades[m_grades.Count - 1];
+                //ginfo gxxx2 = m_grades[m_grades.Count - 2];
                 for (int i = 0; i < m_paceTrack0.Count; i++)
                 {
                     m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
@@ -2099,7 +2097,7 @@ namespace TrailsPlugin.Data
                                 ele = deviceElevationTrack0[index].Value;
                             }
                         }
-                        if (ele != float.NaN)
+                        if (!float.IsNaN(ele))
                         {
                             //elevation track is already in display unit
                             float eleOffset = t.ElevationMeters;
@@ -2176,7 +2174,7 @@ namespace TrailsPlugin.Data
                             }
                         }
 
-                        if (ele != float.NaN)
+                        if (!float.IsNaN(ele))
                         {
                             //ele += UI.Activity.TrailLineChart.FixedSyncGraphMode;
                             IGPSPoint g2 = new GPSPoint(g.Value.LatitudeDegrees, g.Value.LongitudeDegrees, ele);
@@ -2347,10 +2345,14 @@ namespace TrailsPlugin.Data
 
                 float prevTime = 0;
                 float prevVal = 0;
-                float? prevElev = null;
+                float prevEle = float.NaN;
                 float prevDist = 0;
                 INumericTimeDataSeries eleTrack = this.CalcElevationMetersTrack0(this.m_cacheTrackRef);
-                
+                bool convertEleToSI = !UnitUtil.Elevation.isDefaultUnit(this.Activity);
+                //ITimeValueEntry<float> xxx1 = this.DistanceMetersTrack[this.DistanceMetersTrack.Count - 1];
+                //ITimeValueEntry<float> xxx2 = this.DistanceMetersTrack[this.DistanceMetersTrack.Count - 2];
+                //ITimeValueEntry<float> xxx3 = this.DistanceMetersTrack[this.DistanceMetersTrack.Count - 3];
+
                 foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                 {
                     //TODO insert when sparse
@@ -2363,26 +2365,29 @@ namespace TrailsPlugin.Data
                     if (t2 != null)
                     {
                         float ele = t2.Value;
-                        if (!UnitUtil.Elevation.isDefaultUnit(this.Activity))
+                        if (convertEleToSI)
                         {
                             ele = (float)UnitUtil.Elevation.ConvertFrom(ele, this.Activity);//convert back...
                         }
                         //This point is valid, at least for next
-                        if (prevElev != null)
+                        if (!float.IsNaN(prevEle))
                         {
                             if (dist - prevDist > 0)
                             {
-                                float g = (ele - (float)prevElev) / (dist - prevDist); //grade
+                                float g = (ele - prevEle) / (dist - prevDist); //grade
                                 q = RunningGradeAdjustMethodClass.getGradeFactor(g, time, prevTime, dist, prevDist);
                             }
                         }
                         else
                         {
+                            //Just save prevEle
                         }
-                        prevElev = ele;
+                        prevEle = ele;
                     }
                     else
                     {
+                        //No elevation, keep q=1
+                        prevEle = float.NaN;
                     }
                     float val = prevVal + q * (time - prevTime);
                     m_gradeRunAdjustedTime.Add(dateTime, val);

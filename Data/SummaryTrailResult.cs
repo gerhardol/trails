@@ -129,6 +129,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public override float GradeRunAdjustedSpeed
+        {
+            get
+            {
+                return (float)(Distance/GradeRunAdjustedTime.TotalSeconds);
+            }
+        }
+
         public override double Distance
         {
             get

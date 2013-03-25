@@ -420,10 +420,17 @@ namespace TrailsPlugin.Data
                         }
                         if (m_startTime == DateTime.MinValue)
                         {
-                            m_startTime = this.Info.ActualTrackStart;
-                            if (m_startTime == DateTime.MinValue)
+                            if (this.Activity == null || this.Info == null)
                             {
-                                m_startTime = this.Activity.StartTime;
+                                m_startTime = DateTime.MinValue;
+                            }
+                            else
+                            {
+                                m_startTime = this.Info.ActualTrackStart;
+                                if (m_startTime == DateTime.MinValue)
+                                {
+                                    m_startTime = this.Activity.StartTime;
+                                }
                             }
                         }
                     }
@@ -454,10 +461,17 @@ namespace TrailsPlugin.Data
                         }
                         if (m_endTime == DateTime.MinValue)
                         {
-                            m_endTime = Info.ActualTrackEnd;
-                            if (m_endTime == DateTime.MinValue)
+                            if (this.Activity == null || this.Info == null)
                             {
-                                m_endTime = Info.EndTime;
+                                m_endTime = DateTime.MinValue;
+                            }
+                            else
+                            {
+                                m_endTime = Info.ActualTrackEnd;
+                                if (m_endTime == DateTime.MinValue)
+                                {
+                                    m_endTime = Info.EndTime;
+                                }
                             }
                         }
                     }
@@ -589,6 +603,10 @@ namespace TrailsPlugin.Data
 
         private TimeSpan getTimeSpanActivity(DateTime entryTime)
         {
+            if (this.Info == null)
+            {
+                return TimeSpan.FromSeconds(0);
+            }
             TimeSpan time = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
                 this.Info.ActualTrackStart, entryTime, Pauses);
             return time;
@@ -603,6 +621,10 @@ namespace TrailsPlugin.Data
 
         public DateTime getDateTimeFromTimeActivity(float t)
         {
+            if (this.Info == null)
+            {
+                return DateTime.MinValue;
+            }
             return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(this.Info.ActualTrackStart, TimeSpan.FromSeconds(t), Pauses);
         }
 
@@ -710,7 +732,11 @@ namespace TrailsPlugin.Data
             {
                 if (m_pauses == null)
                 {
-                    if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
+                    if (this is SummaryTrailResult)
+                    {
+                        this.m_pauses = new ValueRangeSeries<DateTime>();
+                    }
+                    else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                     {
                         m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
 
@@ -1007,6 +1033,10 @@ namespace TrailsPlugin.Data
                 INumericTimeDataSeries track = CadencePerMinuteTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
+                    if (this.Info == null)
+                    {
+                        return float.NaN;
+                    }
                     return Info.AverageCadence;
                 }
                 return track.Avg;
@@ -1026,6 +1056,10 @@ namespace TrailsPlugin.Data
                 INumericTimeDataSeries track = HeartRatePerMinuteTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
+                    if (this.Info == null)
+                    {
+                        return float.NaN;
+                    }
                     return Info.AverageHeartRate;
                 }
                 return track.Avg;
@@ -1045,6 +1079,10 @@ namespace TrailsPlugin.Data
                 INumericTimeDataSeries track = HeartRatePerMinuteTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
+                    if (this.Info == null)
+                    {
+                        return float.NaN;
+                    }
                     return Info.MaximumHeartRate;
                 }
                 return track.Max;
@@ -1065,6 +1103,10 @@ namespace TrailsPlugin.Data
                 INumericTimeDataSeries track = PowerWattsTrack0(m_cacheTrackRef);
                 if (track == null || track.Count == 0)
                 {
+                    if (this.Info == null)
+                    {
+                        return float.NaN;
+                    }
                     result = Info.AveragePower;
                 }
                 else
@@ -1183,8 +1225,16 @@ namespace TrailsPlugin.Data
             INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
             if (track == null || track.Count == 0)
             {
-                m_ascent = Info.TotalAscendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
-                m_descent = Info.TotalDescendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                if (this.Info == null)
+                {
+                    m_ascent = double.NaN;
+                    m_descent = double.NaN;
+                }
+                else
+                {
+                    m_ascent = Info.TotalAscendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                    m_descent = Info.TotalDescendingMeters(Plugin.GetApplication().DisplayOptions.SelectedClimbZone);
+                }
             }
             else
             {
@@ -1193,20 +1243,23 @@ namespace TrailsPlugin.Data
                 //Note: Using Trails Info inflates the values slightly, also standard Info does a little (due to points added)
                 //Attempt to adjust factor, may need tuning
                 ActivityInfo info = this.Info;
-                ZoneCategoryInfo categoryInfo = ZoneCategoryInfo.Calculate(info, Plugin.GetApplication().DisplayOptions.SelectedClimbZone, track, 0.8f);
-
-                // Remove totals row
-                categoryInfo.Zones.RemoveAt(categoryInfo.Zones.Count - 1);
-
-                foreach (ZoneInfo zoneInfo in categoryInfo.Zones)
+                if (info != null)
                 {
-                    if (zoneInfo.Zone.Low > 0 && zoneInfo.ElevationChangeMeters > 0)
+                    ZoneCategoryInfo categoryInfo = ZoneCategoryInfo.Calculate(info, Plugin.GetApplication().DisplayOptions.SelectedClimbZone, track, 0.8f);
+
+                    // Remove totals row
+                    categoryInfo.Zones.RemoveAt(categoryInfo.Zones.Count - 1);
+
+                    foreach (ZoneInfo zoneInfo in categoryInfo.Zones)
                     {
-                        m_ascent += zoneInfo.ElevationChangeMeters;
-                    }
-                    if (zoneInfo.Zone.High < 0 && zoneInfo.ElevationChangeMeters < 0)
-                    {
-                        m_descent += zoneInfo.ElevationChangeMeters;
+                        if (zoneInfo.Zone.Low > 0 && zoneInfo.ElevationChangeMeters > 0)
+                        {
+                            m_ascent += zoneInfo.ElevationChangeMeters;
+                        }
+                        if (zoneInfo.Zone.High < 0 && zoneInfo.ElevationChangeMeters < 0)
+                        {
+                            m_descent += zoneInfo.ElevationChangeMeters;
+                        }
                     }
                 }
             }
@@ -1538,13 +1591,13 @@ namespace TrailsPlugin.Data
                 DateTime startTime;
                 DateTime endTime;
                 IValueRangeSeries<DateTime> pauses;
-                if(trimToResult)
+                if (trimToResult)
                 {
                     startTime = this.StartTime;
                     pauses = this.Pauses;
                     endTime = this.EndTime;
                 }
-                else if (this.Activity != null)
+                else if (this.Activity != null && this.Info != null)
                 {
                     //(normally)elevation handling, trim to activity
                     //startTime = this.Activity.StartTime;
@@ -1783,18 +1836,25 @@ namespace TrailsPlugin.Data
                         }
                     }
                 }
-                //TBD due to insertion at start/end and rounding of seconds, distance may look strange
-                speedTrack.RemoveAt(speedTrack.Count - 1);
-                speedTrack.RemoveAt(0);
-                //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
-                m_paceTrack0 = copySmoothTrack(speedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                new Convert(ConvertNone), this.m_cacheTrackRef);
-                for (int i = 0; i < m_paceTrack0.Count; i++)
+                if (speedTrack != null && speedTrack.Count > 1)
                 {
-                    m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
+                    //TBD due to insertion at start/end and rounding of seconds, distance may look strange
+                    speedTrack.RemoveAt(speedTrack.Count - 1);
+                    speedTrack.RemoveAt(0);
+                    //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
+                    this.m_paceTrack0 = copySmoothTrack(speedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
+                                    new Convert(ConvertNone), this.m_cacheTrackRef);
+                    for (int i = 0; i < this.m_paceTrack0.Count; i++)
+                    {
+                        this.m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
+                    }
+                }
+                else
+                {
+                    this.m_paceTrack0 = new NumericTimeDataSeries();
                 }
             }
-            return m_paceTrack0;
+            return this.m_paceTrack0;
         }
 
         public static IDictionary<IActivity, IItemTrackSelectionInfo[]> CommonStretches(IActivity refAct, IList<IActivity> acts, System.Windows.Forms.ProgressBar progressBar)
@@ -1911,7 +1971,16 @@ namespace TrailsPlugin.Data
                 {
                     const int maxTimeDiff = 15;
                     DateTime start2 = sourceTrack.StartTime.AddSeconds(-maxTimeDiff);
-                    DateTime end2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(start2, TimeSpan.FromSeconds(sourceTrack.TotalElapsedSeconds+2*maxTimeDiff), this.Activity.TimerPauses);
+                    IValueRangeSeries<DateTime> pauses;
+                    if (this.Activity != null)
+                    {
+                        pauses = this.Activity.TimerPauses;
+                    }
+                    else
+                    {
+                        pauses = new ValueRangeSeries<DateTime>();
+                    }
+                    DateTime end2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(start2, TimeSpan.FromSeconds(sourceTrack.TotalElapsedSeconds+2*maxTimeDiff), pauses);
                     if (start2 <= this.StartTime && this.EndTime <= end2)
                     {
                         deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
@@ -2317,7 +2386,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public float GradeRunAdjustedSpeed
+        public virtual float GradeRunAdjustedSpeed
         {
             get
             {
@@ -3119,6 +3188,10 @@ namespace TrailsPlugin.Data
             get
             {
                 //Custom InfoCache, to control smoothing (otherwise ST could cache)
+                if (this is SummaryTrailResult)
+                {
+                    return null;
+                }
                 if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                 {
                     return (this as ChildTrailResult).ParentResult.Info;
@@ -3164,6 +3237,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.Info == null)
+                {
+                    return new NumericTimeDataSeries();
+                }
                 return Info.SmoothedCadenceTrack;
             }
         }
@@ -3172,6 +3249,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.Info == null)
+                {
+                    return new NumericTimeDataSeries();
+                }
                 return Info.SmoothedElevationTrack;
             }
         }
@@ -3179,6 +3260,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.Info == null)
+                {
+                    return new NumericTimeDataSeries();
+                }
                 return Info.SmoothedGradeTrack;
             }
         }
@@ -3187,6 +3272,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.Info == null)
+                {
+                    return new NumericTimeDataSeries();
+                }
                 return Info.SmoothedHeartRateTrack;
             }
         }
@@ -3195,6 +3284,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.Info == null)
+                {
+                    return new NumericTimeDataSeries();
+                }
                 return Info.SmoothedPowerTrack;
             }
         }
@@ -3203,6 +3296,10 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                if (this.Info == null)
+                {
+                    return new NumericTimeDataSeries();
+                }
                 return Info.SmoothedSpeedTrack;
             }
         }

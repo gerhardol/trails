@@ -646,12 +646,16 @@ namespace TrailsPlugin.UI.Activity {
                     for (int i = 0; i < this.TrailResults.Count; i++)
                     {
                         TrailResult tr = this.TrailResults[i];
+                        if (//TODO: check data for summary too
+                            tr is SummaryTrailResult)
+                        {
+                            m_hasValues[chartType] = true;
+                            break;
+                        }
                         //The track is mostly cached in result, it is not much extra to request and drop it
                         INumericTimeDataSeries graphPoints = LineChartUtil.GetSmoothedActivityTrack(tr, chartType, ReferenceTrailResult);
 
-                        if (graphPoints != null && graphPoints.Count > 1 || 
-                            //TODO: check data for summary too
-                            tr is SummaryTrailResult)
+                        if (graphPoints != null && graphPoints.Count > 1)
                         {
                             m_hasValues[chartType] = true;
                             break;

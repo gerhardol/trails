@@ -330,7 +330,13 @@ namespace TrailsPlugin.Utils
                     (float.IsNaN(trElapsed[currOffsetIndex]) || float.IsNaN(refElapsed[currOffsetIndex]) ||
                     elapsed < trElapsed[currOffsetIndex]))
                 {
-                    if (!float.IsNaN(trElapsed[currOffsetIndex]) && !float.IsNaN(refElapsed[currOffsetIndex]))
+                    if (currOffsetIndex >= trElapsed.Count - 1 || currOffsetIndex >= refElapsed.Count - 1)
+                    {
+                        //Last point - no limitation
+                        nextElapsed = float.MaxValue;
+                        break;
+                    }
+                    else if (!float.IsNaN(trElapsed[currOffsetIndex]) && !float.IsNaN(refElapsed[currOffsetIndex]))
                     {
                         nextElapsed = refElapsed[currOffsetIndex];
                     }

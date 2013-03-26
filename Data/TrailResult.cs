@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Collections.Generic;
 
@@ -1804,11 +1805,11 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    //Calculate a grade adjusted track
+                    //grade adjusted track
                     speedTrack = new NumericTimeDataSeries();
                     if (!TrailResult.PaceTrackIsGradeAdjustedPaceAvg)
                     {
-                        //Show pace, as it was flat
+                        //Show pace adjusted to was flat
                         this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
                         if (this.m_grades.Count > 1)
                         {
@@ -1823,7 +1824,7 @@ namespace TrailsPlugin.Data
                     }
                     else
                     {
-                        //Show pace as it should have been with "even" pace"
+                        //Show pace as it should have been with "even pace" (the adjusted pace will not give same speed)
                         //Undocumented
                         INumericTimeDataSeries timeTrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
                         if (this.m_grades.Count > 1)
@@ -2711,7 +2712,8 @@ namespace TrailsPlugin.Data
                         if (!float.IsNaN(refTime) && !float.IsNaN(trTime))
                         {
                             lastValue = (float)(refTime - trTime + diffOffset);
-                            m_DiffTimeTrack0.Add(EndTime, lastValue);
+                            //TBD Disable this add, not so interesting?
+                            //m_DiffTimeTrack0.Add(EndTime, lastValue);
                         }
                     }
                 }
@@ -2902,7 +2904,8 @@ namespace TrailsPlugin.Data
                         {
                             lastValue = (float)UnitUtil.Elevation.ConvertFrom(refDist -
                                 trDist + diffOffset, trRef.Activity);
-                            m_DiffDistTrack0.Add(EndTime, lastValue);
+                            //TBD Disable this add, not so interesting?
+                            //m_DiffDistTrack0.Add(EndTime, lastValue);
                         }
                     }
                 }
@@ -3190,6 +3193,7 @@ namespace TrailsPlugin.Data
                 //Custom InfoCache, to control smoothing (otherwise ST could cache)
                 if (this is SummaryTrailResult)
                 {
+                    Debug.Assert(false);
                     return null;
                 }
                 if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
@@ -3224,6 +3228,7 @@ namespace TrailsPlugin.Data
                     else
                     {
                         //TODO: This data should not be used, just return any activity to avoid exceptions
+                        Debug.Assert(false);
                         m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
                     }
                 }

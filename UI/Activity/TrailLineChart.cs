@@ -970,9 +970,10 @@ namespace TrailsPlugin.UI.Activity {
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
                 //TBD (fix in DistTrack?) 
-                //Make sure distance track has start/end for graphpoints, otherwise may about 30s valid data not be shown
+                //Make sure distance track (datapoints) has start/end for graphpoints, otherwise may about 30s valid data not be shown
+                //It is not easy to check if the point already exists
                 DateTime time = graphPoints.StartTime;
-                if (dataPoints.StartTime < time)
+                if (dataPoints.StartTime != time)
                 {
                     ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
                     if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
@@ -981,7 +982,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 time = graphPoints.StartTime.AddSeconds(graphPoints.TotalElapsedSeconds);
-                if (time < dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds))
+                if (time != dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds))
                 {
                     ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
                     if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
@@ -1032,6 +1033,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             yValueEntry = graphPoints.GetInterpolatedValue(time);
                         }
+                        //yValueEntry == null means that graphpoints are for a shorter time than datapoints, OK
                         //Infinity values gives garbled graphs
                         if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
                         {

@@ -58,6 +58,38 @@ namespace TrailsPlugin.Utils
             return res;
         }
 
+        //ST interpolate is not handling subseconds, interpolate better if possible
+        internal static float getDistFromDateTimeIndex(IDistanceDataTrack distTrack, DateTime time, int i)
+        {
+            float dist;
+            int status;
+
+            if (i == 0 || i >= distTrack.Count || time == distTrack.EntryDateTime(distTrack[i]))
+            {
+                //Distance seem to be out of bound
+                //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
+                dist = TrackUtil.getDistFromDateTime(distTrack, time, out status);
+            }
+            else
+            {
+                float elapsed = (float)((time - distTrack.StartTime).TotalSeconds);
+                float f = (elapsed - distTrack[i - 1].ElapsedSeconds)  / (distTrack[i].ElapsedSeconds - distTrack[i - 1].ElapsedSeconds);
+                dist = (distTrack[i - 1].Value + (distTrack[i].Value - distTrack[i - 1].Value) * f);
+            }
+            return dist;
+        }
+
+        //Add a point last in the track (no check), override if point already exists
+        internal static void trackAdd(IDistanceDataTrack distTrack, DateTime time, float distance)
+        {
+            distTrack.Add(time, distance);
+            if (distTrack[distTrack.Count - 1].Value != distance)
+            {
+                //(uint)(this.EndTime - this.StartTime.AddSeconds(-this.StartTime.Second)).TotalSeconds == m_activityDistanceMetersTrack[i - 1].ElapsedSeconds)
+                distTrack.SetValueAt(distTrack.Count - 1, distance);
+            }
+        }
+
         public static DateTime getDateTimeFromTrackDist(IDistanceDataTrack distTrack, float t)
         {
             DateTime res = DateTime.MinValue;
@@ -111,11 +143,11 @@ namespace TrailsPlugin.Utils
                     {
                         if (next)
                         {
-                            dateTime = (pause.Upper).Add(TimeSpan.FromSeconds(1));
+                            dateTime = (pause.Upper);//.Add(TimeSpan.FromSeconds(1));
                         }
                         else if (pause.Lower > DateTime.MinValue)
                         {
-                            dateTime = (pause.Lower).Add(TimeSpan.FromSeconds(-1));
+                            dateTime = (pause.Lower);//.Add(TimeSpan.FromSeconds(-1));
                         }
                         break;
                     }
@@ -296,18 +328,18 @@ namespace TrailsPlugin.Utils
             if (Data.Settings.SyncChartAtTrailPoints)
             {
                 IList<float> trElapsed;
-                IList<float> trOffset;
+                //IList<float> trOffset;
                 IList<float> refElapsed;
                 if (xIsTime)
                 {
                     trElapsed = tr.TrailPointTime0(ReferenceTrailResult);
-                    trOffset = tr.TrailPointTimeOffset0(ReferenceTrailResult);
+                    //trOffset = tr.TrailPointTimeOffset0(ReferenceTrailResult);
                     refElapsed = ReferenceTrailResult.TrailPointTime0(ReferenceTrailResult);
                 }
                 else
                 {
                     trElapsed = tr.TrailPointDist0(ReferenceTrailResult);
-                    trOffset = tr.TrailPointDistOffset0(ReferenceTrailResult);
+                    //trOffset = tr.TrailPointDistOffset0(ReferenceTrailResult);
                     refElapsed = ReferenceTrailResult.TrailPointDist0(ReferenceTrailResult);
                 }
 
@@ -318,10 +350,10 @@ namespace TrailsPlugin.Utils
                     if (!float.IsNaN(trElapsed[currOffsetIndex]) && !float.IsNaN(refElapsed[currOffsetIndex]))
                     {
                         offset = refElapsed[currOffsetIndex] - trElapsed[currOffsetIndex];
-                        if (currOffsetIndex < trOffset.Count && !float.IsNaN(trOffset[currOffsetIndex]))
-                        {
-                            offset += trOffset[currOffsetIndex];
-                        }
+                        //if (currOffsetIndex < trOffset.Count && !float.IsNaN(trOffset[currOffsetIndex]))
+                        //{
+                        //    offset += trOffset[currOffsetIndex];
+                        //}
                     }
                     currOffsetIndex++;
                 }

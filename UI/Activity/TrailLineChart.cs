@@ -226,6 +226,7 @@ namespace TrailsPlugin.UI.Activity {
         void MainChart_SelectData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)
         {
             float[] range = null;
+            bool rangeIsValid = false;
 
             this.m_selectedDataSetries = -1;
 
@@ -251,42 +252,44 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_prevSelectedRange = null;
                 }
 
-                if (!this.m_endSelect)
-                {
-                    //Reset color on axis when start to select
-                    foreach (LineChartTypes chartType in m_ChartTypes)
-                    {
-                        if (this.m_multipleCharts && e.DataSeries.ValueAxis == m_axisCharts[chartType])
-                        {
-                            e.DataSeries.ValueAxis.LabelColor = Color.Black;
-                            this.m_lastSelectedType = chartType;
-                        }
-                        else
-                        {
-                            LineChartTypes axisType =  LineChartUtil.ChartToAxis(chartType);
-                            if (axisType == chartType || !m_ChartTypes.Contains(axisType))
-                            {
-                                m_axisCharts[axisType].LabelColor = ColorUtil.ChartColor[axisType].LineNormal;
-                            }
-                        }
-                    }
-                }
                 //Get index for dataseries - relates to result
                 for (int j = 0; j < MainChart.DataSeries.Count; j++)
                 {
                     if (e.DataSeries.Equals(MainChart.DataSeries[j]))
                     {
+                        rangeIsValid = !float.IsNaN(range[0]);
                         this.m_selectedDataSetries = j;
                         break;
                     }
                 }
             }
-            bool rangeIsValid = range != null && !float.IsNaN(range[0]);
+
             //Clear if starting a new selection and ctrl is not pressed
-            if (!this.m_endSelect && this.m_MouseDownLocation != Point.Empty)
+            if (!this.m_endSelect)
             {
-                this.m_multiple.ClearSelectedRegions(!rangeIsValid);
-                this.m_page.ClearCurrentSelectedOnRoute();
+                if (this.m_MouseDownLocation != Point.Empty)
+                {
+                    this.m_multiple.ClearSelectedRegions(!rangeIsValid);
+                    this.m_page.ClearCurrentSelectedOnRoute();
+                }
+                //Reset color on axis when start to select
+                foreach (LineChartTypes chartType in m_ChartTypes)
+                {
+                    if (this.m_multipleCharts &&
+                        this.m_selectedDataSetries >=0 && e.DataSeries.ValueAxis == m_axisCharts[chartType])
+                    {
+                        e.DataSeries.ValueAxis.LabelColor = Color.Black;
+                        this.m_lastSelectedType = chartType;
+                    }
+                    else
+                    {
+                        LineChartTypes axisType = LineChartUtil.ChartToAxis(chartType);
+                        if (axisType == chartType || !m_ChartTypes.Contains(axisType))
+                        {
+                            m_axisCharts[axisType].LabelColor = ColorUtil.ChartColor[axisType].LineNormal;
+                        }
+                    }
+                }
             }
             this.m_MouseDownLocation = Point.Empty;
 

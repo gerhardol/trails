@@ -683,7 +683,7 @@ namespace TrailsPlugin.Data
             bool result = false;
             if (activity != null && activity.GPSRoute != null)
             {
-                IGPSBounds gpsBounds = Controller.TrailController.Instance.GpsBoundsCache(activity);
+                IGPSBounds gpsBounds = ActivityCache.GpsBoundsCache(activity);
                 result = this.IsInBounds(gpsBounds);
             }
             return result;

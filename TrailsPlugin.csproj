@@ -39,6 +39,7 @@
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="DataImport\ExtendDataImporters.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
+    <Compile Include="Data\ActivityCache.cs" />
     <Compile Include="Data\SpeedGradeAdjust.cs" />
     <Compile Include="Data\SummaryRowDataRenderer.cs" />
     <Compile Include="Data\SummaryTrailResult.cs" />

@@ -51,7 +51,6 @@ namespace TrailsPlugin.Controller
 
         private IList<ActivityTrail> m_CurrentOrderedTrails = new List<ActivityTrail>();
         private ActivityTrail m_referenceActivityTrail;
-        private IDictionary<IActivity, IGPSBounds> activityGps = new Dictionary<IActivity, IGPSBounds>();
 
         private TrailController()
         {
@@ -108,54 +107,6 @@ namespace TrailsPlugin.Controller
 
                 //Calculate trails - at least InBounds, set apropriate ActivityTrail
                 this.ReCalcTrails(false, progressBar);
-            }
-        }
-
-        public IGPSBounds GpsBoundsCache(IActivity activity)
-        {
-            if (!activityGps.ContainsKey(activity))
-            {
-                //activityGps controls if the property listener is added
-                activity.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-                activityGps.Add(activity, null);
-            }
-            if (this.activityGps[activity] == null)
-            {
-                this.activityGps[activity] = GPSBounds.FromGPSRoute(activity.GPSRoute);
-            }
-            return activityGps[activity];
-        }
-
-        public void ClearGpsBoundsCache()
-        {
-            foreach (IActivity activity in activityGps.Keys)
-            {
-                activity.PropertyChanged -= new System.ComponentModel.PropertyChangedEventHandler(Activity_PropertyChanged);
-            }
-            this.activityGps.Clear();
-        }
-
-        void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            //e is null at reset. For other this is called multiple times - only run once
-            if (sender is IActivity && (e == null || e.PropertyName == "GPSRoute"))
-            {
-                IActivity activity = sender as IActivity;
-                if (activity != null && this.activityGps.ContainsKey(activity))
-                {
-                    this.activityGps[activity] = null;
-                }
-                //all trails must be recalculated, there is no possibility to recalculate for one trail only
-                //(almost: Clear results for a certain activity followed by CalcTrail then sets status)
-                //As activities are edit in single view normally, recalc time is not an issue
-                //(except if results have been 
-                //(if a user auto edits, there could be seconds of slowdown).
-                this.Reset();
-                //Make sure reference activity is 'reasonable' in case the reference trail is selected
-                this.checkReferenceActivity(null);
-
-                //Calculate trails - at least InBounds, set apropriate ActivityTrail
-                this.ReCalcTrails(false, null);
             }
         }
 
@@ -478,7 +429,7 @@ namespace TrailsPlugin.Controller
 
         //check that the reference result is reasonable
         //Called after activities are updated, before trail is selected/calculated
-        private IActivity checkReferenceActivity(System.Windows.Forms.ProgressBar progressBar)
+        internal IActivity checkReferenceActivity(System.Windows.Forms.ProgressBar progressBar)
         {
             IActivity prevRefActivity = this.m_referenceActivity;
             bool moreChecks = true;

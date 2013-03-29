@@ -184,7 +184,7 @@ namespace TrailsPlugin.UI.Activity {
                 TrailSelector.ShowPage = false; //hide edit dialog if shown
                 //Free memory by destroying all results
                 this.m_controller.Reset();
-                Controller.TrailController.Instance.ClearGpsBoundsCache();
+                ActivityCache.ClearGpsBoundsCache();
             }
             return true;
         }

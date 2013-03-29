@@ -806,18 +806,18 @@ namespace TrailsPlugin.UI.Activity {
                                     chartColor = tr.ResultColor;
                                 }
 
+                                dataLine.LineColor = chartColor.LineNormal;
+                                dataLine.FillColor = chartColor.FillNormal;
+                                dataLine.SelectedColor = chartColor.FillSelected; //The selected fill color only
+
                                 //Decrease alpha for many activities for fill (but not selected)
                                 if (m_trailResults.Count > 1)
                                 {
                                     int alpha = chartColor.FillNormal.A - m_trailResults.Count * 3;
                                     alpha = Math.Min(alpha, 0x77);
                                     alpha = Math.Max(alpha, 0x10);
-                                    chartColor.FillNormal = Color.FromArgb(alpha, chartColor.FillNormal.R, chartColor.FillNormal.G, chartColor.FillNormal.B);
+                                    dataLine.FillColor = Color.FromArgb(alpha, chartColor.FillNormal.R, chartColor.FillNormal.G, chartColor.FillNormal.B);
                                 }
-
-                                dataLine.LineColor = chartColor.LineNormal;
-                                dataLine.FillColor = chartColor.FillNormal;
-                                dataLine.SelectedColor = chartColor.FillSelected; //The selected fill color only
                             }
 
                             //Set chart type to Fill similar to ST for first result
@@ -833,6 +833,7 @@ namespace TrailsPlugin.UI.Activity {
 
                         if (tr is SummaryTrailResult)
                         {
+                            //The data is calculated from the normal results
                             summaryDataLine = dataLine;
                             if (m_trailResults.Count > 1)
                             {
@@ -966,7 +967,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
                 //TBD (fix in DistTrack?) 
-                //Make sure distance track has start/end for graphpoints, otherwise may 30s valid data not be shown
+                //Make sure distance track has start/end for graphpoints, otherwise may about 30s valid data not be shown
                 DateTime time = graphPoints.StartTime;
                 if (dataPoints.StartTime < time)
                 {

@@ -44,6 +44,7 @@
     <Compile Include="Data\SummaryRowDataRenderer.cs" />
     <Compile Include="Data\SummaryTrailResult.cs" />
     <Compile Include="Data\EditTrailLabelProvider.cs" />
+    <Compile Include="Export\CFTrailResult.cs" />
     <Compile Include="Utils\LineChartUtil.cs" />
     <Compile Include="Data\TrailResultInfo.cs" />
     <Compile Include="Data\TrailsActivityInfoOptions.cs" />

@@ -39,7 +39,7 @@ namespace TrailsPlugin.Export
                 List<ITrailResult> trailResults = new List<ITrailResult>();
                 foreach (var result in TrailResultWrapper.Results(activityTrail.ResultTreeList))
                 {
-                    trailResults.Add(result);
+                    trailResults.Add(new CFTrailResult(result));
                 }
 
                 results.Add(trail.Name, trailResults);

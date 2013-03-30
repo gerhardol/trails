@@ -69,7 +69,7 @@ namespace TrailsPlugin.Data
 
     }
 
-    public class TrailResult : ITrailResult, IComparable
+    public class TrailResult : IComparable
     {
         #region private variables
         public ActivityTrail m_activityTrail;
@@ -109,7 +109,7 @@ namespace TrailsPlugin.Data
 
         //Converted tracks, to display format, with smoothing
         //Should be in a separate class
-        private TrailResult m_cacheTrackRef;
+        protected TrailResult m_cacheTrackRef;
         private IDistanceDataTrack m_distanceMetersTrack0;
         private INumericTimeDataSeries m_cadencePerMinuteTrack0;
         private INumericTimeDataSeries m_elevationMetersTrack0;
@@ -967,7 +967,7 @@ namespace TrailsPlugin.Data
         }
 
         //Distance track for trail, adjusted with pauses
-        private IDistanceDataTrack DistanceMetersTrack
+        internal IDistanceDataTrack DistanceMetersTrack
         {
             get
             {
@@ -1185,7 +1185,7 @@ namespace TrailsPlugin.Data
             get
             {
                 checkCacheRef(m_cacheTrackRef);
-                return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity);
+                return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity); //xxx this.Activity??
             }
         }
 
@@ -1490,7 +1490,7 @@ namespace TrailsPlugin.Data
         }
 
         //copy the relevant part to a new track
-        private INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
+        public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
         {
             return copySmoothTrack(source, false, 0, new Convert(ConvertNone), m_cacheTrackRef);
         }
@@ -1698,6 +1698,10 @@ namespace TrailsPlugin.Data
             return etrack;
         }
 
+        public INumericTimeDataSeries ElevationMetersTrack0()
+        {
+            return this.ElevationMetersTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries ElevationMetersTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1710,6 +1714,12 @@ namespace TrailsPlugin.Data
         }
 
         public static bool CalculateGrade = false;
+        public INumericTimeDataSeries GradeTrack0()
+        {
+            return this.copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+    new Convert(UnitUtil.Grade.ConvertTo), this.m_cacheTrackRef);
+            //TBD return this.GradeTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries GradeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1756,6 +1766,10 @@ namespace TrailsPlugin.Data
             return m_gradeTrack0;
         }
 
+        public INumericTimeDataSeries CadencePerMinuteTrack0()
+        {
+            return this.CadencePerMinuteTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries CadencePerMinuteTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1767,6 +1781,10 @@ namespace TrailsPlugin.Data
             return m_cadencePerMinuteTrack0;
         }
 
+        public INumericTimeDataSeries HeartRatePerMinuteTrack0()
+        {
+            return this.HeartRatePerMinuteTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries HeartRatePerMinuteTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1778,6 +1796,10 @@ namespace TrailsPlugin.Data
             return m_heartRatePerMinuteTrack0;
         }
 
+        public INumericTimeDataSeries PowerWattsTrack0()
+        {
+            return this.PowerWattsTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries PowerWattsTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1789,6 +1811,10 @@ namespace TrailsPlugin.Data
             return m_powerWattsTrack0;
         }
 
+        public INumericTimeDataSeries SpeedTrack0()
+        {
+            return this.SpeedTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries SpeedTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -1805,6 +1831,10 @@ namespace TrailsPlugin.Data
             return m_speedTrack0;
         }
 
+        public INumericTimeDataSeries PaceTrack0()
+        {
+            return this.PaceTrack0(this.m_cacheTrackRef);
+        }
         public INumericTimeDataSeries PaceTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -3240,44 +3270,7 @@ namespace TrailsPlugin.Data
                     Debug.Assert(false);
                     return null;
                 }
-                //if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
-                //{
-                //    return (this as ChildTrailResult).ParentResult.Info;
-                //}
                 return ActivityCache.GetActivityInfo(this.Activity, this.IncludeStopped);
-                //if (m_ActivityInfo == null)
-                //{
-                //    ActivityInfoCache c = new ActivityInfoCache();
-                //    ActivityInfoOptions t = new ActivityInfoOptions(false, this.IncludeStopped);
-                //    c.Options = t;
-                //    IActivity activity = this.Activity;
-                //    //if (this.Pauses != activity.TimerPauses)
-                //    //{
-                //    //    IActivity activity2 = Plugin.GetApplication().Logbook.Activities.AddCopy(activity);
-                //    //    activity = activity2;
-                //    //    activity.TimerPauses.Clear();
-                //    //    foreach (IValueRange<DateTime> p in this.Pauses)
-                //    //    {
-                //    //        activity.TimerPauses.Add(p);
-                //    //    }
-                //    //    activity.Category = Plugin.GetApplication().Logbook.ActivityCategories[1];
-                //    //    if (activity.Category.SubCategories.Count > 0)
-                //    //    {
-                //    //        activity.Category = activity.Category.SubCategories[0];
-                //    //    }
-                //    //}
-                //    if (activity != null)
-                //    {
-                //        m_ActivityInfo = c.GetInfo(activity);
-                //    }
-                //    else
-                //    {
-                //        //TODO: This data should not be used, just return any activity to avoid exceptions
-                //        Debug.Assert(false);
-                //        m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
-                //    }
-                //}
-                //return m_ActivityInfo;
             }
         }
 
@@ -3384,148 +3377,6 @@ namespace TrailsPlugin.Data
             }
             return activity;
         }
-
-        /**********************************************************/
-        #region Implementation of ITrailResult
-
-        float ITrailResult.AvgCadence
-        {
-            get { return AvgCadence; }
-        }
-
-        float ITrailResult.AvgGrade
-        {
-            get { return 100*AscAvgGrade; }
-        }
-
-        float ITrailResult.AvgHR
-        {
-            get { return AvgHR; }
-        }
-
-        double ITrailResult.AvgPace
-        {
-            get { return (float)UnitUtil.Pace.ConvertFrom(AvgSpeed); }
-        }
-
-        float ITrailResult.AvgPower
-        {
-            get { return AvgPower; }
-        }
-
-        float ITrailResult.AvgSpeed
-        {
-            get { return (float)UnitUtil.Speed.ConvertFrom(AvgSpeed); }
-        }
-
-        INumericTimeDataSeries ITrailResult.CadencePerMinuteTrack
-        {
-            get { return CadencePerMinuteTrack0(m_cacheTrackRef); }
-        }
-
-        IActivityCategory ITrailResult.Category
-        {
-            get { return Category; }
-        }
-
-        INumericTimeDataSeries ITrailResult.CopyTrailTrack(INumericTimeDataSeries source)
-        {
-            return copyTrailTrack(source);
-        }
-
-        string ITrailResult.Distance
-        {
-            get { return UnitUtil.Distance.ToString(Distance, ""); }
-        }
-
-        IDistanceDataTrack ITrailResult.DistanceMetersTrack
-        {
-            get { return DistanceMetersTrack; }
-        }
-
-        TimeSpan ITrailResult.Duration
-        {
-            get { return Duration; }
-        }
-
-        string ITrailResult.ElevChg
-        {
-            get { return (ElevChg > 0 ? "+" : "") + UnitUtil.Elevation.ToString(ElevChg, ""); }
-        }
-
-        INumericTimeDataSeries ITrailResult.ElevationMetersTrack
-        {
-            get { return ElevationMetersTrack0(m_cacheTrackRef); }
-        }
-
-        TimeSpan ITrailResult.EndTime
-        {
-            get { return EndTimeOfDay; }
-        }
-
-        double ITrailResult.FastestPace
-        {
-            get
-            {
-                checkCacheRef(m_cacheTrackRef);
-                return UnitUtil.Pace.ConvertFrom(FastestPace, m_cacheTrackRef.Activity);
-            }
-        }
-
-        float ITrailResult.FastestSpeed
-        {
-            get
-            {
-                checkCacheRef(m_cacheTrackRef);
-                return (float)UnitUtil.Speed.ConvertFrom(FastestSpeed, m_cacheTrackRef.Activity);
-            }
-        }
-
-        INumericTimeDataSeries ITrailResult.GradeTrack
-        {
-            get
-            {
-                return copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new Convert(UnitUtil.Grade.ConvertTo), m_cacheTrackRef);
-            }
-        }
-
-        INumericTimeDataSeries ITrailResult.HeartRatePerMinuteTrack
-        {
-            get { return HeartRatePerMinuteTrack0(m_cacheTrackRef); }
-        }
-
-        float ITrailResult.MaxHR
-        {
-            get { return MaxHR; }
-        }
-
-        int ITrailResult.Order
-        {
-            get { return Order; }
-        }
-
-        INumericTimeDataSeries ITrailResult.PaceTrack
-        {
-            get { return PaceTrack0(m_cacheTrackRef); }
-        }
-
-        INumericTimeDataSeries ITrailResult.PowerWattsTrack
-        {
-            get { return PowerWattsTrack0(m_cacheTrackRef); }
-        }
-
-        INumericTimeDataSeries ITrailResult.SpeedTrack
-        {
-            get { return SpeedTrack0(m_cacheTrackRef); }
-        }
-
-        TimeSpan ITrailResult.StartTime
-        {
-            get { return StartTimeOfDay; }
-        }
-
-        #endregion
 
         /**********************************************************/
         #region IComparable<Product> Members

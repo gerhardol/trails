@@ -1,6 +1,6 @@
 ﻿/*
 Copyright (C) 2009 Brendan Doherty
-Copyright (C) 2011 Gerhard Olsson
+Copyright (C) 2011-2013 Gerhard Olsson
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -32,43 +32,6 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
-    public class ChildTrailResult : TrailResult
-    {
-        internal bool PartOfParent = true;
-
-        private TrailResult m_parentResult;
-        public TrailResult ParentResult
-        {
-            get
-            {
-                return m_parentResult;
-            }
-        }
-
-        public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff) :
-            base(activityTrail, order, indexes, distDiff)
-        {
-            this.m_parentResult = par;
-            if (par != null)
-            {
-                if (par.m_childrenResults == null)
-                {
-                    par.m_childrenResults = new List<ChildTrailResult>();
-                }
-                par.m_childrenResults.Add(this);
-            }
-        }
-
-        //HighScore
-        public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
-            this(activityTrail, par, order, indexes, distDiff)
-        {
-            this.m_toolTip = tt;
-            this.PartOfParent = false;
-        }
-
-    }
-
     public class TrailResult : IComparable
     {
         #region private variables
@@ -109,7 +72,7 @@ namespace TrailsPlugin.Data
 
         //Converted tracks, to display format, with smoothing
         //Should be in a separate class
-        protected TrailResult m_cacheTrackRef;
+        private TrailResult m_cacheTrackRef;
         private IDistanceDataTrack m_distanceMetersTrack0;
         private INumericTimeDataSeries m_cadencePerMinuteTrack0;
         private INumericTimeDataSeries m_elevationMetersTrack0;

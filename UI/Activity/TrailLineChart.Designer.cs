@@ -195,6 +195,7 @@ namespace TrailsPlugin.UI.Activity
             this.MainChart.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainChart_KeyUp);
             this.MainChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseDown);
             this.MainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseMove);
+            this.MainChart.MouseLeave += MainChart_MouseLeave;
             //this.MainChart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MainChart_MouseUp);
             // 
             // chartContextMenu

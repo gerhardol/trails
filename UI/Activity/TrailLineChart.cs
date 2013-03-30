@@ -263,6 +263,10 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+            else
+            {
+                this.m_endSelect = false;
+            }
 
             //Clear if starting a new selection and ctrl is not pressed
             if (!this.m_endSelect)
@@ -585,7 +589,8 @@ namespace TrailsPlugin.UI.Activity {
                     MainChart.DataSeries.Count > 0 &&
                 m_trailResults.Count > 0)
             {
-                this.ClearSelectedRegions(markedRange == null);
+                //The clear used to be controlled by (markedRange == null), but this path should be used from ActivityPage, that should have corrct status
+                this.ClearSelectedRegions(true);
                 bool toolTipShown = false;
                 foreach (TrailResultMarked trm in atr)
                 {
@@ -1275,6 +1280,7 @@ namespace TrailsPlugin.UI.Activity {
             bool clearRefreshData = true;
 
             this.m_CtrlPressed = e.Modifiers == Keys.Control;
+
             if (e.KeyCode == Keys.Home)
             {
                 smoothChanged = true;
@@ -1590,6 +1596,13 @@ namespace TrailsPlugin.UI.Activity {
                 summaryListToolTip.AutoPopDelay);
         }
 
+        /*******************************************/
+
+        void MainChart_MouseLeave(object sender, System.EventArgs e)
+        {
+            this.m_CtrlPressed = false;
+        }
+
         void MainChart_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             this.m_endSelect = false;
@@ -1640,6 +1653,8 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
+
+        /*******************************************/
 
         public bool BeginUpdate()
         {

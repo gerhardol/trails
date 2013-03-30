@@ -1448,7 +1448,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (e.Modifiers == Keys.Control)
                     {
-                        ActivityCache.ClearGpsBoundsCache();
+                        ActivityCache.ClearActivityCache();
                     }
 
                     bool allRefresh = e.Modifiers == Keys.Shift;

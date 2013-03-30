@@ -273,7 +273,7 @@ namespace TrailsPlugin.Data
                 if (!(this is ChildTrailResult) || !(this as ChildTrailResult).PartOfParent)
                 {
                     m_activityDistanceMetersTrack = null;
-                    m_ActivityInfo = null;
+                    //m_ActivityInfo = null;
                     m_pauses = null;
                 }
             }
@@ -668,7 +668,7 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region basic tracks
-        bool isIncludeStoppedCategory(IActivityCategory category)
+        static bool isIncludeStoppedCategory(IActivityCategory category)
         {
             if (category == null || Settings.ExcludeStoppedCategory == null || Settings.ExcludeStoppedCategory.Length == 0)
             {
@@ -3229,7 +3229,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        ActivityInfo m_ActivityInfo = null;
+        //ActivityInfo m_ActivityInfo = null;
         ActivityInfo Info
         {
             get
@@ -3240,43 +3240,44 @@ namespace TrailsPlugin.Data
                     Debug.Assert(false);
                     return null;
                 }
-                if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
-                {
-                    return (this as ChildTrailResult).ParentResult.Info;
-                }
-                if (m_ActivityInfo == null)
-                {
-                    ActivityInfoCache c = new ActivityInfoCache();
-                    ActivityInfoOptions t = new ActivityInfoOptions(false, this.IncludeStopped);
-                    c.Options = t;
-                    IActivity activity = this.Activity;
-                    //if (this.Pauses != activity.TimerPauses)
-                    //{
-                    //    IActivity activity2 = Plugin.GetApplication().Logbook.Activities.AddCopy(activity);
-                    //    activity = activity2;
-                    //    activity.TimerPauses.Clear();
-                    //    foreach (IValueRange<DateTime> p in this.Pauses)
-                    //    {
-                    //        activity.TimerPauses.Add(p);
-                    //    }
-                    //    activity.Category = Plugin.GetApplication().Logbook.ActivityCategories[1];
-                    //    if (activity.Category.SubCategories.Count > 0)
-                    //    {
-                    //        activity.Category = activity.Category.SubCategories[0];
-                    //    }
-                    //}
-                    if (activity != null)
-                    {
-                        m_ActivityInfo = c.GetInfo(activity);
-                    }
-                    else
-                    {
-                        //TODO: This data should not be used, just return any activity to avoid exceptions
-                        Debug.Assert(false);
-                        m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
-                    }
-                }
-                return m_ActivityInfo;
+                //if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
+                //{
+                //    return (this as ChildTrailResult).ParentResult.Info;
+                //}
+                return ActivityCache.GetActivityInfo(this.Activity, this.IncludeStopped);
+                //if (m_ActivityInfo == null)
+                //{
+                //    ActivityInfoCache c = new ActivityInfoCache();
+                //    ActivityInfoOptions t = new ActivityInfoOptions(false, this.IncludeStopped);
+                //    c.Options = t;
+                //    IActivity activity = this.Activity;
+                //    //if (this.Pauses != activity.TimerPauses)
+                //    //{
+                //    //    IActivity activity2 = Plugin.GetApplication().Logbook.Activities.AddCopy(activity);
+                //    //    activity = activity2;
+                //    //    activity.TimerPauses.Clear();
+                //    //    foreach (IValueRange<DateTime> p in this.Pauses)
+                //    //    {
+                //    //        activity.TimerPauses.Add(p);
+                //    //    }
+                //    //    activity.Category = Plugin.GetApplication().Logbook.ActivityCategories[1];
+                //    //    if (activity.Category.SubCategories.Count > 0)
+                //    //    {
+                //    //        activity.Category = activity.Category.SubCategories[0];
+                //    //    }
+                //    //}
+                //    if (activity != null)
+                //    {
+                //        m_ActivityInfo = c.GetInfo(activity);
+                //    }
+                //    else
+                //    {
+                //        //TODO: This data should not be used, just return any activity to avoid exceptions
+                //        Debug.Assert(false);
+                //        m_ActivityInfo = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
+                //    }
+                //}
+                //return m_ActivityInfo;
             }
         }
 

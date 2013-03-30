@@ -27,7 +27,8 @@ using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ITrailExport;
 
-namespace TrailsPlugin.Data {
+namespace TrailsPlugin.Data
+{
     public class ActivityInfoOptions : IActivityInfoOptions
     {
         public ActivityInfoOptions(bool defaultSmoothing, bool includeStopped)

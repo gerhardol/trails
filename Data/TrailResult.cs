@@ -953,6 +953,14 @@ namespace TrailsPlugin.Data
         /**********************************************************/
         #region fields
 
+        public TrailResultInfo SubResultInfo
+        {
+            get
+            {
+                return m_subResultInfo;
+            }
+        }
+
         public IList<DateTime> TrailPointDateTime
         {
             get
@@ -1331,125 +1339,6 @@ namespace TrailsPlugin.Data
                 return true;
             }
             return false;
-        }
-
-        //Insert points at start/end and pauses
-        //This simplifies tranversing distancetrack
-        //It was originally added as an attempt to handle selections and improve averages etc
-        internal class InsertValues<T>
-        {
-            DateTime startTime;
-            DateTime endTime;
-            IValueRangeSeries<DateTime> pauses;
-            IList<TrailResultPoint> points;
-
-            ITimeDataSeries<T> track;
-            ITimeDataSeries<T> source;
-
-            public InsertValues(DateTime startTime, DateTime endTime, IValueRangeSeries<DateTime> pauses, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
-            {
-                this.startTime = startTime;
-                this.endTime = endTime;
-                this.pauses = pauses;
-                this.points = null;
-                this.track = track;
-                this.source = source;
-            }
-            public InsertValues(TrailResult result, ITimeDataSeries<T> track, ITimeDataSeries<T> source) :
-                this(result.StartTime, result.EndTime, result.Pauses, track, source)
-            {
-                this.points = result.m_subResultInfo.Points;
-            }
-
-            public void insertValues(DateTime atime)
-            {
-                if (atime >= this.startTime && atime <= this.endTime &&
-                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
-                {
-                    //Interpolation is down to seconds
-                    ITimeValueEntry<T> interpolatedP = this.source.GetInterpolatedValue(atime);
-                    if (interpolatedP != null)
-                    {
-                        try
-                        {
-                            this.track.Add(atime, interpolatedP.Value);
-                        }
-                        catch { }
-                    }
-                }
-            }
-
-            public ITimeDataSeries<T> insertValues()
-            {
-                //Insert points around pauses and points
-                //This is needed to get the track match the cut-up activity
-                //(otherwise for instance start point need to be added)
-
-#if ST_BEFORE_3_0_4205
-                //Bug in ST 3.0.4205 not resorting
-                int noPoints = track.Count;
-#endif
-                //start/end should be included from points, but prepare for changes...
-                insertValues(startTime);
-                insertValues(endTime);
-
-                foreach (IValueRange<DateTime> p in pauses)
-                {
-                    if (p.Lower > DateTime.MinValue)
-                    {
-                        insertValues(p.Lower.AddSeconds(-1));
-                    }
-                    insertValues(p.Upper.AddSeconds(1));
-                }
-
-                if (this.points != null)
-                {
-                    foreach (TrailResultPoint t in points)
-                    {
-                        DateTime dateTime = t.Time;
-                        if (dateTime > DateTime.MinValue)
-                        {
-                            //xxx insertValues(dateTime.AddSeconds(-1));
-                            insertValues(dateTime);
-                        }
-                    }
-                }
-
-#if ST_BEFORE_3_0_4205
-                if (noPoints > 0)
-                {
-                    //AllowMultipleAtSameTime=false does not work in and before 3.0.4205
-                    bool reSort = false;
-                    for (int i = noPoints; i < track.Count; i++)
-                    {
-                        if (track[noPoints - 1].ElapsedSeconds > track[i].ElapsedSeconds)
-                        {
-                            reSort = true;
-                            break;
-                        }
-                    }
-                    if (reSort)
-                    {
-                        SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
-                        foreach (ITimeValueEntry<T> g in track)
-                        {
-                            if (!dic.ContainsKey(g.ElapsedSeconds))
-                            {
-                                dic.Add(g.ElapsedSeconds, g);
-                            }
-                        }
-                        DateTime startTimeTrack = track.StartTime;
-                        track.Clear();
-                        foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
-                        {
-                            track.Add(startTimeTrack.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
-                        }
-                    }
-                }
-#endif
-                //Return the original track, the typecasting must work
-                return this.track;
-            }
         }
 
         //copy the relevant part to a new track

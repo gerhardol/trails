@@ -740,6 +740,10 @@ namespace TrailsPlugin.Data
                                     {
                                         //pauses are set on next second
                                         DateTime lower = lap.StartTime;
+                                        if (i == 0)
+                                        {
+                                            lower = lower.AddSeconds(-1);
+                                        }
                                         DateTime upper;
                                         if (i < Activity.Laps.Count - 1)
                                         {

@@ -1023,11 +1023,12 @@ namespace TrailsPlugin.UI.Activity {
                     float nextXvalue = float.MaxValue;
                     if (Data.Settings.SyncChartAtTrailPoints)
                     {
-                        xValue += TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
+                        float offset = TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
+                        xValue += offset;
                     }
                     if (oldElapsedEntry < elapsedEntry &&
                         (!Data.Settings.SyncChartAtTrailPoints ||
-                        oldXvalue < xValue && xValue < nextXvalue))
+                        oldXvalue < xValue && xValue <= nextXvalue))
                     {
                         ITimeValueEntry<float> yValueEntry;
                         if (XAxisReferential == XAxisValue.Time)

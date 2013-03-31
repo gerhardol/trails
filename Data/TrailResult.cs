@@ -1390,7 +1390,9 @@ namespace TrailsPlugin.Data
                             tTrack = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(tTrack, smooth, out min, out max);
                             for (int j = 0; j < tTrack.Count; j++)
                             {
-                                track.SetValueAt(i - addOffset - tTrack.Count + 1 + j, tTrack[j].Value);
+                                int k = i - addOffset - tTrack.Count + 1 + j;
+                                //if(k<track.Count) //xxx
+                                track.SetValueAt(k, tTrack[j].Value);
                             }
                             tTrack = new NumericTimeDataSeries();
                             if (addOffset > 0)
@@ -1453,18 +1455,20 @@ namespace TrailsPlugin.Data
                 IValueRangeSeries<DateTime> pauses;
                 if (trimToResult)
                 {
-                    startTime = this.StartTime;
+                    //ST only uses whole seconds in graphs
+                    //Set start/end to whole second match, to get easier comparisions
+                    startTime = this.StartTime.AddMilliseconds(-this.StartTime.Millisecond);
                     pauses = this.Pauses;
-                    endTime = this.EndTime;
+                    endTime = this.EndTime.AddMilliseconds(1000-this.EndTime.Millisecond);
                 }
                 else if (this.Activity != null && this.Info != null)
                 {
                     //(normally)elevation handling, trim to activity
                     //startTime = this.Activity.StartTime;
-                    startTime = this.Info.ActualTrackStart;
+                    startTime = this.Info.ActualTrackStart.AddMilliseconds(-this.Info.ActualTrackStart.Millisecond);
                     pauses = this.Activity.TimerPauses;
                     //endTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(startTime, this.Activity.TotalTimeEntered, pauses);
-                    endTime = this.Info.ActualTrackEnd;
+                    endTime = this.Info.ActualTrackEnd.AddMilliseconds(1000 - this.Info.ActualTrackEnd.Millisecond);
                 }
                 else
                 {
@@ -1494,7 +1498,7 @@ namespace TrailsPlugin.Data
                 foreach (ITimeValueEntry<float> t in source)
                 {
                     DateTime dateTime = source.EntryDateTime(t);
-                    if (startTime <= dateTime && dateTime <= endTime &&
+                    if (startTime <= dateTime && dateTime < endTime &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, pauses))
                     {
                         uint elapsed = t.ElapsedSeconds;
@@ -1504,7 +1508,7 @@ namespace TrailsPlugin.Data
                             oldElapsed = (int)elapsed;
                         }
                     }
-                    if (dateTime > this.EndTime)
+                    if (dateTime >= this.EndTime)
                     {
                         break;
                     }

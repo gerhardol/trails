@@ -739,28 +739,27 @@ namespace TrailsPlugin.Data
                                     if (lap.Rest)
                                     {
                                         //pauses are set on next second
-                                        DateTime lower = lap.StartTime.AddSeconds(-1);
+                                        DateTime lower = lap.StartTime;
                                         DateTime upper;
                                         if (i < Activity.Laps.Count - 1)
                                         {
                                             upper = Activity.Laps[i + 1].StartTime;
-                                            //upper = Activity.Laps[i + 1].StartTime.AddMilliseconds(-Activity.Laps[i + 1].StartTime.Millisecond - 1);
                                             if (!Activity.Laps[i + 1].Rest)
                                             {
-                                                //xxx upper -= TimeSpan.FromSeconds(1);
+                                                upper=upper.AddSeconds(-1);
                                             }
                                             //Fix: Lap start time is in seconds, precision could be lost
                                             DateTime upper2 = lower.Add(lap.TotalTime);
                                             if (upper.Millisecond == 0 && Math.Abs((upper2 - upper).TotalSeconds) < 2)
                                             {
-                                                //xxx upper = upper2;
+                                                upper = upper2;
                                             }
                                         }
                                         else
                                         {
-                                            upper = this.Info.EndTime;
+                                            upper = this.Info.EndTime.AddSeconds(1);
                                         }
-                                        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                                        this.m_pauses.Add(new ValueRange<DateTime>(lower, upper));
                                     }
                                 }
                             }

@@ -1290,6 +1290,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         TrailsPlugin.Data.Settings.RestIsPause = true;
                     }
+                    this.m_controller.CurrentReset(false); //TBD
                     this.m_page.RefreshData(true);
                 }
             }

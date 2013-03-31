@@ -1391,8 +1391,13 @@ namespace TrailsPlugin.Data
                             for (int j = 0; j < tTrack.Count; j++)
                             {
                                 int k = i - addOffset - tTrack.Count + 1 + j;
-                                //if(k<track.Count) //xxx
-                                track.SetValueAt(k, tTrack[j].Value);
+                                if (k < track.Count)
+                                {
+                                    track.SetValueAt(k, tTrack[j].Value);
+                                }
+                                else
+                                { //TBD: This should not happen, but only affects some smoothing
+                                }
                             }
                             tTrack = new NumericTimeDataSeries();
                             if (addOffset > 0)

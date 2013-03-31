@@ -1293,13 +1293,13 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshData(true);
                 }
             }
-            else if (e.KeyCode == Keys.C && e.Modifiers == Keys.Control)
-            {
-                this.copyTable();
-            }
             else if (e.KeyCode == Keys.C)
             {
-                if (e.Modifiers == Keys.Shift)
+                if (e.Modifiers == Keys.Control)
+                {
+                    this.copyTable();
+                }
+                else if (e.Modifiers == Keys.Shift)
                 {
                     TrailsPlugin.Data.Settings.DiffUsingCommonStretches = !TrailsPlugin.Data.Settings.DiffUsingCommonStretches;
                     this.m_page.RefreshData(true);
@@ -1347,7 +1347,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             foreach (TrailResultWrapper trw in atr)
                             {
-                               trw.Result.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
+                                trw.Result.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
                             }
                             m_page.RefreshData(true);
                         }

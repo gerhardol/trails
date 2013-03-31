@@ -416,43 +416,43 @@ namespace TrailsPlugin.Utils
         IValueRangeSeries<DateTime> pauses;
         IList<TrailResultPoint> points;
 
-        ITimeDataSeries<T> track;
-        ITimeDataSeries<T> source;
-
-        public InsertValues(DateTime startTime, DateTime endTime, IValueRangeSeries<DateTime> pauses, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+        public InsertValues(DateTime startTime, DateTime endTime, IValueRangeSeries<DateTime> pauses)
         {
             this.startTime = startTime;
             this.endTime = endTime;
             this.pauses = pauses;
             this.points = null;
-            this.track = track;
-            this.source = source;
         }
-        public InsertValues(TrailResult result, ITimeDataSeries<T> track, ITimeDataSeries<T> source) :
-            this(result.StartTime, result.EndTime, result.Pauses, track, source)
+        public InsertValues(TrailResult result) :
+            this(result.StartTime, result.EndTime, result.Pauses)
         {
             this.points = result.SubResultInfo.Points;
         }
 
-        public void insertValues(DateTime atime)
+        public void insertValues(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
         {
             if (atime >= this.startTime && atime <= this.endTime &&
                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
             {
                 //Interpolation is down to seconds
-                ITimeValueEntry<T> interpolatedP = this.source.GetInterpolatedValue(atime);
+                ITimeValueEntry<T> interpolatedP = source.GetInterpolatedValue(atime);
                 if (interpolatedP != null)
                 {
                     try
                     {
-                        this.track.Add(atime, interpolatedP.Value);
+                        track.Add(atime, interpolatedP.Value);
                     }
                     catch { }
                 }
             }
         }
 
-        public ITimeDataSeries<T> insertValues()
+        public ITimeDataSeries<T> insertValues(ITimeDataSeries<T> track)
+        {
+            return insertValues(track, track);
+        }
+
+        public ITimeDataSeries<T> insertValues(ITimeDataSeries<T> track, ITimeDataSeries<T> source)
         {
             //Insert points around pauses and points
             //This is needed to get the track match the cut-up activity
@@ -463,16 +463,16 @@ namespace TrailsPlugin.Utils
                 int noPoints = track.Count;
 #endif
             //start/end should be included from points, but prepare for changes...
-            insertValues(startTime);
-            insertValues(endTime);
+            insertValues(startTime, track, source);
+            insertValues(endTime, track, source);
 
             foreach (IValueRange<DateTime> p in pauses)
             {
                 if (p.Lower > DateTime.MinValue)
                 {
-                    insertValues(p.Lower.AddSeconds(-1));
+                    insertValues(p.Lower.AddSeconds(-1), track, source);
                 }
-                insertValues(p.Upper.AddSeconds(1));
+                insertValues(p.Upper.AddSeconds(1), track, source);
             }
 
             if (this.points != null)
@@ -483,7 +483,7 @@ namespace TrailsPlugin.Utils
                     if (dateTime > DateTime.MinValue)
                     {
                         //xxx insertValues(dateTime.AddSeconds(-1));
-                        insertValues(dateTime);
+                        insertValues(dateTime, track, source);
                     }
                 }
             }
@@ -521,7 +521,7 @@ namespace TrailsPlugin.Utils
                 }
 #endif
             //Return the original track, the typecasting must work
-            return this.track;
+            return track;
         }
     }
 }

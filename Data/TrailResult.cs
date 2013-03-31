@@ -868,8 +868,8 @@ namespace TrailsPlugin.Data
                     {
                         //insert points at borders in m_activityDistanceMetersTrack
                         //Less special handling when transversing the activity track
-                        m_activityDistanceMetersTrack = (DistanceDataTrack)(new InsertValues<float>(this, m_activityDistanceMetersTrack, m_activityDistanceMetersTrack)).
-                            insertValues();
+                        (new InsertValues<float>(this)).
+                            insertValues(m_activityDistanceMetersTrack);
                     }
                 }
                 if (m_activityDistanceMetersTrack != null && m_activityDistanceMetersTrack.Count > 0)
@@ -1481,13 +1481,13 @@ namespace TrailsPlugin.Data
                     InsertValues<float> iv;
                     if (trimToResult)
                     {
-                        iv = new InsertValues<float>(this, track, source);
+                        iv = new InsertValues<float>(this);
                     }
                     else
                     {
-                        iv = new InsertValues<float>(startTime, endTime, pauses, track, source);
+                        iv = new InsertValues<float>(startTime, endTime, pauses);
                     }
-                    track = (INumericTimeDataSeries)iv.insertValues();
+                    iv.insertValues(track, source);
                 }
 
                 int oldElapsed = int.MinValue;
@@ -1810,7 +1810,11 @@ namespace TrailsPlugin.Data
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
                     ITimeValueEntry<float> prev = null;
-                    foreach (ITimeValueEntry<float> t in this.Activity.DistanceMetersTrack)
+                    IDistanceDataTrack source = this.Activity.DistanceMetersTrack;
+                    InsertValues<float> iv = new InsertValues<float>(this);
+                    //iv.insertValues(source);
+
+                    foreach (ITimeValueEntry<float> t in source)
                     {
                         if (t != null)
                         {
@@ -1818,7 +1822,7 @@ namespace TrailsPlugin.Data
                             {
                                 prev = t;
                             }
-                            DateTime dateTime = this.Activity.DistanceMetersTrack.EntryDateTime(t);
+                            DateTime dateTime = source.EntryDateTime(t);
                             if (this.StartTime <= dateTime && dateTime <= this.EndTime &&
                                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                             {
@@ -2950,7 +2954,7 @@ namespace TrailsPlugin.Data
                 StartTime != DateTime.MinValue && EndTime != DateTime.MinValue)
             {
                 //Insert values at borders in m_gpsTrack
-                gpsTrack = (GPSRoute)(new InsertValues<IGPSPoint>(this, gpsTrack, m_activity.GPSRoute)).insertValues();
+                (new InsertValues<IGPSPoint>(this)).insertValues(gpsTrack, m_activity.GPSRoute);
 
                 int i = 0;
                 while (i < m_activity.GPSRoute.Count)

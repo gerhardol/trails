@@ -1021,7 +1021,7 @@ namespace TrailsPlugin.UI.Activity {
                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
                     //or cut (elapsed is higher than next limit, then decreases at trail point)  
                     float nextXvalue = float.MaxValue;
-                    if (Data.Settings.SyncChartAtTrailPoints)
+                    if (Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count > 1)
                     {
                         float offset = TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
                         xValue += offset;

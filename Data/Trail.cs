@@ -441,7 +441,7 @@ namespace TrailsPlugin.Data
                         IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
                         if (t != null)
                         {
-                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d));
+                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d, l.TotalTime));
                         }
                     }
                 }

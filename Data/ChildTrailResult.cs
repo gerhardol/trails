@@ -48,6 +48,10 @@ namespace TrailsPlugin.Data
             base(activityTrail, order, indexes, distDiff)
         {
             this.m_parentResult = par;
+            if (indexes.Count == 2)
+            {
+                this.m_duration = indexes.Points[0].Duration;
+            }
         }
 
         //HighScore

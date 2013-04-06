@@ -151,12 +151,18 @@ namespace TrailsPlugin.Data
             : this(trailLocation, time, 0)
         {
         }
+        public TrailResultPoint(TrailGPSLocation trailLocation, DateTime time, TimeSpan duration)
+            : this(trailLocation, time)
+        {
+            this.Duration = duration;
+        }
         public TrailResultPoint(TrailResultPoint t)
             : base(t)
         {
             this.m_time = t.Time;
             //this.m_name = t.Name;
             this.DistDiff = t.DistDiff;
+            this.Duration = t.Duration;
         }
 
         public override string ToString()
@@ -197,6 +203,7 @@ namespace TrailsPlugin.Data
         public float DistDiff = 0;
         //Just a high number, affects sorting
         public const float DiffDistMax = 0xffff;
+        internal TimeSpan? Duration = null;
 
         public int CompareTo(object obj)
         {

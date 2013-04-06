@@ -166,7 +166,8 @@ namespace TrailsPlugin.Data
                 int i; //start time index
                 for (i = 0; i < m_subResultInfo.Count - 1; i++)
                 {
-                    if (m_subResultInfo.Points[i].Time != DateTime.MinValue)
+                    if (m_subResultInfo.Points[i].Time != DateTime.MinValue && 
+                                (!this.m_activityTrail.Trail.IsSplits || !Settings.RestIsPause || m_subResultInfo.Points[i].Required))
                     {
                         int j; //end time index
                         for (j = i + 1; j < m_subResultInfo.Points.Count; j++)
@@ -308,17 +309,25 @@ namespace TrailsPlugin.Data
 
         /****************************************************************/
 
+        protected TimeSpan? m_duration = null;
         public virtual TimeSpan Duration
         {
             get
             {
-                if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
-                    this.Activity != null)
+                if (m_duration == null)
                 {
-                    return this.Activity.TotalTimeEntered;
+                    if (!(this is ChildTrailResult) &&
+                        TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                        this.Activity != null)
+                    {
+                        m_duration = this.Activity.TotalTimeEntered;
+                    }
+                    else
+                    {
+                        m_duration = this.getTimeSpanResult(EndTime);
+                    }
                 }
-                return this.getTimeSpanResult(EndTime);
+                return (TimeSpan)this.m_duration;
             }
         }
 

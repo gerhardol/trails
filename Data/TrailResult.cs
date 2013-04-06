@@ -1159,7 +1159,7 @@ namespace TrailsPlugin.Data
             get
             {
                 checkCacheRef(m_cacheTrackRef);
-                return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity); //xxx this.Activity??
+                return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity);
             }
         }
 

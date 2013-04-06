@@ -70,8 +70,7 @@ namespace TrailsPlugin.Data
                 }
                 activityInfos.Add(activity, null);
             }
-            //includeStopped changes could be catched from changing system preferences and the activities too
-            //xxx check include includeSopped as key
+            //TBD includeStopped changes could be catched from changing system preferences and the activities too
             if (activityInfos[activity] == null)
             {
                 activityInfos[activity] = new Dictionary<bool, ActivityInfo>();

@@ -191,6 +191,21 @@ namespace TrailsPlugin.Data
                         i = j - 1;//Next index to try
                     }
                 }
+                TimeSpan sp = TimeSpan.Zero;
+                bool ok = true;
+                foreach (ChildTrailResult ctr in splits)
+                {
+                    if (ctr.m_duration == null)
+                    {
+                        ok = false;
+                        break;
+                    }
+                    sp = sp.Add((TimeSpan)ctr.m_duration);
+                }
+                if (ok)
+                {
+                    this.m_duration = sp;
+                }
             }
             return splits;
         }

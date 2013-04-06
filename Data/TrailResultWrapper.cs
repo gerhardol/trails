@@ -86,6 +86,15 @@ namespace TrailsPlugin.Data
                     base.Element = new ChildTrailResult(activityTrail, parent.Result, order, indexes, 0, tt);
                     parent.Children.Add(this);
                     parent.m_children.Add(this);
+                    if (this.Result is ChildTrailResult)
+                    {
+                        ChildTrailResult ctr = this.Result as ChildTrailResult;
+                        if (parent.Result.m_childrenResults == null)
+                        {
+                            parent.Result.m_childrenResults = new List<ChildTrailResult>();
+                        }
+                        parent.Result.m_childrenResults.Add(ctr);
+                    }
                 }
             }
         }
@@ -147,11 +156,17 @@ namespace TrailsPlugin.Data
                 IList<ChildTrailResult> children = this.Result.getSplits();
                 if (children != null && children.Count > 1)
                 {
-                    foreach (TrailResult tr in children)
+                    foreach (ChildTrailResult tr in children)
                     {
                         TrailResultWrapper tn = new TrailResultWrapper(this, tr);
+                        //several separate substructues..
                         this.Children.Add(tn);
-                        m_children.Add(tn);
+                        this.m_children.Add(tn);
+                        if (this.Result.m_childrenResults == null)
+                        {
+                            this.Result.m_childrenResults = new List<ChildTrailResult>();
+                        }
+                        this.Result.m_childrenResults.Add(tr);
                     }
                 }
             }
@@ -159,16 +174,26 @@ namespace TrailsPlugin.Data
 
         public bool RemoveChildren(IList<TrailResultWrapper> tn, bool invertSelection)
         {
-            bool result = true;
+            bool result = false;
             foreach (TrailResultWrapper tr in tn)
             {
-                if (m_children.Contains(tr))
+                if (this.m_children.Contains(tr))
                 {
-                    m_children.Remove(tr);
+                    this.m_children.Remove(tr);
+                    result = true;
                 }
-                else
+                //May not be needed as Children are added when sorting
+                if (this.Children.Contains(tr))
                 {
-                    result = false;
+                    this.Children.Remove(tr);
+                }
+                if (this.Result != null && this.Result.m_childrenResults != null && tr.Result is ChildTrailResult)
+                {
+                    ChildTrailResult ctr = tr.Result as ChildTrailResult;
+                    if (this.Result.m_childrenResults.Contains(ctr))
+                    {
+                        this.Result.m_childrenResults.Remove(ctr);
+                    }
                 }
             }
             return result;

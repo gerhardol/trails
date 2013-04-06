@@ -48,14 +48,6 @@ namespace TrailsPlugin.Data
             base(activityTrail, order, indexes, distDiff)
         {
             this.m_parentResult = par;
-            if (par != null)
-            {
-                if (par.m_childrenResults == null)
-                {
-                    par.m_childrenResults = new List<ChildTrailResult>();
-                }
-                par.m_childrenResults.Add(this);
-            }
         }
 
         //HighScore

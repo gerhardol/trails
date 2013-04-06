@@ -183,6 +183,7 @@ namespace TrailsPlugin.Data
                             {
                                 TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
                                 ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, t.DistDiff);
+                                //Note: paused results may be added, no limit for childresults
                                 splits.Add(tr);
                             }
                         }

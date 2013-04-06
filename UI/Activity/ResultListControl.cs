@@ -1337,25 +1337,22 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.F)
             {
-                //Unofficial shortcuts
                 if (e.Modifiers == Keys.Control)
                 {
-                    if (this.m_controller.ReferenceTrailResult != null)
+                    IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
+                    if (atr != null && atr.Count > 0 &&
+                        m_controller.CurrentResultTreeList.Count > 0)
                     {
-                        IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
-                        if (atr != null && atr.Count > 0 &&
-                            m_controller.CurrentResultTreeList.Count > 0)
+                        foreach (TrailResultWrapper trw in atr)
                         {
-                            foreach (TrailResultWrapper trw in atr)
-                            {
-                                trw.Result.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
-                            }
-                            m_page.RefreshData(true);
+                            trw.Result.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
                         }
+                        m_page.RefreshData(true);
                     }
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
+                    //Unofficial shortcuts
                     //Put alternatively calculated grade in Cadence
                     TrailResult.CalculateGrade = !TrailResult.CalculateGrade;
                     m_page.RefreshData(true);

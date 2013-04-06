@@ -1387,7 +1387,7 @@ namespace TrailsPlugin.Data
                             addOffset = 1;
                         }
 
-                        //End of section
+                       //End of section
                         if ((i >= track.Count - 1 || t > pTime) && tTrack.Count > 0 && i > 0)
                         {
                             tTrack = ZoneFiveSoftware.Common.Data.Algorithm.NumericTimeDataSeries.Smooth(tTrack, smooth, out min, out max);
@@ -1948,12 +1948,11 @@ namespace TrailsPlugin.Data
             INumericTimeDataSeries deviceElevationTrack0 = null;
             //include the activity track with UseTrailElevationAdjust, then cut it - for adjustment
             bool trimSource = !TrailsPlugin.Data.Settings.UseTrailElevationAdjust && trimToResult;
-            if (this.Activity != null && this.Activity.ElevationMetersTrack != null && this.Activity.ElevationMetersTrack.Count > 0)
-            {
-                deviceElevationTrack0 = copySmoothTrack(this.Activity.ElevationMetersTrack, true, trimSource, eleSmooth,
-                   new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
-            }
-            else if (TrailsPlugin.Data.Settings.DeviceElevationFromOther)
+
+            //Try to get separate elevation track or GPS elevation from barometric device
+            deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(this.Activity, trimSource, eleSmooth);
+
+            if (deviceElevationTrack0 == null && TrailsPlugin.Data.Settings.DeviceElevationFromOther)
             {
                 //Get device elevation from another activity in results
                 foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
@@ -2134,7 +2133,7 @@ namespace TrailsPlugin.Data
             bool result = false;
             //Get a track adjusted for the activity
             INumericTimeDataSeries eTrack = this.DeviceElevationTrack0(0, false, adjustElevation);
-            if (eTrack != null && eTrack.Count > 1)
+            if (this.Activity != null && eTrack != null && eTrack.Count > 1)
             {
                 // possibly converted to display unit (for Imperal/feet users). Change back to SI unit
                 if (!UnitUtil.Elevation.isDefaultUnit(this.Activity))
@@ -2145,8 +2144,7 @@ namespace TrailsPlugin.Data
                     }
                 }
 
-                if (this.Activity != null &&
-                 this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 1)
+                if (this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 1)
                 {
                     IGPSRoute gpsRoute = new GPSRoute();
                     foreach (ITimeValueEntry<IGPSPoint> g in this.Activity.GPSRoute)
@@ -2184,9 +2182,12 @@ namespace TrailsPlugin.Data
                     }
                     this.Activity.GPSRoute = gpsRoute;
                 }
-
-                //Elevation track is not updated now
-                //this.Activity.ElevationMetersTrack = eTrack;
+                else
+                {
+                    //No GPS track, add as separate elevation track
+                    this.Activity.ElevationMetersTrack = eTrack;
+                }
+                this.Clear(false);
                 result = true;
             }
             return result;

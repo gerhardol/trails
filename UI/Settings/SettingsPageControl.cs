@@ -108,12 +108,12 @@ namespace TrailsPlugin.UI.Settings
 
         void boxStoppedCategory_LostFocus(object sender, System.EventArgs e)
         {
-            Data.Settings.SetExcludeStoppedCategory(boxStoppedCategory.Text);
+            Data.Settings.SetExcludeStoppedCategory(this.boxStoppedCategory.Text);
         }
 
         void boxBarometricDevices_LostFocus(object sender, System.EventArgs e)
         {
-            Data.Settings.SetExcludeStoppedCategory(boxBarometricDevices.Text);
+            Data.Settings.SetBarometricDevices(this.boxBarometricDevices.Text);
         }
 
         void txtAdjustElevationAtImport_CheckedChanged(object sender, System.EventArgs e)

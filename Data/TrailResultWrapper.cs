@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : base(par, null)
         {
-            base.Element = new TrailResult(activityTrail, order, indexes, distDiff, reverse);
+            base.Element = new ParentTrailResult(activityTrail, order, indexes, distDiff, reverse);
             if (par == null)
             {
                 //Children are not created by default
@@ -52,7 +52,7 @@ namespace TrailsPlugin.Data
             : base(null, null)
         {
             TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-            base.Element = new TrailResult(activityTrail, order, indexes, 0);
+            base.Element = new ParentTrailResult(activityTrail, order, indexes, 0);
             //Children are not created by default
             //getSplits();
         }
@@ -78,23 +78,21 @@ namespace TrailsPlugin.Data
             {
                 if (order == 1 || parent == null)
                 {
-                    base.Element = new TrailResult(activityTrail, order, indexes, 0, tt);
+                    base.Element = new ParentTrailResult(activityTrail, order, indexes, 0, tt);
                 }
-                else
+                else if (parent.Element != null && parent.Element is ParentTrailResult)
                 {
                     base.Parent = parent;
-                    base.Element = new ChildTrailResult(activityTrail, parent.Result, order, indexes, 0, tt);
+                    ParentTrailResult ptr = parent.Result as ParentTrailResult;
+                    ChildTrailResult ctr = new ChildTrailResult(activityTrail, ptr, order, indexes, 0, tt);
+                    base.Element = ctr;
                     parent.Children.Add(this);
                     parent.m_children.Add(this);
-                    if (this.Result is ChildTrailResult)
+                    if (ptr.m_childrenResults == null)
                     {
-                        ChildTrailResult ctr = this.Result as ChildTrailResult;
-                        if (parent.Result.m_childrenResults == null)
-                        {
-                            parent.Result.m_childrenResults = new List<ChildTrailResult>();
-                        }
-                        parent.Result.m_childrenResults.Add(ctr);
+                        ptr.m_childrenResults = new List<ChildTrailResult>();
                     }
+                    ptr.m_childrenResults.Add(ctr);
                 }
             }
         }
@@ -151,9 +149,10 @@ namespace TrailsPlugin.Data
         //A good enough reason is that this will give main activities separate colors, in the intended order
         public void getSplits()
         {
-            if (this.Result != null)
+            if (this.Result != null && this.Result is ParentTrailResult)
             {
-                IList<ChildTrailResult> children = this.Result.getSplits();
+                ParentTrailResult ptr = this.Result as ParentTrailResult;
+                IList<ChildTrailResult> children = ptr.getSplits();
                 if (children != null && children.Count > 1)
                 {
                     foreach (ChildTrailResult tr in children)
@@ -162,11 +161,11 @@ namespace TrailsPlugin.Data
                         //several separate substructues..
                         this.Children.Add(tn);
                         this.m_children.Add(tn);
-                        if (this.Result.m_childrenResults == null)
+                        if (ptr.m_childrenResults == null)
                         {
-                            this.Result.m_childrenResults = new List<ChildTrailResult>();
+                            ptr.m_childrenResults = new List<ChildTrailResult>();
                         }
-                        this.Result.m_childrenResults.Add(tr);
+                        ptr.m_childrenResults.Add(tr);
                     }
                 }
             }
@@ -187,12 +186,13 @@ namespace TrailsPlugin.Data
                 {
                     this.Children.Remove(tr);
                 }
-                if (this.Result != null && this.Result.m_childrenResults != null && tr.Result is ChildTrailResult)
+                if (this.Result != null && this.Result is ParentTrailResult && (this.Result as ParentTrailResult).m_childrenResults != null
+                    && tr.Result is ChildTrailResult)
                 {
                     ChildTrailResult ctr = tr.Result as ChildTrailResult;
-                    if (this.Result.m_childrenResults.Contains(ctr))
+                    if ((this.Result as ParentTrailResult).m_childrenResults.Contains(ctr))
                     {
-                        this.Result.m_childrenResults.Remove(ctr);
+                        (this.Result as ParentTrailResult).m_childrenResults.Remove(ctr);
                     }
                 }
             }

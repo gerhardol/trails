@@ -41,8 +41,7 @@ namespace TrailsPlugin.Data
         private string m_name;
         private bool m_reverse;
 
-        internal IList<ChildTrailResult> m_childrenResults;
-        private TrailResultInfo m_subResultInfo;
+        protected TrailResultInfo m_subResultInfo;
 
         private bool? m_includeStopped;
         private DateTime? m_startTime;
@@ -51,7 +50,7 @@ namespace TrailsPlugin.Data
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
         private ChartColors m_trailColor = null;
-        protected string m_toolTip;
+        private string m_toolTip;
         //Temporary? (undocumented)
         public static bool m_diffOnDateTime = false;
         public static bool diffToSelf = false;
@@ -104,36 +103,24 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region contructors
-        //Normal TrailResult
-        public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
+        //Parent results
+        protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
+        {
+            createTrailResult(activityTrail, order, indexes, distDiff);
+        }
+        protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : this(activityTrail, order, indexes, distDiff)
         {
             this.m_reverse = reverse;
         }
-
-        //Results from Splits (and internal)
-        public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
-        {
-            createTrailResult(activityTrail, order, indexes, distDiff);
-        }
-
-        //HighScore result
-        public TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
+        protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
             : this(activityTrail, order, indexes, distDiff)
         {
-            m_toolTip = toolTip;
+            this.m_toolTip = toolTip;
         }
 
-        //Create from splits
-        //public TrailResult(ActivityTrail activityTrail, Trail trail, IActivity activity, int order)
-        //{
-        //    TrailResultInfo indexes;
-        //    Data.Trail.TrailGpsPointsFromSplits(activity, out indexes);
-        //    createTrailResult(activityTrail, order, indexes, float.MaxValue);
-        //}
-
-        //Summary result (avoid having createTrailResult more public)
-        public TrailResult()
+        //Summary result
+        protected TrailResult()
         {
             //a summary result is not related to an activity trail
             createTrailResult(null, 0, new TrailResultInfo(null, false), float.NaN);
@@ -158,57 +145,6 @@ namespace TrailsPlugin.Data
             m_totalDistDiff = distDiff;
         }
 
-        public IList<ChildTrailResult> getSplits()
-        {
-            IList<ChildTrailResult> splits = new List<ChildTrailResult>();
-            if (this.m_subResultInfo.Count > 1)
-            {
-                int i; //start time index
-                for (i = 0; i < m_subResultInfo.Count - 1; i++)
-                {
-                    if (m_subResultInfo.Points[i].Time != DateTime.MinValue && 
-                                (!this.m_activityTrail.Trail.IsSplits || !Settings.RestIsPause || m_subResultInfo.Points[i].Required))
-                    {
-                        int j; //end time index
-                        for (j = i + 1; j < m_subResultInfo.Points.Count; j++)
-                        {
-                            if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
-                            {
-                                break;
-                            }
-                        }
-                        if (this.m_subResultInfo.Count > i &&
-                            this.m_subResultInfo.Count > j)
-                        {
-                            if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
-                            {
-                                TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
-                                ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, t.DistDiff);
-                                //Note: paused results may be added, no limit for childresults
-                                splits.Add(tr);
-                            }
-                        }
-                        i = j - 1;//Next index to try
-                    }
-                }
-                TimeSpan sp = TimeSpan.Zero;
-                bool ok = true;
-                foreach (ChildTrailResult ctr in splits)
-                {
-                    if (ctr.m_duration == null)
-                    {
-                        ok = false;
-                        break;
-                    }
-                    sp = sp.Add((TimeSpan)ctr.m_duration);
-                }
-                if (ok)
-                {
-                    this.m_duration = sp;
-                }
-            }
-            return splits;
-        }
 #endregion
 
         /**********************************************************/
@@ -325,6 +261,7 @@ namespace TrailsPlugin.Data
         /****************************************************************/
 
         protected TimeSpan? m_duration = null;
+        internal bool DurationIsNull() { return this.m_duration == null; }
         public virtual TimeSpan Duration
         {
             get
@@ -2528,10 +2465,10 @@ namespace TrailsPlugin.Data
         {
             TrailResult res = parRes;
             if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent &&
-                parRes != null && parRes.m_childrenResults != null)
+                parRes != null && parRes is ParentTrailResult && (parRes as ParentTrailResult).m_childrenResults != null)
             {
                 //This is a subsplit, get the subsplit related to the ref
-                foreach (TrailResult tr in parRes.m_childrenResults)
+                foreach (TrailResult tr in (parRes as ParentTrailResult).m_childrenResults)
                 {
                     if (this.m_order == tr.Order)
                     {

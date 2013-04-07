@@ -35,8 +35,8 @@ namespace TrailsPlugin.Data
     {
         internal bool PartOfParent = true;
 
-        private TrailResult m_parentResult;
-        public TrailResult ParentResult
+        private ParentTrailResult m_parentResult;
+        public ParentTrailResult ParentResult
         {
             get
             {
@@ -44,23 +44,27 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff) :
+        public ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
+        {
+            createResult(par, indexes, false);
+        }
+
+        //HighScore
+        public ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
+            base(activityTrail, order, indexes, distDiff, tt)
+        {
+            createResult(par, indexes, true);
+        }
+
+        private void createResult(ParentTrailResult par, TrailResultInfo indexes, bool part)
         {
             this.m_parentResult = par;
             if (indexes.Count == 2)
             {
                 this.m_duration = indexes.Points[0].Duration;
             }
+            this.PartOfParent = part;
         }
-
-        //HighScore
-        public ChildTrailResult(ActivityTrail activityTrail, TrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
-            this(activityTrail, par, order, indexes, distDiff)
-        {
-            this.m_toolTip = tt;
-            this.PartOfParent = false;
-        }
-
     }
 }

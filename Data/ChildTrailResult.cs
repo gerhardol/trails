@@ -47,14 +47,14 @@ namespace TrailsPlugin.Data
         public ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
         {
-            createResult(par, indexes, false);
+            createResult(par, indexes, true);
         }
 
         //HighScore
         public ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
             base(activityTrail, order, indexes, distDiff, tt)
         {
-            createResult(par, indexes, true);
+            createResult(par, indexes, false);
         }
 
         private void createResult(ParentTrailResult par, TrailResultInfo indexes, bool part)

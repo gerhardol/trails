@@ -32,22 +32,45 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
+    public class NormalParentTrailResult : ParentTrailResult
+    {
+        //Normal TrailResult
+        public NormalParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
+            : base(activityTrail, order, indexes, distDiff, reverse)
+        {
+        }
+    }
+    public class SplitsParentTrailResult : ParentTrailResult
+    {
+        public SplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, order, indexes, distDiff)
+        {
+        }
+    }
+    public class HighScoreParentTrailResult : ParentTrailResult
+    {
+        public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
+            : base(activityTrail, order, indexes, distDiff, toolTip)
+        {
+        }
+    }
+
     public class ParentTrailResult : TrailResult
     {
         //Normal TrailResult
-        public ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
+        protected ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : base(activityTrail, order, indexes, distDiff, reverse)
         {
         }
 
         //Results from Splits
-        public ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
+        protected ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
         {
         }
 
         //HighScore result
-        public ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
+        protected ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
             : base(activityTrail, order, indexes, distDiff, toolTip)
         {
         }
@@ -77,7 +100,7 @@ namespace TrailsPlugin.Data
                             if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
                                 TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
-                                ChildTrailResult tr = new ChildTrailResult(m_activityTrail, this, i + 1, t, t.DistDiff);
+                                ChildTrailResult tr = new NormalChildTrailResult(m_activityTrail, this, i + 1, t, t.DistDiff);
                                 //Note: paused results may be added, no limit for childresults
                                 splits.Add(tr);
                             }

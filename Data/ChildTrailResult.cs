@@ -31,6 +31,23 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
+    public class NormalChildTrailResult : ChildTrailResult
+    {
+        public NormalChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, par, order, indexes, distDiff)
+        {
+            createResult(par, indexes, true);
+        }
+    }
+    public class HighScoreChildTrailResult : ChildTrailResult
+    {
+        public HighScoreChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
+            base(activityTrail, par, order, indexes, distDiff, tt)
+        {
+            createResult(par, indexes, false);
+        }
+    }
+
     public class ChildTrailResult : TrailResult
     {
         internal bool PartOfParent = true;
@@ -44,20 +61,20 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
+        protected ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
         {
             createResult(par, indexes, true);
         }
 
         //HighScore
-        public ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
+        protected ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
             base(activityTrail, order, indexes, distDiff, tt)
         {
             createResult(par, indexes, false);
         }
 
-        private void createResult(ParentTrailResult par, TrailResultInfo indexes, bool part)
+        protected void createResult(ParentTrailResult par, TrailResultInfo indexes, bool part)
         {
             this.m_parentResult = par;
             if (indexes.Count == 2)

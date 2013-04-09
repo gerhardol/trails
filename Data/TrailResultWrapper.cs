@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : base(par, null)
         {
-            base.Element = new ParentTrailResult(activityTrail, order, indexes, distDiff, reverse);
+            base.Element = new NormalParentTrailResult(activityTrail, order, indexes, distDiff, reverse);
             if (par == null)
             {
                 //Children are not created by default
@@ -52,7 +52,7 @@ namespace TrailsPlugin.Data
             : base(null, null)
         {
             TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-            base.Element = new ParentTrailResult(activityTrail, order, indexes, 0);
+            base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
             //Children are not created by default
             //getSplits();
         }
@@ -78,13 +78,13 @@ namespace TrailsPlugin.Data
             {
                 if (order == 1 || parent == null)
                 {
-                    base.Element = new ParentTrailResult(activityTrail, order, indexes, 0, tt);
+                    base.Element = new HighScoreParentTrailResult(activityTrail, order, indexes, 0, tt);
                 }
                 else if (parent.Element != null && parent.Element is ParentTrailResult)
                 {
                     base.Parent = parent;
                     ParentTrailResult ptr = parent.Result as ParentTrailResult;
-                    ChildTrailResult ctr = new ChildTrailResult(activityTrail, ptr, order, indexes, 0, tt);
+                    ChildTrailResult ctr = new HighScoreChildTrailResult(activityTrail, ptr, order, indexes, 0, tt);
                     base.Element = ctr;
                     parent.Children.Add(this);
                     parent.m_children.Add(this);

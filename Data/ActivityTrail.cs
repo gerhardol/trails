@@ -1301,7 +1301,7 @@ trailResults, incompleteResults, null);
                     {
                         resultInfo.Points.Add(new TrailResultPoint(m_trail.TrailLocations[i], DateTime.MinValue, TrailResultPoint.DiffDistMax));
                     }
-                    TrailResult tr = new ParentTrailResult(this, m_resultsListWrapper.Count + 1,
+                    TrailResult tr = new NormalParentTrailResult(this, m_resultsListWrapper.Count + 1,
                         resultInfo, resultInfo.DistDiff, t.Reverse);
                     result.Add(tr);
                 }

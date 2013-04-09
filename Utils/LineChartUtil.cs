@@ -270,7 +270,7 @@ namespace TrailsPlugin.Utils
                 case LineChartTypes.DeviceSpeed:
                     {
                         axis.Formatter = new Formatter.General(UnitUtil.Speed.DefaultDecimalPrecision);
-                        axis.Label = CommonResources.Text.LabelSpeed + UnitUtil.Pace.LabelAbbrAct2(activity);
+                        axis.Label = CommonResources.Text.LabelSpeed + UnitUtil.Speed.LabelAbbrAct2(activity);
                         break;
                     }
                 case LineChartTypes.Pace:

@@ -7,11 +7,11 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("TrailsPlugin")]
-[assembly: AssemblyDescription("SportTracks TrailsPlugin Plugin")]
+[assembly: AssemblyDescription("SportTracks TrailsPlugin")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TrailsPlugin")]
-[assembly: AssemblyCopyright("Copyright © Brendan Doherty 2009, Gerhard 2010-2013")]
+[assembly: AssemblyCopyright("Copyright © Brendan Doherty 2009, gerhard 2010-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,6 +32,6 @@ using System.Resources;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.2.821.*")]
+[assembly: AssemblyVersion("1.2.826.*")]
 [assembly: AssemblyFileVersion("1.0")]
 [assembly: NeutralResourcesLanguageAttribute("")]

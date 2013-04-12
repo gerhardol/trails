@@ -1322,11 +1322,11 @@ namespace TrailsPlugin.Data
 
         private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
         {
+            //Smooth is incorrect if track is "out-of-order"
+            InsertValues<float>.ResortTrack(track);
+
             if (smooth > 0)
             {
-                //Smooth is incorrect if track is "out-of-order"
-                InsertValues<float>.ResortTrack(track);
-
                 float min; float max;
                 if (Settings.SmoothOverTrailPoints == SmoothOverTrailBorders.All || m_subResultInfo.Points.Count <= 2)
                 {

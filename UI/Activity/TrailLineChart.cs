@@ -1131,7 +1131,7 @@ namespace TrailsPlugin.UI.Activity {
             if (!m_axisCharts.ContainsKey(axisType))
             {
                 IAxis axis;
-                if (m_axisCharts.Count == 0)
+                if (left)
                 {
                     axis = MainChart.YAxis;
                 }

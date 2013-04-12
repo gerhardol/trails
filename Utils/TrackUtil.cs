@@ -73,7 +73,7 @@ namespace TrailsPlugin.Utils
             else
             {
                 float elapsed = (float)((time - distTrack.StartTime).TotalSeconds);
-                float f = (elapsed - distTrack[i - 1].ElapsedSeconds)  / (distTrack[i].ElapsedSeconds - distTrack[i - 1].ElapsedSeconds);
+                float f = (elapsed - distTrack[i - 1].ElapsedSeconds) / (distTrack[i].ElapsedSeconds - distTrack[i - 1].ElapsedSeconds);
                 dist = (distTrack[i - 1].Value + (distTrack[i].Value - distTrack[i - 1].Value) * f);
             }
             return dist;
@@ -173,7 +173,7 @@ namespace TrailsPlugin.Utils
                     {
                         result = activity.GPSRoute[0].Value;
                     }
-                    else if(time > activity.GPSRoute.EntryDateTime(activity.GPSRoute[activity.GPSRoute.Count-1]))
+                    else if (time > activity.GPSRoute.EntryDateTime(activity.GPSRoute[activity.GPSRoute.Count - 1]))
                     {
                         result = activity.GPSRoute[activity.GPSRoute.Count - 1].Value;
                     }
@@ -403,7 +403,6 @@ namespace TrailsPlugin.Utils
             return t;
         }
 
-
     }
 
     //Insert points at start/end and pauses
@@ -458,10 +457,6 @@ namespace TrailsPlugin.Utils
             //This is needed to get the track match the cut-up activity
             //(otherwise for instance start point need to be added)
 
-#if ST_BEFORE_3_0_4205
-                //Bug in ST 3.0.4205 not resorting
-                int noPoints = track.Count;
-#endif
             //start/end should be included from points, but prepare for changes...
             insertValues(startTime, track, source);
             insertValues(endTime, track, source);
@@ -487,41 +482,49 @@ namespace TrailsPlugin.Utils
                     }
                 }
             }
+            ResortTrack(track);
 
-#if ST_BEFORE_3_0_4205
-                if (noPoints > 0)
-                {
-                    //AllowMultipleAtSameTime=false does not work in and before 3.0.4205
-                    bool reSort = false;
-                    for (int i = noPoints; i < track.Count; i++)
-                    {
-                        if (track[noPoints - 1].ElapsedSeconds > track[i].ElapsedSeconds)
-                        {
-                            reSort = true;
-                            break;
-                        }
-                    }
-                    if (reSort)
-                    {
-                        SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
-                        foreach (ITimeValueEntry<T> g in track)
-                        {
-                            if (!dic.ContainsKey(g.ElapsedSeconds))
-                            {
-                                dic.Add(g.ElapsedSeconds, g);
-                            }
-                        }
-                        DateTime startTimeTrack = track.StartTime;
-                        track.Clear();
-                        foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
-                        {
-                            track.Add(startTimeTrack.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
-                        }
-                    }
-                }
-#endif
             //Return the original track, the typecasting must work
             return track;
+        }
+
+        /****************************************************/
+        //Before ST 3_0_4205 points was not always inserted in order
+        //For some reason this occasionally occurs in Trails 1.2.821 too
+        public static bool ResortTrack(ITimeDataSeries<T> track)
+        {
+            bool reSort = false;
+#if !NO_ST_RESORT_TRACKS
+            if (track.Count > 0)
+            {
+                for (int i = 1; i < track.Count; i++)
+                {
+                    if (track[i - 1].ElapsedSeconds > track[i].ElapsedSeconds)
+                    {
+                        reSort = true;
+                        break;
+                    }
+                }
+                if (reSort)
+                {
+                    SortedDictionary<uint, ITimeValueEntry<T>> dic = new SortedDictionary<uint, ITimeValueEntry<T>>();
+                    foreach (ITimeValueEntry<T> g in track)
+                    {
+                        if (!dic.ContainsKey(g.ElapsedSeconds))
+                        {
+                            dic.Add(g.ElapsedSeconds, g);
+                        }
+                    }
+                    DateTime startTimeTrack = track.StartTime;
+                    track.Clear();
+                    foreach (KeyValuePair<uint, ITimeValueEntry<T>> g in dic)
+                    {
+                        track.Add(startTimeTrack.AddSeconds(g.Value.ElapsedSeconds), g.Value.Value);
+                    }
+                }
+            }
+#endif
+            return reSort;
         }
     }
 }

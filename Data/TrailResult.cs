@@ -1323,9 +1323,6 @@ namespace TrailsPlugin.Data
 
         private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
         {
-            //Smooth is incorrect if track is "out-of-order"
-            TrackUtil.ResortTrack<float>(track);
-
             if (smooth > 0)
             {
                 float min; float max;
@@ -1469,11 +1466,14 @@ namespace TrailsPlugin.Data
                     //No resort, always done when smoothing
                 }
 
+                //ST bug: track could be out of order (due to insert at least)
+                TrackUtil.ResortTrack<float>(track);
+
                 int oldElapsed = int.MinValue;
                 foreach (ITimeValueEntry<float> t in source)
                 {
                     DateTime dateTime = source.EntryDateTime(t);
-                    if (startTime <= dateTime && dateTime < endTime &&
+                    if (startTime <= dateTime && dateTime <= endTime &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, pauses))
                     {
                         uint elapsed = t.ElapsedSeconds;
@@ -1785,6 +1785,7 @@ namespace TrailsPlugin.Data
                     return m_deviceSpeedPaceTrack0;
                 }
                 bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
+                //About the same as copySmoothTrack()
                 m_deviceSpeedPaceTrack0 = new NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
@@ -1798,28 +1799,28 @@ namespace TrailsPlugin.Data
                     {
                         if (t != null)
                         {
-                            if (prev == null)
-                            {
-                                prev = t;
-                            }
                             DateTime dateTime = source.EntryDateTime(t);
-                            if (this.StartTime <= dateTime && dateTime <= this.EndTime &&
+                            if (prev != null &&
+                                this.StartTime <= dateTime && dateTime <= this.EndTime &&
                                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                             {
                                 //Ignore 0 time and infinity pace
                                 if (t.ElapsedSeconds - prev.ElapsedSeconds > 0 && 
                                     (!isPace || (t.Value - prev.Value > 0)))
                                 {
-                                    float val = (float)Math.Abs( (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds));
-                                    m_deviceSpeedPaceTrack0.Add(dateTime, val);
+                                    float val = (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds);
+                                    if (val > 0)
+                                    {
+                                        m_deviceSpeedPaceTrack0.Add(dateTime, val);
+                                    }
                                 }
                             }
-                            if (t.ElapsedSeconds - prev.ElapsedSeconds > 0)
+                            if (prev == null || t.ElapsedSeconds - prev.ElapsedSeconds > 0)
                             {
                                 //Update previous only if more than one sec has passed
                                 prev = t;
                             }
-                            if (dateTime > this.EndTime)
+                            if (dateTime >= this.EndTime)
                             {
                                 break;
                             }

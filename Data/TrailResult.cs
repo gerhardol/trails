@@ -1791,7 +1791,8 @@ namespace TrailsPlugin.Data
                     ITimeValueEntry<float> prev = null;
                     IDistanceDataTrack source = this.Activity.DistanceMetersTrack;
                     InsertValues<float> iv = new InsertValues<float>(this);
-                    //iv.insertValues(source);
+                    iv.insertValues(source, source);
+                    TrackUtil.ResortTrack<float>(source);
 
                     foreach (ITimeValueEntry<float> t in source)
                     {

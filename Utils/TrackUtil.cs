@@ -64,11 +64,16 @@ namespace TrailsPlugin.Utils
             float dist;
             int status;
 
-            if (i == 0 || i >= track.Count || time == track.EntryDateTime(track[i]))
+            if (i <= 0 || i >= track.Count)
             {
                 //Distance seem to be out of bound
                 //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
                 dist = TrackUtil.getValFromDateTime(track, time, out status);
+            }
+            else if (time == track.EntryDateTime(track[i]))
+            {
+                //Exact time, no interpolation
+                dist = track[i].Value;
             }
             else
             {
@@ -83,6 +88,7 @@ namespace TrailsPlugin.Utils
         internal static void trackAdd(INumericTimeDataSeries track, DateTime time, float val)
         {
             track.Add(time, val);
+            //Check if the entry already existed, overwrite if necessary
             if (track[track.Count - 1].Value != val)
             {
                 //(uint)(this.EndTime - this.StartTime.AddSeconds(-this.StartTime.Second)).TotalSeconds == m_activityDistanceMetersTrack[i - 1].ElapsedSeconds)

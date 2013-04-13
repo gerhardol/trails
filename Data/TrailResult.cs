@@ -475,11 +475,11 @@ namespace TrailsPlugin.Data
         //Get result time and distance from activity references
         public float getDistActivity(DateTime t)
         {
-            return TrackUtil.getDistFromDateTime(ActivityDistanceMetersTrack, t);
+            return TrackUtil.getValFromDateTime(ActivityDistanceMetersTrack, t);
         }
         public float getDistResult(DateTime t)
         {
-            return TrackUtil.getDistFromDateTime(DistanceMetersTrack, t);
+            return TrackUtil.getValFromDateTime(DistanceMetersTrack, t);
         }
         public float getDistResultFromDistActivity(double t)
         {
@@ -835,7 +835,7 @@ namespace TrailsPlugin.Data
                         //Less special handling when transversing the activity track
                         (new InsertValues<float>(this)).
                             insertValues(m_activityDistanceMetersTrack, m_activityDistanceMetersTrack);
-                        TrackUtil.ResortTrack<float>(m_activityDistanceMetersTrack);
+                        //TrackUtil.ResortTrack<float>(m_activityDistanceMetersTrack);
                     }
                 }
                 if (m_activityDistanceMetersTrack != null && m_activityDistanceMetersTrack.Count > 0)
@@ -852,7 +852,7 @@ namespace TrailsPlugin.Data
 
                     //Add a point at result start, also if no Dist point is set
                     this.m_distanceMetersTrack.Add(this.StartTime, distance);
-                    this.m_startDistance = TrackUtil.getDistFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.StartTime, i);
+                    this.m_startDistance = TrackUtil.getValFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.StartTime, i);
 
                     float prevDist = this.m_startDistance;
                     while (i < this.m_activityDistanceMetersTrack.Count &&
@@ -887,7 +887,7 @@ namespace TrailsPlugin.Data
                     //Set real last distance, override if elapsedSec is set
                     if (!float.IsNaN(prevDist))
                     {
-                        float dist = TrackUtil.getDistFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.EndTime, i);
+                        float dist = TrackUtil.getValFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.EndTime, i);
                         distance += dist - prevDist;
                         TrackUtil.trackAdd(this.m_distanceMetersTrack, this.EndTime, distance);
                     }
@@ -1465,10 +1465,11 @@ namespace TrailsPlugin.Data
                     iv.insertValues(track, source);
                     //No resort, always done when smoothing
                 }
-
-                //ST bug: track could be out of order (due to insert at least)
-                TrackUtil.ResortTrack<float>(track);
-
+                else
+                {
+                    //ST bug: track could be out of order (due to insert at least)
+                    TrackUtil.ResortTrack<float>(track);
+                }
                 int oldElapsed = int.MinValue;
                 foreach (ITimeValueEntry<float> t in source)
                 {
@@ -1500,18 +1501,18 @@ namespace TrailsPlugin.Data
             if (m_distanceMetersTrack0 == null)
             {
                 //Just copy the track. No smoothing or inserting of values
-                m_distanceMetersTrack0 = new DistanceDataTrack();
+                this.m_distanceMetersTrack0 = new DistanceDataTrack();
                 foreach (ITimeValueEntry<float> entry in this.DistanceMetersTrack)
                 {
                     float val = (float)UnitUtil.Distance.ConvertFrom(entry.Value, m_cacheTrackRef.Activity);
                     if (!float.IsNaN(val))
                     {
-                        DateTime dateTime = DistanceMetersTrack.EntryDateTime(entry);
-                        m_distanceMetersTrack0.Add(dateTime, val);
+                        DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(entry);
+                        this.m_distanceMetersTrack0.Add(dateTime, val);
                     }
                 }
             }
-            return m_distanceMetersTrack0;
+            return this.m_distanceMetersTrack0;
         }
 
         public INumericTimeDataSeries CalcElevationMetersTrack0(TrailResult refRes)
@@ -1793,7 +1794,7 @@ namespace TrailsPlugin.Data
                     IDistanceDataTrack source = this.Activity.DistanceMetersTrack;
                     InsertValues<float> iv = new InsertValues<float>(this);
                     iv.insertValues(source, source);
-                    TrackUtil.ResortTrack<float>(source);
+                    //TrackUtil.ResortTrack<float>(source);
 
                     foreach (ITimeValueEntry<float> t in source)
                     {
@@ -2706,12 +2707,12 @@ namespace TrailsPlugin.Data
                                             //diffdist over time will normally "jump" at each trail point
                                             //I.e. if the reference is behind, the distance suddenly gained must be subtracted
                                             int status2;
-                                            double refDistP = TrackUtil.getDistFromDateTime(trRef.DistanceMetersTrack,
+                                            double refDistP = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack,
                                                 trRef.TrailPointDateTime[dateTrailPointIndex], out status2);
                                             if (status2 == 0)
                                             {
                                                 //getDistResult
-                                                double distP = TrackUtil.getDistFromDateTime(this.DistanceMetersTrack,
+                                                double distP = TrackUtil.getValFromDateTime(this.DistanceMetersTrack,
                                                     this.TrailPointDateTime[dateTrailPointIndex], out status2);
                                                 if (status2 == 0)
                                                 {
@@ -2769,7 +2770,7 @@ namespace TrailsPlugin.Data
                                                 d2 = d1;
                                             }
                                             int status;
-                                            refDist = TrackUtil.getDistFromDateTime(trRef.DistanceMetersTrack, d2, out status);
+                                            refDist = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack, d2, out status);
                                             if (status != 0)
                                             {
                                                 refDist = null;
@@ -2935,10 +2936,6 @@ namespace TrailsPlugin.Data
             if (m_activity != null && m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
                 StartTime != DateTime.MinValue && EndTime != DateTime.MinValue)
             {
-                //Insert values at borders in m_gpsTrack
-                (new InsertValues<IGPSPoint>(this)).insertValues(gpsTrack, m_activity.GPSRoute);
-                TrackUtil.ResortTrack<IGPSPoint>(gpsTrack);
-
                 int i = 0;
                 while (i < m_activity.GPSRoute.Count)
                 {
@@ -2964,6 +2961,10 @@ namespace TrailsPlugin.Data
                     }
                     i++;
                 }
+
+                //Insert values at borders in m_gpsTrack
+                (new InsertValues<IGPSPoint>(this)).insertValues(gpsTrack, m_activity.GPSRoute);
+                //TrackUtil.ResortTrack<IGPSPoint>(gpsTrack);
             }
             else
             {

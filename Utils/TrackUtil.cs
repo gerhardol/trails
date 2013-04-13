@@ -32,64 +32,65 @@ namespace TrailsPlugin.Utils
     {
         /**********************************/
 
-        internal static float getDistFromDateTime(IDistanceDataTrack distTrack, DateTime t)
+        internal static float getValFromDateTime(INumericTimeDataSeries track, DateTime t)
         {
             int status;
-            return getDistFromDateTime(distTrack, t, out status);
+            return getValFromDateTime(track, t, out status);
         }
 
-        internal static float getDistFromDateTime(IDistanceDataTrack distTrack, DateTime t, out int status)
+        internal static float getValFromDateTime(INumericTimeDataSeries track, DateTime t, out int status)
         {
             //Ignore malformed activities and selection outside the result
             float res = 0;
             status = 1;
-            ITimeValueEntry<float> entry = distTrack.GetInterpolatedValue(t);
+            ITimeValueEntry<float> entry = track.GetInterpolatedValue(t);
             if (entry != null)
             {
                 res = entry.Value;
                 status = 0;
             }
-            else if (distTrack.Count > 0 && t >= distTrack.StartTime.AddSeconds(2))
+            else if (track.Count > 0 && t >= track.StartTime.AddSeconds(2))
             {
                 //Seem to be out of bounds
                 //Any time after start is handled as end, as pauses may complicate calcs (default is 0, i.e. before)
-                res = distTrack[distTrack.Count - 1].Value;
+                res = track[track.Count - 1].Value;
             }
             return res;
         }
 
         //ST interpolate is not handling subseconds, interpolate better if possible
-        internal static float getDistFromDateTimeIndex(IDistanceDataTrack distTrack, DateTime time, int i)
+        internal static float getValFromDateTimeIndex(INumericTimeDataSeries track, DateTime time, int i)
         {
             float dist;
             int status;
 
-            if (i == 0 || i >= distTrack.Count || time == distTrack.EntryDateTime(distTrack[i]))
+            if (i == 0 || i >= track.Count || time == track.EntryDateTime(track[i]))
             {
                 //Distance seem to be out of bound
                 //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
-                dist = TrackUtil.getDistFromDateTime(distTrack, time, out status);
+                dist = TrackUtil.getValFromDateTime(track, time, out status);
             }
             else
             {
-                float elapsed = (float)((time - distTrack.StartTime).TotalSeconds);
-                float f = (elapsed - distTrack[i - 1].ElapsedSeconds) / (distTrack[i].ElapsedSeconds - distTrack[i - 1].ElapsedSeconds);
-                dist = (distTrack[i - 1].Value + (distTrack[i].Value - distTrack[i - 1].Value) * f);
+                float elapsed = (float)((time - track.StartTime).TotalSeconds);
+                float f = (elapsed - track[i - 1].ElapsedSeconds) / (track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
+                dist = (track[i - 1].Value + (track[i].Value - track[i - 1].Value) * f);
             }
             return dist;
         }
 
         //Add a point last in the track (no check), override if point already exists
-        internal static void trackAdd(IDistanceDataTrack distTrack, DateTime time, float distance)
+        internal static void trackAdd(INumericTimeDataSeries track, DateTime time, float val)
         {
-            distTrack.Add(time, distance);
-            if (distTrack[distTrack.Count - 1].Value != distance)
+            track.Add(time, val);
+            if (track[track.Count - 1].Value != val)
             {
                 //(uint)(this.EndTime - this.StartTime.AddSeconds(-this.StartTime.Second)).TotalSeconds == m_activityDistanceMetersTrack[i - 1].ElapsedSeconds)
-                distTrack.SetValueAt(distTrack.Count - 1, distance);
+                track.SetValueAt(track.Count - 1, val);
             }
         }
 
+        /******************************************************/
         public static DateTime getDateTimeFromTrackDist(IDistanceDataTrack distTrack, float t)
         {
             DateTime res = DateTime.MinValue;
@@ -520,6 +521,8 @@ namespace TrailsPlugin.Utils
                     }
                 }
             }
+            //ST bug: track could be out of order (due to insert at least)
+            TrackUtil.ResortTrack<T>(track);
         }
     }
 }

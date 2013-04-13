@@ -403,95 +403,10 @@ namespace TrailsPlugin.Utils
             return t;
         }
 
-    }
-
-    //Insert points at start/end and pauses
-    //This simplifies tranversing distancetrack
-    //It was originally added as an attempt to handle selections and improve averages etc
-    internal class InsertValues<T>
-    {
-        DateTime startTime;
-        DateTime endTime;
-        IValueRangeSeries<DateTime> pauses;
-        IList<TrailResultPoint> points;
-
-        public InsertValues(DateTime startTime, DateTime endTime, IValueRangeSeries<DateTime> pauses)
-        {
-            this.startTime = startTime;
-            this.endTime = endTime;
-            this.pauses = pauses;
-            this.points = null;
-        }
-        public InsertValues(TrailResult result) :
-            this(result.StartTime, result.EndTime, result.Pauses)
-        {
-            this.points = result.SubResultInfo.Points;
-        }
-
-        public void insertValues(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
-        {
-            if (atime >= this.startTime && atime <= this.endTime &&
-                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
-            {
-                //Interpolation is down to seconds
-                ITimeValueEntry<T> interpolatedP = source.GetInterpolatedValue(atime);
-                if (interpolatedP != null)
-                {
-                    try
-                    {
-                        track.Add(atime, interpolatedP.Value);
-                    }
-                    catch { }
-                }
-            }
-        }
-
-        public ITimeDataSeries<T> insertValues(ITimeDataSeries<T> track)
-        {
-            return insertValues(track, track);
-        }
-
-        public ITimeDataSeries<T> insertValues(ITimeDataSeries<T> track, ITimeDataSeries<T> source)
-        {
-            //Insert points around pauses and points
-            //This is needed to get the track match the cut-up activity
-            //(otherwise for instance start point need to be added)
-
-            //start/end should be included from points, but prepare for changes...
-            insertValues(startTime, track, source);
-            insertValues(endTime, track, source);
-
-            foreach (IValueRange<DateTime> p in pauses)
-            {
-                if (p.Lower > DateTime.MinValue)
-                {
-                    insertValues(p.Lower.AddSeconds(-1), track, source);
-                }
-                insertValues(p.Upper.AddSeconds(1), track, source);
-            }
-
-            if (this.points != null)
-            {
-                foreach (TrailResultPoint t in points)
-                {
-                    DateTime dateTime = t.Time;
-                    if (dateTime > DateTime.MinValue)
-                    {
-                        //xxx insertValues(dateTime.AddSeconds(-1));
-                        insertValues(dateTime, track, source);
-                    }
-                }
-            }
-            ResortTrack(track);
-
-            //Return the original track, the typecasting must work
-            return track;
-        }
-
         /****************************************************/
         //Before ST 3_0_4205 points was not always inserted in order
         //For some reason this occasionally occurs in Trails 1.2.821 too
-        public static bool ResortTrack(ITimeDataSeries<T> track)
+        public static bool ResortTrack<T>(ITimeDataSeries<T> track)
         {
             bool reSort = false;
 #if !NO_ST_RESORT_TRACKS
@@ -525,6 +440,86 @@ namespace TrailsPlugin.Utils
             }
 #endif
             return reSort;
+        }
+
+        public static void InsertValue<T>(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+        {
+            //Interpolation is down to seconds
+            ITimeValueEntry<T> interpolatedP = source.GetInterpolatedValue(atime);
+            if (interpolatedP != null)
+            {
+                try
+                {
+                    track.Add(atime, interpolatedP.Value);
+                }
+                catch { }
+            }
+        }
+    }
+
+    //Insert points at start/end and pauses
+    //This simplifies tranversing distancetrack
+    //It was originally added as an attempt to handle selections and improve averages etc
+    internal class InsertValues<T>
+    {
+        DateTime startTime;
+        DateTime endTime;
+        IValueRangeSeries<DateTime> pauses;
+        IList<TrailResultPoint> points;
+
+        public InsertValues(DateTime startTime, DateTime endTime, IValueRangeSeries<DateTime> pauses)
+        {
+            this.startTime = startTime;
+            this.endTime = endTime;
+            this.pauses = pauses;
+            this.points = null;
+        }
+        public InsertValues(TrailResult result) :
+            this(result.StartTime, result.EndTime, result.Pauses)
+        {
+            this.points = result.SubResultInfo.Points;
+        }
+
+        public void InsertValue(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+        {
+            if (atime >= this.startTime && atime <= this.endTime &&
+                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
+            {
+                TrackUtil.InsertValue<T>(atime, track, source);
+            }
+        }
+
+        public void insertValues(ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+        {
+            //Insert points around pauses and points
+            //This is needed to get the track match the cut-up activity
+            //(otherwise for instance start point need to be added)
+
+            //start/end should be included from points, but prepare for changes...
+            InsertValue(startTime, track, source);
+            InsertValue(endTime, track, source);
+
+            foreach (IValueRange<DateTime> p in pauses)
+            {
+                if (p.Lower > DateTime.MinValue)
+                {
+                    InsertValue(p.Lower.AddSeconds(-1), track, source);
+                }
+                InsertValue(p.Upper.AddSeconds(1), track, source);
+            }
+
+            if (this.points != null)
+            {
+                foreach (TrailResultPoint t in points)
+                {
+                    DateTime dateTime = t.Time;
+                    if (dateTime > DateTime.MinValue)
+                    {
+                        //xxx insertValues(dateTime.AddSeconds(-1));
+                        InsertValue(dateTime, track, source);
+                    }
+                }
+            }
         }
     }
 }

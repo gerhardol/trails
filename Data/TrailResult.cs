@@ -834,7 +834,8 @@ namespace TrailsPlugin.Data
                         //insert points at borders in m_activityDistanceMetersTrack
                         //Less special handling when transversing the activity track
                         (new InsertValues<float>(this)).
-                            insertValues(m_activityDistanceMetersTrack);
+                            insertValues(m_activityDistanceMetersTrack, m_activityDistanceMetersTrack);
+                        TrackUtil.ResortTrack<float>(m_activityDistanceMetersTrack);
                     }
                 }
                 if (m_activityDistanceMetersTrack != null && m_activityDistanceMetersTrack.Count > 0)
@@ -1323,7 +1324,7 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
         {
             //Smooth is incorrect if track is "out-of-order"
-            InsertValues<float>.ResortTrack(track);
+            TrackUtil.ResortTrack<float>(track);
 
             if (smooth > 0)
             {
@@ -1465,6 +1466,7 @@ namespace TrailsPlugin.Data
                         iv = new InsertValues<float>(startTime, endTime, pauses);
                     }
                     iv.insertValues(track, source);
+                    //No resort, always done when smoothing
                 }
 
                 int oldElapsed = int.MinValue;
@@ -2933,6 +2935,7 @@ namespace TrailsPlugin.Data
             {
                 //Insert values at borders in m_gpsTrack
                 (new InsertValues<IGPSPoint>(this)).insertValues(gpsTrack, m_activity.GPSRoute);
+                TrackUtil.ResortTrack<IGPSPoint>(gpsTrack);
 
                 int i = 0;
                 while (i < m_activity.GPSRoute.Count)

@@ -1449,27 +1449,6 @@ namespace TrailsPlugin.Data
                     endTime = DateTime.MaxValue;
                 }
 
-                if (insert)
-                {
-                    //Insert values around borders, to limit effects when track is chopped
-                    //Do this before other additions, so start is StartTime for track
-                    InsertValues<float> iv;
-                    if (trimToResult)
-                    {
-                        iv = new InsertValues<float>(this);
-                    }
-                    else
-                    {
-                        iv = new InsertValues<float>(startTime, endTime, pauses);
-                    }
-                    iv.insertValues(track, source);
-                    //No resort, always done when smoothing
-                }
-                else
-                {
-                    //ST bug: track could be out of order (due to insert at least)
-                    TrackUtil.ResortTrack<float>(track);
-                }
                 int oldElapsed = int.MinValue;
                 foreach (ITimeValueEntry<float> t in source)
                 {
@@ -1489,6 +1468,28 @@ namespace TrailsPlugin.Data
                         break;
                     }
                 }
+
+                if (insert)
+                {
+                    //Insert values around borders, to limit effects when track is chopped
+                    //Do this before other additions, so start is StartTime for track
+                    InsertValues<float> iv;
+                    if (trimToResult)
+                    {
+                        iv = new InsertValues<float>(this);
+                    }
+                    else
+                    {
+                        iv = new InsertValues<float>(startTime, endTime, pauses);
+                    }
+                    iv.insertValues(track, source);
+                }
+                else
+                {
+                    //ST bug: track could be out of order (due to insert at least)
+                    TrackUtil.ResortTrack<float>(track);
+                }
+
                 track = SmoothTrack(track, smooth);
             }
             return track;
@@ -2940,24 +2941,30 @@ namespace TrailsPlugin.Data
                 while (i < m_activity.GPSRoute.Count)
                 {
                     DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
-                    if (this.StartTime.AddSeconds(1) <= dateTime)
+                    if (this.StartTime < dateTime)
                     {
                         break;
                     }
                     i++;
                 }
+                if (i < this.m_activity.GPSRoute.Count)
+                {
+                    IGPSPoint p = TrackUtil.getGpsFromDateTimeIndex(this.m_activity.GPSRoute, this.StartTime, i);
+                    gpsTrack.Add(this.StartTime, p);
+                }
+
                 while (i < m_activity.GPSRoute.Count)
                 {
                     DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
-                    if (dateTime >= this.EndTime)
-                    {
-                        break;
-                    }
 
                     if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses))
                     {
                         IGPSPoint point = m_activity.GPSRoute[i].Value;
                         gpsTrack.Add(dateTime, point);
+                    }
+                    if (dateTime >= this.EndTime)
+                    {
+                        break;
                     }
                     i++;
                 }

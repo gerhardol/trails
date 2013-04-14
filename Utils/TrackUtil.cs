@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.Fitness;
@@ -62,13 +63,15 @@ namespace TrailsPlugin.Utils
         internal static float getValFromDateTimeIndex(INumericTimeDataSeries track, DateTime time, int i)
         {
             float dist;
-            int status;
 
             if (i < 0 || i >= track.Count)
             {
-                //Distance seem to be out of bound
+                //index out of bound
                 //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
-                dist = TrackUtil.getValFromDateTime(track, time, out status);
+                Debug.Assert(true, "index out of bounds");
+                i = Math.Max(i, 0);
+                i = Math.Min(i, track.Count);
+                dist = track[i].Value;
             }
             else if (time == track.EntryDateTime(track[i]))
             {
@@ -84,6 +87,40 @@ namespace TrailsPlugin.Utils
                 float elapsed = (float)((time - track.StartTime).TotalSeconds);
                 float f = (elapsed - track[i - 1].ElapsedSeconds) / (track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
                 dist = (track[i - 1].Value + (track[i].Value - track[i - 1].Value) * f);
+            }
+            return dist;
+        }
+
+        internal static IGPSPoint getGpsFromDateTimeIndex(IGPSRoute track, DateTime time, int i)
+        {
+            IGPSPoint dist;
+
+            if (i < 0 || i >= track.Count)
+            {
+                //index out of bound
+                //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
+                Debug.Assert(true, "index out of bounds");
+                i = Math.Max(i, 0);
+                i = Math.Min(i, track.Count);
+                dist = track[i].Value;
+            }
+            else if (time == track.EntryDateTime(track[i]))
+            {
+                //Exact time, no interpolation
+                dist = track[i].Value;
+            }
+            else
+            {
+                if (i == 0)
+                {
+                    i = 1;
+                }
+                float elapsed = (float)((time - track.StartTime).TotalSeconds);
+                float f = (elapsed - track[i - 1].ElapsedSeconds) / (track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
+                float lat = (track[i - 1].Value.LatitudeDegrees + (track[i].Value.LatitudeDegrees - track[i - 1].Value.LatitudeDegrees) * f);
+                float lon = (track[i - 1].Value.LongitudeDegrees + (track[i].Value.LongitudeDegrees - track[i - 1].Value.LongitudeDegrees) * f);
+                float ele = (track[i - 1].Value.ElevationMeters + (track[i].Value.ElevationMeters - track[i - 1].Value.ElevationMeters) * f);
+                dist = new GPSPoint(lat, lon, ele);
             }
             return dist;
         }

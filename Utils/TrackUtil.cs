@@ -64,7 +64,7 @@ namespace TrailsPlugin.Utils
             float dist;
             int status;
 
-            if (i <= 0 || i >= track.Count)
+            if (i < 0 || i >= track.Count)
             {
                 //Distance seem to be out of bound
                 //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
@@ -77,6 +77,10 @@ namespace TrailsPlugin.Utils
             }
             else
             {
+                if (i == 0)
+                {
+                    i = 1;
+                }
                 float elapsed = (float)((time - track.StartTime).TotalSeconds);
                 float f = (elapsed - track[i - 1].ElapsedSeconds) / (track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
                 dist = (track[i - 1].Value + (track[i].Value - track[i - 1].Value) * f);

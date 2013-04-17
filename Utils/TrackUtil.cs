@@ -60,9 +60,9 @@ namespace TrailsPlugin.Utils
         }
 
         //ST interpolate is not handling subseconds, interpolate better if possible
-        internal static float getValFromDateTimeIndex(INumericTimeDataSeries track, DateTime time, int i)
+        internal static T getValFromDateTimeIndex<T>(ITimeDataSeries<T> track, DateTime time, int i)
         {
-            float dist;
+            T dist;
 
             if (i < 0 || i >= track.Count)
             {
@@ -70,7 +70,7 @@ namespace TrailsPlugin.Utils
                 //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
                 Debug.Assert(true, "index out of bounds");
                 i = Math.Max(i, 0);
-                i = Math.Min(i, track.Count);
+                i = Math.Min(i, track.Count-1);
                 dist = track[i].Value;
             }
             else if (time == track.EntryDateTime(track[i]))
@@ -85,42 +85,29 @@ namespace TrailsPlugin.Utils
                     i = 1;
                 }
                 float elapsed = (float)((time - track.StartTime).TotalSeconds);
-                float f = (elapsed - track[i - 1].ElapsedSeconds) / (track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
-                dist = (track[i - 1].Value + (track[i].Value - track[i - 1].Value) * f);
-            }
-            return dist;
-        }
-
-        internal static IGPSPoint getGpsFromDateTimeIndex(IGPSRoute track, DateTime time, int i)
-        {
-            IGPSPoint dist;
-
-            if (i < 0 || i >= track.Count)
-            {
-                //index out of bound
-                //Note that the distance track may not start at result StartTime, then this will report result at 0 sec
-                Debug.Assert(true, "index out of bounds");
-                i = Math.Max(i, 0);
-                i = Math.Min(i, track.Count);
-                dist = track[i].Value;
-            }
-            else if (time == track.EntryDateTime(track[i]))
-            {
-                //Exact time, no interpolation
-                dist = track[i].Value;
-            }
-            else
-            {
-                if (i == 0)
+                float f = (elapsed - track[i - 1].ElapsedSeconds) / (float)(track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
+                dist = track[i - 1].Value; //assignment for compiler
+                if (dist is float)
                 {
-                    i = 1;
+                    float v0 = (float)(object)(track[i - 1].Value);
+                    float v1 = (float)(object)(track[i].Value);
+                    dist = (T)(object)(v0 + (v1 - v0) * f);
                 }
-                float elapsed = (float)((time - track.StartTime).TotalSeconds);
-                float f = (elapsed - track[i - 1].ElapsedSeconds) / (track[i].ElapsedSeconds - track[i - 1].ElapsedSeconds);
-                float lat = (track[i - 1].Value.LatitudeDegrees + (track[i].Value.LatitudeDegrees - track[i - 1].Value.LatitudeDegrees) * f);
-                float lon = (track[i - 1].Value.LongitudeDegrees + (track[i].Value.LongitudeDegrees - track[i - 1].Value.LongitudeDegrees) * f);
-                float ele = (track[i - 1].Value.ElevationMeters + (track[i].Value.ElevationMeters - track[i - 1].Value.ElevationMeters) * f);
-                dist = new GPSPoint(lat, lon, ele);
+                else if (dist is IGPSPoint)
+                {
+                    IGPSPoint v0 = (IGPSPoint)(object)(track[i - 1].Value);
+                    IGPSPoint v1 = (IGPSPoint)(object)(track[i].Value);
+                    float lat = (v0.LatitudeDegrees + (v1.LatitudeDegrees - v0.LatitudeDegrees) * f);
+                    float lon = (v0.LongitudeDegrees + (v1.LongitudeDegrees - v0.LongitudeDegrees) * f);
+                    float ele = (v0.ElevationMeters + (v1.ElevationMeters - v0.ElevationMeters) * f);
+                    dist = (T)(object)(new GPSPoint(lat, lon, ele));
+                }
+                else
+                {
+                    //Added to satisfy compiler - not possible to configure
+                    Debug.Assert(true, "Unexpected ITimeDataSeries");
+                    dist = default(T);
+                }
             }
             return dist;
         }
@@ -493,12 +480,23 @@ namespace TrailsPlugin.Utils
         public static void InsertValue<T>(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
         {
             //Interpolation is down to seconds
+            //TBD: Inefficient, source.IndexOf often fails
             ITimeValueEntry<T> interpolatedP = source.GetInterpolatedValue(atime);
             if (interpolatedP != null)
             {
+                int index = source.IndexOf(interpolatedP);
+                T val = interpolatedP.Value;
+                if (index >= 0)
+                {
+                    val = TrackUtil.getValFromDateTimeIndex(source, atime, index);
+                }
+                else
+                {
+                }
                 try
                 {
-                    track.Add(atime, interpolatedP.Value);
+                    track.Add(atime, val);
+                    T val2 = track.GetInterpolatedValue(atime).Value;
                 }
                 catch { }
             }

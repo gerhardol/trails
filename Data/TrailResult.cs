@@ -828,6 +828,18 @@ namespace TrailsPlugin.Data
                 else
                 {
                     m_activityDistanceMetersTrack = Info.MovingDistanceMetersTrack;
+                    //There are occasional 0 or decreasing distance values, that disrupt insertion
+                    if (this.m_activityDistanceMetersTrack.Count > 0)
+                    {
+                        for (int i = 1; i < this.m_activityDistanceMetersTrack.Count; i++)
+                        {
+                            if (this.m_activityDistanceMetersTrack[i].Value < this.m_activityDistanceMetersTrack[i - 1].Value)
+                            {
+                                this.m_activityDistanceMetersTrack.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                    }
                     m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
                     if (m_activityDistanceMetersTrack != null)
                     {
@@ -868,7 +880,7 @@ namespace TrailsPlugin.Data
                                 float actDist = timeValue.Value;
                                 if (!float.IsNaN(prevDist))
                                 {
-                                    //xxx TODO: Get the offsets at boundaries, instead of inserting values
+                                    //It is possible to get the offsets at boundaries, instead of inserting values
                                     distance += actDist - prevDist;
                                 }
                                 //Adding max one entry per truncated second
@@ -2949,7 +2961,7 @@ namespace TrailsPlugin.Data
                 }
                 if (i < this.m_activity.GPSRoute.Count)
                 {
-                    IGPSPoint p = TrackUtil.getGpsFromDateTimeIndex(this.m_activity.GPSRoute, this.StartTime, i);
+                    IGPSPoint p = TrackUtil.getValFromDateTimeIndex(this.m_activity.GPSRoute, this.StartTime, i);
                     gpsTrack.Add(this.StartTime, p);
                 }
 

@@ -2959,11 +2959,6 @@ namespace TrailsPlugin.Data
                     }
                     i++;
                 }
-                if (i < this.m_activity.GPSRoute.Count)
-                {
-                    IGPSPoint p = TrackUtil.getValFromDateTimeIndex(this.m_activity.GPSRoute, this.StartTime, i);
-                    gpsTrack.Add(this.StartTime, p);
-                }
 
                 while (i < m_activity.GPSRoute.Count)
                 {

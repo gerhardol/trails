@@ -1131,8 +1131,7 @@ namespace GpsRunningPlugin.Util
                 }
 #else
                 unit = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(
-                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Pace,
-                    new Length(1, GetApplication().SystemPreferences.DistanceUnits));
+                    ZoneFiveSoftware.Common.Data.Measurement.Speed.Units.Pace, GetLength(activity));
 #endif
                 return unit;
             }
@@ -1164,6 +1163,7 @@ namespace GpsRunningPlugin.Util
                     return CommonResources.Text.LabelPace + LabelAbbr2;
                 }
             }
+#if ST_2_1
             //Some forms uses the label to find if pace/speed is used, get a way to find how
             public static bool isLabelPace(string label)
             {
@@ -1180,6 +1180,7 @@ namespace GpsRunningPlugin.Util
                     || label.Contains("min/")
                     );
             }
+#endif
             public static string LabelAbbrAct(IActivity activity)
             {
                 return getLabel(activity);

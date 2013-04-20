@@ -1729,13 +1729,20 @@ namespace TrailsPlugin.Data
                             }
                         }
                     }
-                    if (speedTrack != null && speedTrack.Count > 1)
+                    if (speedTrack != null && speedTrack.Count > 2)
                     {
                         //Distance calculation is not always "stable" at start/end, partly due to rounding of seconds.
                         //Just one point with lets say 10m instead of 5m will offset the smoothing
                         //To minimize this, remove the points
-                        speedTrack.RemoveAt(speedTrack.Count - 1);
-                        speedTrack.RemoveAt(0);
+                        const int minCheck = 10;
+                        if (speedTrack[speedTrack.Count - 1].ElapsedSeconds - speedTrack[speedTrack.Count - 2].ElapsedSeconds < minCheck)
+                        {
+                            speedTrack.RemoveAt(speedTrack.Count - 1);
+                        }
+                        if (speedTrack[1].ElapsedSeconds - speedTrack[0].ElapsedSeconds < minCheck)
+                        {
+                            speedTrack.RemoveAt(0);
+                        }
                     }
                 }
                 if (speedTrack != null && speedTrack.Count > 1)

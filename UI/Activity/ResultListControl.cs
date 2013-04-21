@@ -453,13 +453,25 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (selected2.Count <= 1)
             {
-                //0 or 1 selected, use summary instead
-                if (selected2.Count == 0 || !(selected2[0].Result is ChildTrailResult))
+                //0 or 1 selected, show something "smarter" in summary instead
+                if (this.m_controller.CurrentResultTreeList.Count == 1)
                 {
-                    selected2 = m_controller.CurrentResultTreeList;
+                    //only one result, show summary for child results
+                    IList<TrailResultWrapper> list2 = new List<TrailResultWrapper>();
+                    foreach (TreeList.TreeListNode t in this.m_controller.CurrentResultTreeList[0].Children)
+                    {
+                        list2.Add((TrailResultWrapper)t);
+                    }
+                    selected2 = list2;
+                }
+                else if (selected2.Count == 0 || !(selected2[0].Result is ChildTrailResult))
+                {
+                    //Show summary for all current results
+                    selected2 = this.m_controller.CurrentResultTreeList;
                 }
                 else
                 {
+                    //Child is selected, use all similar (numbered) children
                     TrailResultWrapper tr = selected2[0];
                     selected2 = new List<TrailResultWrapper>();
                     foreach (TrailResultWrapper rtn in m_controller.CurrentResultTreeList)

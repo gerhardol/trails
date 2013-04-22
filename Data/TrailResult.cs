@@ -1499,7 +1499,7 @@ namespace TrailsPlugin.Data
                 else
                 {
                     //ST bug: track could be out of order (due to insert at least)
-                    TrackUtil.ResortTrack<float>(track);
+                    TrackUtil.ResortTrack(track);
                 }
 
                 track = SmoothTrack(track, smooth);

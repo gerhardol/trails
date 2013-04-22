@@ -131,6 +131,7 @@ namespace TrailsPlugin.Utils
                         break;
                     }
                 case LineChartTypes.HeartRateBPM:
+                case LineChartTypes.DiffHeartRateBPM:
                     {
                         yAxisLabel = CommonResources.Text.LabelHeartRate;
                         break;
@@ -146,11 +147,13 @@ namespace TrailsPlugin.Utils
                         break;
                     }
                 case LineChartTypes.Speed:
+                case LineChartTypes.DeviceSpeed:
                     {
                         yAxisLabel = CommonResources.Text.LabelSpeed;
                         break;
                     }
                 case LineChartTypes.Pace:
+                case LineChartTypes.DevicePace:
                     {
                         yAxisLabel = CommonResources.Text.LabelPace;
                         break;
@@ -166,12 +169,14 @@ namespace TrailsPlugin.Utils
                         yAxisLabel = CommonResources.Text.LabelGrade;
                         break;
                     }
+                case LineChartTypes.Distance:
                 case LineChartTypes.DiffDist:
                 case LineChartTypes.DeviceDiffDist:
                     {
                         yAxisLabel = CommonResources.Text.LabelDistance;
                         break;
                     }
+                case LineChartTypes.Time:
                 case LineChartTypes.DiffTime:
                     {
                         yAxisLabel = CommonResources.Text.LabelTime;
@@ -182,14 +187,9 @@ namespace TrailsPlugin.Utils
                         yAxisLabel = CommonResources.Text.LabelDistance + CommonResources.Text.LabelTime;
                         break;
                     }
-                //case LineChartTypes.DeviceDiffDist:
-                //{
-                    //    yAxisLabel = CommonResources.Text.LabelDevice;
-                    //    break;
-                    //}
                 default:
                     {
-                        //Debug.Assert(false);
+                        Debug.Assert(false);
                         break;
                     }
             }

@@ -495,8 +495,16 @@ namespace TrailsPlugin.Utils
                 }
                 try
                 {
+                    //ST bug: not inserted in order if ms differs for start
+                    if ((int)((atime - track.StartTime).TotalSeconds) == 0 && atime.Second == this.startTime.Second)
+                    {
+                        if (atime.Millisecond != track.StartTime.Millisecond)
+                        {
+                            track.RemoveAt(0);
+                        }
+                    }
                     track.Add(atime, val);
-                    T val2 = track.GetInterpolatedValue(atime).Value;
+                    //T val2 = track.GetInterpolatedValue(atime).Value;
                 }
                 catch { }
             }
@@ -531,13 +539,6 @@ namespace TrailsPlugin.Utils
             if (atime >= this.startTime && atime <= this.endTime &&
                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
             {
-                if ((int)((atime - track.StartTime).TotalSeconds) == 0 && atime.Second == this.startTime.Second)
-                {
-                    if (atime.Millisecond != track.StartTime.Millisecond)
-                    {
-                        track.RemoveAt(0);
-                    }
-                }
                 TrackUtil.InsertValue<T>(atime, track, source);
             }
         }

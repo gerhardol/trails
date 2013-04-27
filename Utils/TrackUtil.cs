@@ -526,11 +526,18 @@ namespace TrailsPlugin.Utils
             this.points = result.SubResultInfo.Points;
         }
 
-        public void InsertValue(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
+        private void InsertValue(DateTime atime, ITimeDataSeries<T> track, ITimeDataSeries<T> source)
         {
             if (atime >= this.startTime && atime <= this.endTime &&
                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(atime, this.pauses))
             {
+                if ((int)((atime - track.StartTime).TotalSeconds) == 0 && atime.Second == this.startTime.Second)
+                {
+                    if (atime.Millisecond != track.StartTime.Millisecond)
+                    {
+                        track.RemoveAt(0);
+                    }
+                }
                 TrackUtil.InsertValue<T>(atime, track, source);
             }
         }
@@ -541,17 +548,23 @@ namespace TrailsPlugin.Utils
             //This is needed to get the track match the cut-up activity
             //(otherwise for instance start point need to be added)
 
+            IList<DateTime> dates = new List<DateTime>();
+
             //start/end should be included from points, but prepare for changes...
             InsertValue(startTime, track, source);
             InsertValue(endTime, track, source);
+            dates.Add(startTime);
+            dates.Add(endTime);
 
             foreach (IValueRange<DateTime> p in pauses)
             {
                 if (p.Lower > DateTime.MinValue)
                 {
                     InsertValue(p.Lower.AddSeconds(-1), track, source);
+                    dates.Add(p.Lower.AddSeconds(-1));
                 }
                 InsertValue(p.Upper.AddSeconds(1), track, source);
+                dates.Add(p.Upper.AddSeconds(1));
             }
 
             if (this.points != null)
@@ -563,11 +576,38 @@ namespace TrailsPlugin.Utils
                     {
                         //xxx insertValues(dateTime.AddSeconds(-1));
                         InsertValue(dateTime, track, source);
+                        dates.Add(dateTime);
                     }
                 }
             }
+            ((List<DateTime>)dates).Sort();
+            //xxx kolla avrundning av elapsed både då starttime.ms och emtry.ms
+            //int j = 0;
+            //double elapsedDate = (dates[j] - source.StartTime).TotalSeconds;
+            //for (int i = 0; i < source.Count - 1; i++)
+            //{
+            //    uint elapsedSrc = source[i].ElapsedSeconds;
+            //    while (j < dates.Count && (dates[j] < source.StartTime ||
+            //        elapsedDate < elapsedSrc))
+            //    {
+            //        j++;
+            //        if (j < dates.Count)
+            //        {
+            //            elapsedDate = (dates[j] - source.StartTime).TotalSeconds;
+            //        }
+            //    }
+            //    if (j >= dates.Count || elapsedDate > source.TotalElapsedSeconds)
+            //    {
+            //        //No more dates
+            //        break;
+            //    }
+            //    if (elapsedDate >= elapsedSrc)
+            //    {
+            //        //xxx
+            //    }
+            //}
             //ST bug: track could be out of order (due to insert at least)
-            TrackUtil.ResortTrack<T>(track);
+            TrackUtil.ResortTrack(track);
         }
     }
 }

@@ -841,7 +841,7 @@ namespace TrailsPlugin.Data
                         }
                     }
                     m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
-                    if (m_activityDistanceMetersTrack != null)
+                    if (m_activityDistanceMetersTrack != null && this.m_activityDistanceMetersTrack.Count > 0)
                     {
                         //insert points at borders in m_activityDistanceMetersTrack
                         //Less special handling when transversing the activity track
@@ -1431,6 +1431,7 @@ namespace TrailsPlugin.Data
             }
             INumericTimeDataSeries track = new NumericTimeDataSeries();
             track.AllowMultipleAtSameTime = false;
+
             if (source != null)
             {
                 DateTime startTime;
@@ -1886,7 +1887,7 @@ namespace TrailsPlugin.Data
                 }
                 if (sourceTrack != null && sourceTrack.Count>1)
                 {
-                    const int maxTimeDiff = 15;
+                    const int maxTimeDiff = 60;
                     DateTime start2 = sourceTrack.StartTime.AddSeconds(-maxTimeDiff);
                     IValueRangeSeries<DateTime> pauses;
                     if (this.Activity != null)
@@ -2002,6 +2003,11 @@ namespace TrailsPlugin.Data
                 if (elevationOffset.Count > 0)
                 {
                     int eleIndex = 0;
+                    if (elevationOffset.Count > 1)
+                    {
+                        //interpolate between points, extrapolate before first and after last
+                        eleIndex = 1;
+                    }
                     for (int i = 0; i < deviceElevationTrack0.Count; i++)
                     {
                         DateTime t = deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[i]);
@@ -2017,15 +2023,15 @@ namespace TrailsPlugin.Data
                                 eleIndex++;
                             }
                         }
-                        if (eleIndex > 0 /*&& elevationOffset[eleIndex].Date >= t*/)
+                        if (eleIndex > 0)
                         {
-                            //interpolate between points, extrapolate after last
+                            //interpolate between points, extrapolate before first and after last
                             float k = (float)((t - elevationOffset[eleIndex - 1].Date).TotalSeconds / (elevationOffset[eleIndex].Date - elevationOffset[eleIndex - 1].Date).TotalSeconds);
                             e = ((1 - k) * elevationOffset[eleIndex - 1].elevation + k * elevationOffset[eleIndex].elevation);
                         }
                         else
                         {
-                            //Before or on first point (possibly single point), no extrapolation
+                            //single point, no extrapolation
                             e = elevationOffset[eleIndex].elevation;
                         }
                         e += deviceElevationTrack0[i].Value;

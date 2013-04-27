@@ -454,7 +454,7 @@ namespace TrailsPlugin.UI.Activity {
             if (selected2.Count <= 1)
             {
                 //0 or 1 selected, show something "smarter" in summary instead
-                if (this.m_controller.CurrentResultTreeList.Count == 1)
+                if (this.m_controller.CurrentResultTreeList.Count == 1 && this.m_controller.CurrentResultTreeList[0].Children.Count > 0)
                 {
                     //only one result, show summary for child results
                     IList<TrailResultWrapper> list2 = new List<TrailResultWrapper>();

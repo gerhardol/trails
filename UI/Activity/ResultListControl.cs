@@ -1510,6 +1510,15 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResult.m_diffOnDateTime = !TrailResult.m_diffOnDateTime;
                     this.m_page.RefreshData(true);
                 }
+                else
+                {
+                    TrailsPlugin.Data.Settings.ResultSummaryTotal = !TrailsPlugin.Data.Settings.ResultSummaryTotal;
+                    TrailResultWrapper t = this.GetSummary();
+                    if (t != null)
+                    {
+                        this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
+                    }
+                }
             }
             else if (e.KeyCode == Keys.U)
             {

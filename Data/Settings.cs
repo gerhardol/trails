@@ -54,6 +54,7 @@ namespace TrailsPlugin.Data
         private static bool m_showOnlyMarkedOnRoute = false;
         private static bool m_resultSummaryIsDevice = false;
         private static bool m_resultSummaryStdDev = false;
+        private static bool m_resultSummaryTotal = false;
         private static String[] m_excludeStoppedCategory = new String[0];
         private static String[] m_barometricDevices = new String[2] {"Edge", "GB-580"};
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
@@ -491,6 +492,12 @@ namespace TrailsPlugin.Data
         {
             get { return m_resultSummaryStdDev; }
             set { m_resultSummaryStdDev = value; }
+        }
+
+        public static bool ResultSummaryTotal
+        {
+            get { return m_resultSummaryTotal; }
+            set { m_resultSummaryTotal = value; }
         }
 
         /// <summary>

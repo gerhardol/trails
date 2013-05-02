@@ -495,14 +495,13 @@ namespace TrailsPlugin.Utils
                 }
                 try
                 {
+#if !NO_ST_INSERT_START_TIME
                     //ST bug: not inserted in order if ms differs for start
-                    if ((int)((atime - track.StartTime).TotalSeconds) == 0 && atime.Second == this.startTime.Second)
+                    if (Math.Abs((atime - track.StartTime).TotalSeconds) < 1)
                     {
-                        if (atime.Millisecond != track.StartTime.Millisecond)
-                        {
-                            track.RemoveAt(0);
-                        }
+                        track.RemoveAt(0);
                     }
+#endif
                     track.Add(atime, val);
                     //T val2 = track.GetInterpolatedValue(atime).Value;
                 }
@@ -575,14 +574,14 @@ namespace TrailsPlugin.Utils
                     DateTime dateTime = t.Time;
                     if (dateTime > DateTime.MinValue)
                     {
-                        //xxx insertValues(dateTime.AddSeconds(-1));
+                        InsertValue(dateTime.AddSeconds(-1), track, source);
                         InsertValue(dateTime, track, source);
                         dates.Add(dateTime);
                     }
                 }
             }
             ((List<DateTime>)dates).Sort();
-            //xxx kolla avrundning av elapsed både då starttime.ms och emtry.ms
+            //kolla avrundning av elapsed både då starttime.ms och entry.ms
             //int j = 0;
             //double elapsedDate = (dates[j] - source.StartTime).TotalSeconds;
             //for (int i = 0; i < source.Count - 1; i++)

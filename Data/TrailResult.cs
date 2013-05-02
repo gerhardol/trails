@@ -866,6 +866,17 @@ namespace TrailsPlugin.Data
                     this.m_distanceMetersTrack.Add(this.StartTime, distance);
                     this.m_startDistance = TrackUtil.getValFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.StartTime, i);
 
+                    //xxx kolla beteende för ele==0
+
+#if !NO_ST_INSERT_START_TIME
+                    //There is a bug if a second point is added at the same second as starttime
+                    while (i < m_activityDistanceMetersTrack.Count &&
+                        (m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])-this.StartTime).TotalSeconds < 1)
+                    {
+                        i++;
+                    }
+#endif
+
                     float prevDist = this.m_startDistance;
                     while (i < this.m_activityDistanceMetersTrack.Count &&
                         this.EndTime > this.m_activityDistanceMetersTrack.EntryDateTime(this.m_activityDistanceMetersTrack[i]))

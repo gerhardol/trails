@@ -438,11 +438,18 @@ namespace TrailsPlugin.Data
                             name = "#" + (results.Points.Count + 1);
                         }
                         DateTime d = l.StartTime;
-                        IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
-                        if (t != null)
+                        if (activity.GPSRoute == null)
                         {
-                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d, l.TotalTime));
+                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(name, !l.Rest), d, l.TotalTime));
                         }
+                        else
+                        {
+                            IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
+                            if (t != null)
+                            {
+                                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d, l.TotalTime));
+                            }
+                        } 
                     }
                 }
                 lastIsRestlap = activity.Laps[activity.Laps.Count - 1].Rest;
@@ -452,18 +459,25 @@ namespace TrailsPlugin.Data
             if (!onlyActiveLaps || !lastIsRestlap)
             {
                 DateTime d = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd;
-                IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
-                if (t != null)
+                if (activity.GPSRoute == null)
                 {
-                    results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, activity.Name, !lastIsRestlap), d));
+                    results.Points.Add(new TrailResultPoint(new TrailGPSLocation(activity.Name, !lastIsRestlap), d));
+                }
+                else
+                {
+                    IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
+                    if (t != null)
+                    {
+                        results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, activity.Name, !lastIsRestlap), d));
+                    }
                 }
             }
 
             //Special for activities without any GPS info
             if (results.Count == 0 && activity.HasStartTime)
             {
-                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(float.NaN, float.NaN, float.NaN, activity.Name, true, 1), activity.StartTime));
-                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(float.NaN, float.NaN, float.NaN, activity.Name, true, 1), activity.StartTime + activity.TotalTimeEntered));
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(activity.Name, true), activity.StartTime));
+                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(activity.Name, true), activity.StartTime + activity.TotalTimeEntered));
             }
 
             //A trail created from splits should not define elevation points

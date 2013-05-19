@@ -37,7 +37,7 @@ namespace TrailsPlugin.Data
 {
     public class TrailGPSLocation : GPSPoint
     {
-        public TrailGPSLocation(float lat, float lon, float ele, string name, bool required, float radius)
+        private TrailGPSLocation(float lat, float lon, float ele, string name, bool required, float radius)
           : base(lat, lon, ele)
         {
             this._name = name;
@@ -64,7 +64,13 @@ namespace TrailsPlugin.Data
             : this(trailLocation.LatitudeDegrees, trailLocation.LongitudeDegrees, trailLocation.ElevationMeters, trailLocation._name, trailLocation._required, trailLocation._radius)
         {
         }
-        
+
+        //result points without GPS
+        public TrailGPSLocation(string name, bool required)
+            : this(float.NaN, float.NaN, float.NaN, name, required, defaultRadius)
+        {
+        }
+
         public override string ToString()
         {
             return _name + " " + _required + " " +base.ToString()/* _gpsPoint*/;

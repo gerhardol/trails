@@ -1659,23 +1659,16 @@ namespace TrailsPlugin.UI.Activity {
 
         public bool BeginUpdate()
         {
-            if (this.ShowPage)
-            {
-                return this.MainChart.BeginUpdate();
-            }
-            return false;
+            return this.MainChart.BeginUpdate();
 		}
 
-		public void EndUpdate(bool zoom)
+        public void EndUpdate(bool zoom)
         {
-            if (this.ShowPage)
+            if (this.ShowPage && zoom)
             {
-                if (zoom)
-                {
-                    this.ZoomToData();
-                }
-                this.MainChart.EndUpdate();
+                this.ZoomToData();
             }
-		}
+            this.MainChart.EndUpdate();
+        }
 	}
 }

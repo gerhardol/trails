@@ -558,13 +558,16 @@ namespace TrailsPlugin.Utils
 
             foreach (IValueRange<DateTime> p in pauses)
             {
-                if (p.Lower > DateTime.MinValue)
+                if (p.Lower > startTime)
                 {
                     InsertValue(p.Lower.AddSeconds(-1), track, source);
                     dates.Add(p.Lower.AddSeconds(-1));
                 }
-                InsertValue(p.Upper.AddSeconds(1), track, source);
-                dates.Add(p.Upper.AddSeconds(1));
+                if (p.Upper < endTime)
+                {
+                    InsertValue(p.Upper.AddSeconds(1), track, source);
+                    dates.Add(p.Upper.AddSeconds(1));
+                }
             }
 
             if (this.points != null)
@@ -572,15 +575,15 @@ namespace TrailsPlugin.Utils
                 foreach (TrailResultPoint t in points)
                 {
                     DateTime dateTime = t.Time;
-                    if (dateTime > DateTime.MinValue)
+                    if (dateTime > startTime && dateTime < endTime)
                     {
-                        InsertValue(dateTime.AddSeconds(-1), track, source);
+                        //InsertValue(dateTime.AddSeconds(-1), track, source);
                         InsertValue(dateTime, track, source);
                         dates.Add(dateTime);
                     }
                 }
             }
-            ((List<DateTime>)dates).Sort();
+            //((List<DateTime>)dates).Sort();
             //kolla avrundning av elapsed både då starttime.ms och entry.ms
             //int j = 0;
             //double elapsedDate = (dates[j] - source.StartTime).TotalSeconds;

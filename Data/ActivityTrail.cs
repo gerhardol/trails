@@ -409,7 +409,7 @@ namespace TrailsPlugin.Data
         private TrailOrderStatus CalcInboundResults(IActivity activity, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, int MaxRequiredMisses, bool reverse, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
-            TrailOrderStatus status = CalcTrail(activity, null, trailgps, locationBounds, this.Trail.Radius, this.Trail.MinDistance, MaxRequiredMisses, reverse, 0, this.Trail.IsCompleteActivity, trailResults, m_incompleteResults, progressBar);
+            TrailOrderStatus status = CalcGpsTrail(activity, null, trailgps, locationBounds, this.Trail.Radius, this.Trail.MinDistance, MaxRequiredMisses, reverse, 0, this.Trail.IsCompleteActivity, trailResults, m_incompleteResults, progressBar);
 
             foreach (TrailResultInfo resultInfo in trailResults)
             {
@@ -517,23 +517,26 @@ namespace TrailsPlugin.Data
         {
             TrailOrderStatus status = TrailOrderStatus.NoInfo;
 
-            IList<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds> locationBounds = new List<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds>();
-            TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * radius); 
-
-            status = CalcTrail(activity, pauses, trailgps, locationBounds,
-                radius, 0, 0, false, maxPoints, false, trailResults, incompleteResults, null);
-            if (bidirectional && trailgps.Count > 1 && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
+            if (activity != null && activity.GPSRoute != null && activity.GPSRoute.Count > 0)
             {
-                IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
-                IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();
-                for (int i = trailgps.Count - 1; i >= 0; i--)
+                IList<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds> locationBounds = new List<ZoneFiveSoftware.Common.Data.GPS.IGPSBounds>();
+                TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * radius);
+
+                status = CalcGpsTrail(activity, pauses, trailgps, locationBounds,
+                    radius, 0, 0, false, maxPoints, false, trailResults, incompleteResults, null);
+                if (bidirectional && trailgps.Count > 1 && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
                 {
-                    trailgpsReverse.Add(trailgps[i]);
-                    locationBoundsReverse.Add(locationBounds[i]);
+                    IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
+                    IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();
+                    for (int i = trailgps.Count - 1; i >= 0; i--)
+                    {
+                        trailgpsReverse.Add(trailgps[i]);
+                        locationBoundsReverse.Add(locationBounds[i]);
+                    }
+                    TrailOrderStatus status2 = CalcGpsTrail(activity, pauses, trailgpsReverse, locationBoundsReverse,
+                        radius, 0, 0, true, maxPoints, false, trailResults, incompleteResults, null);
+                    status = BestCalcStatus(status, status2);
                 }
-                TrailOrderStatus status2 = CalcTrail(activity, pauses, trailgpsReverse, locationBoundsReverse,
-                    radius, 0, 0, true, maxPoints, false, trailResults, incompleteResults, null);
-                status = BestCalcStatus(status, status2);
             }
 
             return status;
@@ -542,20 +545,23 @@ namespace TrailsPlugin.Data
         public TrailResult CalcTrailCompleteResult(IActivity activity)
         {
             TrailResult tr = null;
-            IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
-            IList<IncompleteTrailResult> incompleteResults = new List<IncompleteTrailResult>();
-            IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
-            IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
-            int noNonReq = TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * this.m_trail.Radius);
-            int MaxAllowedMisses = Math.Min(trailgps.Count - noNonReq, m_trail.MaxRequiredMisses);
-
-            CalcTrail(activity, null, this.Trail.TrailLocations, locationBounds,
-this.Trail.Radius, this.Trail.MinDistance, 0, false, MaxAllowedMisses, true, 
-trailResults, incompleteResults, null);
-            if(trailResults.Count > 0)
+            if (activity != null && activity.GPSRoute != null && activity.GPSRoute.Count > 0)
             {
-                TrailResultWrapper result = new TrailResultWrapper(this, 0, trailResults[0]);
-                tr = result.Result;
+                IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
+                IList<IncompleteTrailResult> incompleteResults = new List<IncompleteTrailResult>();
+                IList<TrailGPSLocation> trailgps = m_trail.TrailLocations;
+                IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
+                int noNonReq = TrailGPSLocation.LocationBounds(trailgps, locationBounds, 10 * this.m_trail.Radius);
+                int MaxAllowedMisses = Math.Min(trailgps.Count - noNonReq, m_trail.MaxRequiredMisses);
+
+                CalcGpsTrail(activity, null, this.Trail.TrailLocations, locationBounds,
+    this.Trail.Radius, this.Trail.MinDistance, 0, false, MaxAllowedMisses, true,
+    trailResults, incompleteResults, null);
+                if (trailResults.Count > 0)
+                {
+                    TrailResultWrapper result = new TrailResultWrapper(this, 0, trailResults[0]);
+                    tr = result.Result;
+                }
             }
             return tr;
         }
@@ -574,7 +580,7 @@ trailResults, incompleteResults, null);
         /// <param name="incompleteResults"></param>
         /// <param name="progressBar"></param>
         /// <returns></returns>
-        private static TrailOrderStatus CalcTrail(IActivity activity, IValueRangeSeries<DateTime> pauses, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, 
+        private static TrailOrderStatus CalcGpsTrail(IActivity activity, IValueRangeSeries<DateTime> pauses, IList<TrailGPSLocation> trailgps, IList<IGPSBounds> locationBounds, 
             float radius, float minDistance, int MaxRequiredMisses, bool reverse, int maxResultPoints, bool isComplete,
             IList<TrailResultInfo> trailResults, IList<IncompleteTrailResult> incompleteResults, System.Windows.Forms.ProgressBar progressBar)
         {

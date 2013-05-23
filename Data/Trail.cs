@@ -438,7 +438,7 @@ namespace TrailsPlugin.Data
                             name = "#" + (results.Points.Count + 1);
                         }
                         DateTime d = l.StartTime;
-                        if (activity.GPSRoute == null)
+                        if (activity.GPSRoute == null || activity.GPSRoute.Count == 0)
                         {
                             results.Points.Add(new TrailResultPoint(new TrailGPSLocation(name, !l.Rest), d, l.TotalTime));
                         }
@@ -459,7 +459,7 @@ namespace TrailsPlugin.Data
             if (!onlyActiveLaps || !lastIsRestlap)
             {
                 DateTime d = ActivityInfoCache.Instance.GetInfo(activity).ActualTrackEnd;
-                if (activity.GPSRoute == null)
+                if (activity.GPSRoute == null || activity.GPSRoute.Count == 0)
                 {
                     results.Points.Add(new TrailResultPoint(new TrailGPSLocation(activity.Name, !lastIsRestlap), d));
                 }

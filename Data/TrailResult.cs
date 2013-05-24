@@ -179,6 +179,7 @@ namespace TrailsPlugin.Data
                 m_startTime = null;
                 m_endTime = null;
                 m_includeStopped = null;
+                m_duration = null;
 
                 m_distanceMetersTrack = null;
                 m_gpsPoints = null;
@@ -1735,9 +1736,9 @@ namespace TrailsPlugin.Data
                     {
                         //Show pace as it should have been with "even pace" (the adjusted pace will not give same "total time")
                         //Undocumented
-                        INumericTimeDataSeries timeTrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
                         if (this.m_grades.Count > 1)
                         {
+                            IDistanceDataTrack timeTrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
                             //No data in first point - could use dummy
                             for (int i = 1; i < timeTrack.Count; i++)
                             {
@@ -2346,8 +2347,9 @@ namespace TrailsPlugin.Data
                 if (m_gradeRunAdjustedTime != null && this.m_gradeRunAdjustedTime.Count > 0)
                 {
                     res = this.m_gradeRunAdjustedTime[this.m_gradeRunAdjustedTime.Count - 1].Value;
+                    return TimeSpan.FromSeconds(res);
                 }
-                return TimeSpan.FromSeconds(res);
+                return this.Duration;
             }
         }
 
@@ -2443,18 +2445,18 @@ namespace TrailsPlugin.Data
         {
             this.calcGradeRunAdjustedTime(refRes);
 
-            if (m_gradeRunAdjustedTimeAvg == null)
+            if (this.m_gradeRunAdjustedTimeAvg == null)
             {
-                m_gradeRunAdjustedTimeAvg = new DistanceDataTrack();
+                this.m_gradeRunAdjustedTimeAvg = new DistanceDataTrack();
                 if (this.m_gradeRunAdjustedTime.Count > 0)
                 {
                     //Iterate to get new time apropriate for "adjusted time"
-                    float newTime = m_gradeRunAdjustedTime[m_gradeRunAdjustedTime.Count - 1].Value; //time derived from predictTime, should converge to resultTime
+                    float newTime = this.m_gradeRunAdjustedTime[this.m_gradeRunAdjustedTime.Count - 1].Value; //time derived from predictTime, should converge to resultTime
                     float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime;//Time used to predict resultTime - seed with most likely
                     float[,] splitTime = Settings.AdjustDiffSplitTimes;
 
                     int i = 0; //limit iterations - should iterate within 3 tries
-                    while (i==0 ||
+                    while (i == 0 ||
                         Math.Abs(newTime - this.Duration.TotalSeconds) > 3 && i < 9 ||
                         Math.Abs(newTime - this.Duration.TotalSeconds) > 1 && i < 3)
                     {
@@ -2502,20 +2504,36 @@ namespace TrailsPlugin.Data
 #endif
                     foreach (ginfo t in m_grades)
                     {
-                        m_gradeRunAdjustedTimeAvg.Add(t.dateTime, t.adjTime);
+                        this.m_gradeRunAdjustedTimeAvg.Add(t.dateTime, t.adjTime);
 #if TRACE
                         if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) > 4)
                         {
                         }
-                        if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) <2)
+                        if (Math.Abs(t.adjTime - this.getTimeResult(t.dateTime)) < 2)
                         {
                         }
 #endif
                     }
                 }
+
+                if (this.m_gradeRunAdjustedTimeAvg.Count == 0)
+                {
+                    //base on Distance track
+                    float invAvgSpeed = this.DistanceMetersTrack.TotalElapsedSeconds / this.DistanceMetersTrack.Max;
+                    foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
+                    {
+                        DateTime d = this.DistanceMetersTrack.EntryDateTime(t);
+                        float val = t.Value * invAvgSpeed;
+                        if (float.IsNaN(val))
+                        {
+                            val = 0;
+                        }
+                        this.m_gradeRunAdjustedTimeAvg.Add(d, val);
+                    }
+                }
             }
 
-            return m_gradeRunAdjustedTimeAvg;
+            return this.m_gradeRunAdjustedTimeAvg;
         }
         
         #endregion
@@ -2620,11 +2638,12 @@ namespace TrailsPlugin.Data
                                         ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
                                         //refTime = thisTime;
                                         //get diff from average
-                                        if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None ||
-                                            TrailsPlugin.Data.Settings.AdjustDiffSplitTimes != null)
+                                        if ((Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None) ||
+                                            (TrailsPlugin.Data.Settings.AdjustDiffSplitTimes != null))
                                         {
+                                            IDistanceDataTrack dtrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
                                             float dist = this.getDistResult(d1);
-                                            ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef).GetInterpolatedValue(d1);
+                                            ITimeValueEntry<float> val = dtrack.GetInterpolatedValue(d1);
                                             if (val != null)
                                             {
                                                 refTime = val.Value;
@@ -2793,16 +2812,16 @@ namespace TrailsPlugin.Data
                                         {
                                             ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
                                             //get diff from average
-                                            if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None || 
-                                                TrailsPlugin.Data.Settings.AdjustDiffSplitTimes != null)
+                                            if ((Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None) || 
+                                                (TrailsPlugin.Data.Settings.AdjustDiffSplitTimes != null))
                                             {
                                                 //ITimeValueEntry<float> val = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef).GetInterpolatedValue(d1);
                                                 //if (val != null && !float.IsNaN(val.Value))
                                                 {
+                                                    IDistanceDataTrack dtrack = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
                                                     //TODO: correct check here?
                                                     //refDist = this.getDistResult(getDateTimeFromTimeResult(val.Value));
-                                                    IDistanceDataTrack dt = this.GradeRunAdjustedTimeTrack(this.m_cacheTrackRef);
-                                                    DateTime d2 = dt.GetTimeAtDistanceMeters(this.getTimeResult(d1));
+                                                    DateTime d2 = dtrack.GetTimeAtDistanceMeters(this.getTimeResult(d1));
                                                     refDist = this.getDistResult(d2);
                                                 }
                                             }

@@ -1275,6 +1275,73 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        void FixDistanceTrack()
+        {
+            //Temporary fix for changed distance tracks
+            IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
+            if (atr != null && atr.Count > 0 &&
+                m_controller.CurrentResultTreeList.Count > 0)
+            {
+                foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
+                //foreach (TrailResultWrapper trw in atr)
+                {
+                    //IActivity activity = trw.Result.Activity;
+                    if (activity != null && activity.DistanceMetersTrack != null && activity.DistanceMetersTrack.Count > 0 &&
+                        activity.GPSRoute != null && activity.GPSRoute.Count < activity.DistanceMetersTrack.Count)
+                    {
+                        IDistanceDataTrack track = new DistanceDataTrack();
+                        int prev = int.MinValue;
+                        foreach (ITimeValueEntry<float> t in activity.DistanceMetersTrack)
+                        {
+                            DateTime d = activity.DistanceMetersTrack.EntryDateTime(t);
+                            if (t.ElapsedSeconds - prev != 1)
+                            {
+                                track.Add(d, t.Value);
+                            }
+                            prev = (int)t.ElapsedSeconds;
+                        }
+                        if (track.Count != activity.DistanceMetersTrack.Count)
+                        {
+                            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
+                            p.Size = new System.Drawing.Size(370, 105);
+                            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+                            ZoneFiveSoftware.Common.Visuals.TextBox AdjustDiffSplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+                            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
+                            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
+                            p.Text = string.Format("{0} {1}", activity.Name,  activity.StartTime);
+                            p.Controls.Add(pa);
+                            pa.Dock = DockStyle.Fill;
+                            pa.Controls.Add(AdjustDiffSplitTimes_TextBox);
+                            pa.Controls.Add(b);
+                            pa.Controls.Add(c);
+                            p.AcceptButton = b;
+                            p.CancelButton = c;
+                            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
+                            b.DialogResult = DialogResult.OK;
+                            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
+                            c.DialogResult = DialogResult.Cancel;
+                            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+                            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+                            pa.ThemeChanged(this.m_visualTheme);
+                            //p.ThemeChanged(this.m_visualTheme);
+                            AdjustDiffSplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
+                            AdjustDiffSplitTimes_TextBox.Width = p.Width - 37;
+                            AdjustDiffSplitTimes_TextBox.Location = new System.Drawing.Point(10, 10);
+
+                            AdjustDiffSplitTimes_TextBox.Text = string.Format("{0}/{1}/ {2} {3} {4}", track.Count, activity.DistanceMetersTrack.Count, activity.GPSRoute.Count, activity.Name, activity.StartTime);
+
+                            //update is done in clicking OK/Enter
+                            if (p.ShowDialog() == DialogResult.OK)
+                            {
+                                activity.DistanceMetersTrack = track;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
         /*************************************************************************/
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
@@ -1305,6 +1372,11 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_controller.CurrentReset(false); //TBD
                     this.m_page.RefreshData(true);
                 }
+            }
+            else if (e.KeyCode == Keys.B)
+            {
+                //Unofficial temp fix
+                FixDistanceTrack();
             }
             else if (e.KeyCode == Keys.C)
             {

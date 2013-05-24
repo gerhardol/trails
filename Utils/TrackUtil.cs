@@ -577,6 +577,7 @@ namespace TrailsPlugin.Utils
                     DateTime dateTime = t.Time;
                     if (dateTime > startTime && dateTime < endTime)
                     {
+                        //Adding an extra point will change averages etc
                         //InsertValue(dateTime.AddSeconds(-1), track, source);
                         InsertValue(dateTime, track, source);
                         dates.Add(dateTime);

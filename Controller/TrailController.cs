@@ -404,6 +404,21 @@ namespace TrailsPlugin.Controller
             CheckSetCurrentTrail(progressBar);
         }
 
+        public void RecalculateAllTrails()
+        {                
+            //all trails must be recalculated, there is no possibility to recalculate for one trail only
+            //(almost: Clear results for a certain activity followed by CalcTrail then sets status)
+            //As activities are edit in single view normally, recalc time is not an issue
+            //(except if results have been 
+            //(if a user auto edits, there could be seconds of slowdown).
+            Controller.TrailController.Instance.Reset();
+            //Make sure reference activity is 'reasonable' in case the reference trail is selected
+            Controller.TrailController.Instance.checkReferenceActivity(null);
+
+            //Calculate trails - at least InBounds, set apropriate ActivityTrail
+            Controller.TrailController.Instance.ReCalcTrails(false, null);
+        }
+
         public IActivity ReferenceActivity
         {
             //No special set, implicitly from switching activity or setting result

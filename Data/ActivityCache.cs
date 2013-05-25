@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using ZoneFiveSoftware.Common.Data;
@@ -32,6 +33,7 @@ namespace TrailsPlugin.Data
         //If an activity exists in the specific caches, it must exist in the propList too
         private static IDictionary<IActivity, IGPSBounds> activityGpss = new Dictionary<IActivity, IGPSBounds>();
         private static IDictionary<IActivity, IDictionary<bool, ActivityInfo>> activityInfos = new Dictionary<IActivity, IDictionary<bool, ActivityInfo>>();
+        private static bool systemProperty = false;
 
         public static IGPSBounds GpsBoundsCache(IActivity activity)
         {
@@ -60,6 +62,12 @@ namespace TrailsPlugin.Data
                 return null;
             }
 
+            if (!systemProperty)
+            {
+                systemProperty = true;
+                Plugin.GetApplication().SystemPreferences.PropertyChanged += new PropertyChangedEventHandler(SystemPreferences_PropertyChanged);
+            }
+
             if (!activityInfos.ContainsKey(activity))
             {
                 if (!activityPropLists.Contains(activity))
@@ -70,7 +78,7 @@ namespace TrailsPlugin.Data
                 }
                 activityInfos.Add(activity, null);
             }
-            //TBD includeStopped changes could be catched from changing system preferences and the activities too
+
             if (activityInfos[activity] == null)
             {
                 activityInfos[activity] = new Dictionary<bool, ActivityInfo>();
@@ -124,7 +132,18 @@ namespace TrailsPlugin.Data
             activityInfos.Clear();
         }
 
-        static void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private static void SystemPreferences_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (sender is ZoneFiveSoftware.Common.Visuals.Fitness.ISystemPreferences &&
+                e.PropertyName.Equals("AnalysisSettings.IncludeStopped"))
+            {
+                ClearActivityCache();
+
+                Controller.TrailController.Instance.RecalculateAllTrails();
+            }
+        }
+
+        private static void Activity_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             //e is null at reset. For other this is called multiple times - only run once
             if (sender is IActivity /*&& (e == null || e.PropertyName == "GPSRoute")*/)
@@ -141,17 +160,8 @@ namespace TrailsPlugin.Data
                         activityInfos[activity] = null;
                     }
                 }
-                //all trails must be recalculated, there is no possibility to recalculate for one trail only
-                //(almost: Clear results for a certain activity followed by CalcTrail then sets status)
-                //As activities are edit in single view normally, recalc time is not an issue
-                //(except if results have been 
-                //(if a user auto edits, there could be seconds of slowdown).
-                Controller.TrailController.Instance.Reset();
-                //Make sure reference activity is 'reasonable' in case the reference trail is selected
-                Controller.TrailController.Instance.checkReferenceActivity(null);
 
-                //Calculate trails - at least InBounds, set apropriate ActivityTrail
-                Controller.TrailController.Instance.ReCalcTrails(false, null);
+                Controller.TrailController.Instance.RecalculateAllTrails();
             }
         }
 

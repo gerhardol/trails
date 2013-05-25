@@ -173,7 +173,7 @@ namespace TrailsPlugin.Data
 
             //smoothing control
             //m_TrailActivityInfoOptions = null;
-            m_duration = null;
+            //? m_duration = null;
 
             if (!onlyDisplay)
             {
@@ -207,12 +207,12 @@ namespace TrailsPlugin.Data
             if (refRes == null || refRes != this.m_cacheTrackRef)
             {
                 //Clear cache where ref (possibly null) has been used
-                Clear(true);
-                m_cacheTrackRef = refRes;
-                if (m_cacheTrackRef == null)
+                this.Clear(true);
+                this.m_cacheTrackRef = refRes;
+                if (this.m_cacheTrackRef == null)
                 {
                     //A reference is needed to set for instance display format
-                    m_cacheTrackRef = this;
+                    this.m_cacheTrackRef = this;
                 }
 
                 return true;

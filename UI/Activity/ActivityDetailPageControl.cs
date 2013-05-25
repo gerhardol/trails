@@ -231,7 +231,7 @@ namespace TrailsPlugin.UI.Activity {
             if (clearResults)
             {
                 //The trail results will be cleared
-                this.m_controller.Clear(true);
+                this.m_controller.Clear(false);
             }
 
             //Calculate results (not needed explicitly)

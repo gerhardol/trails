@@ -172,7 +172,7 @@ namespace TrailsPlugin.UI.Activity
 			this.BackColor = visualTheme.Control;
             this.EList.ThemeChanged(visualTheme);
             this.TrailName.ThemeChanged(visualTheme);
-            this.Radius.ThemeChanged(visualTheme);
+            this.radiusBox.ThemeChanged(visualTheme);
             this.editBox.ThemeChanged(visualTheme);
         }
 
@@ -559,13 +559,13 @@ namespace TrailsPlugin.UI.Activity
 
         private void presentRadius()
         {
-            this.Radius.Text = UnitUtil.Elevation.ToString(this.m_TrailToEdit.Radius, "u");
+            this.radiusBox.Text = UnitUtil.Elevation.ToString(this.m_TrailToEdit.Radius, "u");
         }
 
         private void Radius_LostFocus(object sender, System.EventArgs e)
         {
             float result;
-            result = (float)UnitUtil.Elevation.Parse(this.Radius.Text);
+            result = (float)UnitUtil.Elevation.Parse(this.radiusBox.Text);
             if (!float.IsNaN(result) && result >= 0)
             {
                 this.m_TrailToEdit.Radius = result;

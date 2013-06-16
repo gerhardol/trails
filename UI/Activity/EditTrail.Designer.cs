@@ -43,7 +43,7 @@
             this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.lblRadius = new System.Windows.Forms.Label();
-            this.Radius = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.radiusBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
@@ -268,7 +268,7 @@
             this.Panel.Controls.Add(this.btnEdit, 5, 1);
             this.Panel.Controls.Add(this.btnDelete, 6, 1);
             this.Panel.Controls.Add(this.lblRadius, 1, 2);
-            this.Panel.Controls.Add(this.Radius, 2, 2);
+            this.Panel.Controls.Add(this.radiusBox, 2, 2);
             this.Panel.Controls.Add(this.btnUp, 5, 2);
             this.Panel.Controls.Add(this.btnDown, 6, 2);
             this.Panel.Controls.Add(this.EList, 1, 3);
@@ -400,26 +400,26 @@
             // 
             // Radius
             // 
-            this.Radius.AcceptsReturn = false;
-            this.Radius.AcceptsTab = false;
-            this.Radius.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.radiusBox.AcceptsReturn = false;
+            this.radiusBox.AcceptsTab = false;
+            this.radiusBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Radius.BackColor = System.Drawing.Color.White;
-            this.Radius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
-            this.Radius.ButtonImage = null;
-            this.Radius.Location = new System.Drawing.Point(92, 27);
-            this.Radius.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
-            this.Radius.MaxLength = 32767;
-            this.Radius.Multiline = false;
-            this.Radius.Name = "Radius";
-            this.Radius.ReadOnly = false;
-            this.Radius.ReadOnlyColor = System.Drawing.SystemColors.Control;
-            this.Radius.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
-            this.Radius.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.Radius.Size = new System.Drawing.Size(359, 19);
-            this.Radius.TabIndex = 20;
-            this.Radius.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.Radius.LostFocus += new System.EventHandler(this.Radius_LostFocus);
+            this.radiusBox.BackColor = System.Drawing.Color.White;
+            this.radiusBox.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.radiusBox.ButtonImage = null;
+            this.radiusBox.Location = new System.Drawing.Point(92, 27);
+            this.radiusBox.Margin = new System.Windows.Forms.Padding(1, 0, 0, 0);
+            this.radiusBox.MaxLength = 32767;
+            this.radiusBox.Multiline = false;
+            this.radiusBox.Name = "Radius";
+            this.radiusBox.ReadOnly = false;
+            this.radiusBox.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.radiusBox.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.radiusBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.radiusBox.Size = new System.Drawing.Size(359, 19);
+            this.radiusBox.TabIndex = 20;
+            this.radiusBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.radiusBox.LostFocus += new System.EventHandler(this.Radius_LostFocus);
             // 
             // btnUp
             // 
@@ -568,7 +568,7 @@
 		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
 		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
         private ZoneFiveSoftware.Common.Visuals.TreeList EList;
-        private ZoneFiveSoftware.Common.Visuals.TextBox Radius;
+        private ZoneFiveSoftware.Common.Visuals.TextBox radiusBox;
 		private System.Windows.Forms.Label lblRadius;
         private ZoneFiveSoftware.Common.Visuals.TextBox editBox;
         private ZoneFiveSoftware.Common.Visuals.Button btnUp;

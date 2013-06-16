@@ -161,7 +161,12 @@ namespace TrailsPlugin.Data
                     }
                 }
 
-                Controller.TrailController.Instance.RecalculateAllTrails();
+                if (e.PropertyName != "Laps")
+                {
+                    //If time is updated, all laps are changed too
+                    //Avoid recalc, otherwise ST seem to "hang"
+                    Controller.TrailController.Instance.RecalculateAllTrails();
+                }
             }
         }
 

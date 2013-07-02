@@ -28,7 +28,7 @@ using GpsRunningPlugin;
 
 namespace GpsRunningPlugin.Util
 {
-    class UnitUtil
+    public class UnitUtil
     {
         public static IApplication GetApplication()
         {
@@ -40,7 +40,15 @@ namespace GpsRunningPlugin.Util
             return TrailsPlugin.Plugin.GetApplication();
 #endif
         }
-        
+
+        //Convert to/from internal format to display format
+        public delegate double Convert(double value, IActivity activity);
+        //Empty definition, when no conversion needed
+        public static double ConvertNone(double p, IActivity activity)
+        {
+            return p;
+        }
+
         //Helpfunction for common format
         private static string encPar(string p)
         {

@@ -1342,15 +1342,7 @@ namespace TrailsPlugin.Data
         //copy the relevant part to a new track
         public INumericTimeDataSeries copyTrailTrack(INumericTimeDataSeries source)
         {
-            return copySmoothTrack(source, false, 0, new Convert(ConvertNone), m_cacheTrackRef);
-        }
-
-        //Convert to/from internal format to display format
-        public delegate double Convert(double value, IActivity activity);
-        //Empty definition, when no conversion needed
-        public static double ConvertNone(double p, IActivity activity)
-        {
-            return p;
+            return copySmoothTrack(source, false, 0, new UnitUtil.Convert(UnitUtil.ConvertNone), m_cacheTrackRef);
         }
 
         private INumericTimeDataSeries SmoothTrack(INumericTimeDataSeries track, int smooth)
@@ -1437,12 +1429,12 @@ namespace TrailsPlugin.Data
         /// <param name="refRes"></param>
         /// <returns></returns>
 
-        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, int smooth, Convert convert, TrailResult refRes)
+        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, int smooth, UnitUtil.Convert convert, TrailResult refRes)
         {
             return copySmoothTrack(source, insert, true, smooth, convert, refRes);
         }
 
-        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, bool trimToResult, int smooth, Convert convert, TrailResult refRes)
+        public INumericTimeDataSeries copySmoothTrack(INumericTimeDataSeries source, bool insert, bool trimToResult, int smooth, UnitUtil.Convert convert, TrailResult refRes)
         {
             IActivity refActivity = null;
             if (refRes != null)
@@ -1578,7 +1570,7 @@ namespace TrailsPlugin.Data
             if (m_elevationMetersTrack0 == null)
             {
                 m_elevationMetersTrack0 = copySmoothTrack(this.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                    new UnitUtil.Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_elevationMetersTrack0;
         }
@@ -1587,7 +1579,7 @@ namespace TrailsPlugin.Data
         public INumericTimeDataSeries GradeTrack0()
         {
             return this.copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                new Convert(UnitUtil.Grade.ConvertTo), this.m_cacheTrackRef);
+                new UnitUtil.Convert(UnitUtil.Grade.ConvertTo), this.m_cacheTrackRef);
             //TBD return this.GradeTrack0(this.m_cacheTrackRef);
         }
         public INumericTimeDataSeries GradeTrack0(TrailResult refRes)
@@ -1596,7 +1588,7 @@ namespace TrailsPlugin.Data
             if (m_gradeTrack0 == null)
             {
                 m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                        new Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
+                        new UnitUtil.Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
 
                 if (CalculateGrade && this.Activity.CadencePerMinuteTrack == null)
                 {
@@ -1646,7 +1638,7 @@ namespace TrailsPlugin.Data
             if (m_cadencePerMinuteTrack0 == null)
             {
                 m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
-                     new Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
+                     new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_cadencePerMinuteTrack0;
         }
@@ -1661,7 +1653,7 @@ namespace TrailsPlugin.Data
             if (m_heartRatePerMinuteTrack0 == null)
             {
                 m_heartRatePerMinuteTrack0 = copySmoothTrack(this.HeartRatePerMinuteTrack, true, TrailActivityInfoOptions.HeartRateSmoothingSeconds,
-                    new Convert(UnitUtil.HeartRate.ConvertFrom), this.m_cacheTrackRef);
+                    new UnitUtil.Convert(UnitUtil.HeartRate.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_heartRatePerMinuteTrack0;
         }
@@ -1676,7 +1668,7 @@ namespace TrailsPlugin.Data
             if (m_powerWattsTrack0 == null)
             {
                 m_powerWattsTrack0 = copySmoothTrack(this.PowerWattsTrack, true, TrailActivityInfoOptions.PowerSmoothingSeconds,
-                    new Convert(UnitUtil.Power.ConvertFrom), this.m_cacheTrackRef);
+                    new UnitUtil.Convert(UnitUtil.Power.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_powerWattsTrack0;
         }
@@ -1690,13 +1682,13 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
             {
-                m_speedTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0, ConvertNone, this.m_cacheTrackRef);
+                m_speedTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 return m_speedTrack0;
             }
             if (m_speedTrack0 == null)
             {
                 m_speedTrack0 = copySmoothTrack(this.SpeedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                 new Convert(UnitUtil.Speed.ConvertFrom), this.m_cacheTrackRef);
+                                 new UnitUtil.Convert(UnitUtil.Speed.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_speedTrack0;
         }
@@ -1710,7 +1702,7 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
             {
-                m_paceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.PaceTrack0(this.m_cacheTrackRef), false, 0, ConvertNone, this.m_cacheTrackRef);
+                m_paceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.PaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 return m_paceTrack0;
             }
             if (m_paceTrack0 == null)
@@ -1774,7 +1766,7 @@ namespace TrailsPlugin.Data
                 {
                     //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
                     this.m_paceTrack0 = copySmoothTrack(speedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                    new Convert(ConvertNone), this.m_cacheTrackRef);
+                                    new UnitUtil.Convert(UnitUtil.ConvertNone), this.m_cacheTrackRef);
                     for (int i = 0; i < this.m_paceTrack0.Count; i++)
                     {
                         this.m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
@@ -1827,7 +1819,7 @@ namespace TrailsPlugin.Data
             {
                 if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
-                    m_deviceSpeedPaceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(this.m_cacheTrackRef), false, 0, ConvertNone, this.m_cacheTrackRef);
+                    m_deviceSpeedPaceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                     return m_deviceSpeedPaceTrack0;
                 }
                 bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
@@ -1928,7 +1920,7 @@ namespace TrailsPlugin.Data
                     if (start2 <= this.StartTime && this.EndTime <= end2)
                     {
                         deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
-                               new Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                               new UnitUtil.Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
                     }
                 }
             }
@@ -2022,7 +2014,7 @@ namespace TrailsPlugin.Data
                 {
                     //Trim, insert (as start/end changes), smooth already done
                     deviceElevationTrack0 = copySmoothTrack(deviceElevationTrack0, true, true, 0,
-                        new Convert(ConvertNone), this.m_cacheTrackRef);
+                        new UnitUtil.Convert(UnitUtil.ConvertNone), this.m_cacheTrackRef);
                 }
                 //Correct the elevation track from the offset (already in display unit), by time
                 //(assume that all error is changed over time)
@@ -2259,7 +2251,7 @@ namespace TrailsPlugin.Data
             {
                 if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
-                    m_deviceDiffDistTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceDiffDistTrack0(this.m_cacheTrackRef), false, 0, ConvertNone, this.m_cacheTrackRef);
+                    m_deviceDiffDistTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceDiffDistTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                     return m_deviceDiffDistTrack0;
                 }
                 m_deviceDiffDistTrack0 = new NumericTimeDataSeries();

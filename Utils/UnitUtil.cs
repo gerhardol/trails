@@ -352,7 +352,7 @@ namespace GpsRunningPlugin.Util
 
             public static double Parse(string p)
             {
-                return double.Parse(p, NumberFormatInfo.InvariantInfo);
+                return ZoneFiveSoftware.Common.Data.Measurement.Temperature.ParseTemperatureCelsiusText(p, Unit);
             }
 
             public static String Label
@@ -389,7 +389,7 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class Weight
         {
-            private static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units Unit { get { return GetApplication().SystemPreferences.WeightUnits; } }
+            public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units Unit { get { return GetApplication().SystemPreferences.WeightUnits; } }
             public static int DefaultDecimalPrecision { get { return 1; } }
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
 
@@ -399,8 +399,26 @@ namespace GpsRunningPlugin.Util
             }
             public static string ToString(double p, string fmt)
             {
-                if (fmt.ToLower().Equals("u")) { fmt = DefFmt + fmt; }
-                return ZoneFiveSoftware.Common.Data.Measurement.Weight.ToString(ConvertFrom(p), Unit, fmt);
+                return ToString(p, Unit, fmt);
+            }
+            public static string ToString(double p, ZoneFiveSoftware.Common.Data.Measurement.Weight.Units unit, string fmt)
+            {
+                string dfmt = DefFmt;
+                //Uvalue is in kg (SI), unit is presentation
+                if (unit != Unit)
+                {
+                    p = ZoneFiveSoftware.Common.Data.Measurement.Weight.Convert(p, Unit, unit);
+                }
+                if (unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Gram)
+                {
+                    dfmt = "F0";
+                }
+                else if (unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Ounce)
+                {
+                    dfmt = "F1";
+                }
+                if (fmt.ToLower().Equals("u") || string.IsNullOrEmpty(fmt)) { fmt = dfmt + fmt; }
+                return ZoneFiveSoftware.Common.Data.Measurement.Weight.ToString(ConvertFrom(p), unit, fmt);
             }
 
             public static double ConvertFrom(double p)
@@ -1163,7 +1181,7 @@ namespace GpsRunningPlugin.Util
                     return CommonResources.Text.LabelPace + LabelAbbr2;
                 }
             }
-#if ST_2_1
+#if ST_2_1 || GPSRUNNING_HIGHSCORE
             //Some forms uses the label to find if pace/speed is used, get a way to find how
             public static bool isLabelPace(string label)
             {

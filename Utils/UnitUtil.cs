@@ -513,6 +513,7 @@ namespace GpsRunningPlugin.Util
                 }
                 return du;
             }
+
             public static bool isDefaultUnit(IActivity activity)
             {
                 return (GetUnit(activity) == Length.Units.Meter);
@@ -536,6 +537,17 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(p, activity).ToString((fmt)) + str;
             }
 
+            public static Convert ConvertFromDelegate(IActivity activity)
+            {
+                if (UnitUtil.Elevation.GetUnit(activity) == Unit)
+                {
+                    return new Convert(ConvertNone);
+                }
+                else
+                {
+                    return new Convert(UnitUtil.Elevation.ConvertFrom);
+                }
+            }
             public static double ConvertFrom(double p)
             {
                 return ConvertFrom(p, Unit);

@@ -1570,7 +1570,7 @@ namespace TrailsPlugin.Data
             if (m_elevationMetersTrack0 == null)
             {
                 m_elevationMetersTrack0 = copySmoothTrack(this.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    new UnitUtil.Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                    UnitUtil.Elevation.ConvertFromDelegate(this.m_cacheTrackRef.Activity), this.m_cacheTrackRef);
             }
             return m_elevationMetersTrack0;
         }
@@ -1920,7 +1920,7 @@ namespace TrailsPlugin.Data
                     if (start2 <= this.StartTime && this.EndTime <= end2)
                     {
                         deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
-                               new UnitUtil.Convert(UnitUtil.Elevation.ConvertFrom), this.m_cacheTrackRef);
+                               UnitUtil.Elevation.ConvertFromDelegate(this.m_cacheTrackRef.Activity), this.m_cacheTrackRef);
                     }
                 }
             }

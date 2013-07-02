@@ -867,13 +867,8 @@ namespace TrailsPlugin.Data
                 {
                     //Make a copy, as we insert values
                     IDistanceDataTrack source = Info.MovingDistanceMetersTrack;
-                    m_activityDistanceMetersTrack = new DistanceDataTrack();
+                    m_activityDistanceMetersTrack = new DistanceDataTrack(Info.MovingDistanceMetersTrack);
                     m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
-                    foreach (TimeValueEntry<float> t in Info.MovingDistanceMetersTrack)
-                    {
-                        DateTime d = Info.MovingDistanceMetersTrack.EntryDateTime(t);
-                        m_activityDistanceMetersTrack.Add(d, t.Value);
-                    }
 
                     //There are occasional 0 or decreasing distance values, that disrupt insertion
                     if (source != null && source.Count > 0)
@@ -1324,7 +1319,8 @@ namespace TrailsPlugin.Data
                     {
                         IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
                             TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
-                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, null);
+//xxx                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, new List<double> { 0 }, null);
+                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, new List<double> { this.GradeRunAdjustedTime.TotalSeconds }, null);
                         if (t != null && t.Count > 0 && t[0] != null)
                         {
                             m_predictDistance = (float)t[0].predicted[0].new_time;
@@ -1543,7 +1539,7 @@ namespace TrailsPlugin.Data
             if (m_distanceMetersTrack0 == null)
             {
                 //Just copy the track. No smoothing or inserting of values
-                this.m_distanceMetersTrack0 = new DistanceDataTrack();
+                this.m_distanceMetersTrack0 = new DistanceDataTrack();//xxx
                 foreach (ITimeValueEntry<float> entry in this.DistanceMetersTrack)
                 {
                     float val = (float)UnitUtil.Distance.ConvertFrom(entry.Value, m_cacheTrackRef.Activity);
@@ -1909,11 +1905,8 @@ namespace TrailsPlugin.Data
                     {
                         if (activity.Metadata.Source.Contains(devName))
                         {
-                            sourceTrack = new NumericTimeDataSeries();
-                            foreach (ITimeValueEntry<IGPSPoint> g in activity.GPSRoute)
-                            {
-                                sourceTrack.Add(activity.GPSRoute.EntryDateTime(g), g.Value.ElevationMeters);
-                            }
+                            //faster than manually copy the track, info always get the GPS elevation
+                            sourceTrack = this.Info.SmoothedElevationTrack;
                             break;
                         }
                     }

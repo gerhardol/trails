@@ -341,7 +341,7 @@ namespace TrailsPlugin.Utils
         public static INumericTimeDataSeries GetSmoothedActivityTrack(Data.TrailResult result, LineChartTypes lineChart, TrailResult refRes)
         {
             // Fail safe
-            INumericTimeDataSeries track = new NumericTimeDataSeries();
+            INumericTimeDataSeries track;
 
             switch (lineChart)
             {
@@ -418,6 +418,8 @@ namespace TrailsPlugin.Utils
                 default:
                     {
                         Debug.Assert(false);
+                        // Fail safe
+                        track = new NumericTimeDataSeries();
                         break;
                     }
             }

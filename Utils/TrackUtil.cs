@@ -64,7 +64,7 @@ namespace TrailsPlugin.Utils
         {
             T dist;
 
-            if (i < 0 || i >= track.Count)
+            if (i < 0 || i >= track.Count || track.Count <= 1)
             {
                 //index out of bound
                 //Note that the distance track may not start at result StartTime, then this will report result at 0 sec

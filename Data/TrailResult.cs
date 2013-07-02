@@ -1531,10 +1531,11 @@ namespace TrailsPlugin.Data
             if (m_distanceMetersTrack0 == null)
             {
                 //Just copy the track. No smoothing or inserting of values
-                this.m_distanceMetersTrack0 = new DistanceDataTrack();//xxx
+                this.m_distanceMetersTrack0 = new DistanceDataTrack();
+                UnitUtil.Convert convert = UnitUtil.Distance.ConvertFromDelegate(m_cacheTrackRef.Activity);
                 foreach (ITimeValueEntry<float> entry in this.DistanceMetersTrack)
                 {
-                    float val = (float)UnitUtil.Distance.ConvertFrom(entry.Value, m_cacheTrackRef.Activity);
+                    float val = (float)convert(entry.Value, m_cacheTrackRef.Activity);
                     if (!float.IsNaN(val))
                     {
                         DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(entry);
@@ -2069,6 +2070,8 @@ namespace TrailsPlugin.Data
             {
                 refAct = this.m_cacheTrackRef.Activity;
             }
+            UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(refAct);
+
             foreach (TrailResultPoint t in points)
             {
                 if (!float.IsNaN(t.ElevationMeters))
@@ -2117,7 +2120,7 @@ namespace TrailsPlugin.Data
                             float eleOffset = t.ElevationMeters;
                             if (!UnitUtil.Elevation.isDefaultUnit(refAct))
                             {
-                                eleOffset = (float)UnitUtil.Elevation.ConvertFrom(eleOffset, refAct);
+                                eleOffset = (float)convertFrom(eleOffset, refAct);
                             }
                             eleOffset -= ele;
                             DateEle e = new DateEle(d1, eleOffset);
@@ -2258,6 +2261,7 @@ namespace TrailsPlugin.Data
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
                     float? start2 = null;
+                    UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
@@ -2269,7 +2273,7 @@ namespace TrailsPlugin.Data
                             {
                                 start2 = t2.Value;
                             }
-                            float val = (float)UnitUtil.Elevation.ConvertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
+                            float val = (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
                             m_deviceDiffDistTrack0.Add(dateTime, val);
                         }
                         else
@@ -2386,8 +2390,7 @@ namespace TrailsPlugin.Data
                     INumericTimeDataSeries eleTrack = this.CalcElevationMetersTrack0(this.m_cacheTrackRef);
                     if (eleTrack != null && eleTrack.Count > 0)
                     {
-                        bool convertEleToSI = !UnitUtil.Elevation.isDefaultUnit(this.Activity);
-
+                        UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
                         foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                         {
                             //TODO insert when sparse
@@ -2399,11 +2402,8 @@ namespace TrailsPlugin.Data
 
                             if (t2 != null)
                             {
-                                float ele = t2.Value;
-                                if (convertEleToSI)
-                                {
-                                    ele = (float)UnitUtil.Elevation.ConvertFrom(ele, this.Activity);//convert back...
-                                }
+                                float ele =  (float)UnitUtil.Elevation.ConvertFrom(t2.Value, this.Activity);//convert back...
+                                
                                 //This point is valid, at least for next
                                 if (!float.IsNaN(prevEle))
                                 {
@@ -2731,6 +2731,7 @@ namespace TrailsPlugin.Data
             {
                 m_DiffDistTrack0 = new NumericTimeDataSeries();
                 TrailResult trRef = getRefSub(m_cacheTrackRef);
+                UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(trRef.Activity);
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
                     int oldElapsed = int.MinValue;
@@ -2859,7 +2860,7 @@ namespace TrailsPlugin.Data
                                                 prevCommonStreches = false;
                                             }
                                             double diff = thisDist - (double)refDist + diffOffset;
-                                            lastValue = (float)UnitUtil.Elevation.ConvertFrom(diff, trRef.Activity);
+                                            lastValue = (float)convertFrom(diff, trRef.Activity);
                                             m_DiffDistTrack0.Add(d1, lastValue);
                                             oldElapsed = (int)elapsed;
                                             prevDist = thisDist;
@@ -2888,8 +2889,7 @@ namespace TrailsPlugin.Data
                         float trDist = this.TrailPointDist0(trRef)[dateTrailPointIndex];
                         if (!float.IsNaN(refDist) && !float.IsNaN(trDist))
                         {
-                            lastValue = (float)UnitUtil.Elevation.ConvertFrom(refDist -
-                                trDist + diffOffset, trRef.Activity);
+                            lastValue = (float)convertFrom(refDist - trDist + diffOffset, trRef.Activity);
                             //TBD Disable this add, not so interesting?
                             //m_DiffDistTrack0.Add(EndTime, lastValue);
                         }

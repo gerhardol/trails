@@ -539,15 +539,21 @@ namespace GpsRunningPlugin.Util
 
             public static Convert ConvertFromDelegate(IActivity activity)
             {
-                if (UnitUtil.Elevation.GetUnit(activity) == Unit)
+                Length.Units unit = GetUnit(activity);
+                if (unit == Unit)
                 {
                     return new Convert(ConvertNone);
                 }
+                else if (unit == Length.Units.Foot)
+                {
+                    return new Convert(ConvertFrom_ToFt);
+                }
                 else
                 {
-                    return new Convert(UnitUtil.Elevation.ConvertFrom);
+                    return new Convert(ConvertFrom);
                 }
             }
+
             public static double ConvertFrom(double p)
             {
                 return ConvertFrom(p, Unit);
@@ -559,6 +565,10 @@ namespace GpsRunningPlugin.Util
             public static double ConvertFrom(double value, IActivity activity)
             {
                 return ConvertFrom(value, GetUnit(activity));
+            }
+            private static double ConvertFrom_ToFt(double value, IActivity activity)
+            {
+                return value / 0.3048;
             }
 
             public static double ConvertTo(double value, Length.Units du)
@@ -851,6 +861,27 @@ namespace GpsRunningPlugin.Util
                 return ConvertFrom(p, activity).ToString((fmt)) + str;
             }
 
+            public static Convert ConvertFromDelegate(IActivity activity)
+            {
+                Length.Units unit = GetUnit(activity);
+                if (unit == Unit)
+                {
+                    return new Convert(ConvertNone);
+                }
+                else if (unit == Length.Units.Kilometer)
+                {
+                    return new Convert(ConvertFrom_ToKm);
+                }
+                else if (unit == Length.Units.Mile)
+                {
+                    return new Convert(ConvertFrom_ToMi);
+                }
+                else
+                {
+                    return new Convert(ConvertFrom);
+                }
+            }
+
             //From SI unit (ST internal) to display
             public static double ConvertFrom(double p)
             {
@@ -863,6 +894,14 @@ namespace GpsRunningPlugin.Util
             public static double ConvertFrom(double value, IActivity activity)
             {
                 return ConvertFrom(value, GetUnit(activity));
+            }
+            private static double ConvertFrom_ToKm(double value, IActivity activity)
+            {
+                return value / 1000;
+            }
+            private static double ConvertFrom_ToMi(double value, IActivity activity)
+            {
+                return value / 1609.344;
             }
 
             public static double ConvertTo(double value, Length.Units du)

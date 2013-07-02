@@ -392,6 +392,24 @@ namespace GpsRunningPlugin.Util
             public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units Unit { get { return GetApplication().SystemPreferences.WeightUnits; } }
             public static int DefaultDecimalPrecision { get { return 1; } }
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
+            public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units SmallUnit(ZoneFiveSoftware.Common.Data.Measurement.Weight.Units unit)
+            {
+                if (unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Kilogram)
+                {
+                    unit = ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Gram;
+                }
+                else if (unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Pound ||
+                    unit == ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Stone)
+                {
+                    unit = ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Ounce;
+                }
+                else
+                {
+                    //gram, oz
+                    //do not name to allow for new units without strange effects
+                }
+                return unit;
+            }
 
             public static string ToString(double p)
             {
@@ -429,7 +447,12 @@ namespace GpsRunningPlugin.Util
 
             public static double Parse(string p)
             {
-                return ZoneFiveSoftware.Common.Data.Measurement.Weight.ParseWeightKilograms(p, Unit);
+                return Parse(p, Unit);
+            }
+
+            public static double Parse(string p, ZoneFiveSoftware.Common.Data.Measurement.Weight.Units unit)
+            {
+                return ZoneFiveSoftware.Common.Data.Measurement.Weight.ParseWeightKilograms(p, unit);
             }
 
             public static String Label

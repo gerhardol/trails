@@ -1281,7 +1281,7 @@ namespace TrailsPlugin.Data
                     value = elevationTrack[elevationTrack.Count - 1].Value - elevationTrack[0].Value;
                     if (!UnitUtil.Elevation.isDefaultUnit(this.m_cacheTrackRef.Activity))
                     {
-                        //Already in display unit, convert back
+                        //Already in display unit, convert back to SI
                         value = (float)UnitUtil.Elevation.ConvertTo(value, this.m_cacheTrackRef.Activity);
                     }
                 }
@@ -1887,42 +1887,40 @@ namespace TrailsPlugin.Data
             if (activity != null)
             {
                 INumericTimeDataSeries sourceTrack = null;
-                if (activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 1)
+                const int maxTimeDiff = 60;
+                DateTime start2 = this.StartTime.AddSeconds(+maxTimeDiff);
+                DateTime end2 = this.EndTime.AddSeconds(-maxTimeDiff);
+
+                if (activity.ElevationMetersTrack != null && activity.ElevationMetersTrack.Count > 1 &&
+                    activity.ElevationMetersTrack.StartTime <= start2 &&
+                    activity.ElevationMetersTrack.EntryDateTime(activity.ElevationMetersTrack[activity.ElevationMetersTrack.Count - 1]) >= end2)
                 {
                     //Separate elevation track, prefer it, assume Barometric
                     sourceTrack = activity.ElevationMetersTrack;
                 }
-                else if (activity.GPSRoute != null && activity.GPSRoute.Count > 1 && activity.GPSRoute.StartTime > DateTime.MinValue)
+                else if (activity.GPSRoute != null && activity.GPSRoute.Count > 1 && activity.GPSRoute.StartTime > DateTime.MinValue &&
+                    activity.GPSRoute.StartTime <= start2 &&
+                    activity.GPSRoute.EntryDateTime(activity.GPSRoute[activity.GPSRoute.Count - 1]) >= end2)
                 {
                     foreach (string devName in Settings.BarometricDevices)
                     {
                         if (activity.Metadata.Source.Contains(devName))
                         {
-                            //faster than manually copy the track, info always get the GPS elevation
-                            sourceTrack = this.Info.SmoothedElevationTrack;
+                            sourceTrack = new NumericTimeDataSeries();
+                            foreach (TimeValueEntry<IGPSPoint> t in activity.GPSRoute)
+                            {
+                                DateTime d = activity.GPSRoute.EntryDateTime(t);
+                                sourceTrack.Add(d, t.Value.ElevationMeters);
+                            }
                             break;
                         }
                     }
                 }
-                if (sourceTrack != null && sourceTrack.Count>1)
+
+                if (sourceTrack != null && sourceTrack.Count > 1)
                 {
-                    const int maxTimeDiff = 60;
-                    DateTime start2 = sourceTrack.StartTime.AddSeconds(-maxTimeDiff);
-                    IValueRangeSeries<DateTime> pauses;
-                    if (this.Activity != null)
-                    {
-                        pauses = this.Activity.TimerPauses;
-                    }
-                    else
-                    {
-                        pauses = new ValueRangeSeries<DateTime>();
-                    }
-                    DateTime end2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(start2, TimeSpan.FromSeconds(sourceTrack.TotalElapsedSeconds+2*maxTimeDiff), pauses);
-                    if (start2 <= this.StartTime && this.EndTime <= end2)
-                    {
-                        deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
+                    deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
                                UnitUtil.Elevation.ConvertFromDelegate(this.m_cacheTrackRef.Activity), this.m_cacheTrackRef);
-                    }
                 }
             }
             return deviceElevationTrack0;
@@ -2117,11 +2115,7 @@ namespace TrailsPlugin.Data
                         if (!float.IsNaN(ele))
                         {
                             //elevation track is already in display unit
-                            float eleOffset = t.ElevationMeters;
-                            if (!UnitUtil.Elevation.isDefaultUnit(refAct))
-                            {
-                                eleOffset = (float)convertFrom(eleOffset, refAct);
-                            }
+                            float eleOffset = (float)convertFrom(t.ElevationMeters, refAct);
                             eleOffset -= ele;
                             DateEle e = new DateEle(d1, eleOffset);
                             elevationOffset.Add(e);

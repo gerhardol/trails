@@ -721,7 +721,8 @@ namespace GpsRunningPlugin.Util
 
             public static Convert ConvertFromDelegate(IActivity activity)
             {
-                return Distance.ConvertFromDelegate(activity);
+                Length.Units unit = GetUnit(activity);
+                return Distance.ConvertFromDelegate(activity, unit);
             }
 
             //From SI unit (ST internal) to display
@@ -865,6 +866,10 @@ namespace GpsRunningPlugin.Util
             public static Convert ConvertFromDelegate(IActivity activity)
             {
                 Length.Units unit = GetUnit(activity);
+                return ConvertFromDelegate(activity, unit);
+            }
+            public static Convert ConvertFromDelegate(IActivity activity, Length.Units unit)
+            {
                 if (unit == Length.Units.Meter/* Unit*/)
                 {
                     return new Convert(ConvertNone);

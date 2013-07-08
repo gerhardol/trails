@@ -500,6 +500,7 @@ namespace GpsRunningPlugin.Util
             public static int DefaultDecimalPrecision { get { return Length.DefaultDecimalPrecision(Unit); } }
             private static string DefFmt { get { return defFmt(Unit); } }
             private static string defFmt(Length.Units unit) { return "F" + Length.DefaultDecimalPrecision(unit); }
+
             public static Length.Units GetUnit(IActivity activity)
             {
                 Length.Units du;
@@ -513,7 +514,6 @@ namespace GpsRunningPlugin.Util
                 }
                 return du;
             }
-
             public static bool isDefaultUnit(IActivity activity)
             {
                 return (GetUnit(activity) == Length.Units.Meter);
@@ -523,10 +523,21 @@ namespace GpsRunningPlugin.Util
             {
                 return ToString(p, DefFmt);
             }
+            public static string ToString(double p, string fmt, bool convert)
+            {
+                return ToString(p, Unit, fmt, convert);
+            }
             public static string ToString(double p, string fmt)
             {
-                if (fmt.ToLower().Equals("u")) { fmt = DefFmt + fmt; }
-                return Length.ToString(ConvertFrom(p), Unit, fmt);
+                return ToString(p, Unit, fmt);
+            }
+            public static string ToString(double p, Length.Units unit, string fmt)
+            {
+                return ToString(p, unit, fmt, true);
+            }
+            public static string ToString(double p, Length.Units unit, string fmt, bool convert)
+            {
+                return Distance.ToString(p, unit, fmt, convert);
             }
             public static string ToString(double p, IActivity activity, string fmt)
             {
@@ -539,21 +550,10 @@ namespace GpsRunningPlugin.Util
 
             public static Convert ConvertFromDelegate(IActivity activity)
             {
-                Length.Units unit = GetUnit(activity);
-                if (unit == Unit)
-                {
-                    return new Convert(ConvertNone);
-                }
-                else if (unit == Length.Units.Foot)
-                {
-                    return new Convert(ConvertFrom_ToFt);
-                }
-                else
-                {
-                    return new Convert(ConvertFrom);
-                }
+                return Distance.ConvertFromDelegate(activity);
             }
 
+            //From SI unit (ST internal) to display
             public static double ConvertFrom(double p)
             {
                 return ConvertFrom(p, Unit);
@@ -565,10 +565,6 @@ namespace GpsRunningPlugin.Util
             public static double ConvertFrom(double value, IActivity activity)
             {
                 return ConvertFrom(value, GetUnit(activity));
-            }
-            private static double ConvertFrom_ToFt(double value, IActivity activity)
-            {
-                return value / 0.3048;
             }
 
             public static double ConvertTo(double value, Length.Units du)
@@ -587,6 +583,10 @@ namespace GpsRunningPlugin.Util
                     return double.NaN;
                 }
                 Length.Units unit = Unit;
+                return Parse(p, ref unit);
+            }
+            public static double Parse(string p, ref Length.Units unit)
+            {
                 return Length.ParseDistanceMeters(p, ref unit);
             }
 
@@ -807,6 +807,7 @@ namespace GpsRunningPlugin.Util
             public static int DefaultDecimalPrecision { get { return Length.DefaultDecimalPrecision(Unit); } }
             private static string DefFmt { get { return defFmt(Unit); } }
             private static string defFmt(Length.Units unit) { return "F" + Length.DefaultDecimalPrecision(unit); }
+
             public static Length.Units GetUnit(IActivity activity)
             {
                 Length.Units du;
@@ -864,17 +865,21 @@ namespace GpsRunningPlugin.Util
             public static Convert ConvertFromDelegate(IActivity activity)
             {
                 Length.Units unit = GetUnit(activity);
-                if (unit == Unit)
+                if (unit == Length.Units.Meter/* Unit*/)
                 {
                     return new Convert(ConvertNone);
                 }
                 else if (unit == Length.Units.Kilometer)
                 {
-                    return new Convert(ConvertFrom_ToKm);
+                    return new Convert(Convert_MToKm);
                 }
                 else if (unit == Length.Units.Mile)
                 {
-                    return new Convert(ConvertFrom_ToMi);
+                    return new Convert(Convert_MToMi);
+                }
+                else if (unit == Length.Units.Foot)
+                {
+                    return new Convert(Convert_MToFt);
                 }
                 else
                 {
@@ -895,13 +900,17 @@ namespace GpsRunningPlugin.Util
             {
                 return ConvertFrom(value, GetUnit(activity));
             }
-            private static double ConvertFrom_ToKm(double value, IActivity activity)
+            private static double Convert_MToKm(double value, IActivity activity)
             {
                 return value / 1000;
             }
-            private static double ConvertFrom_ToMi(double value, IActivity activity)
+            private static double Convert_MToMi(double value, IActivity activity)
             {
                 return value / 1609.344;
+            }
+            private static double Convert_MToFt(double value, IActivity activity)
+            {
+                return value / 0.3048;
             }
 
             public static double ConvertTo(double value, Length.Units du)

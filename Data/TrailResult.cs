@@ -1919,8 +1919,13 @@ namespace TrailsPlugin.Data
 
                 if (sourceTrack != null && sourceTrack.Count > 1)
                 {
+                    IActivity activityRef = activity;
+                    if (this.m_cacheTrackRef != null)
+                    {
+                        activityRef = this.m_cacheTrackRef.Activity;
+                    }
                     deviceElevationTrack0 = copySmoothTrack(sourceTrack, true, trim, eleSmooth,
-                               UnitUtil.Elevation.ConvertFromDelegate(this.m_cacheTrackRef.Activity), this.m_cacheTrackRef);
+                               UnitUtil.Elevation.ConvertFromDelegate(activityRef), this.m_cacheTrackRef);
                 }
             }
             return deviceElevationTrack0;

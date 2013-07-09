@@ -38,7 +38,7 @@ namespace TrailsPlugin.Integration
         private const string _PerformancePredictorPopup = "PerformancePredictorPopup";
         private const string _PerformancePredictorFields = "getResults";
 
-        private static readonly System.Version minVersion = new System.Version(2, 0, 357, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 405, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedPerformancePredictor = false;
 
@@ -78,11 +78,12 @@ namespace TrailsPlugin.Integration
         {
             public class Predicted
             {
-                public double new_dist, new_time;
-                public Predicted(double new_dist, double new_time)
+                public double new_dist, new_time, ideal_time;
+                public Predicted(double new_dist, double new_time, double utopia_time)
                 {
                     this.new_dist = new_dist;
                     this.new_time = new_time;
+                    this.ideal_time = utopia_time;
                 }
             }
             public PerformancePredictorResult(IList<Object> o)
@@ -92,7 +93,7 @@ namespace TrailsPlugin.Integration
                 this.predicted = new List<Predicted>();
                 for(int i = 2; i < o.Count-1; i+=2)
                 {
-                    predicted.Add(new Predicted((double)o[i], (double)o[i+1]));
+                    predicted.Add(new Predicted((double)o[i], (double)o[i+1],  (double)o[i+2]));
                 }
             }
             public double vo2max, vdot;
@@ -123,8 +124,9 @@ namespace TrailsPlugin.Integration
             }
         }
 
-        //relatve fast call for 2150 activities, 0.03s calledindividually, 0.0016s called for all
-        public static IList<PerformancePredictorResult> PerformancePredictorFields(IList<IActivity> activities, IList<double> times, IList<double> distances, IList<double> predictDistances, System.Windows.Forms.ProgressBar progressBar)
+        //relatve fast call for 2150 activities, 0.03s called individually, 0.0016s called for all
+        //369 8(7)ms no utopia, 402 16 (9) ms w utopia
+        public static IList<PerformancePredictorResult> PerformancePredictorFields(IList<IActivity> activities, IList<double> times, IList<double> distances, IList<double> predictDistances, IList<double> times2, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<PerformancePredictorResult> results = null;
             try
@@ -132,7 +134,7 @@ namespace TrailsPlugin.Integration
                 if (GetPerformancePredictor != null)
                 {
                     MethodInfo methodInfo = GetPerformancePredictor.GetMethod(_PerformancePredictorFields);
-                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, times, distances, predictDistances, progressBar });
+                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, times, distances, predictDistances, times2, progressBar });
                     results = new List<PerformancePredictorResult>();
                     foreach (IList<Object> o in (IList<IList<Object>>)resultFromPlugIn)
                     {

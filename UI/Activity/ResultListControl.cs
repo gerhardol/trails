@@ -415,17 +415,15 @@ namespace TrailsPlugin.UI.Activity {
                 //Avoid sort on some fields that are heavy to calculate at auto updates
                 if (!colClicked && atr.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
                 {
-                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedTime)
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedTime ||
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.PredictDistance ||
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.IdealTime)
                     {
                         TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.Duration;
                     }
                     if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedPace)
                     {
                         TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.AvgPace;
-                    }
-                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.PredictDistance)
-                    {
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.Distance;
                     }
                 }
                 ((List<TrailResultWrapper>)(atr)).Sort();

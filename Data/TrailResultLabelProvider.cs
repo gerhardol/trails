@@ -188,6 +188,8 @@ namespace TrailsPlugin.Data
                     return row.Name;
                 case TrailResultColumnIds.PredictDistance:
                     return UnitUtil.Time.ToString(row.PredictDistance, "");
+                case TrailResultColumnIds.IdealTime:
+                    return UnitUtil.Time.ToString(row.IdealTime, "");
                 case TrailResultColumnIds.GradeRunAdjustedTime:
                     return UnitUtil.Time.ToString(row.GradeRunAdjustedTime, "");
                 case TrailResultColumnIds.GradeRunAdjustedPace:

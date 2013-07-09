@@ -115,6 +115,7 @@ namespace TrailsPlugin.Data {
         public const string Location = "Location";
         public const string Category = "Category";
         public const string PredictDistance = "PredictDistance";
+        public const string IdealTime = "IdealTime";
         public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
         public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
         public const string Diff = "Diff";
@@ -123,6 +124,7 @@ namespace TrailsPlugin.Data {
         //TBD to translate
         public const string DiffPresent = "Diff";
         public const string AscendingSpeed_VAM = "Ascending Speed (VAM)";
+        public const string cIdealTime = "IdealTime";
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -214,6 +216,7 @@ namespace TrailsPlugin.Data {
             if (all || TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", "", 70, StringAlignment.Far));
+                columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.IdealTime, cIdealTime, "", 70, StringAlignment.Far));
             }
             if (all || Settings.RunningGradeAdjustMethod != Data.RunningGradeAdjustMethodEnum.None)
             {
@@ -313,6 +316,8 @@ namespace TrailsPlugin.Data {
                     return x.MaxHR;
                 case TrailResultColumnIds.PredictDistance:
                     return x.PredictDistance;
+                case TrailResultColumnIds.IdealTime:
+                    return x.IdealTime.TotalSeconds;
                 case TrailResultColumnIds.GradeRunAdjustedTime:
                     return x.GradeRunAdjustedTime.TotalSeconds;
                 case TrailResultColumnIds.GradeRunAdjustedPace:

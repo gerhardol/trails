@@ -47,6 +47,8 @@ namespace TrailsPlugin.Data
         private DateTime? m_startTime;
         private DateTime? m_endTime;
         private float? m_predictDistance;
+        private TimeSpan? m_idealTime = null;
+
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
         private ChartColors m_trailColor = null;
@@ -170,6 +172,7 @@ namespace TrailsPlugin.Data
             m_ascent = null;
             m_descent = null;
             m_predictDistance = null;
+            this.m_idealTime = null;
 
             //smoothing control
             //m_TrailActivityInfoOptions = null;
@@ -1319,8 +1322,7 @@ namespace TrailsPlugin.Data
                     {
                         IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
                             TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
-//xxx                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, new List<double> { 0 }, null);
-                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, new List<double> { this.GradeRunAdjustedTime.TotalSeconds }, null);
+                            new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, new List<double> { double.NaN }, null);
                         if (t != null && t.Count > 0 && t[0] != null)
                         {
                             m_predictDistance = (float)t[0].predicted[0].new_time;
@@ -1334,7 +1336,31 @@ namespace TrailsPlugin.Data
                 return (float)m_predictDistance;
             }
         }
-#endregion
+        public TimeSpan IdealTime
+        {
+            get
+            {
+                if (this.m_idealTime == null)
+                {
+                    if (TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+                    {
+                        IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
+                            TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
+                            new List<IActivity> { this.Activity }, new List<double> { double.NaN }, new List<double> { this.Distance }, new List<double> { this.Distance }, new List<double> { this.GradeRunAdjustedTime.TotalSeconds }, null);
+                        if (t != null && t.Count > 0 && t[0] != null)
+                        {
+                            this.m_idealTime = TimeSpan.FromSeconds(t[0].predicted[0].ideal_time);
+                        }
+                    }
+                    if (this.m_idealTime == null)
+                    {
+                        this.m_idealTime = TimeSpan.Zero;
+                    }
+                }
+                return (TimeSpan)this.m_idealTime;
+            }
+        }
+        #endregion
 
         /**********************************************************/
         #region tracks

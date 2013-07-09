@@ -394,26 +394,29 @@ namespace TrailsPlugin.UI.Activity {
                 IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
                 foreach (TrailResult tr2 in markResults)
                 {
-                    IValueRangeSeries<DateTime> t2 = TrackUtil.GetResultRegions(XAxisReferential == XAxisValue.Time, tr2, this.ReferenceTrailResult, regions);
-                    //Add ranges if single set, then it is a part of a new selection
-                    if (!selecting && range != null)
+                    if (!(tr2 is SummaryTrailResult))
                     {
-                        if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
+                        IValueRangeSeries<DateTime> t2 = TrackUtil.GetResultRegions(XAxisReferential == XAxisValue.Time, tr2, this.ReferenceTrailResult, regions);
+                        //Add ranges if single set, then it is a part of a new selection
+                        if (!selecting && range != null)
                         {
-                            DateTime time;
-                            if (XAxisReferential == XAxisValue.Time)
+                            if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
                             {
-                                time = tr2.getDateTimeFromTimeResult(range[0]);
+                                DateTime time;
+                                if (XAxisReferential == XAxisValue.Time)
+                                {
+                                    time = tr2.getDateTimeFromTimeResult(range[0]);
+                                }
+                                else
+                                {
+                                    time = tr2.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(range[0], this.ReferenceTrailResult));
+                                }
+                                //Add a one second duration, otherwise rhere will be a complicated shared/Marked times combination
+                                t2.Add(new ValueRange<DateTime>(time, time.AddSeconds(1)));
                             }
-                            else
-                            {
-                                time = tr2.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(range[0], this.ReferenceTrailResult));
-                            }
-                            //Add a one second duration, otherwise rhere will be a complicated shared/Marked times combination
-                            t2.Add(new ValueRange<DateTime> ( time, time.AddSeconds(1) ));
                         }
+                        results.Add(new Data.TrailResultMarked(tr2, t2));
                     }
-                    results.Add(new Data.TrailResultMarked(tr2, t2));
                 }
                 //this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 //m_selectDataHandler = false;
@@ -828,8 +831,8 @@ namespace TrailsPlugin.UI.Activity {
                                 }
                             }
 
-                            //Set chart type to Fill similar to ST for first result
-                            if (m_ChartTypes[0] == chartType)
+                            //Set chart type to Fill similar to ST for first result, only summary if selected
+                            if (m_ChartTypes[0] == chartType || summaryResult == null || summaryResult == tr)
                             {
                                 dataLine.ChartType = ChartDataSeries.Type.Fill;
                             }

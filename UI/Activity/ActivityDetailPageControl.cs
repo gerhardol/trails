@@ -84,7 +84,8 @@ namespace TrailsPlugin.UI.Activity {
         private IList<TrailResultMarked> m_currentSelectedMapRanges = new List<TrailResultMarked>(); //Note that Count is 0 or 1 now
         //Selected on ST drawn activities
         private IList<IItemTrackSelectionInfo> m_currentItemTrackSelected = new List<IItemTrackSelectionInfo>();
-
+        internal IList<TrailResultMarked> m_lastMarkedResult = null; //Fix: save last part of a result marked
+        
 #if ST_2_1
         public ActivityDetailPageControl()
         {
@@ -227,6 +228,7 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshData(bool clearResults)
         {
             bool showPage = m_showPage;
+            m_lastMarkedResult = null;
             HidePage(false); //defer updates
             if (clearResults)
             {
@@ -406,7 +408,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.LowerSplitContainer.SplitterDistance = value;
             }
         }
-        
+
         public void MarkTrack(IList<TrailResultMarked> atr, bool markChart, bool zoom)
         {
 #if !ST_2_1
@@ -417,6 +419,7 @@ namespace TrailsPlugin.UI.Activity {
                 IDictionary<string, MapPolyline> marked = new Dictionary<string, MapPolyline>();
                 foreach (TrailResultMarked trm in atr)
                 {
+                    m_lastMarkedResult = atr;
                     if (m_view != null &&
                       ViewSingleActivity(trm.trailResult.Activity))
                     {

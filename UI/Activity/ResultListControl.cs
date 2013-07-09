@@ -198,7 +198,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 RefreshColumns();
 
-                summaryList_Sort();
+                summaryList_Sort(false);
                 ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
             }
             else
@@ -404,7 +404,7 @@ namespace TrailsPlugin.UI.Activity {
             return aTr;
         }
 
-        private void summaryList_Sort()
+        private void summaryList_Sort(bool colClicked)
         {
             if (m_controller.CurrentActivityTrailIsSelected)
             {
@@ -412,6 +412,22 @@ namespace TrailsPlugin.UI.Activity {
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
                 IList<TrailResultWrapper> atr = m_controller.CurrentResultTreeList;
+                //Avoid sort on some fields that are heavy to calculate at auto updates
+                if (!colClicked && atr.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
+                {
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedTime)
+                    {
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.Duration;
+                    }
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedPace)
+                    {
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.AvgPace;
+                    }
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.PredictDistance)
+                    {
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.Distance;
+                    }
+                }
                 ((List<TrailResultWrapper>)(atr)).Sort();
                 int i = 1;
                 foreach (TrailResultWrapper tr in atr)
@@ -928,7 +944,7 @@ namespace TrailsPlugin.UI.Activity {
                        ListSortDirection.Descending : ListSortDirection.Ascending;
             }
             TrailsPlugin.Data.Settings.SummaryViewSortColumn = e.Id;
-            this.summaryList_Sort();
+            this.summaryList_Sort(true);
         }
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
@@ -1339,8 +1355,29 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-
         }
+
+        private void InsertRestLap(IActivityLaps laps, DateTime startTime, TimeSpan duration)
+        {
+            ILapInfo l = null;
+            if(laps.Count>0)
+            {
+                for (int i = 0; i < laps.Count; i++ )
+                {
+                    if (laps[i].StartTime > startTime)
+                    {
+                        l = laps.Insert(i, startTime, duration);
+                        break;
+                    }
+                }
+            }
+            if (l == null)
+            {
+                l = laps.Add(startTime, duration);
+            }
+            l.Rest = true;
+        }
+
 
         /*************************************************************************/
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1355,7 +1392,68 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.A)
             {
-                if (e.Modifiers == Keys.Control)
+                if (e.Modifiers == (Keys.Control | Keys.Shift | Keys.Alt))
+                {
+                    //Unofficial
+                    //Set the part marked (on chart on map) as a "Rest" lap
+                    //A little inconveient to use. After marking right click in list to get focus, then activate
+                    if (this.m_page.m_lastMarkedResult != null)
+                    {
+                        foreach (TrailResultMarked mtr in this.m_page.m_lastMarkedResult)
+                        {
+                            foreach (IValueRange<DateTime> t in mtr.selInfo.MarkedTimes)
+                            {
+                                TimeSpan duration = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                                    mtr.trailResult.Activity.StartTime, t.Lower, mtr.trailResult.Activity.TimerPauses);
+                                if (duration.TotalSeconds >= 1)
+                                {
+                                    InsertRestLap(mtr.trailResult.Activity.Laps, t.Lower, duration);
+                                }
+                            }
+                        }
+                    }
+
+                    ////Fix to remove laps added last insert of inserted (code to be removed)
+                    //IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
+                    //if (atr != null && atr.Count > 0)
+                    //{
+                    //    IActivity activity = atr[0].Result.Activity;
+                    //    if (activity.Laps.Count > 1)
+                    //    {
+                    //        int j = -1;
+                    //        for (int i = 1; i < activity.Laps.Count; i++)
+                    //        {
+                    //            if (j >= 0)
+                    //            {
+                    //                if (activity.Laps[i].StartTime < activity.Laps[j].StartTime)
+                    //                {
+                    //                    activity.Laps.Remove(activity.Laps[i]);
+                    //                }
+                    //            }
+                    //            else if (activity.Laps[i].StartTime < activity.Laps[i - 1].StartTime)
+                    //            {
+                    //                j = i;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                }
+                else if (e.Modifiers == (Keys.Control | Keys.Shift))
+                {
+                    //Unofficial
+                    IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
+                    if (atr != null && atr.Count > 0)
+                    {
+                        foreach (TrailResultWrapper tr in atr)
+                        {
+                            if (tr.Result is ChildTrailResult)
+                            {
+                                InsertRestLap(tr.Result.Activity.Laps, tr.Result.StartTime, tr.Result.Duration);
+                            }
+                        }
+                    }
+                }
+                else if (e.Modifiers == Keys.Control)
                 {
                     this.selectAll();
                 }

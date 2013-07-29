@@ -1517,8 +1517,10 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.F)
             {
+                //Unofficial shortcuts
                 if (e.Modifiers == Keys.Control)
                 {
+                    //Set "Device elevation" (possibly in other activity) as ST normal (GPS) elevation
                     IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
                     if (atr != null && atr.Count > 0 &&
                         m_controller.CurrentResultTreeList.Count > 0)
@@ -1532,7 +1534,6 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    //Unofficial shortcuts
                     //Put alternatively calculated grade in Cadence
                     TrailResult.CalculateGrade = !TrailResult.CalculateGrade;
                     m_page.RefreshData(true);

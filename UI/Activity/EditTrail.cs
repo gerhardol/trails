@@ -338,7 +338,7 @@ namespace TrailsPlugin.UI.Activity
             if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_EditTrail_Export, CommonResources.Text.ActionOk, CommonResources.Text.ActionCancel),
                 "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                DateTime startTime = DateTime.Now;
+                DateTime startTime = DateTime.UtcNow;
                 IActivity activity;
                 bool hasGps = this.m_trailResult != null && this.m_trailResult.GPSRoute != null;
                 if (hasGps)

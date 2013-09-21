@@ -58,7 +58,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="TrailsName" xml:space="preserve">
     <comment>ActivityPage title</comment>
     <value>Trails</value>
@@ -131,22 +131,8 @@ nicht beeinflusst.</value>
   <data name="TrailChartsName" xml:space="preserve">
     <value>Trail-Diagramme</value>
   </data>
-  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
-    <comment>unused</comment>
-    <value>Diagrammwerkzeuge ausblenden</value>
-  </data>
-  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <comment>Same as STcore </comment>
-    <value>Diagrammwerkzeuge anzeigen</value>
-  </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
     <value>Mit Doppelklick in der Tabelle können Sie Werte bearbeiten.</value>
-  </data>
-  <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
-    <comment>unused</comment>
-    <value>Kein Punkt auf der Karte augewählt.
-
-Drücken Sie {0}, um Zwischenzeiten zu verwenden, {1} um abzubrechen und Punkte auf dem GPS-Track auszuwählen.</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Aktivitäten auf die in der Liste ausgewählten beschränken</value>
@@ -233,5 +219,8 @@ Stellen Sie sicher, dass {1} installiert ist.</value>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
     <value>Aktivitäten mit der aktuellen Referenz-Kategorie einfügen</value>
+  </data>
+  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
+    <value>Diagrammwerkzeuge anzeigen</value>
   </data>
 </root>

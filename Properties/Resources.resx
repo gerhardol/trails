@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="square_blue" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\square-blue-16-ns.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -177,18 +177,6 @@
     <value>List Settings...</value>
     <comment>STcore</comment>
   </data>
-  <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
-    <value>You must select a point on the map.
-
-To select a point, just click on the track.
-Add new points by pressing the Add button.
-
-To select a second point, hold down CTRL, and click another part of the track.
-Select as many points required to make this trail unique from other trails.
-
-To make a copy of the current reference activity, select Trail {0}, then press Edit button.</value>
-    <comment>ST2 only</comment>
-  </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Do you want to update the trail GPS locations
 to currently selected points?</value>
@@ -219,25 +207,11 @@ Changing this value will not effect existing trails.</value>
     <value>Trails Plugin</value>
     <comment>Name of application, displayed in GUI</comment>
   </data>
-  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
-    <value>Hide Chart Tools</value>
-    <comment>unused</comment>
-  </data>
-  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <value>Show Chart Tools</value>
-    <comment>Same as STcore </comment>
-  </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
     <value>Double click the table to edit values.</value>
   </data>
   <data name="DropDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DropDown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
-    <value>No point selected on the map.
-
-Press {0} to use the Lap points, {1} to abort and select points on the GPS track.</value>
-    <comment>unused</comment>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Limit activities to activities selected in list</value>
@@ -348,7 +322,6 @@ Make sure that {1} is installed.</value>
   </data>
   <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
     <value>Adjust Resync Diff at Trail Points</value>
-    <comment>unused</comment>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
     <value>Add Activities with Current Reference Category</value>
@@ -361,5 +334,8 @@ Make sure that {1} is installed.</value>
   </data>
   <data name="PerformancePredictorToInstall" xml:space="preserve">
     <value>Install at least version {0} of {1} to analyze with PerformancePredictor.</value>
+  </data>
+  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
+    <value>Show Chart Tools</value>
   </data>
 </root>

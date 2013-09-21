@@ -58,7 +58,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
     <value>Lägg till trail</value>
   </data>
@@ -105,16 +105,6 @@
     <comment>STcore</comment>
     <value>Inställningar för tabell...</value>
   </data>
-  <data name="UI_Activity_Page_SelectPointsError_ST2" xml:space="preserve">
-    <comment>ST2 only</comment>
-    <value>Du måste välja punkter på kartan.
-
-För att välja en punkt, klicka bara på ett aktivitetsspår.
-
-För att välja ytterliggare punkter, använd CTRL och klicka på en annan punkt på spåret.
-Välj punkter så denna trail är unik jämförd med andra trail.
-Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Trail {0} och klicka på knappen för editera.</value>
-  </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
     <value>Vill du uppdatera trail GPS punkter med de valda punkterna?</value>
   </data>
@@ -133,22 +123,8 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="TrailChartsName" xml:space="preserve">
     <value>Trail Grafer</value>
   </data>
-  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
-    <comment>unused</comment>
-    <value>Göm kartverktyg</value>
-  </data>
-  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <comment>Same as STcore </comment>
-    <value>Visa kartverktyg</value>
-  </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
     <value>Dubbelklicka i tabellen för att editera.</value>
-  </data>
-  <data name="UI_Activity_Page_AddTrail_NoSelected" xml:space="preserve">
-    <comment>unused</comment>
-    <value>Inga punkter valda på kartan.
-
-Välj {0} för att använda etapper, {1} för att avbryta och välja punkter på GPS spåret.</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Begränsa aktiviteter till valda i listan</value>
@@ -212,7 +188,7 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <value>En HighScore Trail kan genereras.</value>
   </data>
   <data name="HighScoreToInstall" xml:space="preserve">
-    <value>Installera åtminstone version {0} av {1} får att HighScoreTrail.</value>
+    <value>Installera åtminstone version {0} av {1} för att analysera med HighScore.</value>
   </data>
   <data name="Required" xml:space="preserve">
     <value>Obligatorisk</value>
@@ -232,7 +208,19 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
     <value>Synka diagram vid trail punkter</value>
   </data>
+  <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Synkronisera diff vid trail punkter</value>
+  </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
     <value>Lägg till aktiviteter med referens kategori</value>
+  </data>
+  <data name="PerformancePredictorCompatible" xml:space="preserve">
+    <value>Installera åtminstone version {0} av {1} för att analysera med PerformancePredictor.</value>
+  </data>
+  <data name="PerformancePredictorToInstall" xml:space="preserve">
+    <value>Problem att kommunicera med {0}. Se till att {1} är installerad.</value>
+  </data>
+  <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
+    <value>Visa kartverktyg</value>
   </data>
 </root>

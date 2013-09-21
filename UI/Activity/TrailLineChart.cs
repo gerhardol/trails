@@ -824,15 +824,15 @@ namespace TrailsPlugin.UI.Activity {
                                 //Decrease alpha for many activities for fill (but not selected)
                                 if (m_trailResults.Count > 1)
                                 {
-                                    int alpha = chartColor.FillNormal.A - m_trailResults.Count * 3;
+                                    int alpha = chartColor.FillNormal.A - m_trailResults.Count * 2;
                                     alpha = Math.Min(alpha, 0x77);
                                     alpha = Math.Max(alpha, 0x10);
                                     dataLine.FillColor = Color.FromArgb(alpha, chartColor.FillNormal.R, chartColor.FillNormal.G, chartColor.FillNormal.B);
                                 }
                             }
 
-                            //Set chart type to Fill similar to ST for first result, only summary if selected
-                            if (m_ChartTypes[0] == chartType || summaryResult == null || summaryResult == tr)
+                            //Set chart type to Fill similar to ST for first result (not charttype), only summary if selected
+                            if (m_ChartTypes[0] == chartType /*&& i==0/* || summaryResult == tr*/)
                             {
                                 dataLine.ChartType = ChartDataSeries.Type.Fill;
                             }

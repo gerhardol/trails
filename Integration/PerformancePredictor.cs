@@ -38,7 +38,7 @@ namespace TrailsPlugin.Integration
         private const string _PerformancePredictorPopup = "PerformancePredictorPopup";
         private const string _PerformancePredictorFields = "getResults";
 
-        private static readonly System.Version minVersion = new System.Version(2, 0, 405, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 410, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedPerformancePredictor = false;
 

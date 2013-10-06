@@ -347,7 +347,7 @@ namespace TrailsPlugin.Data
                                     activityStatus = CalcInboundResults(activity, trailgps, locationBounds, MaxAllowedMisses, false, progressBar);
                                     //No need to check bidirectional for one point trails
                                     if (bidirectional && trailgps.Count > 1 &&
-                                        activityStatus != TrailOrderStatus.Match && activityStatus < TrailOrderStatus.InBound)
+                                        /*activityStatus != TrailOrderStatus.Match &&*/ activityStatus < TrailOrderStatus.InBound)
                                     {
                                         IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
                                         IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();
@@ -524,7 +524,7 @@ namespace TrailsPlugin.Data
 
                 status = CalcGpsTrail(activity, pauses, trailgps, locationBounds,
                     radius, 0, 0, false, maxPoints, false, trailResults, incompleteResults, null);
-                if (bidirectional && trailgps.Count > 1 && /*status != TrailOrderStatus.Match &&*/ status < TrailOrderStatus.InBound)
+                if (bidirectional && trailgps.Count > 1 && status != TrailOrderStatus.Match && status < TrailOrderStatus.InBound)
                 {
                     IList<TrailGPSLocation> trailgpsReverse = new List<TrailGPSLocation>();
                     IList<IGPSBounds> locationBoundsReverse = new List<IGPSBounds>();

@@ -36,6 +36,8 @@ namespace GpsRunningPlugin.Util
             return GpsRunningPlugin.Plugin.GetApplication();
 #elif MATRIXPLUGIN
             return MatrixPlugin.Plugin.GetApplication();
+#elif ACTIVITYPICTURESPLUGIN
+            return ActivityPicturePlugin.Plugin.GetApplication();
 #else // TRAILSPLUGIN
             return TrailsPlugin.Plugin.GetApplication();
 #endif

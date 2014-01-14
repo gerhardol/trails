@@ -1323,7 +1323,7 @@ namespace TrailsPlugin.Data
                         IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
                             TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
                             new List<IActivity> { this.Activity }, new List<double> { this.Duration.TotalSeconds }, new List<double> { this.Distance }, new List<double> { Settings.PredictDistance }, new List<double> { double.NaN }, null);
-                        if (t != null && t.Count > 0 && t[0] != null)
+                        if (t != null && t.Count > 0 && t[0] != null && !double.IsNaN(t[0].predicted[0].new_time))
                         {
                             m_predictDistance = (float)t[0].predicted[0].new_time;
                         }
@@ -1336,6 +1336,7 @@ namespace TrailsPlugin.Data
                 return (float)m_predictDistance;
             }
         }
+
         public TimeSpan IdealTime
         {
             get

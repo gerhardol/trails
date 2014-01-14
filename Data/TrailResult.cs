@@ -1347,7 +1347,7 @@ namespace TrailsPlugin.Data
                         IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
                             TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(
                             new List<IActivity> { this.Activity }, new List<double> { double.NaN }, new List<double> { this.Distance }, new List<double> { this.Distance }, new List<double> { this.GradeRunAdjustedTime.TotalSeconds }, null);
-                        if (t != null && t.Count > 0 && t[0] != null)
+                        if (t != null && t.Count > 0 && t[0] != null && !double.IsNaN(t[0].predicted[0].ideal_time))
                         {
                             this.m_idealTime = TimeSpan.FromSeconds(t[0].predicted[0].ideal_time);
                         }

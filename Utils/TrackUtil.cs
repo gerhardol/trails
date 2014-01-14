@@ -378,6 +378,11 @@ namespace TrailsPlugin.Utils
                     refElapsed = ReferenceTrailResult.TrailPointDist0(ReferenceTrailResult);
                 }
 
+                //If the result/reference has no laps, no offset
+                if (trElapsed.Count <= 2 || refElapsed.Count <= 2)
+                {
+                    return offset;
+                }
                 int currOffsetIndex = 0;
                 while (currOffsetIndex < trElapsed.Count && currOffsetIndex < refElapsed.Count &&
                     (float.IsNaN(trElapsed[currOffsetIndex]) || elapsed > trElapsed[currOffsetIndex]))

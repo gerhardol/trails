@@ -900,7 +900,7 @@ namespace TrailsPlugin.Data
                                     matchDist = closeDist;
                                     matchFactor = routeFactor;
                                 }
-                                if (currResult.NextIsEndTrailPoint && routeDist > matchDist + distHysteresis)
+                                if (currResult.NextIsEndTrailPoint && ((routeFactor>0) && (closeDist < distHysteresis*3) || (routeDist > matchDist + distHysteresis)))
                                 {
                                     //Leaving center for last point - no more checks
                                     break;
@@ -938,14 +938,14 @@ namespace TrailsPlugin.Data
                                         }
                                     }
 
-                                   if (closeDist < matchDist)
+                                    if (closeDist < matchDist)
                                     {
                                         //Better, still closing in
                                         matchIndex = p.index;
                                         matchDist = closeDist;
                                         matchFactor = routeFactor;
                                     }
-                                    if (p.prevDist > matchDist + distHysteresis)
+                                    if (((routeFactor > 0) && (closeDist < distHysteresis*3)) || (p.prevDist > matchDist + distHysteresis))
                                     {
                                         //Leaving middle for last point - no more checks
                                         break;

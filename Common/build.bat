@@ -17,8 +17,8 @@ REM $(PluginId)
 SET guid=%1
 REM $(StPluginVersion)
 SET StPluginVersion=%2
-REM ProjectName)
-SET ProjectName=%3
+REM $(PluginName)
+SET PluginName=%3
 REM $(ProjectDir)
 SET ProjectDir=%4
 REM $(StPluginPath)
@@ -49,14 +49,14 @@ GOTO endversion
 
 :PERL_VERSION
 set cygwin=nodosfilewarning
-set tempfile=%temp%\%ProjectName%-stpluginversion.tmp
+set tempfile=%temp%\%PluginName%-stpluginversion.tmp
 %perl% -ne "if(/^^\[assembly: AssemblyVersion\(.([\.\d]*)(\.\*)*.\)\]/){print $1;}" %ProjectDir%\Properties\AssemblyInfo.cs > %tempfile%
 set /p PluginVersion= < %tempfile%
 rem DEL %tempfile%
 :endversion
 
-set stPlgFile=%ProjectDir%%ProjectName%-%PluginVersion%.st%StPluginVersion%plugin
-IF NOT "%ConfigurationType%"=="Release" set stPlgFile="%ProjectDir%%ProjectName%-%PluginVersion%-%ConfigurationType%.st%StPluginVersion%plugin"
+set stPlgFile=%ProjectDir%%PluginName%-%PluginVersion%.st%StPluginVersion%plugin
+IF NOT "%ConfigurationType%"=="Release" set stPlgFile="%ProjectDir%%PluginName%-%PluginVersion%-%ConfigurationType%.st%StPluginVersion%plugin"
 REM To move a .stplugin to common area, create environment variable (or set it below)
 REM set stPlgoutdir=g:\Users\go\dev\web
 
@@ -70,7 +70,7 @@ GOTO END_COPY_FILES
 IF "%ConfigurationType%"=="Profile" GOTO COPY_PROFILE
 
 :COPY_REL
-set StTarget="%C_APPDATA%\%StPluginPath%\Update\%guid%\%ProjectName%"
+set StTarget="%C_APPDATA%\%StPluginPath%\Update\%guid%\%PluginName%"
 IF NOT EXIST %StTarget% mkdir %StTarget%
 
 REM XCOPY depreciated in Vista, use for XP compatibility
@@ -80,7 +80,7 @@ GOTO END_COPY_FILES
 
 :COPY_PROFILE
 IF EXIST %C_APPDATA%\%StPluginPath%\Update ECHO Delete %C_APPDATA%\%StPluginPath%\Update\%guid%
-set StTarget="%C_APPDATA%\%StPluginPath%\Installed\%guid%\%ProjectName%"
+set StTarget="%C_APPDATA%\%StPluginPath%\Installed\%guid%\%PluginName%"
 IF NOT EXIST %StTarget% mkdir %StTarget%
 
 REM XCOPY depreciated in Vista, use for XP compatibility
@@ -106,11 +106,11 @@ IF "%ConfigurationType%"=="Release" GOTO ReleasePluginPackage
 
 :DebugPluginPackage
 REM Create debug package, with pdb
-"%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml
+"%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%PluginName%.xml
 GOTO COPY_ZIP_PACKAGE
 
 :ReleasePluginPackage
-"%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%ProjectName%.xml -x!*.pdb
+"%sevenzip%" a -r -tzip "%stPlgFile%" "%TargetDir%*" -x!*.st*plugin -x!*.tmp -x!*.locked -x!%PluginName%.xml -x!*.pdb
 
 :COPY_ZIP_PACKAGE
 IF "%stPlgoutdir%"=="" GOTO END

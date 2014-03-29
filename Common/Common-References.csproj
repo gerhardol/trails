@@ -21,68 +21,63 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug')) ">
-    <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\SportTracks.exe</StartProgram>
-	<StPluginPath>ZoneFiveSoftware\SportTracks\2.0\Plugins</StPluginPath>
-	<StPluginVersion>2</StPluginVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST3.0Profile')) ">
-    <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</StartProgram>
-	<StPluginPath>ZoneFiveSoftware\SportTracks\3\Plugins</StPluginPath>
-	<StPluginVersion>3</StPluginVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST2.1Debug')) ">
-    <ConfigurationType>Debug</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Profile') or ('$(Configuration)' == 'ST2.1Release')) ">
-    <ConfigurationType>Release</ConfigurationType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Profile')) ">
-    <ConfigurationType>Profile</ConfigurationType>
-  </PropertyGroup>
-
+ 
   <PropertyGroup>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
+
+  <!-- variables from configurations, can be set from specific too -->
+  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug')) ">
+	<StPluginVersion>2</StPluginVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Profile') or ('$(Configuration)' == 'ST3.0Debug')) ">
+	<StPluginVersion>3</StPluginVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST2.1Release')) ">
+    <ConfigurationType>Release</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST2.1Debug')) ">
+    <ConfigurationType>Debug</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'ST3.0Profile'">
+    <ConfigurationType>Profile</ConfigurationType>
+  </PropertyGroup>
+
+  <!-- Version dependencies -->
+  <PropertyGroup Condition="'$(StPluginVersion)' == '2'">
+    <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\SportTracks.exe</StartProgram>
+	<StPluginPath>ZoneFiveSoftware\SportTracks\2.0\Plugins</StPluginPath>
+    <DefineConstants>$(DefineConstants);ST_2_1</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(StPluginVersion)' == '3'">
+    <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 3\SportTracks.exe</StartProgram>
+	<StPluginPath>ZoneFiveSoftware\SportTracks\3\Plugins</StPluginPath>
+    <DefineConstants>$(DefineConstants);ST_3_0</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
  
   <!-- Configurations -->
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ST2.1Release|AnyCPU' ">
-    <DefineConstants>$(DefineConstants);TRACE;ST_2_1</DefineConstants>
+  <PropertyGroup Condition="'$(ConfigurationType)' == 'Release' or '$(ConfigurationType)' == 'Profile'">
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ST2.1Debug|AnyCPU' ">
-    <DefineConstants>$(DefineConstants);TRACE;DEBUG;ST_2_1</DefineConstants>
+
+  <PropertyGroup Condition="'$(ConfigurationType)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" (('$(Configuration)|$(Platform)' == 'ST3.0Release|AnyCPU') or ('$(Configuration)|$(Platform)' == 'ST3.0Profile|AnyCPU'))  ">
-    <DefineConstants>$(DefineConstants);TRACE;ST_3_0</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ST3.0Debug|AnyCPU' ">
-    <DefineConstants>$(DefineConstants);TRACE;DEBUG;ST_3_0</DefineConstants>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
 
   <!-- The last conditional references are seen in VSE, the others will raise warnings -->  
   <!-- references to ST API 2.1 -->
   <!--
-  <ItemGroup Condition=" ('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug') ">
+  <ItemGroup Condition=" ('$(StPluginVersion)' == '2') ">
     <Reference Include="Common.Data, Version=2.1.3478.21402, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\Common.Data.dll</HintPath>
@@ -95,8 +90,9 @@
     </Reference>
   </ItemGroup>
   -->
+
   <!-- references to ST API 3.0 -->
-  <ItemGroup Condition=" ('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST3.0Profile') ">
+  <ItemGroup Condition="'$(StPluginVersion)' == '3'">
     <Reference Include="Common.Data, Version=3.1.4415.14933, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath Condition="'$(Platform)' == 'x64' and Exists('$(ProgramFiles) (x86)')">$(ProgramFiles) (x86)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
@@ -110,7 +106,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-
 
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -160,10 +155,16 @@ IF exist "$(TargetPath)"*".locked" DEL "$(TargetPath)"*".locked"
 IF exist "$(TargetPath)" MOVE "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25date:~8,2%25%25date:~10,4%25_@_%25time:~1,1%25h%25time:~3,2%25m%25time:~6,2%25s.locked</PreBuildEvent>
   </PropertyGroup>
   -->
+  
+  <!-- Can be overridden -->
+  <PropertyGroup Condition="'$(PluginName)' == ''">
+	<PluginName>$(ProjectName)</PluginName>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <PostBuildEvent>:: This part is in the Common part of the properties
 :: Avoid editing from VSE
-$(ProjectDir)\Common\build.bat $(PluginId) $(StPluginVersion) $(ProjectName) $(ProjectDir) $(StPluginPath) $(TargetDir) $(ConfigurationType)
+$(ProjectDir)\Common\build.bat $(PluginId) $(StPluginVersion) $(PluginName) $(ProjectDir) $(StPluginPath) $(TargetDir) $(ConfigurationType)
 </PostBuildEvent>
   </PropertyGroup>
 

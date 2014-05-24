@@ -767,7 +767,12 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 foreach (LineChartTypes chartType in chartTypes)
                 {
-                    //LineChartTypes chartType = m_ChartTypes[k];
+                    LineChartTypes axisType = LineChartUtil.ChartToAxis(chartType);
+                    if (!m_axisCharts.ContainsKey(axisType))
+                    {
+                        //Race condition?
+                        return;
+                    }
                     ChartDataSeries summaryDataLine = null;
                     IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
                     INumericTimeDataSeries refGraphPoints = null;

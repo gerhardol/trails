@@ -71,7 +71,7 @@ namespace TrailsPlugin.UI.Activity {
         private DateTime m_lastMarkingRouteTime = DateTime.MinValue;
         private bool m_endSelect = false;
         private float[] m_prevSelectedRange = null;
-        private int m_selectedDataSetries = -1;
+        private int m_selectedDataSeries = -1;
  
         const int MaxSelectedSeries = 6;
         public static SyncGraphMode SyncGraph = SyncGraphMode.None;
@@ -217,7 +217,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.BeginUpdate();
                 this.m_lastSelectingTime = DateTime.Now;
-                MainChart_SelectingData(this.m_selectedDataSetries, null, true, false);
+                MainChart_SelectingData(this.m_selectedDataSeries, null, true, false);
                 this.EndUpdate(false);
             }
         }
@@ -228,7 +228,7 @@ namespace TrailsPlugin.UI.Activity {
             float[] range = null;
             bool rangeIsValid = false;
 
-            this.m_selectedDataSetries = -1;
+            this.m_selectedDataSeries = -1;
 
             this.BeginUpdate();
             if (e != null && e.DataSeries != null)
@@ -258,7 +258,7 @@ namespace TrailsPlugin.UI.Activity {
                     if (e.DataSeries.Equals(MainChart.DataSeries[j]))
                     {
                         rangeIsValid = !float.IsNaN(range[0]);
-                        this.m_selectedDataSetries = j;
+                        this.m_selectedDataSeries = j;
                         break;
                     }
                 }
@@ -280,7 +280,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (LineChartTypes chartType in m_ChartTypes)
                 {
                     if (this.m_multipleCharts &&
-                        this.m_selectedDataSetries >=0 && e.DataSeries.ValueAxis == m_axisCharts[chartType])
+                        this.m_selectedDataSeries >= 0 && e.DataSeries.ValueAxis == m_axisCharts[chartType])
                     {
                         e.DataSeries.ValueAxis.LabelColor = Color.Black;
                         this.m_lastSelectedType = chartType;
@@ -300,7 +300,7 @@ namespace TrailsPlugin.UI.Activity {
             //Select in charts etc only with current series. Use range instead of e 
             if (rangeIsValid)
             {
-                MainChart_SelectingData(this.m_selectedDataSetries, range, false, this.m_endSelect);
+                MainChart_SelectingData(this.m_selectedDataSeries, range, false, this.m_endSelect);
             }
             this.m_endSelect = !this.m_endSelect;
             this.EndUpdate(false);
@@ -1009,15 +1009,12 @@ namespace TrailsPlugin.UI.Activity {
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
             float xOffset = 0;
-            //if (TrailResult.m_syncOnDateTime)
-            //{
-            //    xOffset = tr.GetReferenceXOffset(this.ReferenceTrailResult);
-            //    if (XAxisReferential != XAxisValue.Time)
-            //    {
-            //        //xxx ref disxOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
-            //    }
-            //    //chart is diff: also y offset at 0, for sync.none
-            //}
+            if (XAxisReferential == XAxisValue.Time)
+            {
+                xOffset = tr.getReferenceXOffset(this.ReferenceTrailResult);
+                //TODO for distxOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
+            }
+            //chart is diff: also y offset at 0, for sync.none
             foreach (ITimeValueEntry<float> entry in dataPoints)
             {
                 uint elapsedEntry = entry.ElapsedSeconds;
@@ -1291,7 +1288,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            int? smoothStep;
+            int? smoothStep = null;
             bool reset = false;
             bool refreshData = false;
             bool clearRefreshData = true;
@@ -1370,6 +1367,25 @@ namespace TrailsPlugin.UI.Activity {
                 smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.Cadence;
             }
+            else if (e.KeyCode == Keys.D)
+            {
+                m_lastSelectedType = LineChartTypes.DiffDistTime;
+                if (e.Modifiers == Keys.Control)
+                {
+                    smoothStep = 0;
+                    reset = true;
+                    TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
+                    if (tr != null && this.ReferenceTrailResult != null)
+                    {
+                        tr.Activity.StartTime += TimeSpan.FromSeconds(tr.getReferenceXOffset(this.ReferenceTrailResult) -
+                            (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                    }
+                }
+                else
+                {
+                    smoothStep = 1;
+                }
+            }
             else if (e.KeyCode == Keys.E)
             {
                 smoothStep = 1;
@@ -1411,15 +1427,7 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.T)
             {
                 refreshData = true;
-                if (e.Modifiers == Keys.Control)
-                {
-                    //TBD Adjust time on diff activity?
-                    //TrailResult.m_syncOnDateTime = !TrailResult.m_syncOnDateTime;
-                }
-                else
-                {
-                    Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
-                }
+                Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
             }
             IList<LineChartTypes> charts = new List<LineChartTypes>();
             if (smoothStep != null)
@@ -1430,25 +1438,43 @@ namespace TrailsPlugin.UI.Activity {
                     smoothStep *= -1;
                 }
 
-                int val;
-                if (smoothStep == 0)
+                //If a diff graph was selected last, it will be set (the other path must handle diff too)
+                TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
+                if (tr != null)
                 {
-                    val = 0;
+                    float val;
+                    if (smoothStep == 0)
+                    {
+                        val = 0;
+                    }
+                    else
+                    {
+                        val = (float)smoothStep + tr.getReferenceXOffset(this.ReferenceTrailResult);
+                    }
+                    tr.setReferenceXOffset(val);
                 }
                 else
                 {
-                    val = GetDefaultSmooth(m_lastSelectedType);
-                    //No action for reset, value already set
-                    if (!reset)
+                    int val;
+                    if (smoothStep == 0)
                     {
-                        val += (int)smoothStep;
-                        if (val < 0)
+                        val = 0;
+                    }
+                    else
+                    {
+                        val = GetDefaultSmooth(m_lastSelectedType);
+                        //No action for reset, value already set
+                        if (!reset)
                         {
-                            val = 0;
+                            val += (int)smoothStep;
+                            if (val < 0)
+                            {
+                                val = 0;
+                            }
                         }
                     }
+                    SetDefaultSmooth(m_lastSelectedType, val);
                 }
-                SetDefaultSmooth(m_lastSelectedType, val);
             }
 
             if (refreshData)
@@ -1478,6 +1504,29 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+        }
+
+        private TrailResult getLastSelectedDiffResult(LineChartTypes chartType)
+        {
+            TrailResult tr = null;
+            if (1 == this.m_trailResults.Count)
+            {
+                tr = this.m_trailResults[0];
+            }
+            else
+            {
+                if (chartType == LineChartTypes.DiffTime ||
+                    chartType == LineChartTypes.DiffDist ||
+                    chartType == LineChartTypes.DiffDistTime)
+                {
+                    if (this.m_selectedDataSeries >= 0)
+                    {
+                        //Series must be added in order, so they can be resolved to result here
+                        tr = m_trailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
+                    }
+                }
+            }
+            return tr;
         }
 
         //Combine Set&Get to minimize the case usage
@@ -1578,8 +1627,18 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_cursorLocationAtMouseMove != null)
             {
+                int val;
+                TrailResult tr = getLastSelectedDiffResult(chartType);
+                if (tr != null)
+                {
+                    val = (int)tr.getReferenceXOffset(this.ReferenceTrailResult);
+                }
+                else 
+                {
+                    val = GetDefaultSmooth(chartType);
+                }
                 summaryListToolTip.Show(
-                    GetDefaultSmooth(chartType).ToString(),
+                    val.ToString(),
                     this,
                     new System.Drawing.Point(m_cursorLocationAtMouseMove.X +
                                   Cursor.Current.Size.Width / 2,

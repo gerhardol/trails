@@ -39,6 +39,7 @@ using ZoneFiveSoftware.Common.Visuals.Forms;
 #endif
 using TrailsPlugin.Data;
 using TrailsPlugin.Integration;
+using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity {
     public partial class ResultListControl : UserControl
@@ -1093,11 +1094,10 @@ namespace TrailsPlugin.UI.Activity {
                 DateTime end = ActivityInfoCache.Instance.GetInfo(m_controller.ReferenceActivity).EndTime;
                 foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                 {
-                    //aprox end
+                    //aprox end, excluding TimerPauses
                     DateTime end2 = activity.StartTime + activity.TotalTimeEntered;
                     if (!m_controller.Activities.Contains(activity) &&
-                        (activity.StartTime >= start && activity.StartTime <= end ||
-                        start >= activity.StartTime && start <= end2))
+                        TrackUtil.AnyOverlap(activity.StartTime, end2, start, end))
                     {
                         //Insert after the current activities, then the order is normally OK
                         allActivities.Insert(m_controller.Activities.Count, activity);
@@ -1676,7 +1676,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
-                    TrailResult.m_diffOnDateTime = !TrailResult.m_diffOnDateTime;
+                    //TBD, currently unused
                     this.m_page.RefreshData(true);
                 }
                 else

@@ -53,8 +53,8 @@ namespace TrailsPlugin.Data
         private float m_totalDistDiff; //to give quality of results
         private ChartColors m_trailColor = null;
         private string m_toolTip;
+        private float? m_offsetTime;
         //Temporary? (undocumented)
-        public static bool m_diffOnDateTime = false;
         public static bool diffToSelf = false;
         static public bool PaceTrackIsGradeAdjustedPaceAvg = false;
 
@@ -1018,7 +1018,7 @@ namespace TrailsPlugin.Data
                 else if (this.Activity != null)
                 {
                     string s = string.Format("{0} {1} {2}", this.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
-                    if (m_diffOnDateTime)
+                    if (m_offsetTime != null)
                     {
                         s += " " + Activity.Metadata.Source;
                     }
@@ -2574,6 +2574,31 @@ namespace TrailsPlugin.Data
         /**********************************************************/
         #region diff
 
+
+        public bool AnyOverlap(TrailResult other)
+        {
+            return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, other.StartTime, other.EndTime);
+        }
+
+        public float getReferenceXOffset(TrailResult refRes)
+        {
+            if (this.m_offsetTime == null || checkCacheRef(refRes))
+            {
+                this.m_offsetTime = 0;
+                //Automatically set difference for non position based Split only
+                if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits && AnyOverlap(this.m_cacheTrackRef))
+                {
+                    this.m_offsetTime = (float)(this.StartTime - this.m_cacheTrackRef.StartTime).TotalSeconds;
+                }
+            }
+            return (float)this.m_offsetTime;
+        }
+
+        public void setReferenceXOffset(float val)
+        {
+            this.m_offsetTime = val;
+        }
+
         private TrailResult getRefSub(TrailResult parRes)
         {
             TrailResult res = parRes;
@@ -2749,7 +2774,7 @@ namespace TrailsPlugin.Data
             return new TimeValueEntry<float>(refElapsed, t.Value);
         }
 
-        private enum DiffMode { ActivityStart, AbsoluteTime } //TODO:, TimeOfDay }
+        private enum DiffMode { ActivityStart } //TODO: AbsoluteTime, TimeOfDay }
         public INumericTimeDataSeries DiffDistTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -2775,14 +2800,7 @@ namespace TrailsPlugin.Data
                         commonStretches = CommonStretches(trRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
                         m_DiffDistTrack0.Add(StartTime, 0);
                     }
-                    DiffMode diffMode = DiffMode.ActivityStart;
-                    if (m_diffOnDateTime && (
-                        this.StartTime >= trRef.StartTime && this.StartTime <= trRef.EndTime ||
-                        trRef.StartTime >= this.StartTime && trRef.StartTime <= this.EndTime))
-                    {
-                        //TODO: Implement
-                        diffMode = DiffMode.AbsoluteTime;
-                    }
+                    //DiffMode diffMode = DiffMode.ActivityStart;
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         uint elapsed = t.ElapsedSeconds;
@@ -2861,7 +2879,7 @@ namespace TrailsPlugin.Data
                                         else
                                         {
                                             DateTime d2;
-                                            if (diffMode == DiffMode.ActivityStart)
+                                            if (true /*diffMode == DiffMode.ActivityStart*/)
                                             {
                                                 d2 = trRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refTimeOffset));
                                             }

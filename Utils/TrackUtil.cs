@@ -423,7 +423,7 @@ namespace TrailsPlugin.Utils
         {
             bool res = false;
             if (start1 >= start2 && start1 <= end2 ||
-                start2 >= start1 && start2 <= end2)
+                start2 >= start1 && start2 <= end1)
             {
                 res = true;
             }

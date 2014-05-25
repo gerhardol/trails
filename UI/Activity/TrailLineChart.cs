@@ -1008,6 +1008,16 @@ namespace TrailsPlugin.UI.Activity {
 
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
+            float xOffset = 0;
+            //if (TrailResult.m_syncOnDateTime)
+            //{
+            //    xOffset = tr.GetReferenceXOffset(this.ReferenceTrailResult);
+            //    if (XAxisReferential != XAxisValue.Time)
+            //    {
+            //        //xxx ref disxOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
+            //    }
+            //    //chart is diff: also y offset at 0, for sync.none
+            //}
             foreach (ITimeValueEntry<float> entry in dataPoints)
             {
                 uint elapsedEntry = entry.ElapsedSeconds;
@@ -1016,14 +1026,14 @@ namespace TrailsPlugin.UI.Activity {
                     //The time is required to get the xvalue(time) or yvalue(dist)
                     DateTime time = dataPoints.EntryDateTime(entry);
                     //The x value in the graph, the actual time or distance
-                    float xValue;
+                    float xValue = xOffset;
                     if (XAxisReferential == XAxisValue.Time)
                     {
-                        xValue = (float)tr.getTimeResult(time);
+                        xValue += (float)tr.getTimeResult(time);
                     }
                     else
                     {
-                        xValue = entry.Value;
+                        xValue += entry.Value;
                     }
                     //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
@@ -1281,10 +1291,8 @@ namespace TrailsPlugin.UI.Activity {
 
         void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            bool smoothChanged = false;
-            bool increase = true;
+            int? smoothStep;
             bool reset = false;
-            bool zero = false;
             bool refreshData = false;
             bool clearRefreshData = true;
 
@@ -1292,25 +1300,20 @@ namespace TrailsPlugin.UI.Activity {
 
             if (e.KeyCode == Keys.Home)
             {
-                smoothChanged = true;
+                smoothStep = 0;
                 reset = true;
             }
             else if (e.KeyCode == Keys.End)
             {
-                smoothChanged = true;
-                zero = true;
-            }
-            else if (e.Modifiers == Keys.Shift)
-            {
-                increase = false;
+                smoothStep = 0;
             }
 
             if (e.KeyCode == Keys.PageDown || e.KeyCode == Keys.PageUp)
             {
-                smoothChanged = true;
+                smoothStep = 10;
                 if (e.KeyCode == Keys.PageDown)
                 {
-                    increase = false;
+                    smoothStep *= -1;
                 }
                 if (!m_ChartTypes.Contains(m_lastSelectedType))
                 {
@@ -1355,7 +1358,7 @@ namespace TrailsPlugin.UI.Activity {
                             SyncGraph++;
                         }
                     }
-                    //This tooltip is shown at setup -show explicitly here
+                    //This tooltip is shown at setup - show explicitly here
                     if (SyncGraph == SyncGraphMode.None)
                     {
                         ShowGeneralToolTip(SyncGraph.ToString()); //TODO: Translate
@@ -1364,17 +1367,17 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.C)
             {
-                smoothChanged = true;
+                smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.Cadence;
             }
             else if (e.KeyCode == Keys.E)
             {
-                smoothChanged = true;
+                smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.Elevation;
             }
             else if (e.KeyCode == Keys.H)
             {
-                smoothChanged = true;
+                smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.HeartRateBPM;
             }
             else if (e.KeyCode == Keys.L)
@@ -1384,7 +1387,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.P)
             {
-                smoothChanged = true;
+                smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.Power;
             }
             else if (e.KeyCode == Keys.R)
@@ -1402,19 +1405,50 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.S)
             {
-                smoothChanged = true;
+                smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.Speed;
             }
             else if (e.KeyCode == Keys.T)
             {
                 refreshData = true;
-                Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
+                if (e.Modifiers == Keys.Control)
+                {
+                    //TBD Adjust time on diff activity?
+                    //TrailResult.m_syncOnDateTime = !TrailResult.m_syncOnDateTime;
+                }
+                else
+                {
+                    Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
+                }
             }
             IList<LineChartTypes> charts = new List<LineChartTypes>();
-            if (smoothChanged)
+            if (smoothStep != null)
             {
-                refreshData = true; 
-                charts = MainChart_KeyDown_Smooth(m_lastSelectedType, increase, reset, zero);
+                refreshData = true;
+                if (e.Modifiers == Keys.Shift)
+                {
+                    smoothStep *= -1;
+                }
+
+                int val;
+                if (smoothStep == 0)
+                {
+                    val = 0;
+                }
+                else
+                {
+                    val = GetDefaultSmooth(m_lastSelectedType);
+                    //No action for reset, value already set
+                    if (!reset)
+                    {
+                        val += (int)smoothStep;
+                        if (val < 0)
+                        {
+                            val = 0;
+                        }
+                    }
+                }
+                SetDefaultSmooth(m_lastSelectedType, val);
             }
 
             if (refreshData)
@@ -1427,7 +1461,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshChart();
             }
 
-            if (smoothChanged)
+            if (smoothStep != null)
             {
                 //Show smooth value once, change more than one axis if needed
                 ShowSmoothToolTip(m_lastSelectedType);
@@ -1444,30 +1478,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-        }
-
-        IList<LineChartTypes> MainChart_KeyDown_Smooth(LineChartTypes chartType, bool increase, bool reset, bool zero)
-        {
-            int val = GetDefaultSmooth(chartType);
-            //No action for reset, value already set
-            if (zero)
-            {
-                val = 0;
-            }
-            else if (!reset)
-            {
-                int add = 1;
-                if (!increase)
-                {
-                    add = -add;
-                }
-                val += add;
-                if (val < 0)
-                {
-                    val = 0;
-                }
-            }
-            return SetDefaultSmooth(chartType, val);
         }
 
         //Combine Set&Get to minimize the case usage

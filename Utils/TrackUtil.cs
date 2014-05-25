@@ -419,7 +419,18 @@ namespace TrailsPlugin.Utils
         }
 
         /****************************************************/
+        public static bool AnyOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
+        {
+            bool res = false;
+            if (start1 >= start2 && start1 <= end2 ||
+                start2 >= start1 && start2 <= end2)
+            {
+                res = true;
+            }
+            return res;
+        }
 
+        /****************************************************/
         public static IValueRangeSeries<DateTime> GetResultRegions(bool xIsTime, TrailResult tr, TrailResult ReferenceTrailResult, IList<float[]> regions)
         {
             IValueRangeSeries<DateTime> t = new ValueRangeSeries<DateTime>();

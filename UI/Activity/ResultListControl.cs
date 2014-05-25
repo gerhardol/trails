@@ -1554,6 +1554,15 @@ namespace TrailsPlugin.UI.Activity {
 
                 this.addActivityFromCategory(this.getCurrentCategory(c));
             }
+            else if (e.KeyCode == Keys.K)
+            {
+                if (e.Modifiers == Keys.Alt)
+                {
+                    TrailsPlugin.Data.Settings.CadenceFromOther = !TrailsPlugin.Data.Settings.CadenceFromOther;
+                    this.m_page.RefreshData(true);
+                    this.m_page.RefreshChart();
+                }
+            }
             else if (e.KeyCode == Keys.N)
             {
                 if (e.Modifiers == Keys.Shift)

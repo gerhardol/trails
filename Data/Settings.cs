@@ -61,6 +61,7 @@ namespace TrailsPlugin.Data
         private static float m_predictDistance = 10000;
         private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
         private static bool m_deviceElevationFromOther = false;
+        private static bool m_cadenceFromOther = false;
         private static bool m_useDeviceElevationForCalc = false;
         private static bool m_useTrailElevationAdjust = false;
         private static float[,] m_AdjustDiffSplitTimes = null;
@@ -435,6 +436,18 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public static bool CadenceFromOther
+        {
+            get
+            {
+                return m_cadenceFromOther;
+            }
+            set
+            {
+                m_cadenceFromOther = value;
+            }
+        }
+
         public static bool DeviceElevationFromOther
         {
             get
@@ -569,6 +582,8 @@ namespace TrailsPlugin.Data
                 catch { }
                 attr = pluginNode.GetAttribute(xmlTags.PredictDistance);
                 if (attr.Length > 0) { m_predictDistance = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sCadenceFromOther);
+                if (attr.Length > 0) { CadenceFromOther = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sDeviceElevationFromOther);
                 if (attr.Length > 0) { DeviceElevationFromOther = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sUseDeviceElevationForCalc);
@@ -715,6 +730,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.BarometricDevices, GetBarometricDevices);
             pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
             pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_predictDistance));
+            pluginNode.SetAttribute(xmlTags.sCadenceFromOther, XmlConvert.ToString(m_cadenceFromOther));
             pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_deviceElevationFromOther));
             pluginNode.SetAttribute(xmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_useDeviceElevationForCalc));
             pluginNode.SetAttribute(xmlTags.sUseTrailElevationAdjust, XmlConvert.ToString(m_useTrailElevationAdjust));
@@ -796,6 +812,7 @@ namespace TrailsPlugin.Data
             public const string sRunningGradeAdjustMethod = "sRunningGradeAdjustMethod";
             public const string sAdjustDiffSplitTimes = "sAdjustDiffSplitTimes";
             public const string sResultSummaryStdDev = "sResultSummaryStdDev";
+            public const string sCadenceFromOther = "sCadenceFromOther";
             public const string sDeviceElevationFromOther = "sDeviceElevationFromOther";
             public const string sUseDeviceElevationForCalc = "sUseDeviceElevationForCalc";
             public const string sUseTrailElevationAdjust = "sUseTrailElevationAdjust";

@@ -1667,6 +1667,39 @@ namespace TrailsPlugin.Data
             {
                 m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
                      new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
+                if ((m_cadencePerMinuteTrack0 == null || m_cadencePerMinuteTrack0.Count == 0) && TrailsPlugin.Data.Settings.CadenceFromOther)
+                {
+                    //Get device elevation from another activity in results
+                    foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
+                    {
+                        IActivity activity = trw.Result.Activity;
+                        if (activity != this.Activity)
+                        {
+                            m_cadencePerMinuteTrack0 = copySmoothTrack(activity.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
+                     new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
+                            if (m_cadencePerMinuteTrack0 != null && m_cadencePerMinuteTrack0.Count > 1)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    if (m_cadencePerMinuteTrack0 == null || m_cadencePerMinuteTrack0.Count == 0)
+                    {
+                        //TBD: Can "similar" activities be preferred? Currently use first found
+                        foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
+                        {
+                            if (activity != this.Activity)
+                            {
+                                m_cadencePerMinuteTrack0 = copySmoothTrack(activity.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
+                     new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
+                                if (m_cadencePerMinuteTrack0 != null && m_cadencePerMinuteTrack0.Count > 1)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             return m_cadencePerMinuteTrack0;
         }

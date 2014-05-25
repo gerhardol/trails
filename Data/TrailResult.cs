@@ -1673,7 +1673,7 @@ namespace TrailsPlugin.Data
                     foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                     {
                         IActivity activity = trw.Result.Activity;
-                        if (activity != this.Activity)
+                        if (this.AnyOverlap(activity) && activity.CadencePerMinuteTrack != null)
                         {
                             m_cadencePerMinuteTrack0 = copySmoothTrack(activity.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
                      new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
@@ -1688,7 +1688,7 @@ namespace TrailsPlugin.Data
                         //TBD: Can "similar" activities be preferred? Currently use first found
                         foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                         {
-                            if (activity != this.Activity)
+                            if (this.AnyOverlap(activity) && activity.CadencePerMinuteTrack != null)
                             {
                                 m_cadencePerMinuteTrack0 = copySmoothTrack(activity.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
                      new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
@@ -2031,7 +2031,7 @@ namespace TrailsPlugin.Data
                 foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                 {
                     IActivity activity = trw.Result.Activity;
-                    if (activity != this.Activity)
+                    if (this.AnyOverlap(activity))
                     {
                         deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(activity, trimSource, eleSmooth);
                         if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
@@ -2045,7 +2045,7 @@ namespace TrailsPlugin.Data
                     //TBD: Can "similar" activities be preferred? Currently use first found
                     foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                     {
-                        if (activity != this.Activity)
+                        if (this.AnyOverlap(activity) && activity.CadencePerMinuteTrack != null)
                         {
                             deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(activity, trimSource, eleSmooth);
                             if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)
@@ -2611,6 +2611,17 @@ namespace TrailsPlugin.Data
         public bool AnyOverlap(TrailResult other)
         {
             return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, other.StartTime, other.EndTime);
+        }
+
+        public bool AnyOverlap(IActivity activity)
+        {
+            if(activity == null && this.Activity == activity)
+            {
+                return false;
+            }
+            //aprox end, excluding TimerPauses
+            DateTime end2 = activity.StartTime + activity.TotalTimeEntered;
+            return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, activity.StartTime, end2);
         }
 
         public float getReferenceXOffset(TrailResult refRes)

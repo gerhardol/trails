@@ -1089,15 +1089,10 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (m_controller.ReferenceActivity != null)
             {
-                //Not always true or set...
-                DateTime start = m_controller.ReferenceActivity.StartTime;
-                DateTime end = ActivityInfoCache.Instance.GetInfo(m_controller.ReferenceActivity).EndTime;
                 foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                 {
-                    //aprox end, excluding TimerPauses
-                    DateTime end2 = activity.StartTime + activity.TotalTimeEntered;
-                    if (!m_controller.Activities.Contains(activity) &&
-                        TrackUtil.AnyOverlap(activity.StartTime, end2, start, end))
+                    if (!m_controller.Activities.Contains(activity) && 
+                        m_controller.ReferenceTrailResult.AnyOverlap(activity))
                     {
                         //Insert after the current activities, then the order is normally OK
                         allActivities.Insert(m_controller.Activities.Count, activity);

@@ -2045,7 +2045,7 @@ namespace TrailsPlugin.Data
                     //TBD: Can "similar" activities be preferred? Currently use first found
                     foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                     {
-                        if (this.AnyOverlap(activity) && activity.CadencePerMinuteTrack != null)
+                        if (this.AnyOverlap(activity))
                         {
                             deviceElevationTrack0 = this.DeviceElevationTrackFromActivity(activity, trimSource, eleSmooth);
                             if (deviceElevationTrack0 != null && deviceElevationTrack0.Count > 1)

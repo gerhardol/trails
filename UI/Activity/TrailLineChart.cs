@@ -1429,10 +1429,15 @@ namespace TrailsPlugin.UI.Activity {
                 refreshData = true;
                 Data.Settings.SyncChartAtTrailPoints = (e.Modifiers != Keys.Shift);
             }
+
+            double axisVisibleMin = 0;
+            double pixelsPerValue = 0;
             IList<LineChartTypes> charts = new List<LineChartTypes>();
             if (smoothStep != null)
             {
                 refreshData = true;
+                axisVisibleMin = this.MainChart.XAxis.OriginValue;
+                pixelsPerValue = this.MainChart.XAxis.PixelsPerValue;
                 if (e.Modifiers == Keys.Shift)
                 {
                     smoothStep *= -1;
@@ -1485,6 +1490,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 m_page.RefreshControlState();
                 m_page.RefreshChart();
+                if (pixelsPerValue > 0)
+                {
+                    this.MainChart.XAxis.OriginValue = axisVisibleMin;
+                    this.MainChart.XAxis.PixelsPerValue = pixelsPerValue;
+                }
             }
 
             if (smoothStep != null)

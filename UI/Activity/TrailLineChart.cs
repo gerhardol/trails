@@ -70,6 +70,7 @@ namespace TrailsPlugin.UI.Activity {
         private DateTime m_lastSelectingTime = DateTime.MinValue;
         private DateTime m_lastMarkingRouteTime = DateTime.MinValue;
         private bool m_endSelect = false;
+        private float m_firstRangeSelected = float.NaN;
         private float[] m_prevSelectedRange = null;
         private int m_selectedDataSeries = -1;
  
@@ -239,6 +240,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Sync, should not be needed
                     this.m_endSelect = false;
+                    this.m_firstRangeSelected = range[0];
                 }
 
                 if (!this.m_endSelect)
@@ -1012,7 +1014,7 @@ namespace TrailsPlugin.UI.Activity {
             if (XAxisReferential == XAxisValue.Time)
             {
                 xOffset = tr.getReferenceXOffset(this.ReferenceTrailResult);
-                //TODO for distxOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
+                //TODO for dist xOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
             }
             //chart is diff: also y offset at 0, for sync.none
             foreach (ITimeValueEntry<float> entry in dataPoints)
@@ -1023,14 +1025,14 @@ namespace TrailsPlugin.UI.Activity {
                     //The time is required to get the xvalue(time) or yvalue(dist)
                     DateTime time = dataPoints.EntryDateTime(entry);
                     //The x value in the graph, the actual time or distance
-                    float xValue = xOffset;
+                    float xValue;
                     if (XAxisReferential == XAxisValue.Time)
                     {
-                        xValue += (float)tr.getTimeResult(time);
+                        xValue = (float)tr.getTimeResult(time);
                     }
                     else
                     {
-                        xValue += entry.Value;
+                        xValue = entry.Value;
                     }
                     //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
@@ -1041,6 +1043,7 @@ namespace TrailsPlugin.UI.Activity {
                         float offset = TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
                         xValue += offset;
                     }
+                    xValue += xOffset;
                     if (oldElapsedEntry < elapsedEntry &&
                         (!Data.Settings.SyncChartAtTrailPoints ||
                         oldXvalue < xValue && xValue <= nextXvalue))
@@ -1293,7 +1296,7 @@ namespace TrailsPlugin.UI.Activity {
             bool refreshData = false;
             bool clearRefreshData = true;
 
-            this.m_CtrlPressed = e.Modifiers == Keys.Control;
+            this.m_CtrlPressed = ((e.Modifiers & Keys.Control) > 0);
 
             if (e.KeyCode == Keys.Home)
             {
@@ -1367,25 +1370,6 @@ namespace TrailsPlugin.UI.Activity {
                 smoothStep = 1;
                 m_lastSelectedType = LineChartTypes.Cadence;
             }
-            else if (e.KeyCode == Keys.D)
-            {
-                m_lastSelectedType = LineChartTypes.DiffDistTime;
-                if (e.Modifiers == Keys.Control)
-                {
-                    smoothStep = 0;
-                    reset = true;
-                    TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
-                    if (tr != null && this.ReferenceTrailResult != null)
-                    {
-                        tr.Activity.StartTime += TimeSpan.FromSeconds(tr.getReferenceXOffset(this.ReferenceTrailResult) -
-                            (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
-                    }
-                }
-                else
-                {
-                    smoothStep = 1;
-                }
-            }
             else if (e.KeyCode == Keys.E)
             {
                 smoothStep = 1;
@@ -1400,6 +1384,55 @@ namespace TrailsPlugin.UI.Activity {
             {
                 refreshData = true;
                 m_showTrailPoints = (e.Modifiers == Keys.Shift);
+            }
+            else if (e.KeyCode == Keys.O)
+            {
+                m_lastSelectedType = LineChartTypes.DiffDistTime;
+                if (e.Modifiers == Keys.Control)
+                {
+                    smoothStep = 0;
+                    reset = true;
+                    TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
+                    if (tr != null && this.ReferenceTrailResult != null)
+                    {
+                        tr.Activity.StartTime += TimeSpan.FromSeconds(tr.getReferenceXOffset(this.ReferenceTrailResult) -
+                            (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                    }
+                }
+                else if ((e.Modifiers & Keys.Alt) > 0)
+                {
+                    if (this.m_selectedDataSeries >= 0)
+                    {
+                        float[] range = new float[2];
+                        this.MainChart.DataSeries[this.m_selectedDataSeries].GetSelectedRange(out range[0], out range[1]);
+
+                        if (!float.IsNaN(range[0]) && !float.IsNaN(range[0]))
+                        {
+                            if (XAxisReferential == XAxisValue.Time)
+                            {
+                                smoothStep = (int)(range[1] - range[0]);
+                            }
+                            else
+                            {
+                                double d1 = TrackUtil.DistanceConvertTo(range[0], this.ReferenceTrailResult);
+                                double d2 = TrackUtil.DistanceConvertTo(range[1], this.ReferenceTrailResult);
+                                smoothStep = (int)(d1 - d2);
+                            }
+                            if(!float.IsNaN(this.m_firstRangeSelected))
+                            {
+                                if(this.m_firstRangeSelected > range[0])
+                                {
+                                    //Change +/- with shift too
+                                    smoothStep = -smoothStep;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    smoothStep = 1;
+                }
             }
             else if (e.KeyCode == Keys.P)
             {
@@ -1438,9 +1471,9 @@ namespace TrailsPlugin.UI.Activity {
                 refreshData = true;
                 axisVisibleMin = this.MainChart.XAxis.OriginValue;
                 pixelsPerValue = this.MainChart.XAxis.PixelsPerValue;
-                if (e.Modifiers == Keys.Shift)
+                if ((e.Modifiers & Keys.Shift) > 0)
                 {
-                    smoothStep *= -1;
+                    smoothStep = -smoothStep;
                 }
 
                 //If a diff graph was selected last, it will be set (the other path must handle diff too)

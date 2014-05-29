@@ -2632,7 +2632,8 @@ namespace TrailsPlugin.Data
                 //Automatically set difference for non position based Split only
                 if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits && AnyOverlap(this.m_cacheTrackRef))
                 {
-                    this.m_offsetTime = (float)(this.StartTime - this.m_cacheTrackRef.StartTime).TotalSeconds;
+                    this.m_offsetTime = (float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                        this.StartTime, this.m_cacheTrackRef.StartTime, this.Pauses).TotalSeconds;
                 }
             }
             return (float)this.m_offsetTime;
@@ -2641,6 +2642,9 @@ namespace TrailsPlugin.Data
         public void setReferenceXOffset(float val)
         {
             this.m_offsetTime = val;
+            //also reset the cache dependent on this
+            this.m_DiffTimeTrack0 = null;
+            this.m_DiffDistTrack0 = null;
         }
 
         private TrailResult getRefSub(TrailResult parRes)

@@ -1013,7 +1013,7 @@ namespace TrailsPlugin.UI.Activity {
             float xOffset = 0;
             if (XAxisReferential == XAxisValue.Time)
             {
-                xOffset = tr.getReferenceXOffset(this.ReferenceTrailResult);
+                xOffset = tr.GetTimeXOffset(this.ReferenceTrailResult);
                 //TODO for dist xOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
             }
             //chart is diff: also y offset at 0, for sync.none
@@ -1395,7 +1395,7 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
                     if (tr != null && this.ReferenceTrailResult != null)
                     {
-                        tr.Activity.StartTime += TimeSpan.FromSeconds(tr.getReferenceXOffset(this.ReferenceTrailResult) -
+                        tr.Activity.StartTime += TimeSpan.FromSeconds(tr.GetTimeXOffset(this.ReferenceTrailResult) -
                             (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
                     }
                 }
@@ -1487,9 +1487,9 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        val = (float)smoothStep + tr.getReferenceXOffset(this.ReferenceTrailResult);
+                        val = (float)smoothStep + tr.GetTimeXOffset(this.ReferenceTrailResult);
                     }
-                    tr.setReferenceXOffset(val);
+                    tr.SetTimeXOffset(val);
                 }
                 else
                 {
@@ -1674,7 +1674,7 @@ namespace TrailsPlugin.UI.Activity {
                 TrailResult tr = getLastSelectedDiffResult(chartType);
                 if (tr != null)
                 {
-                    val = (int)tr.getReferenceXOffset(this.ReferenceTrailResult);
+                    val = (int)tr.GetTimeXOffset(this.ReferenceTrailResult);
                 }
                 else 
                 {

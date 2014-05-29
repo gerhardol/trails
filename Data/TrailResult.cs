@@ -2624,7 +2624,7 @@ namespace TrailsPlugin.Data
             return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, activity.StartTime, end2);
         }
 
-        public float getReferenceXOffset(TrailResult refRes)
+        public float GetTimeXOffset(TrailResult refRes)
         {
             if (this.m_offsetTime == null || checkCacheRef(refRes))
             {
@@ -2639,7 +2639,7 @@ namespace TrailsPlugin.Data
             return (float)this.m_offsetTime;
         }
 
-        public void setReferenceXOffset(float val)
+        public void SetTimeXOffset(float val)
         {
             this.m_offsetTime = val;
             //also reset the cache dependent on this

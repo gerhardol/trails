@@ -54,6 +54,7 @@ namespace TrailsPlugin.Data
         private ChartColors m_trailColor = null;
         private string m_toolTip;
         private float? m_offsetTime;
+        private float? m_offsetDist;
         //Temporary? (undocumented)
         public static bool diffToSelf = false;
         static public bool PaceTrackIsGradeAdjustedPaceAvg = false;
@@ -190,6 +191,8 @@ namespace TrailsPlugin.Data
                 m_gpsTrack = null;
                 m_gradeRunAdjustedTime = null;
                 //No need to explicitly clear derived, like: m_gradeRunAdjustedTimeAvg = null;
+                this.m_offsetTime = null;
+                this.m_offsetDist = null;
 
                 if (!(this is ChildTrailResult) || !(this as ChildTrailResult).PartOfParent)
                 {
@@ -1018,7 +1021,7 @@ namespace TrailsPlugin.Data
                 else if (this.Activity != null)
                 {
                     string s = string.Format("{0} {1} {2}", this.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
-                    if (m_offsetTime != null)
+                    if (m_offsetTime != null || this.m_offsetDist != null)
                     {
                         s += " " + Activity.Metadata.Source;
                     }
@@ -2624,7 +2627,31 @@ namespace TrailsPlugin.Data
             return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, activity.StartTime, end2);
         }
 
-        public float GetTimeXOffset(TrailResult refRes)
+        public float GetXOffset(bool xIsTime, TrailResult refRes)
+        {
+            if (xIsTime)
+            {
+                return GetTimeXOffset(refRes);
+            }
+            else
+            {
+                return GetDistXOffset(refRes);
+            }
+        }
+
+        public void SetXOffset(bool xIsTime, float val)
+        {
+            if (xIsTime)
+            {
+                SetTimeXOffset(val);
+            }
+            else
+            {
+                SetDistXOffset(val);
+            }
+        }
+
+        private float GetTimeXOffset(TrailResult refRes)
         {
             if (this.m_offsetTime == null || checkCacheRef(refRes))
             {
@@ -2632,19 +2659,56 @@ namespace TrailsPlugin.Data
                 //Automatically set difference for non position based Split only
                 if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits && AnyOverlap(this.m_cacheTrackRef))
                 {
-                    this.m_offsetTime = (float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
-                        this.StartTime, this.m_cacheTrackRef.StartTime, this.Pauses).TotalSeconds;
+                    if (this.StartTime < this.m_cacheTrackRef.StartTime)
+                    {
+                        this.m_offsetTime = -(float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                            this.StartTime, this.m_cacheTrackRef.StartTime, this.Pauses).TotalSeconds;
+                    }
+                    else
+                    {
+                        this.m_offsetTime = (float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                            this.m_cacheTrackRef.StartTime, this.StartTime, this.m_cacheTrackRef.Pauses).TotalSeconds;
+                    }
                 }
             }
             return (float)this.m_offsetTime;
         }
 
-        public void SetTimeXOffset(float val)
+        private void SetTimeXOffset(float val)
         {
             this.m_offsetTime = val;
             //also reset the cache dependent on this
-            this.m_DiffTimeTrack0 = null;
             this.m_DiffDistTrack0 = null;
+        }
+
+        private float GetDistXOffset(TrailResult refRes)
+        {
+            if (this.m_offsetDist == null || checkCacheRef(refRes))
+            {
+                this.m_offsetDist = 0;
+                //Automatically set difference for non position based Split only
+                if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits && AnyOverlap(this.m_cacheTrackRef))
+                {
+                    if (this.StartTime < this.m_cacheTrackRef.StartTime)
+                    {
+                        int status;
+                        this.m_offsetDist = -TrackUtil.getValFromDateTime(this.DistanceMetersTrack, this.m_cacheTrackRef.StartTime, out status);
+                    }
+                    else
+                    {
+                        int status;
+                        this.m_offsetDist = TrackUtil.getValFromDateTime(this.m_cacheTrackRef.DistanceMetersTrack, this.StartTime, out status);
+                    }
+                }
+            }
+            return (float)this.m_offsetDist;
+        }
+
+        private void SetDistXOffset(float val)
+        {
+            this.m_offsetDist = val;
+            //also reset the cache dependent on this
+            this.m_DiffTimeTrack0 = null;
         }
 
         private TrailResult getRefSub(TrailResult parRes)
@@ -3060,7 +3124,7 @@ namespace TrailsPlugin.Data
                         ITimeValueEntry<float> interpolatedP = DistanceMetersTrack0(m_cacheTrackRef).GetInterpolatedValue(TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], Pauses, true));
                         if (interpolatedP != null)
                         {
-                            //In display format
+                            //In display format already
                             val = interpolatedP.Value;
                         }
 

@@ -240,6 +240,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Sync, should not be needed
                     this.m_endSelect = false;
+                    //Save first, to find if selecting to left/right
                     this.m_firstRangeSelected = range[0];
                 }
 
@@ -398,22 +399,14 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (!(tr2 is SummaryTrailResult))
                     {
-                        IValueRangeSeries<DateTime> t2 = TrackUtil.GetResultRegions(XAxisReferential == XAxisValue.Time, tr2, this.ReferenceTrailResult, regions);
+                        IValueRangeSeries<DateTime> t2 = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr2), tr2, this.ReferenceTrailResult, regions);
                         //Add ranges if single set, then it is a part of a new selection
                         if (!selecting && range != null)
                         {
                             if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
                             {
-                                DateTime time;
-                                if (XAxisReferential == XAxisValue.Time)
-                                {
-                                    time = tr2.getDateTimeFromTimeResult(range[0]);
-                                }
-                                else
-                                {
-                                    time = tr2.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(range[0], this.ReferenceTrailResult));
-                                }
-                                //Add a one second duration, otherwise rhere will be a complicated shared/Marked times combination
+                                DateTime time = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr2), tr2, this.ReferenceTrailResult, range[0]);
+                                //Add a one second duration, otherwise there will be a complicated shared/Marked times combination
                                 t2.Add(new ValueRange<DateTime>(time, time.AddSeconds(1)));
                             }
                         }
@@ -441,6 +434,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     resultIndex = SeriesIndexToResult(seriesIndex);
                 }
+                //regions/range is in (raw) chart format, do not offset/convert
                 m_multiple.SetSelectedResultRange(resultIndex, regions, range);
                 //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
                 //m_selectDataHandler = true;
@@ -566,7 +560,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         tr = this.ReferenceTrailResult;
                     }
-                    IList<float[]> regions = TrackUtil.GetResultSelectionFromActivity(XAxisReferential == XAxisValue.Time, tr, ReferenceTrailResult, trm.selInfo);
+                    IList<float[]> regions = TrackUtil.GetChartResultFromActivity(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr), tr, ReferenceTrailResult, trm.selInfo);
                     if (isRegion)
                     {
                         this.SetSelectedResultRegions(resultIndex, regions, null);
@@ -931,14 +925,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 ///////TrailPoints
-                Data.TrailResult trailPointResult = ReferenceTrailResult;
-                //If only one result is used, it can be confusing if the trail points are set for ref
-                if ((!Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count == 1 ||
-                    m_trailResults.Count > 0 && trailPointResult == null) &&
-                    !(m_trailResults[0] is SummaryTrailResult))
-                {
-                    trailPointResult = m_trailResults[0];
-                }
+                Data.TrailResult trailPointResult = TrailPointResult();
 
                 if (m_showTrailPoints && trailPointResult != null)
                 {
@@ -958,8 +945,13 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            elapsed = TrackUtil.DistanceConvertFrom(
-                                trailPointResult.getDistResult(t), trailPointResult);
+                            elapsed = trailPointResult.getDistResult(t);
+                        }
+                        elapsed += trailPointResult.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                        if (XAxisReferential != XAxisValue.Time)
+                        {
+                            //No ReSync for trailpoints
+                            elapsed = TrackUtil.DistanceConvertFrom(elapsed, this.ReferenceTrailResult);
                         }
                         if (!double.IsNaN(elapsed) && elapsed > oldElapsed)
                         {
@@ -972,6 +964,25 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 		}
+
+        private TrailResult TrailPointResult()
+        {
+            Data.TrailResult trailPointResult = ReferenceTrailResult;
+
+            if ((!Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count == 1 ||
+                 m_trailResults.Count > 0 && trailPointResult == null) &&
+                 !(m_trailResults[0] is SummaryTrailResult))
+            {
+                trailPointResult = m_trailResults[0];
+            }
+
+            return trailPointResult;
+        }
+
+        private bool IsTrailPointOffset(TrailResult tr)
+        {
+            return Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count > 1 && tr != TrailPointResult();
+        }
 
         private float GetDataLine(TrailResult tr, INumericTimeDataSeries graphPoints, 
             ChartDataSeries dataLine, INumericTimeDataSeries refGraphPoints)
@@ -1010,13 +1021,12 @@ namespace TrailsPlugin.UI.Activity {
 
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
-            float xOffset = 0;
-            if (XAxisReferential == XAxisValue.Time)
+            float xOffset = tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+            if (XAxisReferential != XAxisValue.Time)
             {
-                xOffset = tr.GetTimeXOffset(this.ReferenceTrailResult);
-                //TODO for dist xOffset = dataPoints.GetInterpolatedValue(dataPoints.StartTime.AddSeconds(xOffset)).Value;
+                xOffset = (float)TrackUtil.DistanceConvertFrom(xOffset, this.ReferenceTrailResult);
             }
-            //chart is diff: also y offset at 0, for sync.none
+
             foreach (ITimeValueEntry<float> entry in dataPoints)
             {
                 uint elapsedEntry = entry.ElapsedSeconds;
@@ -1036,11 +1046,11 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
                     //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
-                    //or cut (elapsed is higher than next limit, then decreases at trail point)  
+                    //or cut (elapsed is higher than next limit, then decreases at trail point)
                     float nextXvalue = float.MaxValue;
-                    if (Data.Settings.SyncChartAtTrailPoints && m_trailResults.Count > 1)
+                    if (IsTrailPointOffset(tr))
                     {
-                        float offset = TrackUtil.GetResyncOffset(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, xValue, out nextXvalue);
+                        float offset = TrackUtil.GetChartResultsResyncOffset(XAxisReferential == XAxisValue.Time, tr, TrailPointResult(), xValue, out nextXvalue);
                         xValue += offset;
                     }
                     xValue += xOffset;
@@ -1395,8 +1405,14 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
                     if (tr != null && this.ReferenceTrailResult != null)
                     {
-                        tr.Activity.StartTime += TimeSpan.FromSeconds(tr.GetTimeXOffset(this.ReferenceTrailResult) -
-                            (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                        if (XAxisReferential == XAxisValue.Time)
+                        {
+                            tr.Activity.StartTime += TimeSpan.FromSeconds(tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult) -
+                                (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                        }
+                        else
+                        { //TBD, not needed?
+                        }
                     }
                 }
                 else if ((e.Modifiers & Keys.Alt) > 0)
@@ -1414,9 +1430,7 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             else
                             {
-                                double d1 = TrackUtil.DistanceConvertTo(range[0], this.ReferenceTrailResult);
-                                double d2 = TrackUtil.DistanceConvertTo(range[1], this.ReferenceTrailResult);
-                                smoothStep = (int)(d1 - d2);
+                                smoothStep = (int)TrackUtil.DistanceConvertTo(range[1] - range[0], this.ReferenceTrailResult);
                             }
                             if(!float.IsNaN(this.m_firstRangeSelected))
                             {
@@ -1487,9 +1501,9 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        val = (float)smoothStep + tr.GetTimeXOffset(this.ReferenceTrailResult);
+                        val = (float)smoothStep + tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
                     }
-                    tr.SetTimeXOffset(val);
+                    tr.SetXOffset(XAxisReferential == XAxisValue.Time, val);
                 }
                 else
                 {
@@ -1674,7 +1688,7 @@ namespace TrailsPlugin.UI.Activity {
                 TrailResult tr = getLastSelectedDiffResult(chartType);
                 if (tr != null)
                 {
-                    val = (int)tr.GetTimeXOffset(this.ReferenceTrailResult);
+                    val = (int)tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
                 }
                 else 
                 {
@@ -1697,9 +1711,22 @@ namespace TrailsPlugin.UI.Activity {
                 //TBD summary result, multiple result?
                 float dist = 0;
                 float time = 0;
-                foreach (float[] r in regions)
+                IValueRangeSeries<DateTime> res = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, regions);
+                foreach (IValueRange<DateTime> v in res)
                 {
-                    TrackUtil.GetDistanceTimeSelection(XAxisReferential == XAxisValue.Time, tr, this.ReferenceTrailResult, r, (float)this.MainChart.XAxis.MinOriginValue, (float)this.MainChart.XAxis.MaxOriginFarValue, ref dist, ref time);
+                    DateTime d1 = v.Lower;
+                    DateTime d2 = v.Upper;
+
+                    if (d2 > d1)
+                    {
+                        double t1 = tr.getDistResult(d1);
+                        double t2 = tr.getDistResult(d2);
+                        dist += (float)(t2 - t1);
+
+                        t1 = tr.getTimeResult(d1);
+                        t2 = tr.getTimeResult(d2);
+                        time += (float)(t2 - t1);
+                    }
                 }
                 if (time > 0)
                 {

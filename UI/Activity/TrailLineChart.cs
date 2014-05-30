@@ -1403,6 +1403,10 @@ namespace TrailsPlugin.UI.Activity {
                     smoothStep = 0;
                     reset = true;
                     TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
+                    if (tr != null && 1 == this.m_trailResults.Count)
+                    {
+                        tr = this.m_trailResults[0];
+                    }
                     if (tr != null && this.ReferenceTrailResult != null)
                     {
                         if (XAxisReferential == XAxisValue.Time)
@@ -1432,9 +1436,9 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 smoothStep = (int)TrackUtil.DistanceConvertTo(range[1] - range[0], this.ReferenceTrailResult);
                             }
-                            if(!float.IsNaN(this.m_firstRangeSelected))
+                            if (!float.IsNaN(this.m_firstRangeSelected))
                             {
-                                if(this.m_firstRangeSelected > range[0])
+                                if (this.m_firstRangeSelected > range[0])
                                 {
                                     //Change +/- with shift too
                                     smoothStep = -smoothStep;
@@ -1525,6 +1529,10 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
+                    if (val == GetDefaultSmooth(m_lastSelectedType))
+                    {
+                        refreshData = false;
+                    }
                     SetDefaultSmooth(m_lastSelectedType, val);
                 }
             }
@@ -1566,21 +1574,14 @@ namespace TrailsPlugin.UI.Activity {
         private TrailResult getLastSelectedDiffResult(LineChartTypes chartType)
         {
             TrailResult tr = null;
-            if (1 == this.m_trailResults.Count)
+            if (chartType == LineChartTypes.DiffTime ||
+                chartType == LineChartTypes.DiffDist ||
+                chartType == LineChartTypes.DiffDistTime)
             {
-                tr = this.m_trailResults[0];
-            }
-            else
-            {
-                if (chartType == LineChartTypes.DiffTime ||
-                    chartType == LineChartTypes.DiffDist ||
-                    chartType == LineChartTypes.DiffDistTime)
+                if (this.m_selectedDataSeries >= 0)
                 {
-                    if (this.m_selectedDataSeries >= 0)
-                    {
-                        //Series must be added in order, so they can be resolved to result here
-                        tr = m_trailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
-                    }
+                    //Series must be added in order, so they can be resolved to result here
+                    tr = m_trailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
                 }
             }
             return tr;

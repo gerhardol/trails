@@ -26,6 +26,8 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+//Conflict....
+//using ZoneFiveSoftware.Common.Data.Algorithm;
 using ITrailExport;
 using TrailsPlugin.Utils;
 using GpsRunningPlugin.Util;
@@ -53,7 +55,10 @@ namespace TrailsPlugin.Data
         private float m_totalDistDiff; //to give quality of results
         private ChartColors m_trailColor = null;
         private string m_toolTip;
+        //Offset displayed in chart and used in diff calcs.
+        //For time also elapsed is needed, inluded in the Distance track already
         private float? m_offsetTime;
+        private float m_offsetTimeElapsed;
         private float? m_offsetDist;
         //Temporary? (undocumented)
         public static bool diffToSelf = false;
@@ -214,6 +219,9 @@ namespace TrailsPlugin.Data
             {
                 //Clear cache where ref (possibly null) has been used
                 this.Clear(true);
+                //explicitly clear offsets
+                this.m_offsetTime = null;
+                this.m_offsetDist = null;
                 this.m_cacheTrackRef = refRes;
                 if (this.m_cacheTrackRef == null)
                 {
@@ -2613,7 +2621,7 @@ namespace TrailsPlugin.Data
 
         public bool AnyOverlap(TrailResult other)
         {
-            return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, other.StartTime, other.EndTime);
+            return (other != null) && TrackUtil.AnyOverlap(this.StartTime, this.EndTime, other.StartTime, other.EndTime);
         }
 
         public bool AnyOverlap(IActivity activity)
@@ -2655,20 +2663,52 @@ namespace TrailsPlugin.Data
         {
             if (this.m_offsetTime == null || checkCacheRef(refRes))
             {
-                this.m_offsetTime = 0;
                 //Automatically set difference for non position based Split only
                 if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits && AnyOverlap(this.m_cacheTrackRef))
                 {
-                    if (this.StartTime < this.m_cacheTrackRef.StartTime)
+                    if (this.m_offsetDist != null)
                     {
-                        this.m_offsetTime = -(float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
-                            this.StartTime, this.m_cacheTrackRef.StartTime, this.Pauses).TotalSeconds;
+                        float offset = (float)this.m_offsetDist;
+                        TrailResult tr = null;
+                        if (offset > 0)
+                        {
+                            tr = this.m_cacheTrackRef;
+                        }
+                        else
+                        {
+                            tr = this;
+                        }
+                        if (tr != null)
+                        {
+                            DateTime d1 = TrackUtil.getDateTimeFromTrackDist(tr.DistanceMetersTrack, offset);
+                            this.m_offsetTime = (float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                                 tr.StartTime, d1, tr.Pauses).TotalSeconds;
+                            if (this != tr)
+                            {
+                                this.m_offsetTime = -this.m_offsetTime;
+                            }
+                        }
                     }
                     else
                     {
-                        this.m_offsetTime = (float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
-                            this.m_cacheTrackRef.StartTime, this.StartTime, this.m_cacheTrackRef.Pauses).TotalSeconds;
+                        if (this.StartTime < this.m_cacheTrackRef.StartTime)
+                        {
+                            this.m_offsetTime = -(float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                                this.StartTime, this.m_cacheTrackRef.StartTime, this.Pauses).TotalSeconds;
+                        }
+                        else
+                        {
+                            this.m_offsetTime = (float)ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(
+                                this.m_cacheTrackRef.StartTime, this.StartTime, this.m_cacheTrackRef.Pauses).TotalSeconds;
+                        }
                     }
+                    //Elapsed in tracks
+                    this.m_offsetTimeElapsed = (float)(this.StartTime - this.m_cacheTrackRef.StartTime).TotalSeconds;
+                }
+                if (this.m_offsetTime == null)
+                {
+                    this.m_offsetTime = 0;
+                    this.m_offsetTimeElapsed = 0;
                 }
             }
             return (float)this.m_offsetTime;
@@ -2677,6 +2717,8 @@ namespace TrailsPlugin.Data
         private void SetTimeXOffset(float val)
         {
             this.m_offsetTime = val;
+            //Keep dist/time synced, used in diff
+            this.m_offsetDist = val;
             //also reset the cache dependent on this
             this.m_DiffDistTrack0 = null;
         }
@@ -2685,20 +2727,35 @@ namespace TrailsPlugin.Data
         {
             if (this.m_offsetDist == null || checkCacheRef(refRes))
             {
-                this.m_offsetDist = 0;
                 //Automatically set difference for non position based Split only
-                if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits && AnyOverlap(this.m_cacheTrackRef))
+                if (this.m_activityTrail != null && this.m_activityTrail.Trail.IsSplits &&
+                    this.m_cacheTrackRef != null && AnyOverlap(this.m_cacheTrackRef))
                 {
-                    if (this.StartTime < this.m_cacheTrackRef.StartTime)
+                    float offset = this.GetTimeXOffset(this.m_cacheTrackRef);
+                    TrailResult tr = null;
+                    if (offset > 0)
                     {
-                        int status;
-                        this.m_offsetDist = -TrackUtil.getValFromDateTime(this.DistanceMetersTrack, this.m_cacheTrackRef.StartTime, out status);
+                        tr = this.m_cacheTrackRef;
                     }
                     else
                     {
-                        int status;
-                        this.m_offsetDist = TrackUtil.getValFromDateTime(this.m_cacheTrackRef.DistanceMetersTrack, this.StartTime, out status);
+                        tr = this;
                     }
+                    if (tr != null)
+                    {
+                        DateTime d1 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                             tr.StartTime, TimeSpan.FromSeconds(Math.Abs(offset)), tr.Pauses);
+                        int status;
+                        this.m_offsetDist = TrackUtil.getValFromDateTime(tr.DistanceMetersTrack, d1, out status);
+                        if (this == tr)
+                        {
+                            this.m_offsetDist = -this.m_offsetDist;
+                        }
+                    }
+                }
+                if (this.m_offsetDist == null)
+                {
+                    this.m_offsetDist = 0;
                 }
             }
             return (float)this.m_offsetDist;
@@ -2707,6 +2764,8 @@ namespace TrailsPlugin.Data
         private void SetDistXOffset(float val)
         {
             this.m_offsetDist = val;
+            //Keep dist/time synced, used in diff
+            this.m_offsetTime = val;
             //also reset the cache dependent on this
             this.m_DiffTimeTrack0 = null;
         }
@@ -2735,14 +2794,19 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_DiffTimeTrack0 == null)
             {
-                m_DiffTimeTrack0 = new NumericTimeDataSeries();
                 TrailResult trRef = getRefSub(m_cacheTrackRef);
+                //Calc diff, can clear the track
+                this.GetDistXOffset(trRef);
+                trRef.GetDistXOffset(trRef); 
+                m_DiffTimeTrack0 = new NumericTimeDataSeries();
+
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
                     int oldElapsed = int.MinValue;
                     float lastValue = 0;
                     int dateTrailPointIndex = -1;
-                    float refOffset = 0;
+                    float refOffset = this.GetDistXOffset(trRef) - trRef.GetDistXOffset(trRef);
+                    double? firstDifference = null; //Let diff start from zero
                     float refPrevTime = 0;
                     float diffOffset = 0;
 
@@ -2805,7 +2869,7 @@ namespace TrailsPlugin.Data
                                     float? refTime = null;
                                     if (TrailResult.diffToSelf || trRef == this)
                                     {
-                                        ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
+                                        //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
                                         //refTime = thisTime;
                                         //get diff from average (HasAdjustedTimeTrack() is not really needed here, mostly kept for precision and testing reasons)
                                         if (HasAdjustedTimeTrack(this.m_cacheTrackRef))
@@ -2826,9 +2890,10 @@ namespace TrailsPlugin.Data
                                     }
                                     else
                                     {
-                                        if (t.Value + refOffset <= trRef.DistanceMetersTrack.Max)
+                                        float dist = t.Value + refOffset;
+                                        if (dist >= trRef.DistanceMetersTrack.Min && dist <= trRef.DistanceMetersTrack.Max)
                                         {
-                                            DateTime d2 = TrackUtil.getDateTimeFromTrackDist(trRef.DistanceMetersTrack, t.Value + refOffset);
+                                            DateTime d2 = TrackUtil.getDateTimeFromTrackDist(trRef.DistanceMetersTrack, dist);
                                             refTime = (float)trRef.getTimeResult(d2);
                                         }
                                     }
@@ -2839,7 +2904,11 @@ namespace TrailsPlugin.Data
                                             diffOffset = thisTime - (float)refTime;
                                             prevCommonStreches = false;
                                         }
-                                        lastValue = (float)refTime - thisTime + diffOffset;
+                                        if (firstDifference == null)
+                                        {
+                                            firstDifference = thisTime - (double)refTime;
+                                        }
+                                        lastValue = (float)refTime - thisTime + diffOffset + (float)firstDifference;
                                         m_DiffTimeTrack0.Add(d1, lastValue);
                                         oldElapsed = (int)elapsed;
                                         refPrevTime = (float)refTime;
@@ -2876,31 +2945,24 @@ namespace TrailsPlugin.Data
             return m_DiffTimeTrack0;
         }
 
-        private ITimeValueEntry<float> getValueEntryOffset(ITimeValueEntry<float> t, int refOffset)
-        {
-            uint refElapsed = t.ElapsedSeconds;
-            if (refElapsed > -refOffset)
-            {
-                refElapsed = (uint)(refElapsed + refOffset);
-            }
-            return new TimeValueEntry<float>(refElapsed, t.Value);
-        }
-
-        private enum DiffMode { ActivityStart } //TODO: AbsoluteTime, TimeOfDay }
         public INumericTimeDataSeries DiffDistTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
             if (m_DiffDistTrack0 == null)
             {
-                m_DiffDistTrack0 = new NumericTimeDataSeries();
                 TrailResult trRef = getRefSub(m_cacheTrackRef);
+                //Calc elapsed offsets
+                this.GetTimeXOffset(trRef);
+                trRef.GetTimeXOffset(trRef);
+                m_DiffDistTrack0 = new NumericTimeDataSeries();
                 UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(trRef.Activity);
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
                     int oldElapsed = int.MinValue;
                     float lastValue = 0;
                     int dateTrailPointIndex = -1;
-                    int refTimeOffset = 0;
+                    float refTimeOffset = this.m_offsetTimeElapsed - trRef.m_offsetTimeElapsed;
+                    double? firstDifference = null; //Let diff start from zero
                     float diffOffset = 0;
                     double prevDist = 0;
                     double prevRefDist = 0;
@@ -2912,7 +2974,6 @@ namespace TrailsPlugin.Data
                         commonStretches = CommonStretches(trRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
                         m_DiffDistTrack0.Add(StartTime, 0);
                     }
-                    //DiffMode diffMode = DiffMode.ActivityStart;
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         uint elapsed = t.ElapsedSeconds;
@@ -2923,7 +2984,7 @@ namespace TrailsPlugin.Data
                             if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                             {
                                 //TODO ActivityStart
-                                while (/*diffMode == DiffMode.ActivityStart && */Settings.ResyncDiffAtTrailPoints &&
+                                while (Settings.ResyncDiffAtTrailPoints &&
                                     this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
                                     (dateTrailPointIndex == -1 ||
                                     dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
@@ -2935,7 +2996,7 @@ namespace TrailsPlugin.Data
                                         this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
                                         trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                                     {
-                                        refTimeOffset = (int)(trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]) -
+                                        refTimeOffset = (float)(trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]) -
                                            this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]));
                                         //TODO: Configure, explain (or remove)
                                         if (Settings.AdjustResyncDiffAtTrailPoints)
@@ -2974,7 +3035,7 @@ namespace TrailsPlugin.Data
                                         if (TrailResult.diffToSelf || trRef == this)
                                         {
                                             double time = this.getTimeResult(d1);
-                                            ////"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
+                                            //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
                                             //get diff from average (HasAdjustedTimeTrack() is not really needed here, mostly kept for precision and testing reasons)
                                             if (HasAdjustedTimeTrack(this.m_cacheTrackRef))
                                             {
@@ -2990,20 +3051,17 @@ namespace TrailsPlugin.Data
                                         }
                                         else
                                         {
-                                            DateTime d2;
-                                            if (true /*diffMode == DiffMode.ActivityStart*/)
+                                            if (elapsed + refTimeOffset >= 0 && elapsed + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
                                             {
-                                                d2 = trRef.DistanceMetersTrack.EntryDateTime(getValueEntryOffset(t, refTimeOffset));
-                                            }
-                                            else
-                                            {
-                                                d2 = d1;
-                                            }
-                                            int status;
-                                            refDist = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack, d2, out status);
-                                            if (status != 0)
-                                            {
-                                                refDist = null;
+                                                DateTime d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                                                    trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
+
+                                                int status = -1;
+                                                refDist = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack, d2, out status);
+                                                if (status != 0)
+                                                {
+                                                    refDist = null;
+                                                }
                                             }
                                         }
                                         //Only add if valid estimation
@@ -3015,7 +3073,11 @@ namespace TrailsPlugin.Data
                                                 diffOffset = (float)refDist - thisDist;
                                                 prevCommonStreches = false;
                                             }
-                                            double diff = thisDist - (double)refDist + diffOffset;
+                                            if (firstDifference == null)
+                                            {
+                                                firstDifference = -thisDist + (double)refDist;
+                                            }
+                                            double diff = thisDist - (double)refDist + diffOffset + (double)firstDifference;
                                             lastValue = (float)convertFrom(diff, trRef.Activity);
                                             m_DiffDistTrack0.Add(d1, lastValue);
                                             oldElapsed = (int)elapsed;

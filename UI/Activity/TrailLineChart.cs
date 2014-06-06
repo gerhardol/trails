@@ -161,7 +161,7 @@ namespace TrailsPlugin.UI.Activity {
             SaveImageDialog dlg = new SaveImageDialog();
 #endif
             dlg.ThemeChanged(m_visualTheme);
-            dlg.FileName = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + Path.DirectorySeparatorChar + "Trails";
+            dlg.FileName = Data.Settings.SaveChartImagePath + Path.DirectorySeparatorChar + "Trails";
             if (!String.IsNullOrEmpty(this.m_refTrailResult.m_activityTrail.Trail.Name))
             {
                 dlg.FileName += "-" + this.m_refTrailResult.m_activityTrail.Trail.Name;
@@ -179,6 +179,7 @@ namespace TrailsPlugin.UI.Activity {
 					imgSize = dlg.ImageSizes[dlg.ImageSize];
 				}
 				MainChart.SaveImage(imgSize, dlg.FileName, dlg.ImageFormat);
+                Data.Settings.SaveChartImagePath = (new FileInfo(dlg.FileName)).DirectoryName;
 			}
 
 			MainChart.Focus();

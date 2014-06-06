@@ -65,6 +65,7 @@ namespace TrailsPlugin.Data
         private static bool m_useDeviceElevationForCalc = false;
         private static bool m_useTrailElevationAdjust = false;
         private static float[,] m_AdjustDiffSplitTimes = null;
+        private static string m_saveChartImagePath = null;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
@@ -521,7 +522,16 @@ namespace TrailsPlugin.Data
             get { return m_resultSummaryIsDevice; }
             set { m_resultSummaryIsDevice = value; }
         }
-
+        public static string SaveChartImagePath
+        {
+            get
+            {
+                if (m_saveChartImagePath == null) { m_saveChartImagePath = Environment.GetFolderPath(Environment.SpecialFolder.Personal); }
+                return m_saveChartImagePath; 
+            }
+            set { m_saveChartImagePath = value; }
+        }
+        /******************************************************/
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
             try
@@ -701,6 +711,8 @@ namespace TrailsPlugin.Data
                         }
                     }
                 }
+                attr = pluginNode.GetAttribute(xmlTags.sSaveChartImagePath);
+                if (attr.Length > 0) { SaveChartImagePath = attr; }
             }
             catch { }
         }
@@ -778,6 +790,10 @@ namespace TrailsPlugin.Data
                 else { colText += ";" + column.ToString(); }
             }
             pluginNode.SetAttribute(xmlTags.sMultiGraphType, colText);
+            if (!String.IsNullOrEmpty(m_saveChartImagePath))
+            {
+                pluginNode.SetAttribute(xmlTags.sSaveChartImagePath, m_saveChartImagePath);
+            }
         }
 
         private class xmlTags
@@ -816,6 +832,7 @@ namespace TrailsPlugin.Data
             public const string sDeviceElevationFromOther = "sDeviceElevationFromOther";
             public const string sUseDeviceElevationForCalc = "sUseDeviceElevationForCalc";
             public const string sUseTrailElevationAdjust = "sUseTrailElevationAdjust";
+            public const string sSaveChartImagePath = "sSaveChartImagePath";
 
             public const string sColumns = "sColumns";
         }

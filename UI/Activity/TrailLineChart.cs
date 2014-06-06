@@ -1398,7 +1398,7 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.O)
             {
                 m_lastSelectedType = LineChartTypes.DiffDistTime;
-                if (e.Modifiers == Keys.Control)
+                if (e.Modifiers == (Keys.Control | Keys.Shift))
                 {
                     smoothStep = 0;
                     reset = true;

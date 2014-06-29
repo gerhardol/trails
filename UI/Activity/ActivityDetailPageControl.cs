@@ -317,7 +317,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResult tr in results)
                 {
                     //Do not map activities displayed already by ST
-                    if (!ViewSingleActivity(tr.Activity))
+                    if (ViewSingleActivity() != tr.Activity)
                     {
                         //Note: Possibly limit no of Trails shown, it slows down Gmaps some
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
@@ -361,9 +361,9 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //Try to find if ST is mapping a certain activity
-        public bool ViewSingleActivity(IActivity activity)
+        public IActivity ViewSingleActivity()
         {
-            return m_view != null && activity == CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            return (m_view == null) ? null : CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }
 
         //Some views like mapping is only working in single view - there are likely better tests
@@ -421,7 +421,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultMarked trm in atr)
                 {
                     m_lastMarkedResult = atr;
-                    if (ViewSingleActivity(trm.trailResult.Activity))
+                    if (ViewSingleActivity() == trm.trailResult.Activity)
                     {
                         //One ST activity is drawn with standard methods
                         //Use ST standard display of track where possible

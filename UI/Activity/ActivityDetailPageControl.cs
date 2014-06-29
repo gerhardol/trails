@@ -363,7 +363,7 @@ namespace TrailsPlugin.UI.Activity {
         //Try to find if ST is mapping a certain activity
         public bool ViewSingleActivity(IActivity activity)
         {
-            return activity == CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+            return m_view != null && activity == CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }
 
         //Some views like mapping is only working in single view - there are likely better tests
@@ -417,11 +417,11 @@ namespace TrailsPlugin.UI.Activity {
                 IList<TrailResultMarked> atrST = new List<TrailResultMarked>();
                 IDictionary<string, MapPolyline> mresult = new Dictionary<string, MapPolyline>();
                 IDictionary<string, MapPolyline> marked = new Dictionary<string, MapPolyline>();
+
                 foreach (TrailResultMarked trm in atr)
                 {
                     m_lastMarkedResult = atr;
-                    if (m_view != null &&
-                      ViewSingleActivity(trm.trailResult.Activity))
+                    if (ViewSingleActivity(trm.trailResult.Activity))
                     {
                         //One ST activity is drawn with standard methods
                         //Use ST standard display of track where possible

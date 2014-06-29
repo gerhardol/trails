@@ -322,22 +322,6 @@ namespace TrailsPlugin.UI.Activity {
                 //Series must be added in order, so they can be resolved to result here
                 TrailResult tr = m_trailResults[this.SeriesIndexToResult(seriesIndex)];
 
-                bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
-                IList<TrailResult> markResults = new List<TrailResult>();
-                //Reuse ZoomToSelection setting, to select all results
-                if (/*Data.Settings.ZoomToSelection ||*/ tr is SummaryTrailResult)
-                {
-                    foreach (TrailResult tr2 in this.TrailResults)
-                    {
-                        markResults.Add(tr2);
-                    }
-                }
-                else
-                {
-                    //If not summary set only mark selected
-                    markAll = false;
-                    markResults.Add(tr);
-                }
                 IList<float[]> regions;
                 this.MainChart.DataSeries[seriesIndex].GetSelectedRegions(out regions);
 
@@ -348,10 +332,10 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Find if a selection has decreased
-                bool clearDecreased = false;
                 if (range != null && regions != null && this.m_prevSelectedRange != null &&
                     !float.IsNaN(range[0]) && !float.IsNaN(this.m_prevSelectedRange[0]))
                 {
+                    bool clearDecreased = false;
                     if (float.IsNaN(this.m_prevSelectedRange[1]))
                     {
                         //First selection, second not yet set, clicking in selected region: clear it
@@ -393,42 +377,65 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                }
-                if (clearDecreased)
-                {
-                    this.m_multiple.ClearSelectedRegions(false);
+                    if (clearDecreased)
+                    {
+                        this.m_multiple.ClearSelectedRegions(false);
+                    }
                 }
                 this.m_prevSelectedRange = range;
 
-                IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
-                foreach (TrailResult tr2 in markResults)
-                {
-                    if (!(tr2 is SummaryTrailResult))
-                    {
-                        IValueRangeSeries<DateTime> t2 = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr2), tr2, this.ReferenceTrailResult, regions);
-                        //Add ranges if single set, then it is a part of a new selection
-                        if (!selecting && range != null)
-                        {
-                            if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
-                            {
-                                DateTime time = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr2), tr2, this.ReferenceTrailResult, range[0]);
-                                //Add a one second duration, otherwise there will be a complicated shared/Marked times combination
-                                t2.Add(new ValueRange<DateTime>(time, time.AddSeconds(1)));
-                            }
-                        }
-                        results.Add(new Data.TrailResultMarked(tr2, t2));
-                    }
-                }
-                //this.MainChart.SelectData -= new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);
-                //m_selectDataHandler = false;
-
+                bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                 //Mark route track, but not chart
                 //Decrease update rate some, this is choppy
                 if (this.m_endSelect || DateTime.Now.Subtract(this.m_lastMarkingRouteTime).TotalMilliseconds >= 300)
                 {
                     this.m_lastMarkingRouteTime = DateTime.Now;
+
+                    IList<TrailResult> markResults = new List<TrailResult>();
+                    //Reuse ZoomToSelection setting, to select all results
+                    if (/*Data.Settings.ZoomToSelection ||*/ tr is SummaryTrailResult)
+                    {
+                        foreach (TrailResult tr2 in this.TrailResults)
+                        {
+                            markResults.Add(tr2);
+                        }
+                    }
+                    else
+                    {
+                        //If not summary set only mark selected
+                        markAll = false;
+                        markResults.Add(tr);
+                    }
+                    //Add reference to selected if SingleActivity
+                    //if (m_page.ViewSingleActivity(this.ReferenceTrailResult.Activity))
+                    {
+                        //bool addReference = false;
+                    }
+
+                    IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();
+                    foreach (TrailResult tr2 in markResults)
+                    {
+                        if (!(tr2 is SummaryTrailResult))
+                        {
+                            IValueRangeSeries<DateTime> t2 = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr2), tr2, this.ReferenceTrailResult, regions);
+                            //Add ranges if single set, then it is a part of a new selection
+                            if (!selecting && range != null)
+                            {
+                                if (float.IsNaN(range[1]) && !float.IsNaN(range[0]))
+                                {
+                                    DateTime time = TrackUtil.GetDateTimeFromChartResult(XAxisReferential == XAxisValue.Time, IsTrailPointOffset(tr2), tr2, this.ReferenceTrailResult, range[0]);
+                                    //Add a one second duration, otherwise there will be a complicated shared/Marked times combination
+                                    t2.Add(new ValueRange<DateTime>(time, time.AddSeconds(1)));
+                                }
+                            }
+                            results.Add(new Data.TrailResultMarked(tr2, t2));
+                        }
+                    }
+
                     m_page.MarkTrack(results, false, true);
                 }
+
+                //Scroll list
                 m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
 
                 int resultIndex;
@@ -440,6 +447,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     resultIndex = SeriesIndexToResult(seriesIndex);
                 }
+
                 //regions/range is in (raw) chart format, do not offset/convert
                 m_multiple.SetSelectedResultRange(resultIndex, regions, range);
                 //this.MainChart.SelectData += new ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataHandler(MainChart_SelectData);

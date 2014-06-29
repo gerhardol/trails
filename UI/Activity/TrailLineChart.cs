@@ -392,8 +392,8 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_lastMarkingRouteTime = DateTime.Now;
 
                     IList<TrailResult> markResults = new List<TrailResult>();
-                    //Reuse ZoomToSelection setting, to select all results
-                    if (/*Data.Settings.ZoomToSelection ||*/ tr is SummaryTrailResult)
+                    //select all results on map if summary or "few"
+                    if (tr is SummaryTrailResult || this.TrailResults.Count <= MaxSelectedSeries)
                     {
                         foreach (TrailResult tr2 in this.TrailResults)
                         {
@@ -406,10 +406,31 @@ namespace TrailsPlugin.UI.Activity {
                         markAll = false;
                         markResults.Add(tr);
                     }
-                    //Add reference to selected if SingleActivity
-                    //if (m_page.ViewSingleActivity(this.ReferenceTrailResult.Activity))
+
+                    //possibly mark the ST mapped activity on the map
+                    if (markResults.Count <= MaxSelectedSeries && m_page.ViewSingleActivity() != null)
                     {
-                        //bool addReference = false;
+                        bool addReference = true;
+                        foreach (TrailResult tr2 in markResults)
+                        {
+                            if (tr2.Activity == m_page.ViewSingleActivity())
+                            {
+                                addReference = false;
+                                break;
+                            }
+                        }
+                        if (addReference)
+                        {
+                            //find the results for the view activity
+                            IList<TrailResult> allResults = TrailResultWrapper.Results(Controller.TrailController.Instance.CurrentResultTreeList);
+                            foreach (TrailResult tr2 in allResults)
+                            {
+                                if (tr2.Activity == m_page.ViewSingleActivity())
+                                {
+                                    markResults.Add(tr2);
+                                }
+                            }
+                        }
                     }
 
                     IList<Data.TrailResultMarked> results = new List<Data.TrailResultMarked>();

@@ -360,26 +360,12 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Try to find if ST is mapping a certain activity
+        //Find the activity ST maps
         public IActivity ViewSingleActivity()
         {
             return (m_view == null) ? null : CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }
 
-        //Some views like mapping is only working in single view - there are likely better tests
-//        public bool isSingleView
-//        {
-//            get
-//            {
-//#if !ST_2_1
-//                if (CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems) == null)
-//                {
-//                    return false;
-//                }
-//#endif
-//                return true;
-//            }
-//        }
         private bool isReportView
         {
             get

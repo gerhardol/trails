@@ -546,6 +546,14 @@ namespace TrailsPlugin.Utils
             }
         }
 
+        //static inserted values (pauses and points to be handled separetly)
+        public const int NoOfStaticInsertValues = 2;
+
+        /// <summary>
+        /// Insert values at borders: Start, stop, pauses, trailpoints
+        /// </summary>
+        /// <param name="track"></param>
+        /// <param name="source"></param>
         public void insertValues(ITimeDataSeries<T> track, ITimeDataSeries<T> source)
         {
             //Insert points around pauses and points

@@ -350,6 +350,9 @@ namespace TrailsPlugin.UI.Activity
                 {
                     activity = Plugin.GetApplication().Logbook.Activities.Add(startTime);
                     activity.GPSRoute = new GPSRoute();
+#if ST_3_1_5302
+                    ((GPSRoute)activity.GPSRoute).Capacity = ((IList<EditTrailRow>)this.EList.RowData).Count;
+#endif
                 }
                 activity.Name = TrailName.Text;
                 activity.Notes += "Radius: " + UnitUtil.Elevation.ToString(m_TrailToEdit.Radius, "u");

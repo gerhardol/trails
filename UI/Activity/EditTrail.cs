@@ -29,6 +29,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using TrailsPlugin.Data;
 using TrailsPlugin.UI.MapLayers;
 using GpsRunningPlugin.Util;
+using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity
 {
@@ -349,10 +350,8 @@ namespace TrailsPlugin.UI.Activity
                 else
                 {
                     activity = Plugin.GetApplication().Logbook.Activities.Add(startTime);
-                    activity.GPSRoute = new GPSRoute();
-#if ST_3_1_5302
-                    ((GPSRoute)activity.GPSRoute).Capacity = ((IList<EditTrailRow>)this.EList.RowData).Count;
-#endif
+                    activity.GPSRoute = new TrackUtil.GPSRoute();
+                    TrackUtil.setCapacity(activity.GPSRoute, ((IList<EditTrailRow>)this.EList.RowData).Count);
                 }
                 activity.Name = TrailName.Text;
                 activity.Notes += "Radius: " + UnitUtil.Elevation.ToString(m_TrailToEdit.Radius, "u");

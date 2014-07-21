@@ -1419,10 +1419,8 @@ namespace TrailsPlugin.Data
                     //Smooth individual trail sections individually
                     int pointIndex = 0;
                     //temporary track with max the original track points
-                    INumericTimeDataSeries tTrack = new NumericTimeDataSeries();
-#if ST_3_1_5302
-                    ((NumericTimeDataSeries)tTrack).Capacity = track.Count;
-#endif
+                    INumericTimeDataSeries tTrack = new TrackUtil.NumericTimeDataSeries();
+                    TrackUtil.setCapacity(tTrack, track.Count);
                     DateTime pTime = DateTime.MinValue;
                     for (int i = 0; i < track.Count; i++)
                     {
@@ -1453,10 +1451,8 @@ namespace TrailsPlugin.Data
                                 { //TBD: This should not happen, but only affects some smoothing
                                 }
                             }
-                            tTrack = new NumericTimeDataSeries();
-#if ST_3_1_5302
-                            ((NumericTimeDataSeries)tTrack).Capacity = track.Count;
-#endif
+                            tTrack = new TrackUtil.NumericTimeDataSeries();
+                            TrackUtil.setCapacity(tTrack, track.Count);
                             if (addOffset > 0)
                             {
                                 //This point was not added in last smooth
@@ -1508,10 +1504,8 @@ namespace TrailsPlugin.Data
             {
                 refActivity = refRes.Activity;
             }
-            INumericTimeDataSeries track = new NumericTimeDataSeries();
-#if ST_3_1_5302
-            ((NumericTimeDataSeries)track).Capacity = insert ? MaxCopyCapacity(source) : source.Count;
-#endif
+            INumericTimeDataSeries track = new TrackUtil.NumericTimeDataSeries();
+            TrackUtil.setCapacity(track, insert ? MaxCopyCapacity(source) : source.Count);
             track.AllowMultipleAtSameTime = false;
 
             if (source != null)
@@ -1672,10 +1666,8 @@ namespace TrailsPlugin.Data
                     double pTime = 0;
                     bool first = true;
                     INumericTimeDataSeries track = this.CalcElevationMetersTrack0(this.m_cacheTrackRef);
-                    m_cadencePerMinuteTrack0 = new NumericTimeDataSeries();
-#if !ST_3_1_5302
-                    ((NumericTimeDataSeries)m_cadencePerMinuteTrack0).Capacity = track.Count;
-#endif
+                    m_cadencePerMinuteTrack0 = new TrackUtil.NumericTimeDataSeries();
+                    TrackUtil.setCapacity(m_cadencePerMinuteTrack0, track.Count);
                     foreach (ITimeValueEntry<float> entry in track)
                     {
                         DateTime d = track.EntryDateTime(entry);
@@ -1818,12 +1810,10 @@ namespace TrailsPlugin.Data
                 if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None)
                 {
                    //grade adjusted track
-                    speedTrack = new NumericTimeDataSeries();
+                    speedTrack = new TrackUtil.NumericTimeDataSeries();
                     if (!TrailResult.PaceTrackIsGradeAdjustedPaceAvg)
                     {
-#if ST_3_1_5302
-                        ((NumericTimeDataSeries)speedTrack).Capacity = this.m_grades.Count;
-#endif
+                        TrackUtil.setCapacity(speedTrack, this.m_grades.Count);
                         //Show pace adjusted to flat ground
                         this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
                         if (this.m_grades.Count > 1)
@@ -1844,9 +1834,8 @@ namespace TrailsPlugin.Data
                         if (this.HasAdjustedTimeTrack(this.m_cacheTrackRef))
                         {
                             IDistanceDataTrack timeTrack = this.AverageAdjustedTimeTrack(this.m_cacheTrackRef);
-#if ST_3_1_5302
-                            ((NumericTimeDataSeries)speedTrack).Capacity = timeTrack.Count - 1;
-#endif
+                            TrackUtil.setCapacity(speedTrack, timeTrack.Count - 1);
+
                             //No data in first point - could use dummy
                             for (int i = 1; i < timeTrack.Count; i++)
                             {
@@ -1887,7 +1876,7 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    this.m_paceTrack0 = new NumericTimeDataSeries();
+                    this.m_paceTrack0 = new TrackUtil.NumericTimeDataSeries();
                 }
             }
             return this.m_paceTrack0;
@@ -1937,13 +1926,10 @@ namespace TrailsPlugin.Data
                 }
                 bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
                 //About the same as copySmoothTrack()
-                m_deviceSpeedPaceTrack0 = new NumericTimeDataSeries();
-
+                m_deviceSpeedPaceTrack0 = new TrackUtil.NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
-#if ST_3_1_5302
-                    ((NumericTimeDataSeries)this.m_deviceSpeedPaceTrack0).Capacity = MaxCopyCapacity(this.Activity.DistanceMetersTrack);
-#endif
+                    TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(this.Activity.DistanceMetersTrack));
                     ITimeValueEntry<float> prev = null;
                     IDistanceDataTrack source = this.Activity.DistanceMetersTrack;
                     //Similar to CopySmoothTrack, but this is a IDistanceDataTrack
@@ -2022,7 +2008,7 @@ namespace TrailsPlugin.Data
                     {
                         if (activity.Metadata.Source.Contains(devName))
                         {
-                            sourceTrack = new NumericTimeDataSeries();
+                            sourceTrack = new TrackUtil.NumericTimeDataSeries();
                             foreach (TimeValueEntry<IGPSPoint> t in activity.GPSRoute)
                             {
                                 DateTime d = activity.GPSRoute.EntryDateTime(t);
@@ -2115,7 +2101,7 @@ namespace TrailsPlugin.Data
 
             if (deviceElevationTrack0 == null)
             {
-                deviceElevationTrack0 = new NumericTimeDataSeries();
+                deviceElevationTrack0 = new TrackUtil.NumericTimeDataSeries();
             }
             else if (adjustElevation)
             {
@@ -2278,10 +2264,8 @@ namespace TrailsPlugin.Data
 
                 if (this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 1)
                 {
-                    IGPSRoute gpsRoute = new GPSRoute();
-#if ST_3_1_5302
-                    ((GPSRoute)gpsRoute).Capacity = this.Activity.GPSRoute.Count;
-#endif
+                    IGPSRoute gpsRoute = new TrackUtil.GPSRoute();
+                    TrackUtil.setCapacity(gpsRoute, this.Activity.GPSRoute.Count);
                     foreach (ITimeValueEntry<IGPSPoint> g in this.Activity.GPSRoute)
                     {
                         DateTime d1 = this.Activity.GPSRoute.EntryDateTime(g);
@@ -2375,7 +2359,7 @@ namespace TrailsPlugin.Data
                     m_deviceDiffDistTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceDiffDistTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                     return m_deviceDiffDistTrack0;
                 }
-                m_deviceDiffDistTrack0 = new NumericTimeDataSeries();
+                m_deviceDiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
                     float? start2 = null;
@@ -2493,7 +2477,7 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_gradeRunAdjustedTime == null)
             {
-                m_gradeRunAdjustedTime = new NumericTimeDataSeries();
+                m_gradeRunAdjustedTime = new TrackUtil.NumericTimeDataSeries();
                 m_grades = new List<ginfo>();
                 //Clear derived objects too
                 m_averageAdjustedTime = null;
@@ -2845,8 +2829,8 @@ namespace TrailsPlugin.Data
                 TrailResult trRef = getRefSub(m_cacheTrackRef);
                 //Calc diff, can clear the track
                 this.GetDistXOffset(trRef);
-                trRef.GetDistXOffset(trRef); 
-                m_DiffTimeTrack0 = new NumericTimeDataSeries();
+                trRef.GetDistXOffset(trRef);
+                m_DiffTimeTrack0 = new TrackUtil.NumericTimeDataSeries();
 
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
@@ -3002,7 +2986,7 @@ namespace TrailsPlugin.Data
                 //Calc elapsed offsets
                 this.GetTimeXOffset(trRef);
                 trRef.GetTimeXOffset(trRef);
-                m_DiffDistTrack0 = new NumericTimeDataSeries();
+                m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                 UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(trRef.Activity);
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
@@ -3270,14 +3254,12 @@ namespace TrailsPlugin.Data
 
         private IGPSRoute getGps()
         {
-            IGPSRoute gpsTrack = new GPSRoute();
+            IGPSRoute gpsTrack = new TrackUtil.GPSRoute();
             gpsTrack.AllowMultipleAtSameTime = false;
             if (m_activity != null && m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
                 StartTime != DateTime.MinValue && EndTime != DateTime.MinValue)
             {
-#if ST_3_1_5302
-                ((GPSRoute)gpsTrack).Capacity = MaxCopyCapacity(this.Activity.GPSRoute);
-#endif
+                TrackUtil.setCapacity(gpsTrack, MaxCopyCapacity(this.Activity.GPSRoute));
                 int i = 0;
                 while (i < m_activity.GPSRoute.Count)
                 {
@@ -3464,7 +3446,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Info == null)
                 {
-                    return new NumericTimeDataSeries();
+                    return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedCadenceTrack;
             }
@@ -3476,7 +3458,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Info == null)
                 {
-                    return new NumericTimeDataSeries();
+                    return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedElevationTrack;
             }
@@ -3487,7 +3469,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Info == null)
                 {
-                    return new NumericTimeDataSeries();
+                    return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedGradeTrack;
             }
@@ -3499,7 +3481,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Info == null)
                 {
-                    return new NumericTimeDataSeries();
+                    return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedHeartRateTrack;
             }
@@ -3511,7 +3493,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Info == null)
                 {
-                    return new NumericTimeDataSeries();
+                    return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedPowerTrack;
             }
@@ -3523,7 +3505,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.Info == null)
                 {
-                    return new NumericTimeDataSeries();
+                    return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedSpeedTrack;
             }
@@ -3540,10 +3522,8 @@ namespace TrailsPlugin.Data
             activity.GPSRoute = this.GPSRoute;
             if (HasAdjustedTimeTrack(this.m_cacheTrackRef))
             {
-                IGPSRoute gpsRoute = new GPSRoute();
-#if ST_3_1_5302
-                ((GPSRoute)gpsRoute).Capacity = this.Activity.GPSRoute.Count;
-#endif
+                IGPSRoute gpsRoute = new TrackUtil.GPSRoute();
+                TrackUtil.setCapacity(gpsRoute, this.Activity.GPSRoute.Count);
                 IDistanceDataTrack dt = this.AverageAdjustedTimeTrack(this.m_cacheTrackRef);
                 foreach (ITimeValueEntry<IGPSPoint> g in this.GPSRoute)
                 {

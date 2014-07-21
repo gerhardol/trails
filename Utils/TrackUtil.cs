@@ -31,6 +31,47 @@ namespace TrailsPlugin.Utils
 {
     public static class TrackUtil
     {
+        //Changed interfaces in ST, memory performance improvements
+#if ST_3_1_5314
+        internal class NumericTimeDataSeries : ZoneFiveSoftware.Common.Data.NumericTimeDataSeries2 {}
+        internal class DistanceDataTrack : ZoneFiveSoftware.Common.Data.DistanceDataTrack2 { }
+        internal class GPSRoute : ZoneFiveSoftware.Common.Data.GPS.GPSRoute2 { }
+#else
+        internal class NumericTimeDataSeries : ZoneFiveSoftware.Common.Data.NumericTimeDataSeries { }
+        internal class DistanceDataTrack : ZoneFiveSoftware.Common.Data.DistanceDataTrack { }
+        internal class GPSRoute : ZoneFiveSoftware.Common.Data.GPS.GPSRoute { }
+#endif
+
+        internal static void setCapacity(INumericTimeDataSeries t, int v)
+        {
+#if ST_3_1_5314
+            if (t is ZoneFiveSoftware.Common.Data.NumericTimeDataSeries2)
+            {
+                ((ZoneFiveSoftware.Common.Data.NumericTimeDataSeries2)t).Capacity = v;
+            }
+#endif
+        }
+
+        internal static void setCapacity(IDistanceDataTrack t, int v)
+        {
+#if ST_3_1_5314
+            if (t is ZoneFiveSoftware.Common.Data.DistanceDataTrack2)
+            {
+                ((ZoneFiveSoftware.Common.Data.DistanceDataTrack2)t).Capacity = v;
+            }
+#endif
+        }
+
+        internal static void setCapacity(IGPSRoute t, int v)
+        {
+#if ST_3_1_5314
+            if (t is ZoneFiveSoftware.Common.Data.GPS.GPSRoute2)
+            {
+                ((ZoneFiveSoftware.Common.Data.GPS.GPSRoute2)t).Capacity = v;
+            }
+#endif
+        }
+
         /**********************************/
 
         internal static float getValFromDateTime(INumericTimeDataSeries track, DateTime t)

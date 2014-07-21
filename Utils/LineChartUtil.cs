@@ -419,7 +419,7 @@ namespace TrailsPlugin.Utils
                     {
                         Debug.Assert(false);
                         // Fail safe
-                        track = new NumericTimeDataSeries();
+                        track = new TrackUtil.NumericTimeDataSeries();
                         break;
                     }
             }

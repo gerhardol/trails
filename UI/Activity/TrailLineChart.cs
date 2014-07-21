@@ -908,7 +908,7 @@ namespace TrailsPlugin.UI.Activity {
                             else
                             {
                                 //No data
-                                graphPoints = new NumericTimeDataSeries();
+                                graphPoints = new TrackUtil.NumericTimeDataSeries();
                             }
 
                             if (graphPoints.Count > 1)

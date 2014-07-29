@@ -15,6 +15,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if ST_3_0
+//ST 3.1.5314 contains memory optimisations
+//We assume that the plugin is only forward compatible, only change this file, not the .csproj file
+#define ST_3_1_5314
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -526,32 +532,44 @@ namespace TrailsPlugin.Utils
         {
             //Interpolation is down to seconds
             //TBD: Inefficient, source.IndexOf often fails
-            ITimeValueEntry<T> interpolatedP = source.GetInterpolatedValue(atime);
-            if (interpolatedP != null)
+#if ST_3_1_5314
+            //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=84638#p84638
+            //System.Exception: FindPosOnOrBefore: Didn't find element properly.
+            try
             {
-                int index = source.IndexOf(interpolatedP);
-                T val = interpolatedP.Value;
-                if (index >= 0)
-                {
-                    val = TrackUtil.getValFromDateTimeIndex(source, atime, index);
-                }
-                else
-                {
-                }
-                try
-                {
-#if !NO_ST_INSERT_START_TIME
-                    //ST bug: not inserted in order if ms differs for start
-                    if (Math.Abs((atime - track.StartTime).TotalSeconds) < 1)
-                    {
-                        track.RemoveAt(0);
-                    }
 #endif
-                    track.Add(atime, val);
-                    //T val2 = track.GetInterpolatedValue(atime).Value;
+                ITimeValueEntry<T> interpolatedP = source.GetInterpolatedValue(atime);
+                if (interpolatedP != null)
+                {
+                    int index = source.IndexOf(interpolatedP);
+                    T val = interpolatedP.Value;
+                    if (index >= 0)
+                    {
+                        val = TrackUtil.getValFromDateTimeIndex(source, atime, index);
+                    }
+                    else
+                    {
+                    }
+                    try
+                    {
+#if !NO_ST_INSERT_START_TIME
+                        //ST bug: not inserted in order if ms differs for start
+                        if (Math.Abs((atime - track.StartTime).TotalSeconds) < 1)
+                        {
+                            track.RemoveAt(0);
+                        }
+#endif
+                        track.Add(atime, val);
+                        //T val2 = track.GetInterpolatedValue(atime).Value;
+                    }
+                    catch { }
                 }
-                catch { }
+#if ST_3_1_5314
             }
+            catch (Exception e)
+            {
+            }
+#endif
         }
     }
 

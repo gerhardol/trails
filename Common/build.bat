@@ -31,8 +31,8 @@ SET ConfigurationType=%7
 REM Set the plugin GUID in the main PropertyGroup for the plugin
 IF "%guid%"=="" GOTO END
 
-REM ST version, for plugin.xml file
-SET StVersion=3.1.4415
+REM ST version, for plugin.xml file (not used by ST)
+SET StVersion=3.1.5314
 IF "%StPluginVersion%"=="2" SET StVersion=2.1.3478
 
 REM 7-zip must be configured, hardcoded path used

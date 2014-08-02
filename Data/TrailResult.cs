@@ -2830,7 +2830,6 @@ namespace TrailsPlugin.Data
                 //Calc diff, can clear the track
                 this.GetDistXOffset(trRef);
                 trRef.GetDistXOffset(trRef);
-                m_DiffTimeTrack0 = new TrackUtil.NumericTimeDataSeries();
 
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
@@ -2842,6 +2841,7 @@ namespace TrailsPlugin.Data
                     float refPrevTime = 0;
                     float diffOffset = 0;
 
+                    m_DiffTimeTrack0 = new TrackUtil.NumericTimeDataSeries();
                     bool prevCommonStreches = false;
                     IValueRangeSeries<DateTime> commonStretches = null;
                     if (Settings.DiffUsingCommonStretches && trRef.Activity != null)
@@ -2883,7 +2883,7 @@ namespace TrailsPlugin.Data
                                             //float oldTime = oldElapsed;
                                             float refTimeP = (float)trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]);
                                             float thisTimeP = (float)this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]);
-                                            diffOffset += (refTimeP - refPrevTime - (thisTimeP - refPrevTime)); 
+                                            diffOffset += (refTimeP - refPrevTime - (thisTimeP - refPrevTime));
                                         }
                                     }
                                 }
@@ -2914,7 +2914,7 @@ namespace TrailsPlugin.Data
                                                 refTime = val.Value;
                                             }
                                         }
-                                        else 
+                                        else
                                         {
                                             float dist = this.getDistResult(d1);
                                             refTime = dist / this.AvgSpeed;
@@ -2973,6 +2973,11 @@ namespace TrailsPlugin.Data
                         }
                     }
                 }
+                if (m_DiffTimeTrack0 == null)
+                {
+                    //As the diff can be rest in several situations, have this check
+                    m_DiffTimeTrack0 = new TrackUtil.NumericTimeDataSeries();
+                }
             }
             return m_DiffTimeTrack0;
         }
@@ -2986,7 +2991,6 @@ namespace TrailsPlugin.Data
                 //Calc elapsed offsets
                 this.GetTimeXOffset(trRef);
                 trRef.GetTimeXOffset(trRef);
-                m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                 UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(trRef.Activity);
                 if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                 {
@@ -2999,6 +3003,7 @@ namespace TrailsPlugin.Data
                     double prevDist = 0;
                     double prevRefDist = 0;
 
+                    m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                     bool prevCommonStreches = false;
                     IValueRangeSeries<DateTime> commonStretches = null;
                     if (Settings.DiffUsingCommonStretches && trRef.Activity != null)
@@ -3126,7 +3131,7 @@ namespace TrailsPlugin.Data
                     dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
                     if (trRef != this &&
                         !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndTime, Pauses) &&
-                        (Settings.ResyncDiffAtTrailPoints || 
+                        (Settings.ResyncDiffAtTrailPoints ||
                         this.m_activityTrail != null && (this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated)) &&
                         m_cacheTrackRef == trRef && //Otherwise will cache be cleared for splits...
                         this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
@@ -3144,6 +3149,10 @@ namespace TrailsPlugin.Data
                             //m_DiffDistTrack0.Add(EndTime, lastValue);
                         }
                     }
+                }
+                if (m_DiffDistTrack0 == null)
+                {
+                    m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                 }
             }
             return m_DiffDistTrack0;

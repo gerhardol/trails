@@ -62,12 +62,20 @@ namespace TrailsPlugin.Data
             trail.TrailPriority = -100;
             allTrails.Add(trail.Id, trail);
 
+            //UniqueRoutes Trail
+            trail = new Data.Trail(GUIDs.UniqueRoutesTrail);
+            trail.Name = Properties.Resources.UniqueRoutes_Trail;
+            trail.Generated = true;
+            trail.TrailType = Trail.CalcType.UniqueRoutes;
+            trail.TrailPriority = -101;
+            allTrails.Add(trail.Id, trail);
+
             //ElevationPoints Trail
             trail = new Data.Trail(GUIDs.ElevationPointsTrail);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation;
             trail.Generated = true;
             trail.TrailType = Trail.CalcType.ElevationPoints;
-            trail.TrailPriority = -101;
+            trail.TrailPriority = -102;
             trail.TrailLocations = new List<TrailGPSLocation>();
             allTrails.Add(trail.Id, trail);
             ElevationPointsTrail = trail;

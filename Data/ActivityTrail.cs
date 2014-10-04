@@ -18,6 +18,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Text;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
@@ -68,6 +69,17 @@ namespace TrailsPlugin.Data
             if (this.m_trail.TrailType == Trail.CalcType.HighScore)
             {
                 if (Integration.HighScore.HighScoreIntegrationEnabled)
+                {
+                    this.m_status = TrailOrderStatus.MatchNoCalc;
+                }
+                else
+                {
+                    this.m_status = TrailOrderStatus.NotInstalled;
+                }
+            }
+            else if (this.m_trail.TrailType == Trail.CalcType.UniqueRoutes)
+            {
+                if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled)
                 {
                     this.m_status = TrailOrderStatus.MatchNoCalc;
                 }
@@ -251,7 +263,7 @@ namespace TrailsPlugin.Data
         {
             if (m_resultsListWrapper == null)
             {
-                //Avoid calculaations with only one null activity
+                //Avoid calculations with only one null activity
                 //(assume this is a race condition, do not set m_resultsListWrapper)
                 if (activities == null || activities.Count == 1 && activities[0] == null)
                 {
@@ -302,6 +314,32 @@ namespace TrailsPlugin.Data
                                 progressBar.Value = HighScoreProgressVal + 1;
                             }
                         }
+                    }
+                }
+                else if (m_trail.TrailType == Trail.CalcType.UniqueRoutes)
+                {
+                    try
+                    {
+                        if (m_controller.ReferenceActivity != null)
+                        {
+                            IList<IActivity> searchActivities = null; //Default, UR settings
+                            if (m_controller.Activities.Count != 1)
+                            {
+                                searchActivities = m_controller.Activities;
+                            }
+                            IList<IActivity> resultActivities = Integration.UniqueRoutes.GetUniqueRoutesForActivity(
+                                m_controller.ReferenceActivity.GPSRoute, searchActivities, progressBar);
+                            foreach (IActivity activity in resultActivities)
+                            {
+                                this.Status = TrailOrderStatus.Match;
+                                TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                                m_resultsListWrapper.Add(result);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageDialog.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
@@ -1530,7 +1568,7 @@ namespace TrailsPlugin.Data
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
-                if (t.Trail.TrailType == Trail.CalcType.Splits)
+                if (t.Trail.TrailType == Trail.CalcType.Splits || t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
                     name += " (" + t.ActivityCount + ")";
                 }

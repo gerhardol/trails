@@ -715,7 +715,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageDialog.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1995,7 +1995,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageDialog.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 #endif
         }

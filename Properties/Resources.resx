@@ -226,7 +226,7 @@ Changing this value will not effect existing trails.</value>
     <value>Mark other sub Trails or splits in list</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>Limit activities with Unique Routes from reference result{0}</value>
+    <value>Limit activities with UniqueRoutes from reference result{0}</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
     <value>Reference Activity</value>
@@ -258,18 +258,18 @@ Make sure that {1} is installed.</value>
     <value>Advanced</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Add similar activities with Unique Routes from reference result{0}</value>
+    <value>Add similar activities with UniqueRoutes from reference result{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
-    <value>Activities can be filtered using Unique Routes.</value>
+    <value>Activities can be filtered using UniqueRoutes Plugin.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">
-    <value>Unique Routes plugin</value>
+    <value>UniqueRoutes plugin</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
-    <value>Install at least version {0} of {1} to filter activities using Unique Routes.</value>
+    <value>Install at least version {0} of {1} to filter activities using UniqueRoutes.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
@@ -279,7 +279,7 @@ Make sure that {1} is installed.</value>
     <value>Set Name At Import</value>
   </data>
   <data name="UI_Activity_List_URCommon" xml:space="preserve">
-    <value>Mark Unique Routes Common Stretches</value>
+    <value>Mark UniqueRoutes Common Stretches</value>
   </data>
   <data name="HighScoreCompatible" xml:space="preserve">
     <value>A HighScore Trail can be generated.</value>
@@ -337,5 +337,8 @@ Make sure that {1} is installed.</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Show Chart Tools</value>
+  </data>
+  <data name="UniqueRoutes_Trail" xml:space="preserve">
+    <value>UniqueRoutes</value>
   </data>
 </root>

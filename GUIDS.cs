@@ -35,7 +35,7 @@ namespace TrailsPlugin {
         //public static readonly Guid AthleteView = new Guid("709e607b-cb51-431c-ba3f-197ab4df3de0");
         //public static readonly Guid ReportView = new Guid("99498256-cf51-11db-9705-005056c00008");
 
-        //public static readonly Guid SettingsView = new Guid("df106ae5-c497-11db-96fe-005056c00008");
+        public static readonly Guid SettingsView = new Guid("df106ae5-c497-11db-96fe-005056c00008");
         //public static readonly Guid RoutesView = new Guid("e9a99ef8-c497-11db-96fe-005056c00008");
         //public static readonly Guid OnlineView = new Guid("f8a828fc-c497-11db-96fe-005056c00008");
         //public static readonly Guid CategoriesView = new Guid("2cfdc5ac-d8d0-11db-9705-005056c00008");
@@ -48,6 +48,11 @@ namespace TrailsPlugin {
         public static readonly Guid SplitsTrail    = new Guid("30681520-b220-11e0-a00b-0800200c9a66");
         public static readonly Guid ReferenceTrail = new Guid("30681521-b220-11e0-a00b-0800200c9a66");
         public static readonly Guid HighScoreTrail = new Guid("30681522-b220-11e0-a00b-0800200c9a66");
+        public static readonly Guid UniqueRoutesTrail = new Guid("389f4602-6480-4e7c-9830-3ec04a48aa6d");
         public static readonly Guid ElevationPointsTrail = new Guid("e5e19350-89c3-11e2-9e96-0800200c9a66");
+
+        //GUIDs for the plugins, to open settings
+        public static readonly Guid HighScorePluginMain = new Guid("4B84E5C0-EC2B-4C0C-8B8E-3FAEB09F74C6");
+        public static readonly Guid UniqueRoutesPluginMain = new Guid("5c630517-46c4-478d-89d6-a8a6ca6337db");
     }
 }

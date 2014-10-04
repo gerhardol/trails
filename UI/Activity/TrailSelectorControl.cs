@@ -220,11 +220,35 @@ namespace TrailsPlugin.UI.Activity
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
-            IList<IItemTrackSelectionInfo> selectedGPS = 
+            IList<IItemTrackSelectionInfo> selectedGPS =
                         TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities, true);
 #endif
-
-            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) &&
+            if (m_controller.PrimaryCurrentActivityTrail != null &&
+                m_controller.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.HighScore)
+            {
+                Guid view = GUIDs.SettingsView;
+                String bookmark = "PageId=" + GUIDs.HighScorePluginMain.ToString();
+                Plugin.GetApplication().ShowView(view, bookmark);
+                return;
+            }
+            else if (m_controller.PrimaryCurrentActivityTrail != null &&
+                m_controller.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.UniqueRoutes)
+            {
+                Guid view = GUIDs.SettingsView;
+                String bookmark = "PageId=" + GUIDs.UniqueRoutesPluginMain.ToString();
+                Plugin.GetApplication().ShowView(view, bookmark);
+                return;
+            }
+            else if (m_controller.PrimaryCurrentActivityTrail != null &&
+                m_controller.PrimaryCurrentActivityTrail.Trail.Generated &&
+                m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
+            {
+                Guid view = GUIDs.SettingsView;
+                String bookmark = "PageId=" + GUIDs.Settings.ToString();
+                Plugin.GetApplication().ShowView(view, bookmark);
+                return;
+            }
+            else if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS) &&
                 m_controller.CurrentActivityTrailIsSelected &&
                 !m_controller.PrimaryCurrentActivityTrail.Trail.Generated &&
                 //Change: never replace points when editing trails
@@ -241,8 +265,8 @@ namespace TrailsPlugin.UI.Activity
             {
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, m_controller.ReferenceTrailResult);
                 showEditDialog(dialog);
-			}
-		}
+            }
+        }
         private void showEditDialog(EditTrail dialog)
         {
             m_editTrail = dialog;
@@ -267,7 +291,7 @@ namespace TrailsPlugin.UI.Activity
 		private void btnDelete_Click(object sender, EventArgs e)
         {
             if (m_controller.CurrentActivityTrailIsSelected &&
-                MessageBox.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
+                MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
                 == DialogResult.Yes)
             {
 				m_controller.DeleteCurrentTrail();
@@ -379,7 +403,7 @@ namespace TrailsPlugin.UI.Activity
             bool addCurrent = false;
             if (m_controller.CurrentActivityTrailIsSelected && !m_controller.PrimaryCurrentActivityTrail.Trail.Generated)
             {
-                if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
+                if (MessageDialog.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
                     "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     addCurrent = true;
@@ -436,7 +460,7 @@ namespace TrailsPlugin.UI.Activity
  
             if (selectionIsDifferent)
             {
-                if (MessageBox.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageDialog.Show(Properties.Resources.UI_Activity_Page_UpdateTrail, "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     dialog.Trail.TrailLocations = getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS);
                 }

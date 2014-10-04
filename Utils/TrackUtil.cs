@@ -532,7 +532,7 @@ namespace TrailsPlugin.Utils
         {
             //Interpolation is down to seconds
             //TBD: Inefficient, source.IndexOf often fails
-#if ST_3_1_5314
+#if ST_3_1_5314_BUG
             //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=84638#p84638
             //System.Exception: FindPosOnOrBefore: Didn't find element properly.
             try
@@ -564,7 +564,7 @@ namespace TrailsPlugin.Utils
                     }
                     catch { }
                 }
-#if ST_3_1_5314
+#if ST_3_1_5314_BUG
             }
             catch (Exception e)
             {

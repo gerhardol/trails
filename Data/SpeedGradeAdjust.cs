@@ -21,10 +21,10 @@ namespace TrailsPlugin.Data
 {
     //Some hints here: http://mymarathonpace.com/Other_Info.html
 
-    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
+    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
-        public static float getGradeFactor(float g, float time, float prevTime, float dist, float prevDist)
+        public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
         {
             //g = Math.Min(g, 0.2F);
             //g = Math.Max(g, -0.2F);
@@ -102,6 +102,26 @@ namespace TrailsPlugin.Data
                     {
                         q = 1 - q_gm;
                     }
+                    break;
+
+                case RunningGradeAdjustMethodEnum.Kay:
+                    //http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf
+                    //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774
+                    if (g < 0.3152 && g > -0.2617)
+                    {
+                        q = (float)(1707 / (5656 * g + 32209 * Math.Pow(g, 2) - 3211 * Math.Pow(g, 3) - 43635 * Math.Pow(g, 4) + 1707));
+                    }
+                    else if (g > 0.3152)
+                    {
+                        //max uphill
+                        q = 1 + 1.9538f;
+                    }
+                    else
+                    {
+                        q = 1 - 0.8732f;
+                    }
+                    //Adjust for time
+                    q *= (float)(1 + time * 4.446 / 100000f);
                     break;
 
                 case RunningGradeAdjustMethodEnum.JackDaniels:

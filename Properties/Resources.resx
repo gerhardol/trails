@@ -261,7 +261,7 @@ Make sure that {1} is installed.</value>
     <value>Add similar activities with UniqueRoutes from reference result{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
-    <value>Activities can be filtered using UniqueRoutes Plugin.</value>
+    <value>Activities can be filtered using UniqueRoutes plugin.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">

@@ -663,7 +663,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Activities can be filtered using UniqueRoutes Plugin..
+        ///   Looks up a localized string similar to Activities can be filtered using UniqueRoutes plugin..
         /// </summary>
         internal static string UniqueRoutesCompatible {
             get {

@@ -108,7 +108,7 @@ namespace TrailsPlugin.Data
                     //http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf
                     //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774
 
-                    double p0; //(race record) pace predict
+                    double p0; //race record pace predict
                     if (g > 0.3152)
                     {
                         //max uphill
@@ -146,26 +146,22 @@ namespace TrailsPlugin.Data
                      * than the hill people). A problem is that the up grade increases the cost so much that it is hard to run very fast, because the VO2 will go above max real quickly. So yu end up 
                      * extrapolating from slower speeds and hope it applies at faster ones. I have done faster ones using Rate of Perceived Exertion and that can be done beyond max, but not ver exact
                      * */
-                    float q_jd = 0;
-                    float paceMile = (time - prevTime) * 1609 / (dist - prevDist) / 100F;
-                    //const float maxPace = 8 * 60 / 1000F * 1.609F;
-                    //const float minPace = 3 * 60 / 1000F * 1.609F;
-                    //paceMile = Math.Min(paceMile, maxPace);
-                    //paceMile = Math.Max(paceMile, minPace);
+                    double q_jd = 0;
+                    double speed = (dist - prevDist) / (time - prevTime);
                     if (g > 0)
                     {
-                        q_jd = 15 / paceMile;
+                        q_jd = 15 * speed * g * 100 / 1609;
                     }
                     else
                     {
-                        q_jd = 8 / paceMile;
+                        q_jd = 8 * speed * g * 100 / 1609;
                     }
-                    q = 1 - q_jd * g;
+                    q = (float)(1 - q_jd);
                     break;
 
                 case RunningGradeAdjustMethodEnum.AlbertoMinetti:
                     //Energy cost of walking and running at extreme uphill and downhill slopes
-                    //Alberto E. Minetti, Christian Moia1, Giulio S. Roi, Davide Susta1, and Guido Ferretti
+                    //Alberto E. Minetti, Christian Moia1, Giulio S. Roi, Davide Susta1 and Guido Ferretti
                     //http://jap.physiology.org/content/93/3/1039.full
                     float q_am0 = (float)((g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6);
                     float q_am1 = 1 / (1 + q_am0);
@@ -174,9 +170,12 @@ namespace TrailsPlugin.Data
 
                 case RunningGradeAdjustMethodEnum.ACSM:
                     //http://www.edulife.com.br/dados%5CArtigos%5CEducacao%20Fisica%5CFisiologia%20do%20Exercicio%5CEnergy%20expenditure%20of%20walking%20and%20running%20comparison%20with%20prrediction%20equations.pdf
-                    //Running. V˙ O2 (mL·kg1·min1) = 0.2v +  0.9vg*100+  3.5
+                    //http://blue.utb.edu/mbailey/handouts/MetCalEq.htm
+                    //Running. V˙ O2 (mL·/kg /min) = 0.2v +  0.9vg*100+  3.5
                     //vflat=v*(1+4.5*g)
-                    q = 1 / (1 + 4.5F * g);
+                    double sp = (dist - prevDist) / (time - prevTime);
+                    float w = 80;
+                    q = (float)((0.2 * 60 * sp + 3.5) / (0.2 * 60 * sp + 0.9 * g * 60 * sp + 3.5));
                     break;
 
                 case RunningGradeAdjustMethodEnum.Pandolf:

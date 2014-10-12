@@ -107,21 +107,33 @@ namespace TrailsPlugin.Data
                 case RunningGradeAdjustMethodEnum.Kay:
                     //http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf
                     //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774
-                    if (g < 0.3152 && g > -0.2617)
-                    {
-                        q = (float)(1707 / (5656 * g + 32209 * Math.Pow(g, 2) - 3211 * Math.Pow(g, 3) - 43635 * Math.Pow(g, 4) + 1707));
-                    }
-                    else if (g > 0.3152)
+
+                    double p0; //(race record) pace predict
+                    if (g > 0.3152)
                     {
                         //max uphill
-                        q = 1 + 1.9538f;
+                        p0 = 1.9538 * g;
+                        //Alternate quartic function
+                        //p0 = 0.0314 + 1.7544 * g + 0.3162 * g * g;
+                    }
+                    else if (g < -0.2617)
+                    {
+                        //Max downhill
+                        p0 = - 0.8732 * g;
+                        //Alternate quartic function
+                        //p0 = 0.1151 + 0.0061 * g + 1.6802 * g * g;
                     }
                     else
                     {
-                        q = 1 - 0.8732f;
+                        p0 = 0.1707 + 0.5656 * g + 3.2209 * Math.Pow(g, 2) - 0.3211 * Math.Pow(g, 3) - 4.3635 * Math.Pow(g, 4);
                     }
-                    //Adjust for time
-                    q *= (float)(1 + time * 4.446 / 100000f);
+
+                    //Normalize - we want relative speed factor, not race record pace
+                    q = (float)(0.1707 / p0);
+
+                    //Adjust for total (activity) time - only applicable to predict time, not for adjustment
+                    //(the formula should be similar to Performance Predictor formulas, like WAVA/DaveCameron/PeteRiegel)
+                    //q *= (float)(1/(1 - totTime * 0.00004446f));
                     break;
 
                 case RunningGradeAdjustMethodEnum.JackDaniels:

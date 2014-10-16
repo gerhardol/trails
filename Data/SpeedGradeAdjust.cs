@@ -21,13 +21,11 @@ namespace TrailsPlugin.Data
 {
     //Some hints here: http://mymarathonpace.com/Other_Info.html
 
-    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, Kay, Kay2, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
+    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
         public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
         {
-            //g = Math.Min(g, 0.2F);
-            //g = Math.Max(g, -0.2F);
 
             float q;
             switch (TrailsPlugin.Data.Settings.RunningGradeAdjustMethod)
@@ -51,30 +49,33 @@ namespace TrailsPlugin.Data
                     if (g > 0)
                     {
                         float q_md = 3.3F;
-                        float g0 = 0.15f;
+                        float g0 = 0.1627f;
+                        float k0 = 0.0739f;
                         if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin)
                         {
                             if (dist > 21 * 1609)
                             {
                                 q_md = 4.3F;
-                                g0 = 0.116f;
+                                g0 = 0.142f;
+                                k0 = 0.2259f;
                             }
                             else if (dist > 16 * 1609)
                             {
                                 q_md = 3.8F;
-                                g0 = 0.13f;
+                                g0 = 0.151f;
+                                k0 = 0.1524f;
                             }
                         }
-                        //The formula will not work well when steep, by default giving infinite speed over 30%
-                        //Use Kay formula instead, normally from 31%, here extrapolated and used from 15% (11%)
-                        //Kay is always bigger than MD, but the values are closest at g0
+                        //MD will not work well when steep, by default giving infinite speed over 30%
+                        //Use Kay formula instead for steep. This formula is normally above 31% but extrapolated and used from 16% (14%)
+                        //Kay is always bigger than MD, the value is adjusted to be (almost) continous
                         if (g < g0)
                         {
                             q = 1 - q_md * g;
                         }
                         else
                         {
-                            q = 0.1707f / 1.9538f / g;
+                            q = 0.1707f / 1.9538f / g - k0;
                         }
                     }
                     else
@@ -91,7 +92,7 @@ namespace TrailsPlugin.Data
                     break;
 
                 case RunningGradeAdjustMethodEnum.Kay:
-                case RunningGradeAdjustMethodEnum.Kay2:
+                //case RunningGradeAdjustMethodEnum.Kay2:
                     //http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf
                     //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774
 
@@ -100,21 +101,21 @@ namespace TrailsPlugin.Data
                     {
                         //max uphill
                         p0 = 1.9538 * g;
-                        //Alternate quartic function
-                        if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Kay2)
-                        {
-                            p0 = 0.0314 + 1.7544 * g + 0.3162 * g * g;
-                        }
+                        //Alternate quartic function, very small difference
+                        //if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Kay2)
+                        //{
+                        //    p0 = 0.0314 + 1.7544 * g + 0.3162 * g * g;
+                        //}
                     }
                     else if (g < -0.2617)
                     {
                         //Max downhill
                         p0 = - 0.8732 * g;
-                        if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Kay2)
-                        {
-                            //Alternate quartic function
-                            p0 = 0.1151 + 0.0061 * g + 1.6802 * g * g;
-                        }
+                        //if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Kay2)
+                        //{
+                        //    //Alternate quartic function, very small difference
+                        //    p0 = 0.1151 + 0.0061 * g + 1.6802 * g * g;
+                        //}
                     }
                     else
                     {
@@ -141,15 +142,24 @@ namespace TrailsPlugin.Data
                      * */
                     double q_jd = 0;
                     double speed = (dist - prevDist) / (time - prevTime);
-                    if (g > 0)
+                    if (g > 0.153f)
                     {
-                        q_jd = 15 * speed * g * 100 / 1609;
+                        //Steep adjust, see discussion for MervynDavies
+                        //Assuming 4m/s
+                        q = 0.1707f / 1.9538f / g - 0.1416f;
                     }
                     else
                     {
-                        q_jd = 8 * speed * g * 100 / 1609;
+                        if (g > 0)
+                        {
+                            q_jd = 15 * speed * g * 100 / 1609;
+                        }
+                        else
+                        {
+                            q_jd = 8 * speed * g * 100 / 1609;
+                        }
+                        q = (float)(1 - q_jd);
                     }
-                    q = (float)(1 - q_jd);
                     break;
 
                 case RunningGradeAdjustMethodEnum.AlbertoMinetti:

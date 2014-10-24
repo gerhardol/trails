@@ -49,7 +49,7 @@ using TrailsPlugin.Data;
 using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity {
-	public partial class ActivityDetailPageControl : UserControl {
+    public partial class ActivityDetailPageControl : UserControl {
 
         private ITheme m_visualTheme =
 #if ST_2_1
@@ -64,8 +64,8 @@ namespace TrailsPlugin.UI.Activity {
                 Plugin.GetApplication().SystemPreferences.UICulture;
 #endif
 
-		private Controller.TrailController m_controller;
-		private bool m_isExpanded = false;
+        private Controller.TrailController m_controller;
+        private bool m_isExpanded = false;
 
 #if ST_2_1
         private Object m_view = null;
@@ -100,11 +100,11 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             m_controller = Controller.TrailController.Instance;
 
-			this.InitializeComponent();
-			InitControls();
-		}
+            this.InitializeComponent();
+            InitControls();
+        }
 
-		void InitControls()
+        void InitControls()
         {
 #if !ST_2_1
             this.ExpandSplitContainer.Panel2Collapsed = true;
@@ -114,13 +114,13 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.SetControl(this, m_controller, m_view);
             MultiCharts.SetControl(this, m_controller, m_view);
 #if ST_2_1
-			SplitContainer sc = DailyActivitySplitter;
+            SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
             {
                sc.Panel2.Controls.Add(MultiCharts);
             }
 #endif
-		}
+        }
 
         public void UICultureChanged(CultureInfo culture)
         {
@@ -600,20 +600,20 @@ namespace TrailsPlugin.UI.Activity {
         }
 
 #if ST_2_1
-		private System.Windows.Forms.SplitContainer DailyActivitySplitter {
-			get
+        private System.Windows.Forms.SplitContainer DailyActivitySplitter {
+            get
             {
-				Control c = this.Parent;
-				while (c != null) {
+                Control c = this.Parent;
+                while (c != null) {
                     if (c is ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel) {
-						return (System.Windows.Forms.SplitContainer)((ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel)c).Controls[0];
+                        return (System.Windows.Forms.SplitContainer)((ZoneFiveSoftware.SportTracks.UI.Views.Activities.ActivityDetailPanel)c).Controls[0];
                 }
-					c = c.Parent;
-				}
+                    c = c.Parent;
+                }
                 return null;
                 //throw new Exception("Daily Activity Splitter not found");
-			}
-		}
+            }
+        }
 #endif
 
         private void btnExpand_Click(object sender, EventArgs e)
@@ -646,10 +646,10 @@ namespace TrailsPlugin.UI.Activity {
             m_isExpanded = true;
             MultiCharts.Expanded = m_isExpanded;
 #if ST_2_1
- 		    }
+             }
 #endif
         }
-		private void MultiCharts_Collapse(object sender, EventArgs e)
+        private void MultiCharts_Collapse(object sender, EventArgs e)
         {
 #if !ST_2_1
             this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);

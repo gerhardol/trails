@@ -29,7 +29,7 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
 
 namespace TrailsPlugin.UI.Activity {
-	internal class ActivityDetailPage : IDisposable,
+    internal class ActivityDetailPage : IDisposable,
 #if ST_2_1
      IActivityDetailPage
 #else
@@ -74,7 +74,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public System.Guid Id { get { return GUIDs.Activity; } }
 #else
-		public IActivity Activity {
+        public IActivity Activity {
             set
             {
                 if (null == value) { m_activities = new List<IActivity>(); }
@@ -84,22 +84,22 @@ namespace TrailsPlugin.UI.Activity {
                     m_control.Activities = m_activities;
                 }
             }
-		}
+        }
 #endif
-		public Control CreatePageControl()
+        public Control CreatePageControl()
         {
-			if (m_control == null) {				
+            if (m_control == null) {                
 #if ST_2_1
-				m_control = new ActivityDetailPageControl();
+                m_control = new ActivityDetailPageControl();
                 m_control.Activities = m_activities;
 #else
                 m_control = new ActivityDetailPageControl(this, m_view);
 #endif
             }
-			return m_control;
-		}
+            return m_control;
+        }
 
-		public bool HidePage()
+        public bool HidePage()
         {
             m_showPage = false;
 #if !ST_2_1
@@ -109,8 +109,8 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_control.HidePage();
             }
-			return true;
-		}
+            return true;
+        }
 
         public IList<string> MenuPath
         {
@@ -137,12 +137,12 @@ namespace TrailsPlugin.UI.Activity {
         }
         public void RefreshPage()
         {
-			if (m_control != null) {
-				m_control.Refresh();
-			}
-		}
+            if (m_control != null) {
+                m_control.Refresh();
+            }
+        }
 
-		public void ShowPage(string bookmark)
+        public void ShowPage(string bookmark)
         {
 #if ST_2_1
             m_control.Activities = m_activities;
@@ -157,43 +157,43 @@ namespace TrailsPlugin.UI.Activity {
             {
                 m_control.ShowPage(bookmark);
             }
-		}
+        }
 
-		public void ThemeChanged(ITheme visualTheme) {
-			if (m_control != null) {
-				m_control.ThemeChanged(visualTheme);
-				RefreshPage();
-			}
-		}
+        public void ThemeChanged(ITheme visualTheme) {
+            if (m_control != null) {
+                m_control.ThemeChanged(visualTheme);
+                RefreshPage();
+            }
+        }
 
-		public void UICultureChanged(CultureInfo culture) {
+        public void UICultureChanged(CultureInfo culture) {
             if (m_control != null)
             {
                 m_control.UICultureChanged(culture);
             }
             RefreshPage();
-		}
+        }
 
-		public string PageName {
-			get {
-				return Title;
-			}
-		}
+        public string PageName {
+            get {
+                return Title;
+            }
+        }
 
-		public IPageStatus Status {
-			get { return null; }
-		}
+        public IPageStatus Status {
+            get { return null; }
+        }
 
-		public string Title {
-			get {
-				return Properties.Resources.TrailsName;
-			}
-		}
+        public string Title {
+            get {
+                return Properties.Resources.TrailsName;
+            }
+        }
 
-		#region INotifyPropertyChanged Members
-		public event PropertyChangedEventHandler PropertyChanged;
+        #region INotifyPropertyChanged Members
+        public event PropertyChangedEventHandler PropertyChanged;
 
-		#endregion
+        #endregion
 #if !ST_2_1
         private IDailyActivityView m_view = null;
         private Guid m_prevViewId;

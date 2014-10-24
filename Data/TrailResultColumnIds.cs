@@ -94,15 +94,15 @@ namespace TrailsPlugin.Data {
         public const string StartTime = "StartTime";
         public const string StartDistance = "StartDistance";
         public const string EndTime = "EndTime";
-		public const string Duration = "Duration";
-		public const string Distance = "Distance";
+        public const string Duration = "Duration";
+        public const string Distance = "Distance";
         public const string AvgCadence = "AvgCadence";
         public const string AvgHR = "AvgHR";
-		public const string MaxHR = "MaxHR";
+        public const string MaxHR = "MaxHR";
         public const string Ascent = "Ascent";
         public const string Descent = "Descent";
         public const string ElevChg = "ElevChg";
-		public const string AvgPower = "AvgPower";
+        public const string AvgPower = "AvgPower";
         public const string AscAvgGrade = "AscAvgGrade";
         public const string DescAvgGrade = "DescAvgGrade";
         public const string AvgSpeed = "AvgSpeed";
@@ -226,7 +226,7 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", "", 70, StringAlignment.Far));
             return columnDefs;
-		}
+        }
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();

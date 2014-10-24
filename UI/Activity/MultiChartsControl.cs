@@ -31,7 +31,7 @@ using TrailsPlugin.Data;
 using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity {
-	public partial class MultiChartsControl : UserControl {
+    public partial class MultiChartsControl : UserControl {
 
         public event System.EventHandler Expand;
         public event System.EventHandler Collapse;
@@ -49,7 +49,7 @@ namespace TrailsPlugin.UI.Activity {
         private IDailyActivityView m_view = null;
 #endif
 
-		public MultiChartsControl() {
+        public MultiChartsControl() {
             InitializeComponent();
             InitControls();
         }

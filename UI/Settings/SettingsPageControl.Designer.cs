@@ -1,28 +1,28 @@
 ﻿namespace TrailsPlugin.UI.Settings {
-	partial class SettingsPageControl {
-		/// <summary> 
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class SettingsPageControl {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary> 
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing) {
-			if (disposing && (components != null)) {
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Component Designer generated code
+        #region Component Designer generated code
 
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent() {
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent() {
             this.PluginInfoPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
@@ -361,14 +361,14 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private ZoneFiveSoftware.Common.Visuals.Panel PluginInfoPanel;
-		private ZoneFiveSoftware.Common.Visuals.ActionBanner PluginInfoBanner;
+        private ZoneFiveSoftware.Common.Visuals.Panel PluginInfoPanel;
+        private ZoneFiveSoftware.Common.Visuals.ActionBanner PluginInfoBanner;
         private System.Windows.Forms.Label lblCopyright;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label lblDefaultRadius;
         private ZoneFiveSoftware.Common.Visuals.TextBox txtDefaultRadius;
         private System.Windows.Forms.Label lblSetNameAtImport;
@@ -386,5 +386,5 @@
         private System.Windows.Forms.Label lblPredictDistance;
         private ZoneFiveSoftware.Common.Visuals.TextBox boxPredictDistance;
         private System.Windows.Forms.Label lblLicense;
-	}
+    }
 }

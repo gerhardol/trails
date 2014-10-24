@@ -22,41 +22,41 @@ using System.Xml;
 using TrailsPlugin.Export;
 
 namespace TrailsPlugin {
-	class Plugin : IPlugin
+    class Plugin : IPlugin
     {
         #region IPlugin Members
 
-		public IApplication Application {
-			set {
-				if (m_App != null) {
-					m_App.PropertyChanged -= new PropertyChangedEventHandler(AppPropertyChanged);
-				}
+        public IApplication Application {
+            set {
+                if (m_App != null) {
+                    m_App.PropertyChanged -= new PropertyChangedEventHandler(AppPropertyChanged);
+                }
 
-				m_App = value;
+                m_App = value;
 
-				if (m_App != null) {
-					m_App.PropertyChanged += new PropertyChangedEventHandler(AppPropertyChanged);
-				}
-			}
-		}
+                if (m_App != null) {
+                    m_App.PropertyChanged += new PropertyChangedEventHandler(AppPropertyChanged);
+                }
+            }
+        }
 
-		public System.Guid Id {
-			get {
-				return GUIDs.PluginMain;
-			}
-		}
+        public System.Guid Id {
+            get {
+                return GUIDs.PluginMain;
+            }
+        }
 
-		public string Name {
-			get {
-				return Properties.Resources.ApplicationName;
-			}
-		}
+        public string Name {
+            get {
+                return Properties.Resources.ApplicationName;
+            }
+        }
 
-		public string Version {
-			get { return GetType().Assembly.GetName().Version.ToString(4); }
-		}
+        public string Version {
+            get { return GetType().Assembly.GetName().Version.ToString(4); }
+        }
 
-		public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode) {
+        public void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode) {
             String attr;
             attr = pluginNode.GetAttribute(xmlTags.Verbose);
             if (attr.Length > 0) { Verbose = XmlConvert.ToInt16(attr); }
@@ -80,7 +80,7 @@ namespace TrailsPlugin {
             TrailsPlugin.Data.Settings.WriteOptions(xmlDoc, pluginNode);
             TrailsPlugin.Data.TrailData.WriteOptions(xmlDoc, pluginNode);
         }
-		#endregion
+        #endregion
 
         public static void ReadExtensionData()
         {
@@ -110,9 +110,9 @@ namespace TrailsPlugin {
         //    }
         }
 
-		public static IApplication GetApplication() {
-			return m_App;
-		}
+        public static IApplication GetApplication() {
+            return m_App;
+        }
 
         void AppPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -134,8 +134,8 @@ namespace TrailsPlugin {
             }
         }
 
-		private static IApplication m_App = null;
-		//private static Data.TrailData m_data = null;
+        private static IApplication m_App = null;
+        //private static Data.TrailData m_data = null;
         //public static Data.TrailData Data {
         //    get {
         //        //if (m_data == null) {

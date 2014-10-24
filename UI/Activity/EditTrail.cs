@@ -33,12 +33,12 @@ using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.UI.Activity
 {
-	public partial class EditTrail : Form
+    public partial class EditTrail : Form
     {
 
-		protected ITheme m_visualTheme;
-		protected bool m_addMode;
-		protected Data.Trail m_TrailToEdit; //Scratch, the copy of the trail add or newly created
+        protected ITheme m_visualTheme;
+        protected bool m_addMode;
+        protected Data.Trail m_TrailToEdit; //Scratch, the copy of the trail add or newly created
         private ActivityDetailPageControl m_page = null;
 #if ST_2_1
         private UI.MapLayers.MapControlLayer m_layer { get { return UI.MapLayers.MapControlLayer.Instance; } }
@@ -170,7 +170,7 @@ namespace TrailsPlugin.UI.Activity
         public virtual void ThemeChanged(ITheme visualTheme)
         {
             this.m_visualTheme = visualTheme;
-			this.BackColor = visualTheme.Control;
+            this.BackColor = visualTheme.Control;
             this.EList.ThemeChanged(visualTheme);
             this.TrailName.ThemeChanged(visualTheme);
             this.radiusBox.ThemeChanged(visualTheme);
@@ -293,17 +293,17 @@ namespace TrailsPlugin.UI.Activity
         ///////////////////////////
         private void btnCancel_Click(object sender, System.EventArgs e)
         {
-			this.DialogResult = DialogResult.Cancel;
-			Close();
-		}
+            this.DialogResult = DialogResult.Cancel;
+            Close();
+        }
 
-		private void btnOk_Click(object sender, System.EventArgs e)
+        private void btnOk_Click(object sender, System.EventArgs e)
         {
             if (string.IsNullOrEmpty(this.TrailName.Text))
             {
-				MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
-				return;
-			}
+                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
+                return;
+            }
 
             Data.Trail trail = Data.TrailData.GetFromName(this.TrailName.Text);
             if (trail != null && (this.m_addMode ||
@@ -323,7 +323,7 @@ namespace TrailsPlugin.UI.Activity
             this.m_page.ClearCurrentSelectedOnRoute();
 
             Close();
-		}
+        }
 
         void btnCopy_Click(object sender, System.EventArgs e)
         {
@@ -390,7 +390,7 @@ namespace TrailsPlugin.UI.Activity
         private void EditTrail_Activated(object sender, System.EventArgs e)
         {
             this.TrailName.Focus();
-		}
+        }
 
         //protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
         //    base.OnPaint(e);

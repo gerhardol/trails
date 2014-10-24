@@ -26,7 +26,7 @@ using TrailsPlugin.Utils;
 
 namespace TrailsPlugin.Data
 {
-	static class Settings
+    static class Settings
     {
         private static IList<string> m_activityPageColumns = TrailResultColumnIds.DefaultColumns();
         private static int m_activityPageNumFixedColumns = 0;
@@ -133,49 +133,49 @@ namespace TrailsPlugin.Data
 
         public static XAxisValue XAxisValue
         {
-			get {
-				return m_xAxisValue;
-			}
-			set {
-				m_xAxisValue = value;
-				Plugin.WriteExtensionData();
-			}
-		}
+            get {
+                return m_xAxisValue;
+            }
+            set {
+                m_xAxisValue = value;
+                Plugin.WriteExtensionData();
+            }
+        }
 
         public static IList<string> ActivityPageColumns
         {
-			get {
-				return m_activityPageColumns;
-			}
-			set {
-				m_activityPageColumns = value;
-				Plugin.WriteExtensionData();
-			}
-		}
+            get {
+                return m_activityPageColumns;
+            }
+            set {
+                m_activityPageColumns = value;
+                Plugin.WriteExtensionData();
+            }
+        }
 
         public static int ActivityPageNumFixedColumns
         {
-			get
+            get
             {
-				return m_activityPageNumFixedColumns;
-			}
-			set {
-				m_activityPageNumFixedColumns = value;
-				Plugin.WriteExtensionData();
-			}
-		}
+                return m_activityPageNumFixedColumns;
+            }
+            set {
+                m_activityPageNumFixedColumns = value;
+                Plugin.WriteExtensionData();
+            }
+        }
 
         public static float DefaultRadius
         {
-			get
+            get
             {
-				return m_defaultRadius;
-			}
-			set {
-				m_defaultRadius = value;
-				Plugin.WriteExtensionData();
-			}
-		}
+                return m_defaultRadius;
+            }
+            set {
+                m_defaultRadius = value;
+                Plugin.WriteExtensionData();
+            }
+        }
 
         public static bool ShowChartToolBar
         {
@@ -890,7 +890,7 @@ namespace TrailsPlugin.Data
         //    if (settingsNode.Attributes["defaultRadius"] == null) {
         //        settingsNode.Attributes.Append(doc.CreateAttribute("defaultRadius"));
         //    }
-        //    settingsNode.Attributes["defaultRadius"].Value = m_defaultRadius.ToString();			
+        //    settingsNode.Attributes["defaultRadius"].Value = m_defaultRadius.ToString();            
 
         //    XmlNode activityPageNode = doc.CreateElement("ActivityPage");
         //    settingsNode.AppendChild(activityPageNode);
@@ -917,5 +917,5 @@ namespace TrailsPlugin.Data
         //    }
         //    return settingsNode;
         //}
-	}
+    }
 }

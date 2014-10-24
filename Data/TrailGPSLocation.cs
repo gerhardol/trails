@@ -247,13 +247,13 @@ namespace TrailsPlugin.Data
 
         public XmlNode ToXml(XmlDocument doc)
         {
-			XmlNode TrailGPSLocationNode = doc.CreateElement(xmlTags.sTrailGPSLocation);
+            XmlNode TrailGPSLocationNode = doc.CreateElement(xmlTags.sTrailGPSLocation);
 
-			XmlAttribute a;
+            XmlAttribute a;
 
             a = doc.CreateAttribute(xmlTags.sLatitude);
-			a.Value = XmlConvert.ToString(this.LatitudeDegrees);
-			TrailGPSLocationNode.Attributes.Append(a);
+            a.Value = XmlConvert.ToString(this.LatitudeDegrees);
+            TrailGPSLocationNode.Attributes.Append(a);
 
             a = doc.CreateAttribute(xmlTags.sLongitude);
             a.Value = XmlConvert.ToString(this.LongitudeDegrees);
@@ -275,7 +275,7 @@ namespace TrailsPlugin.Data
             TrailGPSLocationNode.Attributes.Append(a);
 
             return TrailGPSLocationNode;
-		}
+        }
 
         private class xmlTags
         {

@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 
 namespace TrailsPlugin.UI.Activity {
-	internal class ExtendActivityEditActions :
+    internal class ExtendActivityEditActions :
 #if ST_2_1
     IExtendActivityEditActions
 #else
@@ -34,13 +34,13 @@ namespace TrailsPlugin.UI.Activity {
 
 #if ST_2_1
         #region IExtendActivityEditActions Members
-		public IList<IAction> GetActions(IList<IActivity> activities) {
-			return new IAction[] { /*new UI.Actions.Action(activities)*/ };
-		}
+        public IList<IAction> GetActions(IList<IActivity> activities) {
+            return new IAction[] { /*new UI.Actions.Action(activities)*/ };
+        }
 
-		public IList<IAction> GetActions(IActivity activity) {
-			return new IAction[] { /*new UI.Actions.Action(new IActivity[] { activity })*/ };
-		}
+        public IList<IAction> GetActions(IActivity activity) {
+            return new IAction[] { /*new UI.Actions.Action(new IActivity[] { activity })*/ };
+        }
         #endregion
 #else
         #region IExtendDailyActivityViewActions Members

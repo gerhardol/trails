@@ -1,28 +1,28 @@
 ﻿namespace TrailsPlugin.UI.Activity {
-	partial class EditTrail {
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class EditTrail {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing) {
-			if (disposing && (components != null)) {
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent() {
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.chkTemporaryTrail = new System.Windows.Forms.CheckBox();
@@ -554,22 +554,22 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.ToolTip toolTip;
-		private ZoneFiveSoftware.Common.Visuals.Button btnOk;
-		private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
+        private System.Windows.Forms.ToolTip toolTip;
+        private ZoneFiveSoftware.Common.Visuals.Button btnOk;
+        private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
         private System.Windows.Forms.TableLayoutPanel Panel;
-		private System.Windows.Forms.Label lblTrail;
-		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
-		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
-		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
-		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
+        private System.Windows.Forms.Label lblTrail;
+        private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
+        private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
+        private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
+        private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
         private ZoneFiveSoftware.Common.Visuals.TreeList EList;
         private ZoneFiveSoftware.Common.Visuals.TextBox radiusBox;
-		private System.Windows.Forms.Label lblRadius;
+        private System.Windows.Forms.Label lblRadius;
         private ZoneFiveSoftware.Common.Visuals.TextBox editBox;
         private ZoneFiveSoftware.Common.Visuals.Button btnUp;
         private ZoneFiveSoftware.Common.Visuals.Button btnDown;
@@ -584,5 +584,5 @@
         private System.Windows.Forms.CheckBox chkCompleteActivity;
         private System.Windows.Forms.NumericUpDown numericSortPrio;
 
-	}
+    }
 }

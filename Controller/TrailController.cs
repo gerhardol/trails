@@ -29,17 +29,17 @@ namespace TrailsPlugin.Controller
     public class TrailController
     {
         static private TrailController m_instance;
-		static public TrailController Instance
+        static public TrailController Instance
         {
-			get
+            get
             {
-				if (m_instance == null)
+                if (m_instance == null)
                 {
-					m_instance = new TrailController();
+                    m_instance = new TrailController();
                 }
-				return m_instance;
-			}
-		}
+                return m_instance;
+            }
+        }
 
         private IList<IActivity> m_activities = new List<IActivity>();
         private IList<ActivityTrail> m_currentActivityTrails = new List<ActivityTrail>();
@@ -587,13 +587,13 @@ namespace TrailsPlugin.Controller
             {
                 NewTrail(trail, progressBar);
                 result = true;
-			} 
+            } 
             else
             {
-				result = false;
-			}
+                result = false;
+            }
             return result;
-		}
+        }
 
         public bool UpdateTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
@@ -613,7 +613,7 @@ namespace TrailsPlugin.Controller
                 result = true;
             }
             return result;
-		}
+        }
 
         public bool DeleteCurrentTrail()
         {
@@ -638,5 +638,5 @@ namespace TrailsPlugin.Controller
             }
             return result;
         }
-	}
+    }
 }

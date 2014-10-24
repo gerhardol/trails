@@ -30,9 +30,9 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.Settings
 {
-	public partial class SettingsPageControl : UserControl
+    public partial class SettingsPageControl : UserControl
     {
-		public SettingsPageControl()
+        public SettingsPageControl()
         {
             this.InitializeComponent();
             this.presentSettings();
@@ -41,7 +41,7 @@ namespace TrailsPlugin.UI.Settings
                 this.lblPredictDistance.Enabled = false;
                 this.boxPredictDistance.Enabled = false;
             }
-		}
+        }
 
         private void presentSettings()
         {
@@ -60,7 +60,7 @@ namespace TrailsPlugin.UI.Settings
             this.boxStoppedCategory.ThemeChanged(visualTheme);
             this.boxBarometricDevices.ThemeChanged(visualTheme);
             this.boxPredictDistance.ThemeChanged(visualTheme);
-		}
+        }
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             this.lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
@@ -86,8 +86,8 @@ namespace TrailsPlugin.UI.Settings
             this.PluginInfoBanner.Text = "Plugin Information";
         }
 
-		private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {
-			float result;
+        private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {
+            float result;
             result = (float)UnitUtil.Elevation.Parse(txtDefaultRadius.Text);
             if (!float.IsNaN(result) && result > 0)
             {

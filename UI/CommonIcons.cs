@@ -30,7 +30,7 @@ using System.IO;
 
 namespace TrailsPlugin
 {
-	class CommonIcons {
+    class CommonIcons {
 
         static public Image MenuCascadeArrowDown
         {
@@ -77,8 +77,8 @@ namespace TrailsPlugin
             get
             {
 #if ST_2_1
-				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
-				return (Bitmap)ResourceManager.GetObject("Image_16_View_2Pane_LowerHalf");
+                ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+                return (Bitmap)ResourceManager.GetObject("Image_16_View_2Pane_LowerHalf");
 #else
                 return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.View2PaneLowerHalf16;
 #endif
@@ -90,8 +90,8 @@ namespace TrailsPlugin
             get
             {
 #if ST_2_1
-				ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
-				return (Bitmap)ResourceManager.GetObject("Image_16_View_3Pane_LowerLeft");
+                ResourceManager ResourceManager = new ResourceManager("ZoneFiveSoftware.SportTracks.Properties.Resources", System.Reflection.Assembly.GetEntryAssembly());
+                return (Bitmap)ResourceManager.GetObject("Image_16_View_3Pane_LowerLeft");
 #else
                 return ZoneFiveSoftware.Common.Visuals.CommonResources.Images.View3PaneLowerLeft16;
 #endif
@@ -200,5 +200,5 @@ namespace TrailsPlugin
         {
             return "file://" + fileCircle(sizeX, sizeY, Color.Red, centerPoint, out iconSize);
         }
-	}
+    }
 }

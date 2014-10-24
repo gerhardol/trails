@@ -27,10 +27,10 @@ using ZoneFiveSoftware.Common.Visuals;
 
 namespace TrailsPlugin.Data
 {
-	public class ActivityTrail : IComparable
+    public class ActivityTrail : IComparable
     {
         private Controller.TrailController m_controller;
-		private Trail m_trail;
+        private Trail m_trail;
         private IList<TrailResultWrapper> m_resultsListWrapper = null;
         private TrailOrderStatus m_status;
 

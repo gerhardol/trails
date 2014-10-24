@@ -44,7 +44,7 @@ using TrailsPlugin.Utils;
 using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.UI.Activity {
-	public partial class TrailLineChart : UserControl {
+    public partial class TrailLineChart : UserControl {
         private Data.TrailResult m_refTrailResult = null;
         private IList<Data.TrailResult> m_trailResults = new List<Data.TrailResult>();
 
@@ -167,8 +167,8 @@ namespace TrailsPlugin.UI.Activity {
                 dlg.FileName += "-" + this.m_refTrailResult.m_activityTrail.Trail.Name;
             }
             dlg.ImageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
-			if (dlg.ShowDialog() == DialogResult.OK) {
-				Size imgSize = dlg.CustomImageSize;
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                Size imgSize = dlg.CustomImageSize;
 
 #if ST_2_1
                 if (dlg.ImageSize != SaveImage.ImageSizeType.Custom)
@@ -176,14 +176,14 @@ namespace TrailsPlugin.UI.Activity {
                 if (dlg.ImageSize != SaveImageDialog.ImageSizeType.Custom)
 #endif
                 {
-					imgSize = dlg.ImageSizes[dlg.ImageSize];
-				}
-				MainChart.SaveImage(imgSize, dlg.FileName, dlg.ImageFormat);
+                    imgSize = dlg.ImageSizes[dlg.ImageSize];
+                }
+                MainChart.SaveImage(imgSize, dlg.FileName, dlg.ImageFormat);
                 Data.Settings.SaveChartImagePath = (new FileInfo(dlg.FileName)).DirectoryName;
-			}
+            }
 
-			MainChart.Focus();
-		}
+            MainChart.Focus();
+        }
 
         private void ZoomOutButton_Click(object sender, EventArgs e)
         {
@@ -204,7 +204,7 @@ namespace TrailsPlugin.UI.Activity {
             //MainChart.Focus();
         }
 
- 		public void ZoomToData()
+         public void ZoomToData()
         {
             MainChart.AutozoomToData(true);
             //MainChart.Refresh();
@@ -726,7 +726,7 @@ namespace TrailsPlugin.UI.Activity {
 
         virtual protected void SetupDataSeries()
         {
-			MainChart.DataSeries.Clear();
+            MainChart.DataSeries.Clear();
             MainChart.XAxis.Markers.Clear();
             if (m_visible)
             {
@@ -998,7 +998,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-		}
+        }
 
         private TrailResult TrailPointResult()
         {
@@ -1212,13 +1212,13 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-		[DisplayName("X Axis value")]
-		public XAxisValue XAxisReferential {
-			get { return m_XAxisReferential; }
-			set {
-				m_XAxisReferential = value;
-			}
-		}
+        [DisplayName("X Axis value")]
+        public XAxisValue XAxisReferential {
+            get { return m_XAxisReferential; }
+            set {
+                m_XAxisReferential = value;
+            }
+        }
 
         [DisplayName("Y Axis value")]
         public LineChartTypes LeftChartType
@@ -1268,7 +1268,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-		[Browsable(false)]
+        [Browsable(false)]
         public Data.TrailResult ReferenceTrailResult
         {
             get
@@ -1843,7 +1843,7 @@ namespace TrailsPlugin.UI.Activity {
         public bool BeginUpdate()
         {
             return this.MainChart.BeginUpdate();
-		}
+        }
 
         public void EndUpdate(bool zoom)
         {
@@ -1853,5 +1853,5 @@ namespace TrailsPlugin.UI.Activity {
             }
             this.MainChart.EndUpdate();
         }
-	}
+    }
 }

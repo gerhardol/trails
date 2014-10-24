@@ -22,17 +22,17 @@ using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Utils
 {
-	public class GPS
+    public class GPS
     {
-		public static IGPSPoint LocationToPoint(IGPSLocation location)
+        public static IGPSPoint LocationToPoint(IGPSLocation location)
         {
             if (location == null)
             {
                 //TODO: raise exception?
                 return new GPSPoint(0, 0, 0);
             }
-			return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, float.NaN);
-		}
+            return new GPSPoint(location.LatitudeDegrees, location.LongitudeDegrees, float.NaN);
+        }
 
 #if !ST_2_1
         public static IGPSBounds GetBounds(IList<IList<IGPSPoint>> trks)

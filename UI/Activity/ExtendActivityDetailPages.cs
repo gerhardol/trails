@@ -22,14 +22,14 @@ using ZoneFiveSoftware.Common.Visuals;
 #endif
 
 namespace TrailsPlugin.UI.Activity {
-	internal class ExtendActivityDetailPages : IExtendActivityDetailPages {
-		#region IExtendActivityDetailPages Members
+    internal class ExtendActivityDetailPages : IExtendActivityDetailPages {
+        #region IExtendActivityDetailPages Members
 
 #if ST_2_1
         public IList<IActivityDetailPage> ActivityDetailPages
         {
-			get { return new IActivityDetailPage[] { new ActivityDetailPage() }; }
-		}
+            get { return new IActivityDetailPage[] { new ActivityDetailPage() }; }
+        }
 #else
         public IList<IDetailPage> GetDetailPages(IDailyActivityView view, ExtendViewDetailPages.Location location)
         {
@@ -37,6 +37,6 @@ namespace TrailsPlugin.UI.Activity {
         }
 #endif
 
-		#endregion
-	}
+        #endregion
+    }
 }

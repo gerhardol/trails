@@ -1,28 +1,28 @@
 ﻿namespace TrailsPlugin.UI.Activity {
-	partial class TrailSelectorControl {
-		/// <summary> 
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+    partial class TrailSelectorControl {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-		/// <summary> 
-		/// Clean up any resources being used.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing) {
-			if (disposing && (components != null)) {
-				components.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Component Designer generated code
+        #region Component Designer generated code
 
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent() {
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             this.TrailSelectorPanel = new System.Windows.Forms.TableLayoutPanel();
             this.lblTrail = new System.Windows.Forms.Label();
@@ -186,16 +186,16 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.TableLayoutPanel TrailSelectorPanel;
-		private System.Windows.Forms.Label lblTrail;
-		private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
-		private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
-		private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
-		private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
-		private System.Windows.Forms.ToolTip toolTip;
-	}
+        private System.Windows.Forms.TableLayoutPanel TrailSelectorPanel;
+        private System.Windows.Forms.Label lblTrail;
+        private ZoneFiveSoftware.Common.Visuals.Button btnDelete;
+        private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
+        private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
+        private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
+        private System.Windows.Forms.ToolTip toolTip;
+    }
 }

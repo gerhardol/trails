@@ -18,9 +18,9 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 
 namespace TrailsPlugin {
-	class GUIDs {
+    class GUIDs {
         //Trails views
-		public static readonly Guid PluginMain = new Guid("d75393a2-4a95-4fe7-ace2-375ff7338b2c");
+        public static readonly Guid PluginMain = new Guid("d75393a2-4a95-4fe7-ace2-375ff7338b2c");
 #if ST_2_1
         public static readonly Guid MapControlLayer = new Guid("2aa470c3-0a3c-42c7-bbee-a43073072ee7");
 #else

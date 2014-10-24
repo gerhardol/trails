@@ -21,7 +21,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 
 namespace TrailsPlugin.Utils {
-	class Units {
+    class Units {
         public static float ParseElevation(string p)
         {
             Length.Units unit = PluginMain.GetApplication().SystemPreferences.ElevationUnits;
@@ -176,7 +176,7 @@ namespace TrailsPlugin.Utils {
             speedUnitLabel = ZoneFiveSoftware.Common.Data.Measurement.Speed.Label(kind, du);
 #endif
             return speedUnitLabel;
-		}
+        }
         public static string GetSpeedLabel(IActivity activity)
         {
             return GetSpeedLabel(activity, Speed.Units.Speed);
@@ -218,8 +218,8 @@ namespace TrailsPlugin.Utils {
 #if ST_2_1
         public static bool IsMetric(Length.Units unit)
         {
-			return (int)unit <= (int)Length.Units.Kilometer;
-		}
+            return (int)unit <= (int)Length.Units.Kilometer;
+        }
 #endif
-	}
+    }
 }

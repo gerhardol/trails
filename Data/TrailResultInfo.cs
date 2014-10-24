@@ -25,7 +25,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Data
 {
-	public class TrailResultInfo : IComparable
+    public class TrailResultInfo : IComparable
     {
         public IList<TrailResultPoint> Points;
         public IActivity Activity;

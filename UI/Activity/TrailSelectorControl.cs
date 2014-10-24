@@ -44,7 +44,7 @@ using TrailsPlugin.Controller;
 
 namespace TrailsPlugin.UI.Activity
 {
-	public partial class TrailSelectorControl : UserControl
+    public partial class TrailSelectorControl : UserControl
     {
 
         private ITheme m_visualTheme;
@@ -82,19 +82,19 @@ namespace TrailsPlugin.UI.Activity
             m_controller = controller;
 
             InitControls();
-		}
+        }
 
-		void InitControls()
+        void InitControls()
         {
             TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
 
-			btnAdd.BackgroundImage = CommonIcons.Add;
-			btnAdd.Text = "";
-			btnEdit.BackgroundImage = CommonIcons.Edit;
-			btnEdit.Text = "";
-			btnDelete.BackgroundImage = CommonIcons.Delete;
-			btnDelete.Text = "";
-		}
+            btnAdd.BackgroundImage = CommonIcons.Add;
+            btnAdd.Text = "";
+            btnEdit.BackgroundImage = CommonIcons.Edit;
+            btnEdit.Text = "";
+            btnDelete.BackgroundImage = CommonIcons.Delete;
+            btnDelete.Text = "";
+        }
 
         public void UICultureChanged(CultureInfo culture)
         {
@@ -165,12 +165,12 @@ namespace TrailsPlugin.UI.Activity
 
 
         /************************************************************/
-		private void btnAdd_Click(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             //single activity use
 #if ST_2_1
-			IMapControl mapControl = m_layer.MapControl;
-			ICollection<IMapControlObject> selectedGPS = null;
+            IMapControl mapControl = m_layer.MapControl;
+            ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
             IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities, true);
@@ -180,7 +180,7 @@ namespace TrailsPlugin.UI.Activity
             {
 #if ST_2_1
                 m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-				m_layer.CaptureSelectedGPSLocations();
+                m_layer.CaptureSelectedGPSLocations();
 #else
                 selectedGPSLocationsChanged_AddTrail(selectedGPS);
 #endif
@@ -204,7 +204,7 @@ namespace TrailsPlugin.UI.Activity
                 showEditDialog(dialog);
 #endif
             }
- 		}
+         }
         //private TrailsItemTrackSelectionInfo getSel(DateTime t)
         //{
         //    IValueRange<DateTime> v = new ValueRange<DateTime>(t, t);
@@ -216,7 +216,7 @@ namespace TrailsPlugin.UI.Activity
         private void btnEdit_Click(object sender, EventArgs e)
         {
 #if ST_2_1
-			IMapControl mapControl = m_layer.MapControl;
+            IMapControl mapControl = m_layer.MapControl;
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
@@ -255,8 +255,8 @@ namespace TrailsPlugin.UI.Activity
                 false)
             {
 #if ST_2_1
-				m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
-				m_layer.CaptureSelectedGPSLocations();
+                m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
+                m_layer.CaptureSelectedGPSLocations();
 #else
                 selectedGPSLocationsChanged_EditTrail(selectedGPS);
 #endif
@@ -288,17 +288,17 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(false);
         }
 
-		private void btnDelete_Click(object sender, EventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
             if (m_controller.CurrentActivityTrailIsSelected &&
                 MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
                 == DialogResult.Yes)
             {
-				m_controller.DeleteCurrentTrail();
-				m_page.RefreshControlState();
-				m_page.RefreshData(false);
-			}
-		}
+                m_controller.DeleteCurrentTrail();
+                m_page.RefreshControlState();
+                m_page.RefreshData(false);
+            }
+        }
 
         /*************************************************************************************************************/
 //ST3
@@ -394,10 +394,10 @@ namespace TrailsPlugin.UI.Activity
         private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
         {
 #else
-		private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
+        private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
         {
-			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
+            //UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
+            m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             bool addCurrent = false;
@@ -423,7 +423,7 @@ namespace TrailsPlugin.UI.Activity
             dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
 
             showEditDialog(dialog);
-		}
+        }
 
 
         //Unused
@@ -431,10 +431,10 @@ namespace TrailsPlugin.UI.Activity
         private void selectedGPSLocationsChanged_EditTrail(IList<IItemTrackSelectionInfo> selectedGPS)
         {
 #else
- 		private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e)
+         private void layer_SelectedGPSLocationsChanged_EditTrail(object sender, EventArgs e)
         {
-			//UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-			m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
+            //UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
+            m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_EditTrail);
             IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
 #endif
             EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, m_controller.ReferenceTrailResult);
@@ -554,16 +554,16 @@ namespace TrailsPlugin.UI.Activity
         }
 
         private void TrailSelectorPanel_SizeChanged(object sender, EventArgs e) {
-			// autosize column doesn't seem to be working.
+            // autosize column doesn't seem to be working.
             //Sizing is flaky in general
-			float width = 0;
-			for (int i = 0; i < TrailSelectorPanel.ColumnStyles.Count; i++) {
-				if (i != 1) {
-					width += this.TrailSelectorPanel.ColumnStyles[i].Width;
-				}
-			}
-			this.TrailSelectorPanel.ColumnStyles[1].SizeType = SizeType.Absolute;
+            float width = 0;
+            for (int i = 0; i < TrailSelectorPanel.ColumnStyles.Count; i++) {
+                if (i != 1) {
+                    width += this.TrailSelectorPanel.ColumnStyles[i].Width;
+                }
+            }
+            this.TrailSelectorPanel.ColumnStyles[1].SizeType = SizeType.Absolute;
             this.TrailSelectorPanel.ColumnStyles[1].Width = this.TrailSelectorPanel.Width - width;
-		}
+        }
     }
 }

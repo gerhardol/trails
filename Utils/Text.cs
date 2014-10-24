@@ -20,11 +20,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace TrailsPlugin.Utils {
-	class Text {
+    class Text {
         //public static string ToString(double pace)
         //{
         //    return (double.IsNaN(pace) || double.IsInfinity(pace)) ? "NaN" : ToString(TimeSpan.FromSeconds(pace));
-        //}		
+        //}        
 
         //public static string ToString(System.TimeSpan time) {
         //    if (time.TotalHours < 1.0) {
@@ -42,26 +42,26 @@ namespace TrailsPlugin.Utils {
         //    return System.String.Concat(objArr);
         //}
 
-		public static string ToString(ZoneFiveSoftware.Common.Data.GPS.IGPSPoint point, ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units units) {
-			string s = "+4";
-			switch (units) {
-				case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal3:
-					s = "+3";
-					break;
+        public static string ToString(ZoneFiveSoftware.Common.Data.GPS.IGPSPoint point, ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units units) {
+            string s = "+4";
+            switch (units) {
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal3:
+                    s = "+3";
+                    break;
 
-				case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal4:
-					s = "+4";
-					break;
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Decimal4:
+                    s = "+4";
+                    break;
 
-				case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Minutes:
-					s = "m-1";
-					break;
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.Minutes:
+                    s = "m-1";
+                    break;
 
-				case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.MinutesSeconds:
-					s = "m0";
-					break;
-			}
-			return point.ToString(s);
-		}
-	}
+                case ZoneFiveSoftware.Common.Data.GPS.GPSLocation.Units.MinutesSeconds:
+                    s = "m0";
+                    break;
+            }
+            return point.ToString(s);
+        }
+    }
 }

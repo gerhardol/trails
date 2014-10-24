@@ -27,7 +27,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 {
-	class TrailsFilterCriteria
+    class TrailsFilterCriteria
     {
         public TrailsFilterCriteria() :
             this(null)
@@ -69,13 +69,13 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             }
         }
 
-	    public string DisplayName
-	    {
+        public string DisplayName
+        {
             get { return Properties.Resources.TrailName; }
         }
 
         public List<object> NamedZones
-	    {
+        {
             get { return m_NamedZones; }
         }
 

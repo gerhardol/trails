@@ -24,7 +24,7 @@ using System;
 
 namespace TrailsPlugin.Data
 {
-	public class Trail
+    public class Trail
     {
         //How the trail is to be determined
         //A RefTrail is calc from Points, a Points trail could present Splits
@@ -36,7 +36,7 @@ namespace TrailsPlugin.Data
 
         public Guid Id;
         public string Name;
-		private IList<TrailGPSLocation> m_trailLocations = null;
+        private IList<TrailGPSLocation> m_trailLocations = null;
         private float m_radius;
         private float m_minDistance = 0;
         private int   m_maxRequiredMisses = 0;
@@ -58,7 +58,7 @@ namespace TrailsPlugin.Data
         {
             this.Id = Id;
             m_radius = Data.Settings.DefaultRadius;
-		}
+        }
 
         public Trail Copy(bool isEdit)
         {
@@ -562,20 +562,20 @@ namespace TrailsPlugin.Data
                 trail.TrailPriority = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sTrailPriority].Value);
             }
             trail.TrailLocations.Clear();
-			foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
-				trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
+            foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
+                trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
                 if (string.IsNullOrEmpty(trail.TrailLocations[trail.TrailLocations.Count-1].Name))
                 {
                     //Name the trail points
                     trail.TrailLocations[trail.TrailLocations.Count-1].Name =
                         "#" + trail.TrailLocations.Count;
                 }
-			}
+            }
             //Set radius - not stored per trail point
             trail.Radius = trail.m_radius;
 
-			return trail;
-		}
+            return trail;
+        }
 
         public XmlNode ToXml(XmlDocument doc)
         {
@@ -720,6 +720,6 @@ namespace TrailsPlugin.Data
         {
             return this.Name.ToString() + " " + this.m_gpsBounds + " " + this.TrailLocations.Count;
         }
-	}
+    }
 }
 

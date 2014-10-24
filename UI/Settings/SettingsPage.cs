@@ -24,89 +24,89 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace TrailsPlugin.UI.Settings {
-	internal class SettingsPage : ISettingsPage, INotifyPropertyChanged, IDisposable {
+    internal class SettingsPage : ISettingsPage, INotifyPropertyChanged, IDisposable {
 
-		#region ISettingsPage Members
+        #region ISettingsPage Members
 
-		private SettingsPageControl m_control = null;
+        private SettingsPageControl m_control = null;
 
-		public System.Guid Id {
+        public System.Guid Id {
             get { return GUIDs.Settings; }
-		}
+        }
 
-		public IList<ISettingsPage> SubPages {
-			get {
-				return new List<ISettingsPage>();
-			}
-		}
+        public IList<ISettingsPage> SubPages {
+            get {
+                return new List<ISettingsPage>();
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region IDialogPage Members
+        #region IDialogPage Members
 
-		public Control CreatePageControl() {
-			if (m_control == null) {
-				m_control = new SettingsPageControl();
-			}
-			return m_control;
-		}
+        public Control CreatePageControl() {
+            if (m_control == null) {
+                m_control = new SettingsPageControl();
+            }
+            return m_control;
+        }
 
-		public bool HidePage() {
-			return true;
-			//throw new System.NotImplementedException();
-		}
+        public bool HidePage() {
+            return true;
+            //throw new System.NotImplementedException();
+        }
 
-		public string PageName {
-			get {
-				return Properties.Resources.ApplicationName;
-			}
-		}
+        public string PageName {
+            get {
+                return Properties.Resources.ApplicationName;
+            }
+        }
 
-		public void ShowPage(string bookmark) {
-			//throw new System.NotImplementedException();
-		}
+        public void ShowPage(string bookmark) {
+            //throw new System.NotImplementedException();
+        }
 
-		public IPageStatus Status {
-			get {
-				return null;
-			}
-		}
+        public IPageStatus Status {
+            get {
+                return null;
+            }
+        }
 
-		public void ThemeChanged(ITheme visualTheme) {
+        public void ThemeChanged(ITheme visualTheme) {
             if (m_control != null)
             {
                 m_control.ThemeChanged(visualTheme);
             }
-		}
+        }
 
-		public string Title {
-			get {
-				return Properties.Resources.TrailsName;
-			}
-		}
+        public string Title {
+            get {
+                return Properties.Resources.TrailsName;
+            }
+        }
 
-		public void UICultureChanged(CultureInfo culture) {
+        public void UICultureChanged(CultureInfo culture) {
             if (m_control != null)
             {
                 m_control.UICultureChanged(culture);
             }
             RefreshPage();
-		}
+        }
 
-		#endregion
+        #endregion
 
-		#region INotifyPropertyChanged Members
+        #region INotifyPropertyChanged Members
 
 #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
 
-		#endregion
+        #endregion
 
-		public void RefreshPage() {
-			if (m_control != null) {
-				m_control.Refresh();
-			}
-		}
+        public void RefreshPage() {
+            if (m_control != null) {
+                m_control.Refresh();
+            }
+        }
 
         public void Dispose()
         {

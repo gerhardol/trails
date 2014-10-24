@@ -24,7 +24,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Data
 {
-	public static class TrailData 
+    public static class TrailData 
     {
         private static SortedList<Guid, Data.Trail> m_AllTrails = defaultTrails();
         public static Data.Trail ElevationPointsTrail;
@@ -139,30 +139,30 @@ namespace TrailsPlugin.Data
 
         public static bool UpdateTrail(Data.Trail trail)
         {
-			foreach (Trail t in m_AllTrails.Values)
+            foreach (Trail t in m_AllTrails.Values)
             {
-				if (t.Name == trail.Name && t.Id != trail.Id)
+                if (t.Name == trail.Name && t.Id != trail.Id)
                 {
-					return false;
-				}
-			}
+                    return false;
+                }
+            }
 
             if (m_AllTrails.ContainsKey(trail.Id))
             {
-				m_AllTrails[trail.Id] = trail;
+                m_AllTrails[trail.Id] = trail;
                 ElevationPointsTrail.TrailLocations.Clear();
                 foreach (Trail t in m_AllTrails.Values)
                 {
                     AddElevationPoints(t);
                 }
                 Plugin.WriteExtensionData();
-				return true;
-			} 
+                return true;
+            } 
             else 
             {
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 
         public static bool DeleteTrail(Data.Trail trail)
         {
@@ -175,13 +175,13 @@ namespace TrailsPlugin.Data
                     AddElevationPoints(t);
                 }
                 Plugin.WriteExtensionData();
-				return true;
-			}
+                return true;
+            }
             else
             {
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
@@ -229,7 +229,7 @@ namespace TrailsPlugin.Data
             //    m_AllTrails.Add(trail.Id, trail);
             //}
 
-		}
+        }
 
         //This is not called by default
         public static XmlNode ToXml(XmlDocument doc)
@@ -240,12 +240,12 @@ namespace TrailsPlugin.Data
             //    trails.AppendChild(trail.ToXml(doc));
             //}
             return trails;
-		}
+        }
 
         //Matrix integration, old call path
         public static IList<IList<string[]>> ListTrails()
         {
             return Export.Integration.ListTrails();
         }
-	}
+    }
 }

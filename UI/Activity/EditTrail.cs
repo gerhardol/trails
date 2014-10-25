@@ -55,40 +55,48 @@ namespace TrailsPlugin.UI.Activity
         private int m_subItemSelected = 0;
         private bool m_updatingFromMap = false;
 
-        private EditTrail(bool addMode)
+        private EditTrail(bool addMode, bool copyMode)
         {
             this.m_addMode = addMode;
 
             InitializeComponent();
 
-            if (!Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
+            if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail == null)
             {
                 this.m_addMode = true;
+                copyMode = false;
+            }
+
+            if (this.m_addMode && !copyMode)
+            {
+                //new empty trail
+                this.m_TrailToEdit = new TrailsPlugin.Data.Trail();
+            }
+            else
+            {
+                Trail trail = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail;
+                if (copyMode || trail.Generated)
+                {
+                    //Add a copy of the trail from the (reference) activity
+                    IActivity activity = Controller.TrailController.Instance.ReferenceActivity;
+                    this.m_TrailToEdit = trail.Copy(activity, this.m_addMode);
+                }
+                else
+                {
+                    //Make a copy (with same Guid) of current, so changes can be undone
+                    this.m_TrailToEdit = trail.Duplicate();
+                }
             }
 
             if (this.m_addMode)
             {
-                this.m_TrailToEdit = new TrailsPlugin.Data.Trail(System.Guid.NewGuid());
                 this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
             }
             else
             {
-                this.m_TrailToEdit = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail;
                 this.Name = Properties.Resources.UI_Activity_EditTrail_EditTrail;
-                if (this.m_TrailToEdit.Generated)
-                {
-                    IActivity activity = Controller.TrailController.Instance.ReferenceActivity;
-                    //Create copy of the trail
-                    this.m_TrailToEdit = m_TrailToEdit.Copy(false, activity);
-                    this.m_addMode = true;
-                    this.Name = Properties.Resources.UI_Activity_EditTrail_AddTrail;
-                }
-                else
-                {
-                    this.m_TrailToEdit = m_TrailToEdit.Copy(true);
-                }
             }
-
+            this.Text = this.Name;
             //Done after init code, as it depends on it
             this.InitControls();
         }
@@ -97,9 +105,9 @@ namespace TrailsPlugin.UI.Activity
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, Object view, bool addMode)
 #else
         public EditTrail(ITheme visualTheme, System.Globalization.CultureInfo culture, ActivityDetailPageControl page, 
-            IDailyActivityView view, TrailPointsLayer layer, bool addMode, TrailResult tr)
+            IDailyActivityView view, TrailPointsLayer layer, bool addMode, bool copy, TrailResult tr)
 #endif
-            : this (addMode)
+            : this (addMode, copy)
         {
 #if !ST_2_1
             this.m_page = page;
@@ -451,6 +459,7 @@ namespace TrailsPlugin.UI.Activity
 
         private void EList_DeleteRow()
         {
+            int lastDeleted = -1;
             if (this.EList.SelectedItems.Count > 0 && ((IList<EditTrailRow>)this.EList.RowData).Count > 0)
             {
                 IList selected = EList.SelectedItems;
@@ -469,6 +478,7 @@ namespace TrailsPlugin.UI.Activity
                                 this.EList.RowData = ((IList<EditTrailRow>)this.EList.RowData);
                                 m_TrailToEdit.TrailLocations = EditTrailRow.getTrailGPSLocation((IList<EditTrailRow>)EList.RowData);
                                 m_layer.TrailPoints = m_TrailToEdit.TrailLocations;
+                                lastDeleted = i;
                                 break;
                             }
                         }
@@ -476,6 +486,14 @@ namespace TrailsPlugin.UI.Activity
                 }
             }
             this.EList.Refresh();
+            if (EList.SelectedItems.Count == 1 && lastDeleted >= 0)
+            {
+                if (lastDeleted > 0) { lastDeleted--; }
+                if (lastDeleted < ((IList<EditTrailRow>)this.EList.RowData).Count)
+                {
+                    EList.SelectedItems = new object[] { ((IList<EditTrailRow>)this.EList.RowData)[lastDeleted] };
+                }
+            }
         }
 
         private void EList_AddRow()

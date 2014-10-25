@@ -54,45 +54,71 @@ namespace TrailsPlugin.Data
 
         private IActivity m_referenceActivity = null;
 
+        public Trail()
+            : this(System.Guid.NewGuid())
+        {
+        }
+
         public Trail(Guid Id)
         {
             this.Id = Id;
             m_radius = Data.Settings.DefaultRadius;
         }
 
-        public Trail Copy(bool isEdit)
+        /// Copy a trail (same guid, but not auto attributes)
+        public Trail Duplicate()
         {
-            return Copy(isEdit, null);
+            return Copy(this.Id);
         }
 
-        public Trail Copy(bool isEdit, IActivity activity)
+        /// Copy a trail (set name from activity)
+        public Trail Copy(IActivity activity, bool addMode)
         {
-            Trail result;
-            if (isEdit)
+            Trail result = Copy(this.Id);
+            if (addMode)
             {
-                result = new Trail(this.Id);
+                result.Id = System.Guid.NewGuid();
+            }
+
+            if (!addMode && this.TrailType == CalcType.ElevationPoints)
+            {
+                //editing Elevation
                 result.Name = this.Name;
+                result.TrailType = this.TrailType;
+                result.Generated = this.Generated;
+            }
+            else if (this.m_isReference && m_referenceActivity != null && m_referenceActivity.Name != "")
+            {
+                result.Name = this.m_referenceActivity.Name;
+            }
+            else if (addMode && activity != null && activity.Name != "")
+            {
+                result.Name = activity.Name;
+            }
+            else if (addMode && activity != null && activity.Location != "")
+            {
+                result.Name = activity.Location;
             }
             else
             {
-                result = new Trail(System.Guid.NewGuid());
-                if (this.m_isReference && m_referenceActivity != null && m_referenceActivity.Name != "")
-                {
-                    result.Name = this.m_referenceActivity.Name;
-                }
-                else if (this.m_generated && activity != null && activity.Name != "")
-                {
-                    result.Name = activity.Name;
-                }
-                else if (this.m_generated && activity != null && activity.Location != "")
-                {
-                    result.Name = activity.Location;
-                }
-                else
-                {
-                    result.Name = this.Name + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
-                }
+                result.Name = this.Name + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             }
+
+            if (this.m_generated && (addMode || this.TrailType != CalcType.ElevationPoints) && 
+                activity != null && this.TrailLocations.Count == 0)
+            {
+                //get all points - it is made to a CalcType.TrailPoint trail
+                result.TrailLocations = Trail.TrailGpsPointsFromSplits(activity, false);
+            }
+
+            return result;
+        }
+
+        private Trail Copy(Guid id)
+        {
+            Trail result = new Trail(id);
+            result.Name = this.Name;
+
             //Do not copy "auto" attributes
             result.m_radius = this.m_radius;
             result.m_minDistance = this.m_minDistance;
@@ -107,20 +133,13 @@ namespace TrailsPlugin.Data
                 result.m_trailPriority = this.m_trailPriority;
             }
 
-            if (this.TrailType == CalcType.Splits && activity != null && this.TrailLocations.Count == 0)
+            result.m_trailLocations = new List<TrailGPSLocation>();
+            foreach (TrailGPSLocation t in this.TrailLocations)
             {
-                //get all points - it is made to a CalcType.TrailPoint trail
-                result.TrailLocations = Trail.TrailGpsPointsFromSplits(activity, false);
+                TrailGPSLocation t2 = new TrailGPSLocation(t);
+                result.m_trailLocations.Add(t2);
             }
-            else
-            {
-                result.m_trailLocations = new List<TrailGPSLocation>(); 
-                foreach (TrailGPSLocation t in this.TrailLocations)
-                {
-                    TrailGPSLocation t2 = new TrailGPSLocation(t);
-                    result.m_trailLocations.Add(t2);
-                }
-            }
+
             return result;
         }
 

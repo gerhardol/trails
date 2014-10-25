@@ -175,13 +175,36 @@ namespace TrailsPlugin.UI.Activity
             IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities, true);
 #endif
 
-            if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
+            //copying the existing result if generated, popup new empty trail otherwise
+            bool copyActivity = m_controller.PrimaryCurrentActivityTrail != null &&
+                m_controller.PrimaryCurrentActivityTrail.Trail.Generated;
+
+            if (!copyActivity && TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
             {
 #if ST_2_1
                 m_layer.SelectedGPSLocationsChanged += new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
                 m_layer.CaptureSelectedGPSLocations();
 #else
-                selectedGPSLocationsChanged_AddTrail(selectedGPS);
+                bool newTrail = true;
+                if (m_controller.CurrentActivityTrailIsSelected)
+                {
+                    //popup to add to current or add a new trail
+                    if (MessageDialog.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace,
+                            CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
+                          "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        newTrail = false;
+                    }
+                }
+
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, newTrail, false, m_controller.ReferenceTrailResult);
+                if (newTrail)
+                {
+                    dialog.Trail.TrailLocations.Clear();
+                }
+                dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
+
+                showEditDialog(dialog);
 #endif
             }
             else
@@ -191,8 +214,8 @@ namespace TrailsPlugin.UI.Activity
                    Properties.Resources.Trail_Reference_Name);
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #else
-                //Just popup new trail, copying the existing result if generated
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, m_controller.ReferenceTrailResult);
+                //Add a copy of the current reference activity
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, true, m_controller.ReferenceTrailResult);
                 showEditDialog(dialog);
 #endif
             }
@@ -219,7 +242,7 @@ namespace TrailsPlugin.UI.Activity
             if (m_controller.PrimaryCurrentActivityTrail == null)
             {
                 //nothing selected, new trail
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, false, m_controller.ReferenceTrailResult);
                 showEditDialog(dialog);
             }
             else if (m_controller.PrimaryCurrentActivityTrail.Trail.Generated &&
@@ -261,7 +284,7 @@ namespace TrailsPlugin.UI.Activity
             else
             {
                 //Do not care about marked points when editing, the user must select add then
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, false, m_controller.ReferenceTrailResult);
                 showEditDialog(dialog);
             }
         }
@@ -377,53 +400,55 @@ namespace TrailsPlugin.UI.Activity
             return result;
         }
 
-#if ST_2_1
-        IList<TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
-        {
-            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
-            for (int i = 0; i < aSelectGPS.Count; i++)
-            {
-                IGPSLocation selectGPS = aSelectGPS[i];
-            result.Add(new TrailGPSLocation(selectGPS.LatitudeDegrees, selectGPS.LongitudeDegrees, ""));
-            }
-            return result;
-        }
-#endif
-#if !ST_2_1
-        private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
-        {
-#else
-        private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
-        {
-            //UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
-            m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
-            IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
-#endif
-            bool addCurrent = false;
-            if (m_controller.CurrentActivityTrailIsSelected && !m_controller.PrimaryCurrentActivityTrail.Trail.Generated)
-            {
-                if (MessageDialog.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
-                    "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    addCurrent = true;
-                }
-            }
+//#if ST_2_1
+//        IList<TrailGPSLocation> getGPS(IList<IGPSLocation> aSelectGPS)
+//        {
+//            IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
+//            for (int i = 0; i < aSelectGPS.Count; i++)
+//            {
+//                IGPSLocation selectGPS = aSelectGPS[i];
+//            result.Add(new TrailGPSLocation(selectGPS.LatitudeDegrees, selectGPS.LongitudeDegrees, ""));
+//            }
+//            return result;
+//        }
+//#endif
+//#if !ST_2_1
+//        private void selectedGPSLocationsChanged_AddTrail(IList<IItemTrackSelectionInfo> selectedGPS)
+//        {
+//#else
+//        private void layer_SelectedGPSLocationsChanged_AddTrail(object sender, EventArgs e)
+//        {
+//            //UI.MapLayers.MapControlLayer layer = (UI.MapLayers.MapControlLayer)sender;
+//            m_layer.SelectedGPSLocationsChanged -= new System.EventHandler(layer_SelectedGPSLocationsChanged_AddTrail);
+//            IList<IGPSLocation> selectedGPS = m_layer.SelectedGPSLocations;
+//#endif
+//            bool addCurrent = false;
+//            if (m_controller.CurrentActivityTrailIsSelected)
+//            {
+//                //popup to add to current or add a new trail (Generated are copied though)
+//                if (MessageDialog.Show(string.Format(Properties.Resources.UI_Activity_Page_AddTrail_Replace, 
+//                        CommonResources.Text.ActionYes,CommonResources.Text.ActionNo),
+//                      "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+//                {
+//                    addCurrent = true;
+//                }
+//            }
 
-            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, !addCurrent, m_controller.ReferenceTrailResult);
-            if (m_controller.CurrentActivityTrailIsSelected)
-            {
-                if (addCurrent)
-                {
-                }
-                else
-                {
-                    dialog.Trail.TrailLocations.Clear();
-                }
-            }
-            dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
+//            EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, !addCurrent, m_controller.ReferenceTrailResult);
+//            if (m_controller.CurrentActivityTrailIsSelected)
+//            {
+//                if (addCurrent)
+//                {
+//                }
+//                else
+//                {
+//                    dialog.Trail.TrailLocations.Clear();
+//                }
+//            }
+//            dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
 
-            showEditDialog(dialog);
-        }
+//            showEditDialog(dialog);
+//        }
 
 
 //#if !ST_2_1

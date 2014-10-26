@@ -21,7 +21,7 @@ namespace TrailsPlugin.Data
 {
     //Some hints here: http://mymarathonpace.com/Other_Info.html
 
-    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
+    public enum RunningGradeAdjustMethodEnum { None, MervynDaviesSpeed, MervynDavies, GregMaclin, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
         public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
@@ -30,6 +30,7 @@ namespace TrailsPlugin.Data
             float q;
             switch (TrailsPlugin.Data.Settings.RunningGradeAdjustMethod)
             {
+                case RunningGradeAdjustMethodEnum.MervynDaviesSpeed:
                 case RunningGradeAdjustMethodEnum.MervynDavies:
                 case RunningGradeAdjustMethodEnum.GregMaclin:
                     q = getMervynDavies(g, time, prevTime, dist, prevDist);
@@ -57,6 +58,7 @@ namespace TrailsPlugin.Data
                     break;
 
                 case RunningGradeAdjustMethodEnum.None:
+                case RunningGradeAdjustMethodEnum.Last:
                 default:
                     q = 1;
                     break;
@@ -84,45 +86,73 @@ namespace TrailsPlugin.Data
                      */
                     if (g > 0)
                     {
-                        float q_md = 3.3F;
+                        float q_md = 3.3f;
                         float g0 = 0.1627f;
                         float k0 = 0.0739f;
                         if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin)
                         {
                             if (dist > 21 * 1609)
                             {
-                                q_md = 4.3F;
+                                q_md = 4.3f;
                                 g0 = 0.142f;
                                 k0 = 0.2259f;
                             }
                             else if (dist > 16 * 1609)
                             {
-                                q_md = 3.8F;
+                                q_md = 3.8f;
                                 g0 = 0.151f;
                                 k0 = 0.1524f;
                             }
                         }
-                        //MD will not work well when steep, by default giving infinite speed over 30%
-                        //Use Kay formula instead for steep. This formula is normally above 31% but extrapolated and used from 16% (14%)
-                        //Kay is always bigger than MD, the value is adjusted to be (almost) continous
-                        if (g < g0)
+                        if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.MervynDaviesSpeed)
                         {
-                            q = 1 - q_md * g;
+                            q = 1 / (1 + q_md * g);
                         }
                         else
                         {
-                            q = 0.1707f / 1.9538f / g - k0;
+                            //MD-speed will not work well when steep, by default giving infinite speed over 30%
+                            //Use Kay formula instead for steep. This formula is normally above 31% but extrapolated and used from 16% (14%)
+                            //Kay is always bigger than MD, the value is adjusted to be (almost) continous
+                            if (g < g0)
+                            {
+                                q = 1 - q_md * g;
+                            }
+                            else
+                            {
+                                q = 0.1707f / 1.9538f / g - k0;
+                            }
                         }
                     }
                     else
                     {
                         //downhill
-                        float q_md = 1.8F;
+                        float q_md = 1.8f;
                         if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin && dist > 21 * 1609)
                         {
-                            q_md = 1.7F;
+                            q_md = 1.7f;
                         }
-                        q = 1 - q_md * g;
+                        if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.MervynDaviesSpeed)
+                        {
+                            //Use Kay at steep
+                            if (g < -0.2617f)
+                            {
+                                //Max downhill
+                                q = (float)(0.1707 / -0.8732 * g);
+                            }
+                            else if (g < -0.08f)
+                            {
+                                //normal Kay, formulas cross here (about fast downhill)
+                                q = (float)(0.1707 / 0.1707 + 0.5656 * g + 3.2209 * Math.Pow(g, 2) - 0.3211 * Math.Pow(g, 3) - 4.3635 * Math.Pow(g, 4));
+                            }
+                            else
+                            {
+                                q = 1 - q_md * g;
+                            }
+                        }
+                        else
+                        {
+                            q = 1 / (1 + q_md * g);
+                        }
                     }
 
                     return q;
@@ -135,7 +165,7 @@ namespace TrailsPlugin.Data
             //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774
 
             double p0; //race record pace predict
-            if (g > 0.3152)
+            if (g > 0.3152f)
             {
                 //max uphill
                 p0 = 1.9538 * g;
@@ -145,7 +175,7 @@ namespace TrailsPlugin.Data
                 //    p0 = 0.0314 + 1.7544 * g + 0.3162 * g * g;
                 //}
             }
-            else if (g < -0.2617)
+            else if (g < -0.2617f)
             {
                 //Max downhill
                 p0 = -0.8732 * g;
@@ -157,13 +187,14 @@ namespace TrailsPlugin.Data
             }
             else
             {
+                //Normal interval, formula
                 p0 = 0.1707 + 0.5656 * g + 3.2209 * Math.Pow(g, 2) - 0.3211 * Math.Pow(g, 3) - 4.3635 * Math.Pow(g, 4);
             }
 
             //Normalize - we want relative speed factor, not race record pace
             q = (float)(0.1707 / p0);
 
-            //Adjust for total (activity) time - only applicable to predict time, not for adjustment
+            //Formula adjust for total (activity) time - only applicable to predict time, not for adjustment
             //(the formula should be similar to Performance Predictor formulas, like WAVA/DaveCameron/PeteRiegel)
             //q *= (float)(1/(1 - totTime * 0.00004446f));
 
@@ -182,14 +213,26 @@ namespace TrailsPlugin.Data
              * than the hill people). A problem is that the up grade increases the cost so much that it is hard to run very fast, because the VO2 will go above max real quickly. So yu end up 
              * extrapolating from slower speeds and hope it applies at faster ones. I have done faster ones using Rate of Perceived Exertion and that can be done beyond max, but not ver exact
              * */
-            double q_jd = 0;
-            double speed = (dist - prevDist) / (time - prevTime);
-            if (g > 0.153f)
-            {
-                //Steep adjust, see discussion for MervynDavies
-                //Assuming 4m/s
-                q = 0.1707f / 1.9538f / g - 0.1416f;
-            }
+                    const bool speedAdjust = false; //unused
+                    double q_jd = 0;
+                    double speed = (dist - prevDist) / (time - prevTime);
+
+                    //Steep adjust, see discussion for MervynDavies
+                    //Assuming 4m/s
+                    if (speedAdjust && g > 0.153f)
+                    {
+                        q = 0.1707f / 1.9538f / g - 0.1416f;
+                    }
+                    else if (!speedAdjust && g < -0.2617f)
+                    {
+                        //Max downhill
+                        q = (float)(0.1707 / -0.8732 * g);
+                    }
+                    else if (g < -0.08f)
+                    {
+                        //normal Kay, formulas cross here (about fast downhill)
+                        q = (float)(0.1707 / 0.1707 + 0.5656 * g + 3.2209 * Math.Pow(g, 2) - 0.3211 * Math.Pow(g, 3) - 4.3635 * Math.Pow(g, 4));
+                    }
             else
             {
                 if (g > 0)
@@ -212,9 +255,11 @@ namespace TrailsPlugin.Data
             //Energy cost of walking and running at extreme uphill and downhill slopes
             //Alberto E. Minetti, Christian Moia1, Giulio S. Roi, Davide Susta1 and Guido Ferretti
             //http://jap.physiology.org/content/93/3/1039.full
+            //http://web.stanford.edu/~clint/Run_Walk2004a.rtf
             float q_am0 = (float)((g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6);
             float q_am1 = 1 / (1 + q_am0);
-            q = q_am1;
+            //q = q_am1;
+            q = (float)Math.Pow(1 / q_am1, 0.83);
 
             return q;
         }
@@ -238,10 +283,18 @@ namespace TrailsPlugin.Data
             //Pandolf, adjusted for running by Epstein (has no impact without load)
             //http://ftp.rta.nato.int/public//PubFullText/RTO/TR/RTO-TR-HFM-080///TR-HFM-080-03.pdf
             //http://www.springerlink.com/content/x372781w776h3367/
-            //Mw=1.5 M + 2.0 (M + L)(L/M)^2 + n(M + L)[1.5V^2 + 0.35VG] = M(1.5 +[1.5V^2 + 0.35VG])=1.5M(1+v^2+7/30vg)
-            //Mr = Mw - 0.5 • (1-001 • L) • (Mw -15 • L - 850)=Mw-0.5*(Mw-850)
+            //Mw=1.5 W + 2.0 (W + L)(L/W)^2 + T(W + L)[1.5V^2 + 0.35VG] = W(1.5 +[1.5V^2 + 0.35VG])=1.5W(1+V^2+7/30*VG)
+            //Mr = Mw - 0.5 • (1-0.01 • L) • (Mw -15 • L - 850)=Mw-0.5*(Mw-850)
+            //Symbols: Mw= metabolic cost of walking (watts); 
+            //Mr= metabolic cost of running (watts);
+            //W = body mass (kg); 
+            //L = load mass (kg); (0 assumed)
+            //T = terrain factor; (1.0 used) 
+            //V = velocity or walk rate (m/s);
+            //G = slope or grade (%)
+            //Terrain factors : 1.0 = black topping road; 1.1 = dirt road; 1.2 = light brush; 1.5 = heavy brush; 1.8 = swampy bog; 2.1 = loose sand; 2.5 = soft snow 15 cm; 3.3 = soft snow 25 cm; 4.1 = soft snow 35 cm
             //float q_p = 1 / (float)Math.Sqrt(1 + 0.7 / 3 * (elap - prevElap) * g / (dist - prevDist));
-            float q_p = 1 + 60F * 7F / 30F * g * (time - prevTime) / (dist - prevDist);
+            float q_p = 1 + 60f * 7f / 30f * g * (time - prevTime) / (dist - prevDist);
             if (q_p < 0)
             {
                 q_p = 1;

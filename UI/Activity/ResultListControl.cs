@@ -1599,6 +1599,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailResult.diffToSelf = !TrailResult.diffToSelf;
                 }
+                else if (e.Modifiers == (Keys.Shift | Keys.Alt))
+                {
+                    //Running out of key combinations
+                    TrailResult.IncreaseRunningGradeCalcMethod(false);
+                }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     this.setAdjustDiffSplitTimesPopup();
@@ -1609,7 +1614,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    TrailResult.IncreaseRunningGradeCalcMethod();
+                    TrailResult.IncreaseRunningGradeCalcMethod(true);
                 }
                 this.summaryListToolTip.Show(Data.Settings.RunningGradeAdjustMethod.ToString(),
                               this.summaryList,
@@ -2011,7 +2016,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
         {
-            TrailResult.IncreaseRunningGradeCalcMethod();
+            TrailResult.IncreaseRunningGradeCalcMethod(true);
             m_page.RefreshData(true);
         }
     }

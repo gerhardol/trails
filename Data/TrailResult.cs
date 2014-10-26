@@ -2395,13 +2395,25 @@ namespace TrailsPlugin.Data
             Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
         }
 
-        internal static void IncreaseRunningGradeCalcMethod()
+        internal static void IncreaseRunningGradeCalcMethod(bool increase)
         {
-            Settings.RunningGradeAdjustMethod++;
-            if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Last)
+            if (increase)
             {
-                Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
+                Settings.RunningGradeAdjustMethod++;
+                if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Last)
+                {
+                    Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
+                }
             }
+            else
+            {
+                if (TrailsPlugin.Data.Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.None)
+                {
+                    TrailsPlugin.Data.Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.Last;
+                }
+                TrailsPlugin.Data.Settings.RunningGradeAdjustMethod--;
+            }
+
             foreach (TrailResult t in TrailResultWrapper.IncludeSubResults(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
             {
                 t.m_gradeRunAdjustedTime = null;

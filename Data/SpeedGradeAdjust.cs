@@ -21,7 +21,7 @@ namespace TrailsPlugin.Data
 {
     //Some hints here: http://mymarathonpace.com/Other_Info.html
 
-    public enum RunningGradeAdjustMethodEnum { None, MervynDaviesSpeed, MervynDavies, GregMaclin, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
+    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, MervynDaviesSpeed, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
         public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
@@ -71,101 +71,112 @@ namespace TrailsPlugin.Data
             return q;
         }
 
+        /***************************************************************************************************/
         private static float getMervynDavies(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
         {
+            //Mervyn Davies, Greg Maclin http://runningtimes.com/Article.aspx?ArticleID=10507 
+            /* First, I tried to find out if anyone had done any serious research into the subject and ran across this article from Running Times: http://runningtimes.com/Article.aspx?ArticleID=10507 
+             * This article mentions a researcher named Mervyn Davies who did extensive studies in the early 1980's of the effect of hills on the energy expenditure of runners. 
+             * (Tim Noakes quotes Davies' research in his book the "Lore of Running".) Mervyn Davies' basic forumla for how much energy runners expend on hills is as follows: 
+             * Every 1% of upgrade slows your pace 3.3% Every 1% of downgrade speeds your pace by 1.8% After playing around with this formula on elevation data for various marathons, 
+             * I felt it needed to be "tweaked" a little for the much longer distance. Here is what I came up with: Miles 1 - 16: Every 1% of upgrade slows your pace 3.3% 
+             * Every 1% of downgrade speeds your pace by 1.8% Miles 16 - 21: Every 1% of upgrade slows your pace 3.8% Every 1% of downgrade speeds your pace by 1.8% 
+             * Miles 21 - 26.2: Every 1% of upgrade slows your pace 4.3% Every 1% of downgrade speeds your pace by 1.8% (The logic behind this is that uphills located late in 
+             * the race will be more difficult than uphills located closer to the start.)
+             */
             float q;
-                    //Mervyn Davies, Greg Maclin http://runningtimes.com/Article.aspx?ArticleID=10507 
-                    /* First, I tried to find out if anyone had done any serious research into the subject and ran across this article from Running Times: http://runningtimes.com/Article.aspx?ArticleID=10507 
-                     * This article mentions a researcher named Mervyn Davies who did extensive studies in the early 1980's of the effect of hills on the energy expenditure of runners. 
-                     * (Tim Noakes quotes Davies' research in his book the "Lore of Running".) Mervyn Davies' basic forumla for how much energy runners expend on hills is as follows: 
-                     * Every 1% of upgrade slows your pace 3.3% Every 1% of downgrade speeds your pace by 1.8% After playing around with this formula on elevation data for various marathons, 
-                     * I felt it needed to be "tweaked" a little for the much longer distance. Here is what I came up with: Miles 1 - 16: Every 1% of upgrade slows your pace 3.3% 
-                     * Every 1% of downgrade speeds your pace by 1.8% Miles 16 - 21: Every 1% of upgrade slows your pace 3.8% Every 1% of downgrade speeds your pace by 1.8% 
-                     * Miles 21 - 26.2: Every 1% of upgrade slows your pace 4.3% Every 1% of downgrade speeds your pace by 1.8% (The logic behind this is that uphills located late in 
-                     * the race will be more difficult than uphills located closer to the start.)
-                     */
-                    if (g > 0)
+            //Formula adjusts pace, first implementation adjusted speed - works a little differently.
+            bool speedAdjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.MervynDaviesSpeed);
+            if (g > 0)
+            {
+                float q_md = 3.3f;
+                float g0 = 0.1627f;
+                float k0 = 0.0739f;
+                if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin)
+                {
+                    if (dist > 21 * 1609)
                     {
-                        float q_md = 3.3f;
-                        float g0 = 0.1627f;
-                        float k0 = 0.0739f;
-                        if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin)
-                        {
-                            if (dist > 21 * 1609)
-                            {
-                                q_md = 4.3f;
-                                g0 = 0.142f;
-                                k0 = 0.2259f;
-                            }
-                            else if (dist > 16 * 1609)
-                            {
-                                q_md = 3.8f;
-                                g0 = 0.151f;
-                                k0 = 0.1524f;
-                            }
-                        }
-                        if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.MervynDaviesSpeed)
-                        {
-                            q = 1 / (1 + q_md * g);
-                        }
-                        else
-                        {
-                            //MD-speed will not work well when steep, by default giving infinite speed over 30%
-                            //Use Kay formula instead for steep. This formula is normally above 31% but extrapolated and used from 16% (14%)
-                            //Kay is always bigger than MD, the value is adjusted to be (almost) continous
-                            if (g < g0)
-                            {
-                                q = 1 - q_md * g;
-                            }
-                            else
-                            {
-                                q = 0.1707f / 1.9538f / g - k0;
-                            }
-                        }
+                        q_md = 4.3f;
+                        g0 = 0.142f;
+                        k0 = 0.2259f;
+                    }
+                    else if (dist > 16 * 1609)
+                    {
+                        q_md = 3.8f;
+                        g0 = 0.151f;
+                        k0 = 0.1524f;
+                    }
+                }
+
+                if (speedAdjust)
+                {
+                    //MD-speed will not work well when steep, by default giving infinite speed over 30%
+                    //Use Kay formula instead for steep. This formula is normally above 31% but extrapolated and used from 16% (14%)
+                    //Kay is always bigger than MD, the value is adjusted to be (almost) continous
+                    if (g > g0)
+                    {
+                        q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxDown) - k0;
                     }
                     else
                     {
-                        //downhill
-                        float q_md = 1.8f;
-                        if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin && dist > 21 * 1609)
-                        {
-                            q_md = 1.7f;
-                        }
-                        if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.MervynDaviesSpeed)
-                        {
-                            //Use Kay at steep
-                            if (g < -0.2617f)
-                            {
-                                //Max downhill
-                                q = (float)(0.1707 / -0.8732 * g);
-                            }
-                            else if (g < -0.08f)
-                            {
-                                //normal Kay, formulas cross here (about fast downhill)
-                                q = (float)(0.1707 / 0.1707 + 0.5656 * g + 3.2209 * Math.Pow(g, 2) - 0.3211 * Math.Pow(g, 3) - 4.3635 * Math.Pow(g, 4));
-                            }
-                            else
-                            {
-                                q = 1 - q_md * g;
-                            }
-                        }
-                        else
-                        {
-                            q = 1 / (1 + q_md * g);
-                        }
+                        q = 1 - q_md * g;
                     }
+                }
+                else
+                {
+                    q = 1 / (1 + q_md * g);
+                }
+            }
+            else
+            {
+                //downhill
+                float q_md = 1.8f;
+                float g0 = -0.08f;
+                if (speedAdjust)
+                {
+                    g0 = -0.095f;
+                }
+                if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin && dist > 21 * 1609)
+                {
+                    q_md = 1.7f;
+                }
 
-                    return q;
+                if (g < g0)
+                {
+                    //normal Kay when steep, formulas cross here (about fast downhill)
+                    q = getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
+                }
+                else
+                {
+                    if (speedAdjust)
+                    {
+                        q = 1 - q_md * g;
+                    }
+                    else
+                    {
+                        q = 1 / (1 + q_md * g);
+                    }
+                }
+            }
+
+            return q;
         }
 
+        /***************************************************************************************************/
+        private enum KayForce { Normal, MaxUp, MaxDown };
         private static float getKay(float g, float time, float prevTime, float dist, float prevDist)
+        {
+            return getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
+        }
+
+        private static float getKay(float g, float time, float prevTime, float dist, float prevDist, KayForce force)
         {
             float q;
             //http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf
             //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774
 
             double p0; //race record pace predict
-            if (g > 0.3152f)
+            if (g > 0.3152f || force == KayForce.MaxUp)
             {
                 //max uphill
                 p0 = 1.9538 * g;
@@ -175,7 +186,7 @@ namespace TrailsPlugin.Data
                 //    p0 = 0.0314 + 1.7544 * g + 0.3162 * g * g;
                 //}
             }
-            else if (g < -0.2617f)
+            else if (g < -0.2617f || force == KayForce.MaxDown)
             {
                 //Max downhill
                 p0 = -0.8732 * g;
@@ -201,6 +212,7 @@ namespace TrailsPlugin.Data
             return q;
         }
 
+        /***************************************************************************************************/
         private static float getJackDaniels(float g, float time, float prevTime, float dist, float prevDist)
         {
             float q;
@@ -213,42 +225,46 @@ namespace TrailsPlugin.Data
              * than the hill people). A problem is that the up grade increases the cost so much that it is hard to run very fast, because the VO2 will go above max real quickly. So yu end up 
              * extrapolating from slower speeds and hope it applies at faster ones. I have done faster ones using Rate of Perceived Exertion and that can be done beyond max, but not ver exact
              * */
-                    const bool speedAdjust = false; //unused
-                    double q_jd = 0;
-                    double speed = (dist - prevDist) / (time - prevTime);
+            const bool speedAdjust = false; //unused (is adjusting speed better?)
+            double p_jd = 0;
+            double speed = (dist - prevDist) / (time - prevTime);
 
-                    //Steep adjust, see discussion for MervynDavies
-                    //Assuming 4m/s
-                    if (speedAdjust && g > 0.153f)
-                    {
-                        q = 0.1707f / 1.9538f / g - 0.1416f;
-                    }
-                    else if (!speedAdjust && g < -0.2617f)
-                    {
-                        //Max downhill
-                        q = (float)(0.1707 / -0.8732 * g);
-                    }
-                    else if (g < -0.08f)
-                    {
-                        //normal Kay, formulas cross here (about fast downhill)
-                        q = (float)(0.1707 / 0.1707 + 0.5656 * g + 3.2209 * Math.Pow(g, 2) - 0.3211 * Math.Pow(g, 3) - 4.3635 * Math.Pow(g, 4));
-                    }
+            //Steep adjust, see discussion for MervynDavies
+            //Assuming 4m/s
+            if (speedAdjust && g > 0.153f)
+            {
+                q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - 0.1416f;
+            }
+            else if (!speedAdjust && g < -0.08f)
+            {
+                //normal Kay, formulas cross here (about fast downhill)
+                q = getKay(g, time, prevTime, dist, prevDist);
+            }
             else
             {
                 if (g > 0)
                 {
-                    q_jd = 15 * speed * g * 100 / 1609;
+                    p_jd = 15 * speed * g * 100 / 1609;
                 }
                 else
                 {
-                    q_jd = 8 * speed * g * 100 / 1609;
+                    p_jd = 8 * speed * g * 100 / 1609;
                 }
-                q = (float)(1 - q_jd);
+
+                if (speedAdjust)
+                {
+                    q = (float)(1 - p_jd);
+                }
+                else
+                {
+                    q = (float)(1 / (1 + p_jd));
+                }
             }
 
             return q;
         }
 
+        /***************************************************************************************************/
         private static float getAlbertoMinetti(float g, float time, float prevTime, float dist, float prevDist)
         {
             float q;
@@ -258,12 +274,13 @@ namespace TrailsPlugin.Data
             //http://web.stanford.edu/~clint/Run_Walk2004a.rtf
             float q_am0 = (float)((g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6);
             float q_am1 = 1 / (1 + q_am0);
-            //q = q_am1;
-            q = (float)Math.Pow(1 / q_am1, 0.83);
+            q = q_am1;
+            //q = (float)Math.Pow(1 / q_am1, 0.83);
 
             return q;
         }
 
+        /***************************************************************************************************/
         private static float getACSM(float g, float time, float prevTime, float dist, float prevDist)
         {
             float q;
@@ -277,6 +294,7 @@ namespace TrailsPlugin.Data
             return q;
         }
 
+        /***************************************************************************************************/
         private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist)
         {
             float q;

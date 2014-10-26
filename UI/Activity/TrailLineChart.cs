@@ -73,6 +73,7 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_endSelect = false;
         private float m_firstRangeSelected = float.NaN;
         private float[] m_prevSelectedRange = null;
+        private IList<float[]> m_prevSelectedRegions = null;
         private int m_selectedDataSeries = -1;
  
         const int MaxSelectedSeries = 6;
@@ -380,6 +381,15 @@ namespace TrailsPlugin.UI.Activity {
                     if (clearDecreased)
                     {
                         this.m_multiple.ClearSelectedRegions(false);
+                    }
+                    else
+                    {
+                        //save the regions, when switching
+                        m_prevSelectedRegions = new List<float[]>();
+                        foreach (float[] r in regions)
+                        {
+                            m_prevSelectedRegions.Add(r);
+                        }
                     }
                 }
                 this.m_prevSelectedRange = range;
@@ -715,7 +725,11 @@ namespace TrailsPlugin.UI.Activity {
 
         private int[] ResultIndexToSeries(int resultIndex)
         {
-            if (resultIndex < 0) { return new int[0]; }
+            if (resultIndex < 0 || this.m_trailResults.Count <= 0)
+            {
+                //No data
+                return new int[0];
+            }
             int[] indexes = new int[MainChart.DataSeries.Count / this.m_trailResults.Count];
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -954,6 +968,10 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }  //for all axis
 
+                //Select same region/range as before. Mostly interesting when recalc or adding graphs but not restricted when switching trail/activities
+                SetSelectedResultRegions(this.m_selectedDataSeries, this.m_prevSelectedRegions, this.m_prevSelectedRange);
+
+                //tooltip for "offset"
                 if (SyncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
                 {
                     ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate

@@ -2524,7 +2524,7 @@ namespace TrailsPlugin.Data
                                     if (dist - prevDist > 0)
                                     {
                                         float g = (ele - prevEle) / (dist - prevDist); //grade
-                                        q = RunningGradeAdjustMethodClass.getGradeFactor(g, time, prevTime, dist, prevDist);
+                                        q = RunningGradeAdjustMethodClass.getGradeFactor(g, time, prevTime, dist, prevDist, this.Activity);
                                     }
                                 }
                                 else

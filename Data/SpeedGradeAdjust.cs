@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Diagnostics;
+using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Data
 {
@@ -25,7 +26,7 @@ namespace TrailsPlugin.Data
     public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, MervynDaviesSpeed, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
-        public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
+        public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist, IActivity activity)
         {
 
             float q;
@@ -55,7 +56,7 @@ namespace TrailsPlugin.Data
                     break;
 
                 case RunningGradeAdjustMethodEnum.Pandolf:
-                    q = getPandolf(g, time, prevTime, dist, prevDist);
+                    q = getPandolf(g, time, prevTime, dist, prevDist, activity);
                     break;
 
                 case RunningGradeAdjustMethodEnum.None:
@@ -295,7 +296,7 @@ namespace TrailsPlugin.Data
         }
 
         /***************************************************************************************************/
-        private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist)
+        static float getPandolfEnergy(float G, float V, IActivity activity)
         {
             //Pandolf, adjusted for running by Epstein (has no impact without load)
             //http://ftp.rta.nato.int/public//PubFullText/RTO/TR/RTO-TR-HFM-080///TR-HFM-080-03.pdf
@@ -311,14 +312,32 @@ namespace TrailsPlugin.Data
             //G = slope or grade (%)
             //Terrain factors : 1.0 = black topping road; 1.1 = dirt road; 1.2 = light brush; 1.5 = heavy brush; 1.8 = swampy bog; 2.1 = loose sand; 2.5 = soft snow 15 cm; 3.3 = soft snow 25 cm; 4.1 = soft snow 35 cm
 
-            //A somehow simplified formula....
-            //float q_p = 1 / (float)Math.Sqrt(1 + 0.7 / 3 * (elap - prevElap) * g / (dist - prevDist));
-            float v = (dist - prevDist) / (time - prevTime);
-            float vdotp = 1 + 60f * 7f / 30f * g / v;
-            if (vdotp > 0)
+            //Cache?
+            float L = 0;
+            if (activity != null && activity.EquipmentUsed != null)
             {
-                vdotp = (float)Math.Sqrt(vdotp);
+                foreach (IEquipmentItem eq in activity.EquipmentUsed)
+                {
+                    L += eq.WeightKilograms;
+                }
             }
+            if (float.IsNaN(L)) { L = 0; }
+            float W = Plugin.GetApplication().Logbook.Athlete.WeightKilograms;
+            if (float.IsNaN(W)) { W = 80; }
+            float T = 1;
+
+            float Mw = 1.5f * W + 2 * (W + L) * (L / W) * (L / W) + T * (W + L) * (1.5f * V * W + 0.35f * V * G);
+            float Mr = (float)(Mw - 0.5 * (1 - 0.01f * L) * (Mw - 15 * L - 850));
+            return Mr;
+        }
+
+        private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist, IActivity activity)
+        {
+
+            float v = (dist - prevDist) / (time - prevTime);
+            float Mr0 = getPandolfEnergy(0, v, activity);
+            float Mr = getPandolfEnergy(g, v, activity);
+            float vdotp = Mr/Mr0;
             float q = energyTimeAdjust(1 / vdotp);
 
             return q;

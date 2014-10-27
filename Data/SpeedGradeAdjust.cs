@@ -22,7 +22,7 @@ namespace TrailsPlugin.Data
 {
     //Some hints here: http://mymarathonpace.com/Other_Info.html
 
-    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, MervynDaviesSpeed, Kay, JackDaniels, JackDanielsSpeed, AlbertoMinetti, AlbertoMinetti2, ACSM, ACSM2, Pandolf, Pandolf2, Last };
+    public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, MervynDaviesSpeed, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
         public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
@@ -43,22 +43,18 @@ namespace TrailsPlugin.Data
                     break;
 
                 case RunningGradeAdjustMethodEnum.JackDaniels:
-                case RunningGradeAdjustMethodEnum.JackDanielsSpeed:
                     q = getJackDaniels(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.AlbertoMinetti:
-                case RunningGradeAdjustMethodEnum.AlbertoMinetti2:
                     q = getAlbertoMinetti(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.ACSM:
-                case RunningGradeAdjustMethodEnum.ACSM2:
                     q = getACSM(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.Pandolf:
-                case RunningGradeAdjustMethodEnum.Pandolf2:
                     q = getPandolf(g, time, prevTime, dist, prevDist);
                     break;
 
@@ -232,7 +228,7 @@ namespace TrailsPlugin.Data
              * than the hill people). A problem is that the up grade increases the cost so much that it is hard to run very fast, because the VO2 will go above max real quickly. So yu end up 
              * extrapolating from slower speeds and hope it applies at faster ones. I have done faster ones using Rate of Perceived Exertion and that can be done beyond max, but not ver exact
              * */
-            bool speedAdjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.JackDanielsSpeed);
+            bool speedAdjust = false; // (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.JackDanielsSpeed);
             double p_jd = 0;
             double speed = (dist - prevDist) / (time - prevTime);
 
@@ -274,36 +270,26 @@ namespace TrailsPlugin.Data
         /***************************************************************************************************/
         private static float getAlbertoMinetti(float g, float time, float prevTime, float dist, float prevDist)
         {
-            float q;
             //Energy cost of walking and running at extreme uphill and downhill slopes
             //Alberto E. Minetti, Christian Moia1, Giulio S. Roi, Davide Susta1 and Guido Ferretti
             //http://jap.physiology.org/content/93/3/1039.full
             //http://web.stanford.edu/~clint/Run_Walk2004a.rtf
             float vdotp = (float)(1 + (g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6);
-            q = 1 / vdotp;
-            bool adjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.AlbertoMinetti);
-            if (adjust)
-            {
-                q = energyTimeAdjust(q);
-            }
+            float q = energyTimeAdjust(1 / vdotp);
+
             return q;
         }
 
         /***************************************************************************************************/
         private static float getACSM(float g, float time, float prevTime, float dist, float prevDist)
         {
-            float q;
             //http://www.edulife.com.br/dados%5CArtigos%5CEducacao%20Fisica%5CFisiologia%20do%20Exercicio%5CEnergy%20expenditure%20of%20walking%20and%20running%20comparison%20with%20prrediction%20equations.pdf
             //http://blue.utb.edu/mbailey/handouts/MetCalEq.htm
             //Running. V˙ O2 (mL·/kg /min) = 0.2v +  0.9vg*100+  3.5
             //vflat=v*(1+4.5*g)
             double sp = (dist - prevDist) / (time - prevTime);
-            q = (float)((0.2 * 60 * sp + 3.5) / (0.2 * 60 * sp + 0.9 * g * 60 * sp + 3.5));
-            bool adjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.ACSM);
-            if (adjust)
-            {
-                q = energyTimeAdjust(q);
-            }
+            float vdotp = (float)((0.2 * 60 * sp + 3.5) / (0.2 * 60 * sp + 0.9 * g * 60 * sp + 3.5));
+            float q = energyTimeAdjust(1 / vdotp);
 
             return q;
         }
@@ -311,7 +297,6 @@ namespace TrailsPlugin.Data
         /***************************************************************************************************/
         private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist)
         {
-            float q;
             //Pandolf, adjusted for running by Epstein (has no impact without load)
             //http://ftp.rta.nato.int/public//PubFullText/RTO/TR/RTO-TR-HFM-080///TR-HFM-080-03.pdf
             //http://www.springerlink.com/content/x372781w776h3367/
@@ -326,20 +311,15 @@ namespace TrailsPlugin.Data
             //G = slope or grade (%)
             //Terrain factors : 1.0 = black topping road; 1.1 = dirt road; 1.2 = light brush; 1.5 = heavy brush; 1.8 = swampy bog; 2.1 = loose sand; 2.5 = soft snow 15 cm; 3.3 = soft snow 25 cm; 4.1 = soft snow 35 cm
 
-            //A somehow adapted formula....
+            //A somehow simplified formula....
             //float q_p = 1 / (float)Math.Sqrt(1 + 0.7 / 3 * (elap - prevElap) * g / (dist - prevDist));
             float v = (dist - prevDist) / (time - prevTime);
-            float vdotp = 1 + 60f * 7f / 30f * g * v;
-            q = 1;
+            float vdotp = 1 + 60f * 7f / 30f * g / v;
             if (vdotp > 0)
             {
-                q = 1 / (float)Math.Sqrt(vdotp);
+                vdotp = (float)Math.Sqrt(vdotp);
             }
-            bool adjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Pandolf);
-            if (adjust)
-            {
-                q = energyTimeAdjust(q);
-            }
+            float q = energyTimeAdjust(1 / vdotp);
 
             return q;
         }

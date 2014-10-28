@@ -289,54 +289,64 @@ namespace TrailsPlugin.Data
             //Running. V˙ O2 (mL·/kg /min) = 0.2v +  0.9vg*100+  3.5
             //vflat=v*(1+4.5*g)
             double sp = (dist - prevDist) / (time - prevTime);
-            float vdotp = (float)((0.2 * 60 * sp + 3.5) / (0.2 * 60 * sp + 0.9 * g * 60 * sp + 3.5));
+            float vdotp = (float)((0.2 * 60 * sp + 0.9 * g * 60 * sp + 3.5) / (0.2 * 60 * sp + 3.5));
             float q = energyTimeAdjust(1 / vdotp);
 
             return q;
         }
 
         /***************************************************************************************************/
+        //cache for calculations, invalidated if activity do not match
+        private static float L = 0;
+        private static float W = 80;
+        private static float prevTime = 0;
+        private static IActivity prevActivity = null;
+
         static float getPandolfEnergy(float G, float V, IActivity activity)
         {
             //Pandolf, adjusted for running by Epstein (has no impact without load)
             //http://ftp.rta.nato.int/public//PubFullText/RTO/TR/RTO-TR-HFM-080///TR-HFM-080-03.pdf
             //http://www.springerlink.com/content/x372781w776h3367/
-            //Mw=1.5 W + 2.0 (W + L)(L/W)^2 + T(W + L)[1.5V^2 + 0.35VG] = W(1.5 +[1.5V^2 + 0.35VG]) = 1.5W(1+V^2+V*G*7/30)
+            //Mw=1.5 W + 2.0 (W + L)(L/W)^2 + T(W + L)(1.5V^2 + 0.35VG) = W(1.5 +[1.5V^2 + 0.35VG]) = 1.5W(1+V^2+V*G*7/30)
             //Mr = Mw - 0.5 • (1-0.01 • L) • (Mw -15 • L - 850) = Mw-0.5*(Mw-850)
             //Symbols: Mw= metabolic cost of walking (watts); 
             //Mr= metabolic cost of running (watts);
             //W = body mass (kg); 
-            //L = load mass (kg); (0 assumed)
-            //T = terrain factor; (1.0 used) 
+            //L = load mass (kg);
+            //T = terrain factor;
             //V = velocity or walk rate (m/s);
             //G = slope or grade (%)
             //Terrain factors : 1.0 = black topping road; 1.1 = dirt road; 1.2 = light brush; 1.5 = heavy brush; 1.8 = swampy bog; 2.1 = loose sand; 2.5 = soft snow 15 cm; 3.3 = soft snow 25 cm; 4.1 = soft snow 35 cm
 
-            //Cache?
-            float L = 0;
-            if (activity != null && activity.EquipmentUsed != null)
+            if (activity != prevActivity)
             {
-                foreach (IEquipmentItem eq in activity.EquipmentUsed)
+                L = 0;
+                if (activity != null && activity.EquipmentUsed != null)
                 {
-                    L += eq.WeightKilograms;
+                    foreach (IEquipmentItem eq in activity.EquipmentUsed)
+                    {
+                        L += eq.WeightKilograms;
+                    }
                 }
+                if (float.IsNaN(L)) { L = 0; }
+                W = Plugin.GetApplication().Logbook.Athlete.WeightKilograms;
+                if (float.IsNaN(W)) { W = 80; }
             }
-            if (float.IsNaN(L)) { L = 0; }
-            float W = Plugin.GetApplication().Logbook.Athlete.WeightKilograms;
-            if (float.IsNaN(W)) { W = 80; }
             float T = 1;
-
-            float Mw = 1.5f * W + 2 * (W + L) * (L / W) * (L / W) + T * (W + L) * (1.5f * V * W + 0.35f * V * G);
+            float Mw = 1.5f * W + 2 * (W + L) * (L / W) * (L / W) + T * (W + L) * (1.5f * V * V + 0.35f * V * G);
             float Mr = (float)(Mw - 0.5 * (1 - 0.01f * L) * (Mw - 15 * L - 850));
             return Mr;
         }
 
         private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist, IActivity activity)
         {
+            //Invalidate cache if time decreases (handle that settings are changed and recalc)
+            if (time < prevTime) { prevActivity = null; }
+            time = prevTime;
 
             float v = (dist - prevDist) / (time - prevTime);
             float Mr0 = getPandolfEnergy(0, v, activity);
-            float Mr = getPandolfEnergy(g, v, activity);
+            float Mr = getPandolfEnergy(100*g, v, activity);
             float vdotp = Mr/Mr0;
             float q = energyTimeAdjust(1 / vdotp);
 

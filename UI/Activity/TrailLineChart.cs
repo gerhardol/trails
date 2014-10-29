@@ -74,6 +74,7 @@ namespace TrailsPlugin.UI.Activity {
         private float m_firstRangeSelected = float.NaN;
         private float[] m_prevSelectedRange = null;
         private IList<float[]> m_prevSelectedRegions = null;
+        private XAxisValue m_prevSelectedXAxis = XAxisValue.Time;
         private int m_selectedDataSeries = -1;
  
         const int MaxSelectedSeries = 6;
@@ -256,11 +257,7 @@ namespace TrailsPlugin.UI.Activity {
                     //Save start range, to shrink if changed
                     this.m_prevSelectedRange = range;
                 }
-                else
-                {
-                    //Clear at end (should not be required)
-                    this.m_prevSelectedRange = null;
-                }
+                this.m_prevSelectedXAxis = this.m_XAxisReferential;
 
                 //Get index for dataseries - relates to result
                 for (int j = 0; j < MainChart.DataSeries.Count; j++)
@@ -390,6 +387,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             m_prevSelectedRegions.Add(r);
                         }
+                        //this.m_prevSelectedXAxis = this.m_XAxisReferential;
                     }
                 }
                 this.m_prevSelectedRange = range;
@@ -512,6 +510,35 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        public void UpdateSelectedResultRegions()
+        {
+            //Select same region/range as before, switch time/distance if needed
+            if (this.m_prevSelectedXAxis != this.m_XAxisReferential && 
+                this.m_selectedDataSeries < this.MainChart.DataSeries.Count)
+            {
+                TrailResult tr = TrailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
+                if (this.m_prevSelectedRegions != null)
+                {
+                    foreach (float[] af in this.m_prevSelectedRegions)
+                    {
+                        TrackUtil.ChartResultConvert(this.m_prevSelectedXAxis == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time, 
+                            IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, af);
+                    }
+                }
+                if(this.m_prevSelectedRegions != null)
+                {
+                    TrackUtil.ChartResultConvert(this.m_prevSelectedXAxis == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time, 
+                        IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, this.m_prevSelectedRange);
+                }
+                this.m_prevSelectedXAxis = this.m_XAxisReferential;
+            }
+        }
+
+        public void SetSelectedResultRegions()
+        {
+            this.SetSelectedResultRegions(-1, this.m_prevSelectedRegions, this.m_prevSelectedRange);
+        }
+
         //Mark the series for all or a specific result
         //Note: Clear should be done prior to the call, regions are added only
         public void SetSelectedResultRegions(int resultIndex, IList<float[]> regions, float[] range)
@@ -609,6 +636,8 @@ namespace TrailsPlugin.UI.Activity {
                     if (isRegion)
                     {
                         this.SetSelectedResultRegions(resultIndex, regions, null);
+                        this.m_prevSelectedRegions = regions;
+                        this.m_prevSelectedXAxis = XAxisReferential;
                         if (!toolTipShown && trm.trailResult == tr)
                         {
                             //While more than one result may be shown, only one tooltip
@@ -621,6 +650,8 @@ namespace TrailsPlugin.UI.Activity {
                         if (regions != null && regions.Count > 0)
                         {
                             this.SetSelectedResultRegions(resultIndex, null, regions[regions.Count - 1]);
+                            this.m_prevSelectedRange = regions[regions.Count - 1];
+                            this.m_prevSelectedXAxis = XAxisReferential;
                         }
                     }
                 }
@@ -968,9 +999,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }  //for all axis
 
-                //Select same region/range as before. Mostly interesting when recalc or adding graphs but not restricted when switching trail/activities
-                SetSelectedResultRegions(this.m_selectedDataSeries, this.m_prevSelectedRegions, this.m_prevSelectedRange);
-
                 //tooltip for "offset"
                 if (SyncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
                 {
@@ -1016,6 +1044,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+            UpdateSelectedResultRegions();
         }
 
         private TrailResult TrailPointResult()
@@ -1870,6 +1899,12 @@ namespace TrailsPlugin.UI.Activity {
                 this.ZoomToData();
             }
             this.MainChart.EndUpdate();
+            if (this.ShowPage)
+            {
+                //Select same region/range as before. Mostly interesting when recalc or adding graphs but not restricted when switching trail/activities
+                //Must be done after EndUpdate, to recalc XAxis.MaxOriginFarValue
+                SetSelectedResultRegions();
+            }
         }
     }
 }

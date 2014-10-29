@@ -266,11 +266,11 @@ namespace TrailsPlugin.Utils
 
         /*******************************************************/
 
-        private static float GetChartResultFromResult(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1)
+        private static float GetTimeChartResultFromDateTime(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1)
         {
             float x1 = (float)(tr.getTimeResult(d1));
             if (isOffset)
-            { 
+            {
                 float nextElapsed;
                 x1 += GetChartResultsResyncOffset(true, tr, ReferenceTrailResult, x1, out nextElapsed);
             }
@@ -278,7 +278,13 @@ namespace TrailsPlugin.Utils
             return x1;
         }
 
-        private static float GetChartResultFromResult(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, double t1)
+        private static float GetDistChartResultFromDateTime(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1)
+        {
+            float x1 = (float)(tr.getDistResult(d1));
+            return GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, x1);
+        }
+
+        private static float GetDistChartResultFromDistResult(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, double t1)
         {
             //distance is for result, then to display units
             float x1 = (float)t1;
@@ -292,52 +298,52 @@ namespace TrailsPlugin.Utils
             return x1;
         }
 
-        private static float[] GetChartResultFromResult(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1, DateTime d2)
+        private static float[] GetTimeChartResultFromDateTime(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1, DateTime d2)
         {
             //Convert to distance display unit, Time is always in seconds
-            float x1 = GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, d1);
-            float x2 = GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, d2);
+            float x1 = GetTimeChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, d1);
+            float x2 = GetTimeChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, d2);
             return new float[] { x1, x2 };
         }
 
-        private static float[] GetChartResultFromResult(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, double t1, double t2)
+        private static float[] GetDistChartResultFromDistResult(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, double t1, double t2)
         {
             //distance is for result, then to display units
-            float x1 = GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, t1);
-            float x2 = GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, t2);
+            float x1 = GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, t1);
+            float x2 = GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, t2);
             return new float[] { x1, x2 };
         }
 
-        private static float[] GetChartResultFromResult(bool xIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<DateTime> v)
+        private static float[] GetChartResultFromDateTime(bool xIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<DateTime> v)
         {
             DateTime d1 = v.Lower;
             DateTime d2 = v.Upper;
             if (xIsTime)
             {
-                return GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, d1, d2);
+                return GetTimeChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, d1, d2);
             }
             else
             {
                 double t1 = tr.getDistResult(d1);
                 double t2 = tr.getDistResult(d2);
-                return GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, t1, t2);
+                return GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, t1, t2);
             }
         }
 
-        private static float[] GetChartResultFromResult(bool xIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<double> v)
+        private static float[] GetChartResultFromDistResult(bool xIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, IValueRange<double> v)
         {
             //Note: Selecting in Route gives unpaused distance, but this should be handled in the selection
             if (xIsTime)
             {
                 DateTime d1 = tr.getDateTimeFromDistActivity(v.Lower);
                 DateTime d2 = tr.getDateTimeFromDistActivity(v.Upper);
-                return GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, d1, d2);
+                return GetTimeChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, d1, d2);
             }
             else
             {
                 double t1 = tr.getDistResultFromDistActivity(v.Lower);
                 double t2 = tr.getDistResultFromDistActivity(v.Upper);
-                return GetChartResultFromResult(isOffset, tr, ReferenceTrailResult, t1, t2);
+                return GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, t1, t2);
             }
         }
 
@@ -351,23 +357,23 @@ namespace TrailsPlugin.Utils
             {
                 foreach (IValueRange<DateTime> v in sel.MarkedTimes)
                 {
-                    result.Add(GetChartResultFromResult(xIsTime, isOffset, tr, ReferenceTrailResult, v));
+                    result.Add(GetChartResultFromDateTime(xIsTime, isOffset, tr, ReferenceTrailResult, v));
                 }
             }
             else if (sel.MarkedDistances != null)
             {
                 foreach (IValueRange<double> v in sel.MarkedDistances)
                 {
-                    result.Add(GetChartResultFromResult(xIsTime, isOffset, tr, ReferenceTrailResult, v));
+                    result.Add(GetChartResultFromDistResult(xIsTime, isOffset, tr, ReferenceTrailResult, v));
                 }
             }
             else if (sel.SelectedTime != null)
             {
-                result.Add(GetChartResultFromResult(xIsTime, isOffset, tr, ReferenceTrailResult, sel.SelectedTime));
+                result.Add(GetChartResultFromDateTime(xIsTime, isOffset, tr, ReferenceTrailResult, sel.SelectedTime));
             }
             else if (sel.SelectedDistance != null)
             {
-                result.Add(GetChartResultFromResult(xIsTime, isOffset, tr, ReferenceTrailResult, sel.SelectedDistance));
+                result.Add(GetChartResultFromDistResult(xIsTime, isOffset, tr, ReferenceTrailResult, sel.SelectedDistance));
             }
             return result;
         }
@@ -439,18 +445,19 @@ namespace TrailsPlugin.Utils
         }
 
         /****************************************************/
-        public static bool AnyOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
-        {
-            bool res = false;
-            if (start1 >= start2 && start1 <= end2 ||
-                start2 >= start1 && start2 <= end1)
-            {
-                res = true;
-            }
-            return res;
-        }
 
-        /****************************************************/
+        private static float GetChartResultFromDateTime(bool xIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime t)
+        {
+            //Note: Selecting in Route gives unpaused distance, but this should be handled in the selection
+            if (xIsTime)
+            {
+                return GetTimeChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, t);
+            }
+            else
+            {
+                return GetDistChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, t);
+            }
+        }
 
         public static DateTime GetDateTimeFromChartResult(bool xIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, float t)
         {
@@ -487,6 +494,31 @@ namespace TrailsPlugin.Utils
                 t.Add(new ValueRange<DateTime>(d1, d2));
             }
             return t;
+        }
+
+        public static float ChartResultConvert(bool xOldIsTime, bool xNewIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, float t)
+        {
+            DateTime time = TrackUtil.GetDateTimeFromChartResult(xOldIsTime, isOffset, tr, ReferenceTrailResult, t);
+            float res = TrackUtil.GetChartResultFromDateTime(xNewIsTime, isOffset, tr, ReferenceTrailResult, time);
+            return res;
+        }
+
+        public static void ChartResultConvert(bool xOldIsTime, bool xNewIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, float[] t)
+        {
+            t[0] = ChartResultConvert(xOldIsTime, xNewIsTime, isOffset, tr, ReferenceTrailResult, t[0]);
+            t[1] = ChartResultConvert(xOldIsTime, xNewIsTime, isOffset, tr, ReferenceTrailResult, t[1]);
+        }
+
+        /****************************************************/
+        public static bool AnyOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
+        {
+            bool res = false;
+            if (start1 >= start2 && start1 <= end2 ||
+                start2 >= start1 && start2 <= end1)
+            {
+                res = true;
+            }
+            return res;
         }
 
         /****************************************************/

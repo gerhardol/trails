@@ -62,13 +62,13 @@ namespace TrailsPlugin.Data
                 case RunningGradeAdjustMethodEnum.None:
                 case RunningGradeAdjustMethodEnum.Last:
                 default:
-                    Debug.Assert(true);
+                    Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString());
                     q = 1;
                     break;
             }
             if (float.IsNaN(q) || q <= 0)
             {
-                Debug.Assert(true);
+                Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString()+q);
                 q = 0;
             }
 
@@ -318,8 +318,20 @@ namespace TrailsPlugin.Data
             //G = slope or grade (%)
             //Terrain factors : 1.0 = black topping road; 1.1 = dirt road; 1.2 = light brush; 1.5 = heavy brush; 1.8 = swampy bog; 2.1 = loose sand; 2.5 = soft snow 15 cm; 3.3 = soft snow 25 cm; 4.1 = soft snow 35 cm
 
+            float T = 1;
+            float Mw = 1.5f * W + 2 * (W + L) * (L / W) * (L / W) + T * (W + L) * (1.5f * V * V + 0.35f * V * G);
+            float Mr = (float)(Mw - 0.5 * (1 - 0.01f * L) * (Mw - 15 * L - 850));
+            return Mr;
+        }
+
+        private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist, IActivity activity)
+        {
+            //Invalidate cache if time decreases (handle that settings are changed and recalc)
+            if (time < RunningGradeAdjustMethodClass.prevTime) { prevActivity = null; }
+            RunningGradeAdjustMethodClass.prevTime = time;
             if (activity != prevActivity)
             {
+                prevActivity = activity;
                 L = 0;
                 if (activity != null && activity.EquipmentUsed != null)
                 {
@@ -332,17 +344,6 @@ namespace TrailsPlugin.Data
                 W = Plugin.GetApplication().Logbook.Athlete.WeightKilograms;
                 if (float.IsNaN(W)) { W = 80; }
             }
-            float T = 1;
-            float Mw = 1.5f * W + 2 * (W + L) * (L / W) * (L / W) + T * (W + L) * (1.5f * V * V + 0.35f * V * G);
-            float Mr = (float)(Mw - 0.5 * (1 - 0.01f * L) * (Mw - 15 * L - 850));
-            return Mr;
-        }
-
-        private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist, IActivity activity)
-        {
-            //Invalidate cache if time decreases (handle that settings are changed and recalc)
-            if (time < prevTime) { prevActivity = null; }
-            time = prevTime;
 
             float v = (dist - prevDist) / (time - prevTime);
             float Mr0 = getPandolfEnergy(0, v, activity);

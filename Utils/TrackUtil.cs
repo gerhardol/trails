@@ -496,20 +496,72 @@ namespace TrailsPlugin.Utils
             return t;
         }
 
-        public static float ChartResultConvert(bool xOldIsTime, bool xNewIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, float t)
+        public static float ChartResultConvert(bool xOldIsTime, bool xNewIsTime, bool isOffset, TrailResult newTr, TrailResult ReferenceTrailResult, float t)
         {
-            DateTime time = TrackUtil.GetDateTimeFromChartResult(xOldIsTime, isOffset, tr, ReferenceTrailResult, t);
-            float res = TrackUtil.GetChartResultFromDateTime(xNewIsTime, isOffset, tr, ReferenceTrailResult, time);
+            if (float.IsNaN(t))
+            {
+                return t;
+            }
+            DateTime time = TrackUtil.GetDateTimeFromChartResult(xOldIsTime, isOffset, newTr, ReferenceTrailResult, t);
+            float res = TrackUtil.GetChartResultFromDateTime(xNewIsTime, isOffset, newTr, ReferenceTrailResult, time);
             return res;
         }
 
         public static void ChartResultConvert(bool xOldIsTime, bool xNewIsTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, float[] t)
         {
-            t[0] = ChartResultConvert(xOldIsTime, xNewIsTime, isOffset, tr, ReferenceTrailResult, t[0]);
-            t[1] = ChartResultConvert(xOldIsTime, xNewIsTime, isOffset, tr, ReferenceTrailResult, t[1]);
+            if (TrackUtil.AnyRangeOverlap(xOldIsTime, isOffset, tr, ReferenceTrailResult, t))
+            {
+                t[0] = ChartResultConvert(xOldIsTime, xNewIsTime, isOffset, tr, ReferenceTrailResult, t[0]);
+                t[1] = ChartResultConvert(xOldIsTime, xNewIsTime, isOffset, tr, ReferenceTrailResult, t[1]);
+            }
+            else
+            {
+                t[0] = float.NaN;
+                t[1] = float.NaN;
+            }
+        }
+
+        public static void ChartResultConvert(bool xOldIsTime, bool xNewIsTime, bool isOffset, TrailResult oldTr, TrailResult newTr, TrailResult ReferenceTrailResult, float[] t)
+        {
+            DateTime time0 = DateTime.MinValue;
+            if (!float.IsNaN(t[0])) { time0 = TrackUtil.GetDateTimeFromChartResult(xOldIsTime, isOffset, oldTr, ReferenceTrailResult, t[0]); }
+            DateTime time1 = DateTime.MinValue;
+            if (!float.IsNaN(t[1])) { time1 = TrackUtil.GetDateTimeFromChartResult(xOldIsTime, isOffset, oldTr, ReferenceTrailResult, t[1]); }
+
+            if (TrackUtil.AnyOverlap(time0, time1, newTr.StartTime, newTr.EndTime))
+            {
+                t[0] = TrackUtil.GetChartResultFromDateTime(xNewIsTime, isOffset, newTr, ReferenceTrailResult, time0);
+                t[1] = TrackUtil.GetChartResultFromDateTime(xNewIsTime, isOffset, newTr, ReferenceTrailResult, time1);
+
+            }
+            else
+            {
+                t[0] = float.NaN;
+                t[1] = float.NaN;
+            }
         }
 
         /****************************************************/
+        public static bool AnyRangeOverlap(bool isTime, bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, float[] t)
+        {
+            float[] t2 = GetChartResultFromDateTime(isTime, isOffset, tr, ReferenceTrailResult, new ValueRange<DateTime>(tr.StartTime, tr.EndTime));
+            return TrackUtil.AnyRangeOverlap(t, t2[0], t2[1]);
+        }
+
+        public static bool AnyRangeOverlap(float[] range, double min, double max)
+        {
+                                //Ignore ranges outside current range and malformed scales
+                    if (range[0] < max &&
+                        min > float.MinValue &&
+                        (float.IsNaN(range[1]) ||
+                        range[1] > min &&
+                        max < float.MaxValue))
+                    {
+                        return true;
+                    }
+                    return false;
+        }
+
         public static bool AnyOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
         {
             bool res = false;

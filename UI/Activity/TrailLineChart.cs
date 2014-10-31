@@ -75,6 +75,7 @@ namespace TrailsPlugin.UI.Activity {
         private float[] m_prevSelectedRange = null;
         private IList<float[]> m_prevSelectedRegions = null;
         private XAxisValue m_prevSelectedXAxis = XAxisValue.Time;
+        private TrailResult m_prevSelectedResult;
         private int m_selectedDataSeries = -1;
  
         const int MaxSelectedSeries = 6;
@@ -266,6 +267,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         rangeIsValid = !float.IsNaN(range[0]);
                         this.m_selectedDataSeries = j;
+                        this.m_prevSelectedResult = TrailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
                         break;
                     }
                 }
@@ -391,6 +393,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
                 this.m_prevSelectedRange = range;
+                this.m_prevSelectedResult = tr;
 
                 bool markAll = (MainChart.DataSeries.Count <= MaxSelectedSeries);
                 //Mark route track, but not chart
@@ -513,24 +516,70 @@ namespace TrailsPlugin.UI.Activity {
         public void UpdateSelectedResultRegions()
         {
             //Select same region/range as before, switch time/distance if needed
-            if (this.m_prevSelectedXAxis != this.m_XAxisReferential && 
-                this.m_selectedDataSeries < this.MainChart.DataSeries.Count)
+            if (this.m_selectedDataSeries < this.MainChart.DataSeries.Count)
             {
                 TrailResult tr = TrailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
-                if (this.m_prevSelectedRegions != null)
+                if (this.m_prevSelectedXAxis != this.m_XAxisReferential)
                 {
-                    foreach (float[] af in this.m_prevSelectedRegions)
+                    if (this.m_prevSelectedRegions != null)
                     {
-                        TrackUtil.ChartResultConvert(this.m_prevSelectedXAxis == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time, 
-                            IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, af);
+                        foreach (float[] af in this.m_prevSelectedRegions)
+                        {
+                            TrackUtil.ChartResultConvert(this.m_prevSelectedXAxis == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time,
+                                IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, af);
+                        }
+                    }
+                    if (this.m_prevSelectedRange != null)
+                    {
+                        TrackUtil.ChartResultConvert(this.m_prevSelectedXAxis == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time,
+                            IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, this.m_prevSelectedRange);
+                    }
+                    this.m_prevSelectedXAxis = this.m_XAxisReferential;
+                }
+                else if (/*this.m_prevSelectedResult != tr &&*/ 
+                    this.m_prevSelectedResult != null && tr != null &&
+                    this.m_prevSelectedResult.Activity != null && tr.Activity != null &&
+                    this.m_prevSelectedResult.Activity == tr.Activity)
+                {
+                    //Result for same activity, same data: recalc
+                    if (this.m_prevSelectedRange != null)
+                    {
+                        float[] t = new float[2] { this.m_prevSelectedRange[0], this.m_prevSelectedRange[1] };
+                        TrackUtil.ChartResultConvert(this.XAxisReferential == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time,
+                                IsTrailPointOffset(tr), this.m_prevSelectedResult, tr, this.ReferenceTrailResult, t);
+                        bool sameRange = false;
+                        if (!float.IsNaN(t[0]) && !float.IsNaN(t[0]))
+                        {
+                            //There was an overlap, use it (otherwise keep the time/distance)
+                            this.m_prevSelectedRange = t;
+                            sameRange = true;
+                        }
+                        else if (!TrackUtil.AnyRangeOverlap(this.XAxisReferential == XAxisValue.Time,
+                            IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, this.m_prevSelectedRange))
+                        {
+                            this.m_prevSelectedRange[0] = float.NaN;
+                            this.m_prevSelectedRange[1] = float.NaN;
+                        }
+                        if (this.m_prevSelectedRegions != null)
+                        {
+                            foreach (float[] af in this.m_prevSelectedRegions)
+                            {
+                                if (sameRange)
+                                {
+                                    TrackUtil.ChartResultConvert(this.XAxisReferential == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time,
+                                        IsTrailPointOffset(tr), this.m_prevSelectedResult, tr, this.ReferenceTrailResult, af);
+                                }
+                                else if (!TrackUtil.AnyRangeOverlap(this.XAxisReferential == XAxisValue.Time,
+                                    IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, af))
+                                {
+                                    af[0] = float.NaN;
+                                    af[1] = float.NaN;
+                                }
+                            }
+                        }
+                        this.m_prevSelectedResult = tr;
                     }
                 }
-                if(this.m_prevSelectedRegions != null)
-                {
-                    TrackUtil.ChartResultConvert(this.m_prevSelectedXAxis == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time, 
-                        IsTrailPointOffset(tr), tr, this.ReferenceTrailResult, this.m_prevSelectedRange);
-                }
-                this.m_prevSelectedXAxis = this.m_XAxisReferential;
             }
         }
 
@@ -583,11 +632,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (range != null)
                 {
                     //Ignore ranges outside current range and malformed scales
-                    if (range[0] < MainChart.XAxis.MaxOriginFarValue &&
-                        MainChart.XAxis.MinOriginValue > float.MinValue &&
-                        (float.IsNaN(range[1]) ||
-                        range[1] > MainChart.XAxis.MinOriginValue &&
-                        MainChart.XAxis.MaxOriginFarValue < float.MaxValue))
+                    if (TrackUtil.AnyRangeOverlap(range, MainChart.XAxis.MinOriginValue, MainChart.XAxis.MaxOriginFarValue))
                     {
                         range[0] = Math.Max(range[0], (float)MainChart.XAxis.MinOriginValue);
                         if (!float.IsNaN(range[1]))
@@ -637,7 +682,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         this.SetSelectedResultRegions(resultIndex, regions, null);
                         this.m_prevSelectedRegions = regions;
-                        this.m_prevSelectedXAxis = XAxisReferential;
+                        //this.m_prevSelectedXAxis = XAxisReferential;
                         if (!toolTipShown && trm.trailResult == tr)
                         {
                             //While more than one result may be shown, only one tooltip
@@ -652,6 +697,7 @@ namespace TrailsPlugin.UI.Activity {
                             this.SetSelectedResultRegions(resultIndex, null, regions[regions.Count - 1]);
                             this.m_prevSelectedRange = regions[regions.Count - 1];
                             this.m_prevSelectedXAxis = XAxisReferential;
+                            this.m_prevSelectedResult = tr;
                         }
                     }
                 }

@@ -39,7 +39,6 @@ namespace TrailsPlugin.Data
                     break;
 
                 case RunningGradeAdjustMethodEnum.Kay:
-                //case RunningGradeAdjustMethodEnum.Kay2:
                     q = getKay(g, time, prevTime, dist, prevDist);
                     break;
 
@@ -68,7 +67,7 @@ namespace TrailsPlugin.Data
             }
             if (float.IsNaN(q) || q <= 0)
             {
-                Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString()+q);
+                Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString() + " " + q + " " + g + " " + time + " " + prevTime + " " + dist + " " + prevDist + " " + activity);
                 q = 0;
             }
 
@@ -119,7 +118,7 @@ namespace TrailsPlugin.Data
                     //Kay is always bigger than MD, the value is adjusted to be (almost) continous
                     if (g > g0)
                     {
-                        q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxDown) - k0;
+                        q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - k0;
                     }
                     else
                     {

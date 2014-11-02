@@ -1115,19 +1115,27 @@ namespace TrailsPlugin.UI.Activity {
             //}
         }
 
-        private void setAdjustDiffSplitTimesPopup()
+        private enum SplitTimesPopup { AdjustDiff, PandolfTerrain}
+        private void setAdjustSplitTimesPopup(SplitTimesPopup splitTimesPopup)
         {
             //Cannot use ST controls for most part here
             System.Windows.Forms.Form p = new System.Windows.Forms.Form();
-            p.Size = new System.Drawing.Size(370, 105);
+            p.Size = new System.Drawing.Size(410, 105);
             ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
-            ZoneFiveSoftware.Common.Visuals.TextBox AdjustDiffSplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            ZoneFiveSoftware.Common.Visuals.TextBox SplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
             System.Windows.Forms.Button b = new System.Windows.Forms.Button();
             System.Windows.Forms.Button c = new System.Windows.Forms.Button();
-            p.Text = string.Format("Diff Adjust: dist ({0}); timeOffset (s)", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(m_controller.ReferenceActivity));
+            if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
+            {
+                p.Text = string.Format("Diff Adjust: dist ({0}); timeOffset (s)", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(m_controller.ReferenceActivity));
+            }
+            else
+            {
+                p.Text = string.Format("Pandolf Terrain: dist ({0}); factor", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(m_controller.ReferenceActivity));
+            }
             p.Controls.Add(pa);
             pa.Dock = DockStyle.Fill;
-            pa.Controls.Add(AdjustDiffSplitTimes_TextBox);
+            pa.Controls.Add(SplitTimes_TextBox);
             pa.Controls.Add(b);
             pa.Controls.Add(c);
             p.AcceptButton = b;
@@ -1140,17 +1148,42 @@ namespace TrailsPlugin.UI.Activity {
             c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
             pa.ThemeChanged(this.m_visualTheme);
             //p.ThemeChanged(this.m_visualTheme);
-            AdjustDiffSplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
-            AdjustDiffSplitTimes_TextBox.Width = p.Width - 37;
-            AdjustDiffSplitTimes_TextBox.Location = new System.Drawing.Point(10, 10);
+            SplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
+            SplitTimes_TextBox.Width = p.Width - 37;
+            SplitTimes_TextBox.Location = new System.Drawing.Point(10, 10);
+
+            String colText = "";
+            float[,] splitTimes;
+            if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
+            {
+                splitTimes = TrailsPlugin.Data.Settings.AdjustDiffSplitTimes;
+            }
+            else
+            {
+                splitTimes = TrailsPlugin.Data.Settings.PandolfTerrainDist;
+            }
+            if (splitTimes != null)
+            {
+                for (int i = 0; i < splitTimes.Length; i++)
+                {
+                    float f = splitTimes[i / 2, i % 2];
+                    if (i % 2 == 0)
+                    {
+                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
+                    }
+                    if (colText == "") { colText = f.ToString(); }
+                    else { colText += ";" + f; }
+                }
+            }
+            SplitTimes_TextBox.Text = colText;
 
             b.Click +=
                 delegate(object sender2, EventArgs args)
                 {
                     try
                     {
-                        string[] values = AdjustDiffSplitTimes_TextBox.Text.Split(';');
-                        float[,] splitTimes = new float[(1 + values.Length) / 2, 2];
+                        string[] values = SplitTimes_TextBox.Text.Split(';');
+                        splitTimes = new float[(1 + values.Length) / 2, 2];
                         int i = 0;
                         foreach (string column in values)
                         {
@@ -1170,31 +1203,19 @@ namespace TrailsPlugin.UI.Activity {
                             splitTimes.Length == 2 && splitTimes[0, 0] == 0 && splitTimes[0, 1] == 0)
                         {
                             //empty is null
-                            TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = null;
+                            splitTimes = null;
+                        }
+                        if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
+                        {
+                            TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = splitTimes;
                         }
                         else
                         {
-                            TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = splitTimes;
+                            TrailsPlugin.Data.Settings.PandolfTerrainDist = splitTimes;
                         }
                     }
                     catch { }
                 };
-
-            String colText = "";
-            if (TrailsPlugin.Data.Settings.AdjustDiffSplitTimes != null)
-            {
-                for (int i = 0; i < TrailsPlugin.Data.Settings.AdjustDiffSplitTimes.Length; i++)
-                {
-                    float f = TrailsPlugin.Data.Settings.AdjustDiffSplitTimes[i / 2, i % 2];
-                    if (i % 2 == 0)
-                    {
-                        f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertFrom(f);
-                    }
-                    if (colText == "") { colText = f.ToString(); }
-                    else { colText += ";" + f; }
-                }
-            }
-            AdjustDiffSplitTimes_TextBox.Text = colText;
 
             //update is done in clicking OK/Enter
             p.ShowDialog();
@@ -1606,7 +1627,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    this.setAdjustDiffSplitTimesPopup();
+                    this.setAdjustSplitTimesPopup(SplitTimesPopup.AdjustDiff);
+                }
+                else if (e.Modifiers == (Keys.Control | Keys.Alt)) //AltGr
+                {
+                    this.setAdjustSplitTimesPopup(SplitTimesPopup.PandolfTerrain);
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {

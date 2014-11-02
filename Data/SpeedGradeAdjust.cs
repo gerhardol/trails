@@ -65,7 +65,7 @@ namespace TrailsPlugin.Data
                     q = 1;
                     break;
             }
-            if (float.IsNaN(q) || q <= 0)
+            if (float.IsNaN(q) || float.IsInfinity(q) || q <= 0)
             {
                 Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString() + " " + q + " " + g + " " + time + " " + prevTime + " " + dist + " " + prevDist + " " + activity);
                 q = 0;
@@ -300,13 +300,13 @@ namespace TrailsPlugin.Data
         private static float W = 80;
         private static float prevTime = 0;
         private static IActivity prevActivity = null;
-
-        static float getPandolfEnergy(float G, float V, IActivity activity)
+        
+        static float getPandolfEnergy(float G, float V, float T, IActivity activity)
         {
             //Pandolf, adjusted for running by Epstein (has no impact without load)
             //http://ftp.rta.nato.int/public//PubFullText/RTO/TR/RTO-TR-HFM-080///TR-HFM-080-03.pdf
             //http://www.springerlink.com/content/x372781w776h3367/
-            //Mw=1.5 W + 2.0 (W + L)(L/W)^2 + T(W + L)(1.5V^2 + 0.35VG) = W(1.5 +[1.5V^2 + 0.35VG]) = 1.5W(1+V^2+V*G*7/30)
+            //Mw=1.5 W + 2.0 (W + L)(L/W)^2 + T(W + L)(1.5V^2 + 0.35VG)
             //Mr = Mw - 0.5 • (1-0.01 • L) • (Mw -15 • L - 850) = Mw-0.5*(Mw-850)
             //Symbols: Mw= metabolic cost of walking (watts); 
             //Mr= metabolic cost of running (watts);
@@ -317,8 +317,7 @@ namespace TrailsPlugin.Data
             //G = slope or grade (%)
             //Terrain factors : 1.0 = black topping road; 1.1 = dirt road; 1.2 = light brush; 1.5 = heavy brush; 1.8 = swampy bog; 2.1 = loose sand; 2.5 = soft snow 15 cm; 3.3 = soft snow 25 cm; 4.1 = soft snow 35 cm
 
-            float T = 1;
-            float Mw = 1.5f * W + 2 * (W + L) * (L / W) * (L / W) + T * (W + L) * (1.5f * V * V + 0.35f * V * G);
+            float Mw = 1.5f * W + 2 * (W + L) * (L*L) / (W*W) + T * (W + L) * (1.5f * V*V + 0.35f * V * G);
             float Mr = (float)(Mw - 0.5 * (1 - 0.01f * L) * (Mw - 15 * L - 850));
             return Mr;
         }
@@ -344,12 +343,30 @@ namespace TrailsPlugin.Data
                 if (float.IsNaN(W)) { W = 80; }
             }
 
+            float T = 1;
+            float[,] splitTime = Settings.PandolfTerrainDist;
+            if (splitTime != null)
+            {
+                int j = 0;
+                while (j < splitTime.Length / 2 && dist > splitTime[j, 0])
+                {
+                    T = splitTime[j, 1];
+                    j++;
+                }
+
+            }
             float v = (dist - prevDist) / (time - prevTime);
-            float Mr0 = getPandolfEnergy(0, v, activity);
-            float Mr = getPandolfEnergy(100*g, v, activity);
+            float Mr0 = getPandolfEnergy(0, v, T, activity);
+            float Mr = getPandolfEnergy(100*g, v, T, activity);
             float vdotp = Mr/Mr0;
             float q = energyTimeAdjust(1 / vdotp);
 
+            if (float.IsNaN(q) || float.IsInfinity(g))
+            {
+                //Steep down will give NaN/Infinity
+                //Do not let the assert catch this (adjust the algorithm as for others?)
+                q = 1;
+            }
             return q;
         }
 

@@ -65,6 +65,7 @@ namespace TrailsPlugin.Data
         private static bool m_useDeviceElevationForCalc = false;
         private static bool m_useTrailElevationAdjust = false;
         private static float[,] m_AdjustDiffSplitTimes = null;
+        private static float[,] m_PandolfTerrainDist = null;
         private static string m_saveChartImagePath = null;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
@@ -487,6 +488,7 @@ namespace TrailsPlugin.Data
 
         ///
         ///Make diff to ideal time adjusted to grade
+        ///Not stored in preferences
         public static float[,] AdjustDiffSplitTimes
         {
             get
@@ -496,6 +498,21 @@ namespace TrailsPlugin.Data
             set
             {
                 m_AdjustDiffSplitTimes = value;
+            }
+        }
+
+        ///
+        ///Make diff to ideal time adjusted to grade
+        ///Not stored in preferences
+        public static float[,] PandolfTerrainDist
+        {
+            get
+            {
+                return m_PandolfTerrainDist;
+            }
+            set
+            {
+                m_PandolfTerrainDist = value;
             }
         }
 

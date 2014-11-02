@@ -66,6 +66,10 @@ namespace TrailsPlugin.Data
         private static bool m_useTrailElevationAdjust = false;
         private static float[,] m_AdjustDiffSplitTimes = null;
         private static float[,] m_PandolfTerrainDist = null;
+        private static float m_MervynDaviesUp = 3.3f;
+        private static float m_MervynDaviesDown = 1.7f;
+        private static float m_JackDanielsUp = 15/1609f;
+        private static float m_JackDanielsDown = 8/1609f;
         private static string m_saveChartImagePath = null;
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
@@ -438,6 +442,54 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public static float MervynDaviesUp
+        {
+            get
+            {
+                return m_MervynDaviesUp;
+            }
+            set
+            {
+                m_MervynDaviesUp = value;
+            }
+        }
+
+        public static float MervynDaviesDown
+        {
+            get
+            {
+                return m_MervynDaviesDown;
+            }
+            set
+            {
+                m_MervynDaviesDown = value;
+            }
+        }
+
+        public static float JackDanielsUp
+        {
+            get
+            {
+                return m_JackDanielsUp;
+            }
+            set
+            {
+                m_JackDanielsUp = value;
+            }
+        }
+
+        public static float JackDanielsDown
+        {
+            get
+            {
+                return m_JackDanielsDown;
+            }
+            set
+            {
+                m_JackDanielsDown = value;
+            }
+        }
+
         public static bool CadenceFromOther
         {
             get
@@ -623,6 +675,14 @@ namespace TrailsPlugin.Data
                     if (attr.Length > 0) { m_RunningGradeAdjustMethod = (RunningGradeAdjustMethodEnum)Enum.Parse(typeof(RunningGradeAdjustMethodEnum), attr, true); }
                 }
                 catch { }
+                attr = pluginNode.GetAttribute(xmlTags.sMervynDaviesUp);
+                if (attr.Length > 0) { m_MervynDaviesUp = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sMervynDaviesDown);
+                if (attr.Length > 0) { m_MervynDaviesDown = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sJackDanielsUp);
+                if (attr.Length > 0) { m_JackDanielsUp = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sJackDanielsDown);
+                if (attr.Length > 0) { m_JackDanielsDown = Settings.parseFloat(attr); }
                 //Not read or saved in preferences right now
                 //attr = pluginNode.GetAttribute(xmlTags.sAdjustDiffSplitTimes);
                 //try
@@ -764,6 +824,10 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_useDeviceElevationForCalc));
             pluginNode.SetAttribute(xmlTags.sUseTrailElevationAdjust, XmlConvert.ToString(m_useTrailElevationAdjust));
             pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
+            pluginNode.SetAttribute(xmlTags.sMervynDaviesUp, XmlConvert.ToString(m_MervynDaviesUp));
+            pluginNode.SetAttribute(xmlTags.sMervynDaviesDown, XmlConvert.ToString(m_MervynDaviesDown));
+            pluginNode.SetAttribute(xmlTags.sJackDanielsUp, XmlConvert.ToString(m_JackDanielsUp));
+            pluginNode.SetAttribute(xmlTags.sJackDanielsDown, XmlConvert.ToString(m_JackDanielsDown));
             String colText = null;
             //if (m_AdjustDiffSplitTimes != null)
             //{
@@ -843,6 +907,10 @@ namespace TrailsPlugin.Data
             public const string SmoothOverTrailPoints = "SmoothOverTrailPoints";
             public const string PredictDistance = "PredictDistance1";
             public const string sRunningGradeAdjustMethod = "sRunningGradeAdjustMethod";
+            public const string sMervynDaviesUp = "sMervynDaviesUp";
+            public const string sMervynDaviesDown = "sMervynDaviesDown";
+            public const string sJackDanielsUp = "sJackDanielsUp";
+            public const string sJackDanielsDown = "sJackDanielsDown";
             public const string sAdjustDiffSplitTimes = "sAdjustDiffSplitTimes";
             public const string sResultSummaryStdDev = "sResultSummaryStdDev";
             public const string sCadenceFromOther = "sCadenceFromOther";

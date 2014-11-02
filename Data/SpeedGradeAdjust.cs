@@ -92,7 +92,7 @@ namespace TrailsPlugin.Data
             bool speedAdjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.MervynDaviesSpeed);
             if (g > 0)
             {
-                float q_md = 3.3f;
+                float q_md = Settings.MervynDaviesUp;
                 float g0 = 0.1627f;
                 float k0 = 0.0739f;
                 if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin)
@@ -133,7 +133,7 @@ namespace TrailsPlugin.Data
             else
             {
                 //downhill
-                float q_md = 1.8f;
+                float q_md = Settings.MervynDaviesDown;
                 float g0 = -0.08f;
                 if (speedAdjust)
                 {
@@ -247,11 +247,11 @@ namespace TrailsPlugin.Data
             {
                 if (g > 0)
                 {
-                    p_jd = 15 * speed * g * 100 / 1609;
+                    p_jd = Settings.JackDanielsUp * speed * g * 100;
                 }
                 else
                 {
-                    p_jd = 8 * speed * g * 100 / 1609;
+                    p_jd = Settings.JackDanielsDown * speed * g * 100;
                 }
 
                 if (speedAdjust)

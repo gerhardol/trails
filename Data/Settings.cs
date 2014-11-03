@@ -66,8 +66,8 @@ namespace TrailsPlugin.Data
         private static bool m_useTrailElevationAdjust = false;
         private static float[,] m_AdjustDiffSplitTimes = null;
         private static float[,] m_PandolfTerrainDist = null;
-        private static float m_MervynDaviesUp = 3.3f;
-        private static float m_MervynDaviesDown = 1.7f;
+        private static float m_MervynDaviesUp = 0.033f;
+        private static float m_MervynDaviesDown = 0.017f;
         private static float m_JackDanielsUp = 15/1609f;
         private static float m_JackDanielsDown = 8/1609f;
         private static string m_saveChartImagePath = null;
@@ -925,13 +925,21 @@ namespace TrailsPlugin.Data
         //Parse dont care how the information was stored
         public static float parseFloat(string val)
         {
+            float result;
+            bool p = tryParseFloat(val, NumberStyles.Any, out result);
+            if (!p) { result = float.NaN; }
+            return result;
+        }
+
+        public static bool tryParseFloat(string val, NumberStyles style, out float result)
+        {
             if (System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator !=
                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat.CurrencyDecimalSeparator)
             {
-                val=val.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator,
+                val = val.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator,
                     System.Globalization.CultureInfo.InvariantCulture.NumberFormat.CurrencyDecimalSeparator);
             }
-            return float.Parse(val, System.Globalization.NumberFormatInfo.InvariantInfo);
+            return float.TryParse(val, style, System.Globalization.NumberFormatInfo.InvariantInfo, out result);
         }
 
 

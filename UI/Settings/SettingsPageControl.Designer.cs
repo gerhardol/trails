@@ -43,8 +43,20 @@
             this.boxPredictDistance = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
+            this.gradeAdjustedPaceGroup = new System.Windows.Forms.GroupBox();
+            this.tablePanelGradeAdjustedPace = new System.Windows.Forms.TableLayoutPanel();
+            this.lblMervynDaviesUp = new System.Windows.Forms.Label();
+            this.boxMervynDaviesUp = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblMervynDaviesDown = new System.Windows.Forms.Label();
+            this.boxMervynDaviesDown = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblJackDanielsUp = new System.Windows.Forms.Label();
+            this.boxJackDanielsUp = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblJackDanielsDown = new System.Windows.Forms.Label();
+            this.boxJackDanielsDown = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.PluginInfoPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.gradeAdjustedPaceGroup.SuspendLayout();
+            this.tablePanelGradeAdjustedPace.SuspendLayout();
             this.SuspendLayout();
             // 
             // PluginInfoPanel
@@ -63,13 +75,13 @@
             this.PluginInfoPanel.HeadingTopMargin = 3;
             this.PluginInfoPanel.Location = new System.Drawing.Point(0, 0);
             this.PluginInfoPanel.Name = "PluginInfoPanel";
-            this.PluginInfoPanel.Size = new System.Drawing.Size(200, 200);
+            this.PluginInfoPanel.Size = new System.Drawing.Size(350, 450);
             this.PluginInfoPanel.TabIndex = 0;
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 155F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.PluginInfoBanner, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.lblDefaultRadius, 0, 2);
@@ -82,13 +94,14 @@
             this.tableLayoutPanel1.Controls.Add(this.boxBarometricDevices, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.lblAdjustElevationAtImport, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.txtAdjustElevationAtImport, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 10);
-            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 11);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 13);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 14);
+            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 12);
+            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 12);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 14);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 15);
+            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 7);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -100,6 +113,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -108,7 +122,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 200);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(350, 450);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // PluginInfoBanner
@@ -145,7 +159,7 @@
             this.txtDefaultRadius.BackColor = System.Drawing.Color.White;
             this.txtDefaultRadius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.txtDefaultRadius.ButtonImage = null;
-            this.txtDefaultRadius.Location = new System.Drawing.Point(150, 30);
+            this.txtDefaultRadius.Location = new System.Drawing.Point(155, 30);
             this.txtDefaultRadius.Margin = new System.Windows.Forms.Padding(0);
             this.txtDefaultRadius.MaxLength = 32767;
             this.txtDefaultRadius.Multiline = false;
@@ -172,7 +186,7 @@
             // txtSetNameAtImport
             // 
             this.txtSetNameAtImport.AutoSize = true;
-            this.txtSetNameAtImport.Location = new System.Drawing.Point(153, 53);
+            this.txtSetNameAtImport.Location = new System.Drawing.Point(158, 53);
             this.txtSetNameAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.txtSetNameAtImport.Name = "txtSetNameAtImport";
             this.txtSetNameAtImport.Size = new System.Drawing.Size(15, 14);
@@ -196,7 +210,7 @@
             this.boxStoppedCategory.BackColor = System.Drawing.Color.White;
             this.boxStoppedCategory.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxStoppedCategory.ButtonImage = null;
-            this.boxStoppedCategory.Location = new System.Drawing.Point(150, 70);
+            this.boxStoppedCategory.Location = new System.Drawing.Point(155, 70);
             this.boxStoppedCategory.Margin = new System.Windows.Forms.Padding(0);
             this.boxStoppedCategory.MaxLength = 32767;
             this.boxStoppedCategory.Multiline = false;
@@ -210,13 +224,13 @@
             this.boxStoppedCategory.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.boxStoppedCategory.LostFocus += new System.EventHandler(this.boxStoppedCategory_LostFocus);
             // 
-            // lblBarometricDevice
+            // lblBarometricDevices
             // 
             this.lblBarometricDevices.AutoSize = true;
-            this.lblBarometricDevices.Location = new System.Drawing.Point(3, 73);
+            this.lblBarometricDevices.Location = new System.Drawing.Point(3, 93);
             this.lblBarometricDevices.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.lblBarometricDevices.Name = "lblBarometricDevice";
-            this.lblBarometricDevices.Size = new System.Drawing.Size(95, 13);
+            this.lblBarometricDevices.Name = "lblBarometricDevices";
+            this.lblBarometricDevices.Size = new System.Drawing.Size(102, 13);
             this.lblBarometricDevices.TabIndex = 4;
             this.lblBarometricDevices.Text = "<BarometricDevices";
             // 
@@ -227,7 +241,7 @@
             this.boxBarometricDevices.BackColor = System.Drawing.Color.White;
             this.boxBarometricDevices.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxBarometricDevices.ButtonImage = null;
-            this.boxBarometricDevices.Location = new System.Drawing.Point(150, 70);
+            this.boxBarometricDevices.Location = new System.Drawing.Point(155, 90);
             this.boxBarometricDevices.Margin = new System.Windows.Forms.Padding(0);
             this.boxBarometricDevices.MaxLength = 32767;
             this.boxBarometricDevices.Multiline = false;
@@ -244,17 +258,17 @@
             // lblAdjustElevationAtImport
             // 
             this.lblAdjustElevationAtImport.AutoSize = true;
-            this.lblAdjustElevationAtImport.Location = new System.Drawing.Point(3, 53);
+            this.lblAdjustElevationAtImport.Location = new System.Drawing.Point(3, 113);
             this.lblAdjustElevationAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblAdjustElevationAtImport.Name = "lblAdjustElevationAtImport";
-            this.lblAdjustElevationAtImport.Size = new System.Drawing.Size(96, 13);
+            this.lblAdjustElevationAtImport.Size = new System.Drawing.Size(125, 13);
             this.lblAdjustElevationAtImport.TabIndex = 0;
             this.lblAdjustElevationAtImport.Text = "<AdjustElevationAtImport";
             // 
             // txtAdjustElevationAtImport
             // 
             this.txtAdjustElevationAtImport.AutoSize = true;
-            this.txtAdjustElevationAtImport.Location = new System.Drawing.Point(153, 53);
+            this.txtAdjustElevationAtImport.Location = new System.Drawing.Point(158, 113);
             this.txtAdjustElevationAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.txtAdjustElevationAtImport.Name = "txtAdjustElevationAtImport";
             this.txtAdjustElevationAtImport.Size = new System.Drawing.Size(15, 14);
@@ -265,7 +279,7 @@
             // 
             this.lblUniqueRoutes.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblUniqueRoutes, 2);
-            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 100);
+            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 245);
             this.lblUniqueRoutes.Name = "lblUniqueRoutes";
             this.lblUniqueRoutes.Size = new System.Drawing.Size(93, 26);
             this.lblUniqueRoutes.TabIndex = 1;
@@ -275,7 +289,7 @@
             // 
             this.lblHighScore.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblHighScore, 2);
-            this.lblHighScore.Location = new System.Drawing.Point(3, 130);
+            this.lblHighScore.Location = new System.Drawing.Point(3, 275);
             this.lblHighScore.Name = "lblHighScore";
             this.lblHighScore.Size = new System.Drawing.Size(92, 26);
             this.lblHighScore.TabIndex = 1;
@@ -285,7 +299,7 @@
             // 
             this.lblPerformancePredictor.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblPerformancePredictor, 2);
-            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 160);
+            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 305);
             this.lblPerformancePredictor.Name = "lblPerformancePredictor";
             this.lblPerformancePredictor.Size = new System.Drawing.Size(91, 26);
             this.lblPerformancePredictor.TabIndex = 1;
@@ -294,7 +308,7 @@
             // lblPredictDistance
             // 
             this.lblPredictDistance.AutoSize = true;
-            this.lblPredictDistance.Location = new System.Drawing.Point(3, 193);
+            this.lblPredictDistance.Location = new System.Drawing.Point(3, 338);
             this.lblPredictDistance.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblPredictDistance.Name = "lblPredictDistance";
             this.lblPredictDistance.Size = new System.Drawing.Size(91, 13);
@@ -308,7 +322,7 @@
             this.boxPredictDistance.BackColor = System.Drawing.Color.White;
             this.boxPredictDistance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxPredictDistance.ButtonImage = null;
-            this.boxPredictDistance.Location = new System.Drawing.Point(150, 190);
+            this.boxPredictDistance.Location = new System.Drawing.Point(155, 335);
             this.boxPredictDistance.Margin = new System.Windows.Forms.Padding(0);
             this.boxPredictDistance.MaxLength = 32767;
             this.boxPredictDistance.Multiline = false;
@@ -327,23 +341,185 @@
             this.lblCopyright.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblCopyright, 2);
             this.lblCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCopyright.Location = new System.Drawing.Point(3, 220);
+            this.lblCopyright.Location = new System.Drawing.Point(3, 370);
             this.lblCopyright.Name = "lblCopyright";
             this.lblCopyright.Size = new System.Drawing.Size(350, 20);
             this.lblCopyright.TabIndex = 1;
-            this.lblCopyright.Text = "Copyright Brendan Doherty 2009";
+            this.lblCopyright.Text = "<Copyright Brendan Doherty 2009";
             // 
             // lblLicense
             // 
             this.lblLicense.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblLicense, 2);
-            this.lblLicense.Location = new System.Drawing.Point(3, 240);
+            this.lblLicense.Location = new System.Drawing.Point(3, 390);
             this.lblLicense.Name = "lblLicense";
             this.lblLicense.Size = new System.Drawing.Size(350, 39);
             this.lblLicense.TabIndex = 3;
             this.lblLicense.Text = "Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
     "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
     "rg/licenses/lgpl.html.";
+            // 
+            // gradeAdjustedPaceGroup
+            // 
+            this.gradeAdjustedPaceGroup.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.gradeAdjustedPaceGroup, 2);
+            this.gradeAdjustedPaceGroup.Controls.Add(this.tablePanelGradeAdjustedPace);
+            this.gradeAdjustedPaceGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gradeAdjustedPaceGroup.Location = new System.Drawing.Point(3, 133);
+            this.gradeAdjustedPaceGroup.Name = "gradeAdjustedPaceGroup";
+            this.gradeAdjustedPaceGroup.Size = new System.Drawing.Size(350, 94);
+            this.gradeAdjustedPaceGroup.TabIndex = 6;
+            this.gradeAdjustedPaceGroup.TabStop = false;
+            this.gradeAdjustedPaceGroup.Text = "<Grade Adjusted Pace";
+            // 
+            // tablePanelGradeAdjustedPace
+            // 
+            this.tablePanelGradeAdjustedPace.AutoSize = true;
+            this.tablePanelGradeAdjustedPace.ColumnCount = 2;
+            this.tablePanelGradeAdjustedPace.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 149F));
+            this.tablePanelGradeAdjustedPace.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.lblMervynDaviesUp, 0, 0);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.boxMervynDaviesUp, 1, 0);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.lblMervynDaviesDown, 0, 1);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.boxMervynDaviesDown, 1, 1);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.lblJackDanielsUp, 0, 2);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.boxJackDanielsUp, 1, 2);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.lblJackDanielsDown, 0, 3);
+            this.tablePanelGradeAdjustedPace.Controls.Add(this.boxJackDanielsDown, 1, 3);
+            this.tablePanelGradeAdjustedPace.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tablePanelGradeAdjustedPace.Location = new System.Drawing.Point(3, 16);
+            this.tablePanelGradeAdjustedPace.Name = "tablePanelGradeAdjustedPace";
+            this.tablePanelGradeAdjustedPace.RowCount = 4;
+            this.tablePanelGradeAdjustedPace.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tablePanelGradeAdjustedPace.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tablePanelGradeAdjustedPace.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tablePanelGradeAdjustedPace.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tablePanelGradeAdjustedPace.Size = new System.Drawing.Size(344, 75);
+            this.tablePanelGradeAdjustedPace.TabIndex = 0;
+            // 
+            // lblMervynDaviesUp
+            // 
+            this.lblMervynDaviesUp.AutoSize = true;
+            this.lblMervynDaviesUp.Location = new System.Drawing.Point(3, 3);
+            this.lblMervynDaviesUp.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblMervynDaviesUp.Name = "lblMervynDaviesUp";
+            this.lblMervynDaviesUp.Size = new System.Drawing.Size(98, 13);
+            this.lblMervynDaviesUp.TabIndex = 1;
+            this.lblMervynDaviesUp.Text = "<MervynDaviesUp:";
+            // 
+            // boxMervynDaviesUp
+            // 
+            this.boxMervynDaviesUp.AcceptsReturn = false;
+            this.boxMervynDaviesUp.AcceptsTab = false;
+            this.boxMervynDaviesUp.BackColor = System.Drawing.Color.White;
+            this.boxMervynDaviesUp.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxMervynDaviesUp.ButtonImage = null;
+            this.boxMervynDaviesUp.Location = new System.Drawing.Point(149, 0);
+            this.boxMervynDaviesUp.Margin = new System.Windows.Forms.Padding(0);
+            this.boxMervynDaviesUp.MaxLength = 32767;
+            this.boxMervynDaviesUp.Multiline = false;
+            this.boxMervynDaviesUp.Name = "boxMervynDaviesUp";
+            this.boxMervynDaviesUp.ReadOnly = false;
+            this.boxMervynDaviesUp.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxMervynDaviesUp.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxMervynDaviesUp.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxMervynDaviesUp.Size = new System.Drawing.Size(100, 19);
+            this.boxMervynDaviesUp.TabIndex = 2;
+            this.boxMervynDaviesUp.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxMervynDaviesUp.LostFocus += new System.EventHandler(this.boxMervynDavies_LostFocus);
+            // 
+            // lblMervynDaviesDown
+            // 
+            this.lblMervynDaviesDown.AutoSize = true;
+            this.lblMervynDaviesDown.Location = new System.Drawing.Point(3, 19);
+            this.lblMervynDaviesDown.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblMervynDaviesDown.Name = "lblMervynDaviesDown";
+            this.lblMervynDaviesDown.Size = new System.Drawing.Size(132, 13);
+            this.lblMervynDaviesDown.TabIndex = 3;
+            this.lblMervynDaviesDown.Text = "<MervynDaviesDown:";
+            // 
+            // boxMervynDaviesDown
+            // 
+            this.boxMervynDaviesDown.AcceptsReturn = false;
+            this.boxMervynDaviesDown.AcceptsTab = false;
+            this.boxMervynDaviesDown.BackColor = System.Drawing.Color.White;
+            this.boxMervynDaviesDown.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxMervynDaviesDown.ButtonImage = null;
+            this.boxMervynDaviesDown.Location = new System.Drawing.Point(149, 19);
+            this.boxMervynDaviesDown.Margin = new System.Windows.Forms.Padding(0);
+            this.boxMervynDaviesDown.MaxLength = 32767;
+            this.boxMervynDaviesDown.Multiline = false;
+            this.boxMervynDaviesDown.Name = "boxMervynDaviesDown";
+            this.boxMervynDaviesDown.ReadOnly = false;
+            this.boxMervynDaviesDown.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxMervynDaviesDown.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxMervynDaviesDown.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxMervynDaviesDown.Size = new System.Drawing.Size(100, 19);
+            this.boxMervynDaviesDown.TabIndex = 2;
+            this.boxMervynDaviesDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxMervynDaviesDown.LostFocus += new System.EventHandler(this.boxMervynDavies_LostFocus);
+            // 
+            // lblJackDanielsUp
+            // 
+            this.lblJackDanielsUp.AutoSize = true;
+            this.lblJackDanielsUp.Location = new System.Drawing.Point(3, 41);
+            this.lblJackDanielsUp.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblJackDanielsUp.Name = "lblJackDanielsUp";
+            this.lblJackDanielsUp.Size = new System.Drawing.Size(88, 13);
+            this.lblJackDanielsUp.TabIndex = 1;
+            this.lblJackDanielsUp.Text = "<JackDanielsUp:";
+            // 
+            // boxJackDanielsUp
+            // 
+            this.boxJackDanielsUp.AcceptsReturn = false;
+            this.boxJackDanielsUp.AcceptsTab = false;
+            this.boxJackDanielsUp.BackColor = System.Drawing.Color.White;
+            this.boxJackDanielsUp.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxJackDanielsUp.ButtonImage = null;
+            this.boxJackDanielsUp.Location = new System.Drawing.Point(149, 38);
+            this.boxJackDanielsUp.Margin = new System.Windows.Forms.Padding(0);
+            this.boxJackDanielsUp.MaxLength = 32767;
+            this.boxJackDanielsUp.Multiline = false;
+            this.boxJackDanielsUp.Name = "boxJackDanielsUp";
+            this.boxJackDanielsUp.ReadOnly = false;
+            this.boxJackDanielsUp.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxJackDanielsUp.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxJackDanielsUp.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxJackDanielsUp.Size = new System.Drawing.Size(100, 19);
+            this.boxJackDanielsUp.TabIndex = 2;
+            this.boxJackDanielsUp.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxJackDanielsUp.LostFocus += new System.EventHandler(this.boxJackDaniels_LostFocus);
+            // 
+            // lblJackDanielsDown
+            // 
+            this.lblJackDanielsDown.AutoSize = true;
+            this.lblJackDanielsDown.Location = new System.Drawing.Point(3, 60);
+            this.lblJackDanielsDown.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblJackDanielsDown.Name = "lblJackDanielsDown";
+            this.lblJackDanielsDown.Size = new System.Drawing.Size(102, 13);
+            this.lblJackDanielsDown.TabIndex = 1;
+            this.lblJackDanielsDown.Text = "<JackDanielsDown:";
+            // 
+            // boxJackDanielsDown
+            // 
+            this.boxJackDanielsDown.AcceptsReturn = false;
+            this.boxJackDanielsDown.AcceptsTab = false;
+            this.boxJackDanielsDown.BackColor = System.Drawing.Color.White;
+            this.boxJackDanielsDown.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxJackDanielsDown.ButtonImage = null;
+            this.boxJackDanielsDown.Location = new System.Drawing.Point(149, 57);
+            this.boxJackDanielsDown.Margin = new System.Windows.Forms.Padding(0);
+            this.boxJackDanielsDown.MaxLength = 32767;
+            this.boxJackDanielsDown.Multiline = false;
+            this.boxJackDanielsDown.Name = "boxJackDanielsDown";
+            this.boxJackDanielsDown.ReadOnly = false;
+            this.boxJackDanielsDown.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxJackDanielsDown.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxJackDanielsDown.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxJackDanielsDown.Size = new System.Drawing.Size(100, 19);
+            this.boxJackDanielsDown.TabIndex = 2;
+            this.boxJackDanielsDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxJackDanielsDown.LostFocus += new System.EventHandler(this.boxJackDaniels_LostFocus);
             // 
             // SettingsPageControl
             // 
@@ -352,12 +528,16 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.PluginInfoPanel);
-            this.MinimumSize = new System.Drawing.Size(200, 200);
+            this.MinimumSize = new System.Drawing.Size(350, 450);
             this.Name = "SettingsPageControl";
-            this.Size = new System.Drawing.Size(200, 200);
+            this.Size = new System.Drawing.Size(350, 450);
             this.PluginInfoPanel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.gradeAdjustedPaceGroup.ResumeLayout(false);
+            this.gradeAdjustedPaceGroup.PerformLayout();
+            this.tablePanelGradeAdjustedPace.ResumeLayout(false);
+            this.tablePanelGradeAdjustedPace.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -386,5 +566,15 @@
         private System.Windows.Forms.Label lblPredictDistance;
         private ZoneFiveSoftware.Common.Visuals.TextBox boxPredictDistance;
         private System.Windows.Forms.Label lblLicense;
+        private System.Windows.Forms.GroupBox gradeAdjustedPaceGroup;
+        private System.Windows.Forms.TableLayoutPanel tablePanelGradeAdjustedPace;
+        private System.Windows.Forms.Label lblMervynDaviesUp;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxMervynDaviesUp;
+        private System.Windows.Forms.Label lblMervynDaviesDown;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxMervynDaviesDown;
+        private System.Windows.Forms.Label lblJackDanielsUp;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxJackDanielsUp;
+        private System.Windows.Forms.Label lblJackDanielsDown;
+        private ZoneFiveSoftware.Common.Visuals.TextBox boxJackDanielsDown;
     }
 }

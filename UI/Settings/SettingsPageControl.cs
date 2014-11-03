@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Data;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 using ZoneFiveSoftware.Common.Data.Fitness;
@@ -51,7 +52,17 @@ namespace TrailsPlugin.UI.Settings
             this.boxBarometricDevices.Text = Data.Settings.GetBarometricDevices;
             this.txtAdjustElevationAtImport.Checked = Data.Settings.SetAdjustElevationAtImport;
             this.boxPredictDistance.Text = UnitUtil.Distance.ToString(Data.Settings.PredictDistance, "u");
+
+            //Present up as negative
+            this.boxMervynDaviesUp.Text = (-Data.Settings.MervynDaviesUp).ToString("P1");
+            this.boxMervynDaviesDown.Text = Data.Settings.MervynDaviesDown.ToString("P1");
+            //Present per distance unit, saved s/m
+            this.boxJackDanielsUp.Text = UnitUtil.Time.ToString((-Data.Settings.JackDanielsUp) * UnitUtil.Distance.ConvertTo(1, UnitUtil.Distance.Unit),"ss") + 
+                " s/" + UnitUtil.Distance.LabelAbbr;
+            this.boxJackDanielsDown.Text = UnitUtil.Time.ToString(Data.Settings.JackDanielsDown * UnitUtil.Distance.ConvertTo(1, UnitUtil.Distance.Unit),"ss") + 
+                " s/" + UnitUtil.Distance.LabelAbbr;
         }
+
         public void ThemeChanged(ITheme visualTheme)
         {
             this.PluginInfoBanner.ThemeChanged(visualTheme);
@@ -60,7 +71,13 @@ namespace TrailsPlugin.UI.Settings
             this.boxStoppedCategory.ThemeChanged(visualTheme);
             this.boxBarometricDevices.ThemeChanged(visualTheme);
             this.boxPredictDistance.ThemeChanged(visualTheme);
+
+            this.boxMervynDaviesUp.ThemeChanged(visualTheme);
+            this.boxMervynDaviesDown.ThemeChanged(visualTheme);
+            this.boxJackDanielsUp.ThemeChanged(visualTheme);
+            this.boxJackDanielsDown.ThemeChanged(visualTheme);
         }
+
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
             this.lblDefaultRadius.Text = Properties.Resources.UI_Settings_DefaultRadius + ":";
@@ -71,6 +88,13 @@ namespace TrailsPlugin.UI.Settings
             this.lblStoppedCategory.Text = "Stopped Category Override" + ":"; //TODO: Translate 
             this.lblBarometricDevices.Text = "Barometric Devices" + ":"; //TODO: Translate 
             this.lblAdjustElevationAtImport.Text = "Adjust Elevation at Import"; //TODO: Translate
+
+            this.gradeAdjustedPaceGroup.Text = "Grade Adjusted Pace"; //TODO: Translate
+            this.lblMervynDaviesUp.Text = "Mervyn Davies " + CommonResources.Text.LabelAscending;
+            this.lblMervynDaviesDown.Text = "Mervyn Davies " + CommonResources.Text.LabelDescending;
+            this.lblJackDanielsUp.Text = "Jack Daniels " + CommonResources.Text.LabelAscending;
+            this.lblJackDanielsDown.Text = "Jack Daniels " + CommonResources.Text.LabelDescending;
+
             this.presentSettings();
 
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
@@ -133,6 +157,66 @@ namespace TrailsPlugin.UI.Settings
             else
             {
                 MessageBox.Show("Incorrect distance format"); //TODO: Translate
+            }
+            presentSettings();
+        }
+
+        private void boxMervynDavies_LostFocus(object sender, EventArgs e)
+        {
+            float result;
+            string val = ((ZoneFiveSoftware.Common.Visuals.TextBox)sender).Text;
+            
+            //Simple parsing, no check misaligned %
+            val = val.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.PercentSymbol, "");
+            bool p = Data.Settings.tryParseFloat(val, NumberStyles.Any, out result);
+            if (p && !float.IsNaN(result) /*&& Math.Abs(result) < 100*/)
+            {
+                if (sender == this.boxMervynDaviesUp)
+                {
+                    //Present as - only
+                    Data.Settings.MervynDaviesUp = -result/100;
+                }
+                else
+                {
+                    Data.Settings.MervynDaviesDown = result/100;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Incorrect percent format"); //TODO: Translate
+            }
+            presentSettings();
+        }
+
+        private void boxJackDaniels_LostFocus(object sender, EventArgs e)
+        {
+            string val = ((ZoneFiveSoftware.Common.Visuals.TextBox)sender).Text;
+            //Simple parsing to skip unit etc
+            int i = 1 + val.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' });
+            if (i < val.Length)
+            {
+                val = val.Remove(i);
+            }
+            float result = float.NaN;
+            try
+            {
+                result = (float)UnitUtil.Time.Parse(val);
+            }
+            catch { }
+            if (!float.IsNaN(result))
+            {
+                if (sender == this.boxJackDanielsUp)
+                {
+                    Data.Settings.JackDanielsUp = (float)(-result / UnitUtil.Distance.ConvertTo(1, UnitUtil.Distance.Unit));
+                }
+                else
+                {
+                    Data.Settings.JackDanielsDown = (float)(result / UnitUtil.Distance.ConvertTo(1, UnitUtil.Distance.Unit));
+                }
+            }
+            else
+            {
+                MessageBox.Show("Incorrect time format"); //TODO: Translate
             }
             presentSettings();
         }

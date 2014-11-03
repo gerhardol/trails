@@ -92,9 +92,12 @@ namespace TrailsPlugin.Data
             bool speedAdjust = (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.MervynDaviesSpeed);
             if (g > 0)
             {
-                float q_md = Settings.MervynDaviesUp;
+                float q_md = 100 * Settings.MervynDaviesUp;
                 float g0 = 0.1627f;
                 float k0 = 0.0739f;
+                //Some experiments to get cutoff factor, using extrapolation
+                //otherwise will (unreasonable) adjustments give negative speed
+                g0 *= 3.3f / q_md;
                 if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin)
                 {
                     if (dist > 21 * 1609)
@@ -133,12 +136,19 @@ namespace TrailsPlugin.Data
             else
             {
                 //downhill
-                float q_md = Settings.MervynDaviesDown;
-                float g0 = -0.08f;
+                float q_md = 100 * Settings.MervynDaviesDown;
+                float g0;
                 if (speedAdjust)
                 {
                     g0 = -0.095f;
                 }
+                else
+                {
+                    g0 = -0.08f;
+                }
+                //Some experiments to get cutoff factor, using extrapolation
+                //otherwise will (unreasonable) adjustments give negative speed
+                g0 *= 1.8f / q_md;
                 if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.GregMaclin && dist > 21 * 1609)
                 {
                     q_md = 1.7f;
@@ -160,6 +170,12 @@ namespace TrailsPlugin.Data
                         q = 1 / (1 + q_md * g);
                     }
                 }
+            }
+            if (float.IsNaN(q) || float.IsInfinity(q) || q <= 0)
+            {
+                //Fix: MD is not working well when steep, despite the workarounds
+                //The discontinuity is better than bad data
+                q = getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
             }
 
             return q;
@@ -229,30 +245,34 @@ namespace TrailsPlugin.Data
              * extrapolating from slower speeds and hope it applies at faster ones. I have done faster ones using Rate of Perceived Exertion and that can be done beyond max, but not ver exact
              * */
             bool speedAdjust = false; // (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.JackDanielsSpeed);
-            double p_jd = 0;
+            double p_jd;
+            float g0;
             double speed = (dist - prevDist) / (time - prevTime);
 
             //Steep adjust, see discussion for MervynDavies
             //Assuming 4m/s
-            if (speedAdjust && g > 0.153f)
+            if (g > 0)
+            {
+                p_jd = Settings.JackDanielsUp;
+                g0 = Math.Max(0, 0.153f * (15 / 1609)/(float)p_jd);
+            }
+            else
+            {
+                p_jd = Settings.JackDanielsDown;
+                g0 = Math.Min(0, -0.08f * (8 / 1609) / (float)p_jd);
+            }
+            if (speedAdjust && g > g0)
             {
                 q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - 0.1416f;
             }
-            else if (!speedAdjust && g < -0.08f)
+            else if (!speedAdjust && g < g0)
             {
                 //normal Kay, formulas cross here (about fast downhill)
                 q = getKay(g, time, prevTime, dist, prevDist);
             }
             else
             {
-                if (g > 0)
-                {
-                    p_jd = Settings.JackDanielsUp * speed * g * 100;
-                }
-                else
-                {
-                    p_jd = Settings.JackDanielsDown * speed * g * 100;
-                }
+                p_jd *= speed * g * 100;
 
                 if (speedAdjust)
                 {
@@ -262,6 +282,11 @@ namespace TrailsPlugin.Data
                 {
                     q = (float)(1 / (1 + p_jd));
                 }
+            }
+            if (float.IsNaN(q) || float.IsInfinity(q) || q <= 0)
+            {
+                //Fix: See MD
+                q = getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
             }
 
             return q;

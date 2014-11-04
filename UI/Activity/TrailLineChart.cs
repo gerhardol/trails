@@ -73,7 +73,7 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_endSelect = false;
         private float m_firstRangeSelected = float.NaN;
         private float[] m_prevSelectedRange = null;
-        private IList<float[]> m_prevSelectedRegions = null;
+        private IList<float[]> m_prevSelectedRegions = new List<float[]>(); //Not null
         private XAxisValue m_prevSelectedXAxis = XAxisValue.Time;
         private TrailResult m_prevSelectedResult;
         private int m_selectedDataSeries = -1;
@@ -275,6 +275,14 @@ namespace TrailsPlugin.UI.Activity {
             else
             {
                 this.m_endSelect = false;
+                //Click out of charts - forget previous selection
+                this.m_prevSelectedRange = null;
+                m_prevSelectedRegions.Clear();
+                if (this.m_MouseDownLocation == Point.Empty)
+                {
+                    //Just a point other than empty...
+                    this.m_MouseDownLocation = new Point(1,1);
+                }
             }
 
             //Clear if starting a new selection and ctrl is not pressed
@@ -516,9 +524,10 @@ namespace TrailsPlugin.UI.Activity {
         public void UpdateSelectedResultRegions()
         {
             //Select same region/range as before, switch time/distance if needed
-            if (this.m_selectedDataSeries < this.MainChart.DataSeries.Count)
+            if (this.m_selectedDataSeries < this.MainChart.DataSeries.Count && this.MainChart.DataSeries.Count > 0)
             {
-                TrailResult tr = TrailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
+                int index = this.SeriesIndexToResult(this.m_selectedDataSeries);
+                TrailResult tr = TrailResults[index];
                 if (this.m_prevSelectedXAxis != this.m_XAxisReferential)
                 {
                     if (this.m_prevSelectedRegions != null)
@@ -608,7 +617,7 @@ namespace TrailsPlugin.UI.Activity {
                     return;
                 }
 
-                if (regions != null && regions.Count > 0)
+                if (regions != null)
                 {
                     foreach (float[] ax in regions)
                     {
@@ -797,6 +806,10 @@ namespace TrailsPlugin.UI.Activity {
 
         private int SeriesIndexToResult(int seriesIndex)
         {
+            if (this.m_trailResults.Count == 0 || seriesIndex < 0)
+            {
+                return 0;
+            }
             return seriesIndex % this.m_trailResults.Count;
         }
 

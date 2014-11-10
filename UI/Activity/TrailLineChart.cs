@@ -889,15 +889,15 @@ namespace TrailsPlugin.UI.Activity {
                         syncGraphOffsetChartType = LineChartUtil.ChartToAxis(syncGraphOffsetChartType);
                     }
                 }
-                //The ST standard order is to draw the Fill chart latest, so it covers others
-                //This hides charts when there are several
+                //The ST standard order is to draw the Fill chart latest, so it covers others (Insert)
+                //The order in Trails paints left to right, so the fill graph is in the bottom (Add)
                 IList<LineChartTypes> chartTypes = m_ChartTypes;
                 if (m_trailResults.Count == 1)
                 {
                     chartTypes = new List<LineChartTypes>();
                     foreach (LineChartTypes chartType in m_ChartTypes)
                     {
-                        chartTypes.Insert(0, chartType);
+                        chartTypes.Add(chartType);
                     }
                 }
                 foreach (LineChartTypes chartType in chartTypes)

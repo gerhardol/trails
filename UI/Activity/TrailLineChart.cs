@@ -1129,6 +1129,10 @@ namespace TrailsPlugin.UI.Activity {
             ChartDataSeries dataLine, INumericTimeDataSeries refGraphPoints)
         {
             INumericTimeDataSeries dataPoints;
+            //DataPoints for Distance can include more/less points than the points to graph
+            //The is used both for pruning and extrapolating graphs
+            DateTime graphStart = graphPoints.StartTime;
+            DateTime graphEnd = graphPoints.StartTime.AddSeconds(graphPoints.TotalElapsedSeconds);
             if (XAxisReferential == XAxisValue.Time)
             {
                 dataPoints = graphPoints;
@@ -1136,25 +1140,23 @@ namespace TrailsPlugin.UI.Activity {
             else
             {
                 dataPoints = tr.DistanceMetersTrack0(ReferenceTrailResult);
-                //TBD (fix in DistTrack?) 
+                //TBD (fix in DistTrack, as well as limiting for graph Start/End?) 
                 //Make sure distance track (datapoints) has start/end for graphpoints, otherwise may about 30s valid data not be shown
                 //It is not easy to check if the point already exists
-                DateTime time = graphPoints.StartTime;
-                if (dataPoints.StartTime != time)
+                if (dataPoints.StartTime != graphStart)
                 {
-                    ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
+                    ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(graphStart);
                     if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
                     {
-                        dataPoints.Add(time, yValueEntry.Value);
+                        dataPoints.Add(graphStart, yValueEntry.Value);
                     }
                 }
-                time = graphPoints.StartTime.AddSeconds(graphPoints.TotalElapsedSeconds);
-                if (time != dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds))
+                if (graphEnd != dataPoints.StartTime.AddSeconds(dataPoints.TotalElapsedSeconds))
                 {
-                    ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(time);
+                    ITimeValueEntry<float> yValueEntry = dataPoints.GetInterpolatedValue(graphEnd);
                     if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
                     {
-                        dataPoints.Add(time, yValueEntry.Value);
+                        dataPoints.Add(graphEnd, yValueEntry.Value);
                     }
                 }
             }
@@ -1170,54 +1172,61 @@ namespace TrailsPlugin.UI.Activity {
 
             foreach (ITimeValueEntry<float> entry in dataPoints)
             {
-                uint elapsedEntry = entry.ElapsedSeconds;
-                if (XAxisReferential == XAxisValue.Time || elapsedEntry <= graphPoints.TotalElapsedSeconds)
+                //The time is required to get the xvalue(time) or yvalue(dist)
+                DateTime time = dataPoints.EntryDateTime(entry);
+                //Limit - only used for Distance
+                if (time < graphStart)
                 {
-                    //The time is required to get the xvalue(time) or yvalue(dist)
-                    DateTime time = dataPoints.EntryDateTime(entry);
-                    //The x value in the graph, the actual time or distance
-                    float xValue;
+                    continue;
+                }
+                if (time > graphEnd)
+                {
+                    break;
+                }
+
+                //The x value in the graph, the actual time or distance
+                float xValue;
+                if (XAxisReferential == XAxisValue.Time)
+                {
+                    xValue = (float)tr.getTimeResult(time);
+                }
+                else
+                {
+                    xValue = entry.Value;
+                }
+                //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
+                //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
+                //or cut (elapsed is higher than next limit, then decreases at trail point)
+                float nextXvalue = float.MaxValue;
+                if (IsTrailPointOffset(tr))
+                {
+                    float offset = TrackUtil.GetChartResultsResyncOffset(XAxisReferential == XAxisValue.Time, tr, TrailPointResult(), xValue, out nextXvalue);
+                    xValue += offset;
+                }
+                xValue += xOffset;
+                uint elapsedEntry = entry.ElapsedSeconds;
+                if (oldElapsedEntry < elapsedEntry &&
+                    (!Data.Settings.SyncChartAtTrailPoints ||
+                    oldXvalue < xValue && xValue <= nextXvalue))
+                {
+                    ITimeValueEntry<float> yValueEntry;
                     if (XAxisReferential == XAxisValue.Time)
                     {
-                        xValue = (float)tr.getTimeResult(time);
+                        yValueEntry = entry;
                     }
                     else
                     {
-                        xValue = entry.Value;
+                        yValueEntry = graphPoints.GetInterpolatedValue(time);
                     }
-                    //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points
-                    //So at the end of each "subtrail", the track can be extended (elapsed jumps) 
-                    //or cut (elapsed is higher than next limit, then decreases at trail point)
-                    float nextXvalue = float.MaxValue;
-                    if (IsTrailPointOffset(tr))
+                    //yValueEntry == null means that graphpoints are for a shorter time than datapoints, OK
+                    //Infinity values gives garbled graphs
+                    if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
                     {
-                        float offset = TrackUtil.GetChartResultsResyncOffset(XAxisReferential == XAxisValue.Time, tr, TrailPointResult(), xValue, out nextXvalue);
-                        xValue += offset;
+                        PointF point = new PointF(xValue, yValueEntry.Value + syncGraphOffset);
+                        dataLine.Points.Add(elapsedEntry, point);
                     }
-                    xValue += xOffset;
-                    if (oldElapsedEntry < elapsedEntry &&
-                        (!Data.Settings.SyncChartAtTrailPoints ||
-                        oldXvalue < xValue && xValue <= nextXvalue))
-                    {
-                        ITimeValueEntry<float> yValueEntry;
-                        if (XAxisReferential == XAxisValue.Time)
-                        {
-                            yValueEntry = entry;
-                        }
-                        else
-                        {
-                            yValueEntry = graphPoints.GetInterpolatedValue(time);
-                        }
-                        //yValueEntry == null means that graphpoints are for a shorter time than datapoints, OK
-                        //Infinity values gives garbled graphs
-                        if (yValueEntry != null && !float.IsInfinity(yValueEntry.Value))
-                        {
-                            PointF point = new PointF(xValue, yValueEntry.Value + syncGraphOffset);
-                            dataLine.Points.Add(elapsedEntry, point);
-                        }
-                        oldElapsedEntry = (int)elapsedEntry;
-                        oldXvalue = xValue;
-                    }
+                    oldElapsedEntry = (int)elapsedEntry;
+                    oldXvalue = xValue;
                 }
             }
             return syncGraphOffset;

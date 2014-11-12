@@ -246,25 +246,32 @@ namespace TrailsPlugin.Data {
             {
                 return -1;
             }
-            int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
+            int result;
 
             if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Name)
             {
-                result *= x.Activity.Name.CompareTo(y.Activity.Name);
+                result = x.Activity.Name.CompareTo(y.Activity.Name);
             }
             else if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Location)
             {
-                result *= x.Activity.Location.CompareTo(y.Activity.Location);
+                result = x.Activity.Location.CompareTo(y.Activity.Location);
             }
             else if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Category)
             {
-                result *= x.Activity.Category.ToString().CompareTo(y.Activity.Category.ToString());
+                result = x.Activity.Category.ToString().CompareTo(y.Activity.Category.ToString());
             }
             else
             {
-                result *= getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
-            }            
-            return result;
+                result = getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
+            }
+            //Seem the same, but check activity
+            if (result == 0 && x.Activity != y.Activity)
+            {
+                result = x.Activity.ReferenceId.CompareTo(y.Activity.ReferenceId);
+            }
+
+            int dir = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
+            return dir * result;
         }
 
         //Helper function to get numerical value used in comparison

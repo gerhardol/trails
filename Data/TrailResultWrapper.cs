@@ -244,15 +244,20 @@ namespace TrailsPlugin.Data
             {
                 foreach (TrailResult trr in tr)
                 {
+                    bool isMatch = false;
                     foreach (TrailResultWrapper tnp in trws)
                     {
+                        if (isMatch)
+                        {
+                            break;
+                        }
                         if (!(trr is ChildTrailResult))
                         {
                             if (tnp.Result.CompareTo(trr) == 0)
                             {
                                 result.Add(tnp);
-                                //Break the loop (break could be used, goto required below)
-                                goto EndCurrentTrailResult;
+                                //Break the loop
+                                isMatch = true;
                             }
                         }
                         else
@@ -263,14 +268,12 @@ namespace TrailsPlugin.Data
                                 {
                                     result.Add(tnc);
                                     //break from two levels of foreach
-                                    goto EndCurrentTrailResult;
+                                    isMatch = true;
+                                    break;
                                 }
                             }
                         }
                     }
-                    // a match should only match once, so jump here to prune searching
-                EndCurrentTrailResult:
-                    ;
                 }
             }
             return result;

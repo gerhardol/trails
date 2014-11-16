@@ -29,6 +29,7 @@
             this.chkTwoWay = new System.Windows.Forms.CheckBox();
             this.chkName = new System.Windows.Forms.CheckBox();
             this.chkCompleteActivity = new System.Windows.Forms.CheckBox();
+            this.chkURFilter = new System.Windows.Forms.CheckBox();
             this.btnCopy = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnExport = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnRefresh = new ZoneFiveSoftware.Common.Visuals.Button();
@@ -100,6 +101,18 @@
             this.chkCompleteActivity.TabIndex = 28;
             this.toolTip.SetToolTip(this.chkCompleteActivity, ">Complete Activity");
             this.chkCompleteActivity.UseVisualStyleBackColor = true;
+            // 
+            // chkURFilter
+            // 
+            this.chkURFilter.AutoSize = true;
+            this.chkURFilter.Checked = true;
+            this.chkURFilter.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkURFilter.Location = new System.Drawing.Point(252, 302);
+            this.chkURFilter.Name = "chkURFilter";
+            this.chkURFilter.Size = new System.Drawing.Size(15, 14);
+            this.chkURFilter.TabIndex = 28;
+            this.toolTip.SetToolTip(this.chkURFilter, ">UR Filter");
+            this.chkURFilter.UseVisualStyleBackColor = true;
             // 
             // btnCopy
             // 
@@ -199,7 +212,7 @@
             // 
             // numericUpDown1
             // 
-            this.numericSortPrio.Location = new System.Drawing.Point(251, 298);
+            this.numericSortPrio.Location = new System.Drawing.Point(272, 298);
             this.numericSortPrio.Name = "numericUpDown1";
             this.numericSortPrio.Size = new System.Drawing.Size(40, 20);
             this.numericSortPrio.TabIndex = 23;
@@ -536,6 +549,7 @@
             this.Controls.Add(this.chkName);
             this.Controls.Add(this.chkTwoWay);
             this.Controls.Add(this.chkTemporaryTrail);
+            this.Controls.Add(this.chkURFilter);
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCopy);
@@ -582,6 +596,7 @@
         private System.Windows.Forms.CheckBox chkName;
         private ZoneFiveSoftware.Common.Visuals.Button btnReverse;
         private System.Windows.Forms.CheckBox chkCompleteActivity;
+        private System.Windows.Forms.CheckBox chkURFilter;
         private System.Windows.Forms.NumericUpDown numericSortPrio;
 
     }

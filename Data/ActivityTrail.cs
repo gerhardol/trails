@@ -35,6 +35,7 @@ namespace TrailsPlugin.Data
         private TrailOrderStatus m_status;
 
         private IList<IncompleteTrailResult> m_incompleteResults;
+        private IList<TrailResultWrapper> m_filteredResults;
         //Counter for "no results"
         public IDictionary<TrailOrderStatus, int> m_noResCount = new Dictionary<TrailOrderStatus, int>();
         private IList<IActivity> m_inBound = new List<IActivity>();
@@ -51,7 +52,8 @@ namespace TrailsPlugin.Data
         public void Init()
         {
             this.m_resultsListWrapper = null;
-            this.m_incompleteResults = null;
+            m_incompleteResults = new List<IncompleteTrailResult>();
+            m_filteredResults = new List<TrailResultWrapper>();
 
             this.m_inBound.Clear();
             this.m_status = TrailOrderStatus.NoInfo;
@@ -254,6 +256,26 @@ namespace TrailsPlugin.Data
             //No progress update
         }
 
+        private IList<IActivity> ResultActivities
+        {
+            get
+            {
+                IList<IActivity> activities = new List<IActivity>();
+                if (m_resultsListWrapper != null)
+                {
+                    foreach(TrailResultWrapper trw in m_resultsListWrapper)
+                    {
+                        IActivity act = trw.Result.Activity;
+                        if (!activities.Contains(act))
+                        {
+                            activities.Add(act);
+                        }
+                    }
+                }
+                return activities;
+            }
+        }
+
         public void CalcResults(System.Windows.Forms.ProgressBar progressBar)
         {
             CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.BiDirectional, progressBar);
@@ -271,7 +293,6 @@ namespace TrailsPlugin.Data
                 }
 
                 m_resultsListWrapper = new List<TrailResultWrapper>();
-                m_incompleteResults = new List<IncompleteTrailResult>();
 
                 //Calculation depends on TrailType
                 if (m_trail.TrailType == Trail.CalcType.HighScore)
@@ -417,6 +438,13 @@ namespace TrailsPlugin.Data
                         tr.getSplits();
                     }
                 }
+
+                if (this.m_trail.IsURFilter &&
+                    m_controller.ReferenceTrailResult != null && m_controller.ReferenceTrailResult.GPSRoute != null)
+                {
+                    this.FilterURRouteSnippet(m_controller.ReferenceTrailResult.GPSRoute, progressBar);
+                }
+
                 if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
                 {
                     //Downgrade status from "speculative match"
@@ -428,6 +456,27 @@ namespace TrailsPlugin.Data
             {
                 progressBar.Value++;
             }
+        }
+
+        public void FilterURRouteSnippet(IGPSRoute route, System.Windows.Forms.ProgressBar progressBar)
+        {
+            IList<IActivity> urActivities = Integration.UniqueRoutes.GetSimilarRoutes(
+                m_controller.ReferenceTrailResult.GPSRoute, this.ResultActivities, progressBar);
+
+            IList<TrailResultWrapper> trws = new List<TrailResultWrapper>();
+            foreach (TrailResultWrapper trw in m_resultsListWrapper)
+            {
+                if (urActivities.Contains(trw.Result.Activity) ||
+                    m_controller.ReferenceActivity == trw.Result.Activity)
+                {
+                    trws.Add(trw);
+                }
+                else
+                {
+                    this.m_filteredResults.Add(trw);
+                }
+            }
+            m_resultsListWrapper = trws;
         }
 
         private class pInfo
@@ -1353,6 +1402,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public IList<TrailResultWrapper> FilteredResults
+        {
+            get
+            {
+                return this.m_filteredResults;
+            }
+        }
+
         /////////////////
         //Some syntethic value to sort
         private float? sortValue;
@@ -1466,6 +1523,7 @@ namespace TrailsPlugin.Data
                 }
                 this.Reverse = reverse;
             }
+
             public IList<TrailResultPointMeta> Points;
             public IActivity Activity;
             public bool Reverse;
@@ -1495,6 +1553,7 @@ namespace TrailsPlugin.Data
                 this(trailLoc, DateTime.MinValue, -1, -1, -1, diffDist)
             {
             }
+
             public TrailResultPointMeta(TrailGPSLocation trailLoc, DateTime time,
                 int index, int nextOkMatch, int nextMatchOutsideRadius, float diffDist) :
                 base(trailLoc, time, diffDist)
@@ -1564,7 +1623,12 @@ namespace TrailsPlugin.Data
             if (t.Status == TrailOrderStatus.Match ||
                 t.Status == TrailOrderStatus.MatchPartial)
             {
-                name += " (" + TrailResultWrapper.Results(t.ResultTreeList).Count + ")";
+                name += " (" + TrailResultWrapper.Results(t.ResultTreeList).Count;
+                if (t.Trail.IsURFilter && t.FilteredResults.Count > 0)
+                {
+                    name += " ," + t.FilteredResults.Count; 
+                }
+                name += ")";
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {

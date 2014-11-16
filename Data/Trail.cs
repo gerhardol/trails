@@ -40,11 +40,14 @@ namespace TrailsPlugin.Data
         private float m_radius;
         private float m_minDistance = 0;
         private int   m_maxRequiredMisses = 0;
+
         private bool m_biDirectional = false;
         private bool m_isReference = false;
         private bool m_isTemporary = false;
         private bool m_isNameMatch = false;
         private bool m_isCompleteActivity = false;
+        private bool m_urFilter = false;
+
         private int m_trailPriority = 0;
         //private bool m_isAutoTryAll = true;
 
@@ -126,8 +129,10 @@ namespace TrailsPlugin.Data
             result.BiDirectional = this.BiDirectional;
             result.IsNameMatch = this.IsNameMatch;
             result.IsCompleteActivity = this.IsCompleteActivity;
+            result.IsURFilter = this.IsURFilter;
             //result.IsAutoTryAll = this.IsAutoTryAll;
             result.IsTemporary = this.IsTemporary;
+
             if (!this.m_generated)
             {
                 result.m_trailPriority = this.m_trailPriority;
@@ -310,6 +315,18 @@ namespace TrailsPlugin.Data
             set
             {
                 m_isCompleteActivity = value;
+            }
+        }
+
+        public bool IsURFilter
+        {
+            get
+            {
+                return m_urFilter;
+            }
+            set
+            {
+                m_urFilter = value;
             }
         }
 
@@ -572,6 +589,10 @@ namespace TrailsPlugin.Data
             {
                 trail.IsCompleteActivity = XmlConvert.ToBoolean(node.Attributes[xmlTags.sCompleteActivity].Value);
             }
+            if (node.Attributes[xmlTags.sURFilter] != null)
+            {
+                trail.IsURFilter = XmlConvert.ToBoolean(node.Attributes[xmlTags.sURFilter].Value);
+            }
             //if (node.Attributes[xmlTags.sAutoTryAll] != null)
             //{
             //    trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
@@ -640,6 +661,12 @@ namespace TrailsPlugin.Data
                 a.Value = XmlConvert.ToString(this.IsCompleteActivity);
                 trailNode.Attributes.Append(a);
             }
+            if (this.IsURFilter)
+            {
+                a = doc.CreateAttribute(xmlTags.sURFilter);
+                a.Value = XmlConvert.ToString(this.IsURFilter);
+                trailNode.Attributes.Append(a);
+            }
             //if (!this.IsAutoTryAll)
             //{
             //    a = doc.CreateAttribute(xmlTags.sAutoTryAll);
@@ -670,6 +697,7 @@ namespace TrailsPlugin.Data
             public const string sBiDirectional = "bidirectional";
             public const string sNameMatch = "namematch";
             public const string sCompleteActivity = "completeactivity";
+            public const string sURFilter = "urfilter";
             public const string sTrailPriority = "trailpriority";
             //public const string sAutoTryAll = "autotryall";
             public const string sTrailGPSLocation = "TrailGPSLocation";

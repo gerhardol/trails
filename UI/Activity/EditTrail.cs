@@ -158,6 +158,7 @@ namespace TrailsPlugin.UI.Activity
             this.chkTemporaryTrail.Checked = this.m_TrailToEdit.IsTemporary;
             this.chkName.Checked = this.m_TrailToEdit.IsNameMatch;
             this.chkCompleteActivity.Checked = this.m_TrailToEdit.IsCompleteActivity;
+            this.chkURFilter.Checked = this.m_TrailToEdit.IsURFilter;
             this.numericSortPrio.Value = this.m_TrailToEdit.TrailPriority;
             //this.chkAutoTryAll.Checked = this.m_TrailToEdit.IsAutoTryAll;
 
@@ -165,6 +166,7 @@ namespace TrailsPlugin.UI.Activity
             this.chkTemporaryTrail.CheckedChanged += new System.EventHandler(this.chkTemporaryTrail_CheckedChanged);
             this.chkName.CheckedChanged += new System.EventHandler(this.chkName_CheckedChanged);
             this.chkCompleteActivity.CheckedChanged += new System.EventHandler(this.chkCompleteActivity_CheckedChanged);
+            this.chkURFilter.CheckedChanged += new System.EventHandler(this.chkURFilter_CheckedChanged);
             //this.chkAutoTryAll.CheckedChanged += new System.EventHandler(this.chkAutoTryAll_CheckedChanged);
             this.numericSortPrio.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
 #if ST_2_1
@@ -200,6 +202,7 @@ namespace TrailsPlugin.UI.Activity
             this.toolTip.SetToolTip(this.chkTwoWay, "Two-way Match");
             this.toolTip.SetToolTip(this.chkName, "Match by Name");
             this.toolTip.SetToolTip(this.chkCompleteActivity, "Match Complete Activity");
+            this.toolTip.SetToolTip(this.chkURFilter, "Filter with UniqueRoutes");
             this.toolTip.SetToolTip(this.numericSortPrio, "Sort Priority");
             //this.toolTip.SetToolTip(this.chkAutoTryAll, "Calculate Trail in automatic updates");
         }
@@ -911,6 +914,11 @@ namespace TrailsPlugin.UI.Activity
         private void chkCompleteActivity_CheckedChanged(object sender, EventArgs e)
         {
             this.m_TrailToEdit.IsCompleteActivity = !this.m_TrailToEdit.IsCompleteActivity;
+        }
+
+        private void chkURFilter_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_TrailToEdit.IsURFilter = !this.m_TrailToEdit.IsURFilter;
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)

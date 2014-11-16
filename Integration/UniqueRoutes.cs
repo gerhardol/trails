@@ -133,6 +133,39 @@ namespace TrailsPlugin.Integration
             return results;
         }
 
+        public static IList<IActivity> GetSimilarRoutes(IGPSRoute route, IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
+        {
+            IList<IActivity> results = null;
+
+            try
+            {
+                if (progressBar == null)
+                    progressBar = new System.Windows.Forms.ProgressBar();
+
+                if (GetUniqueRoutes != null)
+                {
+                    MethodInfo methodInfo = GetUniqueRoutes.GetMethod(findSimilarRouteSnippets);
+                    object resultFromURPlugIn = methodInfo.Invoke(route, new object[] { route, activities, progressBar });
+                    results = (IList<IActivity>)resultFromURPlugIn;
+                }
+            }
+            catch (Exception e)
+            {
+                // Log error?
+                _uniqueRoutes = null;
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+            UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine, e);
+            }
+
+            if (GetUniqueRoutes == null)
+            {
+                throw new Exception(string.Format(IntegrationUtility.OtherPluginExceptionText,
+        UniquePlugin + ".dll", UniqueRoutesPluginName) + Environment.NewLine);
+            }
+
+            return results;
+        }
+
         public static IDictionary<IActivity, IItemTrackSelectionInfo[]> GetCommonStretchesForActivity(IActivity activity, IList<IActivity> activities, System.Windows.Forms.ProgressBar progressBar)
         {
             IDictionary<IActivity, IItemTrackSelectionInfo[]> results = null;

@@ -1649,7 +1649,7 @@ namespace TrailsPlugin.UI.Activity {
                               this.summaryListToolTip.AutoPopDelay);
                 this.m_page.RefreshData(true);
             }
-            else if (e.KeyCode == Keys.R)
+            else if (e.KeyCode == Keys.R || e.KeyCode == Keys.F5)
             {
                 //Debugging, like test trail calculation time
                 if (e.Modifiers == Keys.Alt)
@@ -1706,13 +1706,26 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Shift)
                 {
+                    TrailsPlugin.Data.Settings.XAxisValue = TrailsPlugin.Utils.XAxisValue.Time;
+                    TrailResult.OverlappingResultUseTimeOfDayDiff = true;
+                    TrailResult.OverlappingResultUseReferencePauses = true;
                     this.addCurrentTime();
                 }
-                else if (e.Modifiers == Keys.Control)
+                else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
                 {
-                    //TBD, currently unused
+                    TrailResult.OverlappingResultUseTimeOfDayDiff = !TrailResult.OverlappingResultUseTimeOfDayDiff;
                     this.m_page.RefreshData(true);
                 }
+                else if (e.Modifiers == (Keys.Control | Keys.Alt))
+                {
+                    TrailResult.OverlappingResultUseReferencePauses = !TrailResult.OverlappingResultUseReferencePauses;
+                    this.m_page.RefreshData(true);
+                }
+                //else if (e.Modifiers == Keys.Control)
+                //{
+                //    //TBD, currently unused
+                //    this.m_page.RefreshData(true);
+                //}
                 else
                 {
                     TrailsPlugin.Data.Settings.ResultSummaryTotal = !TrailsPlugin.Data.Settings.ResultSummaryTotal;

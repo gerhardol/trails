@@ -1174,15 +1174,6 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //The time is required to get the xvalue(time) or yvalue(dist)
                 DateTime time = dataPoints.EntryDateTime(entry);
-                //Limit - only used for Distance
-                if (time < graphStart)
-                {
-                    continue;
-                }
-                if (time > graphEnd)
-                {
-                    break;
-                }
 
                 //The x value in the graph, the actual time or distance
                 float xValue;
@@ -1192,6 +1183,17 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
+                    //Limit - only used for Distance
+
+                    if (time < graphStart)
+                    {
+                        continue;
+                    }
+                    if (time > graphEnd)
+                    {
+                       break;
+                    }
+
                     xValue = entry.Value;
                 }
                 //With "resync at Trail Points", the elapsed is adjusted to the reference at trail points

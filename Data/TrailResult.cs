@@ -62,7 +62,9 @@ namespace TrailsPlugin.Data
         private float? m_offsetDist;
         //Temporary? (undocumented)
         public static bool diffToSelf = false;
-        static public bool PaceTrackIsGradeAdjustedPaceAvg = false;
+        public static bool PaceTrackIsGradeAdjustedPaceAvg = false;
+        public static bool OverlappingResultUseReferencePauses = false;
+        public static bool OverlappingResultUseTimeOfDayDiff = false;
 
         private IValueRangeSeries<DateTime> m_pauses;
         private IDistanceDataTrack m_distanceMetersTrack;
@@ -377,39 +379,46 @@ namespace TrailsPlugin.Data
             {
                 if (m_startTime == null)
                 {
-                    if (m_subResultInfo.Points.Count == 0)
-                    {
-                        m_startTime = DateTime.MinValue;
-                    }
-                    else
-                    {
-                        DateTime startTime = m_subResultInfo.Points[0].Time;
-                        DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
-                        m_startTime = TrackUtil.getFirstUnpausedTime(startTime, Pauses, true);
-                        if (endTime.CompareTo((DateTime)m_startTime) <= 0)
-                        {
-                            //Trail (or subtrail) is completely paused. Use all
-                            m_startTime = startTime;
-                        }
-                        if (m_startTime == DateTime.MinValue)
-                        {
-                            if (this.Activity == null || this.Info == null)
-                            {
-                                m_startTime = DateTime.MinValue;
-                            }
-                            else
-                            {
-                                m_startTime = this.Info.ActualTrackStart;
-                                if (m_startTime == DateTime.MinValue)
-                                {
-                                    m_startTime = this.Activity.StartTime;
-                                }
-                            }
-                        }
-                    }
+                    m_startTime = getStartTime(this.Pauses);
                 }
                 return (DateTime)m_startTime;
             }
+        }
+
+        private DateTime getStartTime(IValueRangeSeries<DateTime> pauses)
+        {
+            DateTime resTime;
+            if (m_subResultInfo.Points.Count == 0)
+            {
+                resTime = DateTime.MinValue;
+            }
+            else
+            {
+                DateTime startTime = m_subResultInfo.Points[0].Time;
+                DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
+                resTime = TrackUtil.getFirstUnpausedTime(startTime, pauses, true);
+                if (endTime.CompareTo(resTime) <= 0)
+                {
+                    //Trail (or subtrail) is completely paused. Use all
+                    resTime = startTime;
+                }
+                if (resTime == DateTime.MinValue)
+                {
+                    if (this.Activity == null || this.Info == null)
+                    {
+                        resTime = DateTime.MinValue;
+                    }
+                    else
+                    {
+                        resTime = this.Info.ActualTrackStart;
+                        if (resTime == DateTime.MinValue)
+                        {
+                            resTime = this.Activity.StartTime;
+                        }
+                    }
+                }
+            }
+            return resTime;
         }
 
         public DateTime EndTime
@@ -418,39 +427,46 @@ namespace TrailsPlugin.Data
             {
                 if (m_endTime == null)
                 {
-                    if (m_subResultInfo.Points.Count == 0)
-                    {
-                        m_endTime = DateTime.MinValue;
-                    }
-                    else
-                    {
-                        DateTime startTime = m_subResultInfo.Points[0].Time;
-                        DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
-                        m_endTime = TrackUtil.getFirstUnpausedTime(endTime, Pauses, false);
-                        if (startTime.CompareTo((DateTime)m_endTime) >= 0)
-                        {
-                            //Trail (or subtrail) is completely paused. Use all
-                            m_endTime = endTime;
-                        }
-                        if (m_endTime == DateTime.MinValue)
-                        {
-                            if (this.Activity == null || this.Info == null)
-                            {
-                                m_endTime = DateTime.MinValue;
-                            }
-                            else
-                            {
-                                m_endTime = Info.ActualTrackEnd;
-                                if (m_endTime == DateTime.MinValue)
-                                {
-                                    m_endTime = Info.EndTime;
-                                }
-                            }
-                        }
-                    }
+                    m_endTime = getEndTime(this.Pauses);
                 }
                 return (DateTime)m_endTime;
             }
+        }
+
+        private DateTime getEndTime(IValueRangeSeries<DateTime> pauses)
+        {
+            DateTime resTime;
+            if (m_subResultInfo.Points.Count == 0)
+            {
+                resTime = DateTime.MinValue;
+            }
+            else
+            {
+                DateTime startTime = m_subResultInfo.Points[0].Time;
+                DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
+                resTime = TrackUtil.getFirstUnpausedTime(endTime, pauses, false);
+                if (startTime.CompareTo(resTime) >= 0)
+                {
+                    //Trail (or subtrail) is completely paused. Use all
+                    resTime = endTime;
+                }
+                if (resTime == DateTime.MinValue)
+                {
+                    if (this.Activity == null || this.Info == null)
+                    {
+                        resTime = DateTime.MinValue;
+                    }
+                    else
+                    {
+                        resTime = Info.ActualTrackEnd;
+                        if (resTime == DateTime.MinValue)
+                        {
+                            resTime = Info.EndTime;
+                        }
+                    }
+                }
+            }
+            return resTime;
         }
 
         //All of result including pauses/stopped is how FilteredStatistics want the info
@@ -711,6 +727,7 @@ namespace TrailsPlugin.Data
             {
                 if (m_pauses == null)
                 {
+                    TrailResult refTr = Controller.TrailController.Instance.ReferenceTrailResult;
                     if (this is SummaryTrailResult)
                     {
                         Debug.Assert(false);
@@ -719,6 +736,17 @@ namespace TrailsPlugin.Data
                     else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                     {
                         m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
+                    }
+                    //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
+                    else if (OverlappingResultUseReferencePauses &&
+                        null != refTr &&
+                        this != refTr &&
+                        //Note: All cached values (including Start/End) must be set after Pauses
+                        this.AnyOverlap(refTr, refTr.ExternalPauses))
+                    {
+                        //For Splits, the duration is set when updating splits, may be incorrect
+                        this.m_duration = null;
+                        this.m_pauses = refTr.ExternalPauses;
                     }
                     else
                     {
@@ -764,7 +792,7 @@ namespace TrailsPlugin.Data
                                             upper = Activity.Laps[i + 1].StartTime;
                                             if (!Activity.Laps[i + 1].Rest)
                                             {
-                                                upper=upper.AddSeconds(-1);
+                                                upper = upper.AddSeconds(-1);
                                             }
                                             //Fix: Lap start time is in seconds, precision could be lost
                                             DateTime upper2 = lower.Add(lap.TotalTime);
@@ -2663,6 +2691,12 @@ namespace TrailsPlugin.Data
         #region diff
 
 
+        //Is this result overlapping another result if another set of pauses are used?
+        public bool AnyOverlap(TrailResult other, IValueRangeSeries<DateTime> pauses)
+        {
+            return (other != null) && TrackUtil.AnyOverlap(this.getStartTime(pauses), this.getEndTime(pauses), other.StartTime, other.EndTime);
+        }
+
         public bool AnyOverlap(TrailResult other)
         {
             return (other != null) && TrackUtil.AnyOverlap(this.StartTime, this.EndTime, other.StartTime, other.EndTime);
@@ -2833,6 +2867,22 @@ namespace TrailsPlugin.Data
             return res;
         }
 
+        private bool IsTimeOfDayDiff
+        {
+            get
+            {
+                TrailResult refTr = Controller.TrailController.Instance.ReferenceTrailResult;
+                if (OverlappingResultUseTimeOfDayDiff &&
+                    null != refTr &&
+                    this != refTr &&
+                    this.AnyOverlap(refTr))
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public INumericTimeDataSeries DiffTimeTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
@@ -2957,6 +3007,8 @@ namespace TrailsPlugin.Data
                                         oldElapsed = (int)elapsed;
                                         refPrevTime = (float)refTime;
                                     }
+                                    else 
+                                    {} //Debug
                                 }
                             }
                         }
@@ -3014,6 +3066,7 @@ namespace TrailsPlugin.Data
                     float diffOffset = 0;
                     double prevDist = 0;
                     double prevRefDist = 0;
+                    bool isTimeOfDayDiff = IsTimeOfDayDiff;
 
                     m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                     bool prevCommonStreches = false;
@@ -3100,10 +3153,19 @@ namespace TrailsPlugin.Data
                                         }
                                         else
                                         {
-                                            if (elapsed + refTimeOffset >= 0 && elapsed + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
+                                            if (elapsed + refTimeOffset >= 0 && elapsed + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds &&
+                                                (!isTimeOfDayDiff || !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, trRef.ExternalPauses)))
                                             {
-                                                DateTime d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
-                                                    trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
+                                                DateTime d2;
+                                                if (isTimeOfDayDiff)
+                                                {
+                                                    d2 = d1;
+                                                }
+                                                else
+                                                {
+                                                    d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                                                      trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
+                                                }
 
                                                 int status = -1;
                                                 refDist = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack, d2, out status);
@@ -3112,6 +3174,8 @@ namespace TrailsPlugin.Data
                                                     refDist = null;
                                                 }
                                             }
+                                            else
+                                            {} //Debug
                                         }
                                         //Only add if valid estimation
                                         if (refDist != null && !float.IsNaN((float)refDist))
@@ -3133,6 +3197,8 @@ namespace TrailsPlugin.Data
                                             prevDist = thisDist;
                                             prevRefDist = (double)refDist;
                                         }
+                                        else
+                                        {} //Debug
                                     }
                                 }
                             }

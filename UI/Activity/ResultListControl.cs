@@ -1651,35 +1651,53 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.R || e.KeyCode == Keys.F5)
             {
-                //Debugging, like test trail calculation time
-                if (e.Modifiers == Keys.Alt)
+                //'r' or f5 can beused to recalc when an activity is changed
+                //Other combinations are for debugging, like test trail calculation time
+                //Time for the different alternatives, with debugger on my PC, 3176 activitities, 94 trails
+                if ((e.Modifiers & Keys.Alt) != 0)
                 {
+                    //Clear all calculated data for the results: 0,20s
                     this.m_controller.Clear(false);
-                    this.m_page.RefreshData(false);
+                }
+                if ((e.Modifiers & Keys.Control) != 0)
+                {
+                    //Clear activity cache: 0,30s
+                    ActivityCache.ClearActivityCache();
+                }
+
+                bool allRefresh = ((e.Modifiers & Keys.Shift) != 0);
+                DateTime startTime = DateTime.Now;
+                int progressCount = 0;
+                if (allRefresh)
+                {
+                    //All recalc: 7,79s
+                    this.m_controller.Reset();
                 }
                 else
                 {
-                    if (e.Modifiers == Keys.Control)
+                    progressCount = m_controller.Activities.Count;
+                    //ReCalcAll will force recalc, so Alt have no effect
+                    if ((e.Modifiers & Keys.Alt) != 0)
                     {
-                        ActivityCache.ClearActivityCache();
-                    }
-
-                    bool allRefresh = e.Modifiers == Keys.Shift;
-                    int progressCount = 0;
-                    if (!allRefresh)
-                    {
-                        progressCount = m_controller.Activities.Count;
+                        //Single: 0,05s
                         this.m_controller.CurrentReset(false);
                     }
-                    else
-                    {
-                        this.m_controller.Reset();
-                    }
+                }
 
-                    System.Windows.Forms.ProgressBar progressBar = StartProgressBar(progressCount);
-                    this.m_controller.ReCalcTrails(allRefresh, progressBar);
-                    this.m_page.RefreshData(false);
-                    StopProgressBar();
+                System.Windows.Forms.ProgressBar progressBar = StartProgressBar(progressCount);
+                this.m_controller.ReCalcTrails(allRefresh, progressBar);
+                this.m_page.RefreshData(false);
+                StopProgressBar();
+
+                if (allRefresh)
+                {
+                    //For debugging, the tooltip can be overwritten by other info in list
+                    this.summaryListToolTip.Show((DateTime.Now - startTime).ToString(),
+                                  this.summaryList,
+                                  new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
+                                      Cursor.Current.Size.Width / 2,
+                                            this.summaryListCursorLocationAtMouseMove.Y),
+                                  this.summaryListToolTip.AutoPopDelay);
                 }
             }
             else if (e.KeyCode == Keys.S)

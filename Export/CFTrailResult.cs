@@ -33,7 +33,7 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Export
 {
-    public class CFTrailResult : ITrailResult
+    public sealed class CFTrailResult : ITrailResult
     {
         public CFTrailResult(TrailResult tr)
         {

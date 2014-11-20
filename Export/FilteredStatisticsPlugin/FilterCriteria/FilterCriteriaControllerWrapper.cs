@@ -36,10 +36,10 @@ namespace TrailsPlugin.Export  //FilteredStatisticsPlugin
                 DetectMethodsAndClasses();
                 m_PluginInstalled = true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 m_PluginInstalled = false;
-                throw e;
+                throw;
             }
         }
 

@@ -36,8 +36,9 @@ namespace TrailsPlugin.Data
 
         public Guid Id;
         public string Name;
+        public IActivity DefaultRefActivity = null;
         private IList<TrailGPSLocation> m_trailLocations = null;
-        private float m_radius;
+        private float m_radius = Data.Settings.DefaultRadius;
         private float m_minDistance = 0;
         private int   m_maxRequiredMisses = 0;
 
@@ -65,7 +66,6 @@ namespace TrailsPlugin.Data
         public Trail(Guid Id)
         {
             this.Id = Id;
-            m_radius = Data.Settings.DefaultRadius;
         }
 
         /// Copy a trail (same guid, but not auto attributes)

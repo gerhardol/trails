@@ -1506,6 +1506,21 @@ namespace TrailsPlugin.UI.Activity {
                     this.markCommonStretches();
                 }
             }
+            else if (e.KeyCode == Keys.D)
+            {
+                if (this.m_controller.PrimaryCurrentActivityTrail != null)
+                {
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        this.m_controller.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = null;
+                        this.m_page.RefreshData(true);
+                    }
+                    else
+                    {
+                        this.m_controller.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = this.m_controller.ReferenceActivity;
+                    }
+                }
+            }
             else if (e.KeyCode == Keys.E)
             {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))

@@ -96,6 +96,11 @@ namespace TrailsPlugin.Controller
                 {
                     this.m_activities = activities;
                 }
+                if (this.PrimaryCurrentActivityTrail != null && 
+                    !this.m_activities.Contains(this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity))
+                {
+                    this.m_activities.Add(this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity);
+                }
 
                 if (!keepSelectedTrail)
                 {
@@ -219,7 +224,7 @@ namespace TrailsPlugin.Controller
 
         public void SetCurrentActivityTrail(IList<ActivityTrail> activityTrails, bool manuallySet, System.Windows.Forms.ProgressBar progressBar)
         {
-            //Create a copy of the trails to set - could be the lists cleared
+            //Create a copy of the trails to set - could be that activityTrails is cleared in next step
             IList<ActivityTrail> activityTrails2 = new List<ActivityTrail>();
             foreach (ActivityTrail to in activityTrails)
             {
@@ -473,11 +478,20 @@ namespace TrailsPlugin.Controller
                 }
             }
 
-            //Last resort, use first activity
-            //This also covers the trivial situation with only one activity
             if (m_referenceActivity == null && this.m_activities.Count > 0)
             {
-                m_referenceActivity = this.m_activities[0];
+                if (this.PrimaryCurrentActivityTrail != null &&
+                    this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity != null)
+                {
+                    //Use the reference activity, already inserted for the trail
+                    this.m_referenceActivity = this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity;
+                }
+                else
+                {
+                    //Last resort, use first activity
+                    //This also covers the trivial situation with only one activity
+                    m_referenceActivity = this.m_activities[0];
+                }
             }
 
             //ref activity possibly changed - reset calculations

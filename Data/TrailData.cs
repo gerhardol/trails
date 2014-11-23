@@ -36,9 +36,8 @@ namespace TrailsPlugin.Data
             Data.Trail trail;
 
             //Splits Trail
-            trail = new Data.Trail(GUIDs.SplitsTrail);
+            trail = new Data.Trail(GUIDs.SplitsTrail, true);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
-            trail.Generated = true;
             trail.IsSplits = true;
             trail.IsCompleteActivity = true;
             trail.TrailType = Trail.CalcType.Splits;
@@ -46,34 +45,30 @@ namespace TrailsPlugin.Data
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
-            trail = new Data.Trail(GUIDs.ReferenceTrail);
+            trail = new Data.Trail(GUIDs.ReferenceTrail, true);
             trail.Name = Properties.Resources.Trail_Reference_Name;
-            trail.Generated = true;
             trail.IsReference = true;
             trail.IsCompleteActivity = true;
             trail.TrailPriority = -10;
             allTrails.Add(trail.Id, trail);
 
             //HighScore Trail
-            trail = new Data.Trail(GUIDs.HighScoreTrail);
+            trail = new Data.Trail(GUIDs.HighScoreTrail, true);
             trail.Name = Properties.Resources.HighScore_Trail;
-            trail.Generated = true;
             trail.TrailType = Trail.CalcType.HighScore;
             trail.TrailPriority = -100;
             allTrails.Add(trail.Id, trail);
 
             //UniqueRoutes Trail
-            trail = new Data.Trail(GUIDs.UniqueRoutesTrail);
+            trail = new Data.Trail(GUIDs.UniqueRoutesTrail, true);
             trail.Name = Properties.Resources.UniqueRoutes_Trail;
-            trail.Generated = true;
             trail.TrailType = Trail.CalcType.UniqueRoutes;
             trail.TrailPriority = -101;
             allTrails.Add(trail.Id, trail);
 
             //ElevationPoints Trail
-            trail = new Data.Trail(GUIDs.ElevationPointsTrail);
+            trail = new Data.Trail(GUIDs.ElevationPointsTrail, true);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation;
-            trail.Generated = true;
             trail.TrailType = Trail.CalcType.ElevationPoints;
             trail.TrailPriority = -102;
             trail.TrailLocations = new List<TrailGPSLocation>();

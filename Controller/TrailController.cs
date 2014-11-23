@@ -96,7 +96,8 @@ namespace TrailsPlugin.Controller
                 {
                     this.m_activities = activities;
                 }
-                if (this.PrimaryCurrentActivityTrail != null && 
+                if (this.PrimaryCurrentActivityTrail != null &&
+                    this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity != null &&
                     !this.m_activities.Contains(this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity))
                 {
                     this.m_activities.Add(this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity);
@@ -451,7 +452,6 @@ namespace TrailsPlugin.Controller
         //Called after activities are updated, before trail is selected/calculated
         internal IActivity checkReferenceActivity(System.Windows.Forms.ProgressBar progressBar)
         {
-            IActivity prevRefActivity = this.m_referenceActivity;
             bool moreChecks = true;
 
             //Should always follow the trail result, if it exists
@@ -459,17 +459,21 @@ namespace TrailsPlugin.Controller
             {
                 if (this.m_activities.Contains(this.m_referenceTrailResult.Activity))
                 {
-                    m_referenceActivity = m_referenceTrailResult.Activity;
+                    //The ref result is at least possible, set ref activity
+                    this.m_referenceActivity = m_referenceTrailResult.Activity;
+                    //Save last used activity
+                    this.m_referenceTrailResult.m_activityTrail.Trail.ReferenceActivity = m_referenceActivity;
+                    //skip a Contains check...
                     moreChecks = false;
                 }
                 else
                 {
-                    //Old result, not possible
-                    m_referenceTrailResult = null;
+                    //result not possible
+                    this.m_referenceTrailResult = null;
                 }
             }
 
-            //If no longer in activities, reset (if set from result or not does not matter)
+            //If refAct no longer in activities, reset (if set from result or not does not matter)
             if (moreChecks && m_referenceActivity != null)
             {
                 if (!this.m_activities.Contains(this.m_referenceActivity))
@@ -481,29 +485,46 @@ namespace TrailsPlugin.Controller
             if (m_referenceActivity == null && this.m_activities.Count > 0)
             {
                 if (this.PrimaryCurrentActivityTrail != null &&
-                    this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity != null)
+                    this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity != null &&
+                    this.m_activities.Contains(this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity))
                 {
-                    //Use the reference activity, already inserted for the trail
+                    //Switch back to a trail with prev activities (not used in most usage patterns, but from m_prevSelectedTrails)
+                    this.m_referenceActivity = this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity;
+                }
+                else if (this.PrimaryCurrentActivityTrail != null &&
+                         this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity != null)
+                {
+                    //Use the reference activity, must already have been inserted
                     this.m_referenceActivity = this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity;
                 }
+                else if (this.PrimaryCurrentActivityTrail == null)
+                {
+                    foreach (ActivityTrail at in this.m_prevSelectedTrails)
+                    {
+                        if (at.Trail.ReferenceActivity != null &&
+                            this.m_activities.Contains(at.Trail.ReferenceActivity))
+                        {
+                            //Switch back to a trail with prev activities (not used in most usage patterns)
+                            this.m_referenceActivity = at.Trail.ReferenceActivity;
+                            break;
+                        }
+                    }
+                }
+
                 else
                 {
                     //Last resort, use first activity
                     //This also covers the trivial situation with only one activity
-                    m_referenceActivity = this.m_activities[0];
+                    this.m_referenceActivity = this.m_activities[0];
                 }
             }
 
-            //ref activity possibly changed - reset calculations
-            if (this.m_referenceActivity != null && this.m_referenceActivity != prevRefActivity)
+            //ReferenceActivity trail: ref activity possibly changed - reset calculations
+            if (this.m_referenceActivity != null &&
+                this.m_referenceActivity != this.m_referenceActivityTrail.Trail.ReferenceActivity)
             {
-                bool calculated = this.m_referenceActivityTrail.Status != TrailOrderStatus.MatchNoCalc;
-                this.m_referenceActivityTrail.Init();
                 this.m_referenceActivityTrail.Trail.ReferenceActivity = m_referenceActivity;
-                if (calculated)
-                {
-                    this.m_referenceActivityTrail.CalcResults(progressBar);
-                }
+                this.m_referenceActivityTrail.Init();
             }
 
             return m_referenceActivity;

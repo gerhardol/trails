@@ -1508,7 +1508,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.D)
             {
-                if (this.m_controller.PrimaryCurrentActivityTrail != null)
+                if (this.m_controller.PrimaryCurrentActivityTrail != null &&
+                    !this.m_controller.PrimaryCurrentActivityTrail.Trail.Generated)
                 {
                     if (e.Modifiers == Keys.Shift)
                     {

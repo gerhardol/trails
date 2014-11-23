@@ -128,6 +128,7 @@ namespace TrailsPlugin.UI.Activity
 
         void InitControls()
         {
+            this.boxDefActivity.ButtonImage = CommonIcons.MenuCascadeArrowDown;
             this.btnAdd.BackgroundImage = CommonIcons.Add;
             this.btnAdd.Text = "";
             this.btnEdit.BackgroundImage = CommonIcons.Edit;
@@ -184,16 +185,20 @@ namespace TrailsPlugin.UI.Activity
             this.EList.ThemeChanged(visualTheme);
             this.TrailName.ThemeChanged(visualTheme);
             this.radiusBox.ThemeChanged(visualTheme);
+            this.boxDefActivity.ThemeChanged(visualTheme);
             this.editBox.ThemeChanged(visualTheme);
         }
 
         public void UICultureChanged(System.Globalization.CultureInfo culture)
         {
-            this.lblTrail.Text = Properties.Resources.TrailName;
+            this.lblTrail.Text = Properties.Resources.TrailName + ":";
             this.lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + ":";
+            this.lblDefActivity.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ":"; //TBD
+            this.toolTip.SetToolTip(this.lblDefActivity, "The default reference activity for the trail.");
             this.btnOk.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
             this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
             this.presentRadius();
+            this.presentDefAct();
             this.toolTip.SetToolTip(this.btnCopy, "Create a Copy of the Trail");
             this.toolTip.SetToolTip(this.btnExport, "Export Trail to Activity");
             this.toolTip.SetToolTip(this.btnRefresh, "Refresh Calculation");
@@ -659,6 +664,66 @@ namespace TrailsPlugin.UI.Activity
             this.m_layer.Refresh();
         }
 
+        private void presentDefAct()
+        {
+            if (this.m_TrailToEdit.DefaultRefActivity != null)
+            {
+                this.boxDefActivity.Text = this.m_TrailToEdit.DefaultRefActivity.StartTime.ToLongDateString() +
+                    " " + this.m_TrailToEdit.DefaultRefActivity.Name;
+            }
+            else
+            {
+                this.boxDefActivity.Text = "Automatic"; //TBD
+            }
+        }
+
+        private void boxDefActivity_ButtonClick(object sender, EventArgs e)
+        {
+            TreeListPopup treeListPopup = new TreeListPopup();
+            treeListPopup.ThemeChanged(m_visualTheme);
+            treeListPopup.Tree.Columns.Add(new TreeList.Column());
+
+            IList<object> acts = new List<object>{"Automatic"};//TBD: How to handle null activity?
+            System.Collections.IList currSel = new object[1] { acts[0] };
+            foreach (IActivity act in TrailResultWrapper.Activities(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
+            {
+                acts.Add(act);
+                if (act != null && act == this.Trail.DefaultRefActivity)
+                {
+                    currSel[0] = (IActivity)act;
+                }
+            }
+
+            treeListPopup.Tree.RowData = acts;
+#if ST_2_1
+            treeListPopup.Tree.Selected = currSel;
+#else
+            treeListPopup.Tree.SelectedItems = currSel;
+#endif
+            treeListPopup.Tree.LabelProvider = new ActivityDropdownLabelProvider();
+            treeListPopup.ItemSelected += new TreeListPopup.ItemSelectedEventHandler(boxDefActivity_ItemSelected);
+            treeListPopup.Popup(this.boxDefActivity.Parent.RectangleToScreen(this.boxDefActivity.Bounds));
+        }
+
+        private void boxDefActivity_ItemSelected(object sender, EventArgs e)
+        {
+            if (sender is TreeListPopup)
+            {
+                ((TreeListPopup)sender).Hide();
+            }
+
+            if ((((TreeListPopup.ItemSelectedEventArgs)e).Item) is string)
+            {
+                this.Trail.DefaultRefActivity = null;
+            }
+            else
+            {
+                IActivity t = ((IActivity)((TreeListPopup.ItemSelectedEventArgs)e).Item);
+                this.Trail.DefaultRefActivity = t;
+            }
+            presentDefAct();
+        }
+
         private void editBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Tab || e.KeyCode == Keys.Return)
@@ -930,5 +995,31 @@ namespace TrailsPlugin.UI.Activity
         //{
         //    this.m_TrailToEdit.IsAutoTryAll = !this.m_TrailToEdit.IsAutoTryAll;
         //}
+    }
+
+    public class ActivityDropdownLabelProvider : TreeList.ILabelProvider
+    {
+
+        public System.Drawing.Image GetImage(object element, TreeList.Column column)
+        {
+
+            return null;
+        }
+
+        public string GetText(object element, TreeList.Column column)
+        {
+            if (element != null && element is string)
+            {
+                return element as string; //TBD
+            }
+            if (!(element is IActivity))
+            {
+                return "";
+            }
+
+            IActivity act = element as IActivity;
+            string name = act.StartTime.ToLongDateString() + " " + act.Name;
+            return name;
+        }
     }
 }

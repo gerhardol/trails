@@ -235,6 +235,22 @@ namespace TrailsPlugin.Data
             return TrailResultWrapper.GetTrailResults(tn, true);
         }
 
+        public static IList<IActivity> Activities(IList<TrailResultWrapper> tn)
+        {
+            IList<IActivity> result = new List<IActivity>();
+            if (tn != null)
+            {
+                foreach (TrailResultWrapper tnp in tn)
+                {
+                    if(!result.Contains(tnp.Result.Activity))
+                    {
+                        result.Add(tnp.Result.Activity);
+                    }
+                }
+            }
+            return result;
+        }
+
         //Get all TrailResultWrapper (including children) for the provided TrailResult in the list
         //The check uses CompareTo() instead of Contains() as the result list may be for previous calculations
         public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> trws, IList<TrailResult> tr)

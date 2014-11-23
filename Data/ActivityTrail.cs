@@ -1606,6 +1606,7 @@ namespace TrailsPlugin.Data
                     return null;
             }
         }
+
         public string GetText(object element, TreeList.Column column)
         {
             ActivityTrail t = (ActivityTrail)element;
@@ -1655,6 +1656,7 @@ namespace TrailsPlugin.Data
             return name;
         }
     }
+
     public enum TrailOrderStatus
     {
         //<= InBound is inbound

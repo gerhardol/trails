@@ -27,11 +27,12 @@ use Storable qw(dclone);
 use LWP::Simple;
 binmode STDOUT, ":encoding(UTF-8)";
 
-my$csvArg='&output=csv&gid=3';
-my$savArg='&output=xls';
-my$localcopy="Resources.xls";
-#my$spreadsheetURL='https://spreadsheets.google.com/feeds/download/spreadsheets/Export?key=tNZna7OU_2RlRYv5Iv_csgg';
-my$spreadsheetURL='http://spreadsheets.google.com/ccc?key=tNZna7OU_2RlRYv5Iv_csgg';
+my $sheetId=3;
+my$spreadsheetURL='https://docs.google.com/spreadsheets/export?id=1gy-zMCf1eyEjX49F5ZcV4eZTDDsGC7qKJIfOMy7082c&';
+
+my$csvArg="exportFormat=csv&gid=$sheetId";
+my$savArg='exportFormat=xlsx';
+my$localcopy="Resources.xlsx";
 my$sav="$spreadsheetURL$savArg";
 my$verbose=1;
 if(defined $ENV{VERBOSE})

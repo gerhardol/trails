@@ -38,7 +38,8 @@ namespace TrailsPlugin.Data
         public string Name;
 
         //The default reference activity, only makes sense for non-auto trails
-        public IActivity DefaultRefActivity = null;
+        private IActivity m_DefaultRefActivity = null;
+        private string m_DefaultRefActivityString = null;
         //The activity defing the Reference trail.
         //Also used as an attempt to keep the selection for normal trails
         private IActivity m_referenceActivity = null;
@@ -207,6 +208,30 @@ namespace TrailsPlugin.Data
                         t.Radius = value;
                     }
                 }
+            }
+        }
+
+        public IActivity DefaultRefActivity
+        {
+            get
+            {
+                if (this.m_DefaultRefActivityString != null)
+                {
+                    foreach (IActivity act in TrailsPlugin.Plugin.GetApplication().Logbook.Activities)
+                    {
+                        if (this.m_DefaultRefActivityString.Equals(act.ReferenceId))
+                        {
+                            this.m_DefaultRefActivity = act;
+                            break;
+                        }
+                    }
+                    this.m_DefaultRefActivityString = null;
+                }
+                return this.m_DefaultRefActivity;
+            }
+            set
+            {
+                m_DefaultRefActivity = value;
             }
         }
 
@@ -575,15 +600,7 @@ namespace TrailsPlugin.Data
             }
             if (node.Attributes[xmlTags.sDefaultRefActivity] != null)
             {
-                string defAct = node.Attributes[xmlTags.sDefaultRefActivity].Value;
-                foreach(IActivity act in TrailsPlugin.Plugin.GetApplication().Logbook.Activities)
-                {
-                    if(defAct.Equals(act.ReferenceId))
-                    {
-                        trail.DefaultRefActivity = act;
-                        break;
-                    }
-                }
+                trail.m_DefaultRefActivityString = node.Attributes[xmlTags.sDefaultRefActivity].Value;
             }
 
             if (node.Attributes[xmlTags.sMinDistance] != null)

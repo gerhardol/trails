@@ -44,7 +44,7 @@
             this.TrailSelectorPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.TrailSelectorPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.TrailSelectorPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.TrailSelectorPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 26F));
+            this.TrailSelectorPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 33F));
             this.TrailSelectorPanel.Controls.Add(this.lblTrail, 0, 0);
             this.TrailSelectorPanel.Controls.Add(this.TrailName, 1, 0);
             this.TrailSelectorPanel.Controls.Add(this.btnAdd, 3, 0);
@@ -77,8 +77,8 @@
             // 
             this.TrailName.AcceptsReturn = false;
             this.TrailName.AcceptsTab = false;
-            this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TrailName.AutoSize = true;
             this.TrailName.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.TrailName.BackColor = System.Drawing.Color.White;
@@ -94,12 +94,10 @@
             this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TrailName.Size = new System.Drawing.Size(201, 18);
+            this.TrailName.Size = new System.Drawing.Size(191, 18);
             this.TrailName.TabIndex = 15;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TrailName.ButtonClick += new System.EventHandler(this.TrailName_ButtonClick);
-            //this.TrailName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TrailName_KeyDown);
-            //this.TrailName.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TrailName_KeyUp);
             // 
             // btnAdd
             // 
@@ -112,7 +110,7 @@
             this.btnAdd.HyperlinkStyle = false;
             this.btnAdd.ImageMargin = 2;
             this.btnAdd.LeftImage = null;
-            this.btnAdd.Location = new System.Drawing.Point(321, 3);
+            this.btnAdd.Location = new System.Drawing.Point(311, 3);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Padding = new System.Windows.Forms.Padding(2);
             this.btnAdd.PushStyle = true;
@@ -136,7 +134,7 @@
             this.btnEdit.HyperlinkStyle = false;
             this.btnEdit.ImageMargin = 2;
             this.btnEdit.LeftImage = null;
-            this.btnEdit.Location = new System.Drawing.Point(346, 3);
+            this.btnEdit.Location = new System.Drawing.Point(336, 3);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Padding = new System.Windows.Forms.Padding(2);
             this.btnEdit.PushStyle = true;

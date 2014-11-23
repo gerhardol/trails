@@ -69,6 +69,7 @@ namespace TrailsPlugin.UI.Activity
         {
             InitializeComponent();
         }
+
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller,
 #if ST_2_1
           Object view, UI.MapLayers.MapControlLayer layer)
@@ -104,11 +105,13 @@ namespace TrailsPlugin.UI.Activity
             toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
             this.lblTrail.Text = Properties.Resources.TrailName + ":";
         }
+
         public void ThemeChanged(ITheme visualTheme)
         {
             m_visualTheme = visualTheme;
             TrailName.ThemeChanged(visualTheme);
         }
+
         private bool m_showPage = false;
         public bool ShowPage
         {

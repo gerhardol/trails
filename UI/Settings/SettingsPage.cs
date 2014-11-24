@@ -81,7 +81,7 @@ namespace TrailsPlugin.UI.Settings {
 
         public string Title {
             get {
-                return Properties.Resources.TrailsName;
+                return Properties.Resources.PluginTitle;
             }
         }
 

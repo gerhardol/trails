@@ -172,6 +172,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trails.
+        /// </summary>
+        internal static string PluginTitle {
+            get {
+                return ResourceManager.GetString("PluginTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Required.
         /// </summary>
         internal static string Required {
@@ -301,15 +310,6 @@ namespace TrailsPlugin.Properties {
         internal static string TrailPointsControlLayer {
             get {
                 return ResourceManager.GetString("TrailPointsControlLayer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Trails.
-        /// </summary>
-        internal static string TrailsName {
-            get {
-                return ResourceManager.GetString("TrailsName", resourceCulture);
             }
         }
         

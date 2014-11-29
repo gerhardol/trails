@@ -457,18 +457,5 @@ namespace TrailsPlugin.UI.Activity
             GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3 * t.Trail.Radius);
             m_layer.SetLocation(area);
         }
-
-        private void TrailSelectorPanel_SizeChanged(object sender, EventArgs e) {
-            // autosize column doesn't seem to be working.
-            //Sizing is flaky in general
-            float width = 0;
-            for (int i = 0; i < TrailSelectorPanel.ColumnStyles.Count; i++) {
-                if (i != 1) {
-                    width += this.TrailSelectorPanel.ColumnStyles[i].Width;
-                }
-            }
-            this.TrailSelectorPanel.ColumnStyles[1].SizeType = SizeType.Absolute;
-            this.TrailSelectorPanel.ColumnStyles[1].Width = this.TrailSelectorPanel.Width - width;
-        }
     }
 }

@@ -60,8 +60,6 @@
             this.SummaryPanel.Name = "SummaryPanel";
             this.SummaryPanel.Size = new System.Drawing.Size(400, 80);
             this.SummaryPanel.TabIndex = 1;
-            this.SummaryPanel.SizeChanged += new System.EventHandler(SummaryPanel_SizeChanged);
-            //this.SummaryPanel.HandleCreated += new System.EventHandler(SummaryPanel_HandleCreated);
             // 
             // summaryList
             // 

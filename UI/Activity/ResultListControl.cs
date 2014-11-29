@@ -1793,17 +1793,6 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void SummaryPanel_SizeChanged(object sender, System.EventArgs e)
-        {
-            //Not working
-            //if (!changedSizeAfterCreation && m_page != null)
-            //{
-            //    //By default, list is too big, even if set when activities are updated
-            //    changedSizeAfterCreation = true;
-            //    SummaryPanel_HandleCreated(sender, e);
-            //}
-        }
-
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
         bool summaryListTooltipDisabled = false; // is set to true, whenever a tooltip would be annoying, e.g. while a context menu is shown
         System.Drawing.Point summaryListCursorLocationAtMouseMove;

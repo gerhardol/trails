@@ -999,10 +999,8 @@ namespace TrailsPlugin.UI.Activity
 
     public class ActivityDropdownLabelProvider : TreeList.ILabelProvider
     {
-
         public System.Drawing.Image GetImage(object element, TreeList.Column column)
         {
-
             return null;
         }
 

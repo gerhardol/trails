@@ -1221,7 +1221,7 @@ namespace TrailsPlugin.UI.Activity {
             p.ShowDialog();
         }
 
-        private TrailResult GetSelectedTrailResults()
+        private TrailResult GetSingleSelectedTrailResult()
         {
             TrailResult tr = null;
             IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
@@ -1253,24 +1253,31 @@ namespace TrailsPlugin.UI.Activity {
             return tr;
         }
 
+        private IList<TrailsItemTrackSelectionInfo> GetSelections()
+        {
+            IList<TrailsItemTrackSelectionInfo> res = new List<TrailsItemTrackSelectionInfo>();
+            IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
+            if (atr == null || atr.Count == 0)
+            {
+                atr = new List<TrailResultWrapper> { this.GetSummary() };
+            }
+
+            foreach (TrailResultWrapper t in atr)
+            {
+                //Special handling for Summary, faking selection
+                TrailResultMarked trm = new TrailResultMarked(t.Result);
+                res.Add(TrailResultMarked.SelInfoUnion(new List<TrailResultMarked> { new TrailResultMarked(t.Result) }));
+            }
+
+            return res;
+        }
+
         void PerformancePredictorPopup()
         {
             if (PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
-                TrailResult tr = GetSelectedTrailResults();
-                IList<IActivity> activities;
-                if (tr != null)
-                {
-                    if (tr is SummaryTrailResult)
-                    {
-                        activities = ((SummaryTrailResult)tr).Activities;
-                    }
-                    else
-                    {
-                        activities = new List<IActivity> { tr.Activity };
-                    }
-                    PerformancePredictor.PerformancePredictorPopup(activities, m_view, tr.Duration, tr.Distance, null);
-                }
+                IList<TrailsItemTrackSelectionInfo> sels = GetSelections();
+                PerformancePredictor.PerformancePredictorPopup(sels, m_view, null);
             }
         }
 
@@ -1278,11 +1285,11 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (HighScore.HighScoreIntegrationEnabled)
             {
-                TrailResult tr = GetSelectedTrailResults();
-                IList<IActivity> activities = new List<IActivity>();
-                IList<IValueRangeSeries<DateTime>> pauses = new List<IValueRangeSeries<DateTime>>();
+                TrailResult tr = GetSingleSelectedTrailResult();
                 if (tr != null)
                 {
+                    IList<IActivity> activities = new List<IActivity>();
+                    IList<IValueRangeSeries<DateTime>> pauses = new List<IValueRangeSeries<DateTime>>();
                     if (tr is SummaryTrailResult)
                     {
                         foreach (TrailResult t in ((SummaryTrailResult)tr).Results)

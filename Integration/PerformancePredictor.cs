@@ -23,9 +23,7 @@ using System.Reflection;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
-#if ST_2_1
 using TrailsPlugin.Data;
-#endif
 
 //Similar file used in Matrix, Trails, Overlay
 namespace TrailsPlugin.Integration
@@ -38,7 +36,7 @@ namespace TrailsPlugin.Integration
         private const string _PerformancePredictorPopup = "PerformancePredictorPopup";
         private const string _PerformancePredictorFields = "getResults";
 
-        private static readonly System.Version minVersion = new System.Version(2, 0, 410, 0);
+        private static readonly System.Version minVersion = new System.Version(2, 0, 466, 0);
         private static System.Version currVersion = new System.Version(0, 0, 0, 0);
         private static bool testedPerformancePredictor = false;
 
@@ -100,14 +98,23 @@ namespace TrailsPlugin.Integration
             public IList<Predicted> predicted;
         }
 
-        public static void PerformancePredictorPopup(IList<IActivity> activities, IDailyActivityView view, TimeSpan time, double distance, System.Windows.Forms.ProgressBar progressBar)
+
+        public static void PerformancePredictorPopup(IList<TrailsItemTrackSelectionInfo> selections, IDailyActivityView view, System.Windows.Forms.ProgressBar progressBar)
         {
             try
             {
                 if (GetPerformancePredictor != null)
                 {
+                    IList<IItemTrackSelectionInfo> sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionToST(selections);
+                    IList<IActivity> activities = new List<IActivity>();
+                    foreach (TrailsItemTrackSelectionInfo t in selections)
+                    {
+                        //Should not matter if activities are added in order, 
+                        //but activity is "lost" as string in IItemTrackSelectionInfo, supply possible activities
+                        activities.Add(t.Activity);
+                    }
                     MethodInfo methodInfo = GetPerformancePredictor.GetMethod(_PerformancePredictorPopup);
-                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, view, time, distance, progressBar });
+                    object resultFromPlugIn = methodInfo.Invoke(null, new object[] { activities, sels, view, progressBar });
                 }
             }
             catch (Exception e)
@@ -125,7 +132,7 @@ namespace TrailsPlugin.Integration
         }
 
         //relatve fast call for 2150 activities, 0.03s called individually, 0.0016s called for all
-        //369 8(7)ms no utopia, 402 16 (9) ms w utopia
+        //369 8(7)ms no ideal, 402 16 (9) ms w ideal
         public static IList<PerformancePredictorResult> PerformancePredictorFields(IList<IActivity> activities, IList<double> times, IList<double> distances, IList<double> predictDistances, IList<double> times2, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<PerformancePredictorResult> results = null;

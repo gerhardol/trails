@@ -27,8 +27,21 @@ namespace TrailsPlugin.Data {
         public TrailResultMarked(TrailResult tr)
         {
             this.trailResult = tr;
-            this.selInfo.MarkedTimes = tr.getSelInfo(true);
-            this.selInfo.Activity = tr.Activity;
+            if (tr is SummaryTrailResult)
+            {
+                //Just fake a selection, dont care if time is enough...
+                this.selInfo.Activity = Controller.TrailController.Instance.ReferenceActivity;
+                this.selInfo.MarkedTimes = new ValueRangeSeries<DateTime>();
+                this.selInfo.MarkedTimes.Add(new ValueRange<DateTime>(
+                    this.selInfo.Activity.StartTime,
+                    ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                          this.selInfo.Activity.StartTime, tr.Duration, this.selInfo.Activity.TimerPauses)));
+            }
+            else
+            {
+                this.selInfo.MarkedTimes = tr.getSelInfo(true);
+                this.selInfo.Activity = tr.Activity;
+            }
         }
 
         public TrailResultMarked(TrailResult tr, IValueRangeSeries<DateTime> t)
@@ -83,6 +96,7 @@ namespace TrailsPlugin.Data {
             {
                 result.Union(trm.selInfo);
                 result.Activity = trm.trailResult.Activity; //TODO: verfify only one activity
+                if (result.Activity == null) { result.Activity = trm.selInfo.Activity;  }
             }
             return result;
         }

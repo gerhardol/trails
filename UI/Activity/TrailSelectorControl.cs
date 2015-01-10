@@ -175,7 +175,7 @@ namespace TrailsPlugin.UI.Activity
             ICollection<IMapControlObject> selectedGPS = null;
             if (null != mapControl) { selectedGPS = mapControl.Selected; }
 #else
-            IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities, true);
+            IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionFromST(m_view.RouteSelectionProvider.SelectedItems, m_page.ViewActivities);
 #endif
 
             //copying the existing result if generated, popup new empty trail otherwise

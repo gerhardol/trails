@@ -686,26 +686,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void RouteSelectionProvider_SelectedItemsUpdate(IList<TrailResultMarked> res)
         {
-            IList<IItemTrackSelectionInfo> sels;
-            if (res == null)
-            {
-                sels = new List<IItemTrackSelectionInfo>();
-            }
-            else
-            {
-                //ST internal marking, use common marking
-                //Only one activity, OK to merge selections on one track
-                TrailsItemTrackSelectionInfo sel = TrailResultMarked.SelInfoUnion(res);
-                IList<IActivity> activities = new List<IActivity>();
-                foreach (TrailResultMarked trm in res)
-                {
-                    if (!activities.Contains(trm.selInfo.Activity))
-                    {
-                        activities.Add(trm.selInfo.Activity);
-                    }
-                }
-                sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { sel }, activities, false);
-            }
+            IList<IItemTrackSelectionInfo> sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionToST(res);
             RouteSelectionProvider_SelectedItemsUpdate(sels);
         }
 
@@ -748,7 +729,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     IList<IActivity> activities = this.ViewActivities; //Should be ViewSingleActivity
 
-                    IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(selected.SelectedItems, activities, true);
+                    IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionFromST(selected.SelectedItems, activities);
                     foreach(IItemTrackSelectionInfo t in selectedGPS)
                     {
                         //Only one item in the list

@@ -535,7 +535,7 @@ namespace TrailsPlugin.UI.Activity
             //If a point is selected on the track, use it instead
             IList<IActivity> activities = new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity };
             IList<IItemTrackSelectionInfo> selectedGPS =
-                        TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(m_view.RouteSelectionProvider.SelectedItems, activities, true);
+                        TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionFromST(m_view.RouteSelectionProvider.SelectedItems, activities);
             if (TrailsItemTrackSelectionInfo.ContainsData(selectedGPS))
             {
                 IList<TrailGPSLocation> loc = TrailSelectorControl.getGPS(this.Trail, activities, selectedGPS);

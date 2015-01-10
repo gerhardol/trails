@@ -25,6 +25,8 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Algorithm;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
 
+using GpsRunningPlugin.Util;
+
 namespace TrailsPlugin.Data
 {
     //Class to have the same interface as when selecting items on the track
@@ -115,8 +117,56 @@ namespace TrailsPlugin.Data
 
         //SelectedDistances from ST core is in Activity without pauses distance
         //Add SelectedTime instead
-        public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelection
-            (IList<IItemTrackSelectionInfo> selected, IList<IActivity> activities, bool fromST)
+        public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelectionToST(IList<TrailResultMarked> res)
+        {
+            IList<IItemTrackSelectionInfo> sels;
+            if (res == null)
+            {
+                sels = new List<IItemTrackSelectionInfo>();
+            }
+            else
+            {
+                //ST internal marking, use common marking
+                //Only one activity, OK to merge selections on one track
+                TrailsItemTrackSelectionInfo sel = TrailResultMarked.SelInfoUnion(res);
+                IList<IActivity> activities = new List<IActivity>();
+                foreach (TrailResultMarked trm in res)
+                {
+                    if (!activities.Contains(trm.selInfo.Activity))
+                    {
+                        activities.Add(trm.selInfo.Activity);
+                    }
+                }
+                sels = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelection(new IItemTrackSelectionInfo[] { sel }, activities, false);
+            }
+            return sels;
+        }
+
+        public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelectionToST
+            (TrailsItemTrackSelectionInfo selected)
+        {
+            return SetAndAdjustFromSelectionToST(new List<TrailsItemTrackSelectionInfo> { selected });
+        }
+
+        public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelectionToST
+    (IList<TrailsItemTrackSelectionInfo> selected)
+        {
+            IList<IItemTrackSelectionInfo> sels = new List<IItemTrackSelectionInfo>();
+            foreach (TrailsItemTrackSelectionInfo t in selected)
+            {
+                sels.Add(t);
+            }
+            return SetAndAdjustFromSelection(sels, null, false);
+        }
+
+        public static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelectionFromST
+            (IList<IItemTrackSelectionInfo> selected, IEnumerable<IActivity> activities)
+        {
+           return SetAndAdjustFromSelection(selected, activities, true);
+        }
+
+        private static IList<IItemTrackSelectionInfo> SetAndAdjustFromSelection
+            (IList<IItemTrackSelectionInfo> selected, IEnumerable<IActivity> activities, bool fromST)
         {
             if (selected == null || selected.Count == 0 || activities == null)
             {
@@ -128,45 +178,47 @@ namespace TrailsPlugin.Data
                 selected[0].MarkedTimes != null && selected[0].MarkedTimes.Count > 1);
 
             IList<IItemTrackSelectionInfo> results = new List<IItemTrackSelectionInfo>();
-            for(int i = 0; i < selected.Count; i++)
+            foreach (IItemTrackSelectionInfo sel in selected)
             {
                 IActivity activity = null;
-                if (fromST)
+                if (sel is TrailsItemTrackSelectionInfo)
                 {
+                    activity = ((TrailsItemTrackSelectionInfo)sel).Activity;
+                }
+                else
+                {
+                    if (activities == null)
+                    {
+                        activities = UnitUtil.GetApplication().Logbook.Activities;
+                    }
                     foreach (IActivity a in activities)
                     {
                         //In ST3.0.4068 (at least) only one activity is selected
-                        if (a != null && selected[i].ItemReferenceId == a.ReferenceId)
+                        if (a != null && sel.ItemReferenceId == a.ReferenceId)
                         {
                             activity = a;
                             break;
                         }
                     }
                 }
-                else
-                {
-                    if (selected[i] is TrailsItemTrackSelectionInfo)
-                    {
-                        activity = ((TrailsItemTrackSelectionInfo)selected[i]).Activity;
-                    }
-                }
+
                 if (activity != null)
                 {
                         //The distance is in unstopped/unpaused format
                     IDistanceDataTrack activityUnpausedDistanceMetersTrack =
                         ActivityInfoCache.Instance.GetInfo(activity).ActualDistanceMetersTrack;
                     TrailsItemTrackSelectionInfo tmpSel = new TrailsItemTrackSelectionInfo();
-                    tmpSel.SetFromSelection(selected[i], activity);
+                    tmpSel.SetFromSelection(sel, activity);
 
                     if (fromST)
                     {
                         //Set MarkedTimes (or SelectedTime), used internally. No need to clear "unused"
-                        if (selected[i].MarkedDistances != null && selected[i].MarkedDistances.Count > 0 && 
-                            (selected[i].MarkedTimes == null || selected[i].MarkedTimes.Count == 0))
+                        if (sel.MarkedDistances != null && sel.MarkedDistances.Count > 0 && 
+                            (sel.MarkedTimes == null || sel.MarkedTimes.Count == 0))
                         {
                             try
                             {
-                                foreach (ValueRange<double> t in selected[i].MarkedDistances)
+                                foreach (ValueRange<double> t in sel.MarkedDistances)
                                 {
                                     DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Lower);
                                     DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(t.Upper);
@@ -176,22 +228,22 @@ namespace TrailsPlugin.Data
                             }
                             catch { }
                         }
-                        if (selected[i].SelectedTime != null && selected[i].MarkedTimes == null)
+                        if (sel.SelectedTime != null && sel.MarkedTimes == null)
                         {
                             try
                             {
-                                AddMarkedOrSelectedTime(tmpSel, singleSelection, selected[i].SelectedTime.Lower, selected[i].SelectedTime.Upper);
+                                AddMarkedOrSelectedTime(tmpSel, singleSelection, sel.SelectedTime.Lower, sel.SelectedTime.Upper);
                                 tmpSel.SelectedTime = null;
                             }
                             catch { }
                         }
-                        if (selected[i].SelectedDistance != null && selected[i].MarkedTimes == null)
+                        if (sel.SelectedDistance != null && sel.MarkedTimes == null)
                         {
                             tmpSel.MarkedTimes = new ValueRangeSeries<DateTime>();
                             try
                             {
-                                DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Lower);
-                                DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(selected[i].SelectedDistance.Upper);
+                                DateTime d1 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(sel.SelectedDistance.Lower);
+                                DateTime d2 = activityUnpausedDistanceMetersTrack.GetTimeAtDistanceMeters(sel.SelectedDistance.Upper);
                                 AddMarkedOrSelectedTime(tmpSel, singleSelection, d1, d2);
                                 tmpSel.SelectedDistance = null;
                             }
@@ -202,13 +254,13 @@ namespace TrailsPlugin.Data
                     {
                         //To ST
                         //The standard in the plugin(time) to standard in ST core and omb's Track Coloring (unpaused distance)
-                        if (selected[i].MarkedDistances == null &&
-                            selected[i].MarkedTimes != null && selected[i].MarkedTimes.Count > 0)
+                        if (sel.MarkedDistances == null &&
+                            sel.MarkedTimes != null && sel.MarkedTimes.Count > 0)
                         {
                             try
                             {
                                 tmpSel.MarkedDistances = new ValueRangeSeries<double>();
-                                foreach (ValueRange<DateTime> t in selected[i].MarkedTimes)
+                                foreach (ValueRange<DateTime> t in sel.MarkedTimes)
                                 {
                                     double d1 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Lower).Value;
                                     double d2 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Upper).Value;
@@ -218,14 +270,14 @@ namespace TrailsPlugin.Data
                             }
                             catch { }
                         }
-                        if (selected[i].SelectedDistance == null &&
-                            selected[i].SelectedTime != null)
+                        if (sel.SelectedDistance == null &&
+                            sel.SelectedTime != null)
                         {
                             try
                             {
                                 tmpSel.SelectedDistance = new ValueRange<double>(
-                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(selected[i].SelectedTime.Lower).Value,
-                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(selected[i].SelectedTime.Upper).Value);
+                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(sel.SelectedTime.Lower).Value,
+                                            activityUnpausedDistanceMetersTrack.GetInterpolatedValue(sel.SelectedTime.Upper).Value);
                                 tmpSel.SelectedTime = null;
                             }
                             catch { }
@@ -372,6 +424,7 @@ namespace TrailsPlugin.Data
             }
             return string.Empty;
         }
+
         private TrailsItemTrackSelectionInfo FirstSelection()
         {
             //Many commands can only handle one selection - this will set only one of them

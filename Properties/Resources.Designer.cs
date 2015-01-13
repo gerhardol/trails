@@ -539,7 +539,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Press {0} to add the selected points to current trail, {1} to add a new trail..
+        ///   Looks up a localized string similar to Press {0} to add the current activity as a new trail, {1} to add the selected points new trail.
+        /// </summary>
+        internal static string UI_Activity_Page_AddTrail_Generated {
+            get {
+                return ResourceManager.GetString("UI_Activity_Page_AddTrail_Generated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press {0} to add the selected points to the current trail, {1} to add a new trail..
         /// </summary>
         internal static string UI_Activity_Page_AddTrail_Replace {
             get {

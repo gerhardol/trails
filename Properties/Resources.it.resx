@@ -59,8 +59,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="TrailsName" xml:space="preserve">
-    <comment>ActivityPage title</comment>
+  <data name="PluginTitle" xml:space="preserve">
+    <comment>ActivityPage title, Normally not translated</comment>
     <value>Trails</value>
   </data>
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
@@ -130,6 +130,7 @@ Il cambiamento di questo valore non avrà effetto sui Trail esistenti.</value>
     <value>Grafici di Trail</value>
   </data>
   <data name="TrailName" xml:space="preserve">
+    <comment>Name of 'trail' in GUI</comment>
     <value>Trail</value>
   </data>
   <data name="ApplicationName" xml:space="preserve">

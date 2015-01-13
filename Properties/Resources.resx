@@ -192,7 +192,7 @@ Changing this value will not effect existing trails.</value>
     <value>..\Resources\ZoomToContent.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
-    <value>Press {0} to add the selected points to current trail, {1} to add a new trail.</value>
+    <value>Press {0} to add the selected points to the current trail, {1} to add a new trail.</value>
   </data>
   <data name="TrailPointsControlLayer" xml:space="preserve">
     <value>Trail Points</value>
@@ -341,5 +341,8 @@ Make sure that {1} is installed.</value>
   </data>
   <data name="UniqueRoutes_Trail" xml:space="preserve">
     <value>UniqueRoutes</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_Generated" xml:space="preserve">
+    <value>Press {0} to add the current activity as a new trail, {1} to add the selected points new trail</value>
   </data>
 </root>

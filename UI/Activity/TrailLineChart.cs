@@ -1563,8 +1563,17 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         if (XAxisReferential == XAxisValue.Time)
                         {
-                            tr.Activity.StartTime += TimeSpan.FromSeconds(tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult) -
-                                (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                            DateTime t1 = tr.Activity.StartTime;
+                            DateTime t2 = t1 + TimeSpan.FromSeconds(tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult) -
+                                    (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                            String s = "Adjust starttime on activity " + t1.ToLocalTime().ToString() + " to " + t2.ToLocalTime().ToString() + "?";
+                            DialogResult popRes = MessageDialog.Show(string.Format(s,
+                            CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
+                               "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            if (popRes == DialogResult.Yes)
+                            {
+                                tr.Activity.StartTime = t2;
+                            }
                         }
                         else
                         { //TBD, not needed?

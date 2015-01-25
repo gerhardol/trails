@@ -557,7 +557,7 @@ namespace TrailsPlugin.UI.Activity {
                         TrackUtil.ChartResultConvert(this.XAxisReferential == XAxisValue.Time, this.XAxisReferential == XAxisValue.Time,
                                 IsTrailPointOffset(tr), this.m_prevSelectedResult, tr, this.ReferenceTrailResult, t);
                         bool sameRange = false;
-                        if (!float.IsNaN(t[0]) && !float.IsNaN(t[0]))
+                        if (!float.IsNaN(t[0]) && !float.IsNaN(t[1]))
                         {
                             //There was an overlap, use it (otherwise keep the time/distance)
                             this.m_prevSelectedRange = t;
@@ -732,6 +732,37 @@ namespace TrailsPlugin.UI.Activity {
                     SetSelectedResultRegions(markedRange, false, ref toolTipShown);
                 }
             }
+        }
+
+        private float getSelectedInterval()
+        {
+            float res = 0;
+            if (this.m_selectedDataSeries >= 0)
+            {
+                float[] range = new float[2];
+                this.MainChart.DataSeries[this.m_selectedDataSeries].GetSelectedRange(out range[0], out range[1]);
+
+                if (!float.IsNaN(range[0]) && !float.IsNaN(range[1]))
+                {
+                    res = range[1] - range[0];
+                }
+                if (!float.IsNaN(this.m_firstRangeSelected))
+                {
+                    if (this.m_firstRangeSelected > range[0])
+                    {
+                        res = -res;
+                    }
+                }
+                if (res != 0)
+                {
+                    if (XAxisReferential != XAxisValue.Time)
+                    {
+                        //no conversion needed for time
+                        res = (float)TrackUtil.DistanceConvertTo(res, this.ReferenceTrailResult);
+                    }
+                }
+            }
+            return res;
         }
 
         //Could use TrailResultMarked, but a selection of the track cannot be marked in multi mode
@@ -1559,13 +1590,22 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         tr = this.m_trailResults[0];
                     }
-                    if (tr != null && this.ReferenceTrailResult != null)
+                    if (tr != null)
                     {
                         if (XAxisReferential == XAxisValue.Time)
                         {
                             DateTime t1 = tr.Activity.StartTime;
-                            DateTime t2 = t1 + TimeSpan.FromSeconds(tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult) -
-                                    (tr.StartTime - this.ReferenceTrailResult.StartTime).TotalSeconds);
+                            TimeSpan offset = TimeSpan.FromSeconds(tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult));
+                            //"pending offset" for now require to set the offset first
+                            //offset += TimeSpan.FromSeconds(getSelectedInterval());
+
+                            DateTime t2 = t1 + offset;
+                            //if (this.ReferenceTrailResult != null && !tr.Equals(this.ReferenceTrailResult) && !tr.AnyOverlap(this.ReferenceTrailResult)
+                            //    && tr.m_activityTrail.Trail.IsSplits)
+                            //{
+                            //    //_May_ be completely incorrect time, should not be time/of/day display
+                            //    t2 -= (tr.StartTime - this.ReferenceTrailResult.StartTime);
+                            //}
                             String s = "Adjust starttime on activity " + t1.ToLocalTime().ToString() + " to " + t2.ToLocalTime().ToString() + "?";
                             DialogResult popRes = MessageDialog.Show(string.Format(s,
                             CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
@@ -1582,31 +1622,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if ((e.Modifiers & Keys.Alt) > 0)
                 {
-                    if (this.m_selectedDataSeries >= 0)
-                    {
-                        float[] range = new float[2];
-                        this.MainChart.DataSeries[this.m_selectedDataSeries].GetSelectedRange(out range[0], out range[1]);
-
-                        if (!float.IsNaN(range[0]) && !float.IsNaN(range[0]))
-                        {
-                            if (XAxisReferential == XAxisValue.Time)
-                            {
-                                smoothStep = (int)(range[1] - range[0]);
-                            }
-                            else
-                            {
-                                smoothStep = (int)TrackUtil.DistanceConvertTo(range[1] - range[0], this.ReferenceTrailResult);
-                            }
-                            if (!float.IsNaN(this.m_firstRangeSelected))
-                            {
-                                if (this.m_firstRangeSelected > range[0])
-                                {
-                                    //Change +/- with shift too
-                                    smoothStep = -smoothStep;
-                                }
-                            }
-                        }
-                    }
+                    smoothStep = (int)getSelectedInterval();
                 }
                 else
                 {

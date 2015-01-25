@@ -604,7 +604,13 @@ namespace TrailsPlugin.Data
         //Result to activity
         public DateTime getDateTimeFromTimeResult(float t)
         {
-            DateTime dateTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(this.StartTime, TimeSpan.FromSeconds(t), Pauses);
+            DateTime dateTime = DateTime.MinValue;
+            try
+            {
+                dateTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(this.StartTime, TimeSpan.FromSeconds(t), Pauses);
+            }
+            catch 
+            { }
             return adjustTimeToLimits(dateTime);
         }
 

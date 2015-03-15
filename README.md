@@ -15,11 +15,11 @@ Trails plugin is all about comparing parts 'trails' in activities.
   * [SportTracks](http://www.zonefivesoftware.com/SportTracks)
 
 # Documentation #
-  * [Getting Started](http://github.com/gerhardol/trails/wiki/master/Tutorials)
-  * [Features explained](http://github.com/gerhardol/trails/wiki/master/Features)
+  * [Getting Started](http://github.com/gerhardol/trails/wiki/Tutorials)
+  * [Features explained](http://github.com/gerhardol/trails/wiki/Features)
 
-  * [Change Log](http://github.com/gerhardol/trails/blob/master/Changes)
-  * [Credits](http://github.com/gerhardol/trails/wiki/master/Credits)
+  * [Change Log](http://github.com/gerhardol/trails/blob/master/Changes.md)
+  * [Credits](http://github.com/gerhardol/trails/wiki/Credits)
 
 # Downloads #
   * Latest recommended version from [SportTracks Plugin Page](http://www.zonefivesoftware.com/sporttracks/plugins/?p=trails)

@@ -241,7 +241,7 @@ Use [Keyboard shortcut Shift-'t'](Features#result-list) to insert activities wit
 1.0.566 2012-08-05
   * Editing Trails with drag&drop did not work with Google Maps due to limitation in ST API. Workaround implemented.
   * Integration with PerformancePredictor and HighScore Plugins.
-    * Popups calculated the Trail Results (not necessarily the complete distance). See [analyze-in-highscore) and [Features#Analyze in PerformancePredictor](Features#analyze-in-performancepredictor).
+    * Popups calculated the Trail Results (not necessarily the complete distance). See [analyze-in-highscore) and [Analyze in PerformancePredictor](Features#analyze-in-performancepredictor).
     * Predict Performance on one distance (default 10km) in the result list
   * Stopped Time can be excluded for certain activities only. See [ExcludeStoppedCategory](Features#excludestoppedcategory).
 
@@ -431,7 +431,7 @@ Use [Keyboard shortcut Shift-'t'](Features#result-list) to insert activities wit
   * Tweaked colors slightly for charts used for single activities, to better match ST default.
 
 0.8.331 2011-04-15
-  * resync chart at trail points. Use chart keyboard shortcut 't'. See the documentation: /Features#Trailpoint_Synchronization
+  * resync chart at trail points. Use chart keyboard shortcut 't'. See the documentation: [Trailpoint_Synchronization](Features#trailpoint-synchronization)
 
 0.8.328 2011-04-14
   * Non-GPS activities support

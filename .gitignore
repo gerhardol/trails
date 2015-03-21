@@ -1,0 +1,9 @@
+.svn
+*.stplugin
+*.st3plugin
+obj/
+*.suo
+bin/
+_UpgradeReport_Files/
+*.csproj.user
+/trails.wiki

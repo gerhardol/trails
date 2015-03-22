@@ -1,6 +1,6 @@
-Trails Plugin is a [SportTracks](http://www.zonefivesoftware.com/SportTracks/) plugin allows analysis of data in SportTracks by **trail** without modifying activity data.
+Trails Plugin is a [SportTracks](http://www.zonefivesoftware.com/SportTracks) plugin allows analysis of data in SportTracks by **trail** without modifying activity data.
 
-![](/gerhardol/trails/wiki/master/images/overview.png)
+![](/gerhardol/trails/wiki/images/overview.png)
 
 Trails plugin is all about comparing parts 'trails' in activities.
 
@@ -15,11 +15,11 @@ Trails plugin is all about comparing parts 'trails' in activities.
   * [SportTracks](http://www.zonefivesoftware.com/SportTracks)
 
 # Documentation #
-  * [Getting Started](http://github.com/gerhardol/trails/wiki/Tutorials)
-  * [Features explained](http://github.com/gerhardol/trails/wiki/Features)
+  * [Getting Started](/gerhardol/trails/wiki/Tutorials)
+  * [Features explained](/gerhardol/trails/wiki/Features)
 
-  * [Change Log](http://github.com/gerhardol/trails/blob/master/Changes.md)
-  * [Credits](http://github.com/gerhardol/trails/wiki/Credits)
+  * [Change Log](/gerhardol/trails/blob/master/Changes)
+  * [Credits](/gerhardol/trails/wiki/Credits)
 
 # Downloads #
   * Latest recommended version from [SportTracks Plugin Page](http://www.zonefivesoftware.com/sporttracks/plugins/?p=trails)
@@ -27,6 +27,6 @@ Trails plugin is all about comparing parts 'trails' in activities.
   * Older releases: [Google Code](https://code.google.com/p/trails/downloads/list) Contains versions for older SportTracks versions, but functionality is limited.
   * A beta may be available here (not necessarily newer than the latest release): [beta](http://web.comhem.se/gerhardo/st/TrailsPlugin-beta.st3plugin.zip) (remove the .zip suffix after downloading)
 
-Patches are welcome. See [Developers](Developers) wiki for hints to get started.
+Patches are welcome. See [Developers](/gerhardol/trails/wiki/Developers) wiki for hints to get started.
 
-This project was previously in Google Code: http://code.google.com/p/trails
+This project was previously hosted at Google Code: http://code.google.com/p/trails

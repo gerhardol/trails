@@ -550,23 +550,24 @@ namespace TrailsPlugin.Utils
 
         public static bool AnyRangeOverlap(float[] range, double min, double max)
         {
-                                //Ignore ranges outside current range and malformed scales
-                    if (range[0] < max &&
-                        min > float.MinValue &&
-                        (float.IsNaN(range[1]) ||
-                        range[1] > min &&
-                        max < float.MaxValue))
-                    {
-                        return true;
-                    }
-                    return false;
+            //Ignore ranges outside current range and malformed scales
+            if (range[0] < max &&
+                min > float.MinValue &&
+                (float.IsNaN(range[1]) ||
+                range[1] > min &&
+                max < float.MaxValue))
+            {
+                return true;
+            }
+            return false;
         }
 
         public static bool AnyOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
         {
             bool res = false;
-            if (start1 >= start2 && start1 <= end2 ||
-                start2 >= start1 && start2 <= end1)
+            //Skip short overlaps. They are not interesting and could be border effects for multi matches
+            if (start1 >= start2 && start1 <= end2 && (end2 - start1) > TimeSpan.FromSeconds(9) ||
+                start2 >= start1 && start2 <= end1 && (end1 - start2) > TimeSpan.FromSeconds(9))
             {
                 res = true;
             }

@@ -2,6 +2,9 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
+  (unreleased)
+  * Average time-of-day for summary results with more than two activities. Can give indication when a ride is normally at a certain point.
+  
 1.2.971 2015-01-30 (Plugin Catalog)
   * Pressing '+' when viewing automatically generated trail will offer to add a new trail with selected points, not just creating a copy of the generated trail.
   * New interface to Performance Predictor: Predict from the best result, not the average. Requires Performance Predictor 2.0.467.

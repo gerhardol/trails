@@ -109,7 +109,19 @@ namespace TrailsPlugin.Data
             return new SummaryValue<double>(tot, stdDev);
         }
 
+        /*******************************************************/
+
         //TBD: Cache summary results. Profiling indicates minor difference
+        public override DateTime StartTime
+        {
+            get
+            {
+                //Get average time of day
+                double totSec = this.GetSummaryValue(delegate(TrailResult tr) { return tr.StartTimeOfDay.TotalSeconds; }, true, false);
+                return DateTime.Today + TimeSpan.FromSeconds(totSec);
+            }
+        }
+
         public override double StartDist
         {
             get

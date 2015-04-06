@@ -76,6 +76,11 @@ namespace TrailsPlugin.Data
                 {
                     switch (column.Id)
                     {
+                        case TrailResultColumnIds.StartTime:
+                            //Not interesting to average time when only one activity. Other multi may be interesting.
+                            if (row2.Activities.Count <= 1){return null;}
+                            //Only time of day, averaged
+                            return row.StartTime.ToLocalTime().ToString("T");
                         case TrailResultColumnIds.Duration:
                             {
                                 SummaryValue<TimeSpan> a = row2.DurationStdDev();

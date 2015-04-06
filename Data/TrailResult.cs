@@ -373,7 +373,7 @@ namespace TrailsPlugin.Data
         }
 
         //Start/end time must match the Distance track
-        public DateTime StartTime
+        public virtual DateTime StartTime
         {
             get
             {

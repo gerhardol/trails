@@ -1310,10 +1310,9 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class PaceOrSpeed
         {
-            public static Length.Units GetUnit(bool isPace, ref double value, IActivity activity, bool convertFrom)
+            public static Length.Units GetUnit(bool isPace, ref double speed, IActivity activity, bool convertFrom)
             {
                 //speed is in m/s
-                double speed = value;
                 Length.Units du;
                 if (activity != null)
                 {

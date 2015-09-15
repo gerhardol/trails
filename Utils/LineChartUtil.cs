@@ -72,7 +72,7 @@ namespace TrailsPlugin.Utils
     {
         public static string SmoothOverTrailBordersString(SmoothOverTrailBorders t)
         {
-            return "Chart Border Smooth: " + Data.Settings.SmoothOverTrailPoints.ToString(); //TODO: Translate
+            return Properties.Resources.UI_Chart_ChartBorderSmooth + ": " + Data.Settings.SmoothOverTrailPoints.ToString();
         }
 
         //No simple way to dynamically translate enum

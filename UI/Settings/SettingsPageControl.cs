@@ -85,11 +85,11 @@ namespace TrailsPlugin.UI.Settings
             //toolTip.SetToolTip(txtDefaultRadius, Properties.Resources.UI_Settings_DefaultRadius_ToolTip);
 
             this.lblSetNameAtImport.Text = Properties.Resources.SetNameAtImport;
-            this.lblStoppedCategory.Text = "Stopped Category Override" + ":"; //TODO: Translate 
-            this.lblBarometricDevices.Text = "Barometric Devices" + ":"; //TODO: Translate 
-            this.lblAdjustElevationAtImport.Text = "Adjust Elevation at Import"; //TODO: Translate
+            this.lblStoppedCategory.Text = Properties.Resources.UI_Settings_StoppedCategoryOverride + ":";
+            this.lblBarometricDevices.Text = Properties.Resources.UI_Settings_BarometricDevices + ":";
+            this.lblAdjustElevationAtImport.Text = Properties.Resources.UI_Settings_AdjustElevationAtImport + ":";
 
-            this.gradeAdjustedPaceGroup.Text = "Grade Adjusted Pace"; //TODO: Translate
+            this.gradeAdjustedPaceGroup.Text = Properties.Resources.UI_Settings_GradeAdjustedPace;
             this.lblMervynDaviesUp.Text = "Mervyn Davies " + CommonResources.Text.LabelAscending;
             this.lblMervynDaviesDown.Text = "Mervyn Davies " + CommonResources.Text.LabelDescending;
             this.lblJackDanielsUp.Text = "Jack Daniels " + CommonResources.Text.LabelAscending;
@@ -100,13 +100,13 @@ namespace TrailsPlugin.UI.Settings
             this.lblUniqueRoutes.Text = Integration.UniqueRoutes.CompabilityText;
             this.lblHighScore.Text = Integration.HighScore.CompabilityText;
             this.lblPerformancePredictor.Text = Integration.PerformancePredictor.CompabilityText;
-            this.lblPredictDistance.Text = "Predict Time for Distance:";  //TODO: Translate
+            this.lblPredictDistance.Text = Properties.Resources.UI_Settings_PredictTimeForDistance + ":";
 
             //Some untranslated strings....
             this.lblLicense.Text = "\r\nTrails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
                 "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
                 "rg/licenses/lgpl.html.";
-            this.lblCopyright.Text = "Copyright Brendan Doherty 2009, Gerhard Olsson 2010-2013";
+            this.lblCopyright.Text = "Copyright Brendan Doherty 2009, Gerhard Olsson 2010-2015";
             this.PluginInfoBanner.Text = "Plugin Information";
         }
 

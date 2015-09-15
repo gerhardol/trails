@@ -120,11 +120,7 @@ namespace TrailsPlugin.Data {
         public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
         public const string Diff = "Diff";
         public const string VAM = "VAM";
-
-        //TBD to translate
-        public const string DiffPresent = "Diff";
-        public const string AscendingSpeed_VAM = "Ascending Speed (VAM)";
-        public const string cIdealTime = "IdealTime";
+        public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -216,15 +212,15 @@ namespace TrailsPlugin.Data {
             if (all || TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", "", 70, StringAlignment.Far));
-                columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.IdealTime, cIdealTime, "", 70, StringAlignment.Far));
+                columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.IdealTime, Properties.Resources.UI_Activity_List_IdealTime, "", 70, StringAlignment.Far));
             }
             if (all || Settings.RunningGradeAdjustMethod != Data.RunningGradeAdjustMethodEnum.None)
             {
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelDuration, "", 60, StringAlignment.Far));
                 columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             }
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", "", 70, StringAlignment.Far));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, Properties.Resources.UI_Activity_List_DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, Properties.Resources.UI_Activity_List_AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", "", 70, StringAlignment.Far));
             return columnDefs;
         }
         public static ICollection<IListColumnDefinition> PermanentMultiColumnDefs()

@@ -226,4 +226,34 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="UI_Activity_Page_AddTrail_Generated" xml:space="preserve">
     <value>Välj {0} för att skapa trail av nuvarande aktivitet, {1} för att lägga valda punkter till ny trail.</value>
   </data>
+  <data name="UI_Activity_List_AscendingSpeed_VAM" xml:space="preserve">
+    <value>Stigningshastighet (VAM)</value>
+  </data>
+  <data name="UI_Activity_List_DiffPresent" xml:space="preserve">
+    <value>Diff</value>
+  </data>
+  <data name="UI_Activity_List_IdealTime" xml:space="preserve">
+    <value>Idealtid</value>
+  </data>
+  <data name="UI_Chart_ChartBorderSmooth" xml:space="preserve">
+    <value>Utjämna graf vid gräns</value>
+  </data>
+  <data name="UI_EditList_AutomaticRefActivity" xml:space="preserve">
+    <value>Automatiskt</value>
+  </data>
+  <data name="UI_Settings_AdjustElevationAtImport" xml:space="preserve">
+    <value>Justera höjd vid import</value>
+  </data>
+  <data name="UI_Settings_BarometricDevices" xml:space="preserve">
+    <value>Barometerenheter</value>
+  </data>
+  <data name="UI_Settings_GradeAdjustedPace" xml:space="preserve">
+    <value>Lutningsjusterat tempo</value>
+  </data>
+  <data name="UI_Settings_PredictTimeForDistance" xml:space="preserve">
+    <value>Prediktera tid för distans</value>
+  </data>
+  <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
+    <value>Kategori för att överrida stopp</value>
+  </data>
 </root>

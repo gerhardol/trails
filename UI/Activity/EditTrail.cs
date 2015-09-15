@@ -193,7 +193,7 @@ namespace TrailsPlugin.UI.Activity
         {
             this.lblTrail.Text = Properties.Resources.TrailName + ":";
             this.lblRadius.Text = Properties.Resources.UI_Activity_EditTrail_Radius + ":";
-            this.lblDefActivity.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ":"; //TBD
+            this.lblDefActivity.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ":";
             this.toolTip.SetToolTip(this.lblDefActivity, "The default reference activity for the trail.");
             this.btnOk.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
             this.btnCancel.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
@@ -673,7 +673,7 @@ namespace TrailsPlugin.UI.Activity
             }
             else
             {
-                this.boxDefActivity.Text = "Automatic"; //TBD
+                this.boxDefActivity.Text = TrailsPlugin.Properties.Resources.UI_EditList_AutomaticRefActivity;
             }
         }
 
@@ -683,7 +683,7 @@ namespace TrailsPlugin.UI.Activity
             treeListPopup.ThemeChanged(m_visualTheme);
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
-            IList<object> acts = new List<object>{"Automatic"};//TBD: How to handle null activity?
+            IList<object> acts = new List<object>{ TrailsPlugin.Properties.Resources.UI_EditList_AutomaticRefActivity };//TBD: How to handle null activity?
             System.Collections.IList currSel = new object[1] { acts[0] };
             foreach (IActivity act in TrailResultWrapper.Activities(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
             {

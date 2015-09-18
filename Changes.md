@@ -2,8 +2,12 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-  (unreleased)
-  * Average time-of-day for summary results with more than two activities. Can give indication when a ride is normally at a certain point.
+  
+1.3.0 2015-09-18 (unreleased)
+  * Changed version numbering after source moved to GitHub
+  * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
+  * Updated Spanish translation.
+  * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only. Saved in current ST session only right now.
   
 1.2.971 2015-01-30 (Plugin Catalog)
   * Pressing '+' when viewing automatically generated trail will offer to add a new trail with selected points, not just creating a copy of the generated trail.

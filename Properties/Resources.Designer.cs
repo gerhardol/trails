@@ -771,7 +771,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UniqueRoutes plugin.
+        ///   Looks up a localized string similar to UniqueRoutes.
         /// </summary>
         internal static string UniqueRoutesPluginName {
             get {

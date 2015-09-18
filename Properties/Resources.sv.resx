@@ -167,10 +167,6 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <comment>Matrix</comment>
     <value>Aktiviteter kan filtreras med Unique Routes</value>
   </data>
-  <data name="UniqueRoutesPluginName" xml:space="preserve">
-    <comment>Matrix</comment>
-    <value>Unique Routes plugin</value>
-  </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
     <comment>Matrix</comment>
     <value>Installera åtminstone version {0} av {1} för att filtrera aktiviteter med Unique Routes.</value>

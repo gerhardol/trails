@@ -266,7 +266,7 @@ Make sure that {1} is installed.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">
-    <value>UniqueRoutes plugin</value>
+    <value>UniqueRoutes</value>
     <comment>Matrix</comment>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">

@@ -97,6 +97,7 @@
             //this.summaryList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.summaryList_MouseDoubleClick);
             this.summaryList.MouseMove +=new System.Windows.Forms.MouseEventHandler(summaryList_MouseMove);
             this.summaryList.KeyDown +=new System.Windows.Forms.KeyEventHandler(summaryList_KeyDown);
+            this.summaryList.ColumnResized += new ZoneFiveSoftware.Common.Visuals.TreeList.ColumnEventHandler(SummaryList_ColumnResized);
             // 
             // progressBar
             // 

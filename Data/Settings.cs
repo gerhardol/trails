@@ -29,6 +29,7 @@ namespace TrailsPlugin.Data
     static class Settings
     {
         private static IList<string> m_activityPageColumns = TrailResultColumnIds.DefaultColumns();
+        private static IDictionary<string,int> m_activityPageColumnSizes = new Dictionary<string,int>();
         private static int m_activityPageNumFixedColumns = 0;
         private static float m_defaultRadius = 30;
         private static XAxisValue m_xAxisValue = XAxisValue.Distance;
@@ -149,13 +150,31 @@ namespace TrailsPlugin.Data
 
         public static IList<string> ActivityPageColumns
         {
-            get {
+            get
+            {
                 return m_activityPageColumns;
             }
-            set {
+            set
+            {
                 m_activityPageColumns = value;
                 Plugin.WriteExtensionData();
             }
+        }
+        public static int ActivityPageColumnsSizeGet(string id)
+        {
+            if (m_activityPageColumnSizes.ContainsKey(id))
+            {
+                return m_activityPageColumnSizes[id];
+            }
+            else
+            {
+                return -1; //Unknown
+            }
+        }
+
+        public static void ActivityPageColumnsSizeSet(string id, int value)
+        {
+            m_activityPageColumnSizes[id] = value;
         }
 
         public static int ActivityPageNumFixedColumns

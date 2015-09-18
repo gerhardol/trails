@@ -143,18 +143,21 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        private const int cPlusMinusWidth = 15;
         private void RefreshColumns()
         {
             this.summaryList.Columns.Clear();
-            int plusMinusSize = this.summaryList.ShowPlusMinus ? 15 : 0;
+            //The first column has the optional '+' that must be added to the size
+            int plusMinusSize = this.summaryList.ShowPlusMinus ? cPlusMinusWidth : 0;
 
             //Permanent fields
             foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
             {
+                int width = Data.Settings.ActivityPageColumnsSizeGet(columnDef.Id);
                 TreeList.Column column = new TreeList.Column(
                     columnDef.Id,
                     columnDef.Text(columnDef.Id),
-                    columnDef.Width + plusMinusSize,
+                    width + plusMinusSize,
                     columnDef.Align
                 );
                 this.summaryList.Columns.Add(column);
@@ -171,10 +174,12 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (columnDef.Id == id)
                     {
+                        int width = Data.Settings.ActivityPageColumnsSizeGet(id);
+                        if (width < 0) { width = columnDef.Width; }
                         TreeList.Column column = new TreeList.Column(
                             columnDef.Id,
                             columnDef.Text(columnDef.Id),
-                            columnDef.Width + plusMinusSize,
+                            width + plusMinusSize,
                             columnDef.Align
                         );
                         this.summaryList.Columns.Add(column);
@@ -1798,6 +1803,15 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.ZoomMarked();
                 }
             }
+        }
+
+        private void SummaryList_ColumnResized(object sender, ZoneFiveSoftware.Common.Visuals.TreeList.ColumnEventArgs e)
+        {
+            TreeList.Column col = (TreeList.Column)e.Column;
+            TreeList l = (TreeList)sender;
+            int width = col.Width;
+            if (l.Columns[0].Id == col.Id) { width -= cPlusMinusWidth; }
+            Data.Settings.ActivityPageColumnsSizeSet(col.Id, width);
         }
 
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;

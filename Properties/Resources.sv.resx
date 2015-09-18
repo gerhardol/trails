@@ -69,10 +69,10 @@
     <value>Tillägg misslyckades</value>
   </data>
   <data name="UI_Activity_EditTrail_Latitude" xml:space="preserve">
-    <value>Latitude</value>
+    <value>Latitud</value>
   </data>
   <data name="UI_Activity_EditTrail_Longitude" xml:space="preserve">
-    <value>Longitude</value>
+    <value>Longitud</value>
   </data>
   <data name="UI_Activity_EditTrail_Radius" xml:space="preserve">
     <value>Radie</value>
@@ -215,7 +215,7 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <value>Lägg till aktiviteter med referens kategori</value>
   </data>
   <data name="PerformancePredictorCompatible" xml:space="preserve">
-    <value>Installera åtminstone version {0} av {1} för att analysera med PerformancePredictor.</value>
+    <value>Resultat kan analyseras med PerformancePredictor.</value>
   </data>
   <data name="PerformancePredictorToInstall" xml:space="preserve">
     <value>Problem att kommunicera med {0}. Se till att {1} är installerad.</value>

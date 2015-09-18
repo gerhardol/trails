@@ -61,7 +61,7 @@
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="PluginTitle" xml:space="preserve">
     <comment>ActivityPage title, Normally not translated</comment>
-    <value>senderos</value>
+    <value>Trails (Senderos)</value>
   </data>
   <data name="UI_Activity_EditTrail_AddTrail" xml:space="preserve">
     <value>Agregar sendero</value>
@@ -82,66 +82,65 @@
     <value>Radio</value>
   </data>
   <data name="UI_Activity_EditTrail_RadiusNumeric" xml:space="preserve">
-    <value>Radio debe ser númerico</value>
+    <value>El radio debe ser númerico.</value>
   </data>
   <data name="UI_Activity_EditTrail_TrailNameReqiured" xml:space="preserve">
-    <value>Nombre de sendero requerido</value>
+    <value>Se requiere un nombre del sendero.</value>
   </data>
   <data name="UI_Activity_EditTrail_UniqueTrailNameRequired" xml:space="preserve">
-    <value>Nombre único de sendero necesario</value>
+    <value>Se requiere un nombre único para el sendero.</value>
   </data>
   <data name="UI_Activity_EditTrail_UpdateFailed" xml:space="preserve">
     <value>Error al actualizar</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Agrega nuevo sendero o puntos seleccionados a un sendero. (selecciona puntos del sendero en el mapa antes de dar click a este botón).</value>
+    <value>Agrega un nuevo sendero o puntos seleccionados a un sendero. (Seleccionar los puntos del sendero en el mapa antes de dar click a este botón).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
-    <value>¿Está seguro de borrar este sendero?</value>
+    <value>¿Está seguro de que desea borrar el sendero?</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrail_TT" xml:space="preserve">
-    <value>Borra este sendero</value>
+    <value>Borrar el sendero.</value>
   </data>
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
-    <value>Editar este sendero. (selecciona el sendero en el mapa antes de dar click a este botón).</value>
+    <value>Editar sendero. (Seleccionar el sendero en el mapa antes de dar click a este botón).</value>
   </data>
   <data name="UI_Activity_List_ListSettings" xml:space="preserve">
     <comment>STcore</comment>
-    <value>Configuración…</value>
+    <value>Configuración de la lista</value>
   </data>
   <data name="UI_Activity_Page_UpdateTrail" xml:space="preserve">
-    <value>Desea actualizar la localización de los putnos GPS del sendero
-con los actualmente selecionados?</value>
+    <value>¿Desea actualizar la localización de los puntos GPS del sendero con los actualmente selecionados?</value>
   </data>
   <data name="UI_Settings_DefaultRadius" xml:space="preserve">
     <value>Radio por defecto</value>
   </data>
   <data name="UI_Settings_DefaultRadius_ToolTip" xml:space="preserve">
-    <value>Radio por defecto para senderos nuevos.
-Cambiar este. Valor no modifica los senderos existentes.</value>
+    <value>Radio por defecto para los puntos de senderos nuevos cuando son añadidos.
+Los cambios sobre este valor no tendrá efecto sobre los senderos existentes.</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Replace" xml:space="preserve">
-    <value>Presiona {0} para agregar puntos seleccionados al sendero actual , {1} para agregar nuevo sendero.</value>
+    <value>Presiona {0} para agregar los puntos seleccionados al sendero actual , {1} para agregar un nuevo sendero.</value>
   </data>
   <data name="TrailPointsControlLayer" xml:space="preserve">
-    <value>Punto de sendero</value>
+    <value>Puntos del sendero</value>
   </data>
   <data name="TrailChartsName" xml:space="preserve">
     <value>Gráficas de senderos</value>
   </data>
   <data name="TrailName" xml:space="preserve">
     <comment>Name of 'trail' in GUI</comment>
-    <value>senderos</value>
+    <value>Senderos</value>
   </data>
   <data name="ApplicationName" xml:space="preserve">
     <comment>Name of application, displayed in GUI</comment>
-    <value>Plugin Trails (Senderos)</value>
+    <value>Trails (Senderos)</value>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
-    <value>Doble click en tabla para editar valores.</value>
+    <value>Doble click en la tabla para editar valores.</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
-    <value>Limitar las actividades a las actividades seleccionadas en la lista</value>
+    <value>Limitar las actividades a las que se encuentran seleccionadas en la lista</value>
   </data>
   <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
     <value>Referencia resultado ({0}, actual: {1})</value>
@@ -150,7 +149,7 @@ Cambiar este. Valor no modifica los senderos existentes.</value>
     <value>Marcar otras subsecciones o vueltas en la lista</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>Limitar actividades con Unique Routes usando referencia {0}</value>
+    <value>Limitar actividades con Unique Routes usando la referencia {0}</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
     <value>Actividad de referencia</value>
@@ -161,14 +160,14 @@ Cambiar este. Valor no modifica los senderos existentes.</value>
   <data name="UI_Activity_Page_SelectPointsError" xml:space="preserve">
     <value>Debe seleccionar un punto en el mapa.
 
-Para seleccionar un punto, solo de clik en el mapa.
+Para seleccionar un punto haga un click en el mapa.
 
-Para hacer una copia de la actividad de referencia, seleccione sendero {0}, y haga click en el botón Editar.</value>
+Para hacer una copia de la actividad de referencia seleccione el sendero {0}  y haga click en el botón Editar.</value>
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
     <comment>Matrix</comment>
     <value>Problema de  comunicación con {0}.
-Asegurese de que {1} esté instalado.</value>
+Asegúrese de que {1} esté instalado.</value>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
     <comment>Matrix</comment>
@@ -178,11 +177,11 @@ Asegurese de que {1} esté instalado.</value>
     <value>Avanzado</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Agrega actividades similares con plugin Unique Routes usando la referencia{0}</value>
+    <value>Agrega actividades similares con el plugin Unique Routes usando la referencia{0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Las actividades pueden ser filtradas por el plugin Unique Routes</value>
+    <value>Las actividades pueden ser filtradas por el plugin Unique Routes.</value>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">
     <comment>Matrix</comment>
@@ -190,7 +189,7 @@ Asegurese de que {1} esté instalado.</value>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Instala al menos la versión {0} de {1} para filtrar usando Unique Routes.</value>
+    <value>Instala al menos la versión {0} de {1} para filtrar usando el plugin Unique Routes.</value>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
     <value>Excluir resultados de la lista</value>
@@ -199,16 +198,16 @@ Asegurese de que {1} esté instalado.</value>
     <value>Establecer nombre al importar</value>
   </data>
   <data name="UI_Activity_List_URCommon" xml:space="preserve">
-    <value>Marcar extensiones comunes de Unique Routes</value>
+    <value>Marcar las extensiones comunes mediante el plugin Unique Routes</value>
   </data>
   <data name="HighScoreCompatible" xml:space="preserve">
-    <value>Un sendero de High Score puede ser generado</value>
+    <value>Un sendero de High Score puede ser generado.</value>
   </data>
   <data name="HighScorePluginName" xml:space="preserve">
     <value>Plugin HighScore</value>
   </data>
   <data name="HighScoreToInstall" xml:space="preserve">
-    <value>Instale al menos la versión {0} de {1} para acceder a Trails del plugin HighScore.</value>
+    <value>Instale al menos la versión {0} de {1} para acceder a Trails desde el plugin HighScore.</value>
   </data>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>
@@ -217,24 +216,72 @@ Asegurese de que {1} esté instalado.</value>
     <value>Requerido</value>
   </data>
   <data name="UI_Activity_EditTrail_Copy" xml:space="preserve">
-    <value>Editar una copia del sendero</value>
+    <value>¿Editar una copia del sendero?</value>
   </data>
   <data name="UI_Activity_EditTrail_Export" xml:space="preserve">
-    <value>Exportar sendero como actividad</value>
+    <value>¿Exportar el sendero como actividad?</value>
   </data>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
     <value>Añadir actividades de entrada como resultados</value>
   </data>
   <data name="UI_Chart_resyncDiffAtTrailPoints" xml:space="preserve">
-    <value>Resincroniza diff en puntos de trail</value>
+    <value>Resincronizar las diferencias en los puntos del sendero</value>
   </data>
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
-    <value>Sincroniza Gráfica con puntos de trail</value>
+    <value>Sincronizar gráfica con los puntos del sendero</value>
+  </data>
+  <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Ajustar las diferencias de resincronización en los puntos del sendero</value>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Añadir Actividades con la categoría de referencia</value>
+    <value>Añadir actividades con la categoría de referencia</value>
+  </data>
+  <data name="PerformancePredictorCompatible" xml:space="preserve">
+    <value>Análisis posible con el plugin Performance Predictor.</value>
+  </data>
+  <data name="PerformancePredictorPluginName" xml:space="preserve">
+    <value>Plugin Performance Predictor</value>
+  </data>
+  <data name="PerformancePredictorToInstall" xml:space="preserve">
+    <value>Instale al menos la versión {0} de {1} para analizar con el plugin Performance Predictor.</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <value>Mostrar Herramientas Gráficas</value>
+    <value>Mostrar herramientas gráficas</value>
+  </data>
+  <data name="UniqueRoutes_Trail" xml:space="preserve">
+    <value>Plugin Unique Routes</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_Generated" xml:space="preserve">
+    <value>Presiona {0} para agregar la actividad actual como un sendero nuevo , {1} para agregar los puntos seleccionados como un nuevo sendero.</value>
+  </data>
+  <data name="UI_Activity_List_AscendingSpeed_VAM" xml:space="preserve">
+    <value>Velocidad Ascendente (VAM)</value>
+  </data>
+  <data name="UI_Activity_List_DiffPresent" xml:space="preserve">
+    <value>Diferencias</value>
+  </data>
+  <data name="UI_Activity_List_IdealTime" xml:space="preserve">
+    <value>Tiempo Ideal</value>
+  </data>
+  <data name="UI_Chart_ChartBorderSmooth" xml:space="preserve">
+    <value>Suavizado en gráficas</value>
+  </data>
+  <data name="UI_EditList_AutomaticRefActivity" xml:space="preserve">
+    <value>Automático</value>
+  </data>
+  <data name="UI_Settings_AdjustElevationAtImport" xml:space="preserve">
+    <value>Ajustar la elevación al importar</value>
+  </data>
+  <data name="UI_Settings_BarometricDevices" xml:space="preserve">
+    <value>Dispositivos barométricos</value>
+  </data>
+  <data name="UI_Settings_GradeAdjustedPace" xml:space="preserve">
+    <value>Grado de ajuste del paso</value>
+  </data>
+  <data name="UI_Settings_PredictTimeForDistance" xml:space="preserve">
+    <value>Predecir tiempo para la distancia</value>
+  </data>
+  <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
+    <value>Categorías que no se incluye el tiempo detenido</value>
   </data>
 </root>

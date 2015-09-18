@@ -205,7 +205,7 @@ Changing this value will not effect existing trails.</value>
     <comment>Name of 'trail' in GUI</comment>
   </data>
   <data name="ApplicationName" xml:space="preserve">
-    <value>Trails Plugin</value>
+    <value>Trails</value>
     <comment>Name of application, displayed in GUI</comment>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
@@ -286,7 +286,7 @@ Make sure that {1} is installed.</value>
     <value>A HighScore Trail can be generated.</value>
   </data>
   <data name="HighScorePluginName" xml:space="preserve">
-    <value>HighScore plugin</value>
+    <value>HighScore</value>
   </data>
   <data name="HighScoreToInstall" xml:space="preserve">
     <value>Install at least version {0} of {1} to get a HighScore Trail.</value>

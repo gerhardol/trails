@@ -61,7 +61,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trails Plugin.
+        ///   Looks up a localized string similar to Trails.
         /// </summary>
         internal static string ApplicationName {
             get {
@@ -108,7 +108,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HighScore plugin.
+        ///   Looks up a localized string similar to HighScore.
         /// </summary>
         internal static string HighScorePluginName {
             get {

@@ -747,7 +747,19 @@ namespace TrailsPlugin.Data
                     String[] values = attr.Split(';');
                     foreach (String column in values)
                     {
-                        m_activityPageColumns.Add(column);
+                        String id = column;
+                        String[] idWidth = id.Split(':');
+                        if (idWidth.Length > 1)
+                        {
+                            //The column has width appended
+                            id = idWidth[0];
+                            int width;
+                            if (int.TryParse(idWidth[1], out width))
+                            {
+                                ActivityPageColumnsSizeSet(id, width);
+                            }
+                        }
+                        m_activityPageColumns.Add(id);
                     }
                 }
                 attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
@@ -872,6 +884,10 @@ namespace TrailsPlugin.Data
             {
                 if (colText == null) { colText = column; }
                 else { colText += ";" + column; }
+                if (ActivityPageColumnsSizeGet(column) >= 0)
+                {
+                    colText += ":" + ActivityPageColumnsSizeGet(column);
+                }
             }
             pluginNode.SetAttribute(xmlTags.sColumns, colText);
 

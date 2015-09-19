@@ -3,12 +3,14 @@ This page describes the changes between plugin releases. The change log may cont
 ### Changes ###
 
   
-1.3.0 2015-09-18 (unreleased)
-  * Changed version numbering after source moved to GitHub
+1.3.1 2015-09-19 (unreleased)
+  * Changed version numbering after source repository was moved to GitHub.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * Updated Spanish translation.
-  * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only. Saved in current ST session only right now.
-  
+  * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
+  * Add support for column "Max (Avg) Grade".
+
+
 1.2.971 2015-01-30 (Plugin Catalog)
   * Pressing '+' when viewing automatically generated trail will offer to add a new trail with selected points, not just creating a copy of the generated trail.
   * New interface to Performance Predictor: Predict from the best result, not the average. Requires Performance Predictor 2.0.467.

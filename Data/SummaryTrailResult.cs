@@ -287,6 +287,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public override float AscMaxAvgGrade
+        {
+            get
+            {
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.AscMaxAvgGrade; }, true, false);
+            }
+        }
+
         public override float DescAvgGrade
         {
             get

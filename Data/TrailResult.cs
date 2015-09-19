@@ -1186,6 +1186,24 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public virtual float AscMaxAvgGrade
+        {
+            get
+            {
+                INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    if (this.Info == null)
+                    {
+                        return float.NaN;
+                    }
+                    return Info.MaximumGrade;
+                }
+                //"Localized" track0 result convert back from % to 0.01
+                return track.Max/100;
+            }
+        }
+
         public virtual float DescAvgGrade
         {
             get

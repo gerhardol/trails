@@ -175,6 +175,8 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Power.ToString(row.AvgPower);
                 case TrailResultColumnIds.AscAvgGrade:
                     return (row.AscAvgGrade).ToString("0.0%");
+                case TrailResultColumnIds.AscMaxAvgGrade:
+                    return (row.AscMaxAvgGrade).ToString("0.0%");
                 case TrailResultColumnIds.DescAvgGrade:
                     return (row.DescAvgGrade).ToString("0.0%");
                 case TrailResultColumnIds.AvgSpeed:

@@ -104,7 +104,9 @@ namespace TrailsPlugin.Data {
         public const string ElevChg = "ElevChg";
         public const string AvgPower = "AvgPower";
         public const string AscAvgGrade = "AscAvgGrade";
+        public const string AscMaxAvgGrade = "AscMaxAvgGrade";
         public const string DescAvgGrade = "DescAvgGrade";
+        //Note: No DescMaxAvgGrade
         public const string AvgSpeed = "AvgSpeed";
         public const string FastestSpeed = "FastestSpeed";
         public const string AvgPace = "AvgPace";
@@ -179,6 +181,7 @@ namespace TrailsPlugin.Data {
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", "", 70, StringAlignment.Far));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", "", 70, StringAlignment.Far));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscAvgGrade, CommonResources.Text.LabelAscending + " " + CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Far));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscMaxAvgGrade, CommonResources.Text.LabelMaxAvgGrade, "", 70, StringAlignment.Far));
             columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.DescAvgGrade, CommonResources.Text.LabelDescending + " " + CommonResources.Text.LabelAvgGrade, "", 70, StringAlignment.Far));
 
             int speedIndex = columnDefs.Count;

@@ -156,6 +156,18 @@ namespace TrailsPlugin.Data {
             return columnDefs_ST2;
         }
 #endif
+        public static IListColumnDefinition ColumnDef(string id, IActivity activity, int noRes, bool multAct)
+        {
+            foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(activity, noRes, multAct))
+            {
+                if (columnDef.Id == id)
+                {
+                    return columnDef;
+                }
+            }
+            return null;
+        }
+
         public static ICollection<IListColumnDefinition> ColumnDefs(IActivity activity, int noRes, bool multAct)
         {
             return ColumnDefs(activity, noRes, multAct, false);

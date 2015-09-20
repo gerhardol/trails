@@ -40,6 +40,7 @@ using ZoneFiveSoftware.Common.Visuals.Forms;
 using TrailsPlugin.Data;
 using TrailsPlugin.Integration;
 using TrailsPlugin.Utils;
+using System.Diagnostics;
 
 namespace TrailsPlugin.UI.Activity {
     public partial class ResultListControl : UserControl
@@ -170,22 +171,25 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     noResults = m_controller.CurrentResultTreeList.Count;
                 }
-                foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, noResults, m_controller.Activities.Count>1))
+
+                IListColumnDefinition columnDef = TrailResultColumnIds.ColumnDef(id, m_controller.ReferenceActivity, noResults, m_controller.Activities.Count > 1);
+                if (columnDef.Id == null)
                 {
-                    if (columnDef.Id == id)
-                    {
-                        int width = Data.Settings.ActivityPageColumnsSizeGet(id);
-                        if (width < 0) { width = columnDef.Width; }
-                        TreeList.Column column = new TreeList.Column(
-                            columnDef.Id,
-                            columnDef.Text(columnDef.Id),
-                            width + plusMinusSize,
-                            columnDef.Align
-                        );
-                        this.summaryList.Columns.Add(column);
-                        plusMinusSize = 0;
-                        break;
-                    }
+                    Debug.Assert(false);
+                }
+                else
+                {
+                    int width = Data.Settings.ActivityPageColumnsSizeGet(id);
+                    if (width < 0) { width = columnDef.Width; }
+                    TreeList.Column column = new TreeList.Column(
+                        columnDef.Id,
+                        columnDef.Text(columnDef.Id),
+                        width + plusMinusSize,
+                        columnDef.Align
+                    );
+                    this.summaryList.Columns.Add(column);
+                    plusMinusSize = 0;
+                    break;
                 }
             }
             this.summaryList.NumLockedColumns = Data.Settings.ActivityPageNumFixedColumns;

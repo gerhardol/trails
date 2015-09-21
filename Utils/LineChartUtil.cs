@@ -72,7 +72,32 @@ namespace TrailsPlugin.Utils
     {
         public static string SmoothOverTrailBordersString(SmoothOverTrailBorders t)
         {
-            return Properties.Resources.UI_Chart_ChartBorderSmooth + ": " + Data.Settings.SmoothOverTrailPoints.ToString();
+            string s;
+            switch (t)
+            {
+                case SmoothOverTrailBorders.All:
+                    {
+                        s = Properties.Resources.UI_Activity_Chart_SmoothOverTrailBorders_All;
+                        break;
+                    }
+                case SmoothOverTrailBorders.Unchanged:
+                    {
+                        s = Properties.Resources.UI_Activity_Chart_SmoothOverTrailBorders_Unchanged;
+                        break;
+                    }
+                case SmoothOverTrailBorders.None:
+                    {
+                        s = Properties.Resources.UI_Activity_Chart_SmoothOverTrailBorders_None;
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Assert(false);
+                        s = t.ToString();
+                        break;
+                    }
+            }
+            return Properties.Resources.UI_Chart_ChartBorderSmooth + ": " + s;
         }
 
         //No simple way to dynamically translate enum

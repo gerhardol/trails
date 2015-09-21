@@ -314,6 +314,33 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        internal static string UI_Activity_Chart_SmoothOverTrailBorders_All {
+            get {
+                return ResourceManager.GetString("UI_Activity_Chart_SmoothOverTrailBorders_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string UI_Activity_Chart_SmoothOverTrailBorders_None {
+            get {
+                return ResourceManager.GetString("UI_Activity_Chart_SmoothOverTrailBorders_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unchanged.
+        /// </summary>
+        internal static string UI_Activity_Chart_SmoothOverTrailBorders_Unchanged {
+            get {
+                return ResourceManager.GetString("UI_Activity_Chart_SmoothOverTrailBorders_Unchanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Trail.
         /// </summary>
         internal static string UI_Activity_EditTrail_AddTrail {

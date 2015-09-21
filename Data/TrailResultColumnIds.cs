@@ -158,6 +158,10 @@ namespace TrailsPlugin.Data {
 #endif
         public static IListColumnDefinition ColumnDef(string id, IActivity activity, int noRes, bool multAct)
         {
+            //compatibility
+            if (id == "AvgGrade") { id = "AscAvgGrade"; }
+            if (id == "AscMaxGrade") { id = "AscMaxAvgGrade"; }
+            if (id == "AvgPaceSpeed") { id = "AvgSpeedPace"; }
             foreach (IListColumnDefinition columnDef in TrailResultColumnIds.ColumnDefs(activity, noRes, multAct))
             {
                 if (columnDef.Id == id)
@@ -310,6 +314,8 @@ namespace TrailsPlugin.Data {
                     return x.AvgCadence;
                 case TrailResultColumnIds.AscAvgGrade:
                     return x.AscAvgGrade;
+                case TrailResultColumnIds.AscMaxAvgGrade:
+                    return x.AscMaxAvgGrade;
                 case TrailResultColumnIds.DescAvgGrade:
                     return x.DescAvgGrade;
                 case TrailResultColumnIds.AvgHR:

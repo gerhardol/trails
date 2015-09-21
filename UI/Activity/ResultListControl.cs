@@ -173,13 +173,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 IListColumnDefinition columnDef = TrailResultColumnIds.ColumnDef(id, m_controller.ReferenceActivity, noResults, m_controller.Activities.Count > 1);
-                if (columnDef.Id == null)
+                if (columnDef == null)
                 {
                     Debug.Assert(false);
                 }
                 else
                 {
-                    int width = Data.Settings.ActivityPageColumnsSizeGet(id);
+                    int width = Data.Settings.ActivityPageColumnsSizeGet(columnDef.Id);
                     if (width < 0) { width = columnDef.Width; }
                     TreeList.Column column = new TreeList.Column(
                         columnDef.Id,
@@ -189,7 +189,6 @@ namespace TrailsPlugin.UI.Activity {
                     );
                     this.summaryList.Columns.Add(column);
                     plusMinusSize = 0;
-                    break;
                 }
             }
             this.summaryList.NumLockedColumns = Data.Settings.ActivityPageNumFixedColumns;

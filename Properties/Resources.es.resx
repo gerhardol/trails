@@ -94,7 +94,7 @@
     <value>Error al actualizar</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_TT" xml:space="preserve">
-    <value>Agrega un nuevo sendero o puntos seleccionados a un sendero. (Seleccionar los puntos del sendero en el mapa antes de dar click a este botón).</value>
+    <value>Agrega un nuevo sendero o puntos seleccionados a un sendero. (Seleccionar los puntos del sendero en el mapa antes de pulsar este botón).</value>
   </data>
   <data name="UI_Activity_Page_DeleteTrailConfirm" xml:space="preserve">
     <value>¿Está seguro de que desea borrar el sendero?</value>
@@ -103,7 +103,7 @@
     <value>Borrar el sendero.</value>
   </data>
   <data name="UI_Activity_Page_EditTrail_TT" xml:space="preserve">
-    <value>Editar sendero. (Seleccionar el sendero en el mapa antes de dar click a este botón).</value>
+    <value>Editar sendero. (Seleccionar el sendero en el mapa antes de pulsar este botón).</value>
   </data>
   <data name="UI_Activity_List_ListSettings" xml:space="preserve">
     <comment>STcore</comment>
@@ -126,7 +126,7 @@ Los cambios sobre este valor no tendrá efecto sobre los senderos existentes.</v
     <value>Puntos del sendero</value>
   </data>
   <data name="TrailChartsName" xml:space="preserve">
-    <value>Gráficas de senderos</value>
+    <value>Gráficas Senderos</value>
   </data>
   <data name="TrailName" xml:space="preserve">
     <comment>Name of 'trail' in GUI</comment>
@@ -137,13 +137,13 @@ Los cambios sobre este valor no tendrá efecto sobre los senderos existentes.</v
     <value>Trails (Senderos)</value>
   </data>
   <data name="UI_Activity_EditTrail_EditRow" xml:space="preserve">
-    <value>Doble click en la tabla para editar valores.</value>
+    <value>Pulse doble click en la tabla para editar valores.</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
     <value>Limitar las actividades a las que se encuentran seleccionadas en la lista</value>
   </data>
   <data name="UI_Activity_List_ReferenceResult" xml:space="preserve">
-    <value>Referencia resultado ({0}, actual: {1})</value>
+    <value>Referencia de resultado establecida ({0}, actual: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
     <value>Marcar otras subsecciones o vueltas en la lista</value>
@@ -162,7 +162,7 @@ Los cambios sobre este valor no tendrá efecto sobre los senderos existentes.</v
 
 Para seleccionar un punto haga un click en el mapa.
 
-Para hacer una copia de la actividad de referencia seleccione el sendero {0}  y haga click en el botón Editar.</value>
+Para hacer una copia de la actividad de referencia seleccione el sendero {0}  y pulse el botón Editar.</value>
   </data>
   <data name="OtherPluginExceptionText" xml:space="preserve">
     <comment>Matrix</comment>
@@ -171,25 +171,25 @@ Asegúrese de que {1} esté instalado.</value>
   </data>
   <data name="OtherPluginVersion" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Detectada la versión {0} de {1}.</value>
+    <value>Detectada la versión {0} del plugin {1}.</value>
   </data>
   <data name="UI_Activity_List_Advanced" xml:space="preserve">
     <value>Avanzado</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Agrega actividades similares con el plugin Unique Routes usando la referencia{0}</value>
+    <value>Agregar actividades similares con el plugin Unique Routes usando la referencia {0}</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Las actividades pueden ser filtradas por el plugin Unique Routes.</value>
+    <value>Las actividades pueden ser filtradas por Unique Routes.</value>
   </data>
   <data name="UniqueRoutesPluginName" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Plugin Unique Routes</value>
+    <value>Unique Routes</value>
   </data>
   <data name="UniqueRoutesToInstall" xml:space="preserve">
     <comment>Matrix</comment>
-    <value>Instala al menos la versión {0} de {1} para filtrar usando el plugin Unique Routes.</value>
+    <value>Instale al menos la versión {0} del plugin {1} para poder filtrar usando Unique Routes.</value>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
     <value>Excluir resultados de la lista</value>
@@ -204,10 +204,10 @@ Asegúrese de que {1} esté instalado.</value>
     <value>Un sendero de High Score puede ser generado.</value>
   </data>
   <data name="HighScorePluginName" xml:space="preserve">
-    <value>Plugin HighScore</value>
+    <value>High Score</value>
   </data>
   <data name="HighScoreToInstall" xml:space="preserve">
-    <value>Instale al menos la versión {0} de {1} para acceder a Trails desde el plugin HighScore.</value>
+    <value>Instale al menos la versión {0} de {1} para acceder a Trails desde el plugin High Score.</value>
   </data>
   <data name="HighScore_Trail" xml:space="preserve">
     <value>HighScore</value>
@@ -222,34 +222,34 @@ Asegúrese de que {1} esté instalado.</value>
     <value>¿Exportar el sendero como actividad?</value>
   </data>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
-    <value>Añadir actividades de entrada como resultados</value>
+    <value>Agregar actividades de entrada como resultados</value>
   </data>
   <data name="UI_Chart_resyncDiffAtTrailPoints" xml:space="preserve">
     <value>Resincronizar las diferencias en los puntos del sendero</value>
   </data>
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
-    <value>Sincronizar gráfica con los puntos del sendero</value>
+    <value>Sincronizar gráficas con los puntos del sendero</value>
   </data>
   <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
     <value>Ajustar las diferencias de resincronización en los puntos del sendero</value>
   </data>
   <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Añadir actividades con la categoría de referencia</value>
+    <value>Agregar actividades con la actual categoría de referencia</value>
   </data>
   <data name="PerformancePredictorCompatible" xml:space="preserve">
-    <value>Análisis posible con el plugin Performance Predictor.</value>
+    <value>El análisis es posible con Performance Predictor.</value>
   </data>
   <data name="PerformancePredictorPluginName" xml:space="preserve">
-    <value>Plugin Performance Predictor</value>
+    <value>Performance Predictor</value>
   </data>
   <data name="PerformancePredictorToInstall" xml:space="preserve">
-    <value>Instale al menos la versión {0} de {1} para analizar con el plugin Performance Predictor.</value>
+    <value>Instale al menos la versión {0} de {1} para poder realizar análisis con el plugin Performance Predictor.</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Mostrar herramientas gráficas</value>
   </data>
   <data name="UniqueRoutes_Trail" xml:space="preserve">
-    <value>Plugin Unique Routes</value>
+    <value>Unique Routes</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Generated" xml:space="preserve">
     <value>Presiona {0} para agregar la actividad actual como un sendero nuevo , {1} para agregar los puntos seleccionados como un nuevo sendero.</value>
@@ -270,18 +270,18 @@ Asegúrese de que {1} esté instalado.</value>
     <value>Automático</value>
   </data>
   <data name="UI_Settings_AdjustElevationAtImport" xml:space="preserve">
-    <value>Ajustar la elevación al importar</value>
+    <value>Ajustar elevación al importar</value>
   </data>
   <data name="UI_Settings_BarometricDevices" xml:space="preserve">
     <value>Dispositivos barométricos</value>
   </data>
   <data name="UI_Settings_GradeAdjustedPace" xml:space="preserve">
-    <value>Grado de ajuste del paso</value>
+    <value>Ajustes del grado de paso</value>
   </data>
   <data name="UI_Settings_PredictTimeForDistance" xml:space="preserve">
     <value>Predecir tiempo para la distancia</value>
   </data>
   <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
-    <value>Categorías que no se incluye el tiempo detenido</value>
+    <value>Categorías sin tiempo detenido:</value>
   </data>
 </root>

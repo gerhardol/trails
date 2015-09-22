@@ -164,20 +164,18 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.Columns.Add(column);
                 plusMinusSize = 0;
             }
+
+            int noResults = 1;
+            if (m_controller.CurrentActivityTrailIsSelected)
+            {
+                noResults = m_controller.CurrentResultTreeList.Count;
+            }
+            TrailResultColumnIds cols = new TrailResultColumnIds(m_controller.ReferenceActivity, noResults, m_controller.Activities.Count > 1, false);
+
             foreach (string id in Data.Settings.ActivityPageColumns)
             {
-                int noResults = 1;
-                if (m_controller.CurrentActivityTrailIsSelected)
-                {
-                    noResults = m_controller.CurrentResultTreeList.Count;
-                }
-
-                IListColumnDefinition columnDef = TrailResultColumnIds.ColumnDef(id, m_controller.ReferenceActivity, noResults, m_controller.Activities.Count > 1);
-                if (columnDef == null)
-                {
-                    Debug.Assert(false);
-                }
-                else
+                IListColumnDefinition columnDef = cols.ColumnDef(id);
+                if (columnDef != null)
                 {
                     int width = Data.Settings.ActivityPageColumnsSizeGet(columnDef.Id);
                     if (width < 0) { width = columnDef.Width; }
@@ -1945,7 +1943,8 @@ namespace TrailsPlugin.UI.Activity {
             dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.ReferenceActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
-            dialog.AvailableColumns = TrailResultColumnIds.ColumnDefs(m_controller.ReferenceActivity, m_controller.Activities.Count, true);
+            IList<IListColumnDefinition> cols = (new TrailResultColumnIds(m_controller.ReferenceActivity, m_controller.Activities.Count, true, false)).ColumnDefs();
+            dialog.AvailableColumns = cols;
 #endif
             dialog.ThemeChanged(m_visualTheme);
             dialog.AllowFixedColumnSelect = true;

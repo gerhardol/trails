@@ -284,4 +284,12 @@ Asegúrese de que {1} esté instalado.</value>
   <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
     <value>Categorías sin tiempo detenido:</value>
   </data>
+  <data name="UI_Settings_Copyright" xml:space="preserve">
+    <value>Derechos de autor</value>
+  </data>
+  <data name="UI_Settings_License" xml:space="preserve">
+    <value>El plugin Trails está distribuido bajo licencia Licencia Pública General Reducida de GNU.
+Esta licencia se incluye en el directorio de instalación del plugin y en:
+http://www.gnu.org/licenses/licenses.es.html</value>
+  </data>
 </root>

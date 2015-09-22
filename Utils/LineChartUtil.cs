@@ -77,17 +77,17 @@ namespace TrailsPlugin.Utils
             {
                 case SmoothOverTrailBorders.All:
                     {
-                        s = Properties.Resources.UI_Activity_Chart_SmoothOverTrailBorders_All;
+                        s = Properties.Resources.UI_Chart_SmoothOverTrailBorders_All;
                         break;
                     }
                 case SmoothOverTrailBorders.Unchanged:
                     {
-                        s = Properties.Resources.UI_Activity_Chart_SmoothOverTrailBorders_Unchanged;
+                        s = Properties.Resources.UI_Chart_SmoothOverTrailBorders_Unchanged;
                         break;
                     }
                 case SmoothOverTrailBorders.None:
                     {
-                        s = Properties.Resources.UI_Activity_Chart_SmoothOverTrailBorders_None;
+                        s = Properties.Resources.UI_Chart_SmoothOverTrailBorders_None;
                         break;
                     }
                 default:

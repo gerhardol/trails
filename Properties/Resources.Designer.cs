@@ -314,33 +314,6 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All.
-        /// </summary>
-        internal static string UI_Activity_Chart_SmoothOverTrailBorders_All {
-            get {
-                return ResourceManager.GetString("UI_Activity_Chart_SmoothOverTrailBorders_All", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to None.
-        /// </summary>
-        internal static string UI_Activity_Chart_SmoothOverTrailBorders_None {
-            get {
-                return ResourceManager.GetString("UI_Activity_Chart_SmoothOverTrailBorders_None", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unchanged.
-        /// </summary>
-        internal static string UI_Activity_Chart_SmoothOverTrailBorders_Unchanged {
-            get {
-                return ResourceManager.GetString("UI_Activity_Chart_SmoothOverTrailBorders_Unchanged", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add Trail.
         /// </summary>
         internal static string UI_Activity_EditTrail_AddTrail {
@@ -698,6 +671,33 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        internal static string UI_Chart_SmoothOverTrailBorders_All {
+            get {
+                return ResourceManager.GetString("UI_Chart_SmoothOverTrailBorders_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string UI_Chart_SmoothOverTrailBorders_None {
+            get {
+                return ResourceManager.GetString("UI_Chart_SmoothOverTrailBorders_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unchanged.
+        /// </summary>
+        internal static string UI_Chart_SmoothOverTrailBorders_Unchanged {
+            get {
+                return ResourceManager.GetString("UI_Chart_SmoothOverTrailBorders_Unchanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sync Chart at Trail Points.
         /// </summary>
         internal static string UI_Chart_syncChartAtTrailPoints {
@@ -734,6 +734,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copyright.
+        /// </summary>
+        internal static string UI_Settings_Copyright {
+            get {
+                return ResourceManager.GetString("UI_Settings_Copyright", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default Radius.
         /// </summary>
         internal static string UI_Settings_DefaultRadius {
@@ -762,6 +771,17 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trails Plugin is distributed under the GNU Lesser General Public Licence.
+        ///The License is included in the plugin installation directory and at:
+        ///http://www.gnu.org/licenses/lgpl.html..
+        /// </summary>
+        internal static string UI_Settings_License {
+            get {
+                return ResourceManager.GetString("UI_Settings_License", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Predict Time for Distance.
         /// </summary>
         internal static string UI_Settings_PredictTimeForDistance {
@@ -776,6 +796,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Settings_StoppedCategoryOverride {
             get {
                 return ResourceManager.GetString("UI_Settings_StoppedCategoryOverride", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin Information.
+        /// </summary>
+        internal static string UI_Settings_Title {
+            get {
+                return ResourceManager.GetString("UI_Settings_Title", resourceCulture);
             }
         }
         

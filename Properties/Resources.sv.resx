@@ -252,4 +252,21 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
     <value>Kategori för att överrida stopp</value>
   </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_All" xml:space="preserve">
+    <value>Alla</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_None" xml:space="preserve">
+    <value>Ingen</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_Unchanged" xml:space="preserve">
+    <value>Oförändrad</value>
+  </data>
+  <data name="UI_Settings_Copyright" xml:space="preserve">
+    <value>Copyright</value>
+  </data>
+  <data name="UI_Settings_License" xml:space="preserve">
+    <value>Trails Plugin distribueras under vilkoren i GNU Lesser General Public Licence.
+Licensen inkluderas i installtionsfoldern samt finns tillgänglig på följande URL:
+http://www.gnu.org/licenses/lgpl.html.</value>
+  </data>
 </root>

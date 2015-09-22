@@ -375,13 +375,24 @@ Make sure that {1} is installed.</value>
   <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
     <value>Stopped Category Override</value>
   </data>
-  <data name="UI_Activity_Chart_SmoothOverTrailBorders_All" xml:space="preserve">
+  <data name="UI_Chart_SmoothOverTrailBorders_All" xml:space="preserve">
     <value>All</value>
   </data>
-  <data name="UI_Activity_Chart_SmoothOverTrailBorders_None" xml:space="preserve">
+  <data name="UI_Chart_SmoothOverTrailBorders_None" xml:space="preserve">
     <value>None</value>
   </data>
-  <data name="UI_Activity_Chart_SmoothOverTrailBorders_Unchanged" xml:space="preserve">
+  <data name="UI_Chart_SmoothOverTrailBorders_Unchanged" xml:space="preserve">
     <value>Unchanged</value>
+  </data>
+  <data name="UI_Settings_Copyright" xml:space="preserve">
+    <value>Copyright</value>
+  </data>
+  <data name="UI_Settings_License" xml:space="preserve">
+    <value>Trails Plugin is distributed under the GNU Lesser General Public Licence.
+The License is included in the plugin installation directory and at:
+http://www.gnu.org/licenses/lgpl.html.</value>
+  </data>
+  <data name="UI_Settings_Title" xml:space="preserve">
+    <value>Plugin Information</value>
   </data>
 </root>

@@ -102,12 +102,9 @@ namespace TrailsPlugin.UI.Settings
             this.lblPerformancePredictor.Text = Integration.PerformancePredictor.CompabilityText;
             this.lblPredictDistance.Text = Properties.Resources.UI_Settings_PredictTimeForDistance + ":";
 
-            //Some untranslated strings....
-            this.lblLicense.Text = "\r\nTrails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe Li" +
-                "cense is included in the plugin installation directory and at:\r\nhttp://www.gnu.o" +
-                "rg/licenses/lgpl.html.";
-            this.lblCopyright.Text = "Copyright Brendan Doherty 2009, Gerhard Olsson 2010-2015";
-            this.PluginInfoBanner.Text = "Plugin Information";
+            this.lblLicense.Text = Properties.Resources.UI_Settings_License;
+            this.lblCopyright.Text = Properties.Resources.UI_Settings_Copyright + " " + "Brendan Doherty 2009, Gerhard Olsson 2010-2015";
+            this.PluginInfoBanner.Text = Properties.Resources.UI_Settings_Title;
         }
 
         private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {

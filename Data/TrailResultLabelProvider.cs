@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
 using GpsRunningPlugin.Util;
+using ZoneFiveSoftware.Common.Data.Fitness.CustomData;
 
 namespace TrailsPlugin.Data
 {
@@ -207,7 +208,16 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Elevation.ToString(row.VAM, "");
                 default:
                     if (row.Activity == null) return null;
-                    return base.GetText(row.Activity, column);
+                    if((row is NormalParentTrailResult))
+                    foreach (ICustomDataFieldDefinition custDataDef in Plugin.GetApplication().Logbook.CustomDataFieldDefinitions)
+                    {
+                        if (custDataDef.Id.ToString().Equals(column.Id))
+                        {
+                            return row.Activity.GetCustomDataValue(custDataDef).ToString();
+                        }
+                    }
+
+                            return base.GetText(row.Activity, column);
             }
         }
 

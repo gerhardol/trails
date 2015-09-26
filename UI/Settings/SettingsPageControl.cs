@@ -90,10 +90,14 @@ namespace TrailsPlugin.UI.Settings
             this.lblAdjustElevationAtImport.Text = Properties.Resources.UI_Settings_AdjustElevationAtImport + ":";
 
             this.gradeAdjustedPaceGroup.Text = Properties.Resources.UI_Settings_GradeAdjustedPace;
-            this.lblMervynDaviesUp.Text = "Mervyn Davies " + CommonResources.Text.LabelAscending;
-            this.lblMervynDaviesDown.Text = "Mervyn Davies " + CommonResources.Text.LabelDescending;
-            this.lblJackDanielsUp.Text = "Jack Daniels " + CommonResources.Text.LabelAscending;
-            this.lblJackDanielsDown.Text = "Jack Daniels " + CommonResources.Text.LabelDescending;
+            this.lblMervynDaviesName.Text = "Mervyn Davies";
+            this.lblMervynDaviesName.Font = new Font(this.lblMervynDaviesName.Font, FontStyle.Italic);
+            this.lblMervynDaviesUp.Text = " " + CommonResources.Text.LabelAscending;
+            this.lblMervynDaviesDown.Text = " " + CommonResources.Text.LabelDescending;
+            this.lblJackDanielsName.Text = "Jack Daniels";
+            this.lblJackDanielsName.Font = new Font(this.lblJackDanielsName.Font, FontStyle.Italic);
+            this.lblJackDanielsUp.Text = " " + CommonResources.Text.LabelAscending;
+            this.lblJackDanielsDown.Text = " " + CommonResources.Text.LabelDescending;
 
             this.presentSettings();
 

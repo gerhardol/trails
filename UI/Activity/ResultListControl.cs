@@ -144,6 +144,10 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        private bool MultiActivity() {
+            return m_controller.Activities.Count > 1 || m_controller.PrimaryCurrentActivityTrail != null && m_controller.PrimaryCurrentActivityTrail.Trail.TrailType== Trail.CalcType.UniqueRoutes;
+        }
+
         private const int cPlusMinusWidth = 15;
         private void RefreshColumns()
         {
@@ -170,7 +174,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 noResults = m_controller.CurrentResultTreeList.Count;
             }
-            TrailResultColumnIds cols = new TrailResultColumnIds(m_controller.ReferenceActivity, noResults, m_controller.Activities.Count > 1, false);
+            TrailResultColumnIds cols = new TrailResultColumnIds(m_controller.ReferenceActivity, noResults, MultiActivity(), false);
 
             foreach (string id in Data.Settings.ActivityPageColumns)
             {
@@ -194,7 +198,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshControlState()
         {
-            limitActivityMenuItem.Enabled = m_controller.Activities.Count > 1;
+            limitActivityMenuItem.Enabled = MultiActivity();
             selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             addCurrentCategoryMenuItem.Checked = Data.Settings.AddCurrentCategory;
         }
@@ -206,7 +210,7 @@ namespace TrailsPlugin.UI.Activity {
                 RefreshColumns();
 
                 summaryList_Sort(false);
-                ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = (m_controller.Activities.Count > 1);
+                ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = MultiActivity();
             }
             else
             {

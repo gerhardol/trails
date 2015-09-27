@@ -91,6 +91,7 @@
             this.summaryList.ShowPlusMinus = true;
             this.summaryList.Size = new System.Drawing.Size(400, 60);
             this.summaryList.TabIndex = 11;
+            //this.summaryList.ColumnClicked += new ZoneFiveSoftware.Common.Visuals.TreeList.ColumnEventHandler(this.summaryList_ColumnHeaderMouseClick);
             this.summaryList.Click += new System.EventHandler(this.summaryList_Click);
             this.summaryList.DoubleClick += new System.EventHandler(this.summaryList_DoubleClick);
             this.summaryList.MouseLeave += new System.EventHandler(this.summaryList_MouseLeave);

@@ -145,7 +145,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         private bool MultiActivity() {
-            return m_controller.Activities.Count > 1 || m_controller.PrimaryCurrentActivityTrail != null && m_controller.PrimaryCurrentActivityTrail.Trail.TrailType== Trail.CalcType.UniqueRoutes;
+            return m_controller.Activities.Count > 1 || m_controller.PrimaryCurrentActivityTrail != null && m_controller.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.UniqueRoutes;
         }
 
         private const int cPlusMinusWidth = 15;
@@ -156,7 +156,7 @@ namespace TrailsPlugin.UI.Activity {
             int plusMinusSize = this.summaryList.ShowPlusMinus ? cPlusMinusWidth : 0;
 
             //Permanent fields
-            foreach (IListColumnDefinition columnDef in TrailResultColumnIds.PermanentMultiColumnDefs())
+            foreach (IListColumnDefinition columnDef in TrailResultColumns.PermanentMultiColumnDefs())
             {
                 int width = Data.Settings.ActivityPageColumnsSizeGet(columnDef.Id);
                 TreeList.Column column = new TreeList.Column(
@@ -174,7 +174,12 @@ namespace TrailsPlugin.UI.Activity {
             {
                 noResults = m_controller.CurrentResultTreeList.Count;
             }
-            TrailResultColumnIds cols = new TrailResultColumnIds(m_controller.ReferenceActivity, noResults, MultiActivity(), false);
+            bool splits = false;
+            if (m_controller.PrimaryCurrentActivityTrail != null)
+            {
+                splits = m_controller.PrimaryCurrentActivityTrail.Trail.IsSplits;
+            }
+            TrailResultColumns cols = new TrailResultColumns(m_controller.ReferenceActivity, noResults, MultiActivity(), false, splits);
 
             foreach (string id in Data.Settings.ActivityPageColumns)
             {
@@ -764,6 +769,23 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        private static TreeList.Column getColumn(TreeList l, MouseEventArgs e)
+        {
+            int nStart = e.X + l.HScrollBar.Value;
+            int epos = 0;
+            int colSelected = 0; //Select first by default
+            for (int i = 0; i < l.Columns.Count; i++)
+            {
+                epos += l.Columns[i].Width;
+                if (nStart < epos)
+                {
+                    colSelected = i;
+                    break;
+                }
+            }
+            return l.Columns[colSelected];
+        }
+
         /************************************************************/
         void summaryList_Click(object sender, System.EventArgs e)
         {
@@ -771,24 +793,11 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is TreeList)
             {
                 TreeList l = sender as TreeList;
-                //Check if header. ColumnHeaderClicked will not fire due to this
+                //Check if header. ColumnHeaderClicked will not fire if Click enabled
+                TreeList.Column selectedColumn = getColumn(l, (MouseEventArgs)e);
                 if (l.HeaderRowHeight >= ((MouseEventArgs)e).Y)
                 {
-                    int nStart = ((MouseEventArgs)e).X;
-                    int spos = l.Location.X;// +l.Parent.Location.X;
-                    int subItemSelected = 0;
-                    for (int i = 0; i < l.Columns.Count; i++)
-                    {
-                        int epos = spos + l.Columns[i].Width;
-                        if (nStart > spos && nStart < epos)
-                        {
-                            subItemSelected = i;
-                            break;
-                        }
-
-                        spos = epos;
-                    }
-                    summaryList_ColumnHeaderMouseClick(sender, l.Columns[subItemSelected]);
+                    summaryList_ColumnHeaderMouseClick(sender, selectedColumn);
                 }
                 else
                 {
@@ -802,22 +811,7 @@ namespace TrailsPlugin.UI.Activity {
                         bool colorSelected = false;
                         if (hit != TreeList.RowHitState.PlusMinus)
                         {
-                            int nStart = ((MouseEventArgs)e).X;
-                            int spos = l.Location.X;// +l.Parent.Location.X;
-                            for (int i = 0; i < l.Columns.Count; i++)
-                            {
-                                int epos = spos + l.Columns[i].Width;
-                                if (nStart > spos && nStart < epos)
-                                {
-                                    if (l.Columns[i].Id == TrailResultColumnIds.Color)
-                                    {
-                                        colorSelected = true;
-                                        break;
-                                    }
-                                }
-
-                                spos = epos;
-                            }
+                            colorSelected = (selectedColumn.Id == TrailResultColumnIds.Color);
                         }
                         if (colorSelected)
                         {
@@ -1947,7 +1941,8 @@ namespace TrailsPlugin.UI.Activity {
             dialog.ColumnsAvailable = TrailResultColumnIds.ColumnDefs_ST2(m_controller.ReferenceActivity, false);
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
-            IList<IListColumnDefinition> cols = (new TrailResultColumnIds(m_controller.ReferenceActivity, m_controller.Activities.Count, true, false)).ColumnDefs();
+            //always show 'Splits' columns, even if only visible for Splits trail 
+            IList<IListColumnDefinition> cols = (new TrailResultColumns(m_controller.ReferenceActivity, m_controller.Activities.Count, true, false, true)).ColumnDefs();
             dialog.AvailableColumns = cols;
 #endif
             dialog.ThemeChanged(m_visualTheme);

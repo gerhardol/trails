@@ -159,6 +159,7 @@ namespace TrailsPlugin.UI.Activity {
             foreach (IListColumnDefinition columnDef in TrailResultColumns.PermanentMultiColumnDefs())
             {
                 int width = Data.Settings.ActivityPageColumnsSizeGet(columnDef.Id);
+                if (width < 0) { width = columnDef.Width; }
                 TreeList.Column column = new TreeList.Column(
                     columnDef.Id,
                     columnDef.Text(columnDef.Id),
@@ -424,22 +425,22 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_controller.CurrentActivityTrailIsSelected)
             {
-                this.summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumn,
+                this.summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumns[0],
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
                 IList<TrailResultWrapper> atr = m_controller.CurrentResultTreeList;
                 //Avoid sort on some fields that are heavy to calculate at auto updates
                 if (!colClicked && atr.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
                 {
-                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedTime ||
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.PredictDistance ||
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.IdealTime)
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.GradeRunAdjustedTime ||
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.PredictDistance ||
+                        TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.IdealTime)
                     {
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.Duration;
+                        TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = TrailResultColumnIds.Duration;
                     }
-                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.GradeRunAdjustedPace)
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.GradeRunAdjustedPace)
                     {
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumn = TrailResultColumnIds.AvgPace;
+                        TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = TrailResultColumnIds.AvgPace;
                     }
                 }
                 ((List<TrailResultWrapper>)(atr)).Sort();
@@ -805,78 +806,79 @@ namespace TrailsPlugin.UI.Activity {
                     TreeList.RowHitState hit;
                     //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
                     row = this.summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
-                    if (row != null && hit == TreeList.RowHitState.Row)
+                    if (row != null && hit == TreeList.RowHitState.Row &&
+                        (((MouseEventArgs)e).Location.X < 10)//Should not be necessary, but hit is not always right
+                        )
                     {
                         TrailResult tr = getTrailResultRow(row);
-                        bool colorSelected = false;
-                        if (hit != TreeList.RowHitState.PlusMinus)
+                        if (tr != null)
                         {
-                            colorSelected = (selectedColumn.Id == TrailResultColumnIds.Color);
-                        }
-                        if (colorSelected)
-                        {
-                            ColorSelectorPopup cs = new ColorSelectorPopup();
-                            cs.Width = 70;
-                            cs.ThemeChanged(m_visualTheme);
-                            cs.DesktopLocation = ((Control)sender).PointToScreen(((MouseEventArgs)e).Location);
-                            cs.Selected = tr.ResultColor.LineNormal;
-                            m_ColorSelectorResult = tr;
-                            cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);
-                            cs.Show();
-                        }
-                        else if (tr != null)
-                        {
-                            bool isMatch = false;
-                            foreach (TrailResultWrapper t in this.SelectedResultWrapper)
+                            if (selectedColumn.Id == TrailResultColumnIds.Color)
                             {
-                                if (t.Result == tr)
-                                {
-                                    //Ignore clicking on summary, route is updated and no specific marking in chart
-                                    if (!(tr is SummaryTrailResult))
-                                    {
-                                        //if (!TrailResultWrapper.ParentResults(getTrailResultWrapperSelection(m_beforeChangeSelectedItems)).Contains(tr))
-                                        {
-                                             isMatch = true;
-                                        }
-                                    }
-                                    break;
-                                }
+                                ColorSelectorPopup cs = new ColorSelectorPopup();
+                                cs.Width = 70;
+                                cs.ThemeChanged(m_visualTheme);
+                                cs.DesktopLocation = ((Control)sender).PointToScreen(((MouseEventArgs)e).Location);
+                                cs.Selected = tr.ResultColor.LineNormal;
+                                m_ColorSelectorResult = tr;
+                                cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);
+                                cs.Show();
                             }
-                            if (isMatch)
+                            else
                             {
-                                IList<TrailResult> aTr = new List<TrailResult>();
-                                //if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                                bool isMatch = false;
+                                foreach (TrailResultWrapper t in this.SelectedResultWrapper)
                                 {
-                                    //Select the single row only
-                                    aTr.Add(tr);
+                                    if (t.Result == tr)
+                                    {
+                                        //Ignore clicking on summary, route is updated and no specific marking in chart
+                                        if (!(tr is SummaryTrailResult))
+                                        {
+                                            //if (!TrailResultWrapper.ParentResults(getTrailResultWrapperSelection(m_beforeChangeSelectedItems)).Contains(tr))
+                                            {
+                                                isMatch = true;
+                                            }
+                                        }
+                                        break;
+                                    }
                                 }
-                                //else
-                                //{
-                                //    //The user can control what is selected - mark all
-                                //    aTr = new List<TrailResult>{tr};
-                                //}
-                                bool markChart = false;
-                                if (tr.CompareTo(this.m_lastSelectedTrailResult) == 0 &&
-                                    this.SelectedResultWrapper.Count > 1)
+                                if (isMatch)
                                 {
-                                    markChart = true;
-                                }
-                                else
-                                {
-                                    //foreach (TrailResultWrapper t in SelectedItemsWrapper)
+                                    IList<TrailResult> aTr = new List<TrailResult>();
+                                    //if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                                    {
+                                        //Select the single row only
+                                        aTr.Add(tr);
+                                    }
+                                    //else
                                     //{
-                                    //    foreach (TrailResultWrapper t2 in SelectedItemsWrapper)
-                                    //    {
-                                    //        if (t != t2 && t.Result.ResultColor == t2.Result.ResultColor)
-                                    //        {
-                                    //            markChart = true;
-                                    //            break;
-                                    //        }
-                                    //    }
+                                    //    //The user can control what is selected - mark all
+                                    //    aTr = new List<TrailResult>{tr};
                                     //}
-                                    this.m_lastSelectedTrailResult = tr;
+                                    bool markChart = false;
+                                    if (this.m_lastSelectedTrailResult != null &&
+                                        tr.CompareTo(this.m_lastSelectedTrailResult) == 0 &&
+                                        this.SelectedResultWrapper.Count > 1)
+                                    {
+                                        markChart = true;
+                                    }
+                                    else
+                                    {
+                                        //foreach (TrailResultWrapper t in SelectedItemsWrapper)
+                                        //{
+                                        //    foreach (TrailResultWrapper t2 in SelectedItemsWrapper)
+                                        //    {
+                                        //        if (t != t2 && t.Result.ResultColor == t2.Result.ResultColor)
+                                        //        {
+                                        //            markChart = true;
+                                        //            break;
+                                        //        }
+                                        //    }
+                                        //}
+                                        this.m_lastSelectedTrailResult = tr;
+                                    }
+                                    m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), markChart, false);
                                 }
-                                m_page.MarkTrack(TrailResultMarked.TrailResultMarkAll(aTr), markChart, false);
                             }
                         }
                     }
@@ -941,12 +943,12 @@ namespace TrailsPlugin.UI.Activity {
 
         private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
         {
-            if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == e.Id)
+            if (TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == e.Id)
             {
                 TrailsPlugin.Data.Settings.SummaryViewSortDirection = TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ?
                        ListSortDirection.Descending : ListSortDirection.Ascending;
             }
-            TrailsPlugin.Data.Settings.SummaryViewSortColumn = e.Id;
+            TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = e.Id;
             this.summaryList_Sort(true);
         }
 

@@ -373,174 +373,176 @@ namespace TrailsPlugin.Data {
                 return -1;
             }
 
-            //TODO: use the last (3?) fields when sorting
-            string id = TrailsPlugin.Data.Settings.SummaryViewSortColumn;
-            //Translate some column Ids to the Property names
-            switch (id)
-            {
-                case TrailResultColumnIds.Color:
-                    id = "ResultColor";
-                    break;
-                case TrailResultColumnIds.StartDistance:
-                    id = "StartDist";
-                    break;
-                case TrailResultColumnIds.AvgPace:
-                case TrailResultColumnIds.AvgSpeedPace:
-                    id = "AvgSpeed";
-                    break;
-                case TrailResultColumnIds.FastestPace:
-                case TrailResultColumnIds.FastestSpeedPace:
-                    id = "FastestSpeed";
-                    break;
-                case TrailResultColumnIds.GradeRunAdjustedPace:
-                    id = "GradeRunAdjustedSpeed";
-                    break;
-                case TrailResultColumnIds.AscendingSpeed_VAM:
-                    id = "VAM";
-                    break;
-            }
-
             int result = 0;
 
-            try
+            foreach (string id0 in TrailsPlugin.Data.Settings.SummaryViewSortColumns)
             {
-                if (m_custColumnDict.ContainsKey(id))
+                string id = id0;
+                //Translate some column Ids to the Property names
+                switch (id)
                 {
-                    //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
-                    //If not parent result, there is no difference
-                    if (x is ParentTrailResult)
-                    {
-                        ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
-                        if (cust != null)
-                        {
-                            object xoc = x.Activity.GetCustomDataValue(cust);
-                            object yoc = y.Activity.GetCustomDataValue(cust);
-                            if (xoc == null)
-                            {
-                                result = 1;
-                            }
-                            else if (yoc == null)
-                            {
-                                result = -1;
-                            }
-                            else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
-                            {
-                                //numeric
-                                result = ((System.Double)xoc).CompareTo((System.Double)yoc);
-                            }
-                            else
-                            {
-                                //date or string
-                                result = ((string)xoc).CompareTo((string)yoc);
-                            }
-                        }
-                    }
+                    case TrailResultColumnIds.Color:
+                        id = "ResultColor";
+                        break;
+                    case TrailResultColumnIds.StartDistance:
+                        id = "StartDist";
+                        break;
+                    case TrailResultColumnIds.AvgPace:
+                    case TrailResultColumnIds.AvgSpeedPace:
+                        id = "AvgSpeed";
+                        break;
+                    case TrailResultColumnIds.FastestPace:
+                    case TrailResultColumnIds.FastestSpeedPace:
+                        id = "FastestSpeed";
+                        break;
+                    case TrailResultColumnIds.GradeRunAdjustedPace:
+                        id = "GradeRunAdjustedSpeed";
+                        break;
+                    case TrailResultColumnIds.AscendingSpeed_VAM:
+                        id = "VAM";
+                        break;
                 }
-                else
+
+                try
                 {
-                    object xo;
-                    object yo;
-
-                    if (IsLapField(id))
+                    if (m_custColumnDict.ContainsKey(id))
                     {
-                        id = LapId(id);
-                        xo = null;
-                        yo = null;
-                        if (x is ChildTrailResult)
+                        //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
+                        //If not parent result, there is no difference
+                        if (x is ParentTrailResult)
                         {
-                            ILapInfo lap = (x as ChildTrailResult).LapInfo;
-                            xo = lap;
-                        }
-                        if (y is ChildTrailResult)
-                        {
-                            ILapInfo lap = (y as ChildTrailResult).LapInfo;
-                            yo = lap;
-                        }
-                    }
-                    else if (IsActivityField(id))
-                    {
-                        xo = x.Activity;
-                        yo = y.Activity;
-                    }
-                    else
-                    {
-                        xo = x;
-                        yo = y;
-                    }
-
-                    if (xo != null && yo != null)
-                    {
-                        //Only Properties, no fields searched
-                        PropertyInfo xf = xo.GetType().GetProperty(id);
-                        PropertyInfo yf = yo.GetType().GetProperty(id);
-                        if (xf == null)
-                        {
-                            Debug.Assert(false, string.Format("No property info for id {0} for x {1}", id, xo));
-                            result = 1;
-                        }
-                        else if (yf == null)
-                        {
-                            Debug.Assert(false, string.Format("No property info for id {0} for y {1}", id, yo));
-                            result = -1;
-                        }
-
-                        object xv = xf.GetValue(xo, null);
-                        object yv = xf.GetValue(yo, null);
-                        if (xv == null)
-                        {
-                            Debug.Assert(false, string.Format("No value for id {0} for x {1}", id, xo));
-                            result = 1;
-                        }
-                        else if (yv == null)
-                        {
-                            Debug.Assert(false, string.Format("No value for id {0} for y {1}", id, yo));
-                            result = -1;
-                        }
-
-                        //Get the CompareTo method using reflection
-                        MethodInfo cmp = null;
-                        //Specialized version of generic (not applicable for .Net2) 
-                        // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
-                        foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
-                                                         MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
-                        {
-                            // Check that the parameter counts and types match, 
-                            // with 'loose' matching on generic parameters
-                            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                            if (parameterInfos.Length == 1)
+                            ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
+                            if (cust != null)
                             {
-                                if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
+                                object xoc = x.Activity.GetCustomDataValue(cust);
+                                object yoc = y.Activity.GetCustomDataValue(cust);
+                                if (xoc == null)
                                 {
-                                    cmp = methodInfo;
-                                    break;
+                                    result = 1;
+                                }
+                                else if (yoc == null)
+                                {
+                                    result = -1;
+                                }
+                                else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
+                                {
+                                    //numeric
+                                    result = ((System.Double)xoc).CompareTo((System.Double)yoc);
+                                }
+                                else
+                                {
+                                    //date or string
+                                    result = ((string)xoc).CompareTo((string)yoc);
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        object xo;
+                        object yo;
 
-                        if (cmp != null)
+                        if (IsLapField(id))
                         {
-                            result *= (int)cmp.Invoke(xv, new object[1] { yv });
+                            id = LapId(id);
+                            xo = null;
+                            yo = null;
+                            if (x is ChildTrailResult)
+                            {
+                                ILapInfo lap = (x as ChildTrailResult).LapInfo;
+                                xo = lap;
+                            }
+                            if (y is ChildTrailResult)
+                            {
+                                ILapInfo lap = (y as ChildTrailResult).LapInfo;
+                                yo = lap;
+                            }
+                        }
+                        else if (IsActivityField(id))
+                        {
+                            xo = x.Activity;
+                            yo = y.Activity;
                         }
                         else
                         {
-                            Debug.Assert(false, string.Format("No CompareTo for id {0} for x {1}", id, xo));
+                            xo = x;
+                            yo = y;
+                        }
+
+                        if (xo != null && yo != null)
+                        {
+                            //Only Properties, no fields searched
+                            PropertyInfo xf = xo.GetType().GetProperty(id);
+                            PropertyInfo yf = yo.GetType().GetProperty(id);
+                            if (xf == null)
+                            {
+                                Debug.Assert(false, string.Format("No property info for id {0} for x {1}", id, xo));
+                                result = 1;
+                            }
+                            else if (yf == null)
+                            {
+                                Debug.Assert(false, string.Format("No property info for id {0} for y {1}", id, yo));
+                                result = -1;
+                            }
+
+                            object xv = xf.GetValue(xo, null);
+                            object yv = xf.GetValue(yo, null);
+                            if (xv == null)
+                            {
+                                Debug.Assert(false, string.Format("No value for id {0} for x {1}", id, xo));
+                                result = 1;
+                            }
+                            else if (yv == null)
+                            {
+                                Debug.Assert(false, string.Format("No value for id {0} for y {1}", id, yo));
+                                result = -1;
+                            }
+
+                            //Get the CompareTo method using reflection
+                            MethodInfo cmp = null;
+                            //Specialized version of generic (not applicable for .Net2) 
+                            // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
+                            foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
+                                                             MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
+                            {
+                                // Check that the parameter counts and types match, 
+                                // with 'loose' matching on generic parameters
+                                ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                                if (parameterInfos.Length == 1)
+                                {
+                                    if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
+                                    {
+                                        cmp = methodInfo;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (cmp != null)
+                            {
+                                result = (int)cmp.Invoke(xv, new object[1] { yv });
+                            }
+                            else
+                            {
+                                Debug.Assert(false, string.Format("No CompareTo for id {0} for x {1}", id, xo));
+                            }
                         }
                     }
                 }
-            }
-            catch (System.Exception e)
-            {
-                Debug.Assert(false, string.Format("Exception when finding properties for id {0} for x {1}, y {2}: {3}", id, x, y, e));
-                //Fallback sorting
-                result *= x.Order.CompareTo(y.Order);
-            }
 
-            //Seem the same, but check activity
-            if (result == 0 && x.Activity != y.Activity)
-            {
-                result = x.Activity.ReferenceId.CompareTo(y.Activity.ReferenceId);
-            }
+                catch (System.Exception e)
+                {
+                    Debug.Assert(false, string.Format("Exception when finding properties for id {0} for x {1}, y {2}: {3}", id, x, y, e));
+                    //Fallback sorting
+                    result = x.Order.CompareTo(y.Order);
+                }
 
+                if (result != 0)
+                {
+                    break;
+                }
+
+            }
             result *= (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
             return result;
         }

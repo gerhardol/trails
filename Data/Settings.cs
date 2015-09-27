@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         private static bool m_ShowChartToolBar = true;
         private static bool m_SelectSimilarResults = false;
         private static bool m_addCurrentCategory = false;
-        private static string m_summaryViewSortColumn = TrailResultColumns.DefaultSortColumn();
+        private static IList<string> m_summaryViewSortColumns = new List<string>(3) { TrailResultColumns.DefaultSortColumn() };
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Descending;
         private static bool m_SetNameAtImport = true;
         private static bool m_SetAdjustElevationAtImport = false;
@@ -237,10 +237,41 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static string SummaryViewSortColumn
+        public static IList<string> SummaryViewSortColumns
         {
-            get { return m_summaryViewSortColumn; }
-            set { m_summaryViewSortColumn = value; }
+            get { return m_summaryViewSortColumns; }
+        }
+
+        public static string UpdateSummaryViewSortColumn
+        {
+            set
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    if (m_summaryViewSortColumns.Contains(value))
+                    {
+                        m_summaryViewSortColumns.Remove(value);
+                    }
+                    if (m_summaryViewSortColumns.Count > 2)
+                    {
+                        m_summaryViewSortColumns.RemoveAt(m_summaryViewSortColumns.Count - 1);
+                    }
+                    m_summaryViewSortColumns.Insert(0, value);
+                }
+            }
+        }
+
+        public static string GetSummaryViewSortColumns
+        {
+            get
+            {
+                string s = "";
+                foreach (string col in m_summaryViewSortColumns)
+                {
+                    s += col + ",";
+                }
+                return s;
+            }
         }
 
         public static ListSortDirection SummaryViewSortDirection
@@ -762,10 +793,17 @@ namespace TrailsPlugin.Data
                         m_activityPageColumns.Add(id);
                     }
                 }
+                m_summaryViewSortColumns.Clear();
                 attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
-                if (attr.Length > 0) { m_summaryViewSortColumn = attr; }
-                else if (m_activityPageColumns != null && m_activityPageColumns.Count > 1)
-                { m_summaryViewSortColumn = m_activityPageColumns[1]; }
+                if (attr.Length > 0) {
+                    String[] values = attr.Split(',');
+                    foreach (String column in values)
+                    {
+                        UpdateSummaryViewSortColumn = column;
+                    }
+                }
+                if (m_summaryViewSortColumns.Count == 0 && m_activityPageColumns != null && m_activityPageColumns.Count > 1)
+                { UpdateSummaryViewSortColumn = m_activityPageColumns[1]; }
                 
                 attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
                 if (attr.Length > 0) { m_summaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
@@ -831,7 +869,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
             pluginNode.SetAttribute(xmlTags.sXAxis, m_xAxisValue.ToString());
             pluginNode.SetAttribute(xmlTags.sChartType, m_chartType.ToString());
-            pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, m_summaryViewSortColumn);
+            pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, GetSummaryViewSortColumns);
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
             pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
             pluginNode.SetAttribute(xmlTags.SelectSimilarResults, XmlConvert.ToString(m_SelectSimilarResults));

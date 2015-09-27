@@ -269,4 +269,10 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
 Licensen inkluderas i installtionsfoldern samt finns tillgänglig på följande URL:
 http://www.gnu.org/licenses/lgpl.html.</value>
   </data>
+  <data name="List_CustomFields" xml:space="preserve">
+    <value>Anpassade datafält</value>
+  </data>
+  <data name="List_RestLap" xml:space="preserve">
+    <value>Vilovarv</value>
+  </data>
 </root>

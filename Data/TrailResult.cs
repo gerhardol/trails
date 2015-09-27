@@ -736,7 +736,7 @@ namespace TrailsPlugin.Data
                     TrailResult refTr = Controller.TrailController.Instance.ReferenceTrailResult;
                     if (this is SummaryTrailResult)
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, "Unexpectedly requesting pauses for summary result");
                         this.m_pauses = new ValueRangeSeries<DateTime>();
                     }
                     else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
@@ -901,7 +901,7 @@ namespace TrailsPlugin.Data
                 m_distanceMetersTrack.AllowMultipleAtSameTime = false;
                 if (this is SummaryTrailResult)
                 {
-                    Debug.Assert(false);
+                    Debug.Assert(false, "Unexpectedly requesting distance track for summary result");
                     m_activityDistanceMetersTrack = m_distanceMetersTrack;
                     return;
                 }
@@ -3542,7 +3542,7 @@ namespace TrailsPlugin.Data
                 //Custom InfoCache, to control smoothing (otherwise ST could cache)
                 if (this is SummaryTrailResult)
                 {
-                    Debug.Assert(false);
+                    Debug.Assert(false, "Unexpectedly requesting Info for summary result");
                     return null;
                 }
                 return ActivityCache.GetActivityInfo(this.Activity, this.IncludeStopped);
@@ -3663,9 +3663,14 @@ namespace TrailsPlugin.Data
                 TrailResult other = obj as TrailResult;
                 return TrailResultColumns.Compare(this, other);
             }
+            else if (obj == null)
+            {
+                Debug.Assert(false, string.Format("Unexpectedly comparing {0} to null", this));
+                return 1;
+            }
             else
             {
-                Debug.Assert(false);
+                Debug.Assert(false, string.Format("Unexpectedly comparing {0} to other than TrailResult {1}", this, obj));
                 return this.ToString().CompareTo(obj.ToString());
             }
         }

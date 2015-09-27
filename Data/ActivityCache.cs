@@ -58,7 +58,7 @@ namespace TrailsPlugin.Data
         {
             if (activity == null)
             {
-                Debug.Assert(false);
+                Debug.Assert(false, "Activity is unexpectedly null");
                 return null;
             }
 
@@ -114,7 +114,7 @@ namespace TrailsPlugin.Data
                 else
                 {
                     //TODO: This data should not be used, just return any activity to avoid exceptions
-                    Debug.Assert(false);
+                    Debug.Assert(false, "Activity was checked to be not null, now is");
                     activityInfos[activity][includeStopped] = ActivityInfoCache.Instance.GetInfo(Plugin.GetApplication().Logbook.Activities[0]);
                 }
             }

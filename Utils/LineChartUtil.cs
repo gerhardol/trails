@@ -92,7 +92,7 @@ namespace TrailsPlugin.Utils
                     }
                 default:
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, string.Format("Unexpecteded SmoothOverTrailBorders {0}", t));
                         s = t.ToString();
                         break;
                     }
@@ -120,7 +120,7 @@ namespace TrailsPlugin.Utils
                     //TODO: DateTime
                 default:
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, string.Format("Unexpecteded XAxisValue {0}", XAxisReferential));
                         break;
                     }
             }
@@ -214,7 +214,7 @@ namespace TrailsPlugin.Utils
                     }
                 default:
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, string.Format("Unexpecteded LineChartTypes {0}", YAxisReferential));
                         break;
                     }
             }
@@ -241,7 +241,7 @@ namespace TrailsPlugin.Utils
                     }
                 default:
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, string.Format("Unexpecteded XAxisValue {0}", axisType));
                         break;
                     }
             }
@@ -327,7 +327,7 @@ namespace TrailsPlugin.Utils
                     }
                 default:
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, string.Format("Unexpecteded LineChartTypes {0}", axisType));
                         break;
                     }
             }
@@ -442,7 +442,7 @@ namespace TrailsPlugin.Utils
 
                 default:
                     {
-                        Debug.Assert(false);
+                        Debug.Assert(false, string.Format("Unexpecteded LineChartTypes {0}", lineChart));
                         // Fail safe
                         track = new TrackUtil.NumericTimeDataSeries();
                         break;
@@ -479,7 +479,7 @@ namespace TrailsPlugin.Utils
                         break;
                     default:
                         {
-                            Debug.Assert(false);
+                            Debug.Assert(false, string.Format("Unexpecteded SyncGraphMode {0}", syncGraph));
                             break;
                         }
                 }

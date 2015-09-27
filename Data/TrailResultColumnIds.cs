@@ -125,12 +125,13 @@ namespace TrailsPlugin.Data {
         public const string Diff = "Diff";
         public const string VAM = "VAM";
         public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
-
-        //derived from Activity, not iin individual result
         public const string Name = "Name";
+
+        //derived from Activity, not in individual result
+        //For historical reasons, do not have prefix
         public const string Location = "Location";
         public const string Category = "Category";
-        internal static IList<string> ActivityFields = new List<string> { TrailResultColumnIds.Name, TrailResultColumnIds.Category, TrailResultColumnIds.Location };
+        internal static IList<string> ActivityFields = new List<string> { TrailResultColumnIds.Category, TrailResultColumnIds.Location };
 
         //obsolete fields - maybe just in dev versions
         internal static IList<string> ObsoleteFields = new List<string> { "AvgGrade", "AscMaxGrade", "AvgPaceSpeed" };
@@ -205,10 +206,12 @@ namespace TrailsPlugin.Data {
             {
                 return this.m_columnDict[id];
             }
-            else if (!TrailResultColumnIds.ObsoleteFields.Contains(id))
+            else if (!TrailResultColumnIds.ObsoleteFields.Contains(id) &&
+                !IsLapField(id))
             {
+                //It is OK to have lap fields defined, but this is not a Splits trail
                 //Unknown column, not ignored
-                Debug.Assert(false);
+                Debug.Assert(false, string.Format("Unknown column {0}", id));
             }
             return null;
         }
@@ -222,9 +225,18 @@ namespace TrailsPlugin.Data {
             return null;
         }
 
-        public static bool IsLap(string id)
+        public static bool IsLapField(string id)
         {
             if (id.StartsWith(TrailResultColumnIds.LapInfoPrefix))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsActivityField(string id)
+        {
+            if (TrailResultColumnIds.ActivityFields.Contains(id))
             {
                 return true;
             }
@@ -387,13 +399,14 @@ namespace TrailsPlugin.Data {
                     id = "VAM";
                     break;
             }
-            int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
+
+            int result = 0;
 
             try
             {
                 if (m_custColumnDict.ContainsKey(id))
                 {
-                    //Dont bother with relection CompareTo, few types, just complicates TrailResult/Lap
+                    //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
                     //If not parent result, there is no difference
                     if (x is ParentTrailResult)
                     {
@@ -404,56 +417,55 @@ namespace TrailsPlugin.Data {
                             object yoc = y.Activity.GetCustomDataValue(cust);
                             if (xoc == null)
                             {
-                                result *= 1;
+                                result = 1;
                             }
                             else if (yoc == null)
                             {
-                                result *= -1;
+                                result = -1;
                             }
                             else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
                             {
                                 //numeric
-                                result *= ((System.Double)xoc).CompareTo((System.Double)yoc);
+                                result = ((System.Double)xoc).CompareTo((System.Double)yoc);
                             }
                             else
                             {
                                 //date or string
-                                result *= ((string)xoc).CompareTo((string)yoc);
+                                result = ((string)xoc).CompareTo((string)yoc);
                             }
                         }
                     }
                 }
                 else
                 {
-                    object xo = x;
-                    object yo = y;
+                    object xo;
+                    object yo;
 
-                    if (IsLap(id))
+                    if (IsLapField(id))
                     {
                         id = LapId(id);
+                        xo = null;
+                        yo = null;
                         if (x is ChildTrailResult)
                         {
                             ILapInfo lap = (x as ChildTrailResult).LapInfo;
                             xo = lap;
-                        }
-                        else
-                        {
-                            xo = null;
                         }
                         if (y is ChildTrailResult)
                         {
                             ILapInfo lap = (y as ChildTrailResult).LapInfo;
                             yo = lap;
                         }
-                        else
-                        {
-                            yo = null;
-                        }
                     }
-                    else if (TrailResultColumnIds.ActivityFields.Contains(id))
+                    else if (IsActivityField(id))
                     {
                         xo = x.Activity;
                         yo = y.Activity;
+                    }
+                    else
+                    {
+                        xo = x;
+                        yo = y;
                     }
 
                     if (xo != null && yo != null)
@@ -463,26 +475,26 @@ namespace TrailsPlugin.Data {
                         PropertyInfo yf = yo.GetType().GetProperty(id);
                         if (xf == null)
                         {
-                            Debug.Assert(false);
-                            return 1;
+                            Debug.Assert(false, string.Format("No property info for id {0} for x {1}", id, xo));
+                            result = 1;
                         }
                         else if (yf == null)
                         {
-                            Debug.Assert(false);
-                            return -1;
+                            Debug.Assert(false, string.Format("No property info for id {0} for y {1}", id, yo));
+                            result = -1;
                         }
 
                         object xv = xf.GetValue(xo, null);
                         object yv = xf.GetValue(yo, null);
                         if (xv == null)
                         {
-                            Debug.Assert(false);
-                            return 1;
+                            Debug.Assert(false, string.Format("No value for id {0} for x {1}", id, xo));
+                            result = 1;
                         }
                         else if (yv == null)
                         {
-                            Debug.Assert(false);
-                            return -1;
+                            Debug.Assert(false, string.Format("No value for id {0} for y {1}", id, yo));
+                            result = -1;
                         }
 
                         //Get the CompareTo method using reflection
@@ -505,18 +517,20 @@ namespace TrailsPlugin.Data {
                             }
                         }
 
-                        if (cmp == null)
+                        if (cmp != null)
                         {
-                            Debug.Assert(false);
-                            return result;
+                            result *= (int)cmp.Invoke(xv, new object[1] { yv });
                         }
-                        result *= (int)cmp.Invoke(xv, new object[1] { yv });
+                        else
+                        {
+                            Debug.Assert(false, string.Format("No CompareTo for id {0} for x {1}", id, xo));
+                        }
                     }
                 }
             }
             catch (System.Exception e)
             {
-                Debug.Assert(false);
+                Debug.Assert(false, string.Format("Exception when finding properties for id {0} for x {1}, y {2}: {3}", id, x, y, e));
                 //Fallback sorting
                 result *= x.Order.CompareTo(y.Order);
             }
@@ -527,6 +541,7 @@ namespace TrailsPlugin.Data {
                 result = x.Activity.ReferenceId.CompareTo(y.Activity.ReferenceId);
             }
 
+            result *= (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
             return result;
         }
     }

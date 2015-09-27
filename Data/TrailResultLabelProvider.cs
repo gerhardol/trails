@@ -216,24 +216,44 @@ namespace TrailsPlugin.Data
                         {
                             return row.Activity.GetCustomDataValue(TrailResultColumns.CustomDef(column.Id)).ToString();
                         }
-                    }
-                    else if ((row is ChildTrailResult) && TrailResultColumns.IsLap(column.Id))
-                    {
-                        ILapInfo lap = (row as ChildTrailResult).LapInfo;
-                        if (lap != null)
+                        else if (TrailResultColumns.IsActivityField(column.Id))
                         {
-                            switch (column.Id)
-                            {
-                                case TrailResultColumnIds.LapInfo_TotalDistanceMeters:
-                                    return UnitUtil.Distance.ToString(lap.TotalDistanceMeters, m_controller.ReferenceActivity, "");
-                                default:
-                                    //The column Id is faked to not clash with the internal ids
-                                    TreeList.Column c = new TreeList.Column(TrailResultColumns.LapId(column.Id));
-                                    return base.GetText(lap, c);
-                            }
+                            return base.GetText(row.Activity, column);
+                        }
+                        else if (TrailResultColumns.IsLapField(column.Id))
+                        {
+                            //Must be empty
+                            return null;
                         }
                     }
-                    return base.GetText(row.Activity, column);
+                    else if (row is ChildTrailResult)
+                    {
+                        if (TrailResultColumns.IsLapField(column.Id))
+                        {
+                            ILapInfo lap = (row as ChildTrailResult).LapInfo;
+                            if (lap != null)
+                            {
+                                switch (column.Id)
+                                {
+                                    case TrailResultColumnIds.LapInfo_TotalDistanceMeters:
+                                        return UnitUtil.Distance.ToString(lap.TotalDistanceMeters, m_controller.ReferenceActivity, "");
+                                    default:
+                                        //The column Id is faked to not clash with the internal ids
+                                        TreeList.Column c = new TreeList.Column(TrailResultColumns.LapId(column.Id));
+                                        return base.GetText(lap, c);
+                                }
+                            }
+                            //Not Splits trail
+                            return null;
+                        }
+                        else if (TrailResultColumns.IsActivityField(column.Id) ||
+                            TrailResultColumns.CustomDef(column.Id) != null)
+                        {
+                            return null;
+                        }
+                    }
+                    System.Diagnostics.Debug.Assert(false, string.Format("No label info for id {0}", column.Id));
+                    return null;
             }
         }
 

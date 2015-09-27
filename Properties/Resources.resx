@@ -395,4 +395,10 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Settings_Title" xml:space="preserve">
     <value>Plugin Information</value>
   </data>
+  <data name="List_CustomFields" xml:space="preserve">
+    <value>Custom Fields</value>
+  </data>
+  <data name="List_RestLap" xml:space="preserve">
+    <value>Rest Lap</value>
+  </data>
 </root>

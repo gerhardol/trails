@@ -3661,16 +3661,13 @@ namespace TrailsPlugin.Data
             if (obj != null && obj is TrailResult)
             {
                 TrailResult other = obj as TrailResult;
-                return TrailResultColumnIds.Compare(this, other);
+                return TrailResultColumns.Compare(this, other);
             }
             else
             {
+                Debug.Assert(false);
                 return this.ToString().CompareTo(obj.ToString());
             }
-        }
-        public int CompareTo(TrailResult other)
-        {
-            return TrailResultColumnIds.Compare(this, other);
         }
         #endregion
 

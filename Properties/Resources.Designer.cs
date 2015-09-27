@@ -126,6 +126,24 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom Fields.
+        /// </summary>
+        internal static string List_CustomFields {
+            get {
+                return ResourceManager.GetString("List_CustomFields", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rest Lap.
+        /// </summary>
+        internal static string List_RestLap {
+            get {
+                return ResourceManager.GetString("List_RestLap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Problem communicating with {0}.
         ///Make sure that {1} is installed..
         /// </summary>

@@ -52,6 +52,17 @@ namespace TrailsPlugin.Data
     {
         internal bool PartOfParent = true;
 
+        public ILapInfo LapInfo
+        {
+            get
+            {
+                if (this.Activity != null && this.m_activityTrail.Trail.IsSplits && this.Activity.Laps != null && this.Activity.Laps.Count >= this.Order )
+                {
+                    return this.Activity.Laps[this.Order-1];
+                }
+                return null;
+            }
+        }
         private ParentTrailResult m_parentResult;
         public ParentTrailResult ParentResult
         {

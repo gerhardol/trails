@@ -78,7 +78,7 @@ namespace TrailsPlugin.Utils
 
     }
 
-    public class ChartColors
+    public class ChartColors : IComparable
     {
         public ChartColors(Color LineNormal, Color FillNormal, Color FillSelected)
         {
@@ -97,5 +97,17 @@ namespace TrailsPlugin.Utils
         public Color LineNormal;
         public Color FillNormal;
         public Color FillSelected;
+
+        public int CompareTo(object obj)
+        {
+            if (obj is ChartColors)
+            {
+                return this.LineNormal.ToArgb().CompareTo((obj as ChartColors).LineNormal.ToArgb());
+            }
+            else
+            {
+                return -1;
+            }
+        }
     }
 }

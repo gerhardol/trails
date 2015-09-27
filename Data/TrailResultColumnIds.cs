@@ -1,5 +1,6 @@
 ﻿/*
 Copyright (C) 2009 Brendan Doherty
+Copyright (C) 2010-2015 Gerhard Olsson
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -15,6 +16,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using ZoneFiveSoftware.Common.Visuals;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,6 +25,7 @@ using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Data.Measurement;
 using System.Diagnostics;
 using ZoneFiveSoftware.Common.Data.Fitness.CustomData;
+using System.Reflection;
 
 #if ST_2_1
 //IListItem
@@ -115,9 +118,6 @@ namespace TrailsPlugin.Data {
         public const string FastestPace = "FastestPace";
         public const string AvgSpeedPace = "AvgSpeedPace";
         public const string FastestSpeedPace = "FastestSpeedPace";
-        public const string Name = "Name";
-        public const string Location = "Location";
-        public const string Category = "Category";
         public const string PredictDistance = "PredictDistance";
         public const string IdealTime = "IdealTime";
         public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
@@ -125,6 +125,47 @@ namespace TrailsPlugin.Data {
         public const string Diff = "Diff";
         public const string VAM = "VAM";
         public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
+
+        //derived from Activity, not iin individual result
+        public const string Name = "Name";
+        public const string Location = "Location";
+        public const string Category = "Category";
+        internal static IList<string> ActivityFields = new List<string> { TrailResultColumnIds.Name, TrailResultColumnIds.Category, TrailResultColumnIds.Location };
+
+        //obsolete fields - maybe just in dev versions
+        internal static IList<string> ObsoleteFields = new List<string> { "AvgGrade", "AscMaxGrade", "AvgPaceSpeed" };
+
+        //Splits
+        //All lap fields must start with this prefix, to transform the Id back to standard (and to find them, which could be done with a separate structure)
+        internal const string LapInfoPrefix = "LapInfo_";
+        public const string LapInfo_AverageCadencePerMinute = LapInfoPrefix + "AverageCadencePerMinute";
+        public const string LapInfo_AverageHeartRatePerMinute = LapInfoPrefix + "AverageHeartRatePerMinute";
+        public const string LapInfo_AveragePowerWatts = LapInfoPrefix + "AveragePowerWatts";
+        public const string LapInfo_ElevationChangeMeters = LapInfoPrefix + "ElevationChangeMeters";
+        public const string LapInfo_Notes = LapInfoPrefix + "Notes";
+        public const string LapInfo_Rest = LapInfoPrefix + "Rest";
+        public const string LapInfo_StartTime = LapInfoPrefix + "StartTime";
+        public const string LapInfo_TotalCalories = LapInfoPrefix + "TotalCalories";
+        public const string LapInfo_TotalDistanceMeters = LapInfoPrefix + "TotalDistanceMeters";
+        public const string LapInfo_TotalTime = LapInfoPrefix + "TotalTime";
+        //IPoolLengthInfo PoolLengths (ignored for now)
+        //AverageStrokeDistance
+        //AverageStrokeRate
+        //DistanceUnits
+        //Efficiency
+        //StartTime
+        //StrokeCount
+        //StrokeType
+        //SWOLF
+        //TotalDistanceMeters
+        //TotalTime
+    }
+
+    public class TrailResultColumns
+    {
+        private IList<IListColumnDefinition> m_columnDefs = new List<IListColumnDefinition>();
+        private IDictionary<string, IListColumnDefinition> m_columnDict = new Dictionary<string, IListColumnDefinition>();
+        private static IDictionary<string, ICustomDataFieldDefinition> m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -160,20 +201,11 @@ namespace TrailsPlugin.Data {
 #endif
         public IListColumnDefinition ColumnDef(string id)
         {
-            if (id == "AvgGrade" || id == "AscMaxGrade"|| id == "AvgPaceSpeed")
-            {
-                //compatibility
-                return null;
-            }
-            else if (this.m_columnDict.ContainsKey(id))
+            if (this.m_columnDict.ContainsKey(id))
             {
                 return this.m_columnDict[id];
             }
-            else if (this.m_custColumnDict.ContainsKey(id))
-            {
-                return this.m_custColumnDict[id];
-            }
-            else
+            else if (!TrailResultColumnIds.ObsoleteFields.Contains(id))
             {
                 //Unknown column, not ignored
                 Debug.Assert(false);
@@ -181,17 +213,39 @@ namespace TrailsPlugin.Data {
             return null;
         }
 
+        public static ICustomDataFieldDefinition CustomDef(string id)
+        {
+            if (m_custColumnDict.ContainsKey(id))
+            {
+                return m_custColumnDict[id];
+            }
+            return null;
+        }
+
+        public static bool IsLap(string id)
+        {
+            if (id.StartsWith(TrailResultColumnIds.LapInfoPrefix))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static string LapId(string id)
+        {
+            return id.Remove(0, TrailResultColumnIds.LapInfoPrefix.Length);
+        }
+
         public IList<IListColumnDefinition> ColumnDefs()
         {
             return m_columnDefs;
         }
 
-        private IList<IListColumnDefinition> m_columnDefs = new List<IListColumnDefinition>();
-        private IDictionary<string, IListColumnDefinition> m_columnDict = new Dictionary<string, IListColumnDefinition>();
-        private IDictionary<string, IListColumnDefinition> m_custColumnDict = new Dictionary<string, IListColumnDefinition>();
-        public TrailResultColumnIds(IActivity activity, int noRes, bool multAct, bool all)
+        public TrailResultColumns(IActivity activity, int noRes, bool multAct, bool all, bool laps)
         {
             string TrailsGroup = Properties.Resources.ApplicationName;
+            string ActivityGroup = CommonResources.Text.LabelActivity;
+            //Order width is dynamic from no of activities
             int noRes2 = System.Math.Max(10, noRes);
             int w = 14 + (int)System.Math.Log10(noRes2) * 9;
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Order, "#", TrailsGroup, w, StringAlignment.Far));
@@ -237,9 +291,9 @@ namespace TrailsPlugin.Data {
             //columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeedPace, columnDefs[index].Text(columnDefs[index].Id), columnDefs[index].GroupName, columnDefs[index].Width, columnDefs[index].Align));
             //index++;
             //columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeedPace, columnDefs[index].Text(columnDefs[index].Id), columnDefs[index].GroupName, columnDefs[index].Width, columnDefs[index].Align));
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, TrailsGroup, 70, StringAlignment.Near));
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, TrailsGroup, 70, StringAlignment.Near));
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, TrailsGroup, 70, StringAlignment.Near));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, ActivityGroup, 70, StringAlignment.Near));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, ActivityGroup, 70, StringAlignment.Near));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, ActivityGroup, 70, StringAlignment.Near));
             if (all || TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", TrailsGroup, 70, StringAlignment.Far));
@@ -253,18 +307,38 @@ namespace TrailsPlugin.Data {
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, Properties.Resources.UI_Activity_List_DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, Properties.Resources.UI_Activity_List_AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", TrailsGroup, 70, StringAlignment.Far));
             
-            foreach(IListColumnDefinition l in m_columnDefs)
-            {
-                this.m_columnDict[l.Id] = l;
-            }
+            //Reset every refresh
+            m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
+           
             foreach (ICustomDataFieldDefinition custDataDef in TrailsPlugin.Plugin.GetApplication().Logbook.CustomDataFieldDefinitions)
             {
                 if (custDataDef.ObjectType.Type.Equals(typeof(IActivity)))
                 {
-                    IListColumnDefinition cust = new ListColumnDefinition(custDataDef.Id.ToString(), custDataDef.Name, custDataDef.GroupAggregation.ToString(), 70, StringAlignment.Far);
+                    IListColumnDefinition cust = new ListColumnDefinition(custDataDef.Id.ToString(), custDataDef.Name, Properties.Resources.List_CustomFields + " - " + custDataDef.GroupAggregation.ToString(), 70, StringAlignment.Far);
                     m_columnDefs.Add(cust);
-                    this.m_custColumnDict[custDataDef.Id.ToString()] = cust;
+                    m_custColumnDict[custDataDef.Id.ToString()] = custDataDef;
                 }
+            }
+
+            string LapGroup = CommonResources.Text.LabelLap;
+            if (laps)
+            {
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_AverageCadencePerMinute, CommonResources.Text.LabelAvgCadence, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_AverageHeartRatePerMinute, CommonResources.Text.LabelAvgHR, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_AveragePowerWatts, CommonResources.Text.LabelAvgPower, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_ElevationChangeMeters, CommonResources.Text.LabelElevationChange, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_Notes, CommonResources.Text.LabelNotes, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_Rest, Properties.Resources.List_RestLap, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_StartTime, CommonResources.Text.LabelStartTime, LapGroup, 115, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_TotalCalories, CommonResources.Text.LabelCalories, LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_TotalDistanceMeters, CommonResources.Text.LabelDistance + " (" + UnitUtil.Distance.LabelAbbrAct(activity) + ")", LapGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.LapInfo_TotalTime, CommonResources.Text.LabelTime, LapGroup, 60, StringAlignment.Far));
+            }
+
+            //Dictionary with all fields
+            foreach (IListColumnDefinition l in m_columnDefs)
+            {
+                this.m_columnDict[l.Id] = l;
             }
         }
 
@@ -278,107 +352,182 @@ namespace TrailsPlugin.Data {
 
         public static int Compare(TrailResult x, TrailResult y)
         {
-            if (x == null || x.Activity == null)
+            if (x == null || x is SummaryTrailResult)
             {
-                //Summary
                 return 1;
             }
-            if (y == null || y.Activity == null)
+            if (y == null || y is SummaryTrailResult)
             {
                 return -1;
             }
-            int result;
 
-            if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Name)
+            //TODO: use the last (3?) fields when sorting
+            string id = TrailsPlugin.Data.Settings.SummaryViewSortColumn;
+            //Translate some column Ids to the Property names
+            switch (id)
             {
-                result = x.Activity.Name.CompareTo(y.Activity.Name);
+                case TrailResultColumnIds.Color:
+                    id = "ResultColor";
+                    break;
+                case TrailResultColumnIds.StartDistance:
+                    id = "StartDist";
+                    break;
+                case TrailResultColumnIds.AvgPace:
+                case TrailResultColumnIds.AvgSpeedPace:
+                    id = "AvgSpeed";
+                    break;
+                case TrailResultColumnIds.FastestPace:
+                case TrailResultColumnIds.FastestSpeedPace:
+                    id = "FastestSpeed";
+                    break;
+                case TrailResultColumnIds.GradeRunAdjustedPace:
+                    id = "GradeRunAdjustedSpeed";
+                    break;
+                case TrailResultColumnIds.AscendingSpeed_VAM:
+                    id = "VAM";
+                    break;
             }
-            else if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Location)
+            int result = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
+
+            try
             {
-                result = x.Activity.Location.CompareTo(y.Activity.Location);
+                if (m_custColumnDict.ContainsKey(id))
+                {
+                    //Dont bother with relection CompareTo, few types, just complicates TrailResult/Lap
+                    //If not parent result, there is no difference
+                    if (x is ParentTrailResult)
+                    {
+                        ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
+                        if (cust != null)
+                        {
+                            object xoc = x.Activity.GetCustomDataValue(cust);
+                            object yoc = y.Activity.GetCustomDataValue(cust);
+                            if (xoc == null)
+                            {
+                                result *= 1;
+                            }
+                            else if (yoc == null)
+                            {
+                                result *= -1;
+                            }
+                            else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
+                            {
+                                //numeric
+                                result *= ((System.Double)xoc).CompareTo((System.Double)yoc);
+                            }
+                            else
+                            {
+                                //date or string
+                                result *= ((string)xoc).CompareTo((string)yoc);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    object xo = x;
+                    object yo = y;
+
+                    if (IsLap(id))
+                    {
+                        id = LapId(id);
+                        if (x is ChildTrailResult)
+                        {
+                            ILapInfo lap = (x as ChildTrailResult).LapInfo;
+                            xo = lap;
+                        }
+                        else
+                        {
+                            xo = null;
+                        }
+                        if (y is ChildTrailResult)
+                        {
+                            ILapInfo lap = (y as ChildTrailResult).LapInfo;
+                            yo = lap;
+                        }
+                        else
+                        {
+                            yo = null;
+                        }
+                    }
+                    else if (TrailResultColumnIds.ActivityFields.Contains(id))
+                    {
+                        xo = x.Activity;
+                        yo = y.Activity;
+                    }
+
+                    if (xo != null && yo != null)
+                    {
+                        //Only Properties, no fields searched
+                        PropertyInfo xf = xo.GetType().GetProperty(id);
+                        PropertyInfo yf = yo.GetType().GetProperty(id);
+                        if (xf == null)
+                        {
+                            Debug.Assert(false);
+                            return 1;
+                        }
+                        else if (yf == null)
+                        {
+                            Debug.Assert(false);
+                            return -1;
+                        }
+
+                        object xv = xf.GetValue(xo, null);
+                        object yv = xf.GetValue(yo, null);
+                        if (xv == null)
+                        {
+                            Debug.Assert(false);
+                            return 1;
+                        }
+                        else if (yv == null)
+                        {
+                            Debug.Assert(false);
+                            return -1;
+                        }
+
+                        //Get the CompareTo method using reflection
+                        MethodInfo cmp = null;
+                        //Specialized version of generic (not applicable for .Net2) 
+                        // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
+                        foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
+                                                         MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
+                        {
+                            // Check that the parameter counts and types match, 
+                            // with 'loose' matching on generic parameters
+                            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                            if (parameterInfos.Length == 1)
+                            {
+                                if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
+                                {
+                                    cmp = methodInfo;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (cmp == null)
+                        {
+                            Debug.Assert(false);
+                            return result;
+                        }
+                        result *= (int)cmp.Invoke(xv, new object[1] { yv });
+                    }
+                }
             }
-            else if (TrailsPlugin.Data.Settings.SummaryViewSortColumn == TrailResultColumnIds.Category)
+            catch (System.Exception e)
             {
-                result = x.Activity.Category.ToString().CompareTo(y.Activity.Category.ToString());
+                Debug.Assert(false);
+                //Fallback sorting
+                result *= x.Order.CompareTo(y.Order);
             }
-            else
-            {
-                result = getCompareField(x, TrailsPlugin.Data.Settings.SummaryViewSortColumn).CompareTo(getCompareField(y, TrailsPlugin.Data.Settings.SummaryViewSortColumn));
-            }
+
             //Seem the same, but check activity
             if (result == 0 && x.Activity != y.Activity)
             {
                 result = x.Activity.ReferenceId.CompareTo(y.Activity.ReferenceId);
             }
 
-            int dir = (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
-            return dir * result;
-        }
-
-        //Helper function to get numerical value used in comparison
-        private static double getCompareField(TrailResult x, string id)
-        {
-            //Should be using reflection....
-            switch (id)
-            {
-                case TrailResultColumnIds.Color:
-                    return x.ResultColor.LineNormal.ToArgb();
-                case TrailResultColumnIds.Order:
-                    //Order is set dynamically for parents, but used for children
-                    return x.Order;
-                case TrailResultColumnIds.StartTime:
-                    return x.StartTime.Ticks;
-                case TrailResultColumnIds.StartDistance:
-                    return x.StartDist;
-                case TrailResultColumnIds.EndTime:
-                    return x.EndTime.Ticks;
-                case TrailResultColumnIds.Duration:
-                    return x.Duration.TotalSeconds;
-                case TrailResultColumnIds.Distance:
-                    return x.Distance;
-                case TrailResultColumnIds.AvgCadence:
-                    return x.AvgCadence;
-                case TrailResultColumnIds.AscAvgGrade:
-                    return x.AscAvgGrade;
-                case TrailResultColumnIds.AscMaxAvgGrade:
-                    return x.AscMaxAvgGrade;
-                case TrailResultColumnIds.DescAvgGrade:
-                    return x.DescAvgGrade;
-                case TrailResultColumnIds.AvgHR:
-                    return x.AvgHR;
-                case TrailResultColumnIds.AvgPower:
-                    return x.AvgPower;
-                case TrailResultColumnIds.AvgPace:
-                case TrailResultColumnIds.AvgSpeed:
-                case TrailResultColumnIds.AvgSpeedPace:
-                    return x.AvgSpeed;
-                case TrailResultColumnIds.FastestPace:
-                case TrailResultColumnIds.FastestSpeed:
-                case TrailResultColumnIds.FastestSpeedPace:
-                    return x.FastestSpeed;
-                case TrailResultColumnIds.Ascent:
-                    return x.Ascent;
-                case TrailResultColumnIds.Descent:
-                    return x.Descent;
-                case TrailResultColumnIds.ElevChg:
-                    return x.ElevChg;
-                case TrailResultColumnIds.MaxHR:
-                    return x.MaxHR;
-                case TrailResultColumnIds.PredictDistance:
-                    return x.PredictDistance;
-                case TrailResultColumnIds.IdealTime:
-                    return x.IdealTime.TotalSeconds;
-                case TrailResultColumnIds.GradeRunAdjustedTime:
-                    return x.GradeRunAdjustedTime.TotalSeconds;
-                case TrailResultColumnIds.GradeRunAdjustedPace:
-                    return x.GradeRunAdjustedSpeed;
-                case TrailResultColumnIds.Diff:
-                    return x.Diff;
-                case TrailResultColumnIds.AscendingSpeed_VAM:
-                    return x.VAM;
-                default:
-                    return x.Order;
-            }
+            return result;
         }
     }
 }

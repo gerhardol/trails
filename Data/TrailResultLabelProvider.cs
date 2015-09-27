@@ -21,6 +21,7 @@ using ZoneFiveSoftware.Common.Visuals;
 using System.Drawing;
 using GpsRunningPlugin.Util;
 using ZoneFiveSoftware.Common.Data.Fitness.CustomData;
+using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Data
 {
@@ -208,16 +209,31 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Elevation.ToString(row.VAM, "");
                 default:
                     if (row.Activity == null) return null;
-                    if((row is NormalParentTrailResult))
-                    foreach (ICustomDataFieldDefinition custDataDef in Plugin.GetApplication().Logbook.CustomDataFieldDefinitions)
+                    if (row is ParentTrailResult)
                     {
-                        if (custDataDef.Id.ToString().Equals(column.Id))
+                        ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(column.Id);
+                        if (cust != null)
                         {
-                            return row.Activity.GetCustomDataValue(custDataDef).ToString();
+                            return row.Activity.GetCustomDataValue(TrailResultColumns.CustomDef(column.Id)).ToString();
                         }
                     }
-
-                            return base.GetText(row.Activity, column);
+                    else if ((row is ChildTrailResult) && TrailResultColumns.IsLap(column.Id))
+                    {
+                        ILapInfo lap = (row as ChildTrailResult).LapInfo;
+                        if (lap != null)
+                        {
+                            switch (column.Id)
+                            {
+                                case TrailResultColumnIds.LapInfo_TotalDistanceMeters:
+                                    return UnitUtil.Distance.ToString(lap.TotalDistanceMeters, m_controller.ReferenceActivity, "");
+                                default:
+                                    //The column Id is faked to not clash with the internal ids
+                                    TreeList.Column c = new TreeList.Column(TrailResultColumns.LapId(column.Id));
+                                    return base.GetText(lap, c);
+                            }
+                        }
+                    }
+                    return base.GetText(row.Activity, column);
             }
         }
 

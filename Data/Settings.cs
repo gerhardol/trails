@@ -28,7 +28,7 @@ namespace TrailsPlugin.Data
 {
     static class Settings
     {
-        private static IList<string> m_activityPageColumns = TrailResultColumnIds.DefaultColumns();
+        private static IList<string> m_activityPageColumns = TrailResultColumns.DefaultColumns();
         private static IDictionary<string,int> m_activityPageColumnSizes = new Dictionary<string,int>();
         private static int m_activityPageNumFixedColumns = 0;
         private static float m_defaultRadius = 30;
@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         private static bool m_ShowChartToolBar = true;
         private static bool m_SelectSimilarResults = false;
         private static bool m_addCurrentCategory = false;
-        private static string m_summaryViewSortColumn = TrailResultColumnIds.DefaultSortColumn();
+        private static string m_summaryViewSortColumn = TrailResultColumns.DefaultSortColumn();
         private static ListSortDirection m_summaryViewSortDirection = ListSortDirection.Descending;
         private static bool m_SetNameAtImport = true;
         private static bool m_SetAdjustElevationAtImport = false;

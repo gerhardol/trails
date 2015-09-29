@@ -167,6 +167,7 @@ namespace TrailsPlugin.Data {
         private IList<IListColumnDefinition> m_columnDefs = new List<IListColumnDefinition>();
         private IDictionary<string, IListColumnDefinition> m_columnDict = new Dictionary<string, IListColumnDefinition>();
         private static IDictionary<string, ICustomDataFieldDefinition> m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
+        private static IDictionary<string, MethodInfo> m_methodInfoCache = new Dictionary<string, MethodInfo>();
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -352,6 +353,7 @@ namespace TrailsPlugin.Data {
             {
                 this.m_columnDict[l.Id] = l;
             }
+            m_methodInfoCache = new Dictionary<string, MethodInfo>();
         }
 
         public static IList<IListColumnDefinition> PermanentMultiColumnDefs()
@@ -403,42 +405,59 @@ namespace TrailsPlugin.Data {
                         break;
                 }
 
+                //Limit "automatic" calculations in some situations
+                if (TrailsPlugin.Controller.TrailController.Instance.AutomaticUpdate)
+                {
+                    if (id == TrailResultColumnIds.GradeRunAdjustedTime ||
+                        id == TrailResultColumnIds.PredictDistance ||
+                        id == TrailResultColumnIds.IdealTime)
+                    {
+                        id = TrailResultColumnIds.Duration;
+                    }
+                    if (id == TrailResultColumnIds.GradeRunAdjustedPace)
+                    {
+                        id = TrailResultColumnIds.AvgPace;
+                    }
+                }
+
                 try
                 {
-                    if (m_custColumnDict.ContainsKey(id))
+                    //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
+                    //If not parent result, there is no difference
+                    if (x is ParentTrailResult)
                     {
-                        //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
-                        //If not parent result, there is no difference
-                        if (x is ParentTrailResult)
+                        ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
+                        if (cust != null)
                         {
-                            ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
-                            if (cust != null)
+                            object xoc = x.Activity.GetCustomDataValue(cust);
+                            object yoc = y.Activity.GetCustomDataValue(cust);
+                            if (xoc == null)
                             {
-                                object xoc = x.Activity.GetCustomDataValue(cust);
-                                object yoc = y.Activity.GetCustomDataValue(cust);
-                                if (xoc == null)
-                                {
-                                    result = 1;
-                                }
-                                else if (yoc == null)
-                                {
-                                    result = -1;
-                                }
-                                else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
-                                {
-                                    //numeric
-                                    result = ((System.Double)xoc).CompareTo((System.Double)yoc);
-                                }
-                                else
-                                {
-                                    //date or string
-                                    result = ((string)xoc).CompareTo((string)yoc);
-                                }
+                                result = 1;
+                            }
+                            else if (yoc == null)
+                            {
+                                result = -1;
+                            }
+                            else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
+                            {
+                                //numeric
+                                result = ((System.Double)xoc).CompareTo((System.Double)yoc);
+                            }
+                            else
+                            {
+                                //date or string
+                                result = ((string)xoc).CompareTo((string)yoc);
                             }
                         }
                     }
                     else
                     {
+                        //Profiling to be verified again
+                        //Use reflection to get values and compare routines
+                        //This is very slightly slower than hardcoded access.
+                        //Profiling on the simple Duration field, it takes 16ms vs 22ms for 3400 operations (2000 activities, sorted twice)
+                        //For most fields, this is not measurable
                         object xo;
                         object yo;
 
@@ -500,22 +519,31 @@ namespace TrailsPlugin.Data {
 
                             //Get the CompareTo method using reflection
                             MethodInfo cmp = null;
-                            //Specialized version of generic (not applicable for .Net2) 
-                            // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
-                            foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
-                                                             MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
+                            //Keep id0 in cache, as Trail/Lap can clash
+                            if (!m_methodInfoCache.ContainsKey(id0))
                             {
-                                // Check that the parameter counts and types match, 
-                                // with 'loose' matching on generic parameters
-                                ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                                if (parameterInfos.Length == 1)
+                                //Specialized version of generic (not applicable for .Net2) 
+                                // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
+                                foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
+                                                                 MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
                                 {
-                                    if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
+                                    // Check that the parameter counts and types match, 
+                                    // with 'loose' matching on generic parameters
+                                    ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                                    if (parameterInfos.Length == 1)
                                     {
-                                        cmp = methodInfo;
-                                        break;
+                                        if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
+                                        {
+                                            cmp = methodInfo;
+                                            break;
+                                        }
                                     }
                                 }
+                                m_methodInfoCache[id0] = cmp;
+                            }
+                            else
+                            {
+                                cmp = m_methodInfoCache[id0];
                             }
 
                             if (cmp != null)

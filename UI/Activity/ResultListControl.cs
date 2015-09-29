@@ -215,7 +215,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 RefreshColumns();
 
-                summaryList_Sort(false);
+                if (m_controller.CurrentResultTreeList.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
+                {
+                    //Avoid sort on some fields that are heavy to calculate at auto updates
+                    this.m_controller.AutomaticUpdate = true;
+                }
+                summaryList_Sort();
+                this.m_controller.AutomaticUpdate = false;
                 ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = MultiActivity();
             }
             else
@@ -421,7 +427,7 @@ namespace TrailsPlugin.UI.Activity {
             return aTr;
         }
 
-        private void summaryList_Sort(bool colClicked)
+        private void summaryList_Sort()
         {
             if (m_controller.CurrentActivityTrailIsSelected)
             {
@@ -429,20 +435,6 @@ namespace TrailsPlugin.UI.Activity {
                     TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
                 IList<TrailResultWrapper> atr = m_controller.CurrentResultTreeList;
-                //Avoid sort on some fields that are heavy to calculate at auto updates
-                if (!colClicked && atr.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
-                {
-                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.GradeRunAdjustedTime ||
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.PredictDistance ||
-                        TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.IdealTime)
-                    {
-                        TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = TrailResultColumnIds.Duration;
-                    }
-                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.GradeRunAdjustedPace)
-                    {
-                        TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = TrailResultColumnIds.AvgPace;
-                    }
-                }
                 ((List<TrailResultWrapper>)(atr)).Sort();
                 int i = 1;
                 foreach (TrailResultWrapper tr in atr)
@@ -949,7 +941,7 @@ namespace TrailsPlugin.UI.Activity {
                        ListSortDirection.Descending : ListSortDirection.Ascending;
             }
             TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = e.Id;
-            this.summaryList_Sort(true);
+            this.summaryList_Sort();
         }
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)

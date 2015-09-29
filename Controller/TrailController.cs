@@ -375,6 +375,25 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        //Set at automatic updates, to possibly limit calculations
+        private bool m_AutomaticUpdate = false;
+        public bool AutomaticUpdate
+        {
+            get { return m_AutomaticUpdate; }
+            set
+            {
+                if (value && this.CurrentResultTreeList.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
+                {
+                    //Avoid sort on some fields that are heavy to calculate at auto updates
+                    m_AutomaticUpdate = true;
+                }
+                else
+                {
+                    m_AutomaticUpdate = false;
+                }
+            }
+        }
+
         public void ReCalcTrails(bool reCalc, System.Windows.Forms.ProgressBar progressBar)
         {
             foreach (ActivityTrail at in this.m_CurrentOrderedTrails)

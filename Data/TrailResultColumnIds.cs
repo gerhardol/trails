@@ -382,6 +382,7 @@ namespace TrailsPlugin.Data {
 
             foreach (string id0 in TrailsPlugin.Data.Settings.SummaryViewSortColumns)
             {
+                bool reverseSortOrder = false;
                 string id = id0;
                 //Sort Pace and speed the same
                 switch (id)
@@ -395,7 +396,7 @@ namespace TrailsPlugin.Data {
                         id = "FastestSpeed";
                         break;
                     case TrailResultColumnIds.GradeRunAdjustedPace:
-                        id = "GradeRunAdjustedSpeed";
+                        reverseSortOrder = true;
                         break;
                 }
 
@@ -554,6 +555,10 @@ namespace TrailsPlugin.Data {
 
                 if (result != 0)
                 {
+                    if (reverseSortOrder)
+                    {
+                        result *= -1;
+                    }
                     break;
                 }
 

@@ -1948,7 +1948,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
             //always show 'Splits' columns, even if only visible for Splits trail 
-            IList<IListColumnDefinition> cols = (new TrailResultColumns(m_controller.ReferenceActivity, m_controller.Activities.Count, true, false, true)).ColumnDefs();
+            IList<IListColumnDefinition> cols = (new TrailResultColumns(m_controller.ReferenceActivity, m_controller.Activities.Count, true, true, true)).ColumnDefs();
             dialog.AvailableColumns = cols;
 #endif
             dialog.ThemeChanged(m_visualTheme);

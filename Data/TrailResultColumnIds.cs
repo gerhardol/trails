@@ -118,14 +118,18 @@ namespace TrailsPlugin.Data {
         public const string FastestPace = "FastestPace";
         public const string AvgSpeedPace = "AvgSpeedPace";
         public const string FastestSpeedPace = "FastestSpeedPace";
-        public const string PredictDistance = "PredictDistance";
-        public const string IdealTime = "IdealTime";
-        public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
-        public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
         public const string Diff = "Diff";
         public const string VAM = "VAM";
         public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
         public const string Name = "Name";
+
+        public const string GradeRunAdjustedTime = "GradeRunAdjustedTime";
+        public const string GradeRunAdjustedPace = "GradeRunAdjustedPace";
+        internal static IList<string> GradeRunAdjustedFields = new List<string> { TrailResultColumnIds.GradeRunAdjustedTime, TrailResultColumnIds.GradeRunAdjustedPace };
+
+        public const string PredictDistance = "PredictDistance";
+        public const string IdealTime = "IdealTime";
+        internal static IList<string> PerformancePredictorFields = new List<string> { TrailResultColumnIds.PredictDistance, TrailResultColumnIds.IdealTime };
 
         //derived from Activity, not in individual result
         //For historical reasons, do not have prefix
@@ -207,8 +211,10 @@ namespace TrailsPlugin.Data {
             {
                 return this.m_columnDict[id];
             }
-            else if (!TrailResultColumnIds.ObsoleteFields.Contains(id) &&
-                !IsLapField(id))
+            else if (!IsLapField(id) &&
+                !TrailResultColumnIds.PerformancePredictorFields.Contains(id) &&
+                !TrailResultColumnIds.GradeRunAdjustedFields.Contains(id) &&
+                !TrailResultColumnIds.ObsoleteFields.Contains(id))
             {
                 //It is OK to have lap fields defined, but this is not a Splits trail
                 //Unknown column, not ignored

@@ -171,7 +171,6 @@ namespace TrailsPlugin.Data {
         private IList<IListColumnDefinition> m_columnDefs = new List<IListColumnDefinition>();
         private IDictionary<string, IListColumnDefinition> m_columnDict = new Dictionary<string, IListColumnDefinition>();
         private static IDictionary<string, ICustomDataFieldDefinition> m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
-        private static IDictionary<string, MethodInfo> m_methodInfoCache = new Dictionary<string, MethodInfo>();
 
         //Used by Settings at start
         public static string DefaultSortColumn()
@@ -359,7 +358,6 @@ namespace TrailsPlugin.Data {
             {
                 this.m_columnDict[l.Id] = l;
             }
-            m_methodInfoCache = new Dictionary<string, MethodInfo>();
         }
 
         public static IList<IListColumnDefinition> PermanentMultiColumnDefs()
@@ -462,8 +460,10 @@ namespace TrailsPlugin.Data {
                         //Profiling to be verified again
                         //Use reflection to get values and compare routines
                         //This is very slightly slower than hardcoded access.
-                        //Profiling on the simple Duration field, it takes 16ms vs 22ms for 3400 operations (2000 activities, sorted twice)
-                        //For most fields, this is not measurable
+                        //Profiling on the simple Duration field, it takes 129 ms vs 150ms for 64000/57000(?) operations (Splits, 2400 activities, sorted twice)
+                        //(Total sort is 300/400 ms though)
+                        //An attempt to cache method gave 180ms 82000(?), this was removed
+                        //For most fields, this is not measurable, getting data is much slower
                         object xo;
                         object yo;
 
@@ -525,31 +525,22 @@ namespace TrailsPlugin.Data {
 
                             //Get the CompareTo method using reflection
                             MethodInfo cmp = null;
-                            //Keep id0 in cache, as Trail/Lap can clash
-                            if (!m_methodInfoCache.ContainsKey(id0))
+                            //Specialized version of generic (not applicable for .Net2) 
+                            // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
+                            foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
+                                                             MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
                             {
-                                //Specialized version of generic (not applicable for .Net2) 
-                                // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
-                                foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
-                                                                 MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
+                                // Check that the parameter counts and types match, 
+                                // with 'loose' matching on generic parameters
+                                ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                                if (parameterInfos.Length == 1)
                                 {
-                                    // Check that the parameter counts and types match, 
-                                    // with 'loose' matching on generic parameters
-                                    ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                                    if (parameterInfos.Length == 1)
+                                    if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
                                     {
-                                        if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
-                                        {
-                                            cmp = methodInfo;
-                                            break;
-                                        }
+                                        cmp = methodInfo;
+                                        break;
                                     }
                                 }
-                                m_methodInfoCache[id0] = cmp;
-                            }
-                            else
-                            {
-                                cmp = m_methodInfoCache[id0];
                             }
 
                             if (cmp != null)

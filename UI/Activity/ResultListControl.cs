@@ -441,7 +441,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     tr.Result.Order = i;
                     i++;
-                    tr.Sort();
+                    if (summaryList.IsExpanded(tr) || Data.Settings.SelectSimilarResults)
+                    {
+                        //Only sort similar and visible
+                        tr.Sort();
+                    }
                 }
 
                 if (atr.Count > 0)
@@ -798,14 +802,22 @@ namespace TrailsPlugin.UI.Activity {
                     TreeList.RowHitState hit;
                     //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
                     row = this.summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
-                    if (row != null && hit == TreeList.RowHitState.Row &&
-                        (((MouseEventArgs)e).Location.X < 10)//Should not be necessary, but hit is not always right
-                        )
+                    if (row != null && summaryList.Columns[0] == selectedColumn)
+                    {
+                        //Workaround to sort first when expanding (there is no explicit event)
+                        if (summaryList.IsExpanded(row))
+                        {
+                            ((TrailResultWrapper)row).Sort();
+                        }
+                    }
+                    if (row != null)
                     {
                         TrailResult tr = getTrailResultRow(row);
                         if (tr != null)
                         {
-                            if (selectedColumn.Id == TrailResultColumnIds.Color)
+                            //RowHitState is always Row, use position to filter out likely plus clicks
+                            if (selectedColumn.Id == TrailResultColumnIds.Color && hit == TreeList.RowHitState.Row &&
+                               (((MouseEventArgs)e).Location.X > 18 || !(tr is ParentTrailResult)))
                             {
                                 ColorSelectorPopup cs = new ColorSelectorPopup();
                                 cs.Width = 70;

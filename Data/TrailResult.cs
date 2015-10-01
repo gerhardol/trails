@@ -480,7 +480,7 @@ namespace TrailsPlugin.Data
             return res;
         }
 
-        public virtual double StartDist
+        public virtual double StartDistance
         {
             get
             {
@@ -1355,7 +1355,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public virtual double VAM //Ascending speed
+        public virtual double AscendingSpeed_VAM
         {
             get
             {

@@ -252,7 +252,7 @@ namespace TrailsPlugin.Data
                     {
                         m_summaryViewSortColumns.Remove(value);
                     }
-                    if (m_summaryViewSortColumns.Count > 2)
+                    if (m_summaryViewSortColumns.Count >= 2)
                     {
                         m_summaryViewSortColumns.RemoveAt(m_summaryViewSortColumns.Count - 1);
                     }

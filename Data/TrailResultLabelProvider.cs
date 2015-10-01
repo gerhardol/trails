@@ -142,7 +142,7 @@ namespace TrailsPlugin.Data
             {
                 case TrailResultColumnIds.Order:
                     return row.Order.ToString();
-                case TrailResultColumnIds.Color:
+                case TrailResultColumnIds.ResultColor:
                     return null;
                 case TrailResultColumnIds.StartTime:
                     if (row.Activity == null) return null;
@@ -153,7 +153,7 @@ namespace TrailsPlugin.Data
                     }
                     return date + row.StartTime.ToLocalTime().ToString("T");
                 case TrailResultColumnIds.StartDistance:
-                    return UnitUtil.Distance.ToString(row.StartDist, "");
+                    return UnitUtil.Distance.ToString(row.StartDistance, "");
                 case TrailResultColumnIds.EndTime:
                     if (row.Activity == null) return null;
                     return row.EndTime.ToLocalTime().ToString("T");
@@ -205,8 +205,8 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Pace.ToString(row.GradeRunAdjustedSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.Diff:
                     return UnitUtil.Elevation.ToString(row.Diff, "");
-                case TrailResultColumnIds.VAM:
-                    return UnitUtil.Elevation.ToString(row.VAM, "");
+                case TrailResultColumnIds.AscendingSpeed_VAM:
+                    return UnitUtil.Elevation.ToString(row.AscendingSpeed_VAM, "");
                 default:
                     if (row.Activity == null) return null;
                     if (row is ParentTrailResult)

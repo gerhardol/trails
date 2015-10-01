@@ -95,7 +95,7 @@ namespace TrailsPlugin.Data {
     public class TrailResultColumnIds
     {
         public const string Order = "Order";
-        public const string Color = "Color";
+        public const string ResultColor = "ResultColor";
         public const string StartTime = "StartTime";
         public const string StartDistance = "StartDistance";
         public const string EndTime = "EndTime";
@@ -119,7 +119,6 @@ namespace TrailsPlugin.Data {
         public const string AvgSpeedPace = "AvgSpeedPace";
         public const string FastestSpeedPace = "FastestSpeedPace";
         public const string Diff = "Diff";
-        public const string VAM = "VAM";
         public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
         public const string Name = "Name";
 
@@ -323,7 +322,7 @@ namespace TrailsPlugin.Data {
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
             }
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Diff, Properties.Resources.UI_Activity_List_DiffPresent + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.VAM, Properties.Resources.UI_Activity_List_AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscendingSpeed_VAM, Properties.Resources.UI_Activity_List_AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", TrailsGroup, 70, StringAlignment.Far));
             
             //Reset every refresh
             m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
@@ -363,7 +362,7 @@ namespace TrailsPlugin.Data {
         public static IList<IListColumnDefinition> PermanentMultiColumnDefs()
         {
             IList<IListColumnDefinition> columnDefs = new List<IListColumnDefinition>();
-            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Color, "", "", 25, StringAlignment.Near));
+            columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.ResultColor, "", "", 25, StringAlignment.Near));
 
             return columnDefs;
         }
@@ -384,15 +383,9 @@ namespace TrailsPlugin.Data {
             foreach (string id0 in TrailsPlugin.Data.Settings.SummaryViewSortColumns)
             {
                 string id = id0;
-                //Translate some column Ids to the Property names
+                //Sort Pace and speed the same
                 switch (id)
                 {
-                    case TrailResultColumnIds.Color:
-                        id = "ResultColor";
-                        break;
-                    case TrailResultColumnIds.StartDistance:
-                        id = "StartDist";
-                        break;
                     case TrailResultColumnIds.AvgPace:
                     case TrailResultColumnIds.AvgSpeedPace:
                         id = "AvgSpeed";
@@ -403,9 +396,6 @@ namespace TrailsPlugin.Data {
                         break;
                     case TrailResultColumnIds.GradeRunAdjustedPace:
                         id = "GradeRunAdjustedSpeed";
-                        break;
-                    case TrailResultColumnIds.AscendingSpeed_VAM:
-                        id = "VAM";
                         break;
                 }
 

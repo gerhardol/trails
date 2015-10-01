@@ -816,7 +816,7 @@ namespace TrailsPlugin.UI.Activity {
                         if (tr != null)
                         {
                             //RowHitState is always Row, use position to filter out likely plus clicks
-                            if (selectedColumn.Id == TrailResultColumnIds.Color && hit == TreeList.RowHitState.Row &&
+                            if (selectedColumn.Id == TrailResultColumnIds.ResultColor && hit == TreeList.RowHitState.Row &&
                                (((MouseEventArgs)e).Location.X > 18 || !(tr is ParentTrailResult)))
                             {
                                 ColorSelectorPopup cs = new ColorSelectorPopup();

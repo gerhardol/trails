@@ -122,11 +122,11 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public override double StartDist
+        public override double StartDistance
         {
             get
             {
-                return this.GetSummaryValue(delegate(TrailResult tr) { return tr.StartDist; }, false, false);
+                return this.GetSummaryValue(delegate(TrailResult tr) { return tr.StartDistance; }, false, false);
             }
         }
 

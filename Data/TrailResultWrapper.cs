@@ -307,6 +307,7 @@ namespace TrailsPlugin.Data
             }
             else
             {
+                System.Diagnostics.Debug.Assert(false, "Unexpectedly comparing TrailResultWrapper to object or no result");
                 return this.ToString().CompareTo(obj.ToString());
             }
         }

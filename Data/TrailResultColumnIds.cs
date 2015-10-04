@@ -211,8 +211,7 @@ namespace TrailsPlugin.Data {
             }
             else if (!IsLapField(id) &&
                 !TrailResultColumnIds.PerformancePredictorFields.Contains(id) &&
-                !TrailResultColumnIds.GradeRunAdjustedFields.Contains(id) &&
-                !TrailResultColumnIds.ObsoleteFields.Contains(id))
+                !TrailResultColumnIds.GradeRunAdjustedFields.Contains(id))
             {
                 //It is OK to have lap fields defined, but this is not a Splits trail
                 //Unknown column, not ignored
@@ -260,7 +259,7 @@ namespace TrailsPlugin.Data {
 
         public TrailResultColumns(IActivity activity, int noRes, bool multAct, bool all, bool laps)
         {
-            string TrailsGroup = Properties.Resources.ApplicationName;
+            string TrailsGroup = "";// Properties.Resources.ApplicationName;
             string ActivityGroup = CommonResources.Text.LabelActivity;
             //Order width is dynamic from no of activities
             int noRes2 = System.Math.Max(10, noRes);
@@ -313,8 +312,9 @@ namespace TrailsPlugin.Data {
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, ActivityGroup, 70, StringAlignment.Near));
             if (all || TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", TrailsGroup, 70, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.IdealTime, Properties.Resources.UI_Activity_List_IdealTime, TrailsGroup, 70, StringAlignment.Far));
+                string PerformancePredictorGroup = Properties.Resources.PerformancePredictorPluginName;
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", PerformancePredictorGroup, 70, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.IdealTime, Properties.Resources.UI_Activity_List_IdealTime, PerformancePredictorGroup, 70, StringAlignment.Far));
             }
             if (all || Settings.RunningGradeAdjustMethod != Data.RunningGradeAdjustMethodEnum.None)
             {
@@ -448,7 +448,6 @@ namespace TrailsPlugin.Data {
                     }
                     else
                     {
-                        //Profiling to be verified again
                         //Use reflection to get values and compare routines
                         //This is very slightly slower than hardcoded access.
                         //Profiling on the simple Duration field, it takes 129 ms vs 150ms for 64000/57000(?) operations (Splits, 2400 activities, sorted twice)

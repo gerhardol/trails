@@ -2,13 +2,17 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-  
-1.3.1 2015-09-19 (unreleased)
+1.3.2 2015-10-04 (unreleased)
   * Changed version numbering after source repository was moved to GitHub.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * Updated Spanish translation.
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
+  * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.
+  * Show Lap fields for Split trails.
   * Add support for column "Max (Avg) Grade".
+  * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
+  * Set Garmin fenix, 920xt, 910xt ss barometric devices by default.
+  * Viewer for UniqueRoutes was occasionally not showing time and date.
 
 
 1.2.971 2015-01-30 (Plugin Catalog)

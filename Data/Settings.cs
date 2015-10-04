@@ -57,7 +57,7 @@ namespace TrailsPlugin.Data
         private static bool m_resultSummaryStdDev = false;
         private static bool m_resultSummaryTotal = false;
         private static String[] m_excludeStoppedCategory = new String[0];
-        private static String[] m_barometricDevices = new String[2] {"Edge", "GB-580"};
+        private static String[] m_barometricDevices = new String[5] {"Edge", "920XT", "910XT", "fenix", "GB-580"};
         private static SmoothOverTrailBorders m_SmoothOverTrailPoints = SmoothOverTrailBorders.Unchanged;
         private static float m_predictDistance = 10000;
         private static RunningGradeAdjustMethodEnum m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
@@ -790,7 +790,15 @@ namespace TrailsPlugin.Data
                                 ActivityPageColumnsSizeSet(id, width);
                             }
                         }
-                        m_activityPageColumns.Add(id);
+                        if (id == "VAM")
+                        {
+                            //Renamed
+                            id = TrailResultColumnIds.AscendingSpeed_VAM;
+                        }
+                        if (!TrailResultColumnIds.ObsoleteFields.Contains(id))
+                        {
+                            m_activityPageColumns.Add(id);
+                        }
                     }
                 }
                 m_summaryViewSortColumns.Clear();

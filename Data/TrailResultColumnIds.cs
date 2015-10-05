@@ -417,11 +417,12 @@ namespace TrailsPlugin.Data {
 
                 try
                 {
+                    ICustomDataFieldDefinition cust = null;
                     //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
                     //If not parent result, there is no difference
                     if (x is ParentTrailResult)
                     {
-                        ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
+                        cust = TrailResultColumns.CustomDef(id);
                         if (cust != null)
                         {
                             object xoc = x.Activity.GetCustomDataValue(cust);
@@ -446,7 +447,7 @@ namespace TrailsPlugin.Data {
                             }
                         }
                     }
-                    else
+                    if (cust == null)
                     {
                         //Use reflection to get values and compare routines
                         //This is very slightly slower than hardcoded access.

@@ -48,7 +48,7 @@ namespace TrailsPlugin.Data
         {
             Data.TrailResult row = TrailsPlugin.UI.Activity.ResultListControl.getTrailResultRow(element);
 
-            if (column.Id == "Color")
+            if (column.Id == TrailResultColumnIds.ResultColor)
             {
                 Bitmap image = new Bitmap(column.Width, 15);
                 for (int x = 0; x < image.Width; x++)

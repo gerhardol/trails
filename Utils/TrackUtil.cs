@@ -386,7 +386,7 @@ namespace TrailsPlugin.Utils
         {
             float offset = 0;
             nextElapsed = float.MaxValue;
-            if (Data.Settings.SyncChartAtTrailPoints)
+            if (Data.Settings.SyncChartAtTrailPoints && tr.m_activityTrail.Trail.TrailType == Trail.CalcType.TrailPoints)
             {
                 IList<float> trElapsed;
                 //IList<float> trOffset;

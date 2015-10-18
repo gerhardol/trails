@@ -473,12 +473,24 @@ namespace TrailsPlugin.Data
                         if (p != null)
                         {
                             results.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
-                            dist = Math.Min(track.Max, dist + cDist);
                         }
                         else
                         {
-                            dist = track.Max;
+                            if (activity.GPSRoute == null || activity.GPSRoute.Count == 0)
+                            {
+                                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(activity.Name, true), time, track.TotalElapsedSeconds));
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.Assert(false, "out of GPS");
+                                if (results.Points.Count > 0)
+                                {
+                                    //end insert
+                                    break;
+                                }
+                            }
                         }
+                        dist = Math.Min(track.Max, dist + cDist);
                     }
                 }
                 else

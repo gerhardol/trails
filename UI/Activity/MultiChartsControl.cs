@@ -17,6 +17,7 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -147,6 +148,13 @@ namespace TrailsPlugin.UI.Activity {
             this.heartRateToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.HeartRateBPM);
             this.gradeStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Grade);
             this.powerToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Power);
+
+            this.PowerBalanceToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.PowerBalance);
+            this.TemperatureToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.Temperature);
+            this.GroundContactTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.GroundContactTime);
+            this.VerticalOscillationToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.VerticalOscillation);
+            this.SaturatedHemoglobinToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.SaturatedHemoglobin);
+            this.TotalHemoglobinConcentrationToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.TotalHemoglobinConcentration);
 
             this.diffTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
             this.diffDistToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
@@ -421,6 +429,13 @@ namespace TrailsPlugin.UI.Activity {
             gradeStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Grade);
             powerToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Power);
 
+            PowerBalanceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.PowerBalance);
+            TemperatureToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Temperature);
+            GroundContactTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.GroundContactTime);
+            VerticalOscillationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.VerticalOscillation);
+            SaturatedHemoglobinToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.SaturatedHemoglobin);
+            TotalHemoglobinConcentrationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.TotalHemoglobinConcentration);
+
             diffTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffTime);
             diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
             diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
@@ -573,7 +588,44 @@ namespace TrailsPlugin.UI.Activity {
 
         private void powerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RefreshChart(LineChartTypes.Power);
+            LineChartTypes t = LineChartTypes.Unknown;
+            if (sender == powerToolStripMenuItem)
+            {
+                t = LineChartTypes.Power;
+            }
+            else if (sender == PowerBalanceToolStripMenuItem)
+            {
+                t = LineChartTypes.PowerBalance;
+            }
+            else if (sender == TemperatureToolStripMenuItem)
+            {
+                t = LineChartTypes.Temperature;
+            }
+            else if (sender == GroundContactTimeToolStripMenuItem)
+            {
+                t = LineChartTypes.GroundContactTime;
+            }
+            else if (sender == VerticalOscillationToolStripMenuItem)
+            {
+                t = LineChartTypes.VerticalOscillation;
+            }
+            else if (sender == SaturatedHemoglobinToolStripMenuItem)
+            {
+                t = LineChartTypes.SaturatedHemoglobin;
+            }
+            else if (sender == TotalHemoglobinConcentrationToolStripMenuItem)
+            {
+                t = LineChartTypes.TotalHemoglobinConcentration;
+            }
+
+            if (t != LineChartTypes.Unknown)
+            {
+                RefreshChart(t);
+            }
+            else
+            {
+                Debug.Assert(false, "Unknown object" + sender.ToString());
+            }
         }
 
         private void diffTimeToolStripMenuItem_Click(object sender, EventArgs e)

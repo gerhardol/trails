@@ -50,6 +50,11 @@ namespace GpsRunningPlugin.Util
         {
             return p;
         }
+        //"Hardcoded" conversion mm -> cm
+        public static double Convert10x(double p, IActivity activity)
+        {
+            return 10*p;
+        }
 
         //Helpfunction for common format
         private static string encPar(string p)
@@ -354,10 +359,18 @@ namespace GpsRunningPlugin.Util
                 if (fmt.ToLower().Equals("u")) { fmt = DefFmt + fmt; }
                 return ZoneFiveSoftware.Common.Data.Measurement.Temperature.ToString(ConvertFrom(p), Unit, fmt);
             }
+            public static double ConvertFrom(double value, IActivity activity)
+            {
+                return ConvertFrom(value);
+            }
             public static double ConvertFrom(double p)
             {
                 return ZoneFiveSoftware.Common.Data.Measurement.Temperature.Convert(p,
                     ZoneFiveSoftware.Common.Data.Measurement.Temperature.Units.Celsius, Unit);
+            }
+            public static double ConvertTo(double value, IActivity activity)
+            {
+                return value;
             }
 
             public static double Parse(string p)

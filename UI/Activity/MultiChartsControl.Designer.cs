@@ -36,6 +36,13 @@
             this.gradeStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.powerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.PowerBalanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TemperatureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.GroundContactTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.VerticalOscillationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaturatedHemoglobinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TotalHemoglobinConcentrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.diffTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.diffDistTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -176,6 +183,53 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
             // 
+            // PowerBalanceToolStripMenuItem
+            // 
+            this.PowerBalanceToolStripMenuItem.Name = "PowerBalanceToolStripMenuItem";
+            this.PowerBalanceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.PowerBalanceToolStripMenuItem.Text = "<PowerBalance";
+            this.PowerBalanceToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // TemperatureToolStripMenuItem
+            // 
+            this.TemperatureToolStripMenuItem.Name = "TemperatureToolStripMenuItem";
+            this.TemperatureToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.TemperatureToolStripMenuItem.Text = "<Temperature";
+            this.TemperatureToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // GroundContactTimeToolStripMenuItem
+            // 
+            this.GroundContactTimeToolStripMenuItem.Name = "GroundContactTimeToolStripMenuItem";
+            this.GroundContactTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.GroundContactTimeToolStripMenuItem.Text = "<GroundContactTime";
+            this.GroundContactTimeToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // VerticalOscillationToolStripMenuItem
+            // 
+            this.VerticalOscillationToolStripMenuItem.Name = "VerticalOscillationToolStripMenuItem";
+            this.VerticalOscillationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.VerticalOscillationToolStripMenuItem.Text = "<VerticalOscillation";
+            this.VerticalOscillationToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // SaturatedHemoglobinToolStripMenuItem
+            // 
+            this.SaturatedHemoglobinToolStripMenuItem.Name = "SaturatedHemoglobinToolStripMenuItem";
+            this.SaturatedHemoglobinToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.SaturatedHemoglobinToolStripMenuItem.Text = "<SaturatedHemoglobin";
+            this.SaturatedHemoglobinToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // TotalHemoglobinConcentrationToolStripMenuItem
+            // 
+            this.TotalHemoglobinConcentrationToolStripMenuItem.Name = "TotalHemoglobinConcentrationToolStripMenuItem";
+            this.TotalHemoglobinConcentrationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.TotalHemoglobinConcentrationToolStripMenuItem.Text = "<TotalHemoglobinConcentration";
+            this.TotalHemoglobinConcentrationToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(195, 6);
+            // 
             // diffTimeToolStripMenuItem
             // 
             this.diffTimeToolStripMenuItem.Name = "diffTimeToolStripMenuItem";
@@ -202,7 +256,15 @@
             this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deviceSpeedPaceToolStripMenuItem,
             this.deviceElevationToolStripMenuItem,
-            this.deviceDiffToolStripMenuItem});
+            this.deviceDiffToolStripMenuItem,
+            this.toolStripSeparator4,
+            this.PowerBalanceToolStripMenuItem,
+            this.TemperatureToolStripMenuItem,
+            this.GroundContactTimeToolStripMenuItem,
+            this.VerticalOscillationToolStripMenuItem,
+            this.SaturatedHemoglobinToolStripMenuItem,
+            this.TotalHemoglobinConcentrationToolStripMenuItem
+            });
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             this.deviceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.deviceToolStripMenuItem.Text = "device";
@@ -581,6 +643,14 @@
         private System.Windows.Forms.ToolStripMenuItem heartRateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cadenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem powerToolStripMenuItem;
+
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem PowerBalanceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TemperatureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem GroundContactTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem VerticalOscillationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaturatedHemoglobinToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem TotalHemoglobinConcentrationToolStripMenuItem;
 
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem diffTimeToolStripMenuItem;

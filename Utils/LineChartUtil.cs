@@ -54,7 +54,7 @@ namespace TrailsPlugin.Utils
         Grade,
         Speed,
         Pace,
-        LeftPower,
+        PowerBalance, //LeftPower
         Temperature,
         GroundContactTime,
         VerticalOscillation,
@@ -200,6 +200,36 @@ namespace TrailsPlugin.Utils
                         yAxisLabel = CommonResources.Text.LabelGrade;
                         break;
                     }
+                case LineChartTypes.PowerBalance:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelPowerBalance;
+                        break;
+                    }
+                case LineChartTypes.Temperature:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelTemperature;
+                        break;
+                    }
+                case LineChartTypes.GroundContactTime:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelGroundContactTime;
+                        break;
+                    }
+                case LineChartTypes.VerticalOscillation:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelVerticalOscillation;
+                        break;
+                    }
+                case LineChartTypes.SaturatedHemoglobin:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelSaturatedHemoglobinPercent;
+                        break;
+                    }
+                case LineChartTypes.TotalHemoglobinConcentration:
+                    {
+                        yAxisLabel = CommonResources.Text.LabelTotalHemoglobinConcentration;
+                        break;
+                    }
                 case LineChartTypes.Distance:
                 case LineChartTypes.DiffDist:
                 case LineChartTypes.DeviceDiffDist:
@@ -311,6 +341,42 @@ namespace TrailsPlugin.Utils
                         axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(activity);
                         break;
                     }
+                case LineChartTypes.PowerBalance:
+                    {
+                        axis.Formatter = new Formatter.Percent();
+                        axis.Label = CommonResources.Text.LabelPowerBalance;
+                        break;
+                    }
+                case LineChartTypes.Temperature:
+                    {
+                        axis.Formatter = new Formatter.General(UnitUtil.Temperature.DefaultDecimalPrecision);
+                        axis.Label = CommonResources.Text.LabelTemperature + UnitUtil.Temperature.LabelAbbr2;
+                        break;
+                    }
+                case LineChartTypes.GroundContactTime:
+                    {
+                        axis.Formatter = new Formatter.General(1);
+                        axis.Label = CommonResources.Text.LabelGroundContactTime + " (" + Length.LabelAbbr(Length.Units.Centimeter) + ")";
+                        break;
+                    }
+                case LineChartTypes.VerticalOscillation:
+                    {
+                        axis.Formatter = new Formatter.General();
+                        axis.Label = CommonResources.Text.LabelVerticalOscillation + " (ms)";
+                        break;
+                    }
+                case LineChartTypes.SaturatedHemoglobin:
+                    {
+                        axis.Formatter = new Formatter.Percent();
+                        axis.Label = CommonResources.Text.LabelSaturatedHemoglobinPercent;
+                        break;
+                    }
+                case LineChartTypes.TotalHemoglobinConcentration:
+                    {
+                        axis.Formatter = new Formatter.General();
+                        axis.Label = CommonResources.Text.LabelTotalHemoglobinConcentration;
+                        break;
+                    }
                 case LineChartTypes.DiffTime:
                 case LineChartTypes.Time:
                     {
@@ -419,6 +485,37 @@ namespace TrailsPlugin.Utils
                         break;
                     }
 
+                case LineChartTypes.PowerBalance:
+                    {
+                        track = result.PowerBalanceTrack0(refRes);
+                        break;
+                    }
+
+                case LineChartTypes.Temperature:
+                    {
+                        track = result.TemperatureTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.GroundContactTime:
+                    {
+                        track = result.GroundContactTimeTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.VerticalOscillation:
+                    {
+                        track = result.VerticalOscillationTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.SaturatedHemoglobin:
+                    {
+                        track = result.SaturatedHemoglobinTrack0(refRes);
+                        break;
+                    }
+                case LineChartTypes.TotalHemoglobinConcentration:
+                    {
+                        track = result.TotalHemoglobinConcentrationTrack0(refRes);
+                        break;
+                    }
                 case LineChartTypes.DiffTime:
                     {
                         track = result.DiffTimeTrack0(refRes);

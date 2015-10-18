@@ -52,6 +52,12 @@ namespace TrailsPlugin.Data
                 m_HeartRateSmoothingSeconds = a.HeartRateSmoothingSeconds;
                 m_PowerSmoothingSeconds = a.PowerSmoothingSeconds;
                 m_SpeedSmoothingSeconds = a.SpeedSmoothingSeconds;
+                m_PowerBalanceSmoothingSeconds = 0; //ST no smoothing by default
+                m_TemperatureSmoothingSeconds = 0; //ST no smoothing by default
+                m_GroundContactTimeSmoothingSeconds = 10; //ST hardcoded
+                m_VerticalOscillationSmoothingSeconds = 10; //ST hardcoded
+                m_SaturatedHemoglobinSmoothingSeconds = 10; //ST hardcoded
+                m_TotalHemoglobinConcentrationSmoothingSeconds = 10; //ST hardcoded
             }
             else
             {
@@ -60,6 +66,12 @@ namespace TrailsPlugin.Data
                 m_HeartRateSmoothingSeconds = 0;
                 m_PowerSmoothingSeconds = 0;
                 m_SpeedSmoothingSeconds = 0;
+                m_PowerBalanceSmoothingSeconds = 0;
+                m_TemperatureSmoothingSeconds = 0;
+                m_GroundContactTimeSmoothingSeconds = 0;
+                m_VerticalOscillationSmoothingSeconds = 0;
+                m_SaturatedHemoglobinSmoothingSeconds = 0;
+                m_TotalHemoglobinConcentrationSmoothingSeconds = 0;
             }
         }
 
@@ -72,6 +84,12 @@ namespace TrailsPlugin.Data
         private int m_PowerCutoff;
         private int m_PowerSmoothingSeconds;
         private int m_SpeedSmoothingSeconds;
+        private int m_PowerBalanceSmoothingSeconds;
+        private int m_TemperatureSmoothingSeconds;
+        private int m_GroundContactTimeSmoothingSeconds;
+        private int m_VerticalOscillationSmoothingSeconds;
+        private int m_SaturatedHemoglobinSmoothingSeconds;
+        private int m_TotalHemoglobinConcentrationSmoothingSeconds;
 
         public int CadenceCutoff
         {
@@ -125,6 +143,42 @@ namespace TrailsPlugin.Data
         {
             get { return m_SpeedSmoothingSeconds; }
             set { m_SpeedSmoothingSeconds = value; }
+        }
+
+        public int PowerBalanceSmoothingSeconds
+        {
+            get { return m_PowerBalanceSmoothingSeconds; }
+            set { m_PowerBalanceSmoothingSeconds = value; }
+        }
+
+        public int TemperatureSmoothingSeconds
+        {
+            get { return m_TemperatureSmoothingSeconds; }
+            set { m_TemperatureSmoothingSeconds = value; }
+        }
+
+        public int GroundContactTimeSmoothingSeconds
+        {
+            get { return m_GroundContactTimeSmoothingSeconds; }
+            set { m_GroundContactTimeSmoothingSeconds = value; }
+        }
+
+        public int VerticalOscillationSmoothingSeconds
+        {
+            get { return m_VerticalOscillationSmoothingSeconds; }
+            set { m_VerticalOscillationSmoothingSeconds = value; }
+        }
+
+        public int SaturatedHemoglobinSmoothingSeconds
+        {
+            get { return m_SaturatedHemoglobinSmoothingSeconds; }
+            set { m_SaturatedHemoglobinSmoothingSeconds = value; }
+        }
+
+        public int TotalHemoglobinConcentrationSmoothingSeconds
+        {
+            get { return m_TotalHemoglobinConcentrationSmoothingSeconds; }
+            set { m_TotalHemoglobinConcentrationSmoothingSeconds = value; }
         }
     }
 }

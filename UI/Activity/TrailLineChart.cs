@@ -1848,6 +1848,60 @@ namespace TrailsPlugin.UI.Activity {
                         val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
                         break;
                     }
+                case LineChartTypes.PowerBalance:
+                    {
+                        if (val != null)
+                        {
+                            TrailResult.TrailActivityInfoOptions.PowerBalanceSmoothingSeconds = (int)val;
+                        }
+                        val = TrailResult.TrailActivityInfoOptions.PowerBalanceSmoothingSeconds;
+                        break;
+                    }
+                case LineChartTypes.Temperature:
+                    {
+                        if (val != null)
+                        {
+                            TrailResult.TrailActivityInfoOptions.TemperatureSmoothingSeconds = (int)val;
+                        }
+                        val = TrailResult.TrailActivityInfoOptions.TemperatureSmoothingSeconds;
+                        break;
+                    }
+                case LineChartTypes.GroundContactTime:
+                    {
+                        if (val != null)
+                        {
+                            TrailResult.TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds = (int)val;
+                        }
+                        val = TrailResult.TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds;
+                        break;
+                    }
+                case LineChartTypes.VerticalOscillation:
+                    {
+                        if (val != null)
+                        {
+                            TrailResult.TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds = (int)val;
+                        }
+                        val = TrailResult.TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds;
+                        break;
+                    }
+                case LineChartTypes.SaturatedHemoglobin:
+                    {
+                        if (val != null)
+                        {
+                            TrailResult.TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds = (int)val;
+                        }
+                        val = TrailResult.TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds;
+                        break;
+                    }
+                case LineChartTypes.TotalHemoglobinConcentration:
+                    {
+                        if (val != null)
+                        {
+                            TrailResult.TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds = (int)val;
+                        }
+                        val = TrailResult.TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds;
+                        break;
+                    }
                 default:
                     {
                         val = 0;

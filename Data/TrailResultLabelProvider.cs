@@ -207,6 +207,43 @@ namespace TrailsPlugin.Data
                     return UnitUtil.Elevation.ToString(row.Diff, "");
                 case TrailResultColumnIds.AscendingSpeed_VAM:
                     return UnitUtil.Elevation.ToString(row.AscendingSpeed_VAM, "");
+                case TrailResultColumnIds.AveragePowerBalance:
+                    if (row is SummaryTrailResult)
+                    {
+                        return null;
+                    }
+                    return (row.AveragePowerBalance).ToString("0.0%");
+                case TrailResultColumnIds.AverageSaturatedHemoglobin:
+                    if (row is SummaryTrailResult)
+                    {
+                        return null;
+                    }
+                    return (row.AverageSaturatedHemoglobin).ToString("0.0%");
+                case TrailResultColumnIds.AverageTemperature:
+                case TrailResultColumnIds.AverageGroundContactTime:
+                case TrailResultColumnIds.AverageVerticalOscillation:
+                case TrailResultColumnIds.AverageTotalHemoglobinConcentration:
+                    if (row is SummaryTrailResult)
+                    {
+                        return null;
+                    }
+                    //A simple truncator for now
+                    string val = base.GetText(row, column);
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        int i = val.IndexOfAny(new char[] { '.', ',' });
+                        if (i > 0)
+                        {
+                            if ((column.Id== TrailResultColumnIds.AverageTemperature || 
+                                column.Id == TrailResultColumnIds.AverageVerticalOscillation) &&
+                                i < val.Length-2)
+                            {
+                                i += 2;
+                            }
+                            val = val.Substring(0, i);
+                        }
+                    }
+                    return val;
                 default:
                     if (row.Activity == null) return null;
                     if (row is ParentTrailResult)

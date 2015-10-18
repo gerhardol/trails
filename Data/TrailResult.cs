@@ -88,6 +88,12 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries m_gradeTrack0;
         private INumericTimeDataSeries m_heartRatePerMinuteTrack0;
         private INumericTimeDataSeries m_powerWattsTrack0;
+        private INumericTimeDataSeries m_PowerBalanceTrack0;
+        private INumericTimeDataSeries m_TemperatureTrack0;
+        private INumericTimeDataSeries m_GroundContactTimeTrack0;
+        private INumericTimeDataSeries m_VerticalOscillationTrack0;
+        private INumericTimeDataSeries m_SaturatedHemoglobinTrack0;
+        private INumericTimeDataSeries m_TotalHemoglobinConcentrationTrack0;
         private INumericTimeDataSeries m_speedTrack0;
         private INumericTimeDataSeries m_paceTrack0;
         private INumericTimeDataSeries m_deviceDiffDistTrack0;
@@ -167,6 +173,12 @@ namespace TrailsPlugin.Data
             m_gradeTrack0 = null;
             m_heartRatePerMinuteTrack0 = null;
             m_powerWattsTrack0 = null;
+            m_PowerBalanceTrack0 = null;
+            m_TemperatureTrack0 = null;
+            m_GroundContactTimeTrack0 = null;
+            m_VerticalOscillationTrack0 = null;
+            m_SaturatedHemoglobinTrack0 = null;
+            m_TotalHemoglobinConcentrationTrack0 = null;
             m_cadencePerMinuteTrack0 = null;
             m_speedTrack0 = null;
             m_paceTrack0 = null;
@@ -1170,6 +1182,138 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public virtual float AveragePowerBalance
+        {
+            get
+            {
+                if (this is SummaryTrailResult)
+                {
+                    return float.NaN;
+                }
+                float result;
+                INumericTimeDataSeries track = PowerBalanceTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return float.NaN;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)result;
+            }
+        }
+
+        public virtual float AverageTemperature
+        {
+            get
+            {
+                if (this is SummaryTrailResult)
+                {
+                    return float.NaN;
+                }
+                float result;
+                INumericTimeDataSeries track = TemperatureTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return float.NaN;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)UnitUtil.Temperature.ConvertTo(result, m_cacheTrackRef.Activity); ;
+            }
+        }
+
+        public virtual float AverageGroundContactTime
+        {
+            get
+            {
+                if (this is SummaryTrailResult)
+                {
+                    return float.NaN;
+                }
+                float result;
+                INumericTimeDataSeries track = GroundContactTimeTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return float.NaN;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)result;
+            }
+        }
+
+        public virtual float AverageVerticalOscillation
+        {
+            get
+            {
+                if (this is SummaryTrailResult)
+                {
+                    return float.NaN;
+                }
+                float result;
+                INumericTimeDataSeries track = VerticalOscillationTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return float.NaN;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)result;
+            }
+        }
+
+        public virtual float AverageSaturatedHemoglobin
+        {
+            get
+            {
+                if (this is SummaryTrailResult)
+                {
+                    return float.NaN;
+                }
+                float result;
+                INumericTimeDataSeries track = SaturatedHemoglobinTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return float.NaN;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)result;
+            }
+        }
+
+        public virtual float AverageTotalHemoglobinConcentration
+        {
+            get
+            {
+                if (this is SummaryTrailResult)
+                {
+                    return float.NaN;
+                }
+                float result;
+                INumericTimeDataSeries track = TotalHemoglobinConcentrationTrack0(m_cacheTrackRef);
+                if (track == null || track.Count == 0)
+                {
+                    return float.NaN;
+                }
+                else
+                {
+                    result = track.Avg;
+                }
+                return (float)result;
+            }
+        }
+
         public virtual float AscAvgGrade
         {
             get
@@ -1822,6 +1966,96 @@ namespace TrailsPlugin.Data
                     new UnitUtil.Convert(UnitUtil.Power.ConvertFrom), this.m_cacheTrackRef);
             }
             return m_powerWattsTrack0;
+        }
+
+        public INumericTimeDataSeries PowerBalanceTrack0()
+        {
+            return this.PowerBalanceTrack0(this.m_cacheTrackRef);
+        }
+        public INumericTimeDataSeries PowerBalanceTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_PowerBalanceTrack0 == null)
+            {
+                m_PowerBalanceTrack0 = copySmoothTrack(this.PowerBalanceTrack, true, TrailActivityInfoOptions.PowerBalanceSmoothingSeconds,
+                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+            }
+            return m_PowerBalanceTrack0;
+        }
+
+        public INumericTimeDataSeries TemperatureTrack0()
+        {
+            return this.TemperatureTrack0(this.m_cacheTrackRef);
+        }
+        public INumericTimeDataSeries TemperatureTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_TemperatureTrack0 == null)
+            {
+                m_TemperatureTrack0 = copySmoothTrack(this.TemperatureTrack, true, TrailActivityInfoOptions.TemperatureSmoothingSeconds,
+                    new UnitUtil.Convert(UnitUtil.Temperature.ConvertFrom), this.m_cacheTrackRef);
+            }
+            return m_TemperatureTrack0;
+        }
+
+        public INumericTimeDataSeries GroundContactTimeTrack0()
+        {
+            return this.GroundContactTimeTrack0(this.m_cacheTrackRef);
+        }
+        public INumericTimeDataSeries GroundContactTimeTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_GroundContactTimeTrack0 == null)
+            {
+                m_GroundContactTimeTrack0 = copySmoothTrack(this.GroundContactTimeTrack, true, TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds,
+                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+            }
+            return m_GroundContactTimeTrack0;
+        }
+
+        public INumericTimeDataSeries VerticalOscillationTrack0()
+        {
+            return this.VerticalOscillationTrack0(this.m_cacheTrackRef);
+        }
+        public INumericTimeDataSeries VerticalOscillationTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_VerticalOscillationTrack0 == null)
+            {
+                m_VerticalOscillationTrack0 = copySmoothTrack(this.VerticalOscillationTrack, true, TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds,
+                    UnitUtil.Convert10x, this.m_cacheTrackRef);
+            }
+            return m_VerticalOscillationTrack0;
+        }
+
+        public INumericTimeDataSeries SaturatedHemoglobinTrack0()
+        {
+            return this.SaturatedHemoglobinTrack0(this.m_cacheTrackRef);
+        }
+        public INumericTimeDataSeries SaturatedHemoglobinTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_SaturatedHemoglobinTrack0 == null)
+            {
+                m_SaturatedHemoglobinTrack0 = copySmoothTrack(this.SaturatedHemoglobinTrack, true, TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds,
+                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+            }
+            return m_SaturatedHemoglobinTrack0;
+        }
+
+        public INumericTimeDataSeries TotalHemoglobinConcentrationTrack0()
+        {
+            return this.TotalHemoglobinConcentrationTrack0(this.m_cacheTrackRef);
+        }
+        public INumericTimeDataSeries TotalHemoglobinConcentrationTrack0(TrailResult refRes)
+        {
+            checkCacheRef(refRes);
+            if (m_TotalHemoglobinConcentrationTrack0 == null)
+            {
+                m_TotalHemoglobinConcentrationTrack0 = copySmoothTrack(this.TotalHemoglobinConcentrationTrack, true, TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds,
+                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+            }
+            return m_TotalHemoglobinConcentrationTrack0;
         }
 
         public INumericTimeDataSeries SpeedTrack0()
@@ -3607,6 +3841,78 @@ namespace TrailsPlugin.Data
                     return new TrackUtil.NumericTimeDataSeries();
                 }
                 return Info.SmoothedPowerTrack;
+            }
+        }
+
+        private INumericTimeDataSeries PowerBalanceTrack
+        {
+            get
+            {
+                if (this.Activity == null)
+                {
+                    return new TrackUtil.NumericTimeDataSeries();
+                }
+                return Activity.LeftPowerPercentTrack;
+            }
+        }
+
+        private INumericTimeDataSeries TemperatureTrack
+        {
+            get
+            {
+                if (this.Activity == null)
+                {
+                    return new TrackUtil.NumericTimeDataSeries();
+                }
+                return Activity.TemperatureCelsiusTrack;
+            }
+        }
+
+        private INumericTimeDataSeries GroundContactTimeTrack
+        {
+            get
+            {
+                if (this.Activity == null)
+                {
+                    return new TrackUtil.NumericTimeDataSeries();
+                }
+                return Activity.GroundContactTimeMillisecondsTrack;
+            }
+        }
+
+        private INumericTimeDataSeries VerticalOscillationTrack
+        {
+            get
+            {
+                if (this.Activity == null)
+                {
+                    return new TrackUtil.NumericTimeDataSeries();
+                }
+                return Activity.VerticalOscillationMillimetersTrack;
+            }
+        }
+
+        private INumericTimeDataSeries SaturatedHemoglobinTrack
+        {
+            get
+            {
+                if (this.Activity == null)
+                {
+                    return new TrackUtil.NumericTimeDataSeries();
+                }
+                return Activity.SaturatedHemoglobinPercentTrack;
+            }
+        }
+
+        private INumericTimeDataSeries TotalHemoglobinConcentrationTrack
+        {
+            get
+            {
+                if (this.Activity == null)
+                {
+                    return new TrackUtil.NumericTimeDataSeries();
+                }
+                return Activity.TotalHemoglobinConcentrationTrack;
             }
         }
 

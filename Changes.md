@@ -2,7 +2,9 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-1.3.2 2015-10-04 (unreleased)
+1.3.4 2015-10-19 (unreleased)
+  * Support for missing ST standard charts: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
+In addition to ST, thee average is available in the list. Smoothing can be customized too.
   * Changed version numbering after source repository was moved to GitHub.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * Updated Spanish translation.
@@ -11,7 +13,7 @@ This page describes the changes between plugin releases. The change log may cont
   * Show Lap fields for Split trails.
   * Add support for column "Max (Avg) Grade".
   * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
-  * Set Garmin fenix, 920xt, 910xt ss barometric devices by default.
+  * Set Garmin fenix, 920xt, 910xt barometric devices by default.
   * Viewer for UniqueRoutes was occasionally not showing time and date.
 
 

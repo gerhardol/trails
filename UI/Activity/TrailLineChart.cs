@@ -327,6 +327,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (seriesIndex >= 0)
             {
+                Debug.Assert(seriesIndex < this.MainChart.DataSeries.Count, "Incorrect index?");
+
                 //Series must be added in order, so they can be resolved to result here
                 TrailResult tr = m_trailResults[this.SeriesIndexToResult(seriesIndex)];
 

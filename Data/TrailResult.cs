@@ -2013,6 +2013,11 @@ namespace TrailsPlugin.Data
             return m_GroundContactTimeTrack0;
         }
 
+        //"Hardcoded" conversion mm -> cm
+        public static double ConvertD10(double p, IActivity activity)
+        {
+            return p / 10;
+        }
         public INumericTimeDataSeries VerticalOscillationTrack0()
         {
             return this.VerticalOscillationTrack0(this.m_cacheTrackRef);
@@ -2023,7 +2028,7 @@ namespace TrailsPlugin.Data
             if (m_VerticalOscillationTrack0 == null)
             {
                 m_VerticalOscillationTrack0 = copySmoothTrack(this.VerticalOscillationTrack, true, TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds,
-                    UnitUtil.Convert10x, this.m_cacheTrackRef);
+                    ConvertD10, this.m_cacheTrackRef);
             }
             return m_VerticalOscillationTrack0;
         }

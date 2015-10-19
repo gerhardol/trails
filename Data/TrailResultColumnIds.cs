@@ -334,9 +334,9 @@ namespace TrailsPlugin.Data {
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AveragePowerBalance, CommonResources.Text.LabelPowerBalance, TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageTemperature, CommonResources.Text.LabelTemperature + UnitUtil.Temperature.LabelAbbr2, TrailsGroup, 70, StringAlignment.Far));
             //Hardcoded to cm, as in track?
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageGroundContactTime, CommonResources.Text.LabelGroundContactTime + " ("+Length.LabelAbbr(Length.Units.Centimeter)+")", TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageGroundContactTime, CommonResources.Text.LabelGroundContactTime + " (ms)", TrailsGroup, 70, StringAlignment.Far));
             //No translation for ms?
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageVerticalOscillation, CommonResources.Text.LabelVerticalOscillation + " (ms)", TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageVerticalOscillation, CommonResources.Text.LabelVerticalOscillation + " (" + Length.LabelAbbr(Length.Units.Centimeter) + ")", TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageSaturatedHemoglobin, CommonResources.Text.LabelSaturatedHemoglobinPercent, TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageTotalHemoglobinConcentration, CommonResources.Text.LabelTotalHemoglobinConcentration, TrailsGroup, 70, StringAlignment.Far));
 

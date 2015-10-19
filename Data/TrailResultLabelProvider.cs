@@ -212,38 +212,38 @@ namespace TrailsPlugin.Data
                     {
                         return null;
                     }
-                    return (row.AveragePowerBalance).ToString("0.0%");
+                    return (row.AveragePowerBalance/100).ToString("0.0%");
+                case TrailResultColumnIds.AverageTemperature:
+                    if (row is SummaryTrailResult)
+                    {
+                        return null;
+                    }
+                    return (row.AverageTemperature).ToString("0.0");
+                case TrailResultColumnIds.AverageGroundContactTime:
+                    if (row is SummaryTrailResult)
+                    {
+                        return null;
+                    }
+                    return (row.AverageGroundContactTime).ToString("0");
+                case TrailResultColumnIds.AverageVerticalOscillation:
+                    if (row is SummaryTrailResult)
+                    {
+                        return null;
+                    }
+                    return (row.AverageVerticalOscillation).ToString("0.0");
                 case TrailResultColumnIds.AverageSaturatedHemoglobin:
                     if (row is SummaryTrailResult)
                     {
                         return null;
                     }
-                    return (row.AverageSaturatedHemoglobin).ToString("0.0%");
-                case TrailResultColumnIds.AverageTemperature:
-                case TrailResultColumnIds.AverageGroundContactTime:
-                case TrailResultColumnIds.AverageVerticalOscillation:
+                    return (row.AverageSaturatedHemoglobin/100).ToString("0.0%");
                 case TrailResultColumnIds.AverageTotalHemoglobinConcentration:
                     if (row is SummaryTrailResult)
                     {
                         return null;
                     }
-                    //A simple truncator for now
-                    string val = base.GetText(row, column);
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        int i = val.IndexOfAny(new char[] { '.', ',' });
-                        if (i > 0)
-                        {
-                            if ((column.Id== TrailResultColumnIds.AverageTemperature || 
-                                column.Id == TrailResultColumnIds.AverageVerticalOscillation) &&
-                                i < val.Length-2)
-                            {
-                                i += 2;
-                            }
-                            val = val.Substring(0, i);
-                        }
-                    }
-                    return val;
+                    return (row.AverageTotalHemoglobinConcentration).ToString("0.0");
+
                 default:
                     if (row.Activity == null) return null;
                     if (row is ParentTrailResult)

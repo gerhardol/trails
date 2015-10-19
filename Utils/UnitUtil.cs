@@ -50,11 +50,6 @@ namespace GpsRunningPlugin.Util
         {
             return p;
         }
-        //"Hardcoded" conversion mm -> cm
-        public static double Convert10x(double p, IActivity activity)
-        {
-            return 10*p;
-        }
 
         //Helpfunction for common format
         private static string encPar(string p)

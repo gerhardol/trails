@@ -441,7 +441,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     tr.Result.Order = i;
                     i++;
-                    if (summaryList.IsExpanded(tr) || Data.Settings.SelectSimilarResults)
+                    if (Data.Settings.SelectSimilarResults || this.summaryList.IsExpanded(tr) ||
+                        (summaryList.Expanded.Count > 0 && atr.Count < 10 ) ||
+                        //When inserting the current content of the list are other objects, so compare
+                        //TBD: make generic, not just one
+                        (summaryList.Expanded.Count > 0 && ((TrailResultWrapper)summaryList.Expanded[0]).Result.CompareTo(tr.Result) ==0))
                     {
                         //Only sort similar and visible
                         tr.Sort();

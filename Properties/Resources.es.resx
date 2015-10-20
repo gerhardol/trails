@@ -284,6 +284,15 @@ Asegúrese de que {1} esté instalado.</value>
   <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
     <value>Categorías sin tiempo detenido:</value>
   </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_All" xml:space="preserve">
+    <value>Todo</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_None" xml:space="preserve">
+    <value>Ninguno</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_Unchanged" xml:space="preserve">
+    <value>Sin aplicar</value>
+  </data>
   <data name="UI_Settings_Copyright" xml:space="preserve">
     <value>Derechos de autor</value>
   </data>
@@ -291,5 +300,14 @@ Asegúrese de que {1} esté instalado.</value>
     <value>El plugin Trails está distribuido bajo licencia Licencia Pública General Reducida de GNU.
 Esta licencia se incluye en el directorio de instalación del plugin y en:
 http://www.gnu.org/licenses/lgpl.html</value>
+  </data>
+  <data name="UI_Settings_Title" xml:space="preserve">
+    <value>Información del plugin</value>
+  </data>
+  <data name="List_CustomFields" xml:space="preserve">
+    <value>Campos personalizados</value>
+  </data>
+  <data name="List_RestLap" xml:space="preserve">
+    <value>Descanso de vuelta</value>
   </data>
 </root>

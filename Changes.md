@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-1.3.4 2015-10-19 (unreleased)
+1.3.5 2015-10-20 (unreleased)
   * Support for missing ST standard charts: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
 In addition to ST, thee average is available in the list. Smoothing can be customized too.
   * Changed version numbering after source repository was moved to GitHub.

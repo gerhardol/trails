@@ -3,9 +3,9 @@ This page describes the changes between plugin releases. The change log may cont
 ### Changes ###
 
 1.3.5 2015-10-20 (unreleased)
-  * Support for missing ST standard charts: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
-In addition to ST, thee average is available in the list. Smoothing can be customized too.
   * Changed version numbering after source repository was moved to GitHub.
+  * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
+    The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * Updated Spanish translation.
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.

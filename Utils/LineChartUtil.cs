@@ -356,13 +356,13 @@ namespace TrailsPlugin.Utils
                 case LineChartTypes.GroundContactTime:
                     {
                         axis.Formatter = new Formatter.General(1);
-                        axis.Label = CommonResources.Text.LabelGroundContactTime + " (" + Length.LabelAbbr(Length.Units.Centimeter) + ")";
+                        axis.Label = CommonResources.Text.LabelGroundContactTime + " (ms)";
                         break;
                     }
                 case LineChartTypes.VerticalOscillation:
                     {
                         axis.Formatter = new Formatter.General();
-                        axis.Label = CommonResources.Text.LabelVerticalOscillation + " (ms)";
+                        axis.Label = CommonResources.Text.LabelVerticalOscillation + " (" + Length.LabelAbbr(Length.Units.Centimeter) + ")";
                         break;
                     }
                 case LineChartTypes.SaturatedHemoglobin:

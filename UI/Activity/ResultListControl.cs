@@ -441,11 +441,22 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     tr.Result.Order = i;
                     i++;
-                    if (Data.Settings.SelectSimilarResults || this.summaryList.IsExpanded(tr) ||
-                        (summaryList.Expanded.Count > 0 && atr.Count < 10 ) ||
-                        //When inserting the current content of the list are other objects, so compare
-                        //TBD: make generic, not just one
-                        (summaryList.Expanded.Count > 0 && ((TrailResultWrapper)summaryList.Expanded[0]).Result.CompareTo(tr.Result) ==0))
+                    Boolean expanded = Data.Settings.SelectSimilarResults || this.summaryList.IsExpanded(tr)
+                        //workaround for incorrect expand detection
+                        || atr.Count < 9;
+                    if (!expanded)
+                    {
+                        foreach (TrailResultWrapper etr in summaryList.Expanded)
+                        {
+                            //When inserting the current content of the list are other objects, so compare
+                            if (etr.Result.CompareTo(tr.Result) == 0)
+                            {
+                                expanded = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (expanded)
                     {
                         //Only sort similar and visible
                         tr.Sort();
@@ -772,13 +783,12 @@ namespace TrailsPlugin.UI.Activity {
 
         private static TreeList.Column getColumn(TreeList l, MouseEventArgs e)
         {
-            int nStart = e.X + l.HScrollBar.Value;
             int epos = 0;
             int colSelected = 0; //Select first by default
             for (int i = 0; i < l.Columns.Count; i++)
             {
                 epos += l.Columns[i].Width;
-                if (nStart < epos)
+                if (e.X < epos)
                 {
                     colSelected = i;
                     break;
@@ -795,8 +805,10 @@ namespace TrailsPlugin.UI.Activity {
             {
                 TreeList l = sender as TreeList;
                 //Check if header. ColumnHeaderClicked will not fire if Click enabled
-                TreeList.Column selectedColumn = getColumn(l, (MouseEventArgs)e);
-                if (l.HeaderRowHeight >= ((MouseEventArgs)e).Y)
+                MouseEventArgs e2 = (MouseEventArgs)e;
+                MouseEventArgs eScroll = new MouseEventArgs(e2.Button, e2.Clicks, e2.X + l.HScrollBar.Value, e2.Y + l.VScrollBar.Value, e2.Delta);
+                TreeList.Column selectedColumn = getColumn(l, eScroll);
+                if (l.HeaderRowHeight >= eScroll.Y)
                 {
                     summaryList_ColumnHeaderMouseClick(sender, selectedColumn);
                 }
@@ -805,13 +817,23 @@ namespace TrailsPlugin.UI.Activity {
                     object row;
                     TreeList.RowHitState hit;
                     //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
-                    row = this.summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
+                    row = this.summaryList.RowHitTest(eScroll.Location, out hit);
                     if (row != null && summaryList.Columns[0] == selectedColumn)
                     {
-                        //Workaround to sort first when expanding (there is no explicit event)
+                        //Workaround to sort first when expanding (there is no explicit event when expanding)
+                        //For some reason, this do not fully work
                         if (summaryList.IsExpanded(row))
                         {
                             ((TrailResultWrapper)row).Sort();
+                        }
+                        else
+                        {
+                            //If scrolling after expanding, it is likely that a child is selected
+                            TrailResultWrapper par = ((TrailResultWrapper)((TrailResultWrapper)row).Parent);
+                            if (par != null && summaryList.IsExpanded(par))
+                            {
+                                ((TrailResultWrapper)((TrailResultWrapper)row).Parent).Sort();
+                            }
                         }
                     }
                     if (row != null)
@@ -821,12 +843,12 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             //RowHitState is always Row, use position to filter out likely plus clicks
                             if (selectedColumn.Id == TrailResultColumnIds.ResultColor && hit == TreeList.RowHitState.Row &&
-                               (((MouseEventArgs)e).Location.X > 18 || !(tr is ParentTrailResult)))
+                               (eScroll.X > 18 || !(tr is ParentTrailResult)))
                             {
                                 ColorSelectorPopup cs = new ColorSelectorPopup();
                                 cs.Width = 70;
                                 cs.ThemeChanged(m_visualTheme);
-                                cs.DesktopLocation = ((Control)sender).PointToScreen(((MouseEventArgs)e).Location);
+                                cs.DesktopLocation = ((Control)sender).PointToScreen(e2.Location);
                                 cs.Selected = tr.ResultColor.LineNormal;
                                 m_ColorSelectorResult = tr;
                                 cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);

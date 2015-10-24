@@ -176,11 +176,13 @@ namespace TrailsPlugin.UI.Activity {
                 noResults = m_controller.CurrentResultTreeList.Count;
             }
             bool splits = false;
+            bool swim = false;
             if (m_controller.PrimaryCurrentActivityTrail != null)
             {
                 splits = m_controller.PrimaryCurrentActivityTrail.Trail.IsSplits;
+                swim = m_controller.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.SwimSplits;
             }
-            TrailResultColumns cols = new TrailResultColumns(m_controller.ReferenceActivity, noResults, MultiActivity(), false, splits);
+            TrailResultColumns cols = new TrailResultColumns(m_controller.ReferenceActivity, noResults, MultiActivity(), splits, swim);
 
             foreach (string id in Data.Settings.ActivityPageColumns)
             {
@@ -1974,7 +1976,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
             ListSettingsDialog dialog = new ListSettingsDialog();
             //always show 'Splits' columns, even if only visible for Splits trail 
-            IList<IListColumnDefinition> cols = (new TrailResultColumns(m_controller.ReferenceActivity, m_controller.Activities.Count, true, true, true)).ColumnDefs();
+            IList<IListColumnDefinition> cols = (new TrailResultColumns(m_controller.ReferenceActivity, m_controller.Activities.Count, true)).ColumnDefs();
             dialog.AvailableColumns = cols;
 #endif
             dialog.ThemeChanged(m_visualTheme);

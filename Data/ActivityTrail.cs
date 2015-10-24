@@ -90,7 +90,8 @@ namespace TrailsPlugin.Data
                     this.m_status = TrailOrderStatus.NotInstalled;
                 }
             }
-            else if (this.m_trail.TrailType == Trail.CalcType.Splits)
+            else if (this.m_trail.TrailType == Trail.CalcType.Splits ||
+                     this.m_trail.TrailType == Trail.CalcType.SwimSplits)
             {
                 //By default, always match
                 this.m_status = TrailOrderStatus.MatchNoCalc;
@@ -381,11 +382,22 @@ namespace TrailsPlugin.Data
                     }
                     foreach (IActivity activity in activities)
                     {
-                        if (m_trail.TrailType == Trail.CalcType.Splits)
+                        if (this.m_trail.TrailType == Trail.CalcType.Splits)
                         {
                             this.Status = TrailOrderStatus.Match;
                             TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
                             m_resultsListWrapper.Add(result);
+                        }
+                        else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
+                        {
+                            this.Status = TrailOrderStatus.Match;
+                            int subresultIndex = 1;
+                            foreach (TrailResultInfo indexes in Data.Trail.TrailResultSwimInfoFromSplits(activity, false, subresultIndex))
+                            {
+                                TrailResultWrapper result = new TrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
+                                m_resultsListWrapper.Add(result);
+                                subresultIndex += indexes.Points.Count;
+                            }
                         }
                         else
                         {
@@ -1633,7 +1645,9 @@ namespace TrailsPlugin.Data
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
-                if (t.Trail.TrailType == Trail.CalcType.Splits || t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
+                if (t.Trail.TrailType == Trail.CalcType.Splits ||
+                    t.Trail.TrailType == Trail.CalcType.SwimSplits || 
+                    t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
                     name += " (" + t.ActivityCount + ")";
                 }

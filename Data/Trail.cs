@@ -31,7 +31,7 @@ namespace TrailsPlugin.Data
         //Also used when sorting trails
         public enum CalcType
         {
-            TrailPoints, Splits, HighScore, UniqueRoutes, ElevationPoints
+            TrailPoints, Splits, SwimSplits, HighScore, UniqueRoutes, ElevationPoints
         }
 
         public Guid Id;
@@ -518,16 +518,16 @@ namespace TrailsPlugin.Data
                         DateTime d = l.StartTime;
                         if (activity.GPSRoute == null || activity.GPSRoute.Count == 0)
                         {
-                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(name, !l.Rest), d, l.TotalTime));
+                            results.Points.Add(new TrailResultPoint(new TrailGPSLocation(name, !l.Rest), d, l.TotalTime, l));
                         }
                         else
                         {
                             IGPSPoint t = Utils.TrackUtil.getGpsLoc(activity, d);
                             if (t != null)
                             {
-                                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d, l.TotalTime));
+                                results.Points.Add(new TrailResultPoint(new TrailGPSLocation(t, name, !l.Rest), d, l.TotalTime, l));
                             }
-                        } 
+                        }
                     }
                 }
                 lastIsRestlap = activity.Laps[activity.Laps.Count - 1].Rest;
@@ -562,6 +562,64 @@ namespace TrailsPlugin.Data
             foreach (TrailGPSLocation t in results.Points)
             {
                 t.SetElevation(float.NaN);
+            }
+
+            return results;
+        }
+
+        public static IList<TrailResultInfo> TrailResultSwimInfoFromSplits(IActivity activity, bool onlyActiveLaps, int subresultIndex)
+        {
+            IList<TrailResultInfo> results = new List<TrailResultInfo>();
+            if (activity == null || null == activity.Laps || 0 == activity.Laps.Count)
+            {
+                //summary result
+                return results;
+            }
+
+            //Get around a problem with only Rest laps
+            if (onlyActiveLaps)
+            {
+                onlyActiveLaps = false;
+                for (int j = 0; j < activity.Laps.Count; j++)
+                {
+                    if (!activity.Laps[j].Rest)
+                    {
+                        onlyActiveLaps = true;
+                        break;
+                    }
+                }
+            }
+
+            for (int j = 0; j < activity.Laps.Count; j++)
+            {
+                ILapInfo l = activity.Laps[j];
+                if (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest)
+                {
+                    TrailResultInfo r = new TrailResultInfo(activity, false);
+                    r.LapInfo = l;
+                    results.Add(r);
+                    foreach (IPoolLengthInfo p in l.PoolLengths)
+                    {
+                        DateTime d = p.StartTime;
+                        r.Points.Add(new TrailResultPoint(new TrailGPSLocation(null, !l.Rest), d, p.TotalTime, p, subresultIndex));
+                        subresultIndex++;
+                    }
+                    if(l.PoolLengths.Count > 0)
+                    {
+                        //Need (dummy) last point
+                        IPoolLengthInfo p = l.PoolLengths[l.PoolLengths.Count - 1];
+                        r.Points.Add(new TrailResultPoint(new TrailGPSLocation(null, !l.Rest), p.StartTime+p.TotalTime, TimeSpan.Zero, p, subresultIndex));
+                    }
+                }
+            }
+
+            //A trail created from splits should not define elevation points
+            foreach (TrailResultInfo r in results)
+            {
+                foreach (TrailGPSLocation t in r.Points)
+                {
+                    t.SetElevation(float.NaN);
+                }
             }
 
             return results;

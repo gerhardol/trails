@@ -52,17 +52,6 @@ namespace TrailsPlugin.Data
     {
         internal bool PartOfParent = true;
 
-        public ILapInfo LapInfo
-        {
-            get
-            {
-                if (this.Activity != null && this.m_activityTrail.Trail.IsSplits && this.Activity.Laps != null && this.Activity.Laps.Count >= this.Order )
-                {
-                    return this.Activity.Laps[this.Order-1];
-                }
-                return null;
-            }
-        }
         private ParentTrailResult m_parentResult;
         public ParentTrailResult ParentResult
         {
@@ -93,6 +82,11 @@ namespace TrailsPlugin.Data
                 this.m_duration = indexes.Points[0].Duration;
             }
             this.PartOfParent = part;
+            this.m_LapInfo = indexes.LapInfo;
+            if(indexes.Points != null && indexes.Points.Count>0)
+            {
+                this.m_PoolLengthInfo = indexes.Points[0].PoolLengthInfo;
+            }
         }
     }
 }

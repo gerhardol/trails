@@ -47,6 +47,13 @@ namespace TrailsPlugin.Data
         {
         }
     }
+    public class SwimSplitsParentTrailResult : ParentTrailResult
+    {
+        public SwimSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, order, indexes, distDiff)
+        {
+        }
+    }
     public class HighScoreParentTrailResult : ParentTrailResult
     {
         public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
@@ -100,7 +107,12 @@ namespace TrailsPlugin.Data
                             if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
                                 TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
-                                ChildTrailResult tr = new NormalChildTrailResult(m_activityTrail, this, i + 1, t, t.DistDiff);
+                                int subresultIndex = i + 1;
+                                if (m_subResultInfo.Points[i].Order>=0)
+                                {
+                                    subresultIndex = m_subResultInfo.Points[i].Order;
+                                }
+                                ChildTrailResult tr = new NormalChildTrailResult(m_activityTrail, this, subresultIndex, t, t.DistDiff);
                                 //Note: paused results may be added, no limit for childresults
                                 splits.Add(tr);
                             }

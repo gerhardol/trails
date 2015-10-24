@@ -53,8 +53,12 @@ namespace TrailsPlugin.Data
         {
             TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
-            //Children are not created by default
-            //getSplits();
+        }
+
+        public TrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
+            : base(null, null)
+        {
+            base.Element = new SwimSplitsParentTrailResult(activityTrail, order, indexes, 0);
         }
 
         //Create from HighScore, add the first and last time stamps in MarkedTimes

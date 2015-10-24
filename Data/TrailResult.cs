@@ -39,6 +39,8 @@ namespace TrailsPlugin.Data
         #region private variables
         public ActivityTrail m_activityTrail;
         private IActivity m_activity;
+        protected ILapInfo m_LapInfo = null;
+        protected IPoolLengthInfo m_PoolLengthInfo = null;
         protected int m_order;
         private string m_name;
         private bool m_reverse;
@@ -159,6 +161,7 @@ namespace TrailsPlugin.Data
             }
             m_subResultInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
+            this.m_LapInfo = indexes.LapInfo;
         }
 
 #endregion
@@ -269,6 +272,24 @@ namespace TrailsPlugin.Data
         {
             get { return m_activity; }
         }
+
+        public ILapInfo LapInfo
+        {
+            get
+            {
+                //Splits Childresults, SwimSplit parents
+                return m_LapInfo;
+            }
+        }
+        public IPoolLengthInfo PoolLengthInfo
+        {
+            get
+            {
+                //SwimSplit
+                return m_PoolLengthInfo;
+            }
+        }
+
         //Distance error used to sort results
         public float SortQuality
         {
@@ -305,7 +326,7 @@ namespace TrailsPlugin.Data
             {
                 return m_order;
             }
-           set
+            set
             {
                 m_order = value;
             }
@@ -329,7 +350,15 @@ namespace TrailsPlugin.Data
             {
                 if (m_duration == null)
                 {
-                    if (!(this is ChildTrailResult) &&
+                    if (this.PoolLengthInfo != null)
+                    {
+                        m_duration = this.PoolLengthInfo.TotalTime;
+                    }
+                    else if (this.LapInfo != null)
+                    {
+                        m_duration = this.LapInfo.TotalTime;
+                    }
+                    else if (!(this is ChildTrailResult) &&
                         TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
                         this.Activity != null)
                     {
@@ -348,9 +377,17 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
-                    this.Activity != null)
+                if (this.PoolLengthInfo != null)
+                {
+                    return this.PoolLengthInfo.TotalDistanceMeters;
+                }
+                else if (this.LapInfo != null)
+                {
+                    return this.LapInfo.TotalDistanceMeters;
+                }
+                else if (!(this is ChildTrailResult) &&
+                TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                this.Activity != null)
                 {
                     return this.Activity.TotalDistanceMetersEntered;
                 }
@@ -391,7 +428,18 @@ namespace TrailsPlugin.Data
             {
                 if (m_startTime == null)
                 {
-                    m_startTime = getStartTime(this.Pauses);
+                    if (this.PoolLengthInfo != null)
+                    {
+                        m_startTime = this.PoolLengthInfo.StartTime;
+                    }
+                    else if (this.LapInfo != null)
+                    {
+                        m_startTime = this.LapInfo.StartTime;
+                    }
+                    else
+                    {
+                        m_startTime = getStartTime(this.Pauses);
+                    }
                 }
                 return (DateTime)m_startTime;
             }

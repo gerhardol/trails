@@ -160,7 +160,16 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Duration:
                     return UnitUtil.Time.ToString(row.Duration, "");
                 case TrailResultColumnIds.Distance:
-                    return UnitUtil.Distance.ToString(row.Distance, m_controller.ReferenceActivity, "");
+                    if (row.PoolLengthInfo != null)
+                    {
+                        return ZoneFiveSoftware.Common.Data.Measurement.Length.Convert(row.Distance, ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Meter, row.PoolLengthInfo.DistanceUnits).
+                            ToString("F" + ZoneFiveSoftware.Common.Data.Measurement.Length.DefaultDecimalPrecision(row.PoolLengthInfo.DistanceUnits))+ " " +
+                            ZoneFiveSoftware.Common.Data.Measurement.Length.LabelAbbr(row.PoolLengthInfo.DistanceUnits);
+                    }
+                    else
+                    {
+                        return UnitUtil.Distance.ToString(row.Distance, m_controller.ReferenceActivity, "");
+                    }
                 case TrailResultColumnIds.AvgCadence:
                     return UnitUtil.Cadence.ToString(row.AvgCadence);
                 case TrailResultColumnIds.AvgHR:
@@ -212,7 +221,7 @@ namespace TrailsPlugin.Data
                     {
                         return null;
                     }
-                    return (row.AveragePowerBalance/100).ToString("0.0%");
+                    return (row.AveragePowerBalance / 100).ToString("0.0%");
                 case TrailResultColumnIds.AverageTemperature:
                     if (row is SummaryTrailResult)
                     {
@@ -236,7 +245,7 @@ namespace TrailsPlugin.Data
                     {
                         return null;
                     }
-                    return (row.AverageSaturatedHemoglobin/100).ToString("0.0%");
+                    return (row.AverageSaturatedHemoglobin / 100).ToString("0.0%");
                 case TrailResultColumnIds.AverageTotalHemoglobinConcentration:
                     if (row is SummaryTrailResult)
                     {
@@ -245,50 +254,54 @@ namespace TrailsPlugin.Data
                     return (row.AverageTotalHemoglobinConcentration).ToString("0.0");
 
                 default:
-                    if (row.Activity == null) return null;
-                    if (row is ParentTrailResult)
+
+                    if (TrailResultColumns.IsLapField(column.Id))
                     {
+                        ILapInfo lap = row.LapInfo;
+                        if (lap != null)
+                        {
+                            //The column Id is faked to not clash with the internal ids
+                            TreeList.Column c = new TreeList.Column(TrailResultColumns.LapId(column.Id));
+                            return base.GetText(lap, c);
+                        }
+                        //Not Splits trail
+                        return null;
+                    }
+                    else if (TrailResultColumns.IsSwimLapField(column.Id))
+                    {
+                        IPoolLengthInfo lap = row.PoolLengthInfo;
+                        if (lap != null)
+                        {
+                            //The column Id is faked to not clash with the internal ids
+                            TreeList.Column c = new TreeList.Column(TrailResultColumns.SwimLapId(column.Id));
+                            return base.GetText(lap, c);
+                        }
+                        //Not Splits trail
+                        return null;
+                    }
+                    else if (TrailResultColumns.IsActivityField(column.Id))
+                    {
+                        if (row is ParentTrailResult)
+                        {
+                            if (row.Activity == null) return null;
+                            return base.GetText(row.Activity, column);
+                        }
+                        return null;
+                    }
+                    else
+                    {
+                        if (row.Activity == null) return null;
                         ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(column.Id);
                         if (cust != null)
                         {
-                            return row.Activity.GetCustomDataValue(TrailResultColumns.CustomDef(column.Id)).ToString();
-                        }
-                        else if (TrailResultColumns.IsActivityField(column.Id))
-                        {
-                            return base.GetText(row.Activity, column);
-                        }
-                        else if (TrailResultColumns.IsLapField(column.Id))
-                        {
-                            //Must be empty
-                            return null;
-                        }
-                    }
-                    else if (row is ChildTrailResult)
-                    {
-                        if (TrailResultColumns.IsLapField(column.Id))
-                        {
-                            ILapInfo lap = (row as ChildTrailResult).LapInfo;
-                            if (lap != null)
+                            if (row is ParentTrailResult)
                             {
-                                switch (column.Id)
-                                {
-                                    case TrailResultColumnIds.LapInfo_TotalDistanceMeters:
-                                        return UnitUtil.Distance.ToString(lap.TotalDistanceMeters, m_controller.ReferenceActivity, "");
-                                    default:
-                                        //The column Id is faked to not clash with the internal ids
-                                        TreeList.Column c = new TreeList.Column(TrailResultColumns.LapId(column.Id));
-                                        return base.GetText(lap, c);
-                                }
+                                return row.Activity.GetCustomDataValue(TrailResultColumns.CustomDef(column.Id)).ToString();
                             }
-                            //Not Splits trail
-                            return null;
-                        }
-                        else if (TrailResultColumns.IsActivityField(column.Id) ||
-                            TrailResultColumns.CustomDef(column.Id) != null)
-                        {
                             return null;
                         }
                     }
+
                     System.Diagnostics.Debug.Assert(false, string.Format("No label info for id {0}", column.Id));
                     return null;
             }

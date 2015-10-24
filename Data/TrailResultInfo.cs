@@ -31,6 +31,7 @@ namespace TrailsPlugin.Data
         public IActivity Activity;
         public float? m_DistDiff;
         public bool Reverse;
+        public ILapInfo LapInfo;
 
         public TrailResultInfo(IActivity activity, bool reverse)
         {
@@ -90,9 +91,21 @@ namespace TrailsPlugin.Data
                 {
                     return Points[0].Name;
                 }
+                else if (LapInfo != null)
+                {
+                    string name = LapInfo.Notes;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        //TBD - order when adding
+                        name = "#" + (this.Points.Count + 1);
+                    }
+
+                    return LapInfo.Notes;
+                }
                 return "";
             }
         }
+
         public int Count
         {
             get
@@ -156,6 +169,17 @@ namespace TrailsPlugin.Data
         {
             this.Duration = duration;
         }
+        public TrailResultPoint(TrailGPSLocation trailLocation, DateTime time, TimeSpan duration, ILapInfo lapInfo)
+            : this(trailLocation, time, duration)
+        {
+            this.LapInfo = lapInfo;
+        }
+        public TrailResultPoint(TrailGPSLocation trailLocation, DateTime time, TimeSpan duration, IPoolLengthInfo lapInfo, int subresultIndex)
+            : this(trailLocation, time, duration)
+        {
+            this.PoolLengthInfo = lapInfo;
+            this.Order = subresultIndex;
+        }
         public TrailResultPoint(TrailResultPoint t)
             : base(t)
         {
@@ -163,6 +187,9 @@ namespace TrailsPlugin.Data
             //this.m_name = t.Name;
             this.DistDiff = t.DistDiff;
             this.Duration = t.Duration;
+            this.LapInfo = t.LapInfo;
+            this.PoolLengthInfo = t.PoolLengthInfo;
+            this.Order = t.Order;
         }
 
         public override string ToString()
@@ -204,6 +231,9 @@ namespace TrailsPlugin.Data
         //Just a high number, affects sorting
         public const float DiffDistMax = 0xffff;
         internal TimeSpan? Duration = null;
+        public ILapInfo LapInfo = null;
+        public IPoolLengthInfo PoolLengthInfo = null;
+        public int Order = -1;
 
         public int CompareTo(object obj)
         {

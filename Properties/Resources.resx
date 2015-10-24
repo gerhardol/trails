@@ -401,4 +401,28 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="List_RestLap" xml:space="preserve">
     <value>Rest Lap</value>
   </data>
+  <data name="UI_Activity_List_AverageStrokeDistance" xml:space="preserve">
+    <value>Avg. Stroke Distance</value>
+  </data>
+  <data name="UI_Activity_List_AverageStrokeRate" xml:space="preserve">
+    <value>Avg. Stroke Rate</value>
+  </data>
+  <data name="UI_Activity_List_Efficiency" xml:space="preserve">
+    <value>Efficiency</value>
+  </data>
+  <data name="UI_Activity_List_LengthCount" xml:space="preserve">
+    <value>Length Count</value>
+  </data>
+  <data name="UI_Activity_List_StrokeCount" xml:space="preserve">
+    <value>Stroke Count</value>
+  </data>
+  <data name="UI_Activity_List_StrokeType" xml:space="preserve">
+    <value>Stroke Type</value>
+  </data>
+  <data name="UI_Activity_List_SwimLap" xml:space="preserve">
+    <value>Swim - Laps</value>
+  </data>
+  <data name="UI_Activity_List_SWOLF" xml:space="preserve">
+    <value>SWOLF</value>
+  </data>
 </root>

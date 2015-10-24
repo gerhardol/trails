@@ -44,6 +44,15 @@ namespace TrailsPlugin.Data
             trail.TrailPriority = -11;
             allTrails.Add(trail.Id, trail);
 
+            //SwimSplits Trail
+            trail = new Data.Trail(GUIDs.SwimSplitsTrail, true);
+            trail.Name = Properties.Resources.UI_Activity_List_SwimLap;
+            trail.IsSplits = true;
+            trail.IsCompleteActivity = true;
+            trail.TrailType = Trail.CalcType.SwimSplits;
+            trail.TrailPriority = -12;
+            allTrails.Add(trail.Id, trail);
+
             //Reference Activity Trail
             trail = new Data.Trail(GUIDs.ReferenceTrail, true);
             trail.Name = Properties.Resources.Trail_Reference_Name;

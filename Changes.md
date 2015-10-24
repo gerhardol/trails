@@ -7,6 +7,8 @@ This page describes the changes between plugin releases. The change log may cont
   * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
     The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
+  * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
+  * Swim Splits trail
   * Updated Spanish translation.
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
   * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.

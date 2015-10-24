@@ -485,11 +485,38 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Avg. Stroke Distance.
+        /// </summary>
+        internal static string UI_Activity_List_AverageStrokeDistance {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_AverageStrokeDistance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Avg. Stroke Rate.
+        /// </summary>
+        internal static string UI_Activity_List_AverageStrokeRate {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_AverageStrokeRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Diff.
         /// </summary>
         internal static string UI_Activity_List_DiffPresent {
             get {
                 return ResourceManager.GetString("UI_Activity_List_DiffPresent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Efficiency.
+        /// </summary>
+        internal static string UI_Activity_List_Efficiency {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_Efficiency", resourceCulture);
             }
         }
         
@@ -508,6 +535,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_List_IdealTime {
             get {
                 return ResourceManager.GetString("UI_Activity_List_IdealTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Length Count.
+        /// </summary>
+        internal static string UI_Activity_List_LengthCount {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_LengthCount", resourceCulture);
             }
         }
         
@@ -544,6 +580,42 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_List_Splits {
             get {
                 return ResourceManager.GetString("UI_Activity_List_Splits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stroke Count.
+        /// </summary>
+        internal static string UI_Activity_List_StrokeCount {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_StrokeCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stroke Type.
+        /// </summary>
+        internal static string UI_Activity_List_StrokeType {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_StrokeType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Swim - Laps.
+        /// </summary>
+        internal static string UI_Activity_List_SwimLap {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_SwimLap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SWOLF.
+        /// </summary>
+        internal static string UI_Activity_List_SWOLF {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_SWOLF", resourceCulture);
             }
         }
         

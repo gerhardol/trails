@@ -153,7 +153,14 @@ namespace TrailsPlugin.Data
                     }
                     return date + row.StartTime.ToLocalTime().ToString("T");
                 case TrailResultColumnIds.StartDistance:
-                    return UnitUtil.Distance.ToString(row.StartDistance, "");
+                    if (row.PoolLengthInfo != null)
+                    {
+                        return UnitUtil.Distance.ToString(row.StartDistance, row.PoolLengthInfo.DistanceUnits, "u");
+                    }
+                    else
+                    {
+                        return UnitUtil.Distance.ToString(row.StartDistance, m_controller.ReferenceActivity, "");
+                    }
                 case TrailResultColumnIds.EndTime:
                     if (row.Activity == null) return null;
                     return row.EndTime.ToLocalTime().ToString("T");
@@ -162,9 +169,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Distance:
                     if (row.PoolLengthInfo != null)
                     {
-                        return ZoneFiveSoftware.Common.Data.Measurement.Length.Convert(row.Distance, ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Meter, row.PoolLengthInfo.DistanceUnits).
-                            ToString("F" + ZoneFiveSoftware.Common.Data.Measurement.Length.DefaultDecimalPrecision(row.PoolLengthInfo.DistanceUnits))+ " " +
-                            ZoneFiveSoftware.Common.Data.Measurement.Length.LabelAbbr(row.PoolLengthInfo.DistanceUnits);
+                        return UnitUtil.Distance.ToString(row.Distance, row.PoolLengthInfo.DistanceUnits, "u");
                     }
                     else
                     {

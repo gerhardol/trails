@@ -144,6 +144,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import Source.
+        /// </summary>
+        internal static string Metadata_Source {
+            get {
+                return ResourceManager.GetString("Metadata_Source", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Problem communicating with {0}.
         ///Make sure that {1} is installed..
         /// </summary>

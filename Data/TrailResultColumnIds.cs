@@ -141,7 +141,8 @@ namespace TrailsPlugin.Data {
         //For historical reasons, do not have prefix
         public const string Location = "Location";
         public const string Category = "Category";
-        internal static IList<string> ActivityFields = new List<string> { TrailResultColumnIds.Category, TrailResultColumnIds.Location };
+        public const string MetaData_Source = "MetaData_Source";
+        internal static IList<string> ActivityFields = new List<string> { TrailResultColumnIds.Category, TrailResultColumnIds.Location, TrailResultColumnIds.MetaData_Source };
 
         //obsolete fields - maybe just in dev versions
         internal static IList<string> ObsoleteFields = new List<string> { "AvgGrade", "AscMaxGrade", "AvgPaceSpeed", "LapInfo_StartTime", "LapInfo_TotalDistanceMeters", "LapInfo_TotalTime" };
@@ -353,8 +354,13 @@ namespace TrailsPlugin.Data {
             //index++;
             //columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeedPace, columnDefs[index].Text(columnDefs[index].Id), columnDefs[index].GroupName, columnDefs[index].Width, columnDefs[index].Align));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, ActivityGroup, 70, StringAlignment.Near));
+
+
+            //Activity
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Location, CommonResources.Text.LabelLocation, ActivityGroup, 70, StringAlignment.Near));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, ActivityGroup, 70, StringAlignment.Near));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.MetaData_Source, Properties.Resources.Metadata_Source, ActivityGroup, 70, StringAlignment.Near));
+
             if (all || !swim && TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 string PerformancePredictorGroup = Properties.Resources.PerformancePredictorPluginName;
@@ -519,37 +525,50 @@ namespace TrailsPlugin.Data {
 
                 try
                 {
-                    ICustomDataFieldDefinition cust = null;
-                    //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
-                    //If not parent result, there is no difference
-                    if (x is ParentTrailResult)
+                    Boolean fieldFound = false;
+                    if (id == TrailResultColumnIds.MetaData_Source)
                     {
-                        cust = TrailResultColumns.CustomDef(id);
+                        //Special handling, sub object
+                        fieldFound = true;
+                        if (x is ParentTrailResult && x.Activity != null && y.Activity != null)
+                        {
+                            result = x.Activity.Metadata.Source.CompareTo(y.Activity.Metadata.Source);
+                        }
+                    }
+
+                    {
+                        //Dont bother with reflection CompareTo, few types, just complicates TrailResult/Lap
+                        //If not parent result, there is no difference
+                        ICustomDataFieldDefinition cust = TrailResultColumns.CustomDef(id);
                         if (cust != null)
                         {
-                            object xoc = x.Activity.GetCustomDataValue(cust);
-                            object yoc = y.Activity.GetCustomDataValue(cust);
-                            if (xoc == null)
+                            fieldFound = true;
+                            if (x is ParentTrailResult && x.Activity != null && y.Activity != null)
                             {
-                                result = 1;
-                            }
-                            else if (yoc == null)
-                            {
-                                result = -1;
-                            }
-                            else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
-                            {
-                                //numeric
-                                result = ((System.Double)xoc).CompareTo((System.Double)yoc);
-                            }
-                            else
-                            {
-                                //date or string
-                                result = ((string)xoc).CompareTo((string)yoc);
+                                object xoc = x.Activity.GetCustomDataValue(cust);
+                                object yoc = y.Activity.GetCustomDataValue(cust);
+                                if (xoc == null)
+                                {
+                                    result = 1;
+                                }
+                                else if (yoc == null)
+                                {
+                                    result = -1;
+                                }
+                                else if (cust.DataType.Id.Equals(new System.Guid("{6e0f7115-6aa3-49ea-a855-966ce17317a1}")))
+                                {
+                                    //numeric
+                                    result = ((System.Double)xoc).CompareTo((System.Double)yoc);
+                                }
+                                else
+                                {
+                                    //date or string
+                                    result = ((string)xoc).CompareTo((string)yoc);
+                                }
                             }
                         }
                     }
-                    if (cust == null)
+                    if (!fieldFound)
                     {
                         //Use reflection to get values and compare routines
                         //This is very slightly slower than hardcoded access.
@@ -562,6 +581,7 @@ namespace TrailsPlugin.Data {
 
                         if (IsLapField(id))
                         {
+                            //Note: Some lap/poolinfo fields are read using TrailResult properties
                             id = LapId(id);
                             xo = x.LapInfo;
                             yo = y.LapInfo;
@@ -603,42 +623,43 @@ namespace TrailsPlugin.Data {
                             object yv = xf.GetValue(yo, null);
                             if (xv == null)
                             {
-                                Debug.Assert(false, string.Format("No value for id {0} for x {1}", id, xo));
-                                result = 1;
+                                //Debug.Assert(false, string.Format("No value for id {0} for x {1}", id, xo));
+                                if (yv == null) result = 1;
                             }
                             else if (yv == null)
                             {
                                 Debug.Assert(false, string.Format("No value for id {0} for y {1}", id, yo));
-                                result = -1;
-                            }
-
-                            //Get the CompareTo method using reflection
-                            MethodInfo cmp = null;
-                            //Specialized version of generic (not applicable for .Net2) 
-                            // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
-                            foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
-                                                             MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
-                            {
-                                // Check that the parameter counts and types match, 
-                                // with 'loose' matching on generic parameters
-                                ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                                if (parameterInfos.Length == 1)
-                                {
-                                    if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
-                                    {
-                                        cmp = methodInfo;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (cmp != null)
-                            {
-                                result = (int)cmp.Invoke(xv, new object[1] { yv });
+                                if (xv == null) result = -1;
                             }
                             else
                             {
-                                Debug.Assert(false, string.Format("No CompareTo for id {0} for x {1}", id, xo));
+                                //Get the CompareTo method using reflection
+                                MethodInfo cmp = null;
+                                //Specialized version of generic (not applicable for .Net2) 
+                                // from http://stackoverflow.com/questions/4035719/getmethod-for-generic-method
+                                foreach (MethodInfo methodInfo in xv.GetType().GetMember("CompareTo",
+                                                                 MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance))
+                                {
+                                    // Check that the parameter counts and types match, 
+                                    // with 'loose' matching on generic parameters
+                                    ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+                                    if (parameterInfos.Length == 1)
+                                    {
+                                        if (parameterInfos[0].ParameterType.Equals(yv) || parameterInfos[0].ParameterType.Equals(typeof(object)))
+                                        {
+                                            cmp = methodInfo;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (cmp != null)
+                                {
+                                    result = (int)cmp.Invoke(xv, new object[1] { yv });
+                                }
+                                else
+                                {
+                                    Debug.Assert(false, string.Format("No CompareTo for id {0} for x {1}", id, xo));
+                                }
                             }
                         }
                     }

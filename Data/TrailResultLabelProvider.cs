@@ -284,6 +284,10 @@ namespace TrailsPlugin.Data
                         if (row is ParentTrailResult)
                         {
                             if (row.Activity == null) return null;
+                            if(column.Id == TrailResultColumnIds.MetaData_Source)
+                            {
+                                return row.Activity.Metadata.Source;
+                            }
                             return base.GetText(row.Activity, column);
                         }
                         return null;

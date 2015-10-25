@@ -425,4 +425,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_List_SWOLF" xml:space="preserve">
     <value>SWOLF</value>
   </data>
+  <data name="Metadata_Source" xml:space="preserve">
+    <value>Import Source</value>
+  </data>
 </root>

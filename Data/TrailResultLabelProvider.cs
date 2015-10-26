@@ -155,7 +155,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.StartDistance:
                     if (row.PoolLengthInfo != null)
                     {
-                        return UnitUtil.Distance.ToString(row.StartDistance, row.PoolLengthInfo.DistanceUnits, "u");
+                        return UnitUtil.Distance.ToString(row.StartDistance, row.PoolLengthInfo.DistanceUnits, "F0u");
                     }
                     else
                     {
@@ -169,7 +169,7 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.Distance:
                     if (row.PoolLengthInfo != null)
                     {
-                        return UnitUtil.Distance.ToString(row.Distance, row.PoolLengthInfo.DistanceUnits, "u");
+                        return UnitUtil.Distance.ToString(row.Distance, row.PoolLengthInfo.DistanceUnits, "F0u");
                     }
                     else
                     {

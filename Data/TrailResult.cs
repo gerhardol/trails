@@ -2329,6 +2329,7 @@ namespace TrailsPlugin.Data
             {
                 INumericTimeDataSeries sourceTrack = null;
                 const int maxTimeDiff = 60;
+                Debug.Assert(this.EndTime > DateTime.MinValue, this.StartTime + " " + this.EndTime + " " + maxTimeDiff);
                 DateTime start2 = this.StartTime.AddSeconds(+maxTimeDiff);
                 DateTime end2 = this.EndTime.AddSeconds(-maxTimeDiff);
 

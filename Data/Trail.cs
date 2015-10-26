@@ -593,7 +593,9 @@ namespace TrailsPlugin.Data
             for (int j = 0; j < activity.Laps.Count; j++)
             {
                 ILapInfo l = activity.Laps[j];
-                if (!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest)
+                if ((!onlyActiveLaps || !l.Rest || j > 0 && !activity.Laps[j - 1].Rest) &&
+                   //All swim related have at least one PoolLength for each lap
+                   (l.PoolLengths.Count > 0))
                 {
                     TrailResultInfo r = new TrailResultInfo(activity, false);
                     r.LapInfo = l;
@@ -604,12 +606,9 @@ namespace TrailsPlugin.Data
                         r.Points.Add(new TrailResultPoint(new TrailGPSLocation(null, !l.Rest), d, p.TotalTime, p, subresultIndex));
                         subresultIndex++;
                     }
-                    if(l.PoolLengths.Count > 0)
-                    {
-                        //Need (dummy) last point
-                        IPoolLengthInfo p = l.PoolLengths[l.PoolLengths.Count - 1];
-                        r.Points.Add(new TrailResultPoint(new TrailGPSLocation(null, !l.Rest), p.StartTime+p.TotalTime, TimeSpan.Zero, p, subresultIndex));
-                    }
+                    //Need (dummy) last point
+                    IPoolLengthInfo p2 = l.PoolLengths[l.PoolLengths.Count - 1];
+                    r.Points.Add(new TrailResultPoint(new TrailGPSLocation(null, !l.Rest), p2.StartTime + p2.TotalTime, TimeSpan.Zero, p2, subresultIndex));
                 }
             }
 

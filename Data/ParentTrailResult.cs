@@ -137,6 +137,11 @@ namespace TrailsPlugin.Data
                     this.m_duration = sp;
                 }
             }
+            //If only one subresult, swimming should be added to main result (lap)
+            if (splits.Count <= 1 && this.SubResultInfo.Points.Count > 0)
+            {
+                this.m_PoolLengthInfo = this.SubResultInfo.Points[0].PoolLengthInfo;
+            }
             return splits;
         }
 

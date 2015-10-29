@@ -620,7 +620,7 @@ namespace TrailsPlugin.Data {
                             }
 
                             object xv = xf.GetValue(xo, null);
-                            object yv = xf.GetValue(yo, null);
+                            object yv = yf.GetValue(yo, null);
                             if (xv == null)
                             {
                                 //Debug.Assert(false, string.Format("No value for id {0} for x {1}", id, xo));
@@ -662,14 +662,21 @@ namespace TrailsPlugin.Data {
                                 }
                             }
                         }
+                        else if (xo == null)
+                        {
+                            result = 1;
+                        }
+                        else if (y == null)
+                        {
+                            result = -1;
+                        }
+
                     }
                 }
 
                 catch (System.Exception e)
                 {
                     Debug.Assert(false, string.Format("Exception when finding properties for id {0} for x {1}, y {2}: {3}", id, x, y, e));
-                    //Fallback sorting
-                    result = x.Order.CompareTo(y.Order);
                 }
 
                 if (result != 0)
@@ -681,6 +688,11 @@ namespace TrailsPlugin.Data {
                     break;
                 }
 
+            }
+            if (result == 0)
+            {
+                //Fallback sorting
+                result = x.Order.CompareTo(y.Order);
             }
             result *= (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
             return result;

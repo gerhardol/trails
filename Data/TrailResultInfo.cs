@@ -33,6 +33,27 @@ namespace TrailsPlugin.Data
         public bool Reverse;
         public ILapInfo LapInfo;
 
+        public IPoolLengthInfo PoolLengthInfo
+        {
+            get
+            {
+                IList<IPoolLengthInfo> res = new List<IPoolLengthInfo>();
+                for(int i = 0; i < this.Points.Count-1; i++)
+                {
+                    //a summary of all but the end point
+                    if (this.Points[i].PoolLengthInfo != null)
+                    {
+                        res.Add(this.Points[i].PoolLengthInfo);
+                    }
+                }
+                if (res.Count>0)
+                {
+                    return new PoolLengthInfo(res);
+                }
+                return null;
+            }
+        }
+
         public TrailResultInfo(IActivity activity, bool reverse)
         {
             this.Activity = activity;

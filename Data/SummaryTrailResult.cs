@@ -49,11 +49,12 @@ namespace TrailsPlugin.Data
             this.results = new List<TrailResult>();
         }
 
-        public void SetSummary(IList<TrailResult> list) 
+        public void SetSummary(IList<TrailResult> list)
         {
             this.results = list; //must not be summary...
             this.m_order = list.Count;
             this.Clear(false);
+            this.m_PoolLengthInfo = Data.PoolLengthInfo.GetPoolLength(list);
         }
 
         private delegate double FieldGetter(TrailResult tr);

@@ -162,6 +162,7 @@ namespace TrailsPlugin.Data
             m_subResultInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
             this.m_LapInfo = indexes.LapInfo;
+            this.m_PoolLengthInfo = indexes.PoolLengthInfo;
         }
 
 #endregion
@@ -544,44 +545,47 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (Settings.StartDistOffsetFromStartPoint &&
+                if (float.IsNaN(m_startDistance))
+                {
+                    if (Settings.StartDistOffsetFromStartPoint &&
                     this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 0)
-                {
-                    //Get offset from start point, regardless if there is a pause
-                    DateTime startTime = StartTime;
-                    int i = -1;
-                    for (int k = 0; k < this.TrailPointDateTime.Count; k++)
                     {
-                        if (this.TrailPointDateTime[k] > DateTime.MinValue)
+                        //Get offset from start point, regardless if there is a pause
+                        DateTime startTime = StartTime;
+                        int i = -1;
+                        for (int k = 0; k < this.TrailPointDateTime.Count; k++)
                         {
-                            //The used start time for the point, disregarding pauses
-                            startTime = TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], new ValueRangeSeries<DateTime>(), true);
-                            i = k;
-                            break;
+                            if (this.TrailPointDateTime[k] > DateTime.MinValue)
+                            {
+                                //The used start time for the point, disregarding pauses
+                                startTime = TrackUtil.getFirstUnpausedTime(this.TrailPointDateTime[k], new ValueRangeSeries<DateTime>(), true);
+                                i = k;
+                                break;
+                            }
                         }
-                    }
-                    //Alternative, get time on track
-                    //startDistance = this.ActivityDistanceMetersTrack.GetInterpolatedValue(StartDateTime).Value -
-                    //    this.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime).Value;
-                    float startDistance = -1000; //Negative to see it in list
-                    if (i >= 0 && this.m_activityTrail != null && i < this.m_subResultInfo.Count)
-                    {
-                        ITimeValueEntry<IGPSPoint> entry = this.Activity.GPSRoute.GetInterpolatedValue(StartTime);
-                        if (entry != null)
+                        //Alternative, get time on track
+                        //startDistance = this.ActivityDistanceMetersTrack.GetInterpolatedValue(StartDateTime).Value -
+                        //    this.ActivityDistanceMetersTrack.GetInterpolatedValue(startTime).Value;
+                        float startDistance = -1000; //Negative to see it in list
+                        if (i >= 0 && this.m_activityTrail != null && i < this.m_subResultInfo.Count)
                         {
-                            startDistance = this.m_subResultInfo.Points[i].DistanceMetersToPoint(entry.Value);
+                            ITimeValueEntry<IGPSPoint> entry = this.Activity.GPSRoute.GetInterpolatedValue(StartTime);
+                            if (entry != null)
+                            {
+                                startDistance = this.m_subResultInfo.Points[i].DistanceMetersToPoint(entry.Value);
+                            }
                         }
+                        m_startDistance = startDistance;
                     }
-                    return startDistance;
-                }
-                else
-                {
-                    if (float.IsNaN(m_startDistance))
+                    else
                     {
-                        getDistanceTrack();
                         if (float.IsNaN(m_startDistance))
                         {
-                            m_startDistance = 0;
+                            getDistanceTrack();
+                            if (float.IsNaN(m_startDistance))
+                            {
+                                m_startDistance = 0;
+                            }
                         }
                     }
                 }

@@ -91,7 +91,16 @@ namespace TrailsPlugin.Data
                         case TrailResultColumnIds.Distance:
                             {
                                 SummaryValue<double> a = row2.DistanceStdDev();
-                                return UnitUtil.Distance.ToString(a.Value, m_controller.ReferenceActivity, "") + " σ" + UnitUtil.Elevation.ToString(a.StdDev, m_controller.ReferenceActivity, "");
+                                string d;
+                                if (row.PoolLengthInfo != null)
+                                {
+                                    d = UnitUtil.Distance.ToString(a.Value, row.PoolLengthInfo.DistanceUnits, "F0");
+                                }
+                                else
+                                {
+                                    d = UnitUtil.Distance.ToString(a.Value, m_controller.ReferenceActivity, "");
+                                }
+                                return d + " σ" + UnitUtil.Elevation.ToString(a.StdDev, m_controller.ReferenceActivity, "");
                             }
                         case TrailResultColumnIds.AvgPace:
                             {

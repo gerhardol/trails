@@ -50,7 +50,7 @@ namespace TrailsPlugin.Data
             trail.IsSplits = true;
             trail.IsCompleteActivity = true;
             trail.TrailType = Trail.CalcType.SwimSplits;
-            trail.TrailPriority = -12;
+            trail.TrailPriority = -9;
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail

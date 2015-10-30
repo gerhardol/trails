@@ -551,6 +551,7 @@ namespace TrailsPlugin.Controller
 
         private TrailResult checkReferenceTrailResult(System.Windows.Forms.ProgressBar progressBar)
         {
+            System.Diagnostics.Debug.Assert(m_currentActivityTrails != null);
             if (m_currentActivityTrails.Count > 0)
             {
                 //Check that the ref is for current calculation
@@ -561,6 +562,7 @@ namespace TrailsPlugin.Controller
                         //Check if ref is in all results (may have changed, Contains() will not work)
                         IList<TrailResultWrapper> trs = TrailResultWrapper.SelectedItems(this.CurrentResultTreeList,
                             new List<TrailResult> { m_referenceTrailResult });
+                        System.Diagnostics.Debug.Assert(trs != null);
                         if (trs.Count > 0)
                         {
                             m_referenceTrailResult = trs[0].Result;

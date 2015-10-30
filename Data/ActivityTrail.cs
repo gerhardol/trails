@@ -91,7 +91,7 @@ namespace TrailsPlugin.Data
                 }
             }
             else if (this.m_trail.TrailType == Trail.CalcType.Splits ||
-                     this.m_trail.TrailType == Trail.CalcType.SwimSplits)
+                this.m_trail.TrailType == Trail.CalcType.SwimSplits)
             {
                 //By default, always match
                 this.m_status = TrailOrderStatus.MatchNoCalc;
@@ -368,7 +368,7 @@ namespace TrailsPlugin.Data
                 {
                     IList<TrailGPSLocation> trailgps = null;
                     IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
-                    if (m_trail.TrailType == Trail.CalcType.TrailPoints || 
+                    if (m_trail.TrailType == Trail.CalcType.TrailPoints ||
                         m_trail.TrailType == Trail.CalcType.ElevationPoints)
                     {
                         trailgps = m_trail.TrailLocations;
@@ -390,10 +390,10 @@ namespace TrailsPlugin.Data
                         }
                         else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
                         {
-                            this.Status = TrailOrderStatus.Match;
                             int subresultIndex = 1;
                             foreach (TrailResultInfo indexes in Data.Trail.TrailResultSwimInfoFromSplits(activity, false, subresultIndex))
                             {
+                                this.Status = TrailOrderStatus.Match;
                                 TrailResultWrapper result = new TrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
                                 subresultIndex += indexes.Points.Count;
@@ -460,7 +460,14 @@ namespace TrailsPlugin.Data
                 if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
                 {
                     //Downgrade status from "speculative match"
-                    m_status = TrailOrderStatus.InBound;
+                    if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
+                    {
+                        this.m_status = TrailOrderStatus.NotInBound;
+                    }
+                    else
+                    {
+                        this.m_status = TrailOrderStatus.InBound;
+                    }
                 }
             }
 
@@ -1639,20 +1646,20 @@ namespace TrailsPlugin.Data
                 name += " (" + TrailResultWrapper.Results(t.ResultTreeList).Count;
                 if (t.Trail.IsURFilter && t.FilteredResults.Count > 0)
                 {
-                    name += " ," + t.FilteredResults.Count; 
+                    name += " ," + t.FilteredResults.Count;
                 }
                 name += ")";
             }
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
                 if (t.Trail.TrailType == Trail.CalcType.Splits ||
-                    t.Trail.TrailType == Trail.CalcType.SwimSplits || 
+                    t.Trail.TrailType == Trail.CalcType.SwimSplits ||
                     t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
                     name += " (" + t.ActivityCount + ")";
                 }
             }
-            else if ((t.Status == TrailOrderStatus.InBoundMatchPartial) &&
+           else if ((t.Status == TrailOrderStatus.InBoundMatchPartial) &&
                 t.m_noResCount.ContainsKey(t.Status))
             {
                 name += " (" + t.m_noResCount[t.Status];
@@ -1662,7 +1669,7 @@ namespace TrailsPlugin.Data
                 }
                 name += ")";
             }
-                //Other results
+            //Other results
             else if (t.m_noResCount.ContainsKey(t.Status))
             {
                 name += " (" + t.m_noResCount[t.Status] + ")";

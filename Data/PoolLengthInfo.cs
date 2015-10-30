@@ -33,16 +33,9 @@ namespace TrailsPlugin.Data
             IPoolLengthInfo res = p;
             if (p.TotalDistanceMeters > 600)
             {
-                //Some units (like 920XT w fw 5.20) are imported incorrectly in ST
+                //At least 920XT w fw 5.20 is imported incorrectly in ST
                 res = new PoolLengthInfo(p);
                 uint iByte = BitConverter.ToUInt32(BitConverter.GetBytes(p.TotalDistanceMeters), 0);
-                byte[] xxx = BitConverter.GetBytes(p.TotalDistanceMeters);
-                //50 5c 34
-                // 25y 52 38
-                //25 f6 38
-                //25m 00 00 c841?
-                //byte[] xxx3 = new byte[4] { 0x44, 0x23, 0x38, 0xf6 };
-                //float xxx2 = BitConverter.ToSingle(xxx3, 0);
                 if (iByte == 0x442338f6)
                 {
                     res.TotalDistanceMeters = 25;
@@ -133,7 +126,9 @@ namespace TrailsPlugin.Data
                     }
                 }
                 if (!float.IsNaN(p.TotalDistanceMeters))
-                { this.m_TotalDistanceMeters += p.TotalDistanceMeters; }
+                {
+                    this.m_TotalDistanceMeters += p.TotalDistanceMeters;
+                }
                 this.m_TotalTime += p.TotalTime;
             }
         }

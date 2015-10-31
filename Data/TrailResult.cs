@@ -1810,7 +1810,7 @@ namespace TrailsPlugin.Data
                     }
                 }
 
-                if (insert)
+                if (insert && convert == UnitUtil.ConvertNone)
                 {
                     //Insert values around borders, to limit effects when track is chopped
                     //Do this before other additions, so start is StartTime for track
@@ -1868,7 +1868,7 @@ namespace TrailsPlugin.Data
             }
             if (etrack == null || etrack.Count == 0)
             {
-                return this.ElevationMetersTrack0(this.m_cacheTrackRef);
+                etrack = this.ElevationMetersTrack0(this.m_cacheTrackRef);
             }
             return etrack;
         }
@@ -1882,8 +1882,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_elevationMetersTrack0 == null)
             {
-                m_elevationMetersTrack0 = copySmoothTrack(this.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
-                    UnitUtil.Elevation.ConvertFromDelegate(this.m_cacheTrackRef.Activity), this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_elevationMetersTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.ElevationMetersTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_elevationMetersTrack0 = copySmoothTrack(this.ElevationMetersTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+                        UnitUtil.Elevation.ConvertFromDelegate(this.m_cacheTrackRef.Activity), this.m_cacheTrackRef);
+                }
             }
             return m_elevationMetersTrack0;
         }
@@ -1900,8 +1908,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_gradeTrack0 == null)
             {
-                m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_gradeTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.GradeTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_gradeTrack0 = copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
                         new UnitUtil.Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
+                }
 
                 if (CalculateGrade && this.Activity.CadencePerMinuteTrack == null)
                 {
@@ -1951,8 +1967,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_cadencePerMinuteTrack0 == null)
             {
-                m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_cadencePerMinuteTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.CadencePerMinuteTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_cadencePerMinuteTrack0 = copySmoothTrack(this.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
                      new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
+                }
                 if ((m_cadencePerMinuteTrack0 == null || m_cadencePerMinuteTrack0.Count == 0) && TrailsPlugin.Data.Settings.CadenceFromOther)
                 {
                     //Get device elevation from another activity in results
@@ -1977,7 +2001,7 @@ namespace TrailsPlugin.Data
                             if (this.AnyOverlap(activity) && activity.CadencePerMinuteTrack != null)
                             {
                                 m_cadencePerMinuteTrack0 = copySmoothTrack(activity.CadencePerMinuteTrack, true, TrailActivityInfoOptions.CadenceSmoothingSeconds,
-                     new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
+                                    new UnitUtil.Convert(UnitUtil.Cadence.ConvertFrom), this.m_cacheTrackRef);
                                 if (m_cadencePerMinuteTrack0 != null && m_cadencePerMinuteTrack0.Count > 1)
                                 {
                                     break;
@@ -1999,8 +2023,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_heartRatePerMinuteTrack0 == null)
             {
-                m_heartRatePerMinuteTrack0 = copySmoothTrack(this.HeartRatePerMinuteTrack, true, TrailActivityInfoOptions.HeartRateSmoothingSeconds,
-                    new UnitUtil.Convert(UnitUtil.HeartRate.ConvertFrom), this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_heartRatePerMinuteTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.HeartRatePerMinuteTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_heartRatePerMinuteTrack0 = copySmoothTrack(this.HeartRatePerMinuteTrack, true, TrailActivityInfoOptions.HeartRateSmoothingSeconds,
+                        new UnitUtil.Convert(UnitUtil.HeartRate.ConvertFrom), this.m_cacheTrackRef);
+                }
             }
             return m_heartRatePerMinuteTrack0;
         }
@@ -2014,8 +2046,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_powerWattsTrack0 == null)
             {
-                m_powerWattsTrack0 = copySmoothTrack(this.PowerWattsTrack, true, TrailActivityInfoOptions.PowerSmoothingSeconds,
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_powerWattsTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.PowerWattsTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_powerWattsTrack0 = copySmoothTrack(this.PowerWattsTrack, true, TrailActivityInfoOptions.PowerSmoothingSeconds,
                     new UnitUtil.Convert(UnitUtil.Power.ConvertFrom), this.m_cacheTrackRef);
+                }
             }
             return m_powerWattsTrack0;
         }
@@ -2029,8 +2069,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_PowerBalanceTrack0 == null)
             {
-                m_PowerBalanceTrack0 = copySmoothTrack(this.PowerBalanceTrack, true, TrailActivityInfoOptions.PowerBalanceSmoothingSeconds,
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_PowerBalanceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.PowerBalanceTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_PowerBalanceTrack0 = copySmoothTrack(this.PowerBalanceTrack, true, TrailActivityInfoOptions.PowerBalanceSmoothingSeconds,
                     UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
             }
             return m_PowerBalanceTrack0;
         }
@@ -2044,8 +2092,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_TemperatureTrack0 == null)
             {
-                m_TemperatureTrack0 = copySmoothTrack(this.TemperatureTrack, true, TrailActivityInfoOptions.TemperatureSmoothingSeconds,
-                    new UnitUtil.Convert(UnitUtil.Temperature.ConvertFrom), this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_TemperatureTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.TemperatureTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_TemperatureTrack0 = copySmoothTrack(this.TemperatureTrack, true, TrailActivityInfoOptions.TemperatureSmoothingSeconds,
+                        new UnitUtil.Convert(UnitUtil.Temperature.ConvertFrom), this.m_cacheTrackRef);
+                }
             }
             return m_TemperatureTrack0;
         }
@@ -2059,8 +2115,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_GroundContactTimeTrack0 == null)
             {
-                m_GroundContactTimeTrack0 = copySmoothTrack(this.GroundContactTimeTrack, true, TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds,
-                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_GroundContactTimeTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.GroundContactTimeTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_GroundContactTimeTrack0 = copySmoothTrack(this.GroundContactTimeTrack, true, TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
             }
             return m_GroundContactTimeTrack0;
         }
@@ -2079,8 +2143,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_VerticalOscillationTrack0 == null)
             {
-                m_VerticalOscillationTrack0 = copySmoothTrack(this.VerticalOscillationTrack, true, TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds,
-                    ConvertD10, this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_VerticalOscillationTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.VerticalOscillationTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_VerticalOscillationTrack0 = copySmoothTrack(this.VerticalOscillationTrack, true, TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds,
+                        ConvertD10, this.m_cacheTrackRef);
+                }
             }
             return m_VerticalOscillationTrack0;
         }
@@ -2094,8 +2166,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_SaturatedHemoglobinTrack0 == null)
             {
-                m_SaturatedHemoglobinTrack0 = copySmoothTrack(this.SaturatedHemoglobinTrack, true, TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds,
-                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_SaturatedHemoglobinTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SaturatedHemoglobinTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_SaturatedHemoglobinTrack0 = copySmoothTrack(this.SaturatedHemoglobinTrack, true, TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
             }
             return m_SaturatedHemoglobinTrack0;
         }
@@ -2109,8 +2189,16 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (m_TotalHemoglobinConcentrationTrack0 == null)
             {
-                m_TotalHemoglobinConcentrationTrack0 = copySmoothTrack(this.TotalHemoglobinConcentrationTrack, true, TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds,
-                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_TotalHemoglobinConcentrationTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.TotalHemoglobinConcentrationTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_TotalHemoglobinConcentrationTrack0 = copySmoothTrack(this.TotalHemoglobinConcentrationTrack, true, TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
             }
             return m_TotalHemoglobinConcentrationTrack0;
         }
@@ -2124,7 +2212,8 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
             {
-                m_speedTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                m_speedTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0,
+                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 return m_speedTrack0;
             }
             if (m_speedTrack0 == null)

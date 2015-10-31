@@ -808,7 +808,12 @@ namespace TrailsPlugin.UI.Activity {
                 TreeList l = sender as TreeList;
                 //Check if header. ColumnHeaderClicked will not fire if Click enabled
                 MouseEventArgs e2 = (MouseEventArgs)e;
-                MouseEventArgs eScroll = new MouseEventArgs(e2.Button, e2.Clicks, e2.X + l.HScrollBar.Value, e2.Y + l.VScrollBar.Value, e2.Delta);
+                int e2y = e2.Y;
+                if(e2y>l.HeaderRowHeight)
+                {
+                    e2y += l.VScrollBar.Value;
+                }
+                MouseEventArgs eScroll = new MouseEventArgs(e2.Button, e2.Clicks, e2.X + l.HScrollBar.Value, e2y, e2.Delta);
                 TreeList.Column selectedColumn = getColumn(l, eScroll);
                 if (l.HeaderRowHeight >= eScroll.Y)
                 {

@@ -783,14 +783,14 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private static TreeList.Column getColumn(TreeList l, MouseEventArgs e)
+        private static TreeList.Column getColumn(TreeList l, int eX)
         {
             int epos = 0;
             int colSelected = 0; //Select first by default
             for (int i = 0; i < l.Columns.Count; i++)
             {
                 epos += l.Columns[i].Width;
-                if (e.X < epos)
+                if (eX < epos)
                 {
                     colSelected = i;
                     break;
@@ -806,16 +806,11 @@ namespace TrailsPlugin.UI.Activity {
             if (sender is TreeList)
             {
                 TreeList l = sender as TreeList;
-                //Check if header. ColumnHeaderClicked will not fire if Click enabled
                 MouseEventArgs e2 = (MouseEventArgs)e;
-                int e2y = e2.Y;
-                if(e2y>l.HeaderRowHeight)
-                {
-                    e2y += l.VScrollBar.Value;
-                }
-                MouseEventArgs eScroll = new MouseEventArgs(e2.Button, e2.Clicks, e2.X + l.HScrollBar.Value, e2y, e2.Delta);
-                TreeList.Column selectedColumn = getColumn(l, eScroll);
-                if (l.HeaderRowHeight >= eScroll.Y)
+                int xScrolled = e2.X + l.HScrollBar.Value;
+                TreeList.Column selectedColumn = getColumn(l, xScrolled);
+                //Check if header. ColumnHeaderClicked will not fire if Click enabled
+                if (l.HeaderRowHeight >= e2.Y)
                 {
                     summaryList_ColumnHeaderMouseClick(sender, selectedColumn);
                 }
@@ -823,8 +818,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     object row;
                     TreeList.RowHitState hit;
-                    //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
-                    row = this.summaryList.RowHitTest(eScroll.Location, out hit);
+                    row = this.summaryList.RowHitTest(e2.Location, out hit);
                     if (row != null && summaryList.Columns[0] == selectedColumn)
                     {
                         //Workaround to sort first when expanding (there is no explicit event when expanding)
@@ -850,7 +844,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             //RowHitState is always Row, use position to filter out likely plus clicks
                             if (selectedColumn.Id == TrailResultColumnIds.ResultColor && hit == TreeList.RowHitState.Row &&
-                               (eScroll.X > 18 || !(tr is ParentTrailResult)))
+                               (xScrolled > 18 || !(tr is ParentTrailResult)))
                             {
                                 ColorSelectorPopup cs = new ColorSelectorPopup();
                                 cs.Width = 70;
@@ -927,16 +921,32 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (sender is TreeList)
             {
-                object row;
+                TreeList l = sender as TreeList;
+                MouseEventArgs e2 = (MouseEventArgs)e;
                 TreeList.RowHitState hit;
-                //Note: As ST scrolls before Location is recorded, incorrect row may be selected...
-                row = this.summaryList.RowHitTest(((MouseEventArgs)e).Location, out hit);
+                object row = this.summaryList.RowHitTest(e2.Location, out hit);
                 if (row != null && hit == TreeList.RowHitState.Row)
                 {
-                    Guid view = GUIDs.DailyActivityView;
                     TrailResult tr = getTrailResultRow(row);
-                    string bookmark = "id=" + tr.Activity;
-                    Plugin.GetApplication().ShowView(view, bookmark);
+                    if (tr != null)
+                    {
+                        TreeList.Column selectedColumn = getColumn(l, e2.X + l.HScrollBar.Value);
+                        if (selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest && tr.LapInfo != null)
+                        {
+                            DialogResult popRes = MessageDialog.Show(string.Format("Set to {0}?", !tr.LapInfo.Rest),
+                                  "Toggle rest on lap", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                            if (popRes == DialogResult.OK)
+                            {
+                                tr.LapInfo.Rest = !tr.LapInfo.Rest;
+                            }
+                        }
+                        else
+                        {
+                            Guid view = GUIDs.DailyActivityView;
+                            string bookmark = "id=" + tr.Activity;
+                            Plugin.GetApplication().ShowView(view, bookmark);
+                        }
+                    }
                 }
             }
         }

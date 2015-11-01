@@ -88,13 +88,18 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
-        public TrailResultInfo CopySlice(int i, int j)
+
+        //Handle the points as a child result - promote info
+        public TrailResultInfo CopyToChild(int i, int j)
         {
             TrailResultInfo result = new TrailResultInfo(this.Activity, this.Reverse);
             result.Points.Add(new TrailResultPoint(this.Points[i]));
             result.Points.Add(new TrailResultPoint(this.Points[j]));
+            //Point 0 lap data applies to this result (PoolLengthInfo is extracted from point 0)
+            result.LapInfo = this.Points[i].LapInfo;
             return result;
         }
+
         public IList<DateTime> CopyTime()
         {
             IList<DateTime> result = new List<DateTime>();

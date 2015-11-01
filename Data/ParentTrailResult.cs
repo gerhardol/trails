@@ -106,9 +106,9 @@ namespace TrailsPlugin.Data
                         {
                             if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
-                                TrailResultInfo t = m_subResultInfo.CopySlice(i, j);
+                                TrailResultInfo t = m_subResultInfo.CopyToChild(i, j);
                                 int subresultIndex = i + 1;
-                                if (m_subResultInfo.Points[i].Order>=0)
+                                if (m_subResultInfo.Points[i].Order >= 0)
                                 {
                                     subresultIndex = m_subResultInfo.Points[i].Order;
                                 }
@@ -137,7 +137,7 @@ namespace TrailsPlugin.Data
                     this.m_duration = sp;
                 }
             }
-            //If only one subresult, swimming should be added to main result (lap)
+            //Only one subresult is not shown, add pool length to main result
             if (splits.Count <= 1 && this.SubResultInfo.Points.Count > 0)
             {
                 this.m_PoolLengthInfo = this.SubResultInfo.Points[0].PoolLengthInfo;

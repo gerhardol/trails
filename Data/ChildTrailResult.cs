@@ -79,14 +79,10 @@ namespace TrailsPlugin.Data
             this.m_parentResult = par;
             if (indexes.Count == 2)
             {
+                //Always overwrite the (possibly) calculated data
                 this.m_duration = indexes.Points[0].Duration;
             }
             this.PartOfParent = part;
-            this.m_LapInfo = indexes.LapInfo;
-            if(indexes.Points != null && indexes.Points.Count>0)
-            {
-                this.m_PoolLengthInfo = indexes.Points[0].PoolLengthInfo;
-            }
         }
     }
 }

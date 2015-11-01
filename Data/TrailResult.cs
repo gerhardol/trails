@@ -351,11 +351,11 @@ namespace TrailsPlugin.Data
             {
                 if (m_duration == null)
                 {
-                    if (this.PoolLengthInfo != null)
+                    if (this.PoolLengthInfo != null && this.PoolLengthInfo.TotalTime > TimeSpan.Zero)
                     {
                         m_duration = this.PoolLengthInfo.TotalTime;
                     }
-                    else if (this.LapInfo != null)
+                    else if (this.LapInfo != null && this.LapInfo.TotalTime > TimeSpan.Zero)
                     {
                         m_duration = this.LapInfo.TotalTime;
                     }
@@ -378,11 +378,11 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (this.PoolLengthInfo != null)
+                if (this.PoolLengthInfo != null && !float.IsNaN(this.PoolLengthInfo.TotalDistanceMeters))
                 {
                     return this.PoolLengthInfo.TotalDistanceMeters;
                 }
-                else if (this.LapInfo != null)
+                else if (this.LapInfo != null && !float.IsNaN(this.LapInfo.TotalDistanceMeters))
                 {
                     return this.LapInfo.TotalDistanceMeters;
                 }
@@ -429,11 +429,11 @@ namespace TrailsPlugin.Data
             {
                 if (m_startTime == null)
                 {
-                    if (this.PoolLengthInfo != null)
+                    if (this.PoolLengthInfo != null && this.PoolLengthInfo.StartTime > DateTime.MinValue)
                     {
                         m_startTime = this.PoolLengthInfo.StartTime;
                     }
-                    else if (this.LapInfo != null)
+                    else if (this.LapInfo != null && this.LapInfo.StartTime > DateTime.MinValue)
                     {
                         m_startTime = this.LapInfo.StartTime;
                     }
@@ -1602,7 +1602,7 @@ namespace TrailsPlugin.Data
             {
                 if (this.m_idealTime == null)
                 {
-                    if (TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+                    if (TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled && !double.IsNaN(this.Distance))
                     {
                         IList<TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorResult> t =
                             TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorFields(

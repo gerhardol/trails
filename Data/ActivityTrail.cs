@@ -90,11 +90,15 @@ namespace TrailsPlugin.Data
                     this.m_status = TrailOrderStatus.NotInstalled;
                 }
             }
-            else if (this.m_trail.TrailType == Trail.CalcType.Splits ||
-                this.m_trail.TrailType == Trail.CalcType.SwimSplits)
+            else if (this.m_trail.TrailType == Trail.CalcType.Splits)
             {
                 //By default, always match
                 this.m_status = TrailOrderStatus.MatchNoCalc;
+            }
+            else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
+            {
+                //A possible match
+                this.m_status = TrailOrderStatus.InBoundNoCalc;
             }
             else if (this.m_trail.TrailType == Trail.CalcType.ElevationPoints)
             {

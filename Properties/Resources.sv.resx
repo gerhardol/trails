@@ -275,4 +275,28 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="List_RestLap" xml:space="preserve">
     <value>Vilovarv</value>
   </data>
+  <data name="UI_Activity_List_AverageStrokeDistance" xml:space="preserve">
+    <value>Medel distans per armtag</value>
+  </data>
+  <data name="UI_Activity_List_AverageStrokeRate" xml:space="preserve">
+    <value>Medel frekvens för armtag</value>
+  </data>
+  <data name="UI_Activity_List_Efficiency" xml:space="preserve">
+    <value>Effektivitet</value>
+  </data>
+  <data name="UI_Activity_List_LengthCount" xml:space="preserve">
+    <value>Antal längder</value>
+  </data>
+  <data name="UI_Activity_List_StrokeCount" xml:space="preserve">
+    <value>Antal armtag</value>
+  </data>
+  <data name="UI_Activity_List_StrokeType" xml:space="preserve">
+    <value>Typ av armtag</value>
+  </data>
+  <data name="UI_Activity_List_SwimLap" xml:space="preserve">
+    <value>Simmning - Etapper</value>
+  </data>
+  <data name="Metadata_Source" xml:space="preserve">
+    <value>Importkälla</value>
+  </data>
 </root>

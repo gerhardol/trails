@@ -90,7 +90,8 @@ namespace TrailsPlugin.Data
                     this.m_status = TrailOrderStatus.NotInstalled;
                 }
             }
-            else if (this.m_trail.TrailType == Trail.CalcType.Splits)
+            else if (this.m_trail.TrailType == Trail.CalcType.Splits ||
+                this.m_trail.TrailType == Trail.CalcType.SplitsTime)
             {
                 //By default, always match
                 this.m_status = TrailOrderStatus.MatchNoCalc;
@@ -366,6 +367,22 @@ namespace TrailsPlugin.Data
                     catch (Exception ex)
                     {
                         MessageDialog.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else if (this.m_trail.TrailType == Trail.CalcType.SplitsTime)
+                {
+                    this.Status = TrailOrderStatus.Match;
+                    TrailResultWrapper refRes = new TrailResultWrapper(this, this.m_controller.ReferenceActivity, m_resultsListWrapper.Count + 1);
+                    m_resultsListWrapper.Add(refRes);
+                    refRes.getSplits();
+                    foreach (IActivity activity in activities)
+                    {
+                        if (activity != this.m_controller.ReferenceActivity)
+                        {
+                            TrailResultWrapper result = new TrailResultWrapper(this, activity, refRes.Result.SubResultInfo,  m_resultsListWrapper.Count + 1);
+                            m_resultsListWrapper.Add(result);
+                            result.getSplits();
+                        }
                     }
                 }
                 else
@@ -1657,7 +1674,7 @@ namespace TrailsPlugin.Data
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
                 if (t.Trail.TrailType == Trail.CalcType.Splits ||
-                    t.Trail.TrailType == Trail.CalcType.SwimSplits ||
+                    t.Trail.TrailType == Trail.CalcType.SplitsTime ||
                     t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
                     name += " (" + t.ActivityCount + ")";

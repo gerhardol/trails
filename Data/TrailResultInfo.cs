@@ -109,6 +109,20 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
+
+        public TrailResultInfo CopyFromReference(IActivity activity)
+        {
+            TrailResultInfo result = new TrailResultInfo(activity, this.Reverse);
+            foreach (TrailResultPoint p in Points)
+            {
+                TrailResultPoint p2 = new TrailResultPoint(p);
+                p2.LapInfo = null;
+                p2.PoolLengthInfo = null;
+                result.Points.Add(p2);
+            }
+            return result;
+        }
+
         public string Name
         {
             get

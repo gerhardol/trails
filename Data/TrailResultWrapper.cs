@@ -55,6 +55,13 @@ namespace TrailsPlugin.Data
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
         }
 
+        public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, TrailResultInfo tri, int order)
+            : base(null, null)
+        {
+            TrailResultInfo indexes = tri.CopyFromReference(activity);
+            base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
+        }
+
         public TrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
             : base(null, null)
         {

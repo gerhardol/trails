@@ -75,6 +75,7 @@ namespace TrailsPlugin.Data
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
+        public static bool UseDeviceDistances = false; //Not in xml
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings

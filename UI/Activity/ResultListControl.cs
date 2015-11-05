@@ -1568,10 +1568,15 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.D)
             {
-                if (this.m_controller.PrimaryCurrentActivityTrail != null &&
+                if (e.Modifiers == Keys.Control)
+                {
+                    TrailsPlugin.Data.Settings.UseDeviceDistances = !TrailsPlugin.Data.Settings.UseDeviceDistances;
+                    this.m_page.RefreshData(true);
+                }
+                else if (this.m_controller.PrimaryCurrentActivityTrail != null &&
                     !this.m_controller.PrimaryCurrentActivityTrail.Trail.Generated)
                 {
-                    if (e.Modifiers == Keys.Shift)
+                    if(e.Modifiers == Keys.Shift)
                     {
                         this.m_controller.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = null;
                         this.m_page.RefreshData(true);

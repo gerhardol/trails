@@ -33,7 +33,7 @@ namespace TrailsPlugin.Data
             IPoolLengthInfo res = p;
             if (p.TotalDistanceMeters > 600)
             {
-                //At least 920XT w fw 5.20 is imported incorrectly in ST
+                //At least 920XT w fw 5.20/6.10 is imported incorrectly in ST
                 res = new PoolLengthInfo(p);
                 uint iByte = BitConverter.ToUInt32(BitConverter.GetBytes(p.TotalDistanceMeters), 0);
                 if (iByte == 0x442338f6)

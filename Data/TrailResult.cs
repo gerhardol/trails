@@ -977,9 +977,19 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
+                    IDistanceDataTrack source;
+                    if (TrailsPlugin.Data.Settings.UseDeviceDistances && this.Activity != null && 
+                        this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 1)
+                    {
+                        //Special handling, same calc as device
+                        source = this.Activity.DistanceMetersTrack;
+                    }
+                    else
+                    {
+                        source = Info.MovingDistanceMetersTrack;
+                    }
                     //Make a copy, as we insert values
-                    IDistanceDataTrack source = Info.MovingDistanceMetersTrack;
-                    m_activityDistanceMetersTrack = new DistanceDataTrack(Info.MovingDistanceMetersTrack);
+                    m_activityDistanceMetersTrack = new DistanceDataTrack(source);
                     m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
 
                     //There are occasional 0 or decreasing distance values, that disrupt insertion
@@ -990,7 +1000,7 @@ namespace TrailsPlugin.Data
                             ITimeValueEntry<float> t = source[i];
                             if (i == 0 || t.Value < source[i - 1].Value)
                             {
-                                DateTime d = Info.MovingDistanceMetersTrack.EntryDateTime(t);
+                                DateTime d = source.EntryDateTime(t);
                                 m_activityDistanceMetersTrack.Add(d, t.Value);
                             }
                         }
@@ -2361,9 +2371,18 @@ namespace TrailsPlugin.Data
                 m_deviceSpeedPaceTrack0 = new TrackUtil.NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
-                    TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(this.Activity.DistanceMetersTrack));
+                    IDistanceDataTrack source;
+                    if (!TrailsPlugin.Data.Settings.UseDeviceDistances)
+                    {
+                        source = this.Activity.DistanceMetersTrack;
+                    }
+                    else
+                    {
+                        //The device distance is the "normal" show calculated instead
+                        source = Info.MovingDistanceMetersTrack;
+                    }
+                    TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(source));
                     ITimeValueEntry<float> prev = null;
-                    IDistanceDataTrack source = this.Activity.DistanceMetersTrack;
                     //Similar to CopySmoothTrack, but this is a IDistanceDataTrack
 
                     foreach (ITimeValueEntry<float> t in source)
@@ -2795,12 +2814,22 @@ namespace TrailsPlugin.Data
                 m_deviceDiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
+                    IDistanceDataTrack source;
+                    if (!TrailsPlugin.Data.Settings.UseDeviceDistances)
+                    {
+                        source = this.Activity.DistanceMetersTrack;
+                    }
+                    else
+                    {
+                        //The device distance is the "normal" show calculated instead
+                        source = Info.MovingDistanceMetersTrack;
+                    }
                     float? start2 = null;
                     UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
                     foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                     {
                         DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
-                        ITimeValueEntry<float> t2 = this.Activity.DistanceMetersTrack.GetInterpolatedValue(dateTime);
+                        ITimeValueEntry<float> t2 = source.GetInterpolatedValue(dateTime);
                         if (t2 != null &&
                                 !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                         {
@@ -2809,6 +2838,10 @@ namespace TrailsPlugin.Data
                                 start2 = t2.Value;
                             }
                             float val = (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
+                            if (!TrailsPlugin.Data.Settings.UseDeviceDistances)
+                            {
+                                val *= -1;
+                            }
                             m_deviceDiffDistTrack0.Add(dateTime, val);
                         }
                         else

@@ -8,15 +8,16 @@ This page describes the changes between plugin releases. The change log may cont
     The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
-  * Swim Splits trail
+  * Swim Splits trail - analyze swim activities
   * Updated Spanish translation.
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
   * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.
-  * Show Lap fields for Split trails.
+  * Show Lap fields for 'Splits' trail. Time and Distance are fetched from Lap data.
   * Add support for column "Max (Avg) Grade".
+  * Result list shortcut Ctrl-D: Use device distance calculations for distance and pace/speed if existing.
   * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
-  * Set Garmin fenix, 920xt, 910xt barometric devices by default.
-  * Viewer for UniqueRoutes was occasionally not showing time and date.
+  * Set Garmin fenix, 920xt, 910xt as barometric devices by default.
+  * Viewer for UniqueRoutes was not always showing time and date.
 
 
 1.2.971 2015-01-30 (Plugin Catalog)

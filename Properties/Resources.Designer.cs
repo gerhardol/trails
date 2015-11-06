@@ -611,7 +611,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Swim - Laps.
+        ///   Looks up a localized string similar to Swim - Pool.
         /// </summary>
         internal static string UI_Activity_List_SwimLap {
             get {

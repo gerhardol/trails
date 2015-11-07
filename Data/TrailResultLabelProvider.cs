@@ -74,7 +74,7 @@ namespace TrailsPlugin.Data
             if (TrailsPlugin.Data.Settings.ResultSummaryStdDev && row is SummaryTrailResult)
             {
                 SummaryTrailResult row2 = row as SummaryTrailResult;
-                if (row2.Results.Count > 1)
+                if (!row2.IsTotal && row2.Results.Count > 1)
                 {
                     switch (column.Id)
                     {

@@ -48,7 +48,8 @@ namespace TrailsPlugin.UI.Activity {
         ActivityDetailPageControl m_page;
         private ITheme m_visualTheme;
         private Controller.TrailController m_controller;
-        private TrailResultWrapper m_summary;
+        private TrailResultWrapper m_summaryTotal;
+        private TrailResultWrapper m_summaryAverage;
         private TrailResult m_lastSelectedTrailResult = null;
 
 #if !ST_2_1
@@ -58,7 +59,8 @@ namespace TrailsPlugin.UI.Activity {
         public ResultListControl()
         {
             InitializeComponent();
-            this.m_summary = new TrailResultWrapper();
+            this.m_summaryTotal = new TrailResultWrapper(true);
+            this.m_summaryAverage = new TrailResultWrapper(false);
         }
 #if ST_2_1
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
@@ -124,7 +126,9 @@ namespace TrailsPlugin.UI.Activity {
             this.addTopCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddCurrentCategory;
             this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
-            this.summaryRowShowAverageMenuItem.Text = Properties.Resources.UI_Activity_List_SummaryRowShowAverage;
+            this.ResultSummaryStdDevMenuItem.Text = Properties.Resources.UI_Activity_List_ResultSummaryStdDev;
+            this.showSummaryTotalMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryTotal;
+            this.showSummaryAverageMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryAverage;
             this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
             this.RefreshColumns();
         }
@@ -216,7 +220,9 @@ namespace TrailsPlugin.UI.Activity {
             addCurrentCategoryMenuItem.Checked = Data.Settings.AddCurrentCategory;
             this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
-            this.summaryRowShowAverageMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
+            this.ResultSummaryStdDevMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
+            this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
+            this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
             this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
         }
 
@@ -476,7 +482,17 @@ namespace TrailsPlugin.UI.Activity {
 
                 if (atr.Count > 0)
                 {
-                    atr.Insert(0, this.GetSummary());
+                    TrailResultWrapper t;
+                    t = this.GetSummaryAverage();
+                    if (t != null)
+                    {
+                        atr.Insert(0, t);
+                    }
+                    t = this.GetSummaryTotal();
+                    if (t != null)
+                    {
+                        atr.Insert(0, t);
+                    }
                 }
 #if ST_2_1
                 this.summaryList.SelectedChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
@@ -539,13 +555,48 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            m_summary.SetSummary(selected2);
+            if (Data.Settings.ShowSummaryTotal)
+            {
+                m_summaryTotal.SetSummary(selected2);
+            }
+            if (Data.Settings.ShowSummaryAverage)
+            {
+                m_summaryAverage.SetSummary(selected2);
+            }
             //TODO: Splits
         }
 
-        public TrailResultWrapper GetSummary()
+        private void RefreshSummary()
         {
-            return m_summary;
+            TrailResultWrapper t;
+            t = this.GetSummaryTotal();
+            if (t != null)
+            {
+                this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
+            }
+            t = this.GetSummaryAverage();
+            if (t != null)
+            {
+                this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
+            }
+        }
+
+        public TrailResultWrapper GetSummaryTotal()
+        {
+            if (Data.Settings.ShowSummaryTotal)
+            {
+                return m_summaryTotal;
+            }
+            return null;
+        }
+
+        public TrailResultWrapper GetSummaryAverage()
+        {
+            if (Data.Settings.ShowSummaryAverage)
+            {
+                return m_summaryAverage;
+            }
+            return null;
         }
 
         bool selectSimilarSplits()
@@ -1025,11 +1076,7 @@ namespace TrailsPlugin.UI.Activity {
             if (this.m_controller.CurrentActivityTrailIsSelected)
             {
                 this.SetSummary(this.SelectedResultWrapper);
-                TrailResultWrapper t = this.GetSummary();
-                if (t != null)
-                {
-                    this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
-                }
+                RefreshSummary();
             }
             if (isChange)
             {
@@ -1309,7 +1356,16 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (tr == null && m_controller.CurrentActivityTrailIsSelected)
             {
-                tr = this.GetSummary().Result;
+                TrailResultWrapper trw;
+                trw = this.GetSummaryTotal();
+                if (trw == null)
+                {
+                    trw = this.GetSummaryAverage();
+                }
+                if (trw != null)
+                {
+                    tr = trw.Result;
+                }
             }
 
             return tr;
@@ -1321,7 +1377,20 @@ namespace TrailsPlugin.UI.Activity {
             IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
             if (atr == null || atr.Count == 0)
             {
-                atr = new List<TrailResultWrapper> { this.GetSummary() };
+                TrailResultWrapper tr;
+                tr = this.GetSummaryTotal();
+                if (tr == null)
+                {
+                    tr = this.GetSummaryAverage();
+                }
+                if (tr == null)
+                {
+                    atr = new List<TrailResultWrapper>();
+                }
+                else
+                {
+                    atr = new List<TrailResultWrapper> { this.GetSummaryAverage() };
+                }
             }
 
             foreach (TrailResultWrapper t in atr)
@@ -1356,7 +1425,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         foreach (TrailResult t in ((SummaryTrailResult)tr).Results)
                         {
-                            //Only add one activity, PP only uses that
+                            //Only add one activity, HS only uses that
                             if (activities.Count == 0)
                             {
                                 activities.Add(t.Activity);
@@ -1836,12 +1905,9 @@ namespace TrailsPlugin.UI.Activity {
                 //}
                 else
                 {
+                    //Depreciated since adding both average/total
                     TrailsPlugin.Data.Settings.ResultSummaryTotal = !TrailsPlugin.Data.Settings.ResultSummaryTotal;
-                    TrailResultWrapper t = this.GetSummary();
-                    if (t != null)
-                    {
-                        this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
-                    }
+                    RefreshSummary();
                 }
             }
             else if (e.KeyCode == Keys.U)
@@ -2153,15 +2219,27 @@ namespace TrailsPlugin.UI.Activity {
             m_page.RefreshData(true);
         }
 
-        void summaryRowShowAverageMenuItem_Click(object sender, System.EventArgs e)
+        void ResultSummaryStdDevMenuItem_Click(object sender, System.EventArgs e)
         {
-            Data.Settings.ResultSummaryTotal = !Data.Settings.ResultSummaryTotal;
+            Data.Settings.ResultSummaryStdDev = !Data.Settings.ResultSummaryStdDev;
             this.RefreshControlState();
-            TrailResultWrapper t = this.GetSummary();
-            if (t != null)
-            {
-                this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
-            }
+            RefreshSummary();
+        }
+
+        void showSummaryTotalMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowSummaryTotal = !Data.Settings.ShowSummaryTotal;
+            this.RefreshControlState();
+            RefreshSummary();
+            m_page.RefreshData(false);
+        }
+
+        void showSummaryAverageMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowSummaryAverage = !Data.Settings.ShowSummaryAverage;
+            this.RefreshControlState();
+            RefreshSummary();
+            m_page.RefreshData(false);
         }
 
         void showOnlyMarkedResultsOnMapMenuItem_Click(object sender, System.EventArgs e)

@@ -593,6 +593,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Summary Average Standard Deviation.
+        /// </summary>
+        internal static string UI_Activity_List_ResultSummaryStdDev {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ResultSummaryStdDev", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set Rest Laps As Pauses.
         /// </summary>
         internal static string UI_Activity_List_SetRestLapsAsPauses {
@@ -620,6 +629,24 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Summary Average.
+        /// </summary>
+        internal static string UI_Activity_List_ShowSummaryAverage {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ShowSummaryAverage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary Total.
+        /// </summary>
+        internal static string UI_Activity_List_ShowSummaryTotal {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ShowSummaryTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mark other sub Trails or splits in list.
         /// </summary>
         internal static string UI_Activity_List_Splits {
@@ -643,15 +670,6 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_List_StrokeType {
             get {
                 return ResourceManager.GetString("UI_Activity_List_StrokeType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Summary Row Show Average.
-        /// </summary>
-        internal static string UI_Activity_List_SummaryRowShowAverage {
-            get {
-                return ResourceManager.GetString("UI_Activity_List_SummaryRowShowAverage", resourceCulture);
             }
         }
         

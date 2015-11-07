@@ -9,6 +9,7 @@ This page describes the changes between plugin releases. The change log may cont
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
   * Swim Splits trail - analyze swim activities
+  * Added trail 'Splits - ReferenceResults - Time', a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Updated Spanish translation.
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
   * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.
@@ -18,12 +19,13 @@ This page describes the changes between plugin releases. The change log may cont
   * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default.
   * Viewer for UniqueRoutes was not always showing time and date.
-  * Add GUI settings for some keyboard shortcuts:
+  * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
+  * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
     * AddTopCategory
     * UseDeviceDistance
     * SetRestLapsAsPauses
-    * SummaryRowShowAverage
     * ShowOnlyMarkedResultsOnMap
+	* Summary Average Standard Deviation
 
 
 1.2.971 2015-01-30 (Plugin Catalog)

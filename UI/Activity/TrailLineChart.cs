@@ -880,6 +880,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (tr is SummaryTrailResult)
                     {
+                        if (summaryResult!= null)
+                        {
+                            //total or average already selected, use one of them (could ignore total)
+                            continue;
+                        }
                         summaryResult = (tr as SummaryTrailResult);
                         if (m_trailResults.Count == 2)
                         {
@@ -1018,6 +1023,7 @@ namespace TrailsPlugin.UI.Activity {
                         if (tr is SummaryTrailResult)
                         {
                             //The data is calculated from the normal results
+                            //If both total and average selected, only one of them is used
                             summaryDataLine = dataLine;
                             if (m_trailResults.Count > 1)
                             {

@@ -109,11 +109,10 @@ namespace TrailsPlugin.Data
         }
 
         //Summary line
-        public TrailResultWrapper()
+        public TrailResultWrapper(bool isTotal)
             : base(null, null)
         {
-            m_isSummary = true;
-            base.Element = new SummaryTrailResult();
+            base.Element = new SummaryTrailResult(isTotal);
         }
 
         public void SetSummary(IList<TrailResultWrapper> rows)
@@ -135,7 +134,15 @@ namespace TrailsPlugin.Data
 
         public bool IsSummary
         {
-            get { return m_isSummary; }
+            get
+            {
+                bool res = false;
+                if(this.Element is SummaryTrailResult)
+                {
+                    res = true;
+                }
+                return res;
+            }
         }
 
         public void Sort()
@@ -307,7 +314,6 @@ namespace TrailsPlugin.Data
         }
 
         private IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
-        private bool m_isSummary = false;
 
         #region IComparable<Product> Members
         public int CompareTo(object obj)

@@ -440,10 +440,16 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_List_ShowSplitPointsOnMap1" xml:space="preserve">
     <value>Show Split Points On Map</value>
   </data>
-  <data name="UI_Activity_List_SummaryRowShowAverage" xml:space="preserve">
-    <value>Summary Row Show Average</value>
+  <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">
+    <value>Summary Average Standard Deviation</value>
   </data>
   <data name="UI_Activity_List_UseDeviceDistance" xml:space="preserve">
     <value>Use Device Distance</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryAverage" xml:space="preserve">
+    <value>Summary Average</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryTotal" xml:space="preserve">
+    <value>Summary Total</value>
   </data>
 </root>

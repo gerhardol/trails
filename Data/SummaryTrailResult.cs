@@ -43,9 +43,15 @@ namespace TrailsPlugin.Data
 
     public class SummaryTrailResult : TrailResult
     {
-        public SummaryTrailResult() :
+        private bool m_isTotal;
+        public bool IsTotal
+        {
+            get { return m_isTotal; }
+        }
+        public SummaryTrailResult(bool isTotal) :
             base()
         {
+            m_isTotal = isTotal;
             this.results = new List<TrailResult>();
         }
 
@@ -97,7 +103,7 @@ namespace TrailsPlugin.Data
                 }
             }
 
-            if (!total || !Settings.ResultSummaryTotal)
+            if (!total || (!m_isTotal && !Settings.ResultSummaryTotal))
             {
                 tot = tot / NoOfResults(skip);
             }
@@ -118,7 +124,7 @@ namespace TrailsPlugin.Data
             get
             {
                 //Get average time of day
-                double totSec = this.GetSummaryValue(delegate(TrailResult tr) { return tr.StartTimeOfDay.TotalSeconds; }, true, false);
+                double totSec = this.GetSummaryValue(delegate (TrailResult tr) { return tr.StartTimeOfDay.TotalSeconds; }, true, false);
                 return DateTime.Today + TimeSpan.FromSeconds(totSec);
             }
         }
@@ -127,7 +133,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return this.GetSummaryValue(delegate(TrailResult tr) { return tr.StartDistance; }, false, false);
+                return this.GetSummaryValue(delegate (TrailResult tr) { return tr.StartDistance; }, false, false);
             }
         }
 
@@ -146,7 +152,7 @@ namespace TrailsPlugin.Data
 
         private SummaryValue<TimeSpan> DurationStdDev(bool getStdDev)
         {
-            SummaryValue<double> a = this.GetSummary(delegate(TrailResult tr) { return tr.Duration.TotalSeconds; }, false, true, getStdDev);
+            SummaryValue<double> a = this.GetSummary(delegate (TrailResult tr) { return tr.Duration.TotalSeconds; }, false, true, getStdDev);
             TimeSpan stdDev = TimeSpan.Zero;
             if (getStdDev)
             {
@@ -159,7 +165,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return TimeSpan.FromSeconds(this.GetSummaryValue(delegate(TrailResult tr) { return tr.GradeRunAdjustedTime.TotalSeconds; }, false, true));
+                return TimeSpan.FromSeconds(this.GetSummaryValue(delegate (TrailResult tr) { return tr.GradeRunAdjustedTime.TotalSeconds; }, false, true));
             }
         }
 
@@ -167,7 +173,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)(Distance/GradeRunAdjustedTime.TotalSeconds);
+                return (float)(Distance / GradeRunAdjustedTime.TotalSeconds);
             }
         }
 
@@ -186,13 +192,13 @@ namespace TrailsPlugin.Data
 
         private SummaryValue<double> DistanceStdDev(bool getStdDev)
         {
-            return this.GetSummary(delegate(TrailResult tr) { return tr.Distance; }, false, true, getStdDev);
+            return this.GetSummary(delegate (TrailResult tr) { return tr.Distance; }, false, true, getStdDev);
         }
 
         //No override for some methods
         public SummaryValue<double> AvgPaceStdDev()
         {
-            SummaryValue<double> a = this.GetSummary(delegate(TrailResult tr) { return 1 / tr.AvgSpeed; }, false, false);
+            SummaryValue<double> a = this.GetSummary(delegate (TrailResult tr) { return 1 / tr.AvgSpeed; }, false, false);
             a.StdDev = 1 / a.StdDev; //Convert back
             a.Value = this.AvgSpeed; //Return average, not "median"
             return a;
@@ -200,7 +206,7 @@ namespace TrailsPlugin.Data
 
         public SummaryValue<double> AvgSpeedStdDev()
         {
-            SummaryValue<double> a = this.GetSummary(delegate(TrailResult tr) { return tr.AvgSpeed; }, false, false);
+            SummaryValue<double> a = this.GetSummary(delegate (TrailResult tr) { return tr.AvgSpeed; }, false, false);
             a.Value = this.AvgSpeed; //Return average, not "median"
             return a;
         }
@@ -228,7 +234,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.AvgCadence; }, true, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.AvgCadence; }, true, false);
             }
         }
 
@@ -236,7 +242,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.AvgHR; }, true, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.AvgHR; }, true, false);
             }
         }
 
@@ -244,7 +250,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.MaxHR; }, true, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.MaxHR; }, true, false);
             }
         }
 
@@ -252,7 +258,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return this.GetSummaryValue(delegate(TrailResult tr) { return tr.Ascent; }, false, true);
+                return this.GetSummaryValue(delegate (TrailResult tr) { return tr.Ascent; }, false, true);
             }
         }
 
@@ -260,7 +266,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return this.GetSummaryValue(delegate(TrailResult tr) { return tr.Descent; }, false, true);
+                return this.GetSummaryValue(delegate (TrailResult tr) { return tr.Descent; }, false, true);
             }
         }
 
@@ -268,7 +274,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.ElevChg; }, false, true);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.ElevChg; }, false, true);
             }
         }
 
@@ -276,7 +282,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.AvgPower; }, true, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.AvgPower; }, true, false);
             }
         }
 
@@ -284,7 +290,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.AscAvgGrade; }, false, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.AscAvgGrade; }, false, false);
             }
         }
 
@@ -300,7 +306,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.DescAvgGrade; }, false, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.DescAvgGrade; }, false, false);
             }
         }
 
@@ -308,7 +314,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return this.GetSummaryValue(delegate(TrailResult tr) { return tr.FastestPace; }, false, false);
+                return this.GetSummaryValue(delegate (TrailResult tr) { return tr.FastestPace; }, false, false);
             }
         }
 
@@ -316,7 +322,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.FastestSpeed; }, false, false);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.FastestSpeed; }, false, false);
             }
         }
 
@@ -324,7 +330,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return (float)this.GetSummaryValue(delegate(TrailResult tr) { return tr.Diff; }, false, true);
+                return (float)this.GetSummaryValue(delegate (TrailResult tr) { return tr.Diff; }, false, true);
             }
         }
 
@@ -374,7 +380,7 @@ namespace TrailsPlugin.Data
 
         public override string ToString()
         {
-            return "Summary:" + this.results.Count;
+            return string.Format("Summary({0}: {1}", this.m_isTotal, this.results.Count);
         }
     }
 }

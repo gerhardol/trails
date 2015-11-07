@@ -46,7 +46,11 @@ namespace TrailsPlugin.Data
                 TrailResultWrapper wrapper = (element as TrailResultWrapper);
                 if (wrapper.IsSummary)
                 {
-                    return System.Drawing.FontStyle.Bold;
+                    if ((wrapper.Element as SummaryTrailResult).IsTotal)
+                    {
+                        return System.Drawing.FontStyle.Bold;
+                    }
+                    return System.Drawing.FontStyle.Bold| System.Drawing.FontStyle.Italic;
                 }
                 else
                 {
@@ -55,7 +59,6 @@ namespace TrailsPlugin.Data
                     {
                         return System.Drawing.FontStyle.Italic;
                     }
-                     
                 }
             }
             return base.GetCellFontStyle(element, column);

@@ -77,6 +77,8 @@ namespace TrailsPlugin.Data
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
         public static bool UseDeviceDistance = false;
+        public static bool ShowSummaryTotal = true;
+        public static bool ShowSummaryAverage = true;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -721,6 +723,10 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { UseDeviceElevationForCalc = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sUseDeviceDistance);
                 if (attr.Length > 0) { UseDeviceDistance = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sShowSummaryTotal);
+                if (attr.Length > 0) { ShowSummaryTotal = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sShowSummaryAverage);
+                if (attr.Length > 0) { ShowSummaryAverage = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sUseTrailElevationAdjust);
                 if (attr.Length > 0) { UseTrailElevationAdjust = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sRunningGradeAdjustMethod);
@@ -904,6 +910,8 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_deviceElevationFromOther));
             pluginNode.SetAttribute(xmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_useDeviceElevationForCalc));
             pluginNode.SetAttribute(xmlTags.sUseDeviceDistance, XmlConvert.ToString(UseDeviceDistance));
+            pluginNode.SetAttribute(xmlTags.sShowSummaryTotal, XmlConvert.ToString(ShowSummaryTotal));
+            pluginNode.SetAttribute(xmlTags.sShowSummaryAverage, XmlConvert.ToString(ShowSummaryAverage));
             pluginNode.SetAttribute(xmlTags.sUseTrailElevationAdjust, XmlConvert.ToString(m_useTrailElevationAdjust));
             pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
             pluginNode.SetAttribute(xmlTags.sMervynDaviesUp, XmlConvert.ToString(m_MervynDaviesUp));
@@ -1003,6 +1011,8 @@ namespace TrailsPlugin.Data
             public const string sDeviceElevationFromOther = "sDeviceElevationFromOther";
             public const string sUseDeviceElevationForCalc = "sUseDeviceElevationForCalc";
             public const string sUseDeviceDistance = "sUseDeviceDistance";
+            public const string sShowSummaryTotal = "sShowSummaryTotal";
+            public const string sShowSummaryAverage = "sShowSummaryAverage";
             public const string sUseTrailElevationAdjust = "sUseTrailElevationAdjust";
             public const string sSaveChartImagePath = "sSaveChartImagePath";
 

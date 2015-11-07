@@ -47,7 +47,9 @@
             this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.summaryRowShowAverageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ResultSummaryStdDevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showSummaryTotalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showSummaryAverageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showOnlyMarkedResultsOnMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
@@ -122,6 +124,12 @@
             this.listSettingsMenuItem,
             this.selectSimilarSplitsMenuItem,
             this.referenceResultMenuItem,
+            this.showSummaryTotalMenuItem,
+            this.showSummaryAverageMenuItem,
+            this.showOnlyMarkedResultsOnMapMenuItem,
+            this.useDeviceDistanceMenuItem,
+            this.setRestLapsAsPausesMenuItem,
+            this.runGradeAdjustMenuItem,
             this.analyzeMenuItem,
             this.advancedMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
@@ -191,11 +199,7 @@
             this.addInBoundActivitiesMenuItem,
             this.addCurrentCategoryMenuItem,
             this.addTopCategoryMenuItem,
-            this.runGradeAdjustMenuItem,
-            this.useDeviceDistanceMenuItem,
-            this.setRestLapsAsPausesMenuItem,
-            this.summaryRowShowAverageMenuItem,
-            this.showOnlyMarkedResultsOnMapMenuItem});
+            this.ResultSummaryStdDevMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
@@ -270,12 +274,26 @@
             this.setRestLapsAsPausesMenuItem.Text = "<setRestLapsAsPausesMenuItem...";
             this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.setRestLapsAsPausesMenuItem_Click);
             // 
-            // summaryRowShowAverageMenuItem
+            // ResultSummaryStdDevMenuItem
             // 
-            this.summaryRowShowAverageMenuItem.Name = "summaryRowShowAverageMenuItem";
-            this.summaryRowShowAverageMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.summaryRowShowAverageMenuItem.Text = "<summaryRowShowAverageMenuItem...";
-            this.summaryRowShowAverageMenuItem.Click += new System.EventHandler(this.summaryRowShowAverageMenuItem_Click);
+            this.ResultSummaryStdDevMenuItem.Name = "ResultSummaryStdDevMenuItem";
+            this.ResultSummaryStdDevMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.ResultSummaryStdDevMenuItem.Text = "<ResultSummaryStdDevMenuItem...";
+            this.ResultSummaryStdDevMenuItem.Click += new System.EventHandler(this.ResultSummaryStdDevMenuItem_Click);
+            // 
+            // showSummaryTotalMenuItem
+            // 
+            this.showSummaryTotalMenuItem.Name = "showSummaryTotalMenuItem";
+            this.showSummaryTotalMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.showSummaryTotalMenuItem.Text = "<showSummaryTotalMenuItem...";
+            this.showSummaryTotalMenuItem.Click += new System.EventHandler(this.showSummaryTotalMenuItem_Click);
+            // 
+            // showSummaryAverageMenuItem
+            // 
+            this.showSummaryAverageMenuItem.Name = "showSummaryAverageMenuItem";
+            this.showSummaryAverageMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.showSummaryAverageMenuItem.Text = "<showSummaryAverageMenuItem...";
+            this.showSummaryAverageMenuItem.Click += new System.EventHandler(this.showSummaryAverageMenuItem_Click);
             // 
             // showOnlyMarkedResultsOnMapMenuItem
             // 
@@ -331,7 +349,9 @@
         private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setRestLapsAsPausesMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem summaryRowShowAverageMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ResultSummaryStdDevMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showSummaryTotalMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showSummaryAverageMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
         private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();

@@ -476,11 +476,22 @@ namespace TrailsPlugin.Data {
 
         public static int Compare(TrailResult x, TrailResult y)
         {
-            if (x == null || x is SummaryTrailResult)
+            if (x == null)
             {
                 return 1;
             }
-            if (y == null || y is SummaryTrailResult)
+            if (y == null)
+            {
+                return -1;
+            }
+            if (x is SummaryTrailResult)
+            {
+                if ((x as SummaryTrailResult).IsTotal || !(y is SummaryTrailResult))
+                {
+                    return 1;
+                }
+            }
+            if (y is SummaryTrailResult)
             {
                 return -1;
             }

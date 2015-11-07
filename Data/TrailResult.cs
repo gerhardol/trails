@@ -978,7 +978,7 @@ namespace TrailsPlugin.Data
                 else
                 {
                     IDistanceDataTrack source;
-                    if (TrailsPlugin.Data.Settings.UseDeviceDistances && this.Activity != null && 
+                    if (TrailsPlugin.Data.Settings.UseDeviceDistance && this.Activity != null && 
                         this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 1)
                     {
                         //Special handling, same calc as device
@@ -2372,7 +2372,7 @@ namespace TrailsPlugin.Data
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
                     IDistanceDataTrack source;
-                    if (!TrailsPlugin.Data.Settings.UseDeviceDistances)
+                    if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
                     {
                         source = this.Activity.DistanceMetersTrack;
                     }
@@ -2815,7 +2815,7 @@ namespace TrailsPlugin.Data
                 if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                 {
                     IDistanceDataTrack source;
-                    if (!TrailsPlugin.Data.Settings.UseDeviceDistances)
+                    if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
                     {
                         source = this.Activity.DistanceMetersTrack;
                     }
@@ -2838,7 +2838,7 @@ namespace TrailsPlugin.Data
                                 start2 = t2.Value;
                             }
                             float val = (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
-                            if (!TrailsPlugin.Data.Settings.UseDeviceDistances)
+                            if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
                             {
                                 val *= -1;
                             }

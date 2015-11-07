@@ -121,6 +121,11 @@ namespace TrailsPlugin.UI.Activity {
             this.markCommonStretchesMenuItem.Text = Properties.Resources.UI_Activity_List_URCommon;
             this.addInBoundActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddInBound;
             this.addCurrentCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddCurrentCategory;
+            this.addTopCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddCurrentCategory;
+            this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
+            this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
+            this.summaryRowShowAverageMenuItem.Text = Properties.Resources.UI_Activity_List_SummaryRowShowAverage;
+            this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
             this.RefreshColumns();
         }
 
@@ -209,6 +214,10 @@ namespace TrailsPlugin.UI.Activity {
             limitActivityMenuItem.Enabled = MultiActivity();
             selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             addCurrentCategoryMenuItem.Checked = Data.Settings.AddCurrentCategory;
+            this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
+            this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
+            this.summaryRowShowAverageMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
+            this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
         }
 
         public void RefreshList()
@@ -1570,7 +1579,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    TrailsPlugin.Data.Settings.UseDeviceDistances = !TrailsPlugin.Data.Settings.UseDeviceDistances;
+                    TrailsPlugin.Data.Settings.UseDeviceDistance = !TrailsPlugin.Data.Settings.UseDeviceDistance;
                     this.m_page.RefreshData(true);
                 }
                 else if (this.m_controller.PrimaryCurrentActivityTrail != null &&
@@ -1979,6 +1988,20 @@ namespace TrailsPlugin.UI.Activity {
                 this.excludeResultsMenuItem.Enabled = true;
                 this.markCommonStretchesMenuItem.Enabled = true && Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             }
+
+            if (m_controller.ReferenceActivity != null)
+            {
+                this.addTopCategoryMenuItem.Enabled = true;
+                InsertCategoryTypes c = InsertCategoryTypes.SelectedTree;
+                IActivityCategory cat = this.getCurrentCategory(c);
+
+                this.addTopCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddTopCategory, Data.Settings.printFullCategoryPath(cat));
+            }
+            else
+            {
+                this.addTopCategoryMenuItem.Enabled = false;
+            }
+
             this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
             e.Cancel = false;
         }
@@ -2097,7 +2120,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshControlState();
             }
         }
-
+        
         void addCurrentCategoryMenuItem_Click(object sender, System.EventArgs e)
         {
             if (sender is ToolStripMenuItem)
@@ -2107,6 +2130,45 @@ namespace TrailsPlugin.UI.Activity {
                 Data.Settings.AddCurrentCategory = addCurrent.Checked;
                 addCurrentCategoryCheck();
             }
+        }
+
+        void addTopCategoryMenuItem_Click(object sender, System.EventArgs e)
+        {
+            InsertCategoryTypes c = InsertCategoryTypes.SelectedTree;
+            this.addActivityFromCategory(this.getCurrentCategory(c));
+        }
+
+        void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
+            this.RefreshControlState();
+            m_page.RefreshData(true);
+        }
+
+        void setRestLapsAsPausesMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.RestIsPause = !Data.Settings.RestIsPause;
+            this.RefreshControlState();
+            this.m_controller.CurrentReset(false); //TBD
+            m_page.RefreshData(true);
+        }
+
+        void summaryRowShowAverageMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ResultSummaryTotal = !Data.Settings.ResultSummaryTotal;
+            this.RefreshControlState();
+            TrailResultWrapper t = this.GetSummary();
+            if (t != null)
+            {
+                this.summaryList.RefreshElements(new List<TrailResultWrapper> { t });
+            }
+        }
+
+        void showOnlyMarkedResultsOnMapMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
+            this.RefreshControlState();
+            m_page.RefreshData(false);
         }
 
         void limitURMenuItem_Click(object sender, System.EventArgs e)

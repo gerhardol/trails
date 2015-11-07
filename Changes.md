@@ -18,6 +18,12 @@ This page describes the changes between plugin releases. The change log may cont
   * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default.
   * Viewer for UniqueRoutes was not always showing time and date.
+  * Add GUI settings for some keyboard shortcuts:
+    * AddTopCategory
+    * UseDeviceDistance
+    * SetRestLapsAsPauses
+    * SummaryRowShowAverage
+    * ShowOnlyMarkedResultsOnMap
 
 
 1.2.971 2015-01-30 (Plugin Catalog)

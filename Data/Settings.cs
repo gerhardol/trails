@@ -23,6 +23,7 @@ using System.ComponentModel;
 using TrailsPlugin.UI.Activity;
 
 using TrailsPlugin.Utils;
+using ZoneFiveSoftware.Common.Data.Fitness;
 
 namespace TrailsPlugin.Data
 {
@@ -75,7 +76,7 @@ namespace TrailsPlugin.Data
 
         private static bool m_startDistOffsetFromStartPoint = false; //Not in xml
         private static bool m_diffUsingCommonStretches = false; //Not in xml
-        public static bool UseDeviceDistances = false; //Not in xml
+        public static bool UseDeviceDistance = false;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -718,6 +719,8 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { DeviceElevationFromOther = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sUseDeviceElevationForCalc);
                 if (attr.Length > 0) { UseDeviceElevationForCalc = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sUseDeviceDistance);
+                if (attr.Length > 0) { UseDeviceDistance = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sUseTrailElevationAdjust);
                 if (attr.Length > 0) { UseTrailElevationAdjust = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sRunningGradeAdjustMethod);
@@ -900,6 +903,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.sCadenceFromOther, XmlConvert.ToString(m_cadenceFromOther));
             pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_deviceElevationFromOther));
             pluginNode.SetAttribute(xmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_useDeviceElevationForCalc));
+            pluginNode.SetAttribute(xmlTags.sUseDeviceDistance, XmlConvert.ToString(UseDeviceDistance));
             pluginNode.SetAttribute(xmlTags.sUseTrailElevationAdjust, XmlConvert.ToString(m_useTrailElevationAdjust));
             pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
             pluginNode.SetAttribute(xmlTags.sMervynDaviesUp, XmlConvert.ToString(m_MervynDaviesUp));
@@ -998,6 +1002,7 @@ namespace TrailsPlugin.Data
             public const string sCadenceFromOther = "sCadenceFromOther";
             public const string sDeviceElevationFromOther = "sDeviceElevationFromOther";
             public const string sUseDeviceElevationForCalc = "sUseDeviceElevationForCalc";
+            public const string sUseDeviceDistance = "sUseDeviceDistance";
             public const string sUseTrailElevationAdjust = "sUseTrailElevationAdjust";
             public const string sSaveChartImagePath = "sSaveChartImagePath";
 
@@ -1024,6 +1029,19 @@ namespace TrailsPlugin.Data
             return float.TryParse(val, style, System.Globalization.NumberFormatInfo.InvariantInfo, out result);
         }
 
+        public static string printFullCategoryPath(IActivityCategory iActivityCategory)
+        {
+            return printFullCategoryPath(iActivityCategory, null, ": ");
+        }
+        private static string printFullCategoryPath(IActivityCategory iActivityCategory, string p, string sep)
+        {
+            if (iActivityCategory == null) return p;
+            if (p == null)
+                return printFullCategoryPath(iActivityCategory.Parent,
+                             iActivityCategory.Name, sep);
+            return printFullCategoryPath(iActivityCategory.Parent,
+                                iActivityCategory.Name + sep + p, sep);
+        }
 
         ////Old version, read from logbook ("new" settings not implemented)
         //public void FromXml(XmlNode pluginNode)

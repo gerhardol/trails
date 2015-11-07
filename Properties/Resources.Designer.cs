@@ -476,6 +476,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Activities below {0}.
+        /// </summary>
+        internal static string UI_Activity_List_AddTopCategory {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_AddTopCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced.
         /// </summary>
         internal static string UI_Activity_List_Advanced {
@@ -584,6 +593,33 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set Rest Laps As Pauses.
+        /// </summary>
+        internal static string UI_Activity_List_SetRestLapsAsPauses {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_SetRestLapsAsPauses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Only Marked Results On Map.
+        /// </summary>
+        internal static string UI_Activity_List_ShowOnlyMarkedResultsOnMap {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ShowOnlyMarkedResultsOnMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Split Points On Map.
+        /// </summary>
+        internal static string UI_Activity_List_ShowSplitPointsOnMap1 {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ShowSplitPointsOnMap1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mark other sub Trails or splits in list.
         /// </summary>
         internal static string UI_Activity_List_Splits {
@@ -607,6 +643,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_List_StrokeType {
             get {
                 return ResourceManager.GetString("UI_Activity_List_StrokeType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary Row Show Average.
+        /// </summary>
+        internal static string UI_Activity_List_SummaryRowShowAverage {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_SummaryRowShowAverage", resourceCulture);
             }
         }
         
@@ -652,6 +697,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_List_URSelect {
             get {
                 return ResourceManager.GetString("UI_Activity_List_URSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Device Distance.
+        /// </summary>
+        internal static string UI_Activity_List_UseDeviceDistance {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_UseDeviceDistance", resourceCulture);
             }
         }
         

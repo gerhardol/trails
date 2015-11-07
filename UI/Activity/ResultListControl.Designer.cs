@@ -43,7 +43,12 @@
             this.markCommonStretchesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addInBoundActivitiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addCurrentCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addTopCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.summaryRowShowAverageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showOnlyMarkedResultsOnMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
@@ -185,7 +190,12 @@
             this.markCommonStretchesMenuItem,
             this.addInBoundActivitiesMenuItem,
             this.addCurrentCategoryMenuItem,
-            this.runGradeAdjustMenuItem});
+            this.addTopCategoryMenuItem,
+            this.runGradeAdjustMenuItem,
+            this.useDeviceDistanceMenuItem,
+            this.setRestLapsAsPausesMenuItem,
+            this.summaryRowShowAverageMenuItem,
+            this.showOnlyMarkedResultsOnMapMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
@@ -239,6 +249,41 @@
             this.addCurrentCategoryMenuItem.Text = "<addCurrentCategoryMenuItem...";
             this.addCurrentCategoryMenuItem.Click += new System.EventHandler(this.addCurrentCategoryMenuItem_Click);
             // 
+            // addTopCategoryMenuItem
+            // 
+            this.addTopCategoryMenuItem.Name = "addTopCategoryMenuItem";
+            this.addTopCategoryMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.addTopCategoryMenuItem.Text = "<addTopCategoryMenuItem...";
+            this.addTopCategoryMenuItem.Click += new System.EventHandler(this.addTopCategoryMenuItem_Click);
+            // 
+            // useDeviceDistanceMenuItem
+            // 
+            this.useDeviceDistanceMenuItem.Name = "useDeviceDistanceMenuItem";
+            this.useDeviceDistanceMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.useDeviceDistanceMenuItem.Text = "<useDeviceDistanceMenuItem...";
+            this.useDeviceDistanceMenuItem.Click += new System.EventHandler(this.useDeviceDistanceMenuItem_Click);
+            // 
+            // setRestLapsAsPausesMenuItem
+            // 
+            this.setRestLapsAsPausesMenuItem.Name = "setRestLapsAsPausesMenuItem";
+            this.setRestLapsAsPausesMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.setRestLapsAsPausesMenuItem.Text = "<setRestLapsAsPausesMenuItem...";
+            this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.setRestLapsAsPausesMenuItem_Click);
+            // 
+            // summaryRowShowAverageMenuItem
+            // 
+            this.summaryRowShowAverageMenuItem.Name = "summaryRowShowAverageMenuItem";
+            this.summaryRowShowAverageMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.summaryRowShowAverageMenuItem.Text = "<summaryRowShowAverageMenuItem...";
+            this.summaryRowShowAverageMenuItem.Click += new System.EventHandler(this.summaryRowShowAverageMenuItem_Click);
+            // 
+            // showOnlyMarkedResultsOnMapMenuItem
+            // 
+            this.showOnlyMarkedResultsOnMapMenuItem.Name = "showOnlyMarkedResultsOnMapMenuItem";
+            this.showOnlyMarkedResultsOnMapMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.showOnlyMarkedResultsOnMapMenuItem.Text = "<showOnlyMarkedResultsOnMapMenuItem...";
+            this.showOnlyMarkedResultsOnMapMenuItem.Click += new System.EventHandler(this.showOnlyMarkedResultsOnMapMenuItem_Click);
+            // 
             // runGradeAdjustMenuItem
             // 
             this.runGradeAdjustMenuItem.Name = "runGradeAdjustMenuItem";
@@ -282,7 +327,12 @@
         private System.Windows.Forms.ToolStripMenuItem selectWithURMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addInBoundActivitiesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addCurrentCategoryMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addTopCategoryMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setRestLapsAsPausesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem summaryRowShowAverageMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
         private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();
     }

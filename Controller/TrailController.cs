@@ -449,6 +449,18 @@ namespace TrailsPlugin.Controller
             //No special set, implicitly from switching activity or setting result
             get
             {
+                if (this.m_referenceActivity==null || !this.m_activities.Contains(this.m_referenceActivity))
+                {
+                    if (m_referenceTrailResult!= null && this.m_referenceTrailResult.Activity!= null &&
+                        this.m_activities.Contains(this.m_referenceTrailResult.Activity))
+                    {
+                        this.m_referenceActivity = this.m_referenceTrailResult.Activity;
+                    }
+                    else if (this.m_activities.Count > 0)
+                    {
+                        this.m_referenceActivity = this.m_activities[0];
+                    }
+                }
                 return this.m_referenceActivity;
             }
         }

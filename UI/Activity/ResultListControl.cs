@@ -1000,9 +1000,10 @@ namespace TrailsPlugin.UI.Activity {
                                 tr.LapInfo.Rest = !tr.LapInfo.Rest;
                             }
                         }
-                        else
+                        else if (tr.Activity != null)
                         {
                             Guid view = GUIDs.DailyActivityView;
+                            m_controller.ReferenceTrailResult = tr;
                             string bookmark = "id=" + tr.Activity;
                             Plugin.GetApplication().ShowView(view, bookmark);
                         }

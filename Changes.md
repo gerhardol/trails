@@ -10,12 +10,12 @@ This page describes the changes between plugin releases. The change log may cont
   * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
   * SplitPoints - view on map.
   * Swim Splits trail - analyze swim activities
-  * Added trail 'Splits - ReferenceResults - Time', a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
+  * Added trail _Splits - ReferenceResults_, a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Updated Spanish translation.
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
   * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.
-  * Show Lap fields for 'Splits' trail. Time and Distance are fetched from Lap data.
-  * Add support for column "Max (Avg) Grade".
+  * Show Lap fields for _Splits_ trail. Time and Distance are fetched from Lap data.
+  * Add support for column _Max (Avg) Grade_.
   * Result list shortcut Ctrl-D: Use device distance calculations for distance and pace/speed if existing.
   * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default.

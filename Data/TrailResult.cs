@@ -3142,8 +3142,9 @@ namespace TrailsPlugin.Data
 
         public bool AnyOverlap(IActivity activity)
         {
-            if(activity == null && this.Activity == activity)
+            if(activity == null || this.Activity == activity || this.Activity == null)
             {
+                Debug.Assert(this.Activity != null, "Current activity is unexpectedly null");
                 return false;
             }
             //aprox end, excluding TimerPauses

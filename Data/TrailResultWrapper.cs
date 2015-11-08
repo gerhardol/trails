@@ -55,6 +55,7 @@ namespace TrailsPlugin.Data
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
         }
 
+        //create results on datetime info
         public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, TrailResultInfo tri, int order)
             : base(null, null)
         {

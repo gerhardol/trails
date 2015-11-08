@@ -371,17 +371,23 @@ namespace TrailsPlugin.Data
                 }
                 else if (this.m_trail.TrailType == Trail.CalcType.SplitsTime)
                 {
-                    this.Status = TrailOrderStatus.Match;
-                    TrailResultWrapper refRes = new TrailResultWrapper(this, this.m_controller.ReferenceActivity, m_resultsListWrapper.Count + 1);
-                    m_resultsListWrapper.Add(refRes);
-                    refRes.getSplits();
-                    foreach (IActivity activity in activities)
+                    IActivity refAct = this.m_controller.ReferenceActivity;
+                    if (refAct != null)
                     {
-                        if (activity != this.m_controller.ReferenceActivity)
+                        this.Status = TrailOrderStatus.Match;
+                        TrailResultWrapper refRes = new TrailResultWrapper(this, refAct, m_resultsListWrapper.Count + 1);
+                        m_resultsListWrapper.Add(refRes);
+                        refRes.getSplits();
+                        this.m_controller.ReferenceTrailResult = refRes.Result;
+                        foreach (IActivity activity in activities)
                         {
-                            TrailResultWrapper result = new TrailResultWrapper(this, activity, refRes.Result.SubResultInfo,  m_resultsListWrapper.Count + 1);
-                            m_resultsListWrapper.Add(result);
-                            result.getSplits();
+                            if (activity != refAct &&
+                                refRes.Result.AnyOverlap(activity))
+                            {
+                                TrailResultWrapper result = new TrailResultWrapper(this, activity, refRes.Result.SubResultInfo, m_resultsListWrapper.Count + 1);
+                                m_resultsListWrapper.Add(result);
+                                result.getSplits();
+                            }
                         }
                     }
                 }

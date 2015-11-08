@@ -47,7 +47,7 @@ namespace TrailsPlugin.Data
             //Splits Trail - use time-of-day for others
             trail = new Data.Trail(GUIDs.SplitsTimeTrail, true);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits + " - " +
-                Properties.Resources.Trail_Reference_Name + " - " + ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelTime;
+                Properties.Resources.Trail_Reference_Name;
             trail.IsSplits = true;
             trail.IsCompleteActivity = true;
             trail.TrailType = Trail.CalcType.SplitsTime;
@@ -211,6 +211,28 @@ namespace TrailsPlugin.Data
             foreach (XmlNode node in doc.DocumentElement.SelectNodes("Trail"))
             {
                 Data.Trail trail = Data.Trail.FromXml(node);
+                string name = trail.Name;
+                int extraId = 0;
+                bool isUnique = false;
+                while (!isUnique)
+                {
+                    isUnique = true;
+                    foreach (Trail t in m_AllTrails.Values)
+                    {
+                        if (t.Name == name)
+                        {
+                            isUnique = false;
+                            extraId += 1;
+                            name = trail.Name + "-" + extraId;
+                            break;
+                        }
+                    }
+                    if (extraId > 99)
+                    {
+                        break;
+                    }
+                }
+                trail.Name = name;
                 m_AllTrails.Add(trail.Id, trail);
                 AddElevationPoints(trail);
             }

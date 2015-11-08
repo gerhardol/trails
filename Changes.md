@@ -8,6 +8,7 @@ This page describes the changes between plugin releases. The change log may cont
     The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
+  * SplitPoints - view on map.
   * Swim Splits trail - analyze swim activities
   * Added trail 'Splits - ReferenceResults - Time', a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Updated Spanish translation.

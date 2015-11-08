@@ -283,6 +283,7 @@ namespace TrailsPlugin.UI.Activity {
                 //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
+                IList<SplitGPSLocation> splitPoints = new List<SplitGPSLocation>();
                 //route
                 foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
                 {
@@ -328,12 +329,21 @@ namespace TrailsPlugin.UI.Activity {
                                 routes.Add(m.key, m);
                             }
                         }
+                        if(tr.m_activityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
+                        {
+                            foreach(TrailResultPoint tp in tr.SubResultInfo.Points)
+                            {
+                                SplitGPSLocation tl = new SplitGPSLocation(tp, tr.ResultColor.LineNormal);
+                                splitPoints.Add(tl);
+                            }
+                        }
                     }
                 }
                 //Clear marked routes (set separately, runs after) 
                 m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
                 m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
                 m_layerMarked.ClearOverlays();
+                m_layerMarked.SplitPoints = splitPoints;
 
                 m_layerRoutes.TrailRoutes = routes;
 

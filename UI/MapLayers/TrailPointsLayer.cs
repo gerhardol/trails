@@ -124,6 +124,15 @@ namespace TrailsPlugin.UI.MapLayers
             }
         }
 
+        public IList<SplitGPSLocation> SplitPoints
+        {
+            set
+            {
+                m_SplitPoints = value;
+                RefreshOverlays(true);
+            }
+        }
+
         public IList<TrailGPSLocation> SelectedTrailPoints
         {
             set
@@ -199,6 +208,16 @@ namespace TrailsPlugin.UI.MapLayers
                 float highlightRadius = m_TrailPoints[0].Radius;
                 IGPSBounds area2 = TrailGPSLocation.getGPSBounds(m_TrailPoints, 2 * highlightRadius);
                 area = this.Union(area, area2);
+            }
+            if (m_SplitPoints.Count > 0)
+            {
+                    IList<IGPSPoint> r = new List<IGPSPoint>();
+                    foreach(SplitGPSLocation s in m_SplitPoints)
+                    {
+                        r.Add(s);
+                    }
+                    IGPSBounds area2 = GPSBounds.FromGPSPoints(r);
+                    area = this.Union(area, area2);
             }
             if (m_MarkedTrailRoutes.Count > 0 || m_MarkedTrailRoutesNoShow.Count > 0)
             {
@@ -607,12 +626,27 @@ namespace TrailsPlugin.UI.MapLayers
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
                     pointOverlay.MouseUp += new MouseEventHandler(pointOverlay_MouseUp);
                 }
-                if(!newPointOverlays.ContainsKey(location))
+                if (!newPointOverlays.ContainsKey(location))
                 {
                     newPointOverlays.Add(location, pointOverlay);
                 }
                 addedOverlays.Add(pointOverlay);
             }
+
+            foreach (SplitGPSLocation location in m_SplitPoints)
+            {
+                Size iconSize;
+                string fileURL = TrailsPlugin.CommonIcons.Rhombus(11, 11, location.PointColor, out iconSize);
+                MapIcon icon = new MapIcon(fileURL, iconSize, new Point(iconSize.Width / 2, iconSize.Height / 2));
+
+                PointMapMarker pointOverlay = new PointMapMarker(location, icon, false);
+                if (!newPointOverlays.ContainsKey(location))
+                {
+                    newPointOverlays.Add(location, pointOverlay);
+                }
+                addedOverlays.Add(pointOverlay);
+            }
+
             // Draw overlay
             if (0 == newPointOverlays.Count && 0 == visibleRoutes.Count) return;
 
@@ -668,6 +702,7 @@ namespace TrailsPlugin.UI.MapLayers
         private IDictionary<IList<IGPSPoint>, IMapOverlay> m_routeOverlays = new Dictionary<IList<IGPSPoint>, IMapOverlay>();
 
         private IList<TrailGPSLocation> m_TrailPoints = new List<TrailGPSLocation>();
+        private IList<SplitGPSLocation> m_SplitPoints = new List<SplitGPSLocation>();
         private IDictionary<string, MapPolyline> m_TrailRoutes = new Dictionary<string, MapPolyline>();
         private IDictionary<string, MapPolyline> m_MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
         //Rendered w standard ST ovelay, needed here when zooming

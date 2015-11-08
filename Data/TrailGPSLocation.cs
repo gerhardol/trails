@@ -35,10 +35,19 @@ using System.Collections.Generic;
 
 namespace TrailsPlugin.Data
 {
+    public class SplitGPSLocation : TrailGPSLocation
+    {
+        public System.Drawing.Color PointColor;
+        public SplitGPSLocation(TrailGPSLocation t, System.Drawing.Color c) : base(t)
+        {
+            this.PointColor = c;
+        }
+    }
+
     public class TrailGPSLocation : GPSPoint
     {
         private TrailGPSLocation(float lat, float lon, float ele, string name, bool required, float radius)
-          : base(lat, lon, ele)
+      : base(lat, lon, ele)
         {
             this._name = name;
             this._required = required;
@@ -73,7 +82,7 @@ namespace TrailsPlugin.Data
 
         public override string ToString()
         {
-            return _name + " " + _required + " " +base.ToString()/* _gpsPoint*/;
+            return _name + " " + _required + " " + base.ToString()/* _gpsPoint*/;
         }
 
         //IGPSPoint does not allow direct modification of points
@@ -408,7 +417,7 @@ namespace TrailsPlugin.Data
             return factor;
         }
 
-/*****************************************************************************/
+        /*****************************************************************************/
         //static utilities to get the areas for a set of points (not always a complete trail)
 
         //Get location bounds for a set of points
@@ -466,8 +475,8 @@ namespace TrailsPlugin.Data
 
                     north = Math.Max(north, glat);
                     south = Math.Min(south, glat);
-                    east  = Math.Max(east, glon);
-                    west  = Math.Min(west, glon);
+                    east = Math.Max(east, glon);
+                    west = Math.Min(west, glon);
                 }
             }
             //Overlapping, could be an exception
@@ -489,20 +498,20 @@ namespace TrailsPlugin.Data
             float lng = (float)(radius / 111132 / Math.Cos(Math.Abs(north) * Math.PI / 180));
             north += lat;
             south -= lat;
-            east  += lng;
-            west  -= lng;
+            east += lng;
+            west -= lng;
 
             //if radius is negative, area may have to be adjusted
             //With no required points, use center of trail
             if (north < south || requiredCheck && !enoughRequired)
             {
-                float tmp = (north+south)/2;
+                float tmp = (north + south) / 2;
                 north = tmp;
                 south = tmp;
             }
             if (east < west || requiredCheck && !enoughRequired)
             {
-                float tmp = (west+east)/2;
+                float tmp = (west + east) / 2;
                 west = tmp;
                 east = tmp;
             }

@@ -130,15 +130,9 @@ namespace TrailsPlugin
             }
         }
 
-        const int brushSize = 6; //Even
-        //The outer radius defines the included area
-        static public string fileCircle(int sizeX, int sizeY, Color color)
-        {
-            Size iconSize;
-            return fileCircle(sizeX, sizeY, color, false, out iconSize);
-        }
+        private enum IconType { Circle, Rhombus };
 
-        static public string fileCircle(int sizeX, int sizeY, Color color, bool centerPoint, out Size iconSize)
+        static private string fileImage(int sizeX, int sizeY, int brushSize, Color color, bool centerPoint, IconType iconType, out Size iconSize)
         {
             string basePath = Plugin.GetApplication().
 #if ST_2_1
@@ -168,7 +162,7 @@ namespace TrailsPlugin
             if (1 != sizeX % 2) { sizeX++; }
             if (1 != sizeY % 2) { sizeY++; }
             iconSize = new Size(sizeX, sizeY);
-            string filePath = basePath + "circle-" + color + sizeX+"_"+sizeY;
+            string filePath = basePath + iconType + "-" + color + sizeX + "_" + sizeY;
             if (centerPoint)
             {
                 filePath += "_center";
@@ -180,14 +174,26 @@ namespace TrailsPlugin
                 Bitmap myBitmap = new Bitmap(sizeX, sizeY);
                 Graphics myGraphics = Graphics.FromImage(myBitmap);
                 myGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                myGraphics.DrawEllipse(new Pen(color, brushSize), new Rectangle(brushSize / 2, brushSize / 2, 
-                    myBitmap.Width - brushSize, myBitmap.Height - brushSize));
-                myGraphics.DrawEllipse(new Pen(Color.Black, 1), new Rectangle(1, 1, 
-                    myBitmap.Width - 2, myBitmap.Height - 2));
-                if (centerPoint)
+                if (iconType == IconType.Circle)
                 {
-                    const int midSize = 2;
-                    myGraphics.DrawEllipse(new Pen(color, midSize), new Rectangle(sizeX / 2 - midSize, sizeY / 2 - midSize, 1 + midSize * 2, 1 + midSize * 2));
+                    myGraphics.DrawEllipse(new Pen(color, brushSize), new Rectangle(brushSize / 2, brushSize / 2,
+                        myBitmap.Width - brushSize, myBitmap.Height - brushSize));
+                    myGraphics.DrawEllipse(new Pen(Color.Black, 1), new Rectangle(1, 1,
+                        myBitmap.Width - 2, myBitmap.Height - 2));
+                    if (centerPoint)
+                    {
+                        const int midSize = 2;
+                        myGraphics.DrawEllipse(new Pen(color, midSize), new Rectangle(sizeX / 2 - midSize, sizeY / 2 - midSize, 1 + midSize * 2, 1 + midSize * 2));
+                    }
+                }
+                else
+                {
+                    Point[] points = new Point[]{ new Point(sizeX / 2, brushSize/2), new Point(sizeX-brushSize/2, sizeY / 2),
+                    new Point(sizeX / 2, sizeY-brushSize/2) , new Point(brushSize/2, sizeY / 2), new Point(sizeX / 2, brushSize/2) };
+                    myGraphics.DrawLines(new Pen(color, brushSize), points);
+                    points = new Point[]{ new Point(sizeX / 2, 1), new Point(sizeX-1, sizeY / 2),
+                    new Point(sizeX / 2, sizeY-1) , new Point(1, sizeY / 2), new Point(sizeX / 2, 1) };
+                    myGraphics.DrawLines(new Pen(Color.Black, 1), points);
                 }
                 FileStream myFileOut = new FileStream(filePath, FileMode.Create);
                 myBitmap.Save(myFileOut, ImageFormat.Png);
@@ -196,9 +202,24 @@ namespace TrailsPlugin
             return filePath;
         }
 
+        //The outer radius defines the included area
+        static public string fileCircle(int sizeX, int sizeY, Color color)
+        {
+            Size iconSize;
+            const int brushSize = 6; //Even
+            return fileImage(sizeX, sizeY, brushSize, color, false, IconType.Circle, out iconSize);
+        }
+
         static public string Circle(int sizeX, int sizeY, bool centerPoint, out Size iconSize)
         {
-            return "file://" + fileCircle(sizeX, sizeY, Color.Red, centerPoint, out iconSize);
+            const int brushSize = 6; //Even
+            return "file://" + fileImage(sizeX, sizeY, brushSize, Color.Red, centerPoint, IconType.Circle, out iconSize);
+        }
+
+        static public string Rhombus(int sizeX, int sizeY, Color c, out Size iconSize)
+        {
+            const int brushSize = 4;
+            return "file://" + fileImage(sizeX, sizeY, brushSize, c, false, IconType.Rhombus, out iconSize);
         }
     }
 }

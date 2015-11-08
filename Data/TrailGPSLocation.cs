@@ -35,15 +35,6 @@ using System.Collections.Generic;
 
 namespace TrailsPlugin.Data
 {
-    public class SplitGPSLocation : TrailGPSLocation
-    {
-        public System.Drawing.Color PointColor;
-        public SplitGPSLocation(TrailGPSLocation t, System.Drawing.Color c) : base(t)
-        {
-            this.PointColor = c;
-        }
-    }
-
     public class TrailGPSLocation : GPSPoint
     {
         private TrailGPSLocation(float lat, float lon, float ele, string name, bool required, float radius)
@@ -517,6 +508,25 @@ namespace TrailsPlugin.Data
             }
 
             return new GPSBounds(new GPSLocation(north, west), new GPSLocation(south, east));
+        }
+    }
+
+    public class SplitGPSLocation : TrailGPSLocation
+    {
+        public System.Drawing.Color PointColor;
+        public SplitGPSLocation(TrailGPSLocation t, System.Drawing.Color c) : base(t)
+        {
+            this.PointColor = c;
+        }
+
+        public static GPSBounds getGPSBounds(IList<SplitGPSLocation> list)
+        {
+            IList<IGPSPoint> r = new List<IGPSPoint>();
+            foreach (SplitGPSLocation s in list)
+            {
+                r.Add(s);
+            }
+            return GPSBounds.FromGPSPoints(r);
         }
     }
 }

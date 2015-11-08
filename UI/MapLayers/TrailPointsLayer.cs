@@ -211,13 +211,8 @@ namespace TrailsPlugin.UI.MapLayers
             }
             if (m_SplitPoints.Count > 0)
             {
-                    IList<IGPSPoint> r = new List<IGPSPoint>();
-                    foreach(SplitGPSLocation s in m_SplitPoints)
-                    {
-                        r.Add(s);
-                    }
-                    IGPSBounds area2 = GPSBounds.FromGPSPoints(r);
-                    area = this.Union(area, area2);
+                IGPSBounds area2 = SplitGPSLocation.getGPSBounds(m_SplitPoints);
+                area = this.Union(area, area2);
             }
             if (m_MarkedTrailRoutes.Count > 0 || m_MarkedTrailRoutesNoShow.Count > 0)
             {
@@ -510,6 +505,18 @@ namespace TrailsPlugin.UI.MapLayers
             return radius;
         }
 
+
+        private MapIcon getCircleIcon(IMapControl mapControl, float radius)
+        {
+            if (this.m_icon.icon == null || this.m_icon.radius != radius || this.m_icon.scaling != this.MapControl.Zoom)
+            {
+                this.m_icon.radius = radius;
+                this.m_icon.scaling = this.MapControl.Zoom;
+                this.m_icon.icon = getCircle(this.MapControl, this.m_icon.radius, true);
+            }
+            return this.m_icon.icon;
+        }
+
         private static MapIcon getCircle(IMapControl mapControl, float radius, bool centerPoint)
         {
             float x, y;
@@ -524,6 +531,18 @@ namespace TrailsPlugin.UI.MapLayers
             Size iconSize;
             string fileURL = TrailsPlugin.CommonIcons.Circle(sizeInPixelsX, sizeInPixelsY, centerPoint, out iconSize);
             return new MapIcon(fileURL, iconSize, new Point(iconSize.Width / 2, iconSize.Height / 2));
+        }
+
+        private IDictionary<Color, MapIcon> m_SplitPointIconCache = new Dictionary<Color, MapIcon>();
+        private MapIcon getRhombusIcon(Color c)
+        {
+            if (!m_SplitPointIconCache.ContainsKey(c))
+            {
+                Size iconSize;
+                string fileURL = TrailsPlugin.CommonIcons.Rhombus(11, 11, c, out iconSize);
+                m_SplitPointIconCache[c] = new MapIcon(fileURL, iconSize, new Point(iconSize.Width / 2, iconSize.Height / 2));
+            }
+            return m_SplitPointIconCache[c];
         }
 
         private void RefreshOverlays()
@@ -614,13 +633,7 @@ namespace TrailsPlugin.UI.MapLayers
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             foreach (TrailGPSLocation location in m_TrailPoints)
             {
-                if (this.m_icon.icon == null || this.m_icon.radius != location.Radius || this.m_icon.scaling != this.MapControl.Zoom)
-                {
-                    this.m_icon.radius = location.Radius;
-                    this.m_icon.scaling = this.MapControl.Zoom;
-                    this.m_icon.icon = getCircle(this.MapControl, this.m_icon.radius, true);
-                }
-                PointMapMarker pointOverlay = new PointMapMarker(location, m_icon.icon, MouseEvents && (this.m_editTrail != null));
+                PointMapMarker pointOverlay = new PointMapMarker(location, getCircleIcon(this.MapControl, this.m_icon.radius), MouseEvents && (this.m_editTrail != null));
                 if (this.MouseEvents && location.Name != "DebugNotClickableDebug")
                 {
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);
@@ -633,13 +646,10 @@ namespace TrailsPlugin.UI.MapLayers
                 addedOverlays.Add(pointOverlay);
             }
 
+            //SplitPoints
             foreach (SplitGPSLocation location in m_SplitPoints)
             {
-                Size iconSize;
-                string fileURL = TrailsPlugin.CommonIcons.Rhombus(11, 11, location.PointColor, out iconSize);
-                MapIcon icon = new MapIcon(fileURL, iconSize, new Point(iconSize.Width / 2, iconSize.Height / 2));
-
-                PointMapMarker pointOverlay = new PointMapMarker(location, icon, false);
+                PointMapMarker pointOverlay = new PointMapMarker(location, getRhombusIcon(location.PointColor), false);
                 if (!newPointOverlays.ContainsKey(location))
                 {
                     newPointOverlays.Add(location, pointOverlay);

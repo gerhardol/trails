@@ -283,7 +283,6 @@ namespace TrailsPlugin.UI.Activity {
                 //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
                 IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
-                IList<SplitGPSLocation> splitPoints = new List<SplitGPSLocation>();
                 //route
                 foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
                 {
@@ -295,6 +294,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_layerPoints.TrailPoints = points;
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
+                IList<SplitGPSLocation> splitPoints = new List<SplitGPSLocation>();
                 IList<TrailResult> results;
                 IList<TrailResult> selected = this.m_controller.SelectedResults;
                 if (!Data.Settings.ShowOnlyMarkedOnRoute ||
@@ -317,7 +317,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 foreach (TrailResult tr in results)
                 {
-                    //Do not map activities displayed already by ST
+                    //Do not map routes displayed already by ST
                     if (ViewSingleActivity() != tr.Activity)
                     {
                         //Note: Possibly limit no of Trails shown, it slows down Gmaps some
@@ -329,21 +329,21 @@ namespace TrailsPlugin.UI.Activity {
                                 routes.Add(m.key, m);
                             }
                         }
-                        if(tr.m_activityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
+                    }
+                    if (tr.m_activityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
+                    {
+                        foreach (TrailResultPoint tp in tr.SubResultInfo.Points)
                         {
-                            foreach(TrailResultPoint tp in tr.SubResultInfo.Points)
-                            {
-                                SplitGPSLocation tl = new SplitGPSLocation(tp, tr.ResultColor.LineNormal);
-                                splitPoints.Add(tl);
-                            }
+                            SplitGPSLocation tl = new SplitGPSLocation(tp, tr.ResultColor.FillSelected);
+                            splitPoints.Add(tl);
                         }
                     }
                 }
                 //Clear marked routes (set separately, runs after) 
                 m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
                 m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-                m_layerMarked.ClearOverlays();
                 m_layerMarked.SplitPoints = splitPoints;
+                m_layerMarked.ClearOverlays();
 
                 m_layerRoutes.TrailRoutes = routes;
 

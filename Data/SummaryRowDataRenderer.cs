@@ -50,7 +50,7 @@ namespace TrailsPlugin.Data
                     {
                         return System.Drawing.FontStyle.Bold;
                     }
-                    return System.Drawing.FontStyle.Bold| System.Drawing.FontStyle.Italic;
+                    return System.Drawing.FontStyle.Italic;
                 }
                 else
                 {

@@ -122,8 +122,8 @@
             this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyTableMenuItem,
             this.listSettingsMenuItem,
-            this.selectSimilarSplitsMenuItem,
             this.referenceResultMenuItem,
+            this.selectSimilarSplitsMenuItem,
             this.showSummaryTotalMenuItem,
             this.showSummaryAverageMenuItem,
             this.showOnlyMarkedResultsOnMapMenuItem,

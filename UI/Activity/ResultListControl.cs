@@ -89,6 +89,8 @@ namespace TrailsPlugin.UI.Activity {
             limitActivityMenuItem.Visible = false;
             limitURMenuItem.Visible = false;
 #else
+            this.listSettingsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
+            this.runGradeAdjustMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
             this.analyzeMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
             this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
 #endif

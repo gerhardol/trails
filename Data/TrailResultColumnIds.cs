@@ -302,7 +302,7 @@ namespace TrailsPlugin.Data {
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartTime, CommonResources.Text.LabelStartTime, TrailsGroup, w, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.StartDistance, CommonResources.Text.LabelStart + CommonResources.Text.LabelDistance + " (" + UnitUtil.Distance.LabelAbbrAct(activity) + ")", TrailsGroup, 60, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.EndTime, CommonResources.Text.LabelEndTime, TrailsGroup, 70, StringAlignment.Far));
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Duration, CommonResources.Text.LabelDuration, TrailsGroup, 60, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Duration, CommonResources.Text.LabelTime, TrailsGroup, 60, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Distance, CommonResources.Text.LabelDistance + " (" + UnitUtil.Distance.LabelAbbrAct(activity) + ")", TrailsGroup, 60, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgCadence, CommonResources.Text.LabelAvgCadence, TrailsGroup, 60, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgHR, CommonResources.Text.LabelAvgHR, TrailsGroup, 50, StringAlignment.Far));
@@ -374,7 +374,7 @@ namespace TrailsPlugin.Data {
             }
             if (all || !swim && Settings.RunningGradeAdjustMethod != Data.RunningGradeAdjustMethodEnum.None)
             {
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelDuration, TrailsGroup, 60, StringAlignment.Far));
+                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelTime, TrailsGroup, 60, StringAlignment.Far));
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
             }
             else

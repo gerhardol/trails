@@ -158,7 +158,8 @@ namespace TrailsPlugin.UI.Activity
                     TrailName.Text += " (*)";
                 }
                 TrailName.Enabled = (m_editTrail == null);
-                if (m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
+                if (m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
+                    m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
                 {
                     btnEdit.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Settings16;
                 }

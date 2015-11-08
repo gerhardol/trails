@@ -277,40 +277,44 @@ namespace TrailsPlugin.Data
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
             if (trws != null && tr != null)
             {
-                foreach (TrailResult trr in tr)
-                {
-                    bool isMatch = false;
-                    foreach (TrailResultWrapper tnp in trws)
+                //This should not be needed, but a crash when developing occurred here set breakpoint
+                try {
+                    foreach (TrailResult trr in tr)
                     {
-                        if (isMatch)
+                        bool isMatch = false;
+                        foreach (TrailResultWrapper tnp in trws)
                         {
-                            break;
-                        }
-                        if (!(trr is ChildTrailResult))
-                        {
-                            if (tnp.Result.CompareTo(trr) == 0)
+                            if (isMatch)
                             {
-                                result.Add(tnp);
-                                //Break the loop
-                                isMatch = true;
+                                break;
                             }
-                        }
-                        else
-                        {
-                            foreach (TrailResultWrapper tnc in tnp.m_children)
+                            if (!(trr is ChildTrailResult))
                             {
-                                if (tnc.Result.CompareTo(trr) == 0)
+                                if (tnp.Result.CompareTo(trr) == 0)
                                 {
-                                    result.Add(tnc);
-                                    //break from two levels of foreach
+                                    result.Add(tnp);
+                                    //Break the loop
                                     isMatch = true;
-                                    break;
+                                }
+                            }
+                            else
+                            {
+                                foreach (TrailResultWrapper tnc in tnp.m_children)
+                                {
+                                    if (tnc.Result.CompareTo(trr) == 0)
+                                    {
+                                        result.Add(tnc);
+                                        //break from two levels of foreach
+                                        isMatch = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
+                catch { }
+            } 
             return result;
         }
 

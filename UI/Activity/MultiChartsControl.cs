@@ -37,9 +37,8 @@ namespace TrailsPlugin.UI.Activity {
         public event System.EventHandler Expand;
         public event System.EventHandler Collapse;
 
+        //Expanded state, controls also if multiple charts/graphs
         private bool m_expanded = false;
-        private bool m_multipleGraphs = false;
-        private bool m_multipleCharts = true;
         private bool m_showPage;
         private ActivityDetailPageControl m_page;
         private Controller.TrailController m_controller;
@@ -226,8 +225,6 @@ namespace TrailsPlugin.UI.Activity {
                 btnExpand.Left = this.ChartBanner.Right - 46;
 
                 m_expanded = value;
-                m_multipleGraphs = value;
-                m_multipleCharts = !value;
                 if (m_expanded)
                 {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
@@ -332,7 +329,7 @@ namespace TrailsPlugin.UI.Activity {
                 multiChart.ShowPage = false;
                 //TODO: Temporary handling. Cleanup and decide multiple graphs and charts
                 TrailLineChart updateChart = m_multiChart;
-                if (m_multipleCharts)
+                if (!m_expanded)
                 {
                     foreach (TrailLineChart chart in m_lineCharts)
                     {
@@ -381,14 +378,14 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         bool visible = false;
 
-                        if (m_multipleGraphs &&
+                        if (m_expanded &&
                             (Data.Settings.MultiGraphType.Contains(chart.LeftChartType) ||
                             chart.LeftChartType == speedPaceChart &&
                             (Data.Settings.MultiGraphType.Contains(LineChartTypes.SpeedPace) || Data.Settings.MultiGraphType.Contains(LineChartTypes.DeviceSpeedPace))||
                             chart.LeftChartType == diffChart &&
                             (Data.Settings.MultiGraphType.Contains(LineChartTypes.DiffDistTime) || Data.Settings.MultiGraphType.Contains(LineChartTypes.DeviceDiffDist))) ||
 
-                            !m_multipleGraphs &&
+                            !m_expanded &&
                             (chart.LeftChartType == Data.Settings.ChartType ||
                             chart.LeftChartType == speedPaceChart &&
                                 (LineChartTypes.SpeedPace == Data.Settings.ChartType || LineChartTypes.DeviceSpeedPace == Data.Settings.ChartType) ||
@@ -406,7 +403,7 @@ namespace TrailsPlugin.UI.Activity {
                             updateChart.XAxisReferential = Data.Settings.XAxisValue;
                             IList<Data.TrailResult> list = this.m_controller.SelectedResults;
                             updateChart.TrailResults = list;
-                            if (!m_multipleGraphs && updateChart.ChartTypes.Count == 1)
+                            if (!m_expanded && updateChart.ChartTypes.Count == 1)
                             {
                                 this.ChartBanner.Text = LineChartUtil.ChartTypeString(chart.LeftChartType) + " / " +
                                 LineChartUtil.XAxisValueString(chart.XAxisReferential);
@@ -421,7 +418,7 @@ namespace TrailsPlugin.UI.Activity {
                                 {
                                     chart.ShowPage = false;
                                     //Replace empty chart
-                                    if (!m_multipleGraphs && chart.LeftChartType != speedPaceChart)
+                                    if (!m_expanded && chart.LeftChartType != speedPaceChart)
                                     {
                                         foreach (TrailLineChart replaceChart in m_lineCharts)
                                         {
@@ -432,7 +429,7 @@ namespace TrailsPlugin.UI.Activity {
                                                 replaceChart.XAxisReferential = Data.Settings.XAxisValue;
                                                 IList<Data.TrailResult> list2 = this.m_controller.SelectedResults;
                                                 replaceChart.TrailResults = list2;
-                                                if (!m_multipleGraphs)
+                                                if (!m_expanded)
                                                 {
                                                     this.ChartBanner.Text = LineChartUtil.ChartTypeString(replaceChart.LeftChartType) + " / " +
                                                     LineChartUtil.XAxisValueString(replaceChart.XAxisReferential);
@@ -455,17 +452,13 @@ namespace TrailsPlugin.UI.Activity {
 
         private bool setLineChartChecked(LineChartTypes t)
         {
-            if (m_multipleCharts)
+            if (!m_expanded)
             {
                 return Data.Settings.MultiChartType.Contains(t);
             }
-            else if (m_multipleGraphs)
-            {
-                return Data.Settings.MultiGraphType.Contains(t);
-            }
             else
             {
-                return Data.Settings.ChartType == t;
+                return Data.Settings.MultiGraphType.Contains(t);
             }
         }
 
@@ -525,17 +518,13 @@ namespace TrailsPlugin.UI.Activity {
 
         private void RefreshChart(LineChartTypes t)
         {
-            if (m_multipleCharts)
+            if (!m_expanded)
             {
                 Data.Settings.ToggleMultiChartType = t;
             }
-            if (m_multipleGraphs)
-            {
-                Data.Settings.ToggleMultiGraphType = t;
-            }
             else
             {
-                Data.Settings.ChartType = t;
+                Data.Settings.ToggleMultiGraphType = t;
             }
             this.RefreshChart();
         }

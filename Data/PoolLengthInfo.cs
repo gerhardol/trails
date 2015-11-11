@@ -251,6 +251,7 @@ namespace TrailsPlugin.Data
         private float m_TotalDistanceMeters;
         private TimeSpan m_TotalTime;
 
+#pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

@@ -299,4 +299,55 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="Metadata_Source" xml:space="preserve">
     <value>Importkälla</value>
   </data>
+  <data name="UI_Activity_List_AddTopCategory" xml:space="preserve">
+    <value>Lägg till aktiviteter i {0}</value>
+  </data>
+  <data name="UI_Activity_List_SetRestLapsAsPauses" xml:space="preserve">
+    <value>Hantera vilovarv som pauser</value>
+  </data>
+  <data name="UI_Activity_List_ShowOnlyMarkedResultsOnMap" xml:space="preserve">
+    <value>Visa enbart valda resultat på karta</value>
+  </data>
+  <data name="UI_Activity_List_ShowSplitPointsOnMap1" xml:space="preserve">
+    <value>Visa etappunkter på karta</value>
+  </data>
+  <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">
+    <value>Standardavvikelse för medel sammanfattning</value>
+  </data>
+  <data name="UI_Activity_List_UseDeviceDistance" xml:space="preserve">
+    <value>Använd enhetens distans</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryAverage" xml:space="preserve">
+    <value>Medel sammanfattning</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryTotal" xml:space="preserve">
+    <value>Totaler Sammanfattning</value>
+  </data>
+  <data name="UI_Chart_AddChart" xml:space="preserve">
+    <value>Lägg till diagram</value>
+  </data>
+  <data name="UI_Chart_SelectChartsTitle" xml:space="preserve">
+    <value>Diagramdetaljer</value>
+  </data>
+  <data name="UI_Chart_SelectedCharts" xml:space="preserve">
+    <value>Valda diagram</value>
+  </data>
+  <data name="UI_Chart_SelectMoreCharts" xml:space="preserve">
+    <value>Fler diagram...</value>
+  </data>
+  <data name="UI_Chart_AddGraph" xml:space="preserve">
+    <value>Lägg till graf</value>
+  </data>
+  <data name="UI_Chart_Difference" xml:space="preserve">
+    <value>Differens</value>
+  </data>
+  <data name="UI_Chart_SelectedGraphs" xml:space="preserve">
+    <value>Valda grafer</value>
+  </data>
+  <data name="UI_Chart_SelectGraphsTitle" xml:space="preserve">
+    <value>Grafdetaljer</value>
+  </data>
+  <data name="UI_Chart_SelectMoreGraphs" xml:space="preserve">
+    <value>Fler grafer...</value>
+  </data>
 </root>

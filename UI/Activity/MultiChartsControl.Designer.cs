@@ -359,13 +359,13 @@
             this.btnExpand.CenterImage = null;
             this.btnExpand.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnExpand.HyperlinkStyle = false;
-            this.btnExpand.ImageMargin = 2;
+            //this.btnExpand.ImageMargin = 1;
             this.btnExpand.LeftImage = null;
             this.btnExpand.Location = new System.Drawing.Point(353, 0);
             this.btnExpand.Name = "btnExpand";
             this.btnExpand.PushStyle = false;
             this.btnExpand.RightImage = null;
-            this.btnExpand.Size = new System.Drawing.Size(20, 20);
+            this.btnExpand.Size = new System.Drawing.Size(22, 22);
             this.btnExpand.TabIndex = 11;
             this.btnExpand.Text = "X";
             this.btnExpand.TextAlign = System.Drawing.StringAlignment.Center;
@@ -384,9 +384,9 @@
             this.ChartPanel.Controls.Add(this.speedChart, 0, 2);
             this.ChartPanel.Controls.Add(this.paceChart, 0, 3);
             this.ChartPanel.Controls.Add(this.elevationChart, 0, 4);
-            this.ChartPanel.Controls.Add(this.heartrateChart, 0, 5);
-            this.ChartPanel.Controls.Add(this.cadenceChart, 0, 6);
-            this.ChartPanel.Controls.Add(this.gradeChart, 0, 7);
+            this.ChartPanel.Controls.Add(this.gradeChart, 0, 5);
+            this.ChartPanel.Controls.Add(this.heartrateChart, 0, 6);
+            this.ChartPanel.Controls.Add(this.cadenceChart, 0, 7);
             this.ChartPanel.Controls.Add(this.powerChart, 0, 8);
             this.ChartPanel.Controls.Add(this.diffTimeChart, 0, 9);
             this.ChartPanel.Controls.Add(this.diffDistChart, 0, 10);

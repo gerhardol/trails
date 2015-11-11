@@ -31,6 +31,7 @@ using ZoneFiveSoftware.Common.Visuals.Fitness;
 
 using TrailsPlugin.Data;
 using GpsRunningPlugin.Util;
+using System.Collections;
 
 namespace TrailsPlugin.Utils
 {
@@ -46,24 +47,24 @@ namespace TrailsPlugin.Utils
     public enum LineChartTypes
     {
         Unknown,
-        Cadence,
-        Elevation,
-        HeartRateBPM,
-        //HeartRatePercentMax,
-        Power,
-        Grade,
         Speed,
         Pace,
+        SpeedPace,
+        Elevation,
+        Grade,
+        HeartRateBPM,
+        //HeartRatePercentMax,
+        Cadence,
+        Power,
+        DiffTime, //unused
+        DiffDist, //unused
+        DiffDistTime,
         PowerBalance, //LeftPower
         Temperature,
         GroundContactTime,
         VerticalOscillation,
         SaturatedHemoglobin,
         TotalHemoglobinConcentration,
-        SpeedPace,
-        DiffTime,
-        DiffDist,
-        DiffDistTime,
         DeviceSpeed,
         DevicePace,
         DeviceSpeedPace,
@@ -74,8 +75,138 @@ namespace TrailsPlugin.Utils
         Distance //NotUsedInTrails
     }
 
+    public class ChartTypeDefinition : IListColumnDefinition
+    {
+        public ChartTypeDefinition(LineChartTypes chartKey)
+        {
+            this.chartKey = chartKey;
+        }
+        private LineChartTypes chartKey;
+
+        public StringAlignment Align
+        {
+            get
+            {
+                return StringAlignment.Near;
+            }
+        }
+        public string GroupName
+        {
+            get
+            {
+                string group = null;
+                if (chartKey >= LineChartTypes.DeviceSpeed)
+                { group = CommonResources.Text.LabelDevice; }
+                else if (chartKey >= LineChartTypes.PowerBalance)
+                { group = ""; }
+                return group;
+            }
+        }
+        public string Id
+        {
+            get
+            {
+                return this.chartKey.ToString();
+            }
+        }
+        public int Width
+        {
+            get
+            {
+                return 0;
+            }
+        }
+        public string Text(string id)
+        {
+            return this.ToString();
+        }
+        public override string ToString()
+        {
+            return LineChartUtil.LineChartTypesString(chartKey, false);
+        }
+    }
+
     public static class LineChartUtil
     {
+        public static IList<LineChartTypes> ParseLineChartType(string[] s)
+        {
+            IList<LineChartTypes> r = new List<LineChartTypes>();
+            foreach (String column in s)
+            {
+                try
+                {
+                    LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
+                    //Compatibility w previous, where DifTime/DiffDist could be speced directly
+                    if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
+                    {
+                        if (!r.Contains(LineChartTypes.DiffDistTime))
+                        {
+                            r.Add(LineChartTypes.DiffDistTime);
+                        }
+                    }
+                    else
+                    {
+                        r.Add(t);
+                    }
+                }
+                catch { }
+            }
+            return r;
+        }
+
+        public static IList<LineChartTypes> SortMultiGraphType(IList<LineChartTypes> list)
+        {
+            //The order of presentation is fixed and the same as enum order
+            ((List<LineChartTypes>)list).Sort();
+            return list;
+        }
+
+        public static IList<string> LineChartType_strings(IList<LineChartTypes> list)
+        {
+            IList<string> r = new List<string>();
+            foreach (LineChartTypes l in list)
+            {
+                r.Add(l.ToString());
+            }
+            return r;
+        }
+
+        public static IList<IListColumnDefinition> MultiCharts()
+        {
+            return ChartDefs(Enum.GetValues(typeof(LineChartTypes)), true);
+        }
+
+        public static IList<IListColumnDefinition> MultiGraphs()
+        {
+            return ChartDefs((Array)new LineChartTypes[] { LineChartTypes.Cadence,
+                LineChartTypes.SpeedPace, LineChartTypes.Speed, LineChartTypes.Pace,
+                LineChartTypes.Elevation, LineChartTypes.Grade,
+                LineChartTypes.HeartRateBPM, LineChartTypes.Power,
+                LineChartTypes.DiffDistTime},
+                false);
+        }
+
+        private static IList<IListColumnDefinition> ChartDefs(Array list, bool charts)
+        {
+            IList<IListColumnDefinition> r = new List<IListColumnDefinition>();
+            foreach (LineChartTypes l in list)
+            {
+                if (l > LineChartTypes.Unknown && 
+                    (charts && l < LineChartTypes.DiffHeartRateBPM ||
+                     !charts && l < LineChartTypes.PowerBalance) &&
+                    l != LineChartTypes.DiffDist && l != LineChartTypes.DiffTime)
+                {
+                    r.Add(new ChartTypeDefinition(l));
+                }
+            }
+            return r;
+        }
+
+        public static IList<IListColumnDefinition> ChartDefs(IList<LineChartTypes> list)
+        {
+            return ChartDefs(((List<LineChartTypes>)list));
+        }
+
         public static string SmoothOverTrailBordersString(SmoothOverTrailBorders t)
         {
             string s;
@@ -142,10 +273,10 @@ namespace TrailsPlugin.Utils
 
         public static string ChartTypeString(LineChartTypes x)
         {
-            return LineChartTypesString(x);
+            return LineChartTypesString(x, true);
         }
 
-        public static string LineChartTypesString(LineChartTypes YAxisReferential)
+        public static string LineChartTypesString(LineChartTypes YAxisReferential, bool yAxis)
         {
             string yAxisLabel = "";
             switch (YAxisReferential)
@@ -162,7 +293,7 @@ namespace TrailsPlugin.Utils
                         break;
                     }
                 case LineChartTypes.HeartRateBPM:
-                case LineChartTypes.DiffHeartRateBPM:
+                case LineChartTypes.DiffHeartRateBPM: //Unused - need name changes
                     {
                         yAxisLabel = CommonResources.Text.LabelHeartRate;
                         break;
@@ -189,10 +320,10 @@ namespace TrailsPlugin.Utils
                         yAxisLabel = CommonResources.Text.LabelPace;
                         break;
                     }
-                case LineChartTypes.SpeedPace:
-                case LineChartTypes.DeviceSpeedPace:
+                case LineChartTypes.SpeedPace: //Only chart selector
+                case LineChartTypes.DeviceSpeedPace: //Only chart selector
                     {
-                        yAxisLabel = CommonResources.Text.LabelSpeed + CommonResources.Text.LabelPace;
+                        yAxisLabel = CommonResources.Text.LabelSpeed + " / " + CommonResources.Text.LabelPace;
                         break;
                     }
                 case LineChartTypes.Grade:
@@ -231,21 +362,32 @@ namespace TrailsPlugin.Utils
                         break;
                     }
                 case LineChartTypes.Distance:
-                case LineChartTypes.DiffDist:
-                case LineChartTypes.DeviceDiffDist:
+                case LineChartTypes.DiffDist: //Only for yaxis label
                     {
                         yAxisLabel = CommonResources.Text.LabelDistance;
                         break;
                     }
+                case LineChartTypes.DeviceDiffDist:
+                    {
+                        if (yAxis)
+                        {
+                            yAxisLabel = CommonResources.Text.LabelDistance;
+                        }
+                        else
+                        {
+                            yAxisLabel = Properties.Resources.UI_Chart_Difference;
+                        }
+                        break;
+                    }
                 case LineChartTypes.Time:
-                case LineChartTypes.DiffTime:
+                case LineChartTypes.DiffTime://Only for yaxis label
                     {
                         yAxisLabel = CommonResources.Text.LabelTime;
                         break;
                     }
-                case LineChartTypes.DiffDistTime:
+                case LineChartTypes.DiffDistTime://Only chart selector
                     {
-                        yAxisLabel = CommonResources.Text.LabelDistance + CommonResources.Text.LabelTime;
+                        yAxisLabel = Properties.Resources.UI_Chart_Difference;
                         break;
                     }
                 default:

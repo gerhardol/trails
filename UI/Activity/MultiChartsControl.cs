@@ -86,6 +86,7 @@ namespace TrailsPlugin.UI.Activity {
             this.deviceDiffToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffTimeToolStripMenuItem.Image = Properties.Resources.delta;
             //this.diffDistToolStripMenuItem.Image = Properties.Resources.delta;
+            //disable, only show diffDistTime
             this.diffTimeToolStripMenuItem.Visible = false;
             this.diffDistToolStripMenuItem.Visible = false;
             //this.deviceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
@@ -209,11 +210,33 @@ namespace TrailsPlugin.UI.Activity {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
                     this.ChartBanner.Text = Properties.Resources.TrailChartsName;
                     btnExpand.BackgroundImage = CommonIcons.LowerLeft;
+
+                    this.deviceToolStripMenuItem.Visible = false;
+                    PowerBalanceToolStripMenuItem.Visible = false;
+                    TemperatureToolStripMenuItem.Visible = false;
+                    GroundContactTimeToolStripMenuItem.Visible = false;
+                    VerticalOscillationToolStripMenuItem.Visible = false;
+                    SaturatedHemoglobinToolStripMenuItem.Visible = false;
+                    TotalHemoglobinConcentrationToolStripMenuItem.Visible = false;
+                    deviceDiffToolStripMenuItem.Visible = false;
+                    deviceSpeedPaceToolStripMenuItem.Visible = false;
+                    deviceElevationToolStripMenuItem.Visible = false;
                 }
                 else
                 {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
                     btnExpand.BackgroundImage = CommonIcons.LowerHalf;
+
+                    this.deviceToolStripMenuItem.Visible = true;
+                    PowerBalanceToolStripMenuItem.Visible = true;
+                    TemperatureToolStripMenuItem.Visible = true;
+                    GroundContactTimeToolStripMenuItem.Visible = true;
+                    VerticalOscillationToolStripMenuItem.Visible = true;
+                    SaturatedHemoglobinToolStripMenuItem.Visible = true;
+                    TotalHemoglobinConcentrationToolStripMenuItem.Visible = true;
+                    deviceDiffToolStripMenuItem.Visible = true;
+                    deviceSpeedPaceToolStripMenuItem.Visible = true;
+                    deviceElevationToolStripMenuItem.Visible = true;
                 }
                 this.RefreshChart();
             }

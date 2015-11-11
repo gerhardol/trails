@@ -98,18 +98,8 @@ namespace TrailsPlugin.UI.Activity {
 #if !ST_2_1
             saveImageMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Save16;
 #endif
-            //selectChartsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
-            selectChartsMenuItem.Visible = false;
-#if !ST_2_1
-//            this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
-#else
-//            //No listSetting dialog in ST2
-//            if (this.contextMenu.Items.Contains(this.listSettingsMenuItem))
-//            {
-//                this.contextMenu.Items.Remove(this.listSettingsMenuItem);
-//            }
-#endif
             fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
+            moreChartsMenuItem.Image = Properties.Resources.MoreCharts;
         }
 
         public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple)
@@ -135,6 +125,7 @@ namespace TrailsPlugin.UI.Activity {
             saveImageMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSaveImage;
 #endif
             fitToWindowMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRefresh;
+            moreChartsMenuItem.Text = Properties.Resources.UI_Chart_SelectMoreCharts;
             SetupAxes();
         }
 
@@ -157,7 +148,12 @@ namespace TrailsPlugin.UI.Activity {
 
         /********************************************************************************/
 
-        private void SaveImageButton_Click(object sender, EventArgs e) {
+        private void copyCharts_Click(object sender, EventArgs e)
+        {
+            //MainChart.SaveImage()
+        }
+        private void SaveImageButton_Click(object sender, EventArgs e)
+        {
 #if ST_2_1
             SaveImage dlg = new SaveImage();
 #else
@@ -211,6 +207,46 @@ namespace TrailsPlugin.UI.Activity {
         {
             MainChart.AutozoomToData(true);
             //MainChart.Refresh();
+        }
+
+        private void moreCharts_Click(object sender, EventArgs e)
+        {
+            ListSettingsDialog dialog = new ListSettingsDialog();
+            IList<IListColumnDefinition> cols;
+            if (this.MultipleCharts)
+            {
+                cols = LineChartUtil.MultiCharts();
+                dialog.SelectedColumns = LineChartUtil.LineChartType_strings(Data.Settings.MultiChartType);
+                dialog.Text = Properties.Resources.UI_Chart_SelectChartsTitle;
+                dialog.SelectedItemListLabel = Properties.Resources.UI_Chart_SelectedCharts;
+                dialog.AddButtonLabel = Properties.Resources.UI_Chart_AddChart;
+            }
+            else
+            {
+                cols = LineChartUtil.MultiGraphs();
+                //The selected cols are not really arrangable. The list could be sorted when presenting, but it is harder preventing reordering.
+                dialog.SelectedColumns = LineChartUtil.LineChartType_strings(
+                    LineChartUtil.SortMultiGraphType(Data.Settings.MultiGraphType));
+                dialog.Text = Properties.Resources.UI_Chart_SelectGraphsTitle;
+                dialog.SelectedItemListLabel = Properties.Resources.UI_Chart_SelectedGraphs;
+                dialog.AddButtonLabel = Properties.Resources.UI_Chart_AddGraph;
+            }
+            dialog.AvailableColumns = cols;
+            dialog.ThemeChanged(m_visualTheme);
+            dialog.AllowFixedColumnSelect = false;
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                if (this.MultipleCharts)
+                {
+                    Data.Settings.SetMultiChartType = ((List<string>)dialog.SelectedColumns).ToArray();
+                }
+                else
+                {
+                    Data.Settings.SetMultiGraphType = ((List<string>)dialog.SelectedColumns).ToArray();
+                }
+                this.m_multiple.RefreshChart();
+            }
         }
 
         //void copyChartMenuItem_Click(object sender, EventArgs e)

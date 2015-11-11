@@ -153,6 +153,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MoreCharts {
+            get {
+                object obj = ResourceManager.GetObject("MoreCharts", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Problem communicating with {0}.
         ///Make sure that {1} is installed..
         /// </summary>
@@ -815,6 +825,24 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Chart.
+        /// </summary>
+        internal static string UI_Chart_AddChart {
+            get {
+                return ResourceManager.GetString("UI_Chart_AddChart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Graph.
+        /// </summary>
+        internal static string UI_Chart_AddGraph {
+            get {
+                return ResourceManager.GetString("UI_Chart_AddGraph", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adjust Resync Diff at Trail Points.
         /// </summary>
         internal static string UI_Chart_adjustResyncDiffAtTrailPoints {
@@ -833,11 +861,74 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Difference.
+        /// </summary>
+        internal static string UI_Chart_Difference {
+            get {
+                return ResourceManager.GetString("UI_Chart_Difference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resync Diff at Trail Points.
         /// </summary>
         internal static string UI_Chart_resyncDiffAtTrailPoints {
             get {
                 return ResourceManager.GetString("UI_Chart_resyncDiffAtTrailPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chart Details.
+        /// </summary>
+        internal static string UI_Chart_SelectChartsTitle {
+            get {
+                return ResourceManager.GetString("UI_Chart_SelectChartsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Charts.
+        /// </summary>
+        internal static string UI_Chart_SelectedCharts {
+            get {
+                return ResourceManager.GetString("UI_Chart_SelectedCharts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Graphs.
+        /// </summary>
+        internal static string UI_Chart_SelectedGraphs {
+            get {
+                return ResourceManager.GetString("UI_Chart_SelectedGraphs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph Details.
+        /// </summary>
+        internal static string UI_Chart_SelectGraphsTitle {
+            get {
+                return ResourceManager.GetString("UI_Chart_SelectGraphsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select More Charts....
+        /// </summary>
+        internal static string UI_Chart_SelectMoreCharts {
+            get {
+                return ResourceManager.GetString("UI_Chart_SelectMoreCharts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select More Graphs....
+        /// </summary>
+        internal static string UI_Chart_SelectMoreGraphs {
+            get {
+                return ResourceManager.GetString("UI_Chart_SelectMoreGraphs", resourceCulture);
             }
         }
         

@@ -36,11 +36,12 @@ namespace TrailsPlugin.UI.Activity
             this.ZoomToContentButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.ZoomOutButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.SaveImageButton = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.MoreChartsButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.MainChart = new ZoneFiveSoftware.Common.Visuals.Chart.LineChart();
             this.chartContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyChartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectChartsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fitToWindowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moreChartsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chartTablePanel.SuspendLayout();
             this.ButtonPanel.SuspendLayout();
@@ -76,6 +77,7 @@ namespace TrailsPlugin.UI.Activity
             this.ButtonPanel.Controls.Add(this.ZoomToContentButton);
             this.ButtonPanel.Controls.Add(this.ZoomOutButton);
             this.ButtonPanel.Controls.Add(this.SaveImageButton);
+            this.ButtonPanel.Controls.Add(this.MoreChartsButton);
             this.ButtonPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ButtonPanel.HeadingBackColor = System.Drawing.Color.LightBlue;
             this.ButtonPanel.HeadingFont = null;
@@ -97,14 +99,14 @@ namespace TrailsPlugin.UI.Activity
             this.ZoomInButton.CenterImage = ((System.Drawing.Image)(resources.GetObject("ZoomInButton.CenterImage")));
             this.ZoomInButton.DialogResult = System.Windows.Forms.DialogResult.None;
             this.ZoomInButton.HyperlinkStyle = false;
-            this.ZoomInButton.ImageMargin = 2;
+            //this.ZoomInButton.ImageMargin = 1;
             this.ZoomInButton.LeftImage = null;
             this.ZoomInButton.Location = new System.Drawing.Point(374, 0);
             this.ZoomInButton.Margin = new System.Windows.Forms.Padding(0);
             this.ZoomInButton.Name = "ZoomInButton";
             this.ZoomInButton.PushStyle = true;
             this.ZoomInButton.RightImage = null;
-            this.ZoomInButton.Size = new System.Drawing.Size(24, 24);
+            this.ZoomInButton.Size = new System.Drawing.Size(22, 22);
             this.ZoomInButton.TabIndex = 0;
             this.ZoomInButton.TextAlign = System.Drawing.StringAlignment.Center;
             this.ZoomInButton.TextLeftMargin = 2;
@@ -119,13 +121,13 @@ namespace TrailsPlugin.UI.Activity
             this.ZoomToContentButton.CenterImage = global::TrailsPlugin.Properties.Resources.ZoomToContent;
             this.ZoomToContentButton.DialogResult = System.Windows.Forms.DialogResult.None;
             this.ZoomToContentButton.HyperlinkStyle = false;
-            this.ZoomToContentButton.ImageMargin = 2;
+            //this.ZoomToContentButton.ImageMargin = 1;
             this.ZoomToContentButton.LeftImage = null;
             this.ZoomToContentButton.Location = new System.Drawing.Point(322, 0);
             this.ZoomToContentButton.Name = "ZoomToContentButton";
             this.ZoomToContentButton.PushStyle = true;
             this.ZoomToContentButton.RightImage = null;
-            this.ZoomToContentButton.Size = new System.Drawing.Size(24, 24);
+            this.ZoomToContentButton.Size = new System.Drawing.Size(22, 22);
             this.ZoomToContentButton.TabIndex = 1;
             this.ZoomToContentButton.TextAlign = System.Drawing.StringAlignment.Center;
             this.ZoomToContentButton.TextLeftMargin = 2;
@@ -140,14 +142,14 @@ namespace TrailsPlugin.UI.Activity
             this.ZoomOutButton.CenterImage = ((System.Drawing.Image)(resources.GetObject("ZoomOutButton.CenterImage")));
             this.ZoomOutButton.DialogResult = System.Windows.Forms.DialogResult.None;
             this.ZoomOutButton.HyperlinkStyle = false;
-            this.ZoomOutButton.ImageMargin = 2;
+            //this.ZoomOutButton.ImageMargin = 1;
             this.ZoomOutButton.LeftImage = null;
             this.ZoomOutButton.Location = new System.Drawing.Point(348, 0);
             this.ZoomOutButton.Margin = new System.Windows.Forms.Padding(0);
             this.ZoomOutButton.Name = "ZoomOutButton";
             this.ZoomOutButton.PushStyle = true;
             this.ZoomOutButton.RightImage = null;
-            this.ZoomOutButton.Size = new System.Drawing.Size(24, 24);
+            this.ZoomOutButton.Size = new System.Drawing.Size(22, 22);
             this.ZoomOutButton.TabIndex = 0;
             this.ZoomOutButton.TextAlign = System.Drawing.StringAlignment.Center;
             this.ZoomOutButton.TextLeftMargin = 2;
@@ -162,19 +164,41 @@ namespace TrailsPlugin.UI.Activity
             this.SaveImageButton.CenterImage = ((System.Drawing.Image)(resources.GetObject("SaveImageButton.CenterImage")));
             this.SaveImageButton.DialogResult = System.Windows.Forms.DialogResult.None;
             this.SaveImageButton.HyperlinkStyle = false;
-            this.SaveImageButton.ImageMargin = 2;
+            //this.SaveImageButton.ImageMargin = 0;
             this.SaveImageButton.LeftImage = null;
             this.SaveImageButton.Location = new System.Drawing.Point(296, 0);
             this.SaveImageButton.Margin = new System.Windows.Forms.Padding(0);
             this.SaveImageButton.Name = "SaveImageButton";
             this.SaveImageButton.PushStyle = true;
             this.SaveImageButton.RightImage = null;
-            this.SaveImageButton.Size = new System.Drawing.Size(24, 24);
+            this.SaveImageButton.Size = new System.Drawing.Size(22, 22);
             this.SaveImageButton.TabIndex = 0;
             this.SaveImageButton.TextAlign = System.Drawing.StringAlignment.Center;
             this.SaveImageButton.TextLeftMargin = 2;
             this.SaveImageButton.TextRightMargin = 2;
             this.SaveImageButton.Click += new System.EventHandler(this.SaveImageButton_Click);
+            // 
+            // MoreChartsButton
+            // 
+            this.MoreChartsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MoreChartsButton.BackColor = System.Drawing.Color.Transparent;
+            this.MoreChartsButton.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.MoreChartsButton.CenterImage = global::TrailsPlugin.Properties.Resources.MoreCharts;
+            this.MoreChartsButton.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.MoreChartsButton.HyperlinkStyle = false;
+            //this.MoreChartsButton.ImageMargin = 1;
+            this.MoreChartsButton.LeftImage = null;
+            this.MoreChartsButton.Location = new System.Drawing.Point(270, 0);
+            this.MoreChartsButton.Margin = new System.Windows.Forms.Padding(0);
+            this.MoreChartsButton.Name = "MoreChartsButton";
+            this.MoreChartsButton.PushStyle = true;
+            this.MoreChartsButton.RightImage = null;
+            this.MoreChartsButton.Size = new System.Drawing.Size(24, 24);
+            this.MoreChartsButton.TabIndex = 0;
+            this.MoreChartsButton.TextAlign = System.Drawing.StringAlignment.Center;
+            this.MoreChartsButton.TextLeftMargin = 2;
+            this.MoreChartsButton.TextRightMargin = 2;
+            this.MoreChartsButton.Click += new System.EventHandler(this.moreCharts_Click);
             // 
             // MainChart
             // 
@@ -201,10 +225,10 @@ namespace TrailsPlugin.UI.Activity
             // chartContextMenu
             // 
             this.chartContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyChartMenuItem,
-            this.selectChartsMenuItem,
+            this.moreChartsMenuItem,
             this.fitToWindowMenuItem,
-            this.saveImageMenuItem});
+            this.saveImageMenuItem,
+            this.copyChartMenuItem});
             this.chartContextMenu.Name = "chartContextMenu";
             this.chartContextMenu.Size = new System.Drawing.Size(163, 92);
             // 
@@ -213,13 +237,14 @@ namespace TrailsPlugin.UI.Activity
             this.copyChartMenuItem.Name = "copyChartMenuItem";
             this.copyChartMenuItem.Size = new System.Drawing.Size(162, 22);
             this.copyChartMenuItem.Text = "<Copy>";
+            this.copyChartMenuItem.Click += new System.EventHandler(this.copyCharts_Click);
             // 
-            // selectChartsMenuItem
+            // moreChartsMenuItem
             // 
-            this.selectChartsMenuItem.Name = "selectChartsMenuItem";
-            this.selectChartsMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.selectChartsMenuItem.Text = "<List Settings...";
-            this.selectChartsMenuItem.Visible = false;
+            this.moreChartsMenuItem.Name = "moreChartsMenuItem";
+            this.moreChartsMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.moreChartsMenuItem.Text = "<more charts>";
+            this.moreChartsMenuItem.Click += new System.EventHandler(this.moreCharts_Click);
             // 
             // fitToWindowMenuItem
             // 
@@ -261,14 +286,15 @@ namespace TrailsPlugin.UI.Activity
         private ZoneFiveSoftware.Common.Visuals.Chart.LineChart MainChart;
         private ZoneFiveSoftware.Common.Visuals.Panel ButtonPanel;
         private System.Windows.Forms.ContextMenuStrip chartContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem moreChartsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyChartMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectChartsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fitToWindowMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveImageMenuItem;
         private ZoneFiveSoftware.Common.Visuals.Button ZoomOutButton;
         private ZoneFiveSoftware.Common.Visuals.Button ZoomInButton;
         private ZoneFiveSoftware.Common.Visuals.Button ZoomToContentButton;
         private ZoneFiveSoftware.Common.Visuals.Button SaveImageButton;
+        private ZoneFiveSoftware.Common.Visuals.Button MoreChartsButton;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
     }
 }

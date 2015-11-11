@@ -103,6 +103,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public static string[] SetMultiChartType
+        {
+            set
+            {
+                m_MultiChartTypes = LineChartUtil.ParseLineChartType(value);
+            }
+        }
+
         public static LineChartTypes ToggleMultiChartType
         {
             set
@@ -123,6 +131,14 @@ namespace TrailsPlugin.Data
             get
             {
                 return m_MultiGraphTypes;
+            }
+        }
+
+        public static string[] SetMultiGraphType
+        {
+            set
+            {
+                m_MultiGraphTypes = LineChartUtil.ParseLineChartType(value);
             }
         }
 
@@ -829,51 +845,15 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.sMultiChartType);
                 if (attr.Length > 0)
                 {
-                    m_MultiChartTypes.Clear();
                     String[] values = attr.Split(';');
-                    foreach (String column in values)
-                    {
-                        try
-                        {
-                            LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
-                            //Compatibility w previous, where DifTime/DiffDist could be speced directly
-                            if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
-                            {
-                                if (!m_MultiChartTypes.Contains(LineChartTypes.DiffDistTime))
-                                {
-                                    m_MultiChartTypes.Add(LineChartTypes.DiffDistTime);
-                                }
-                            }
-                            else
-                            {
-                                m_MultiChartTypes.Add(t);
-                            }
-                        }
-                        catch { }
-                    }
+                    SetMultiChartType = values;
                 }
 
                 attr = pluginNode.GetAttribute(xmlTags.sMultiGraphType);
                 if (attr.Length > 0)
                 {
-                    m_MultiGraphTypes.Clear();
                     String[] values = attr.Split(';');
-                    foreach (String column in values)
-                    {
-                        LineChartTypes t = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), column, true);
-                        //Compatibility w previous, where DifTime/DiffDist could be speced directly
-                        if (t == LineChartTypes.DiffDist || t == LineChartTypes.DiffTime)
-                        {
-                            if (!m_MultiGraphTypes.Contains(LineChartTypes.DiffDistTime))
-                            {
-                                m_MultiGraphTypes.Add(LineChartTypes.DiffDistTime);
-                            }
-                        }
-                        else
-                        {
-                            m_MultiGraphTypes.Add(t);
-                        }
-                    }
+                    SetMultiGraphType = values;
                 }
                 attr = pluginNode.GetAttribute(xmlTags.sSaveChartImagePath);
                 if (attr.Length > 0) { SaveChartImagePath = attr; }

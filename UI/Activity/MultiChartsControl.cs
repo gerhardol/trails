@@ -109,9 +109,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     TrailLineChart lChart = (TrailLineChart)t;
                     m_lineCharts.Add(lChart);
-                    if(lChart.MultipleCharts)
+                    if (lChart.MultipleCharts)
                     {
-                        m_multiChart=lChart;
+                        m_multiChart = lChart;
                     }
                 }
             }
@@ -125,6 +125,29 @@ namespace TrailsPlugin.UI.Activity {
             //diffDist.YAxisReferential = LineChartTypes.diffDist;
             this.Expanded = m_expanded;
             this.Resize += new System.EventHandler(TrailLineChart_Resize);
+#if !chartsInDropDownMenu
+            //old style select in drop down menu
+            paceToolStripMenuItem.Visible = false;
+            speedPaceToolStripMenuItem.Visible = false;
+            speedToolStripMenuItem.Visible = false;
+            gradeStripMenuItem.Visible = false;
+            elevationToolStripMenuItem.Visible = false;
+            heartRateToolStripMenuItem.Visible = false;
+            cadenceToolStripMenuItem.Visible = false;
+            powerToolStripMenuItem.Visible = false;
+            this.diffDistTimeToolStripMenuItem.Visible = false;
+
+            this.deviceToolStripMenuItem.Visible = false;
+            PowerBalanceToolStripMenuItem.Visible = false;
+            TemperatureToolStripMenuItem.Visible = false;
+            GroundContactTimeToolStripMenuItem.Visible = false;
+            VerticalOscillationToolStripMenuItem.Visible = false;
+            SaturatedHemoglobinToolStripMenuItem.Visible = false;
+            TotalHemoglobinConcentrationToolStripMenuItem.Visible = false;
+            deviceDiffToolStripMenuItem.Visible = false;
+            deviceSpeedPaceToolStripMenuItem.Visible = false;
+            deviceElevationToolStripMenuItem.Visible = false;
+#endif
         }
 
         public void ThemeChanged(ITheme visualTheme)
@@ -211,6 +234,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.ChartBanner.Text = Properties.Resources.TrailChartsName;
                     btnExpand.BackgroundImage = CommonIcons.LowerLeft;
 
+#if chartsInDropDownMenu
                     this.deviceToolStripMenuItem.Visible = false;
                     PowerBalanceToolStripMenuItem.Visible = false;
                     TemperatureToolStripMenuItem.Visible = false;
@@ -221,12 +245,14 @@ namespace TrailsPlugin.UI.Activity {
                     deviceDiffToolStripMenuItem.Visible = false;
                     deviceSpeedPaceToolStripMenuItem.Visible = false;
                     deviceElevationToolStripMenuItem.Visible = false;
+#endif
                 }
                 else
                 {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
                     btnExpand.BackgroundImage = CommonIcons.LowerHalf;
 
+#if chartsInDropDownMenu
                     this.deviceToolStripMenuItem.Visible = true;
                     PowerBalanceToolStripMenuItem.Visible = true;
                     TemperatureToolStripMenuItem.Visible = true;
@@ -237,6 +263,7 @@ namespace TrailsPlugin.UI.Activity {
                     deviceDiffToolStripMenuItem.Visible = true;
                     deviceSpeedPaceToolStripMenuItem.Visible = true;
                     deviceElevationToolStripMenuItem.Visible = true;
+#endif
                 }
                 this.RefreshChart();
             }

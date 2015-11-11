@@ -97,6 +97,10 @@
             // detailMenu
             // 
             this.detailMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.distanceToolStripMenuItem,
+            this.timeToolStripMenuItem,
+            this.toolStripSeparator3,
+#if chartsInDropDownMenu
             this.speedPaceToolStripMenuItem,
             this.speedToolStripMenuItem,
             this.paceToolStripMenuItem,
@@ -110,12 +114,10 @@
             this.diffTimeToolStripMenuItem,
             this.diffDistToolStripMenuItem,
             this.diffDistTimeToolStripMenuItem,
+#endif
             this.resyncDiffAtTrailPointsToolStripMenuItem,
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem,
             this.toolStripSeparator2,
-            this.distanceToolStripMenuItem,
-            this.timeToolStripMenuItem,
-            this.toolStripSeparator3,
             this.syncChartAtTrailPointsToolStripMenuItem,
             this.chartSmoothMenuItem,
             this.showToolBarMenuItem});
@@ -359,7 +361,7 @@
             this.btnExpand.CenterImage = null;
             this.btnExpand.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnExpand.HyperlinkStyle = false;
-            //this.btnExpand.ImageMargin = 1;
+            //this.btnExpand.ImageMargin = 2;
             this.btnExpand.LeftImage = null;
             this.btnExpand.Location = new System.Drawing.Point(353, 0);
             this.btnExpand.Name = "btnExpand";
@@ -618,7 +620,7 @@
 
         }
 
-        #endregion
+#endregion
 
         private ZoneFiveSoftware.Common.Visuals.ActionBanner ChartBanner;
         private System.Windows.Forms.ContextMenuStrip detailMenu;

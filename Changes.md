@@ -6,6 +6,7 @@ This page describes the changes between plugin releases. The change log may cont
   * Changed version numbering after source repository was moved to GitHub.
   * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
     The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
+  * Standard ST chart selection dialog. This also allows to reorder charts. Chart selection in dropdown menu is removed.
   * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
   * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
   * SplitPoints - view on map.
@@ -21,6 +22,8 @@ This page describes the changes between plugin releases. The change log may cont
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default.
   * Viewer for UniqueRoutes was not always showing time and date.
   * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
+  * Copy Chart option.
+  * Tweaked UI, updating icons, sizes etc
   * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
     * AddTopCategory
     * UseDeviceDistance

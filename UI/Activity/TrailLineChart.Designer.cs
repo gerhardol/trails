@@ -235,6 +235,7 @@ namespace TrailsPlugin.UI.Activity
             // copyChartMenuItem
             // 
             this.copyChartMenuItem.Name = "copyChartMenuItem";
+            this.copyChartMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
             this.copyChartMenuItem.Size = new System.Drawing.Size(162, 22);
             this.copyChartMenuItem.Text = "<Copy>";
             this.copyChartMenuItem.Click += new System.EventHandler(this.copyCharts_Click);
@@ -242,6 +243,7 @@ namespace TrailsPlugin.UI.Activity
             // moreChartsMenuItem
             // 
             this.moreChartsMenuItem.Name = "moreChartsMenuItem";
+            this.moreChartsMenuItem.Image = Properties.Resources.MoreCharts;
             this.moreChartsMenuItem.Size = new System.Drawing.Size(162, 22);
             this.moreChartsMenuItem.Text = "<more charts>";
             this.moreChartsMenuItem.Click += new System.EventHandler(this.moreCharts_Click);
@@ -249,6 +251,7 @@ namespace TrailsPlugin.UI.Activity
             // fitToWindowMenuItem
             // 
             this.fitToWindowMenuItem.Name = "fitToWindowMenuItem";
+            this.fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
             this.fitToWindowMenuItem.Size = new System.Drawing.Size(162, 22);
             this.fitToWindowMenuItem.Text = "<Fit to window>";
             this.fitToWindowMenuItem.Click += new System.EventHandler(this.ZoomToContentButton_Click);

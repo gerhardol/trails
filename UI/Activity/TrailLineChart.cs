@@ -93,13 +93,9 @@ namespace TrailsPlugin.UI.Activity {
 #else
             this.MainChart.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
 #endif
-            copyChartMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
-            copyChartMenuItem.Visible = false;
 #if !ST_2_1
             saveImageMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Save16;
 #endif
-            fitToWindowMenuItem.Image = Properties.Resources.ZoomToContent;
-            moreChartsMenuItem.Image = Properties.Resources.MoreCharts;
         }
 
         public void SetControl(ActivityDetailPageControl page, MultiChartsControl multiple)
@@ -150,8 +146,19 @@ namespace TrailsPlugin.UI.Activity {
 
         private void copyCharts_Click(object sender, EventArgs e)
         {
-            //MainChart.SaveImage()
+            string fileName = Path.GetTempFileName();
+            MainChart.SaveImage(MainChart.ChartDataRect.Size, fileName, System.Drawing.Imaging.ImageFormat.MemoryBmp);
+            Clipboard.SetImage(new Bitmap(fileName));
+            try
+            {
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+            }
+            catch (Exception) { }
         }
+
         private void SaveImageButton_Click(object sender, EventArgs e)
         {
 #if ST_2_1

@@ -184,6 +184,13 @@ foreach my$sname (keys %{$db->{sections}})
     {
       $res->{"assembly"} = dclone($sxml->{"assembly"});
     }
+	
+	my$nodef1="";
+	my$nodef2="";
+	my$noval1="";
+	my$noval2="";
+	my$isdiff1="";
+	my$isdiff2="";
 
     foreach my$d (@{$sxml->{"data"}})
     {
@@ -195,11 +202,13 @@ foreach my$sname (keys %{$db->{sections}})
           if(!defined $section->{$d->{name}} ||
           !defined $section->{$d->{name}}[$i])
           {
-            print STDOUT "Warning: spreadsheet no def for $d->{name}\n";
+            $nodef1 .= "$d->{name}\n";
+            $nodef2 .= "$d->{value}[0]\n";
           }
           elsif (!defined $d->{value})
           {
-             print STDOUT "Warning: $sname no value for $d->{name}\n";
+             $noval1 .= "$d->{name}\n";
+             $noval2 .= "$section->{$d->{name}}[$i]\n";
           }
           else
           {
@@ -216,7 +225,9 @@ foreach my$sname (keys %{$db->{sections}})
               }
               else
               {
-                print STDOUT "\nWarning: Different definitions for $d->{name}: spreadsheet\n   $spr\n and $sname\n   $resx\n\n";
+                #print STDOUT "\nWarning: Different definitions for $d->{name}: spreadsheet\n   $spr\n and $sname\n   $resx\n\n";
+                $isdiff1.="$d->{name}\t$spr\n";
+                $isdiff2.="$d->{name}\t$resx\n";
               }
             }
           }
@@ -238,6 +249,31 @@ foreach my$sname (keys %{$db->{sections}})
         }
       }
     }
+	if($nodef1 ne "")
+	{
+      print STDOUT "\nWarning: spreadsheet no def:\n";
+	  print STDOUT $nodef1;
+      print STDOUT "\n";
+	  print STDOUT $nodef2;
+      print STDOUT "\n";
+	}
+	if($noval1 ne "")
+	{
+      print STDOUT "\nWarning: $sname no value:\n";
+	  print STDOUT $noval1;
+      print STDOUT "\n";
+	  print STDOUT $noval2;
+      print STDOUT "\n";
+	}
+	if($isdiff1 ne "")
+	{
+      print STDOUT "\nWarning: Different definitions for spreadsheet\n";
+	  print STDOUT $isdiff1;
+      print STDOUT "\n   $sname\n";
+	  print STDOUT $isdiff2;
+      print STDOUT "\n";
+	}
+
 
     if($i==1)
     {
@@ -267,14 +303,21 @@ foreach my$sname (keys %{$db->{sections}})
           print "Error: Cannot find \"$visualdiff\" $spr_diff_file $resx_diff_file , keeping temp files\n\n";
         }
       }
+	  my$nospr="";
       foreach my$j (sort keys %{$section})
       {
         if($j ne "\$this.Text" &&
         !defined $xmlexists{$j})
         {
-          print STDOUT "Warning: resx no def for $j\n";
+          $nospr.="$j\n";
         }
       }
+	  if($nospr ne "")
+	  {
+          print STDOUT "Warning: resx no def:\n";
+		  print STDOUT $nospr;
+		  print STDOUT "\n";
+	  }
     }
     else
     {

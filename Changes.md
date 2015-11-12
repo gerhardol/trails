@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-1.3.5 2015-10-20 (unreleased)
+1.3.8 2015-11-12 (unreleased)
   * Changed version numbering after source repository was moved to GitHub.
   * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
     The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
@@ -24,6 +24,7 @@ This page describes the changes between plugin releases. The change log may cont
   * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
   * Copy Chart option.
   * Tweaked UI, updating icons, sizes etc
+  * Move "insert activity" related actions from _Advanced_ submenu to new _Insert activities_ submenu to be able to describe the functionality better.
   * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
     * AddTopCategory
     * UseDeviceDistance

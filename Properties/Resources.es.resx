@@ -310,4 +310,85 @@ http://www.gnu.org/licenses/lgpl.html</value>
   <data name="List_RestLap" xml:space="preserve">
     <value>Descanso de vuelta</value>
   </data>
+  <data name="UI_Activity_List_AverageStrokeDistance" xml:space="preserve">
+    <value>Distancia carrera (prom)</value>
+  </data>
+  <data name="UI_Activity_List_AverageStrokeRate" xml:space="preserve">
+    <value>Ritmo promedio (prom)</value>
+  </data>
+  <data name="UI_Activity_List_Efficiency" xml:space="preserve">
+    <value>Eficiencia</value>
+  </data>
+  <data name="UI_Activity_List_LengthCount" xml:space="preserve">
+    <value>Longitud</value>
+  </data>
+  <data name="UI_Activity_List_StrokeCount" xml:space="preserve">
+    <value>Carrera</value>
+  </data>
+  <data name="UI_Activity_List_StrokeType" xml:space="preserve">
+    <value>Tipo Carrera</value>
+  </data>
+  <data name="UI_Activity_List_SwimLap" xml:space="preserve">
+    <value>Natación - Piscina</value>
+  </data>
+  <data name="UI_Activity_List_SWOLF" xml:space="preserve">
+    <value>SWOLF</value>
+  </data>
+  <data name="Metadata_Source" xml:space="preserve">
+    <value>Origen de importación</value>
+  </data>
+  <data name="UI_Activity_List_AddTopCategory" xml:space="preserve">
+    <value>Agregar actividades debajo {0}</value>
+  </data>
+  <data name="UI_Activity_List_SetRestLapsAsPauses" xml:space="preserve">
+    <value>Ajustar tiempos de descanso como pausas</value>
+  </data>
+  <data name="UI_Activity_List_ShowOnlyMarkedResultsOnMap" xml:space="preserve">
+    <value>Mostrar sólo resultados seleccionados en el mapa</value>
+  </data>
+  <data name="UI_Activity_List_ShowSplitPointsOnMap1" xml:space="preserve">
+    <value>Mostrar puntos de vueltas en el mapa</value>
+  </data>
+  <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">
+    <value>Resumen estándar de desviación media</value>
+  </data>
+  <data name="UI_Activity_List_UseDeviceDistance" xml:space="preserve">
+    <value>Usar distancia del dispositivo</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryAverage" xml:space="preserve">
+    <value>Resumen Promedio</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryTotal" xml:space="preserve">
+    <value>Resumen Total</value>
+  </data>
+  <data name="UI_Chart_AddChart" xml:space="preserve">
+    <value>Agregar gráfica</value>
+  </data>
+  <data name="UI_Chart_SelectChartsTitle" xml:space="preserve">
+    <value>Detalles gráfica</value>
+  </data>
+  <data name="UI_Chart_SelectedCharts" xml:space="preserve">
+    <value>Gráficas seleccionadas</value>
+  </data>
+  <data name="UI_Chart_SelectMoreCharts" xml:space="preserve">
+    <value>Seleccionar más gráficas...</value>
+  </data>
+  <data name="UI_Chart_AddGraph" xml:space="preserve">
+    <value>Agregar gráfico</value>
+  </data>
+  <data name="UI_Chart_Difference" xml:space="preserve">
+    <value>Diferencia</value>
+  </data>
+  <data name="UI_Chart_SelectedGraphs" xml:space="preserve">
+    <value>Gráficos seleccionados</value>
+  </data>
+  <data name="UI_Chart_SelectGraphsTitle" xml:space="preserve">
+    <value>Detalles gráficos</value>
+  </data>
+  <data name="UI_Chart_SelectMoreGraphs" xml:space="preserve">
+    <value>Seleccionar más gráficos...</value>
+  </data>
+  <data name="UI_Activity_List_AddActivities" xml:space="preserve">
+    <value>Agregar actividades</value>
+  </data>
 </root>

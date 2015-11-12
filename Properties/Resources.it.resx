@@ -183,7 +183,7 @@ Assicurarsi che {1} sia installato.</value>
     <value>Avanzato</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Aggiungere conUnique Routes attività simili dall'attività di riferimento {0}</value>
+    <value>Aggiungere conUnique Routes attività simili dall'attività di riferimento ({0})</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
@@ -236,8 +236,8 @@ Assicurarsi che {1} sia installato.</value>
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
     <value>Sincronizzare il grafico nei punti Trail</value>
   </data>
-  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Aggiungere attività con l'attuale Categoria di Riferimento</value>
+  <data name="UI_Activity_List_AddReferenceCategory" xml:space="preserve">
+    <value>Aggiungere attività con l'attuale Categoria di Riferimento: {0}</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Mostrare gli strumenti del grafico</value>

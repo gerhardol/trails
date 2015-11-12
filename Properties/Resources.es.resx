@@ -177,7 +177,7 @@ Asegúrese de que {1} esté instalado.</value>
     <value>Avanzado</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Agregar actividades similares con el plugin Unique Routes usando la referencia {0}</value>
+    <value>Agregar actividades similares con el plugin Unique Routes usando la referencia  ({0})</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
@@ -233,8 +233,8 @@ Asegúrese de que {1} esté instalado.</value>
   <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
     <value>Ajustar las diferencias de resincronización en los puntos del sendero</value>
   </data>
-  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Agregar actividades con la actual categoría de referencia</value>
+  <data name="UI_Activity_List_AddReferenceCategory" xml:space="preserve">
+    <value>Agregar actividades con la actual categoría de referencia: {0}</value>
   </data>
   <data name="PerformancePredictorCompatible" xml:space="preserve">
     <value>El análisis es posible con Performance Predictor.</value>

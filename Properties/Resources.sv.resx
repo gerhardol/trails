@@ -136,7 +136,7 @@
     <value>Markera liknade trail eller etapper i listan</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
-    <value>Begränsa aktiviter med Unique Routes från referens resultat{0}</value>
+    <value>Begränsa aktiviter med Unique Routes från referens resultat ({0})</value>
   </data>
   <data name="Trail_Reference_Name" xml:space="preserve">
     <value>Referens Aktivitet</value>
@@ -161,7 +161,7 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <value>Avancerat</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Lägg till liknande aktiviteter med Unique Routes från referens result{0}</value>
+    <value>Unique Routes från referens result ({0})</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
@@ -207,8 +207,8 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
   <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
     <value>Synkronisera diff vid trail punkter</value>
   </data>
-  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Lägg till aktiviteter med referens kategori</value>
+  <data name="UI_Activity_List_AddReferenceCategory" xml:space="preserve">
+    <value>Referens kategori: {0}</value>
   </data>
   <data name="PerformancePredictorCompatible" xml:space="preserve">
     <value>Resultat kan analyseras med PerformancePredictor.</value>
@@ -300,7 +300,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
     <value>Importkälla</value>
   </data>
   <data name="UI_Activity_List_AddTopCategory" xml:space="preserve">
-    <value>Lägg till aktiviteter i {0}</value>
+    <value>Kategori: {0}</value>
   </data>
   <data name="UI_Activity_List_SetRestLapsAsPauses" xml:space="preserve">
     <value>Hantera vilovarv som pauser</value>
@@ -349,5 +349,8 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   </data>
   <data name="UI_Chart_SelectMoreGraphs" xml:space="preserve">
     <value>Fler grafer...</value>
+  </data>
+  <data name="UI_Activity_List_AddActivities" xml:space="preserve">
+    <value>Lägg till aktiviteter</value>
   </data>
 </root>

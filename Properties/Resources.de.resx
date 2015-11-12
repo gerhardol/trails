@@ -174,7 +174,7 @@ Stellen Sie sicher, dass {1} installiert ist.</value>
     <value>Fortgeschritten</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Ähnliche Aktivitäten mittels Unique Routes anhand des Referenzergebnisses {0} hinzufügen</value>
+    <value>Ähnliche Aktivitäten mittels Unique Routes anhand des Referenzergebnisses ({0}) hinzufügen</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
@@ -217,10 +217,13 @@ Stellen Sie sicher, dass {1} installiert ist.</value>
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
     <value>Chart synchronisieren am Trailpunkt</value>
   </data>
-  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Aktivitäten mit der aktuellen Referenz-Kategorie einfügen</value>
+  <data name="UI_Activity_List_AddReferenceCategory" xml:space="preserve">
+    <value>Aktivitäten mit der aktuellen Referenz-Kategorie einfügen: {0}</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Diagrammwerkzeuge anzeigen</value>
+  </data>
+  <data name="UI_Activity_List_AddActivities" xml:space="preserve">
+    <value>Aktivitäten einfügen</value>
   </data>
 </root>

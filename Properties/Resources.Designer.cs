@@ -468,11 +468,11 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Activities with Current Reference Category.
+        ///   Looks up a localized string similar to Add Activities.
         /// </summary>
-        internal static string UI_Activity_List_AddCurrentCategory {
+        internal static string UI_Activity_List_AddActivities {
             get {
-                return ResourceManager.GetString("UI_Activity_List_AddCurrentCategory", resourceCulture);
+                return ResourceManager.GetString("UI_Activity_List_AddActivities", resourceCulture);
             }
         }
         
@@ -486,7 +486,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add Activities below {0}.
+        ///   Looks up a localized string similar to Reference Category: {0}.
+        /// </summary>
+        internal static string UI_Activity_List_AddReferenceCategory {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_AddReferenceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category: {0}.
         /// </summary>
         internal static string UI_Activity_List_AddTopCategory {
             get {
@@ -711,7 +720,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Limit activities with UniqueRoutes from reference result{0}.
+        ///   Looks up a localized string similar to Limit activities with UniqueRoutes from reference result ({0}).
         /// </summary>
         internal static string UI_Activity_List_URLimit {
             get {
@@ -720,7 +729,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add similar activities with UniqueRoutes from reference result{0}.
+        ///   Looks up a localized string similar to UniqueRoutes from reference result ({0}).
         /// </summary>
         internal static string UI_Activity_List_URSelect {
             get {

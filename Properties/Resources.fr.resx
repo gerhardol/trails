@@ -179,7 +179,7 @@ Vérifiez que {1} soit installé.</value>
     <value>Avancé</value>
   </data>
   <data name="UI_Activity_List_URSelect" xml:space="preserve">
-    <value>Ajouter des activités similaires avec Unique Route du résultat de réference {0}</value>
+    <value>Ajouter des activités similaires avec Unique Route du résultat de réference ({0})</value>
   </data>
   <data name="UniqueRoutesCompatible" xml:space="preserve">
     <comment>Matrix</comment>
@@ -227,8 +227,8 @@ Vérifiez que {1} soit installé.</value>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
     <value>Ajouter des activités entrantes comme résultats</value>
   </data>
-  <data name="UI_Activity_List_AddCurrentCategory" xml:space="preserve">
-    <value>Ajouter des activités avec la catégorie de référence actuelle</value>
+  <data name="UI_Activity_List_AddReferenceCategory" xml:space="preserve">
+    <value>Ajouter des activités avec la catégorie de référence actuelle: {0}</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Afficher les outils graphiques</value>

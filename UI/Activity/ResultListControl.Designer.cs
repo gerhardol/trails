@@ -32,6 +32,7 @@
             this.listSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.referenceResultMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.insertActivitiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analyzeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.highScoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.performancePredictorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,6 +124,7 @@
             this.copyTableMenuItem,
             this.listSettingsMenuItem,
             this.referenceResultMenuItem,
+            this.insertActivitiesMenuItem,
             this.selectSimilarSplitsMenuItem,
             this.showSummaryTotalMenuItem,
             this.showSummaryAverageMenuItem,
@@ -164,6 +166,16 @@
             this.referenceResultMenuItem.Text = "<Set reference trail...";
             this.referenceResultMenuItem.Click += new System.EventHandler(referenceResultMenuItem_Click);
             // 
+            // insertActivitiesMenuItem
+            // 
+            this.insertActivitiesMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectWithURMenuItem,
+            this.addCurrentCategoryMenuItem,
+            this.addTopCategoryMenuItem});
+            this.insertActivitiesMenuItem.Name = "insertActivitiesMenuItem";
+            this.insertActivitiesMenuItem.Size = new System.Drawing.Size(199, 48);
+            this.insertActivitiesMenuItem.Text = "<Insert>";
+            // 
             // analyzeMenuItem
             // 
             this.analyzeMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -191,14 +203,11 @@
             // advancedMenuItem
             // 
             this.advancedMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addInBoundActivitiesMenuItem,
             this.excludeResultsMenuItem,
             this.limitActivityMenuItem,
             this.limitURMenuItem,
-            this.selectWithURMenuItem,
             this.markCommonStretchesMenuItem,
-            this.addInBoundActivitiesMenuItem,
-            this.addCurrentCategoryMenuItem,
-            this.addTopCategoryMenuItem,
             this.ResultSummaryStdDevMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
@@ -334,6 +343,7 @@
         private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem referenceResultMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem insertActivitiesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem analyzeMenuItem;
         private System.Windows.Forms.ToolStripMenuItem highScoreMenuItem;
         private System.Windows.Forms.ToolStripMenuItem performancePredictorMenuItem;

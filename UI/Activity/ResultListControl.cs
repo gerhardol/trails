@@ -90,9 +90,11 @@ namespace TrailsPlugin.UI.Activity {
             limitURMenuItem.Visible = false;
 #else
             this.listSettingsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
+            this.insertActivitiesMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;
             this.runGradeAdjustMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
             this.analyzeMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
             this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
+            this.excludeResultsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16;
 #endif
             this.summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             this.summaryList.LabelProvider = new TrailResultLabelProvider();
@@ -113,6 +115,7 @@ namespace TrailsPlugin.UI.Activity {
             this.copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_List_ListSettings;
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
+            this.insertActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddActivities;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
             this.analyzeMenuItem.Text = CommonResources.Text.ActionAnalyze;
             this.highScoreMenuItem.Text = Properties.Resources.HighScorePluginName;
@@ -120,12 +123,12 @@ namespace TrailsPlugin.UI.Activity {
             this.advancedMenuItem.Text = Properties.Resources.UI_Activity_List_Advanced;
             this.excludeResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ExcludeResult;
             this.limitActivityMenuItem.Text = Properties.Resources.UI_Activity_List_LimitSelection;
-            this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
-            this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
+            //this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, "");
+            //this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, "");
             this.markCommonStretchesMenuItem.Text = Properties.Resources.UI_Activity_List_URCommon;
             this.addInBoundActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddInBound;
-            this.addCurrentCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddCurrentCategory;
-            this.addTopCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddCurrentCategory;
+            //this.addCurrentCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddReferenceCategory;
+            //this.addTopCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddTopCategory;
             this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
             this.ResultSummaryStdDevMenuItem.Text = Properties.Resources.UI_Activity_List_ResultSummaryStdDev;
@@ -2024,6 +2027,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             this.referenceResultMenuItem.Text = string.Format(
                 Properties.Resources.UI_Activity_List_ReferenceResult, currRes, refRes);
+            this.limitURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URLimit, refRes);
+            this.selectWithURMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_URSelect, refRes);
             if (tr == null || tr == m_controller.ReferenceTrailResult)
             {
                 //Instead of a special text
@@ -2045,7 +2050,6 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //Summary result
                 this.referenceResultMenuItem.Enabled = false;
-                this.addCurrentCategoryMenuItem.Enabled = false;
                 this.excludeResultsMenuItem.Enabled = false;
                 this.markCommonStretchesMenuItem.Enabled = false;
             }
@@ -2053,22 +2057,26 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //Separate handled
                 //this.referenceResultMenuItem.Enabled = true;
-                this.addCurrentCategoryMenuItem.Enabled = true;
                 this.excludeResultsMenuItem.Enabled = true;
                 this.markCommonStretchesMenuItem.Enabled = true && Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             }
 
             if (m_controller.ReferenceActivity != null)
             {
-                this.addTopCategoryMenuItem.Enabled = true;
                 InsertCategoryTypes c = InsertCategoryTypes.SelectedTree;
                 IActivityCategory cat = this.getCurrentCategory(c);
 
-                this.addTopCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddTopCategory, Data.Settings.printFullCategoryPath(cat));
+                this.addTopCategoryMenuItem.Enabled = true;
+                this.addTopCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddTopCategory, 
+                    Data.Settings.printFullCategoryPath(cat));
+                this.addCurrentCategoryMenuItem.Enabled = true;
+                this.addCurrentCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddReferenceCategory, 
+                    Data.Settings.printFullCategoryPath(m_controller.ReferenceActivity.Category));
             }
             else
             {
                 this.addTopCategoryMenuItem.Enabled = false;
+                this.addCurrentCategoryMenuItem.Enabled = false;
             }
 
             this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();

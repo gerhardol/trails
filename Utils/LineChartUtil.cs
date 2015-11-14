@@ -467,6 +467,18 @@ namespace TrailsPlugin.Utils
             return res;
         }
 
+        public static bool IsDiffType(LineChartTypes YAxisReferential)
+        {
+            if (YAxisReferential == LineChartTypes.DiffTime ||
+                YAxisReferential == LineChartTypes.DiffDist ||
+                YAxisReferential == LineChartTypes.DiffDistTime ||
+                YAxisReferential == LineChartTypes.DeviceDiffDist)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void SetupXAxisFormatter(XAxisValue axisType, IAxis axis, IActivity activity)
         {
             switch (axisType)

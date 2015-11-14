@@ -121,8 +121,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             fitToWindowMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRefresh;
             moreChartsMenuItem.Text = Properties.Resources.UI_Chart_SelectMoreCharts;
-            smoothingLabel.Text = Properties.Resources.UI_Chart_Smoothing;
-            precedeControl(smoothingLabel, smoothingPicker);
+            //set smoothingLabel in SetupData:  setSmoothingPicker(GetSmooth());
             SetupAxes();
         }
 
@@ -276,6 +275,29 @@ namespace TrailsPlugin.UI.Activity {
                 Controller.TrailController.Instance.Clear(true);
                 m_page.RefreshChart();
             }
+        }
+
+        private void setSmoothingPicker(int val)
+        {
+            if (LineChartUtil.IsDiffType(m_lastSelectedType))
+            {
+                this.smoothingPicker.Maximum = decimal.MaxValue;
+                this.smoothingPicker.Minimum = decimal.MinValue;
+            }
+            else
+            {
+                //Some resonable, to keep size
+                this.smoothingPicker.Maximum = 9999;
+                this.smoothingPicker.Minimum = 0;
+            }
+            if (val > this.smoothingPicker.Maximum)
+            {
+                val = (int)this.smoothingPicker.Maximum;
+            }
+            this.smoothingPicker.Value = val;
+
+            smoothingLabel.Text = LineChartUtil.ChartTypeString(m_lastSelectedType);
+            precedeControl(smoothingLabel, smoothingPicker);
         }
 
         //Fires about every 33ms when selecting
@@ -558,6 +580,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.ShowSpeedToolTip(tr, regions);
                 }
+
+                int val = GetSmooth();
+                setSmoothingPicker(val);
             }
         }
 
@@ -1161,12 +1186,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
                 }
-                int v = GetSmooth();
-                if(v > this.smoothingPicker.Maximum)
-                {
-                    v = (int)this.smoothingPicker.Maximum;
-                }
-                this.smoothingPicker.Value = v;
+                int val = GetSmooth();
+
+                setSmoothingPicker(val);
 
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = TrailPointResult();
@@ -1776,15 +1798,21 @@ namespace TrailsPlugin.UI.Activity {
         private TrailResult getLastSelectedDiffResult()
         {
             TrailResult tr = null;
-            if (m_lastSelectedType == LineChartTypes.DiffTime ||
-                m_lastSelectedType == LineChartTypes.DiffDist ||
-                m_lastSelectedType == LineChartTypes.DiffDistTime ||
-                m_lastSelectedType == LineChartTypes.DeviceDiffDist)
+            int index = m_trailResults.Count - 1;
+            if (LineChartUtil.IsDiffType(m_lastSelectedType) && index >= 0)
             {
-                if (this.m_selectedDataSeries >= 0)
+                if (this.m_selectedDataSeries < 0 && m_trailResults.Contains(m_prevSelectedResult))
                 {
-                    //Series must be added in order, so they can be resolved to result here
-                    tr = m_trailResults[this.SeriesIndexToResult(this.m_selectedDataSeries)];
+                    tr = m_prevSelectedResult;
+                }
+                else
+                {
+                    if (this.m_selectedDataSeries >= 0)
+                    {
+                        //Series must be added in order, so they can be resolved to result here
+                        index = this.SeriesIndexToResult(this.m_selectedDataSeries);
+                    }
+                    tr = m_trailResults[index];
                 }
             }
             return tr;
@@ -1863,29 +1891,44 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                newVal = 0;
                 TrailResult tr = getLastSelectedDiffResult();
 
                 if (tr != null)
                 {
+                    float currVal = tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
                     if (val != null)
                     {
                         float valF;
-                        if (val == 0)
+                        if (resetSmooth)
                         {
                             valF = 0;
                         }
                         else
                         {
-                            valF = (int)val + tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                            valF = (int)val;
+                            if (isStep)
+                            {
+                                valF += currVal;
+                            }
                         }
-                        tr.SetXOffset(XAxisReferential == XAxisValue.Time, valF);
+                        if (valF != currVal)
+                        {
+                            tr.SetXOffset(XAxisReferential == XAxisValue.Time, valF);
+                            newVal = (int)valF;
+                        }
+                        else
+                        {
+                            newVal = null;
+                        }
                     }
-                    newVal = (int)tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                    else
+                    {
+                        newVal = (int)currVal;
+                    }
                 }
                 else
                 {
-                    //Not smoothing, no diff 
+                    //Not smoothing, no diff (selected)
                     newVal = 0;
                 }
             }
@@ -1895,13 +1938,7 @@ namespace TrailsPlugin.UI.Activity {
         void ShowSmoothToolTip()
         {
             int val = GetSmooth();
-
-            int val2 = val;
-            if (val2 > this.smoothingPicker.Maximum)
-            {
-                val2 = (int)this.smoothingPicker.Maximum;
-            }
-            this.smoothingPicker.Value = val2;
+            setSmoothingPicker(val);
 
             if (!Data.Settings.ShowChartToolBar &&
                 m_cursorLocationAtMouseMove != null)

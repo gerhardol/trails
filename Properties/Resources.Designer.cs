@@ -952,15 +952,6 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Smoothing.
-        /// </summary>
-        internal static string UI_Chart_Smoothing {
-            get {
-                return ResourceManager.GetString("UI_Chart_Smoothing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         internal static string UI_Chart_SmoothOverTrailBorders_All {

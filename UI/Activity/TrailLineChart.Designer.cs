@@ -243,8 +243,6 @@ namespace TrailsPlugin.UI.Activity
             // 
             this.smoothingPicker.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.smoothingPicker.Location = new System.Drawing.Point(200, 0);
-            this.smoothingPicker.Minimum = 0;
-            this.smoothingPicker.Maximum = 9999;
             this.smoothingPicker.Name = "smoothingPicker";
             this.smoothingPicker.Size = new System.Drawing.Size(39, 20);
             this.smoothingPicker.TabIndex = 7;

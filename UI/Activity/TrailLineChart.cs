@@ -121,7 +121,14 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             fitToWindowMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRefresh;
             moreChartsMenuItem.Text = Properties.Resources.UI_Chart_SelectMoreCharts;
+            smoothingLabel.Text = Properties.Resources.UI_Chart_Smoothing;
+            precedeControl(smoothingLabel, smoothingPicker);
             SetupAxes();
+        }
+
+        private void precedeControl(Control a, Control b)
+        {
+            a.Location = new Point(b.Location.X - a.Size.Width - 3, a.Location.Y);
         }
 
         public bool ShowPage
@@ -259,6 +266,16 @@ namespace TrailsPlugin.UI.Activity {
         {
             Data.Settings.ShowTrailPointsOnChart = !Data.Settings.ShowTrailPointsOnChart;
             this.m_multiple.RefreshChart();
+        }
+
+        private void smoothingPicker_LostFocus(object sender, EventArgs e)
+        {
+            //There should be a brief delay here
+            if (null != SetSmooth((int)smoothingPicker.Value, false, false))
+            {
+                Controller.TrailController.Instance.Clear(true);
+                m_page.RefreshChart();
+            }
         }
 
         //Fires about every 33ms when selecting
@@ -1144,6 +1161,12 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
                 }
+                int v = GetSmooth();
+                if(v > this.smoothingPicker.Maximum)
+                {
+                    v = (int)this.smoothingPicker.Maximum;
+                }
+                this.smoothingPicker.Value = v;
 
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = TrailPointResult();
@@ -1535,7 +1558,7 @@ namespace TrailsPlugin.UI.Activity {
         void MainChart_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             int? smoothStep = null;
-            bool reset = false;
+            bool resetSmooth = false;
             bool refreshData = false;
             bool clearRefreshData = true;
 
@@ -1544,7 +1567,7 @@ namespace TrailsPlugin.UI.Activity {
             if (e.KeyCode == Keys.Home)
             {
                 smoothStep = 0;
-                reset = true;
+                resetSmooth = true;
             }
             else if (e.KeyCode == Keys.End)
             {
@@ -1557,17 +1580,6 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.KeyCode == Keys.PageDown)
                 {
                     smoothStep *= -1;
-                }
-                if (!m_ChartTypes.Contains(m_lastSelectedType))
-                {
-                    foreach (LineChartTypes chartType in m_ChartTypes)
-                    {
-                        if (m_axisCharts[chartType] is LeftVerticalAxis)
-                        {
-                            m_lastSelectedType = chartType;
-                            break;
-                        }
-                    }
                 }
             }
             else if (e.KeyCode == Keys.A)
@@ -1634,8 +1646,8 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == (Keys.Control | Keys.Shift))
                 {
                     smoothStep = 0;
-                    reset = true;
-                    TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
+                    //resetSmooth = true;
+                    TrailResult tr = getLastSelectedDiffResult();
                     if (tr != null && 1 == this.m_trailResults.Count)
                     {
                         tr = this.m_trailResults[0];
@@ -1721,46 +1733,9 @@ namespace TrailsPlugin.UI.Activity {
                     smoothStep = -smoothStep;
                 }
 
-                //If a diff graph was selected last, it will be set (the other path must handle diff too)
-                TrailResult tr = getLastSelectedDiffResult(m_lastSelectedType);
-                if (tr != null)
+                if (null == SetSmooth(smoothStep, smoothStep != 0, resetSmooth))
                 {
-                    float val;
-                    if (smoothStep == 0)
-                    {
-                        val = 0;
-                    }
-                    else
-                    {
-                        val = (float)smoothStep + tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
-                    }
-                    tr.SetXOffset(XAxisReferential == XAxisValue.Time, val);
-                }
-                else
-                {
-                    int val;
-                    if (smoothStep == 0)
-                    {
-                        val = 0;
-                    }
-                    else
-                    {
-                        val = GetDefaultSmooth(m_lastSelectedType);
-                        //No action for reset, value already set
-                        if (!reset)
-                        {
-                            val += (int)smoothStep;
-                            if (val < 0)
-                            {
-                                val = 0;
-                            }
-                        }
-                    }
-                    if (val == GetDefaultSmooth(m_lastSelectedType))
-                    {
-                        refreshData = false;
-                    }
-                    SetDefaultSmooth(m_lastSelectedType, val);
+                    refreshData = false;
                 }
             }
 
@@ -1782,7 +1757,7 @@ namespace TrailsPlugin.UI.Activity {
             if (smoothStep != null)
             {
                 //Show smooth value once, change more than one axis if needed
-                ShowSmoothToolTip(m_lastSelectedType);
+                ShowSmoothToolTip();
 
                 foreach (KeyValuePair<LineChartTypes, IAxis> kp in m_axisCharts)
                 {
@@ -1798,12 +1773,13 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private TrailResult getLastSelectedDiffResult(LineChartTypes chartType)
+        private TrailResult getLastSelectedDiffResult()
         {
             TrailResult tr = null;
-            if (chartType == LineChartTypes.DiffTime ||
-                chartType == LineChartTypes.DiffDist ||
-                chartType == LineChartTypes.DiffDistTime)
+            if (m_lastSelectedType == LineChartTypes.DiffTime ||
+                m_lastSelectedType == LineChartTypes.DiffDist ||
+                m_lastSelectedType == LineChartTypes.DiffDistTime ||
+                m_lastSelectedType == LineChartTypes.DeviceDiffDist)
             {
                 if (this.m_selectedDataSeries >= 0)
                 {
@@ -1814,168 +1790,122 @@ namespace TrailsPlugin.UI.Activity {
             return tr;
         }
 
-        //Combine Set&Get to minimize the case usage
-        IList<LineChartTypes> SetDefaultSmooth(LineChartTypes selectedType, int val)
+        //Combine Set&Get to minimize the funky reflection usage
+        int GetSmooth()
         {
-            int tmp;
-            return SetGetDefaultSmooth(selectedType, val, out tmp);
+            return (int)SetSmooth(null, false, false);
         }
 
-        int GetDefaultSmooth(LineChartTypes selectedType)
+        //This would be so much easier with a macro or reference to property....
+        private int? SetSmooth(string prop, int? val, bool isStep, bool resetSmooth)
         {
-            int res;
-            SetGetDefaultSmooth(selectedType, null, out res);
-            return res;
-        }
+            ActivityInfoOptions t = TrailResult.TrailActivityInfoOptions;
+            System.Reflection.PropertyInfo tInfo = t.GetType().GetProperty(prop);
+            int currVal = (int)tInfo.GetValue(t, null);
 
-        private IList<LineChartTypes> SetGetDefaultSmooth(LineChartTypes selectedType, int? val, out int res)
-        {
-            IList<LineChartTypes> charts = new List<LineChartTypes> { selectedType };
-            switch (selectedType)
+            int ? newVal;
+            if (val != null)
             {
-                case LineChartTypes.Cadence:
+                if (resetSmooth)
+                {
+                    ActivityInfoOptions a = new ActivityInfoOptions(true);
+                    newVal = (int)a.GetType().GetProperty(prop).GetValue(a, null);
+                }
+                else
+                {
+                    newVal = val;
+                    if (isStep)
                     {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.CadenceSmoothingSeconds;
-                        break;
+                        newVal += currVal;
                     }
-                case LineChartTypes.Elevation:
-                case LineChartTypes.DeviceElevation:
-                case LineChartTypes.Grade:
-                    {
-                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Elevation, LineChartTypes.DeviceElevation, LineChartTypes.Grade })
-                        {
-                            if (!charts.Contains(l))
-                            {
-                                charts.Add(l);
-                            }
-                        }
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.ElevationSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.HeartRateBPM:
-                case LineChartTypes.DiffHeartRateBPM:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.HeartRateSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.Power:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.PowerSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.Speed:
-                case LineChartTypes.Pace:
-                case LineChartTypes.DeviceSpeed:
-                case LineChartTypes.DevicePace:
-                    {
-                        foreach (LineChartTypes l in new List<LineChartTypes> { LineChartTypes.Speed, LineChartTypes.Pace, LineChartTypes.DeviceSpeed, LineChartTypes.DevicePace })
-                        {
-                            if (!charts.Contains(l))
-                            {
-                                charts.Add(l);
-                            }
-                        }
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.SpeedSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.PowerBalance:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.PowerBalanceSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.PowerBalanceSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.Temperature:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.TemperatureSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.TemperatureSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.GroundContactTime:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.GroundContactTimeSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.VerticalOscillation:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.VerticalOscillationSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.SaturatedHemoglobin:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.SaturatedHemoglobinSmoothingSeconds;
-                        break;
-                    }
-                case LineChartTypes.TotalHemoglobinConcentration:
-                    {
-                        if (val != null)
-                        {
-                            TrailResult.TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds = (int)val;
-                        }
-                        val = TrailResult.TrailActivityInfoOptions.TotalHemoglobinConcentrationSmoothingSeconds;
-                        break;
-                    }
-                default:
-                    {
-                        val = 0;
-                        break;
-                    }
+                }
+                if (newVal < 0)
+                {
+                    newVal = 0;
+                }
+                if (currVal != newVal)
+                {
+                    tInfo.SetValue(t, (int)newVal, null);
+                }
+                else
+                {
+                    newVal = null;
+                }
             }
-            res = (int)val;
-            return charts;
+            else
+            {
+                newVal = currVal;
+            }
+
+            return newVal;
         }
 
-        void ShowSmoothToolTip(LineChartTypes chartType)
+        //Sets the smoothing, returns value if setter is null or value changed
+        private int? SetSmooth(int? val, bool isStep, bool resetSmooth)
         {
-            if (m_cursorLocationAtMouseMove != null)
+            int? newVal;
+            if (!m_ChartTypes.Contains(m_lastSelectedType))
             {
-                int val;
-                TrailResult tr = getLastSelectedDiffResult(chartType);
+                foreach (LineChartTypes chartType in m_ChartTypes)
+                {
+                    if (m_axisCharts[chartType] is LeftVerticalAxis)
+                    {
+                        m_lastSelectedType = chartType;
+                        break;
+                    }
+                }
+            }
+
+            string smoothString = LineChartUtil.GetSmoothingString(m_lastSelectedType);
+            if (!string.IsNullOrEmpty(smoothString))
+            {
+                newVal = SetSmooth(smoothString, val, isStep, resetSmooth);
+            }
+            else
+            {
+                newVal = 0;
+                TrailResult tr = getLastSelectedDiffResult();
+
                 if (tr != null)
                 {
-                    val = (int)tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                    if (val != null)
+                    {
+                        float valF;
+                        if (val == 0)
+                        {
+                            valF = 0;
+                        }
+                        else
+                        {
+                            valF = (int)val + tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                        }
+                        tr.SetXOffset(XAxisReferential == XAxisValue.Time, valF);
+                    }
+                    newVal = (int)tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
                 }
-                else 
+                else
                 {
-                    val = GetDefaultSmooth(chartType);
+                    //Not smoothing, no diff 
+                    newVal = 0;
                 }
+            }
+            return newVal;
+        }
+
+        void ShowSmoothToolTip()
+        {
+            int val = GetSmooth();
+
+            int val2 = val;
+            if (val2 > this.smoothingPicker.Maximum)
+            {
+                val2 = (int)this.smoothingPicker.Maximum;
+            }
+            this.smoothingPicker.Value = val2;
+
+            if (!Data.Settings.ShowChartToolBar &&
+                m_cursorLocationAtMouseMove != null)
+            {
                 summaryListToolTip.Show(
                     val.ToString(),
                     this,
@@ -2074,7 +2004,7 @@ namespace TrailsPlugin.UI.Activity {
                         //More than one chart could exist for the axis, only select the first
                         m_lastSelectedType = chartType;
                         m_axisCharts[m_lastSelectedType].LabelColor = Color.Black;
-                        ShowSmoothToolTip(chartType);
+                        ShowSmoothToolTip();
                     }
                     else
                     {

@@ -44,6 +44,9 @@ namespace TrailsPlugin.UI.Activity
             this.fitToWindowMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moreChartsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.smoothingPicker = new System.Windows.Forms.NumericUpDown();
+            this.smoothingLabel = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.smoothingPicker)).BeginInit();
             this.chartTablePanel.SuspendLayout();
             this.ButtonPanel.SuspendLayout();
             this.chartContextMenu.SuspendLayout();
@@ -80,6 +83,8 @@ namespace TrailsPlugin.UI.Activity
             this.ButtonPanel.Controls.Add(this.SaveImageButton);
             this.ButtonPanel.Controls.Add(this.MoreChartsButton);
             this.ButtonPanel.Controls.Add(this.TrailPointsButton);
+            this.ButtonPanel.Controls.Add(this.smoothingLabel);
+            this.ButtonPanel.Controls.Add(this.smoothingPicker);
             this.ButtonPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ButtonPanel.HeadingBackColor = System.Drawing.Color.LightBlue;
             this.ButtonPanel.HeadingFont = null;
@@ -224,6 +229,28 @@ namespace TrailsPlugin.UI.Activity
             this.TrailPointsButton.TextRightMargin = 2;
             this.TrailPointsButton.Click += new System.EventHandler(this.TrailPoints_Click);
             // 
+            // smoothingLabel
+            // 
+            this.smoothingLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.smoothingLabel.AutoSize = true;
+            this.smoothingLabel.Location = new System.Drawing.Point(150, 4);
+            this.smoothingLabel.Name = "smoothingLabel";
+            this.smoothingLabel.Size = new System.Drawing.Size(52, 13);
+            this.smoothingLabel.TabIndex = 3;
+            this.smoothingLabel.Text = "<smoothing>";
+            // 
+            // smoothingPicker
+            // 
+            this.smoothingPicker.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.smoothingPicker.Location = new System.Drawing.Point(200, 0);
+            this.smoothingPicker.Minimum = 0;
+            this.smoothingPicker.Maximum = 9999;
+            this.smoothingPicker.Name = "smoothingPicker";
+            this.smoothingPicker.Size = new System.Drawing.Size(39, 20);
+            this.smoothingPicker.TabIndex = 7;
+            this.smoothingPicker.MouseUp += new System.Windows.Forms.MouseEventHandler(smoothingPicker_LostFocus);
+            this.smoothingPicker.LostFocus += new System.EventHandler(smoothingPicker_LostFocus);
+            // 
             // MainChart
             // 
             this.MainChart.AutoSize = true;
@@ -297,6 +324,7 @@ namespace TrailsPlugin.UI.Activity
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "TrailLineChart";
             this.Size = new System.Drawing.Size(400, 31);
+            ((System.ComponentModel.ISupportInitialize)(this.smoothingPicker)).EndInit();
             this.chartTablePanel.ResumeLayout(false);
             this.chartTablePanel.PerformLayout();
             this.ButtonPanel.ResumeLayout(false);
@@ -323,6 +351,8 @@ namespace TrailsPlugin.UI.Activity
         private ZoneFiveSoftware.Common.Visuals.Button SaveImageButton;
         private ZoneFiveSoftware.Common.Visuals.Button MoreChartsButton;
         private ZoneFiveSoftware.Common.Visuals.Button TrailPointsButton;
+        private System.Windows.Forms.Label smoothingLabel;
+        private System.Windows.Forms.NumericUpDown smoothingPicker;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
     }
 }

@@ -399,6 +399,74 @@ namespace TrailsPlugin.Utils
             return yAxisLabel;
         }
 
+        public static string GetSmoothingString(LineChartTypes YAxisReferential)
+        {
+            string res = "";
+            switch (YAxisReferential)
+            {
+                case LineChartTypes.Cadence:
+                    res = "CadenceSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.Elevation:
+                case LineChartTypes.DeviceElevation:
+                case LineChartTypes.Grade:
+                    res = "ElevationSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.HeartRateBPM:
+                case LineChartTypes.DiffHeartRateBPM:
+                    res = "HeartRateSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.Power:
+                    res = "PowerSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.Speed:
+                case LineChartTypes.Pace:
+                case LineChartTypes.DeviceSpeed:
+                case LineChartTypes.DevicePace:
+                    res = "SpeedSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.PowerBalance:
+                    res = "PowerBalanceSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.Temperature:
+                    res = "TemperatureSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.GroundContactTime:
+                    res = "GroundContactTimeSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.VerticalOscillation:
+                    res = "VerticalOscillationSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.SaturatedHemoglobin:
+                    res = "SaturatedHemoglobinSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.TotalHemoglobinConcentration:
+                    res = "TotalHemoglobinConcentrationSmoothingSeconds";
+                    break;
+
+                case LineChartTypes.DiffDist:
+                case LineChartTypes.DiffTime:
+                case LineChartTypes.DiffDistTime:
+                case LineChartTypes.DeviceDiffDist:
+                    break;
+
+                default:
+                    Debug.Assert(false, "Unknown smoothing LineChartType" + YAxisReferential);
+                    break;
+            }
+            return res;
+        }
+
         public static void SetupXAxisFormatter(XAxisValue axisType, IAxis axis, IActivity activity)
         {
             switch (axisType)

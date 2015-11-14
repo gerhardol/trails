@@ -1744,6 +1744,12 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshChart();
                 }
             }
+            else if (e.KeyCode == Keys.L)
+            {
+                //tmp, to be removed
+                Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
+                this.m_page.RefreshRoute(false);
+            }
             else if (e.KeyCode == Keys.N)
             {
                 if (e.Modifiers == Keys.Shift)

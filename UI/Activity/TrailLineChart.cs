@@ -60,7 +60,6 @@ namespace TrailsPlugin.UI.Activity {
         private ActivityDetailPageControl m_page;
         private MultiChartsControl m_multiple;
         //private bool m_selectDataHandler = true; //Event handler is enabled by default
-        private bool m_showTrailPoints = true;
         private bool refIsSelf = false;
 
         private bool m_CtrlPressed = false;
@@ -258,7 +257,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void TrailPoints_Click(object sender, EventArgs e)
         {
-            m_showTrailPoints = !m_showTrailPoints;
+            Data.Settings.ShowTrailPointsOnChart = !Data.Settings.ShowTrailPointsOnChart;
             this.m_multiple.RefreshChart();
         }
 
@@ -1149,7 +1148,7 @@ namespace TrailsPlugin.UI.Activity {
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = TrailPointResult();
 
-                if (m_showTrailPoints && trailPointResult != null)
+                if (Data.Settings.ShowTrailPointsOnChart && trailPointResult != null)
                 {
                     Image icon =
 #if ST_2_1
@@ -1627,7 +1626,7 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.L)
             {
                 refreshData = true;
-                m_showTrailPoints = (e.Modifiers == Keys.Shift);
+                Data.Settings.ShowTrailPointsOnChart = (e.Modifiers == Keys.Shift);
             }
             else if (e.KeyCode == Keys.O)
             {

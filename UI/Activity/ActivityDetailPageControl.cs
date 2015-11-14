@@ -282,16 +282,24 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
 
-                IList<TrailGPSLocation> points = new List<TrailGPSLocation>();
-                //route
-                foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
+                //Clear marked routes layer (set separately, runs after) 
+                m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
+                m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
+                m_layerMarked.ClearOverlays();
+
+                //TrailPoints (SplitPoints separetly)
+                IList<TrailGPSLocation> trailPoints = new List<TrailGPSLocation>();
+                if (Data.Settings.ShowTrailPointsOnMap)
                 {
-                    foreach (TrailGPSLocation point in at.Trail.TrailLocations)
+                    foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
                     {
-                        points.Add(point);
+                        foreach (TrailGPSLocation point in at.Trail.TrailLocations)
+                        {
+                            trailPoints.Add(point);
+                        }
                     }
                 }
-                m_layerPoints.TrailPoints = points;
+                m_layerPoints.TrailPoints = trailPoints;
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                 IList<SplitGPSLocation> splitPoints = new List<SplitGPSLocation>();
@@ -315,6 +323,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
+                //Result related - routes and splitpoints
                 foreach (TrailResult tr in results)
                 {
                     //Do not map routes displayed already by ST
@@ -330,21 +339,20 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    if (tr.m_activityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
+                    if (Data.Settings.ShowTrailPointsOnMap)
                     {
-                        foreach (TrailResultPoint tp in tr.SubResultInfo.Points)
+                        if (tr.m_activityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
                         {
-                            SplitGPSLocation tl = new SplitGPSLocation(tp, tr.ResultColor.FillSelected);
-                            splitPoints.Add(tl);
+                            foreach (TrailResultPoint tp in tr.SubResultInfo.Points)
+                            {
+                                SplitGPSLocation tl = new SplitGPSLocation(tp, tr.ResultColor.FillSelected);
+                                splitPoints.Add(tl);
+                            }
                         }
                     }
                 }
-                //Clear marked routes (set separately, runs after) 
-                m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
-                m_layerMarked.MarkedTrailRoutes = new Dictionary<string, MapPolyline>();
-                m_layerMarked.SplitPoints = splitPoints;
-                m_layerMarked.ClearOverlays();
 
+                m_layerPoints.SplitPoints = splitPoints;
                 m_layerRoutes.TrailRoutes = routes;
 
                 if (zoomOrVisible)
@@ -355,7 +363,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        //Make routes are visible
+                        //Make sure routes are visible
                         this.m_layerRoutes.EnsureVisible();
                     }
                 }

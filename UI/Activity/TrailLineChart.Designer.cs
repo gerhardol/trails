@@ -37,6 +37,7 @@ namespace TrailsPlugin.UI.Activity
             this.ZoomOutButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.SaveImageButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.MoreChartsButton = new ZoneFiveSoftware.Common.Visuals.Button();
+            this.TrailPointsButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.MainChart = new ZoneFiveSoftware.Common.Visuals.Chart.LineChart();
             this.chartContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyChartMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,6 +79,7 @@ namespace TrailsPlugin.UI.Activity
             this.ButtonPanel.Controls.Add(this.ZoomOutButton);
             this.ButtonPanel.Controls.Add(this.SaveImageButton);
             this.ButtonPanel.Controls.Add(this.MoreChartsButton);
+            this.ButtonPanel.Controls.Add(this.TrailPointsButton);
             this.ButtonPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ButtonPanel.HeadingBackColor = System.Drawing.Color.LightBlue;
             this.ButtonPanel.HeadingFont = null;
@@ -200,6 +202,28 @@ namespace TrailsPlugin.UI.Activity
             this.MoreChartsButton.TextRightMargin = 2;
             this.MoreChartsButton.Click += new System.EventHandler(this.moreCharts_Click);
             // 
+            // TrailPointsButton
+            // 
+            this.TrailPointsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.TrailPointsButton.BackColor = System.Drawing.Color.Transparent;
+            this.TrailPointsButton.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.TrailPointsButton.CenterImage = global::TrailsPlugin.Properties.Resources.SplitPoints;
+            this.TrailPointsButton.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.TrailPointsButton.HyperlinkStyle = false;
+            //this.TrailPointsButton.ImageMargin = 1;
+            this.TrailPointsButton.LeftImage = null;
+            this.TrailPointsButton.Location = new System.Drawing.Point(244, 0);
+            this.TrailPointsButton.Margin = new System.Windows.Forms.Padding(0);
+            this.TrailPointsButton.Name = "TrailPointsButton";
+            this.TrailPointsButton.PushStyle = true;
+            this.TrailPointsButton.RightImage = null;
+            this.TrailPointsButton.Size = new System.Drawing.Size(24, 24);
+            this.TrailPointsButton.TabIndex = 0;
+            this.TrailPointsButton.TextAlign = System.Drawing.StringAlignment.Center;
+            this.TrailPointsButton.TextLeftMargin = 2;
+            this.TrailPointsButton.TextRightMargin = 2;
+            this.TrailPointsButton.Click += new System.EventHandler(this.TrailPoints_Click);
+            // 
             // MainChart
             // 
             this.MainChart.AutoSize = true;
@@ -298,6 +322,7 @@ namespace TrailsPlugin.UI.Activity
         private ZoneFiveSoftware.Common.Visuals.Button ZoomToContentButton;
         private ZoneFiveSoftware.Common.Visuals.Button SaveImageButton;
         private ZoneFiveSoftware.Common.Visuals.Button MoreChartsButton;
+        private ZoneFiveSoftware.Common.Visuals.Button TrailPointsButton;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
     }
 }

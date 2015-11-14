@@ -256,11 +256,11 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //void copyChartMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    //Not visible menu item
-        //    //MainChart.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-        //}
+        void TrailPoints_Click(object sender, EventArgs e)
+        {
+            m_showTrailPoints = !m_showTrailPoints;
+            this.m_multiple.RefreshChart();
+        }
 
         //Fires about every 33ms when selecting
         void MainChart_SelectingData(object sender, ZoneFiveSoftware.Common.Visuals.Chart.ChartBase.SelectDataEventArgs e)

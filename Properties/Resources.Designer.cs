@@ -238,6 +238,16 @@ namespace TrailsPlugin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SplitPoints {
+            get {
+                object obj = ResourceManager.GetObject("SplitPoints", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap square_blue {
             get {
                 object obj = ResourceManager.GetObject("square_blue", resourceCulture);

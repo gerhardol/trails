@@ -24,6 +24,8 @@ This page describes the changes between plugin releases. The change log may cont
   * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
   * Copy Chart option.
   * Tweaked UI, updating icons, sizes etc
+  * Chart toolbar: Add option to hide/show trailpoints
+  * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
   * Move "insert activity" related actions from _Advanced_ submenu to new _Insert activities_ submenu to be able to describe the functionality better.
   * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
     * AddTopCategory

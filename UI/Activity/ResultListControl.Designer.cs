@@ -45,13 +45,6 @@
             this.addInBoundActivitiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addCurrentCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addTopCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ResultSummaryStdDevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showSummaryTotalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showSummaryAverageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showOnlyMarkedResultsOnMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
@@ -126,12 +119,6 @@
             this.referenceResultMenuItem,
             this.insertActivitiesMenuItem,
             this.selectSimilarSplitsMenuItem,
-            this.showSummaryTotalMenuItem,
-            this.showSummaryAverageMenuItem,
-            this.showOnlyMarkedResultsOnMapMenuItem,
-            this.useDeviceDistanceMenuItem,
-            this.setRestLapsAsPausesMenuItem,
-            this.runGradeAdjustMenuItem,
             this.analyzeMenuItem,
             this.advancedMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
@@ -207,8 +194,7 @@
             this.excludeResultsMenuItem,
             this.limitActivityMenuItem,
             this.limitURMenuItem,
-            this.markCommonStretchesMenuItem,
-            this.ResultSummaryStdDevMenuItem});
+            this.markCommonStretchesMenuItem});
             this.advancedMenuItem.Name = "advancedMenuItem";
             this.advancedMenuItem.Size = new System.Drawing.Size(199, 48);
             this.advancedMenuItem.Text = "<Advanced>";
@@ -269,55 +255,6 @@
             this.addTopCategoryMenuItem.Text = "<addTopCategoryMenuItem...";
             this.addTopCategoryMenuItem.Click += new System.EventHandler(this.addTopCategoryMenuItem_Click);
             // 
-            // useDeviceDistanceMenuItem
-            // 
-            this.useDeviceDistanceMenuItem.Name = "useDeviceDistanceMenuItem";
-            this.useDeviceDistanceMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.useDeviceDistanceMenuItem.Text = "<useDeviceDistanceMenuItem...";
-            this.useDeviceDistanceMenuItem.Click += new System.EventHandler(this.useDeviceDistanceMenuItem_Click);
-            // 
-            // setRestLapsAsPausesMenuItem
-            // 
-            this.setRestLapsAsPausesMenuItem.Name = "setRestLapsAsPausesMenuItem";
-            this.setRestLapsAsPausesMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.setRestLapsAsPausesMenuItem.Text = "<setRestLapsAsPausesMenuItem...";
-            this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.setRestLapsAsPausesMenuItem_Click);
-            // 
-            // ResultSummaryStdDevMenuItem
-            // 
-            this.ResultSummaryStdDevMenuItem.Name = "ResultSummaryStdDevMenuItem";
-            this.ResultSummaryStdDevMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.ResultSummaryStdDevMenuItem.Text = "<ResultSummaryStdDevMenuItem...";
-            this.ResultSummaryStdDevMenuItem.Click += new System.EventHandler(this.ResultSummaryStdDevMenuItem_Click);
-            // 
-            // showSummaryTotalMenuItem
-            // 
-            this.showSummaryTotalMenuItem.Name = "showSummaryTotalMenuItem";
-            this.showSummaryTotalMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.showSummaryTotalMenuItem.Text = "<showSummaryTotalMenuItem...";
-            this.showSummaryTotalMenuItem.Click += new System.EventHandler(this.showSummaryTotalMenuItem_Click);
-            // 
-            // showSummaryAverageMenuItem
-            // 
-            this.showSummaryAverageMenuItem.Name = "showSummaryAverageMenuItem";
-            this.showSummaryAverageMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.showSummaryAverageMenuItem.Text = "<showSummaryAverageMenuItem...";
-            this.showSummaryAverageMenuItem.Click += new System.EventHandler(this.showSummaryAverageMenuItem_Click);
-            // 
-            // showOnlyMarkedResultsOnMapMenuItem
-            // 
-            this.showOnlyMarkedResultsOnMapMenuItem.Name = "showOnlyMarkedResultsOnMapMenuItem";
-            this.showOnlyMarkedResultsOnMapMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.showOnlyMarkedResultsOnMapMenuItem.Text = "<showOnlyMarkedResultsOnMapMenuItem...";
-            this.showOnlyMarkedResultsOnMapMenuItem.Click += new System.EventHandler(this.showOnlyMarkedResultsOnMapMenuItem_Click);
-            // 
-            // runGradeAdjustMenuItem
-            // 
-            this.runGradeAdjustMenuItem.Name = "runGradeAdjustMenuItem";
-            this.runGradeAdjustMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.runGradeAdjustMenuItem.Text = "<runGradeAdjustMenuItem";
-            this.runGradeAdjustMenuItem.Click += new System.EventHandler(this.runGradeAdjustMenuItem_Click);
-            // 
             // ResultListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -356,13 +293,6 @@
         private System.Windows.Forms.ToolStripMenuItem addInBoundActivitiesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addCurrentCategoryMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addTopCategoryMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setRestLapsAsPausesMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ResultSummaryStdDevMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showSummaryTotalMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showSummaryAverageMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
         private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();
     }

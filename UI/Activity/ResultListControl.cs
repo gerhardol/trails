@@ -91,7 +91,6 @@ namespace TrailsPlugin.UI.Activity {
 #else
             this.listSettingsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
             this.insertActivitiesMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;
-            this.runGradeAdjustMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackElevation16;
             this.analyzeMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
             this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
             this.excludeResultsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16;
@@ -129,12 +128,6 @@ namespace TrailsPlugin.UI.Activity {
             this.addInBoundActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddInBound;
             //this.addCurrentCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddReferenceCategory;
             //this.addTopCategoryMenuItem.Text = Properties.Resources.UI_Activity_List_AddTopCategory;
-            this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
-            this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
-            this.ResultSummaryStdDevMenuItem.Text = Properties.Resources.UI_Activity_List_ResultSummaryStdDev;
-            this.showSummaryTotalMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryTotal;
-            this.showSummaryAverageMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryAverage;
-            this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
             this.RefreshColumns();
         }
 
@@ -223,12 +216,6 @@ namespace TrailsPlugin.UI.Activity {
             limitActivityMenuItem.Enabled = MultiActivity();
             selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             addCurrentCategoryMenuItem.Checked = Data.Settings.AddCurrentCategory;
-            this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
-            this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
-            this.ResultSummaryStdDevMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
-            this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
-            this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
-            this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
         }
 
         public void RefreshList()
@@ -2085,7 +2072,6 @@ namespace TrailsPlugin.UI.Activity {
                 this.addCurrentCategoryMenuItem.Enabled = false;
             }
 
-            this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
             e.Cancel = false;
         }
 
@@ -2221,51 +2207,6 @@ namespace TrailsPlugin.UI.Activity {
             this.addActivityFromCategory(this.getCurrentCategory(c));
         }
 
-        void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
-            this.RefreshControlState();
-            m_page.RefreshData(true);
-        }
-
-        void setRestLapsAsPausesMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Data.Settings.RestIsPause = !Data.Settings.RestIsPause;
-            this.RefreshControlState();
-            this.m_controller.CurrentReset(false); //TBD
-            m_page.RefreshData(true);
-        }
-
-        void ResultSummaryStdDevMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Data.Settings.ResultSummaryStdDev = !Data.Settings.ResultSummaryStdDev;
-            this.RefreshControlState();
-            RefreshSummary();
-        }
-
-        void showSummaryTotalMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Data.Settings.ShowSummaryTotal = !Data.Settings.ShowSummaryTotal;
-            this.RefreshControlState();
-            RefreshSummary();
-            m_page.RefreshData(false);
-        }
-
-        void showSummaryAverageMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Data.Settings.ShowSummaryAverage = !Data.Settings.ShowSummaryAverage;
-            this.RefreshControlState();
-            RefreshSummary();
-            m_page.RefreshData(false);
-        }
-
-        void showOnlyMarkedResultsOnMapMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
-            this.RefreshControlState();
-            m_page.RefreshData(false);
-        }
-
         void limitURMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
@@ -2303,15 +2244,10 @@ namespace TrailsPlugin.UI.Activity {
         {
             markCommonStretches();
         }
+
         void selectWithURMenuItem_Click(object sender, System.EventArgs e)
         {
             selectWithUR();
-        }
-
-        private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
-        {
-            TrailResult.IncreaseRunningGradeCalcMethod(true);
-            m_page.RefreshData(true);
         }
     }
 }

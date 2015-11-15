@@ -260,6 +260,11 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.RefreshSummary();
         }
 
+        public void ShowListToolBar()
+        {
+            ResultList.ShowListToolBar();
+        }
+
         //public IList<TrailResult> SelectedItems
         //{
         //    get

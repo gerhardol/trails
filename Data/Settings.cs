@@ -81,6 +81,7 @@ namespace TrailsPlugin.Data
         public static bool ShowSummaryAverage = true;
         public static bool ShowTrailPointsOnChart = true;
         public static bool ShowTrailPointsOnMap = true;
+        public static bool ShowListToolBar = true;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -700,7 +701,9 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
                 if (attr.Length > 0) { m_addCurrentCategory = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
-                if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); } 
+                if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.ShowListToolBar);
+                if (attr.Length > 0) { ShowListToolBar = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
                 if (attr.Length > 0) { SetNameAtImport = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.SetAdjustElevationAtImport);
@@ -876,6 +879,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, GetSummaryViewSortColumns);
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_summaryViewSortDirection.ToString());
             pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
+            pluginNode.SetAttribute(xmlTags.ShowListToolBar, XmlConvert.ToString(ShowListToolBar));
             pluginNode.SetAttribute(xmlTags.SelectSimilarResults, XmlConvert.ToString(m_SelectSimilarResults));
             pluginNode.SetAttribute(xmlTags.AddCurrentActivity, XmlConvert.ToString(m_addCurrentCategory));
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
@@ -970,6 +974,7 @@ namespace TrailsPlugin.Data
             public const string summaryViewSortColumn = "summaryViewSortColumn";
             public const string summaryViewSortDirection = "summaryViewSortDirection";
             public const string ShowChartToolBar = "ShowChartToolBar";
+            public const string ShowListToolBar = "ShowListToolBar";
             public const string SelectSimilarResults = "SelectSimilarResults";
             public const string AddCurrentActivity = "AddCurrentActivity";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";

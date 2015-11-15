@@ -97,6 +97,7 @@ namespace TrailsPlugin.UI.Activity
             btnDelete.Text = "";
             btnMenu.CenterImage = Properties.Resources.ChartMenuButton;
             btnMenu.Text = "";
+            this.trailPointsMenuItem.Image = Properties.Resources.SplitPoints;
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -112,6 +113,8 @@ namespace TrailsPlugin.UI.Activity
             this.showSummaryTotalMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryAverage;
             this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
+            this.trailPointsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSplitPointsOnMap;
+            this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
 
         public void ThemeChanged(ITheme visualTheme)
@@ -184,6 +187,8 @@ namespace TrailsPlugin.UI.Activity
             this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
             this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
+            this.trailPointsMenuItem.Checked = Data.Settings.ShowTrailPointsOnMap;
+            this.showToolBarMenuItem.Checked = Data.Settings.ShowListToolBar;
         }
 
 
@@ -386,6 +391,13 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(false);
         }
 
+        void trailPointsMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
+            this.RefreshControlState();
+            m_page.RefreshData(false);
+        }
+
         private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
         {
             TrailResult.IncreaseRunningGradeCalcMethod(true);
@@ -396,6 +408,12 @@ namespace TrailsPlugin.UI.Activity
         {
             this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
             e.Cancel = false;
+        }
+
+        private void showToolBarMenuItem_Click(object sender, EventArgs e)
+        {
+            Data.Settings.ShowListToolBar = !Data.Settings.ShowListToolBar;
+            m_page.ShowListToolBar();
         }
 
         /*************************************************************************************************************/

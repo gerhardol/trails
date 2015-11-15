@@ -681,9 +681,9 @@ namespace TrailsPlugin.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Show Split Points On Map.
         /// </summary>
-        internal static string UI_Activity_List_ShowSplitPointsOnMap1 {
+        internal static string UI_Activity_List_ShowSplitPointsOnMap {
             get {
-                return ResourceManager.GetString("UI_Activity_List_ShowSplitPointsOnMap1", resourceCulture);
+                return ResourceManager.GetString("UI_Activity_List_ShowSplitPointsOnMap", resourceCulture);
             }
         }
         

@@ -138,6 +138,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             this.m_visualTheme = visualTheme;
             this.summaryList.ThemeChanged(visualTheme);
+            this.ButtonPanel.ThemeChanged(visualTheme);
+            this.ButtonPanel.BackColor = visualTheme.Window;
         }
 
         private bool _showPage = false;
@@ -254,6 +256,13 @@ namespace TrailsPlugin.UI.Activity {
             this.SelectedResultWrapper = null;
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
+
+        public void ShowListToolBar()
+        {
+            this.chartTablePanel.RowStyles[0].Height = Data.Settings.ShowListToolBar ? 25 : 0;
+        }
+
+        /***********************************************/
 
         private const int cResultListHeight = 17;//Should be possible to read out from list...
         void SummaryPanel_HandleCreated(object sender, System.EventArgs e)
@@ -2076,6 +2085,11 @@ namespace TrailsPlugin.UI.Activity {
             }
 
             e.Cancel = false;
+        }
+
+        private void ZoomInButton_Click(object sender, EventArgs e)
+        {
+            //Placeholder
         }
 
         void copyTableMenu_Click(object sender, EventArgs e)

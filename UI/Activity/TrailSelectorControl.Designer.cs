@@ -39,6 +39,8 @@
             this.showSummaryTotalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showSummaryAverageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showOnlyMarkedResultsOnMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trailPointsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.TrailSelectorPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
@@ -198,7 +200,9 @@
             this.useDeviceDistanceMenuItem,
             this.setRestLapsAsPausesMenuItem,
             this.ResultSummaryStdDevMenuItem,
-            this.runGradeAdjustMenuItem});
+            this.trailPointsMenuItem,
+            this.runGradeAdjustMenuItem,
+            this.showToolBarMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(199, 48);
             this.listMenu.Opening += new System.ComponentModel.CancelEventHandler(listMenu_Opening);
@@ -245,12 +249,26 @@
             this.showOnlyMarkedResultsOnMapMenuItem.Text = "<showOnlyMarkedResultsOnMapMenuItem...";
             this.showOnlyMarkedResultsOnMapMenuItem.Click += new System.EventHandler(this.showOnlyMarkedResultsOnMapMenuItem_Click);
             // 
+            // trailPointsMenuItem
+            // 
+            this.trailPointsMenuItem.Name = "trailPointsMenuItem";
+            this.trailPointsMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.trailPointsMenuItem.Text = "<trailPointsMenuItem...";
+            this.trailPointsMenuItem.Click += new System.EventHandler(this.trailPointsMenuItem_Click);
+            // 
             // runGradeAdjustMenuItem
             // 
             this.runGradeAdjustMenuItem.Name = "runGradeAdjustMenuItem";
             this.runGradeAdjustMenuItem.Size = new System.Drawing.Size(198, 22);
             this.runGradeAdjustMenuItem.Text = "<runGradeAdjustMenuItem";
             this.runGradeAdjustMenuItem.Click += new System.EventHandler(this.runGradeAdjustMenuItem_Click);
+            // 
+            // showToolBarMenuItem
+            // 
+            this.showToolBarMenuItem.Name = "showToolBarMenuItem";
+            this.showToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.showToolBarMenuItem.Text = "showToolBarMenuItem";
+            this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
             // TrailSelectorControl
             // 
@@ -285,6 +303,8 @@
         private System.Windows.Forms.ToolStripMenuItem showSummaryTotalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showSummaryAverageMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem trailPointsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Panel TrailSelectorPanel;
     }

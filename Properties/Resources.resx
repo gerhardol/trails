@@ -437,7 +437,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_List_ShowOnlyMarkedResultsOnMap" xml:space="preserve">
     <value>Show Only Marked Results On Map</value>
   </data>
-  <data name="UI_Activity_List_ShowSplitPointsOnMap1" xml:space="preserve">
+  <data name="UI_Activity_List_ShowSplitPointsOnMap" xml:space="preserve">
     <value>Show Split Points On Map</value>
   </data>
   <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">

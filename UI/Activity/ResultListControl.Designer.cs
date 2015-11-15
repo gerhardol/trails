@@ -24,6 +24,9 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
+            this.chartTablePanel = new System.Windows.Forms.TableLayoutPanel();
+            this.ButtonPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
+            this.ZoomInButton = new ZoneFiveSoftware.Common.Visuals.Button();
             this.SummaryPanel = new System.Windows.Forms.Panel();
             this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.progressBar = new System.Windows.Forms.ProgressBar();
@@ -45,9 +48,72 @@
             this.addInBoundActivitiesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addCurrentCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addTopCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.chartTablePanel.SuspendLayout();
+            this.ButtonPanel.SuspendLayout();
             this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // chartTablePanel
+            // 
+            this.chartTablePanel.AutoSize = true;
+            this.chartTablePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.chartTablePanel.ColumnCount = 1;
+            this.chartTablePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.chartTablePanel.Controls.Add(this.ButtonPanel, 0, 0);
+            this.chartTablePanel.Controls.Add(this.SummaryPanel, 0, 1);
+            this.chartTablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chartTablePanel.Location = new System.Drawing.Point(0, 0);
+            this.chartTablePanel.Margin = new System.Windows.Forms.Padding(0);
+            this.chartTablePanel.Name = "chartTablePanel";
+            this.chartTablePanel.RowCount = 2;
+            this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.chartTablePanel.Size = new System.Drawing.Size(400, 105);
+            this.chartTablePanel.TabIndex = 0;
+            // 
+            // ButtonPanel
+            // 
+            this.ButtonPanel.AutoSize = true;
+            this.ButtonPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ButtonPanel.BackColor = System.Drawing.Color.Transparent;
+            this.ButtonPanel.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.None;
+            this.ButtonPanel.BorderColor = System.Drawing.Color.Gray;
+            this.ButtonPanel.Controls.Add(this.ZoomInButton);
+            this.ButtonPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ButtonPanel.HeadingBackColor = System.Drawing.Color.LightBlue;
+            this.ButtonPanel.HeadingFont = null;
+            this.ButtonPanel.HeadingLeftMargin = 0;
+            this.ButtonPanel.HeadingText = null;
+            this.ButtonPanel.HeadingTextColor = System.Drawing.Color.Black;
+            this.ButtonPanel.HeadingTopMargin = 0;
+            this.ButtonPanel.Location = new System.Drawing.Point(0, 0);
+            this.ButtonPanel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 1);
+            this.ButtonPanel.Name = "ButtonPanel";
+            this.ButtonPanel.Size = new System.Drawing.Size(400, 24);
+            this.ButtonPanel.TabIndex = 1;
+            // 
+            // ZoomInButton
+            // 
+            this.ZoomInButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ZoomInButton.BackColor = System.Drawing.Color.Transparent;
+            this.ZoomInButton.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
+            this.ZoomInButton.CenterImage = null;
+            this.ZoomInButton.DialogResult = System.Windows.Forms.DialogResult.None;
+            this.ZoomInButton.HyperlinkStyle = false;
+            //this.ZoomInButton.ImageMargin = 1;
+            this.ZoomInButton.LeftImage = null;
+            this.ZoomInButton.Location = new System.Drawing.Point(374, 0);
+            this.ZoomInButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ZoomInButton.Name = "ZoomInButton";
+            this.ZoomInButton.PushStyle = true;
+            this.ZoomInButton.RightImage = null;
+            this.ZoomInButton.Size = new System.Drawing.Size(22, 22);
+            this.ZoomInButton.TabIndex = 0;
+            this.ZoomInButton.TextAlign = System.Drawing.StringAlignment.Center;
+            this.ZoomInButton.TextLeftMargin = 2;
+            this.ZoomInButton.TextRightMargin = 2;
+            this.ZoomInButton.Click += new System.EventHandler(this.ZoomInButton_Click);
             // 
             // SummaryPanel
             // 
@@ -260,9 +326,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Controls.Add(this.SummaryPanel);
+            this.Controls.Add(this.chartTablePanel);
             this.Name = "ResultListControl";
             this.Size = new System.Drawing.Size(400, 60);
+            this.chartTablePanel.ResumeLayout(false);
+            this.chartTablePanel.PerformLayout();
+            this.ButtonPanel.ResumeLayout(false);
             this.SummaryPanel.ResumeLayout(false);
             this.listMenu.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -272,6 +341,9 @@
 
         #endregion
 
+        private System.Windows.Forms.TableLayoutPanel chartTablePanel;
+        private ZoneFiveSoftware.Common.Visuals.Panel ButtonPanel;
+        private ZoneFiveSoftware.Common.Visuals.Button ZoomInButton;
         private System.Windows.Forms.Panel SummaryPanel;
         private ZoneFiveSoftware.Common.Visuals.TreeList summaryList;
         private System.Windows.Forms.ProgressBar progressBar;

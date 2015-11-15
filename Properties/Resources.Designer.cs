@@ -72,6 +72,16 @@ namespace TrailsPlugin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ChartMenuButton {
+            get {
+                object obj = ResourceManager.GetObject("ChartMenuButton", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap delta {
             get {
                 object obj = ResourceManager.GetObject("delta", resourceCulture);

@@ -89,12 +89,14 @@ namespace TrailsPlugin.UI.Activity
         {
             TrailName.ButtonImage = CommonIcons.MenuCascadeArrowDown;
 
-            btnAdd.BackgroundImage = CommonIcons.Add;
+            btnAdd.CenterImage = CommonIcons.Add;
             btnAdd.Text = "";
-            btnEdit.BackgroundImage = CommonIcons.Edit;
+            btnEdit.CenterImage = CommonIcons.Edit;
             btnEdit.Text = "";
-            btnDelete.BackgroundImage = CommonIcons.Delete;
+            btnDelete.CenterImage = CommonIcons.Delete;
             btnDelete.Text = "";
+            btnMenu.CenterImage = Properties.Resources.ChartMenuButton;
+            btnMenu.Text = "";
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -104,6 +106,12 @@ namespace TrailsPlugin.UI.Activity
             toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
             toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
             this.lblTrail.Text = Properties.Resources.TrailName + ":";
+            this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
+            this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
+            this.ResultSummaryStdDevMenuItem.Text = Properties.Resources.UI_Activity_List_ResultSummaryStdDev;
+            this.showSummaryTotalMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryTotal;
+            this.showSummaryAverageMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryAverage;
+            this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
         }
 
         public void ThemeChanged(ITheme visualTheme)
@@ -148,7 +156,7 @@ namespace TrailsPlugin.UI.Activity
 
             enabled = (m_editTrail == null);//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
-            btnEdit.BackgroundImage = CommonIcons.Edit;
+            btnEdit.CenterImage = CommonIcons.Edit;
 
             if (m_controller.CurrentActivityTrailIsSelected)
             {
@@ -161,7 +169,7 @@ namespace TrailsPlugin.UI.Activity
                 if (m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
                     m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
                 {
-                    btnEdit.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Settings16;
+                    btnEdit.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Settings16;
                 }
             }
             else
@@ -170,6 +178,12 @@ namespace TrailsPlugin.UI.Activity
             }
             enabled = enabled && ((!m_controller.CurrentActivityTrailIsSelected) || !m_controller.PrimaryCurrentActivityTrail.Trail.Generated);
             btnDelete.Enabled = enabled;
+            this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
+            this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
+            this.ResultSummaryStdDevMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
+            this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
+            this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
+            this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
         }
 
 
@@ -310,7 +324,7 @@ namespace TrailsPlugin.UI.Activity
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (m_controller.CurrentActivityTrailIsSelected &&
-                MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question) 
+                MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                 == DialogResult.Yes)
             {
                 m_controller.DeleteCurrentTrail();
@@ -319,8 +333,73 @@ namespace TrailsPlugin.UI.Activity
             }
         }
 
+        private void btnMenu_Click(object sender, EventArgs e)
+        {
+            ZoneFiveSoftware.Common.Visuals.Button btnSender = (ZoneFiveSoftware.Common.Visuals.Button)sender;
+            Point ptLowerLeft = new Point(btnSender.Width-listMenu.Width, btnSender.Height);
+            ptLowerLeft = btnSender.PointToScreen(ptLowerLeft);
+            listMenu.Show(ptLowerLeft);
+        }
+
+        void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
+            this.RefreshControlState();
+            m_page.RefreshData(true);
+        }
+
+        void setRestLapsAsPausesMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.RestIsPause = !Data.Settings.RestIsPause;
+            this.RefreshControlState();
+            this.m_controller.CurrentReset(false); //TBD
+            m_page.RefreshData(true);
+        }
+
+        void ResultSummaryStdDevMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ResultSummaryStdDev = !Data.Settings.ResultSummaryStdDev;
+            this.RefreshControlState();
+            m_page.RefreshSummary();
+        }
+
+        void showSummaryTotalMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowSummaryTotal = !Data.Settings.ShowSummaryTotal;
+            this.RefreshControlState();
+            m_page.RefreshSummary();
+            m_page.RefreshData(false);
+        }
+
+        void showSummaryAverageMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowSummaryAverage = !Data.Settings.ShowSummaryAverage;
+            this.RefreshControlState();
+            m_page.RefreshSummary();
+            m_page.RefreshData(false);
+        }
+
+        void showOnlyMarkedResultsOnMapMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
+            this.RefreshControlState();
+            m_page.RefreshData(false);
+        }
+
+        private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
+        {
+            TrailResult.IncreaseRunningGradeCalcMethod(true);
+            m_page.RefreshData(true);
+        }
+
+        void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
+            e.Cancel = false;
+        }
+
         /*************************************************************************************************************/
-//ST3
+        //ST3
         //TODO: Rewrite, using IItemTrackSelectionInfo help functions?
         private static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {

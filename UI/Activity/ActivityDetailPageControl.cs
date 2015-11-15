@@ -255,6 +255,11 @@ namespace TrailsPlugin.UI.Activity {
             MultiCharts.RefreshChart();
         }
 
+        public void RefreshSummary()
+        {
+            ResultList.RefreshSummary();
+        }
+
         //public IList<TrailResult> SelectedItems
         //{
         //    get

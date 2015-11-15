@@ -571,7 +571,7 @@ namespace TrailsPlugin.UI.Activity {
             //TODO: Splits
         }
 
-        private void RefreshSummary()
+        public void RefreshSummary()
         {
             TrailResultWrapper t;
             t = this.GetSummaryTotal();

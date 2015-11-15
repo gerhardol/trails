@@ -95,6 +95,9 @@ namespace TrailsPlugin.UI.Activity {
             this.advancedMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Analyze16;
             this.excludeResultsMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Delete16;
 #endif
+            this.highScoreMenuItem.Image = Properties.Resources.Image_16_HighScore;
+            this.performancePredictorMenuItem.Image = Properties.Resources.Image_16_PerformancePredictor;
+
             this.summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             this.summaryList.LabelProvider = new TrailResultLabelProvider();
             this.summaryList.RowDataRenderer = new SummaryRowDataRenderer(this.summaryList);

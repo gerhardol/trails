@@ -136,6 +136,26 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Image_16_HighScore {
+            get {
+                object obj = ResourceManager.GetObject("Image_16_HighScore", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Image_16_PerformancePredictor {
+            get {
+                object obj = ResourceManager.GetObject("Image_16_PerformancePredictor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Custom Fields.
         /// </summary>
         internal static string List_CustomFields {

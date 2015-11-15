@@ -129,31 +129,31 @@ namespace TrailsPlugin.UI.Activity
         void InitControls()
         {
             this.boxDefActivity.ButtonImage = CommonIcons.MenuCascadeArrowDown;
-            this.btnAdd.BackgroundImage = CommonIcons.Add;
+            this.btnAdd.CenterImage = CommonIcons.Add;
             this.btnAdd.Text = "";
-            this.btnEdit.BackgroundImage = CommonIcons.Edit;
+            this.btnEdit.CenterImage = CommonIcons.Edit;
             this.btnEdit.Text = "";
-            this.btnDelete.BackgroundImage = CommonIcons.Delete;
+            this.btnDelete.CenterImage = CommonIcons.Delete;
             this.btnDelete.Text = "";
             this.btnDelete.Enabled = false;
-            this.btnUp.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
+            this.btnUp.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
             this.btnUp.Text = "";
             this.btnUp.Enabled = false;
-            this.btnDown.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveDown16;
+            this.btnDown.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveDown16;
             this.btnDown.Text = "";
             this.btnDown.Enabled = false;
             this.btnCopy.Text = "";
-            this.btnCopy.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
+            this.btnCopy.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
             if (this.m_addMode)
             {
                 this.btnCopy.Enabled = false;
             }
             this.btnExport.Text = "";
-            this.btnExport.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Export16;
+            this.btnExport.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Export16;
             this.btnRefresh.Text = "";
-            this.btnRefresh.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Refresh16;
+            this.btnRefresh.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Refresh16;
             this.btnReverse.Text = "";
-            this.btnReverse.BackgroundImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
+            this.btnReverse.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.MoveUp16;
 
             this.chkTwoWay.Checked = this.m_TrailToEdit.BiDirectional;
             this.chkTemporaryTrail.Checked = this.m_TrailToEdit.IsTemporary;

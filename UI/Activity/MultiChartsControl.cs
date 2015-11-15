@@ -229,7 +229,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header1;
                     this.ChartBanner.Text = Properties.Resources.TrailChartsName;
-                    btnExpand.BackgroundImage = CommonIcons.LowerLeft;
+                    btnExpand.CenterImage = CommonIcons.LowerLeft;
 
 #if chartsInDropDownMenu
                     this.deviceToolStripMenuItem.Visible = false;
@@ -247,7 +247,7 @@ namespace TrailsPlugin.UI.Activity {
                 else
                 {
                     this.ChartBanner.Style = ZoneFiveSoftware.Common.Visuals.ActionBanner.BannerStyle.Header2;
-                    btnExpand.BackgroundImage = CommonIcons.LowerHalf;
+                    btnExpand.CenterImage = CommonIcons.LowerHalf;
 
 #if chartsInDropDownMenu
                     this.deviceToolStripMenuItem.Visible = true;

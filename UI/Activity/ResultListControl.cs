@@ -98,6 +98,11 @@ namespace TrailsPlugin.UI.Activity {
             this.highScoreMenuItem.Image = Properties.Resources.Image_16_HighScore;
             this.performancePredictorMenuItem.Image = Properties.Resources.Image_16_PerformancePredictor;
 
+            this.HelpTutorialBtn.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Information16;
+            this.HelpFeaturesBtn.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Information16;
+            this.listSettingsBtn.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Table16;
+            this.insertActivitiesBtn.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentAdd16;
+
             this.summaryList.NumHeaderRows = TreeList.HeaderRows.Two;
             this.summaryList.LabelProvider = new TrailResultLabelProvider();
             this.summaryList.RowDataRenderer = new SummaryRowDataRenderer(this.summaryList);
@@ -139,7 +144,7 @@ namespace TrailsPlugin.UI.Activity {
             this.m_visualTheme = visualTheme;
             this.summaryList.ThemeChanged(visualTheme);
             this.ButtonPanel.ThemeChanged(visualTheme);
-            this.ButtonPanel.BackColor = visualTheme.Window;
+            //this.ButtonPanel.BackColor = visualTheme.Control;
         }
 
         private bool _showPage = false;
@@ -2087,9 +2092,23 @@ namespace TrailsPlugin.UI.Activity {
             e.Cancel = false;
         }
 
-        private void ZoomInButton_Click(object sender, EventArgs e)
+        private void HelpTutorialBtn_Click(object sender, EventArgs e)
         {
-            //Placeholder
+            System.Diagnostics.Process.Start("https://github.com/gerhardol/trails/wiki/Tutorials");
+        }
+
+        private void HelpFeaturesBtn_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/gerhardol/trails/wiki/Features");
+        }
+
+        private void insertActivitiesBtn_Click(object sender, EventArgs e)
+        {
+            //Should probably just be the insert....
+            ZoneFiveSoftware.Common.Visuals.Button btnSender = (ZoneFiveSoftware.Common.Visuals.Button)sender;
+            System.Drawing.Point ptLowerLeft = new System.Drawing.Point(btnSender.Width - listMenu.Width, btnSender.Height);
+            ptLowerLeft = btnSender.PointToScreen(ptLowerLeft);
+            listMenu.Show(ptLowerLeft);
         }
 
         void copyTableMenu_Click(object sender, EventArgs e)

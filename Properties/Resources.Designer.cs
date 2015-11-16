@@ -1093,6 +1093,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin Webpage.
+        /// </summary>
+        internal static string UI_Settings_PageControl_linkInformativeUrl_Text {
+            get {
+                return ResourceManager.GetString("UI_Settings_PageControl_linkInformativeUrl_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Predict Time for Distance.
         /// </summary>
         internal static string UI_Settings_PredictTimeForDistance {

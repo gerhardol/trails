@@ -26,6 +26,7 @@
             this.PluginInfoPanel = new ZoneFiveSoftware.Common.Visuals.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.PluginInfoBanner = new ZoneFiveSoftware.Common.Visuals.ActionBanner();
+            this.lblInfo = new System.Windows.Forms.LinkLabel();
             this.lblDefaultRadius = new System.Windows.Forms.Label();
             this.txtDefaultRadius = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblSetNameAtImport = new System.Windows.Forms.Label();
@@ -87,30 +88,32 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 155F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.PluginInfoBanner, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.lblDefaultRadius, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.txtDefaultRadius, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.lblSetNameAtImport, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.txtSetNameAtImport, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.lblStoppedCategory, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.boxStoppedCategory, 1, 4);
-            this.tableLayoutPanel1.Controls.Add(this.lblBarometricDevices, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.boxBarometricDevices, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.lblAdjustElevationAtImport, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.txtAdjustElevationAtImport, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 10);
-            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 12);
-            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 12);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 14);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 15);
-            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.lblInfo, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.lblDefaultRadius, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtDefaultRadius, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.lblSetNameAtImport, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.txtSetNameAtImport, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.lblStoppedCategory, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.boxStoppedCategory, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.lblBarometricDevices, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.boxBarometricDevices, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.lblAdjustElevationAtImport, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.txtAdjustElevationAtImport, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 12);
+            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 13);
+            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 13);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 15);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 16);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 13;
+            this.tableLayoutPanel1.RowCount = 14;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -144,6 +147,18 @@
             this.PluginInfoBanner.TabIndex = 0;
             this.PluginInfoBanner.Text = "Plugin Information";
             this.PluginInfoBanner.UseStyleFont = true;
+            // 
+            // lblInfo
+            // 
+            this.lblInfo.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblInfo, 2);
+            this.lblInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblInfo.Location = new System.Drawing.Point(3, 407);
+            this.lblInfo.Name = "lblInfo";
+            this.lblInfo.Size = new System.Drawing.Size(356, 20);
+            this.lblInfo.TabIndex = 1;
+            this.lblInfo.Text = "<info";
+            this.lblInfo.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblInfo_LinkClicked);
             // 
             // lblDefaultRadius
             // 
@@ -581,6 +596,7 @@
 
         private ZoneFiveSoftware.Common.Visuals.Panel PluginInfoPanel;
         private ZoneFiveSoftware.Common.Visuals.ActionBanner PluginInfoBanner;
+        private System.Windows.Forms.LinkLabel lblInfo;
         private System.Windows.Forms.Label lblCopyright;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label lblDefaultRadius;

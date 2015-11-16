@@ -106,9 +106,17 @@ namespace TrailsPlugin.UI.Settings
             this.lblPerformancePredictor.Text = Integration.PerformancePredictor.CompabilityText;
             this.lblPredictDistance.Text = Properties.Resources.UI_Settings_PredictTimeForDistance + ":";
 
+            this.lblInfo.Text = Properties.Resources.UI_Settings_PageControl_linkInformativeUrl_Text;
             this.lblLicense.Text = Properties.Resources.UI_Settings_License;
             this.lblCopyright.Text = Properties.Resources.UI_Settings_Copyright + " " + "Brendan Doherty 2009, Gerhard Olsson 2010-2015";
             this.PluginInfoBanner.Text = Properties.Resources.UI_Settings_Title;
+        }
+
+        private void lblInfo_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(
+                "https://github.com/gerhardol/trails/wiki/Tutorials"
+            ));
         }
 
         private void txtDefaultRadius_LostFocus(object sender, EventArgs e) {

@@ -308,7 +308,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_List_ShowOnlyMarkedResultsOnMap" xml:space="preserve">
     <value>Visa enbart valda resultat på karta</value>
   </data>
-  <data name="UI_Activity_List_ShowSplitPointsOnMap1" xml:space="preserve">
+  <data name="UI_Activity_List_ShowSplitPointsOnMap" xml:space="preserve">
     <value>Visa etappunkter på karta</value>
   </data>
   <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">
@@ -352,5 +352,8 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   </data>
   <data name="UI_Activity_List_AddActivities" xml:space="preserve">
     <value>Lägg till aktiviteter</value>
+  </data>
+  <data name="UI_Settings_PageControl_linkInformativeUrl_Text" xml:space="preserve">
+    <value>Plugin websida</value>
   </data>
 </root>

@@ -341,9 +341,9 @@ namespace TrailsPlugin.UI.Activity
         private void btnMenu_Click(object sender, EventArgs e)
         {
             ZoneFiveSoftware.Common.Visuals.Button btnSender = (ZoneFiveSoftware.Common.Visuals.Button)sender;
-            Point ptLowerLeft = new Point(btnSender.Width-listMenu.Width, btnSender.Height);
+            Point ptLowerLeft = new Point(btnSender.Width-chartPanelMenu.Width, btnSender.Height);
             ptLowerLeft = btnSender.PointToScreen(ptLowerLeft);
-            listMenu.Show(ptLowerLeft);
+            chartPanelMenu.Show(ptLowerLeft);
         }
 
         void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)
@@ -404,7 +404,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(true);
         }
 
-        void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        void chartPanelMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
             e.Cancel = false;

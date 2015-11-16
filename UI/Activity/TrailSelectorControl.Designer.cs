@@ -31,7 +31,7 @@
             this.btnEdit = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDelete = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnMenu = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.chartPanelMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +43,7 @@
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.TrailSelectorPanel.SuspendLayout();
-            this.listMenu.SuspendLayout();
+            this.chartPanelMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // TrailSelectorPanel
@@ -191,9 +191,9 @@
             this.btnMenu.Text = "M";
             this.btnMenu.Click += new System.EventHandler(this.btnMenu_Click);
             // 
-            // listMenu
+            // chartPanelMenu
             // 
-            this.listMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.chartPanelMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showSummaryTotalMenuItem,
             this.showSummaryAverageMenuItem,
             this.showOnlyMarkedResultsOnMapMenuItem,
@@ -203,9 +203,9 @@
             this.trailPointsMenuItem,
             this.runGradeAdjustMenuItem,
             this.showToolBarMenuItem});
-            this.listMenu.Name = "listContextMenuStrip";
-            this.listMenu.Size = new System.Drawing.Size(199, 48);
-            this.listMenu.Opening += new System.ComponentModel.CancelEventHandler(listMenu_Opening);
+            this.chartPanelMenu.Name = "chartPanelMenu";
+            this.chartPanelMenu.Size = new System.Drawing.Size(199, 48);
+            this.chartPanelMenu.Opening += new System.ComponentModel.CancelEventHandler(chartPanelMenu_Opening);
             // 
             // useDeviceDistanceMenuItem
             // 
@@ -281,7 +281,7 @@
             this.Size = new System.Drawing.Size(425, 22);
             this.TrailSelectorPanel.ResumeLayout(false);
             this.TrailSelectorPanel.PerformLayout();
-            this.listMenu.ResumeLayout(false);
+            this.chartPanelMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -295,7 +295,7 @@
         private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;
         private ZoneFiveSoftware.Common.Visuals.Button btnEdit;
         private ZoneFiveSoftware.Common.Visuals.Button btnMenu;
-        private System.Windows.Forms.ContextMenuStrip listMenu;
+        private System.Windows.Forms.ContextMenuStrip chartPanelMenu;
         private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setRestLapsAsPausesMenuItem;

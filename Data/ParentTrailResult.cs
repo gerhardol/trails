@@ -36,8 +36,9 @@ namespace TrailsPlugin.Data
     {
         //Normal TrailResult
         public NormalParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
-            : base(activityTrail, order, indexes, distDiff, reverse)
+            : base(activityTrail, order, indexes, distDiff)
         {
+            this.m_reverse = reverse;
         }
     }
     public class SplitsParentTrailResult : ParentTrailResult
@@ -57,28 +58,16 @@ namespace TrailsPlugin.Data
     public class HighScoreParentTrailResult : ParentTrailResult
     {
         public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
-            : base(activityTrail, order, indexes, distDiff, toolTip)
+            : base(activityTrail, order, indexes, distDiff)
         {
+            this.m_toolTip = toolTip;
         }
     }
 
     public class ParentTrailResult : TrailResult
     {
-        //Normal TrailResult
-        protected ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
-            : base(activityTrail, order, indexes, distDiff, reverse)
-        {
-        }
-
-        //Results from Splits
         protected ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
-        {
-        }
-
-        //HighScore result
-        protected ParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
-            : base(activityTrail, order, indexes, distDiff, toolTip)
         {
         }
 

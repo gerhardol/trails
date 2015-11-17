@@ -42,8 +42,9 @@ namespace TrailsPlugin.Data
     public class HighScoreChildTrailResult : ChildTrailResult
     {
         public HighScoreChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
-            base(activityTrail, par, order, indexes, distDiff, tt)
+            base(activityTrail, par, order, indexes, distDiff)
         {
+            this.m_toolTip = tt;
             createResult(par, indexes, false);
         }
     }
@@ -64,14 +65,6 @@ namespace TrailsPlugin.Data
         protected ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
         {
-            createResult(par, indexes, true);
-        }
-
-        //HighScore
-        protected ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
-            base(activityTrail, order, indexes, distDiff, tt)
-        {
-            createResult(par, indexes, false);
         }
 
         protected void createResult(ParentTrailResult par, TrailResultInfo indexes, bool part)

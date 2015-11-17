@@ -48,9 +48,14 @@ namespace TrailsPlugin.Data
         {
             get { return m_isTotal; }
         }
+
         public SummaryTrailResult(bool isTotal) :
-            base()
+            //a summary result is not related to an activity trail
+            base(null, 0, new TrailResultInfo(null, false), float.NaN)
         {
+            m_toolTip = "";
+            m_trailColor = TrailsPlugin.Utils.ColorUtil.SummaryColor;
+
             m_isTotal = isTotal;
             this.results = new List<TrailResult>();
         }

@@ -43,7 +43,7 @@ namespace TrailsPlugin.Data
         protected IPoolLengthInfo m_PoolLengthInfo = null;
         protected int m_order;
         private string m_name;
-        private bool m_reverse;
+        protected bool m_reverse;
 
         protected TrailResultInfo m_subResultInfo;
 
@@ -55,8 +55,8 @@ namespace TrailsPlugin.Data
 
         private float m_startDistance = float.NaN;
         private float m_totalDistDiff; //to give quality of results
-        private ChartColors m_trailColor = null;
-        private string m_toolTip;
+        protected ChartColors m_trailColor = null;
+        protected string m_toolTip;
         //Offset displayed in chart and used in diff calcs.
         //For time also elapsed is needed, inluded in the Distance track already
         private float? m_offsetTime;
@@ -126,26 +126,7 @@ namespace TrailsPlugin.Data
         {
             createTrailResult(activityTrail, order, indexes, distDiff);
         }
-        protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
-            : this(activityTrail, order, indexes, distDiff)
-        {
-            this.m_reverse = reverse;
-        }
-        protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
-            : this(activityTrail, order, indexes, distDiff)
-        {
-            this.m_toolTip = toolTip;
-        }
-
-        //Summary result
-        protected TrailResult()
-        {
-            //a summary result is not related to an activity trail
-            createTrailResult(null, 0, new TrailResultInfo(null, false), float.NaN);
-            m_toolTip = "";
-            m_trailColor = ColorUtil.SummaryColor;
-        }
-
+        
         private void createTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
         {
             m_activityTrail = activityTrail;

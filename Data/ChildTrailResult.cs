@@ -31,6 +31,7 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
+    //All but HighScore
     public class NormalChildTrailResult : ChildTrailResult
     {
         public NormalChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :

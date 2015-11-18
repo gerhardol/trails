@@ -29,49 +29,75 @@ using ITrailExport;
 
 namespace TrailsPlugin.Data
 {
-    public class TrailResultWrapper : TreeList.TreeListNode, IComparable
+    public class PositionTrailResultWrapper : TrailResultWrapper
     {
         //Normal result
-        public TrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes)
-            : this(activityTrail, null, order, indexes, indexes.DistDiff, indexes.Reverse)
-        { }
-
-        private TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper par, int order, TrailResultInfo indexes, float distDiff, bool reverse)
-            : base(par, null)
+        public PositionTrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes)
+               : base()
         {
-            base.Element = new NormalParentTrailResult(activityTrail, order, indexes, distDiff, reverse);
-            if (par == null)
-            {
-                //Children are not created by default
-                //getSplits();
-            }
+            base.Element = new PositionParentTrailResult(activityTrail, order, indexes, indexes.DistDiff, indexes.Reverse);
+            this.getChildren();
+        }
+    }
+
+    public class SummaryTrailResultWrapper : TrailResultWrapper
+    {
+        //Summary line
+        public SummaryTrailResultWrapper(bool isTotal)
+        : base()
+        {
+            base.Element = new SummaryTrailResult(isTotal);
         }
 
-        //Create results from splits
-        public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, int order)
-            : base(null, null)
+        public void SetSummary(IList<TrailResultWrapper> rows)
+        {
+            ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows, false));
+        }
+    }
+
+    public class SplitsTrailResultWrapper : TrailResultWrapper
+    {
+        public SplitsTrailResultWrapper(ActivityTrail activityTrail, IActivity activity, int order)
+            : base()
         {
             TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
+            getChildren();
         }
 
+        protected SplitsTrailResultWrapper()
+             : base()
+        {
+        }
+   }
+
+    public class TimeSplitsTrailResultWrapper : SplitsTrailResultWrapper
+    {
         //create results on datetime info
-        public TrailResultWrapper(ActivityTrail activityTrail, IActivity activity, TrailResultInfo tri, int order)
-            : base(null, null)
+        public TimeSplitsTrailResultWrapper(ActivityTrail activityTrail, IActivity activity, TrailResultInfo tri, int order)
+            : base()
         {
             TrailResultInfo indexes = tri.CopyFromReference(activity);
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
+            getChildren();
         }
+    }
 
-        public TrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
-            : base(null, null)
+    public class SwimSplitsTrailResultWrapper : SplitsTrailResultWrapper
+    {
+        public SwimSplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
+            : base()
         {
             base.Element = new SwimSplitsParentTrailResult(activityTrail, order, indexes, 0);
+            getChildren();
         }
+    }
 
+    public class HighScoreTrailResultWrapper : TrailResultWrapper
+    {
         //Create from HighScore, add the first and last time stamps in MarkedTimes
-        public TrailResultWrapper(ActivityTrail activityTrail, TrailResultWrapper parent, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
-            : base(null, null)
+        public HighScoreTrailResultWrapper(ActivityTrail activityTrail, HighScoreTrailResultWrapper parent, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
+            : base()
         {
             TrailResultInfo indexes = new TrailResultInfo(activity, false);
             DateTime time = selInfo.MarkedTimes[0].Lower;
@@ -108,22 +134,19 @@ namespace TrailsPlugin.Data
                 }
             }
         }
+    }
 
-        //Summary line
-        public TrailResultWrapper(bool isTotal)
+    public class TrailResultWrapper : TreeList.TreeListNode, IComparable
+    {
+        //Parent
+        protected TrailResultWrapper()
             : base(null, null)
-        {
-            base.Element = new SummaryTrailResult(isTotal);
-        }
+        { }
 
-        public void SetSummary(IList<TrailResultWrapper> rows)
-        {
-            ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows, false));
-        }
-
-        //SubResults
-        private TrailResultWrapper(TrailResultWrapper par, TrailResult ele)
-            : base(par, ele) { }
+        //Child
+        private TrailResultWrapper(TreeList.TreeListNode parent, object element)
+            : base(parent, element)
+        { }
 
         public TrailResult Result
         {
@@ -133,45 +156,15 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public bool IsSummary
-        {
-            get
-            {
-                bool res = false;
-                if(this.Element is SummaryTrailResult)
-                {
-                    res = true;
-                }
-                return res;
-            }
-        }
-
-        public void Sort()
-        {
-            if (m_children.Count > 0)
-            {
-                //Sorting children directly fails- save original items
-                ((List<TrailResultWrapper>)m_children).Sort();
-                this.Children.Clear(); 
-                foreach (TrailResultWrapper tn in m_children)
-                {
-                    if (!TrailsPlugin.Data.Settings.RestIsPause || tn.Result.Duration.TotalSeconds > 1)
-                    {
-                        this.Children.Add(tn);
-                    }
-                }
-            }
-        }
-
         //TODO: Calculate children when needed, by implementing Children
         //This is currently called after all parent results have been determined
         //A good enough reason is that this will give main activities separate colors, in the intended order
-        public void getSplits()
+        protected void getChildren()
         {
             if (this.Result != null && this.Result is ParentTrailResult)
             {
                 ParentTrailResult ptr = this.Result as ParentTrailResult;
-                IList<ChildTrailResult> children = ptr.getSplits();
+                IList<ChildTrailResult> children = ptr.getChildren();
                 if (children != null && children.Count > 1)
                 {
                     foreach (ChildTrailResult tr in children)
@@ -185,6 +178,23 @@ namespace TrailsPlugin.Data
                             ptr.m_childrenResults = new List<ChildTrailResult>();
                         }
                         ptr.m_childrenResults.Add(tr);
+                    }
+                }
+            }
+        }
+
+        public void Sort()
+        {
+            if (m_children.Count > 0)
+            {
+                //Sorting children directly fails- save original items
+                ((List<TrailResultWrapper>)m_children).Sort();
+                this.Children.Clear();
+                foreach (TrailResultWrapper tn in m_children)
+                {
+                    if (!TrailsPlugin.Data.Settings.RestIsPause || tn.Result.Duration.TotalSeconds > 1)
+                    {
+                        this.Children.Add(tn);
                     }
                 }
             }
@@ -218,7 +228,7 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        private static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
+        protected static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
         {
             IList<TrailResult> result = new List<TrailResult>();
             if (tn != null)
@@ -261,7 +271,7 @@ namespace TrailsPlugin.Data
             {
                 foreach (TrailResultWrapper tnp in tn)
                 {
-                    if(!result.Contains(tnp.Result.Activity))
+                    if (!result.Contains(tnp.Result.Activity))
                     {
                         result.Add(tnp.Result.Activity);
                     }
@@ -278,7 +288,8 @@ namespace TrailsPlugin.Data
             if (trws != null && tr != null)
             {
                 //This should not be needed, but a crash when developing occurred here set breakpoint
-                try {
+                try
+                {
                     foreach (TrailResult trr in tr)
                     {
                         bool isMatch = false;
@@ -314,11 +325,11 @@ namespace TrailsPlugin.Data
                     }
                 }
                 catch { }
-            } 
+            }
             return result;
         }
 
-        private IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
+        protected IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
 
         #region IComparable<Product> Members
         public int CompareTo(object obj)

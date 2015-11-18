@@ -253,10 +253,8 @@ namespace TrailsPlugin.Data
             foreach (IActivity activity in m_inBound)
             {
                 //No GPS check: Must have been done when adding to inbound list
-                TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
                 m_resultsListWrapper.Add(result);
-                //add children
-                result.getSplits();
                 //Note: status is not updated, cannot be better
             }
             //No progress update
@@ -319,11 +317,11 @@ namespace TrailsPlugin.Data
                         IList<Integration.HighScore.HighScoreResult> hs = Integration.HighScore.GetHighScoreForActivity(activities, 10, null/*progressBar*/);
                         if (hs != null && hs.Count > 0)
                         {
-                            TrailResultWrapper parent = null;
+                            HighScoreTrailResultWrapper parent = null;
                             foreach (Integration.HighScore.HighScoreResult h in hs)
                             {
                                 this.Status = TrailOrderStatus.Match;
-                                TrailResultWrapper result = new TrailResultWrapper(this, parent, h.activity, h.selInfo, h.tooltip, h.order/* m_resultsListWrapper.Count + 1*/);
+                                HighScoreTrailResultWrapper result = new HighScoreTrailResultWrapper(this, parent, h.activity, h.selInfo, h.tooltip, h.order/* m_resultsListWrapper.Count + 1*/);
                                 if (h.order == 1)
                                 {
                                     m_resultsListWrapper.Add(result);
@@ -359,7 +357,7 @@ namespace TrailsPlugin.Data
                             foreach (IActivity activity in resultActivities)
                             {
                                 this.Status = TrailOrderStatus.Match;
-                                TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                                SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
                             }
                         }
@@ -375,18 +373,16 @@ namespace TrailsPlugin.Data
                     if (refAct != null)
                     {
                         this.Status = TrailOrderStatus.Match;
-                        TrailResultWrapper refRes = new TrailResultWrapper(this, refAct, m_resultsListWrapper.Count + 1);
+                        SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(this, refAct, m_resultsListWrapper.Count + 1);
                         m_resultsListWrapper.Add(refRes);
-                        refRes.getSplits();
                         this.m_controller.ReferenceTrailResult = refRes.Result;
                         foreach (IActivity activity in activities)
                         {
                             if (activity != refAct &&
                                 refRes.Result.AnyOverlap(activity))
                             {
-                                TrailResultWrapper result = new TrailResultWrapper(this, activity, refRes.Result.SubResultInfo, m_resultsListWrapper.Count + 1);
+                                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, activity, refRes.Result.SubResultInfo, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
-                                result.getSplits();
                             }
                         }
                     }
@@ -412,7 +408,7 @@ namespace TrailsPlugin.Data
                         if (this.m_trail.TrailType == Trail.CalcType.Splits)
                         {
                             this.Status = TrailOrderStatus.Match;
-                            TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                            SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
                             m_resultsListWrapper.Add(result);
                         }
                         else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
@@ -421,7 +417,7 @@ namespace TrailsPlugin.Data
                             foreach (TrailResultInfo indexes in Data.Trail.TrailResultSwimInfoFromSplits(activity, false, subresultIndex))
                             {
                                 this.Status = TrailOrderStatus.Match;
-                                TrailResultWrapper result = new TrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
+                                SplitsTrailResultWrapper result = new SwimSplitsTrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
                                 subresultIndex += indexes.Points.Count;
                             }
@@ -465,17 +461,13 @@ namespace TrailsPlugin.Data
                             {
                                 this.Status = TrailOrderStatus.Match;
                                 //Splits result
-                                TrailResultWrapper result = new TrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                                SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
                             }
                         }
                     }
                     //Always set InBound count, used in some displays
                     m_noResCount[TrailOrderStatus.InBound] = m_inBound.Count;
-                    foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
-                    {
-                        tr.getSplits();
-                    }
                 }
 
                 if (this.m_trail.IsURFilter &&
@@ -546,7 +538,7 @@ namespace TrailsPlugin.Data
 
             foreach (TrailResultInfo resultInfo in trailResults)
             {
-                TrailResultWrapper result = new TrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo);
+                TrailResultWrapper result = new PositionTrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo);
                 m_resultsListWrapper.Add(result);
             }
 
@@ -692,7 +684,7 @@ namespace TrailsPlugin.Data
     trailResults, incompleteResults, null);
                 if (trailResults.Count > 0)
                 {
-                    TrailResultWrapper result = new TrailResultWrapper(this, 0, trailResults[0]);
+                    TrailResultWrapper result = new PositionTrailResultWrapper(this, 0, trailResults[0]);
                     tr = result.Result;
                 }
             }
@@ -1440,7 +1432,7 @@ namespace TrailsPlugin.Data
                     {
                         resultInfo.Points.Add(new TrailResultPoint(m_trail.TrailLocations[i], DateTime.MinValue, TrailResultPoint.DiffDistMax));
                     }
-                    TrailResult tr = new NormalParentTrailResult(this, m_resultsListWrapper.Count + 1,
+                    TrailResult tr = new PositionParentTrailResult(this, m_resultsListWrapper.Count + 1,
                         resultInfo, resultInfo.DistDiff, t.Reverse);
                     result.Add(tr);
                 }

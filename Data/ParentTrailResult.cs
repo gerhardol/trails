@@ -32,15 +32,16 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Data
 {
-    public class NormalParentTrailResult : ParentTrailResult
+    public class PositionParentTrailResult : ParentTrailResult
     {
         //Normal TrailResult
-        public NormalParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
+        public PositionParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, bool reverse)
             : base(activityTrail, order, indexes, distDiff)
         {
             this.m_reverse = reverse;
         }
     }
+
     public class SplitsParentTrailResult : ParentTrailResult
     {
         public SplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
@@ -48,13 +49,15 @@ namespace TrailsPlugin.Data
         {
         }
     }
-    public class SwimSplitsParentTrailResult : ParentTrailResult
+
+    public class SwimSplitsParentTrailResult : SplitsParentTrailResult
     {
         public SwimSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, order, indexes, distDiff)
         {
         }
     }
+
     public class HighScoreParentTrailResult : ParentTrailResult
     {
         public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
@@ -71,7 +74,7 @@ namespace TrailsPlugin.Data
         {
         }
 
-        public IList<ChildTrailResult> getSplits()
+        public IList<ChildTrailResult> getChildren()
         {
             IList<ChildTrailResult> splits = new List<ChildTrailResult>();
             if (this.m_subResultInfo.Count > 1)

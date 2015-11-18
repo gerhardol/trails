@@ -59,8 +59,8 @@ namespace TrailsPlugin.UI.Activity {
         public ResultListControl()
         {
             InitializeComponent();
-            this.m_summaryTotal = new TrailResultWrapper(true);
-            this.m_summaryAverage = new TrailResultWrapper(false);
+            this.m_summaryTotal = new SummaryTrailResultWrapper(true);
+            this.m_summaryAverage = new SummaryTrailResultWrapper(false);
         }
 #if ST_2_1
         public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
@@ -523,7 +523,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (TrailResultWrapper t in selected)
                 {
-                    if (!t.IsSummary)
+                    if (!(t is SummaryTrailResultWrapper))
                     {
                         selected2.Add(t);
                     }
@@ -566,11 +566,11 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (Data.Settings.ShowSummaryTotal)
             {
-                m_summaryTotal.SetSummary(selected2);
+                ((SummaryTrailResultWrapper)m_summaryTotal).SetSummary(selected2);
             }
             if (Data.Settings.ShowSummaryAverage)
             {
-                m_summaryAverage.SetSummary(selected2);
+                ((SummaryTrailResultWrapper)m_summaryAverage).SetSummary(selected2);
             }
             //TODO: Splits
         }
@@ -738,7 +738,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (TrailResultWrapper t in m_controller.CurrentResultTreeList)
                 {
-                    if (!t.IsSummary)
+                    if (!(t is SummaryTrailResultWrapper))
                     {
                         all.Add(t);
                     }

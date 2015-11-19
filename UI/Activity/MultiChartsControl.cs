@@ -325,6 +325,15 @@ namespace TrailsPlugin.UI.Activity {
 
                 bool isData = m_controller.CurrentActivityTrailIsSelected;
 
+                IList<Data.TrailResult> selectedPresentableResults = new List<Data.TrailResult>();
+                foreach (TrailResult t in this.m_controller.SelectedResults)
+                {
+                    if (!(t is PausedChildTrailResult))
+                    {
+                        selectedPresentableResults.Add(t);
+                    }
+                }
+
                 m_multiChart.ChartTypes=new List<LineChartTypes>();
                 multiChart.ShowPage = false;
                 //TODO: Temporary handling. Cleanup and decide multiple graphs and charts
@@ -337,8 +346,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     m_multiChart.BeginUpdate();
                     m_multiChart.XAxisReferential = Data.Settings.XAxisValue;
-                    IList<Data.TrailResult> list = this.m_controller.SelectedResults;
-                    m_multiChart.TrailResults = list;
+                    m_multiChart.TrailResults = selectedPresentableResults;
                     foreach (LineChartTypes t in Data.Settings.MultiChartType)
                     {
                         LineChartTypes t2 = t;
@@ -401,8 +409,7 @@ namespace TrailsPlugin.UI.Activity {
                         if (visible && isData)
                         {
                             updateChart.XAxisReferential = Data.Settings.XAxisValue;
-                            IList<Data.TrailResult> list = this.m_controller.SelectedResults;
-                            updateChart.TrailResults = list;
+                            updateChart.TrailResults = selectedPresentableResults;
                             if (!m_expanded && updateChart.ChartTypes.Count == 1)
                             {
                                 this.ChartBanner.Text = LineChartUtil.ChartTypeString(chart.LeftChartType) + " / " +

@@ -495,6 +495,13 @@ namespace TrailsPlugin.Data {
             {
                 return -1;
             }
+            if ((x is PausedChildTrailResult || y is PausedChildTrailResult) &&
+                !(TrailsPlugin.Data.Settings.SummaryViewSortColumns.Count>0 && 
+                TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.StartTime))
+            {
+                //Keep close to normal result TBD, not working properly
+                return x.StartTime.CompareTo(y.StartTime);
+            }
 
             int result = 0;
             const string GradeRunAdjustedPace_Field = "GradeRunAdjustedSpeed";

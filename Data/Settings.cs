@@ -47,6 +47,7 @@ namespace TrailsPlugin.Data
         private static int m_MaxAutoCalcActivitiesTrails = 10000;
         private static int m_MaxAutoCalcActivitiesSingleTrail = 10000;
         private static bool m_restLapIsPause = false;
+        public static bool ShowPausesAsResults = false;
         private static bool m_nonReqIsPause = false;
         private static bool m_resyncDiffAtTrailPoints = true;
         private static bool m_adjustResyncDiffAtTrailPoints = false;
@@ -710,6 +711,8 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { SetAdjustElevationAtImport = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.RestLapIsPause);
                 if (attr.Length > 0) { RestIsPause = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sShowPausesAsResults);
+                if (attr.Length > 0) { ShowPausesAsResults = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.NonReqIsPause);
                 if (attr.Length > 0) { NonReqIsPause = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ResyncDiffAtTrailPoints);
@@ -885,6 +888,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
             pluginNode.SetAttribute(xmlTags.SetAdjustElevationAtImport, XmlConvert.ToString(m_SetAdjustElevationAtImport));
             pluginNode.SetAttribute(xmlTags.RestLapIsPause, XmlConvert.ToString(m_restLapIsPause));
+            pluginNode.SetAttribute(xmlTags.sShowPausesAsResults, XmlConvert.ToString(ShowPausesAsResults));
             pluginNode.SetAttribute(xmlTags.NonReqIsPause, XmlConvert.ToString(m_nonReqIsPause));
             pluginNode.SetAttribute(xmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_resyncDiffAtTrailPoints));
             pluginNode.SetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints, XmlConvert.ToString(m_adjustResyncDiffAtTrailPoints));
@@ -982,6 +986,7 @@ namespace TrailsPlugin.Data
             public const string SetNameAtImport = "SetNameAtImport";
             public const string SetAdjustElevationAtImport = "SetAdjustElevationAtImport";
             public const string RestLapIsPause = "RestIsPause";
+            public const string sShowPausesAsResults = "sShowPausesAsResults";
             public const string NonReqIsPause = "NonReqIsPause";
             public const string ResyncDiffAtTrailPoints = "ResyncDiffAtTrailPoints";
             public const string AdjustResyncDiffAtTrailPoints = "AdjustResyncDiffAtTrailPoints";

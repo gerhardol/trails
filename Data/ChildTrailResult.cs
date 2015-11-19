@@ -40,6 +40,16 @@ namespace TrailsPlugin.Data
             createResult(par, indexes, true);
         }
     }
+
+    public class PausedChildTrailResult : ChildTrailResult
+    {
+        public PausedChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, par, order, indexes, distDiff)
+        {
+            createResult(par, indexes, true);
+        }
+    }
+
     public class HighScoreChildTrailResult : ChildTrailResult
     {
         public HighScoreChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :

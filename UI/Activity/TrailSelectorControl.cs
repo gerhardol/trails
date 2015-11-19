@@ -109,6 +109,7 @@ namespace TrailsPlugin.UI.Activity
             this.lblTrail.Text = Properties.Resources.TrailName + ":";
             this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
+            this.ShowPausesAsResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowPausesAsResults;
             this.ResultSummaryStdDevMenuItem.Text = Properties.Resources.UI_Activity_List_ResultSummaryStdDev;
             this.showSummaryTotalMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryAverage;
@@ -183,6 +184,7 @@ namespace TrailsPlugin.UI.Activity
             btnDelete.Enabled = enabled;
             this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
+            this.ShowPausesAsResultsMenuItem.Checked = Data.Settings.ShowPausesAsResults;
             this.ResultSummaryStdDevMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
             this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
@@ -358,6 +360,14 @@ namespace TrailsPlugin.UI.Activity
             Data.Settings.RestIsPause = !Data.Settings.RestIsPause;
             this.RefreshControlState();
             this.m_controller.CurrentReset(false); //TBD
+            m_page.RefreshData(true);
+        }
+
+        void ShowPausesAsResultsMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.ShowPausesAsResults = !Data.Settings.ShowPausesAsResults;
+            this.RefreshControlState();
+            this.m_controller.CurrentReset(false);
             m_page.RefreshData(true);
         }
 

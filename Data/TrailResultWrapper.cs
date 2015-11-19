@@ -62,7 +62,7 @@ namespace TrailsPlugin.Data
         {
             TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
-            getChildren();
+            this.getChildren();
         }
 
         protected SplitsTrailResultWrapper()
@@ -79,7 +79,7 @@ namespace TrailsPlugin.Data
         {
             TrailResultInfo indexes = tri.CopyFromReference(activity);
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
-            getChildren();
+            this.getChildren();
         }
     }
 
@@ -89,7 +89,7 @@ namespace TrailsPlugin.Data
             : base()
         {
             base.Element = new SwimSplitsParentTrailResult(activityTrail, order, indexes, 0);
-            getChildren();
+            this.getChildren();
         }
     }
 
@@ -235,12 +235,15 @@ namespace TrailsPlugin.Data
             {
                 foreach (TrailResultWrapper tnp in tn)
                 {
-                    result.Add(tnp.Result);
+                    if (!(tnp.Result is PausedChildTrailResult))
+                    {
+                        result.Add(tnp.Result);
+                    }
                     if (includeChildren)
                     {
                         foreach (TrailResultWrapper tnc in tnp.Children)
                         {
-                            if (!result.Contains(tnc.Result))
+                            if (!result.Contains(tnc.Result) && !(tnc.Result is PausedChildTrailResult))
                             {
                                 result.Add(tnc.Result);
                             }

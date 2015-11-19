@@ -112,7 +112,17 @@ namespace TrailsPlugin.Data
                         i = j - 1;//Next index to try
                     }
                 }
-
+                if (Data.Settings.ShowPausesAsResults)
+                {
+                    foreach (IValueRange<DateTime> v in this.Pauses)
+                    {
+                        TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
+                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Lower, v.Upper - v.Lower));
+                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Upper, TimeSpan.Zero));
+                        ChildTrailResult tr = new PausedChildTrailResult(m_activityTrail, this, -1, t, t.DistDiff);
+                        splits.Add(tr);
+                    }
+                }
                 TimeSpan sp = TimeSpan.Zero;
                 bool ok = true;
                 foreach (ChildTrailResult ctr in splits)

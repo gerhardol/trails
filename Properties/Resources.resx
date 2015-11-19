@@ -500,4 +500,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Settings_PageControl_linkInformativeUrl_Text" xml:space="preserve">
     <value>Plugin Webpage</value>
   </data>
+  <data name="UI_Activity_List_ShowPausesAsResults" xml:space="preserve">
+    <value>Show Pauses As Results</value>
+  </data>
 </root>

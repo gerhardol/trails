@@ -515,7 +515,7 @@ namespace TrailsPlugin.Data
         public IValueRangeSeries<DateTime> getSelInfo(bool excludePauses)
         {
             IValueRangeSeries<DateTime> res = new ValueRangeSeries<DateTime> { new ValueRange<DateTime>(this.StartTime, this.EndTime) };
-            if (excludePauses)
+            if (excludePauses && !(this is PausedChildTrailResult))
             {
                 res = TrailsItemTrackSelectionInfo.excludePauses(res, this.Pauses);
             }
@@ -3754,7 +3754,7 @@ namespace TrailsPlugin.Data
             }
             return m_trailPointDist0;
         }
-#endregion
+        #endregion
 
         /**********************************************************/
         #region GPS
@@ -3782,7 +3782,9 @@ namespace TrailsPlugin.Data
                 {
                     DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
 
-                    if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses))
+                    if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses) ||
+                        //Special handling: Return GPS for the activity, to mark them
+                        this is PausedChildTrailResult)
                     {
                         IGPSPoint point = m_activity.GPSRoute[i].Value;
                         gpsTrack.Add(dateTime, point);
@@ -3801,6 +3803,7 @@ namespace TrailsPlugin.Data
             {
                 //debug
             }
+
             return gpsTrack;
         }
 

@@ -679,6 +679,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Pauses As Results.
+        /// </summary>
+        internal static string UI_Activity_List_ShowPausesAsResults {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_ShowPausesAsResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Split Points On Map.
         /// </summary>
         internal static string UI_Activity_List_ShowSplitPointsOnMap {

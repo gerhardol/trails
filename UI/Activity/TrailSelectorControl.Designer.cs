@@ -35,6 +35,7 @@
             this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ShowPausesAsResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResultSummaryStdDevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showSummaryTotalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showSummaryAverageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -196,10 +197,11 @@
             this.chartPanelMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showSummaryTotalMenuItem,
             this.showSummaryAverageMenuItem,
+            this.ResultSummaryStdDevMenuItem,
             this.showOnlyMarkedResultsOnMapMenuItem,
             this.useDeviceDistanceMenuItem,
             this.setRestLapsAsPausesMenuItem,
-            this.ResultSummaryStdDevMenuItem,
+            this.ShowPausesAsResultsMenuItem,
             this.trailPointsMenuItem,
             this.runGradeAdjustMenuItem,
             this.showToolBarMenuItem});
@@ -220,6 +222,13 @@
             this.setRestLapsAsPausesMenuItem.Size = new System.Drawing.Size(198, 22);
             this.setRestLapsAsPausesMenuItem.Text = "<setRestLapsAsPausesMenuItem...";
             this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.setRestLapsAsPausesMenuItem_Click);
+            // 
+            // ShowPausesAsResultsMenuItem
+            // 
+            this.ShowPausesAsResultsMenuItem.Name = "ShowPausesAsResultsMenuItem";
+            this.ShowPausesAsResultsMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.ShowPausesAsResultsMenuItem.Text = "<ShowPausesAsResultsMenuItem...";
+            this.ShowPausesAsResultsMenuItem.Click += new System.EventHandler(this.ShowPausesAsResultsMenuItem_Click);
             // 
             // ResultSummaryStdDevMenuItem
             // 
@@ -297,11 +306,12 @@
         private ZoneFiveSoftware.Common.Visuals.Button btnMenu;
         private System.Windows.Forms.ContextMenuStrip chartPanelMenu;
         private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setRestLapsAsPausesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ResultSummaryStdDevMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showSummaryTotalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showSummaryAverageMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ShowPausesAsResultsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
         private System.Windows.Forms.ToolStripMenuItem trailPointsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;

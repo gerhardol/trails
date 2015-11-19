@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data {
             }
             else
             {
-                this.selInfo.MarkedTimes = tr.getSelInfo(true);
+                this.selInfo.MarkedTimes = tr.getSelInfo(true && !(tr is PausedChildTrailResult));
                 this.selInfo.Activity = tr.Activity;
             }
         }

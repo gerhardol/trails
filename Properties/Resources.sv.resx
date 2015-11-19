@@ -318,10 +318,10 @@ http://www.gnu.org/licenses/lgpl.html.</value>
     <value>Använd enhetens distans</value>
   </data>
   <data name="UI_Activity_List_ShowSummaryAverage" xml:space="preserve">
-    <value>Medel sammanfattning</value>
+    <value>Medel sammanfattningsrad</value>
   </data>
   <data name="UI_Activity_List_ShowSummaryTotal" xml:space="preserve">
-    <value>Totaler Sammanfattning</value>
+    <value>Totaler sammanfattningsrad</value>
   </data>
   <data name="UI_Chart_AddChart" xml:space="preserve">
     <value>Lägg till diagram</value>
@@ -355,5 +355,8 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   </data>
   <data name="UI_Settings_PageControl_linkInformativeUrl_Text" xml:space="preserve">
     <value>Plugin websida</value>
+  </data>
+  <data name="UI_Activity_List_ShowPausesAsResults" xml:space="preserve">
+    <value>Visa pauser som resultat</value>
   </data>
 </root>

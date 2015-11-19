@@ -147,6 +147,22 @@ namespace TrailsPlugin.Data
                 }
             }
 
+            if (row is PausedChildTrailResult)
+            {
+                switch (column.Id)
+                {
+                    case TrailResultColumnIds.StartTime:
+                    case TrailResultColumnIds.StartDistance:
+                    case TrailResultColumnIds.EndTime:
+                    case TrailResultColumnIds.Duration:
+                        //Show with default formatting
+                        break;
+                    default:
+                        //Not for pauses
+                        return null;
+                }
+            }
+
             switch (column.Id)
             {
                 case TrailResultColumnIds.Order:

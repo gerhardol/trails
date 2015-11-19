@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-1.3.8 2015-11-12 (unreleased)
+1.3.9 2015-11-19 (unreleased)
   * Changed version numbering after source repository was moved to GitHub.
   * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
     The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
@@ -16,13 +16,14 @@ This page describes the changes between plugin releases. The change log may cont
   * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
   * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.
   * Show Lap fields for _Splits_ trail. Time and Distance are fetched from Lap data.
+  * Option to show pauses as results in the list (can be marked on the map too).
   * Add support for column _Max (Avg) Grade_.
   * Result list shortcut Ctrl-D: Use device distance calculations for distance and pace/speed if existing.
   * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default.
   * Viewer for UniqueRoutes was not always showing time and date.
   * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
-  * Copy Chart option.
+  * Copy Chart option
   * Tweaked UI, updating icons, sizes etc
   * Chart toolbar: Add option to hide/show trailpoints
   * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.

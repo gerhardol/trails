@@ -2,38 +2,45 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-1.3.9 2015-11-19 (unreleased)
-  * Changed version numbering after source repository was moved to GitHub.
-  * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
-    The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
-  * Standard ST chart selection dialog. This also allows to reorder charts. Chart selection in dropdown menu is removed.
-  * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
-  * For Splits trail, Distance and Time shows lap data (not the data calculated from track data)
-  * SplitPoints - view on map.
-  * Swim Splits trail - analyze swim activities
-  * Added trail _Splits - ReferenceResults_, a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
-  * Updated Spanish translation.
-  * Save column size in list when changing. Previously the default size was reset when switching back/to the plugin or changing the displayed columns only.
-  * Possibility to show Custom Data fields. They are for the activity, not trail, but some are useful.
-  * Show Lap fields for _Splits_ trail. Time and Distance are fetched from Lap data.
-  * Option to show pauses as results in the list (can be marked on the map too).
-  * Add support for column _Max (Avg) Grade_.
-  * Result list shortcut Ctrl-D: Use device distance calculations for distance and pace/speed if existing.
-  * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there is not much difference.
-  * Set Garmin fenix, 920xt, 910xt as barometric devices by default.
-  * Viewer for UniqueRoutes was not always showing time and date.
-  * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
-  * Copy Chart option
-  * Tweaked UI, updating icons, sizes etc
-  * Chart toolbar: Add option to hide/show trailpoints
-  * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
-  * Move "insert activity" related actions from _Advanced_ submenu to new _Insert activities_ submenu to be able to describe the functionality better.
-  * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
-    * AddTopCategory
-    * UseDeviceDistance
-    * SetRestLapsAsPauses
-    * ShowOnlyMarkedResultsOnMap
-	* Summary Average Standard Deviation
+1.3.10 2015-11-20 (GitHub)
+  * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
+  * Tweaked UI, updating icons, sizes etc. See Charts and Result List changes
+  * Charts
+    * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
+      The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
+    * Standard ST chart selection dialog. This also allows to reorder charts in a simpler. Chart selection in dropdown menu is removed.
+    * Copy Chart option
+    * Chart toolbar: Add option to hide/show trailpoints in charts
+    * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
+  * Pre-defined trails
+    * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
+    * New trail: _Swim Splits trail_ analyze swim activities
+    * New trail: _Splits - ReferenceResults_, a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
+  * Result list
+	* Added option menu, with "settings" for results. The list context menu (right click on the list) still have context related actions: Insert activities, set reference result, Analyze, etc
+    * Result list toolbar, to emphasis help and insert of activities, that seem to not always be recognized. (The toolbar can be hidden)
+    * Move "insert activity" related actions from _Advanced_ submenu to new _Insert activities_ submenu to be able to describe the functionality better.
+    * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
+      * Add Top Category
+      * Use Device Distance
+      * Set Rest Laps As Pauses
+      * Show Only Marked Results On Map
+      * Summary Average Standard Deviation
+    * Option to show pauses as results in the list (can be marked on the map too). SportTracks will by default only show that pauses have occurred, this show the time and length of pauses.
+    * Save column size in list when changing. Previously the size was reset to default at updates.
+    * Possibility to show Custom Data fields. They are for the activity, not trail, so not all are useful.
+    * Show Lap fields for _Splits_ trail
+    * For _Splits_ trail, Distance and Time shows lap data (not the data calculated from track data)
+    * Add support for column _Max (Avg) Grade_
+    * Use device distance calculations for distance and pace/speed if existing. (List option or Result list shortcut Ctrl-D)
+	* Sort on the last three selected columns (if the primary field is the same, sort on secondary). It is possible to group results by for instance selecting Duration, then Categories.
+    * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there are not much difference.
+    * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
+    * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
+    * Viewer for UniqueRoutes was not always showing time and date.
+  * Updated Spanish translation, thanks to AlexMTB
+  * Set Garmin fenix, 920xt, 910xt as barometric devices by default
+  * Documentation updated
 
 
 1.2.971 2015-01-30 (Plugin Catalog)

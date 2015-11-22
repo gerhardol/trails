@@ -36,6 +36,7 @@ namespace TrailsPlugin.Data
 
         public Guid Id;
         public string Name;
+        public IList<Trail> Children = new List<Trail>(); 
 
         //The default reference activity, only makes sense for non-auto trails
         private IActivity m_DefaultRefActivity = null;
@@ -138,6 +139,10 @@ namespace TrailsPlugin.Data
             result.IsURFilter = this.IsURFilter;
             //result.IsAutoTryAll = this.IsAutoTryAll;
             result.IsTemporary = this.IsTemporary;
+            foreach(Trail t in this.Children)
+            {
+                result.Children.Add(t);
+            }
 
             if (!this.m_generated)
             {
@@ -400,6 +405,21 @@ namespace TrailsPlugin.Data
                     }
                 }
             }
+        }
+
+        public bool IsNameParentTo(Trail t)
+        {
+            bool result;
+            if (t.Name.StartsWith(this.Name + ":") ||
+                t.Name.StartsWith(this.Name + " :"))
+            {
+                result = true;
+            }
+            else
+            {
+                result = false;
+            }
+            return result;
         }
 
         public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps, float radius)

@@ -121,6 +121,7 @@ namespace TrailsPlugin.Data {
         public const string Diff = "Diff";
         public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
         public const string Name = "Name";
+        public const string Trail = "Trail";
 
         public const string AveragePowerBalance = "AveragePowerBalance";
         public const string AverageTemperature = "AverageTemperature";
@@ -354,6 +355,7 @@ namespace TrailsPlugin.Data {
             //index++;
             //columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeedPace, columnDefs[index].Text(columnDefs[index].Id), columnDefs[index].GroupName, columnDefs[index].Width, columnDefs[index].Align));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, ActivityGroup, 70, StringAlignment.Near));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Trail, Properties.Resources.TrailName, ActivityGroup, 70, StringAlignment.Near));
 
 
             //Activity

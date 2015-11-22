@@ -1107,6 +1107,14 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public string Trail
+        {
+            get
+            {
+                return this.m_activityTrail.Trail.Name;
+            }
+        }
+
         public string ToolTip
         {
             get

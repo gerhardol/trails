@@ -2,6 +2,10 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
+(unreleased)
+  * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName : Spcific_), selecting the "parent" selects all "child" trails too.
+  
+  
 1.3.10 2015-11-20 (GitHub)
   * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
   * Tweaked UI, updating icons, sizes etc. See Charts and Result List changes

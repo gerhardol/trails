@@ -144,6 +144,20 @@ namespace TrailsPlugin.Controller
             //activityGps handled separately
         }
 
+        public ActivityTrail GetActivityTrail(Trail t)
+        {
+            ActivityTrail res = null;
+            foreach (ActivityTrail at in m_CurrentOrderedTrails)
+            {
+                if (at.Trail == t)
+                {
+                    res = at;
+                    break;
+                }
+            }
+            return res;
+        }
+
         public void CurrentReset(bool onlyDisplay)
         {
             foreach (ActivityTrail t in this.CurrentActivityTrails)
@@ -229,7 +243,18 @@ namespace TrailsPlugin.Controller
             IList<ActivityTrail> activityTrails2 = new List<ActivityTrail>();
             foreach (ActivityTrail to in activityTrails)
             {
-                activityTrails2.Add(to);
+                if (!activityTrails2.Contains(to))
+                {
+                    activityTrails2.Add(to);
+                }
+                foreach(Trail t2 in to.Trail.Children)
+                {
+                    ActivityTrail to2 = GetActivityTrail(t2);
+                    if (!activityTrails2.Contains(to2))
+                    {
+                        activityTrails2.Add(to2);
+                    }
+                }
             }
 
             this.m_currentActivityTrails.Clear();

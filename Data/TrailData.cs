@@ -26,12 +26,12 @@ namespace TrailsPlugin.Data
 {
     public static class TrailData 
     {
-        private static SortedList<Guid, Data.Trail> m_AllTrails = defaultTrails();
+        private static IDictionary<Guid, Data.Trail> m_AllTrails = defaultTrails();
         public static Data.Trail ElevationPointsTrail;
    
-        private static SortedList<Guid, Data.Trail> defaultTrails()
+        private static IDictionary<Guid, Data.Trail> defaultTrails()
         {
-            SortedList<Guid, Data.Trail> allTrails = new SortedList<Guid, Data.Trail>();
+            IDictionary<Guid, Data.Trail> allTrails = new Dictionary<Guid, Data.Trail>();
             //GUIDs could be dynamic or constants too
             Data.Trail trail;
 
@@ -97,7 +97,7 @@ namespace TrailsPlugin.Data
             return allTrails;
         }
 
-        public static SortedList<Guid, Data.Trail> AllTrails
+        public static IDictionary<Guid, Data.Trail> AllTrails
         {
             get
             {
@@ -135,6 +135,33 @@ namespace TrailsPlugin.Data
             return null;
         }
 
+        private static void UpdateChildren(Data.Trail trail, bool add)
+        {
+            //Always remove, also when adding
+            foreach (Trail t in m_AllTrails.Values)
+            {
+                if (t.Children.Contains(trail))
+                {
+                    t.Children.Remove(trail);
+                }
+            }
+
+            if (add)
+            {
+                foreach (Trail t in m_AllTrails.Values)
+                {
+                    if (t.IsNameParentTo(trail))
+                    {
+                        t.Children.Add(trail);
+                    }
+                    else if (trail.IsNameParentTo(t))
+                    {
+                        trail.Children.Add(t);
+                    }
+                }
+            }
+        }
+
         public static bool InsertTrail(Data.Trail trail)
         {
             foreach (Trail t in m_AllTrails.Values)
@@ -146,6 +173,7 @@ namespace TrailsPlugin.Data
             }
             trail.Id = System.Guid.NewGuid();
             m_AllTrails.Add(trail.Id, trail);
+            UpdateChildren(trail, true);
             AddElevationPoints(trail);
             Plugin.WriteExtensionData();
             return true;
@@ -164,6 +192,7 @@ namespace TrailsPlugin.Data
             if (m_AllTrails.ContainsKey(trail.Id))
             {
                 m_AllTrails[trail.Id] = trail;
+                UpdateChildren(trail, true);
                 ElevationPointsTrail.TrailLocations.Clear();
                 foreach (Trail t in m_AllTrails.Values)
                 {
@@ -183,6 +212,7 @@ namespace TrailsPlugin.Data
             if (m_AllTrails.ContainsKey(trail.Id))
             {
                 m_AllTrails.Remove(trail.Id);
+                UpdateChildren(trail, false);
                 ElevationPointsTrail.TrailLocations.Clear();
                 foreach (Trail t in m_AllTrails.Values)
                 {
@@ -234,6 +264,7 @@ namespace TrailsPlugin.Data
                 }
                 trail.Name = name;
                 m_AllTrails.Add(trail.Id, trail);
+                UpdateChildren(trail, true);
                 AddElevationPoints(trail);
             }
         }

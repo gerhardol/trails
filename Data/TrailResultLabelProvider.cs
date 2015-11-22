@@ -165,10 +165,15 @@ namespace TrailsPlugin.Data
 
             switch (column.Id)
             {
-                case TrailResultColumnIds.Order:
-                    return row.Order.ToString();
                 case TrailResultColumnIds.ResultColor:
                     return null;
+
+                //String output without formatting
+                case TrailResultColumnIds.Order:
+                case TrailResultColumnIds.Name:
+                case TrailResultColumnIds.Trail:
+                    return base.GetText(row, column);
+
                 case TrailResultColumnIds.StartTime:
                     if (row.Activity == null) return null;
                     string date = "";
@@ -232,8 +237,6 @@ namespace TrailsPlugin.Data
                     return UnitUtil.PaceOrSpeed.ToString(row.AvgSpeed, m_controller.ReferenceActivity, "");
                 case TrailResultColumnIds.FastestSpeedPace:
                     return UnitUtil.PaceOrSpeed.ToString(row.FastestSpeed, m_controller.ReferenceActivity, "");
-                case TrailResultColumnIds.Name:
-                    return row.Name;
                 case TrailResultColumnIds.PredictDistance:
                     return UnitUtil.Time.ToString(row.PredictDistance, "");
                 case TrailResultColumnIds.IdealTime:

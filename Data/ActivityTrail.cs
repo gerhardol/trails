@@ -170,7 +170,12 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return m_status;
+                TrailOrderStatus res = m_status;
+                foreach(Trail t in this.Trail.Children)
+                {
+                    res = BestCalcStatus(res, m_controller.GetActivityTrail(t).Status);
+                }
+                return res;
             }
             set
             {
@@ -1662,7 +1667,12 @@ namespace TrailsPlugin.Data
             if (t.Status == TrailOrderStatus.Match ||
                 t.Status == TrailOrderStatus.MatchPartial)
             {
-                name += " (" + TrailResultWrapper.Results(t.ResultTreeList).Count;
+                int n = TrailResultWrapper.Results(t.ResultTreeList).Count;
+                foreach (Trail tr in t.Trail.Children)
+                {
+                    n+= TrailResultWrapper.Results(Controller.TrailController.Instance.GetActivityTrail(tr).ResultTreeList).Count;
+                }
+                name += " (" + n;
                 if (t.Trail.IsURFilter && t.FilteredResults.Count > 0)
                 {
                     name += " ," + t.FilteredResults.Count;

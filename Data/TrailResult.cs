@@ -121,7 +121,7 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region contructors
-        //Parent results
+        
         protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
         {
             createTrailResult(activityTrail, order, indexes, distDiff);

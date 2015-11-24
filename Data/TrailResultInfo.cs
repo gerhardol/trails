@@ -82,6 +82,8 @@ namespace TrailsPlugin.Data
         public TrailResultInfo Copy()
         {
             TrailResultInfo result = new TrailResultInfo(this.Activity, this.Reverse);
+            result.m_DistDiff = this.m_DistDiff;
+            result.LapInfo = this.LapInfo;
             foreach (TrailResultPoint p in Points)
             {
                 result.Points.Add(p);
@@ -247,6 +249,29 @@ namespace TrailsPlugin.Data
             this.LapInfo = t.LapInfo;
             this.PoolLengthInfo = t.PoolLengthInfo;
             this.Order = t.Order;
+        }
+
+        public void Merge(TrailResultPoint t)
+        {
+            //Merge with later point, some fields kept
+            this.Duration += t.Duration;
+            if (this.LapInfo != null && t.LapInfo != null)
+            {
+                this.LapInfo = new LapInfo(this.LapInfo, t.LapInfo);
+            }
+            else if (t.LapInfo != null)
+            {
+                this.LapInfo = t.LapInfo;
+            }
+
+            if (this.PoolLengthInfo != null && t.PoolLengthInfo != null)
+            {
+                this.PoolLengthInfo = new PoolLengthInfo(this.PoolLengthInfo, t.PoolLengthInfo);
+            }
+            else if (t.PoolLengthInfo != null)
+            {
+                this.PoolLengthInfo = t.PoolLengthInfo;
+            }
         }
 
         public override string ToString()

@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Controller\TrailController.cs" />
     <Compile Include="DataImport\ExtendDataImporters.cs" />
+    <Compile Include="Data\LapInfo.cs" />
     <Compile Include="Data\PoolLengthInfo.cs" />
     <Compile Include="Data\ActivityTrail.cs" />
     <Compile Include="Data\ActivityCache.cs" />

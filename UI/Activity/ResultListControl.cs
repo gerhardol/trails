@@ -1750,9 +1750,19 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.L)
             {
-                //tmp, to be removed
-                Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
-                this.m_page.RefreshRoute(false);
+                if (e.Modifiers == Keys.Control)
+                {
+                    //Unofficial
+                    ActivityTrail.MergeSubResults(this.SelectedResultWrapper);
+                    this.m_page.RefreshData(false);
+                    this.m_page.RefreshRoute(false);
+                }
+                else
+                {
+                    //tmp, to be removed
+                    Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
+                    this.m_page.RefreshRoute(false);
+                }
             }
             else if (e.KeyCode == Keys.N)
             {

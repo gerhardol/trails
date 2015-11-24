@@ -58,9 +58,12 @@ namespace TrailsPlugin.Data
     public class SplitsTrailResultWrapper : TrailResultWrapper
     {
         public SplitsTrailResultWrapper(ActivityTrail activityTrail, IActivity activity, int order)
+            : this(activityTrail, Data.Trail.TrailResultInfoFromSplits(activity, false), order)
+        {
+        }
+        public SplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
             : base()
         {
-            TrailResultInfo indexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
             base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
             this.getChildren();
         }

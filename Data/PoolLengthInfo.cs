@@ -78,6 +78,16 @@ namespace TrailsPlugin.Data
             this.m_DistanceUnits = p.DistanceUnits;
         }
 
+        public PoolLengthInfo(IPoolLengthInfo p, IPoolLengthInfo q)
+        {
+            this.m_StartTime = p.StartTime < q.StartTime ? p.StartTime : q.StartTime;
+            this.m_StrokeCount = p.StrokeCount + q.StrokeCount;
+            this.m_StrokeType = p.StrokeType == q.StrokeType ? p.StrokeType : SwimStroke.Type.Mixed;
+            this.m_TotalDistanceMeters = p.TotalDistanceMeters + q.TotalDistanceMeters;
+            this.m_TotalTime = p.TotalTime + q.TotalTime;
+            this.m_DistanceUnits = p.DistanceUnits; //No automatic merge - should be the same anyway
+        }
+
         public static IPoolLengthInfo GetPoolLength(IList<TrailResult> list)
         {
             IList<IPoolLengthInfo> r = new List<IPoolLengthInfo>();

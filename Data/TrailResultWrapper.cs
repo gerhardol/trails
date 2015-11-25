@@ -128,7 +128,7 @@ namespace TrailsPlugin.Data
                     ChildTrailResult ctr = new HighScoreChildTrailResult(activityTrail, ptr, order, indexes, 0, tt);
                     base.Element = ctr;
                     parent.Children.Add(this);
-                    parent.m_children.Add(this);
+                    parent.m_allChildren.Add(this);
                     if (ptr.m_childrenResults == null)
                     {
                         ptr.m_childrenResults = new List<ChildTrailResult>();
@@ -175,7 +175,7 @@ namespace TrailsPlugin.Data
                         TrailResultWrapper tn = new TrailResultWrapper(this, tr);
                         //several separate substructues..
                         this.Children.Add(tn);
-                        this.m_children.Add(tn);
+                        this.m_allChildren.Add(tn);
                         if (ptr.m_childrenResults == null)
                         {
                             ptr.m_childrenResults = new List<ChildTrailResult>();
@@ -188,12 +188,12 @@ namespace TrailsPlugin.Data
 
         public void Sort()
         {
-            if (m_children.Count > 0)
+            if (m_allChildren.Count > 0)
             {
                 //Sorting children directly fails- save original items
-                ((List<TrailResultWrapper>)m_children).Sort();
+                ((List<TrailResultWrapper>)m_allChildren).Sort();
                 this.Children.Clear();
-                foreach (TrailResultWrapper tn in m_children)
+                foreach (TrailResultWrapper tn in m_allChildren)
                 {
                     if (!TrailsPlugin.Data.Settings.RestIsPause || tn.Result.Duration.TotalSeconds > 1)
                     {
@@ -208,9 +208,9 @@ namespace TrailsPlugin.Data
             bool result = false;
             foreach (TrailResultWrapper tr in tn)
             {
-                if (this.m_children.Contains(tr))
+                if (this.m_allChildren.Contains(tr))
                 {
-                    this.m_children.Remove(tr);
+                    this.m_allChildren.Remove(tr);
                     result = true;
                 }
                 //May not be needed as Children are added when sorting
@@ -316,7 +316,7 @@ namespace TrailsPlugin.Data
                             }
                             else
                             {
-                                foreach (TrailResultWrapper tnc in tnp.m_children)
+                                foreach (TrailResultWrapper tnc in tnp.m_allChildren)
                                 {
                                     if (tnc.Result.CompareTo(trr) == 0)
                                     {
@@ -335,7 +335,8 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        protected IList<TrailResultWrapper> m_children = new List<TrailResultWrapper>();
+        //The Children may not include all (hide paused laps, deleted etc). These are all results
+        protected IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
 
         #region IComparable<Product> Members
         public int CompareTo(object obj)

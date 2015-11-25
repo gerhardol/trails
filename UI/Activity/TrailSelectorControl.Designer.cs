@@ -33,6 +33,7 @@
             this.btnMenu = new ZoneFiveSoftware.Common.Visuals.Button();
             this.chartPanelMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.runGradeAdjustMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShowPausesAsResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -199,6 +200,7 @@
             this.showSummaryAverageMenuItem,
             this.ResultSummaryStdDevMenuItem,
             this.showOnlyMarkedResultsOnMapMenuItem,
+            this.selectSimilarSplitsMenuItem,
             this.useDeviceDistanceMenuItem,
             this.setRestLapsAsPausesMenuItem,
             this.ShowPausesAsResultsMenuItem,
@@ -208,6 +210,13 @@
             this.chartPanelMenu.Name = "chartPanelMenu";
             this.chartPanelMenu.Size = new System.Drawing.Size(199, 48);
             this.chartPanelMenu.Opening += new System.ComponentModel.CancelEventHandler(chartPanelMenu_Opening);
+            // 
+            // selectSimilarSplitsMenuItem
+            // 
+            this.selectSimilarSplitsMenuItem.Name = "selectSimilarSplitsMenuItem";
+            this.selectSimilarSplitsMenuItem.Size = new System.Drawing.Size(206, 22);
+            this.selectSimilarSplitsMenuItem.Text = "<Select similar splits...";
+            this.selectSimilarSplitsMenuItem.Click += new System.EventHandler(this.selectSimilarSplitsMenuItem_Click);
             // 
             // useDeviceDistanceMenuItem
             // 
@@ -311,6 +320,7 @@
         private System.Windows.Forms.ToolStripMenuItem showSummaryTotalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showSummaryAverageMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useDeviceDistanceMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ShowPausesAsResultsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
         private System.Windows.Forms.ToolStripMenuItem trailPointsMenuItem;

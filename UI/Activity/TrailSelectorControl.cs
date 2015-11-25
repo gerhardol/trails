@@ -107,12 +107,13 @@ namespace TrailsPlugin.UI.Activity
             toolTip.SetToolTip(btnEdit, Properties.Resources.UI_Activity_Page_EditTrail_TT);
             toolTip.SetToolTip(btnDelete, Properties.Resources.UI_Activity_Page_DeleteTrail_TT);
             this.lblTrail.Text = Properties.Resources.TrailName + ":";
-            this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
-            this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
-            this.ShowPausesAsResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowPausesAsResults;
             this.ResultSummaryStdDevMenuItem.Text = Properties.Resources.UI_Activity_List_ResultSummaryStdDev;
             this.showSummaryTotalMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSummaryAverage;
+            this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
+            this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
+            this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
+            this.ShowPausesAsResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowPausesAsResults;
             this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
             this.trailPointsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSplitPointsOnMap;
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
@@ -189,6 +190,7 @@ namespace TrailsPlugin.UI.Activity
             this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
             this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
+            this.selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             this.trailPointsMenuItem.Checked = Data.Settings.ShowTrailPointsOnMap;
             this.showToolBarMenuItem.Checked = Data.Settings.ShowListToolBar;
         }
@@ -346,6 +348,12 @@ namespace TrailsPlugin.UI.Activity
             Point ptLowerLeft = new Point(btnSender.Width-chartPanelMenu.Width, btnSender.Height);
             ptLowerLeft = btnSender.PointToScreen(ptLowerLeft);
             chartPanelMenu.Show(ptLowerLeft);
+        }
+
+        void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
+        {
+            TrailsPlugin.Data.Settings.SelectSimilarResults = this.selectSimilarSplitsMenuItem.Checked;
+            m_page.selectSimilarSplitsChanged();
         }
 
         void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)

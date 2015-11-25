@@ -265,6 +265,10 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.ShowListToolBar();
         }
 
+        public void selectSimilarSplitsChanged()
+        {
+            ResultList.selectSimilarSplitsChanged();
+        }
         //public IList<TrailResult> SelectedItems
         //{
         //    get

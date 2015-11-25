@@ -121,7 +121,6 @@ namespace TrailsPlugin.UI.Activity {
         {
             this.copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_List_ListSettings;
-            this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             this.insertActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddActivities;
             //this.referenceTrailMenuItem.Text = Properties.Resources.UI_Activity_List_ReferenceResult;
             this.analyzeMenuItem.Text = CommonResources.Text.ActionAnalyze;
@@ -224,7 +223,6 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshControlState()
         {
             limitActivityMenuItem.Enabled = MultiActivity();
-            selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             addCurrentCategoryMenuItem.Checked = Data.Settings.AddCurrentCategory;
         }
 
@@ -757,9 +755,8 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
-        void selectSimilarSplitsChanged()
+        internal void selectSimilarSplitsChanged()
         {
-            TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
             if (selectSimilarSplits())
             {
                 this.m_page.RefreshChart();
@@ -1550,6 +1547,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.Space)
             {
+                TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
                 this.selectSimilarSplitsChanged();
             }
             else if (e.KeyCode == Keys.A)
@@ -2189,11 +2187,6 @@ namespace TrailsPlugin.UI.Activity {
         void performancePredictorMenuItem_Click(object sender, System.EventArgs e)
         {
             PerformancePredictorPopup();
-        }
-
-        void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
-        {
-            selectSimilarSplitsChanged();
         }
 
         void excludeResultsMenuItem_Click(object sender, System.EventArgs e)

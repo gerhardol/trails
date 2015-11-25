@@ -40,7 +40,6 @@
             this.selectWithURMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addCurrentCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addTopCategoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.analyzeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.highScoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.performancePredictorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -245,7 +244,6 @@
             this.listSettingsMenuItem,
             this.referenceResultMenuItem,
             this.insertActivitiesMenuItem,
-            this.selectSimilarSplitsMenuItem,
             this.analyzeMenuItem,
             this.advancedMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
@@ -303,13 +301,6 @@
             this.addTopCategoryMenuItem.Size = new System.Drawing.Size(270, 22);
             this.addTopCategoryMenuItem.Text = "<addTopCategoryMenuItem...";
             this.addTopCategoryMenuItem.Click += new System.EventHandler(this.addTopCategoryMenuItem_Click);
-            // 
-            // selectSimilarSplitsMenuItem
-            // 
-            this.selectSimilarSplitsMenuItem.Name = "selectSimilarSplitsMenuItem";
-            this.selectSimilarSplitsMenuItem.Size = new System.Drawing.Size(206, 22);
-            this.selectSimilarSplitsMenuItem.Text = "<Select similar splits...";
-            this.selectSimilarSplitsMenuItem.Click += new System.EventHandler(this.selectSimilarSplitsMenuItem_Click);
             // 
             // analyzeMenuItem
             // 
@@ -425,7 +416,6 @@
         private System.Windows.Forms.ContextMenuStrip listMenu;
         private System.Windows.Forms.ToolStripMenuItem copyTableMenuItem;
         private System.Windows.Forms.ToolStripMenuItem listSettingsMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectSimilarSplitsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem referenceResultMenuItem;
         private System.Windows.Forms.ToolStripMenuItem insertActivitiesMenuItem;
         private System.Windows.Forms.ToolStripMenuItem analyzeMenuItem;

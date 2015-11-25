@@ -1101,6 +1101,8 @@ namespace TrailsPlugin.UI.Activity {
             this.m_lastSelectedItems = this.summaryList.SelectedItems;
         }
 
+        /************************************************/
+
         bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)
         {
             if (activityCat == null)
@@ -1449,6 +1451,34 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
         }
+        
+        private void MergeSubResults(IList<TrailResultWrapper> atr)
+        {
+            if (atr != null && atr.Count > 0)
+            {
+                //Get all relevant child results
+                IDictionary<TrailResultWrapper, IList<TrailResultWrapper>> subRes = new Dictionary<TrailResultWrapper, IList<TrailResultWrapper>>();
+                foreach (TrailResultWrapper tr in atr)
+                {
+                    if (tr.Result is ChildTrailResult &&
+                        (tr.Parent is PositionTrailResultWrapper || tr.Parent is SplitsTrailResultWrapper))
+                    {
+                        TrailResultWrapper parent = (tr.Parent as TrailResultWrapper);
+                        if (!subRes.ContainsKey(parent))
+                        {
+                            subRes[parent] = new List<TrailResultWrapper>();
+                        }
+
+                        subRes[parent].Add(tr);
+                    }
+                }
+
+                foreach (TrailResultWrapper tr in subRes.Keys)
+                {
+                    tr.Result.m_activityTrail.MergeSubResults(tr, subRes[tr]);
+                }
+            }
+        }
 
         void FixDistanceTrack()
         {
@@ -1536,7 +1566,6 @@ namespace TrailsPlugin.UI.Activity {
             }
             l.Rest = true;
         }
-
 
         /*************************************************************************/
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1751,7 +1780,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Control)
                 {
                     //Unofficial
-                    ActivityTrail.MergeSubResults(this.SelectedResultWrapper);
+                    this.MergeSubResults(this.SelectedResultWrapper);
                     this.m_page.RefreshData(false);
                     this.m_page.RefreshRoute(false);
                 }

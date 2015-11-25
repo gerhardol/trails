@@ -536,123 +536,106 @@ namespace TrailsPlugin.Data
             public float prevDist;
         }
 
-        internal static void MergeSubResults(IList<TrailResultWrapper> atr)
+        internal void MergeSubResults(TrailResultWrapper parent, IList<TrailResultWrapper> ctr)
         {
-            if (atr != null && atr.Count > 0)
+            //Get the indexes from the displayed results
+            //Using the order of displayed results (results may have been excluded (pauses) or deleted)
+            IList<TrailResultWrapper> displayedChildren = new List<TrailResultWrapper>();
+            foreach (TrailResultWrapper tr in parent.Children)
             {
-                //For now, only handle one result (first child) at a time
-                TrailResultWrapper parent = null;
-                IList<TrailResultWrapper> ctr = new List<TrailResultWrapper>();
-                foreach (TrailResultWrapper tr in atr)
+                displayedChildren.Add(tr);
+            }
+            ((List<TrailResultWrapper>)displayedChildren).Sort((x, y) => x.Result.StartTime.CompareTo(y.Result.StartTime));
+
+            IList<int> orders = new List<int>();
+            foreach (TrailResultWrapper tr in ctr)
+            {
+                for (int childIndex = 0;
+                    childIndex < displayedChildren.Count;
+                    childIndex++)
                 {
-                    if (tr.Result is ChildTrailResult &&
-                        (tr.Parent is PositionTrailResultWrapper || tr.Parent is SplitsTrailResultWrapper) &&
-                        (parent == null || parent == (tr.Parent as TrailResultWrapper)))
+                    if (tr == displayedChildren[childIndex])
                     {
-                        parent = (tr.Parent as TrailResultWrapper);
-                        ctr.Add(tr);
+                        orders.Add(childIndex);
+                        break;
                     }
                 }
-                if (ctr.Count > 0)
+            }
+                    
+            //The indexes may not have been added in order
+            ((List<int>)orders).Sort();
+
+            int orderIndex = 0; //wrap around the index (mark only last if offset is the same)
+            TrailResultInfo indexes = parent.Result.SubResultInfo.Copy();
+            indexes.Points = new List<TrailResultPoint> { displayedChildren[0].Result.SubResultInfo.Points[0] };
+
+            for (int childIndex = 1;
+                 childIndex < displayedChildren.Count;
+                 childIndex++)
+            {
+                int i = orders[orderIndex % orders.Count] + (orderIndex / orders.Count) * (1 + orders[orders.Count - 1]);
+                TrailResultPoint t = displayedChildren[childIndex].Result.SubResultInfo.Points[0];
+                if (childIndex <= i)
                 {
-                    //Get the indexes from the displayed results
-                    //TODO: Use Children instead, to derive from displayed results
-                    IList<TrailResultWrapper> displayedChildren = new List<TrailResultWrapper>();
-                    foreach(TrailResultWrapper tr in parent.Children)
-                    {
-                        displayedChildren.Add(tr);
-                    }
-                    ((List<TrailResultWrapper>)displayedChildren).Sort((x, y) => x.Result.StartTime.CompareTo(y.Result.StartTime));
-                    IList<int> orders = new List<int>();
-                    foreach (TrailResultWrapper tr in ctr)
-                    {
-                        for (int childIndex = 0;
-                            childIndex < displayedChildren.Count;
-                            childIndex++)
-                        {
-                            if (tr == displayedChildren[childIndex])
-                            {
-                                orders.Add(childIndex);
-                                break;
-                            }
-                        }
-                    }
-                    //The indexes may not have been added in order
-                    ((List<int>)orders).Sort();
-                    int orderIndex = 0; //wrap around the index (mark only last if offset is the same)
-                    TrailResultInfo indexes = parent.Result.SubResultInfo.Copy();
-                    indexes.Points = new List<TrailResultPoint> { displayedChildren[0].Result.SubResultInfo.Points[0] };
+                    indexes.Points[indexes.Points.Count - 1].Merge(t);
+                }
+                else
+                {
+                    //First or new start
+                    indexes.Points.Add(t);
+                    orderIndex++;
+                }
+                //Set the order to the last merged result
+                indexes.Points[indexes.Points.Count - 1].Order = displayedChildren[childIndex].Result.Order;
+            }
+            //End point always included
+            indexes.Points.Add(displayedChildren[displayedChildren.Count - 1].Result.SubResultInfo.Points[1]);
 
-                    for (int childIndex = 1;
-                         childIndex < displayedChildren.Count;
-                         childIndex++)
+            int order = parent.Result.Order;
+            this.Remove(new List<TrailResultWrapper> { parent }, false);
+            //All trail types are not handled
+            if (parent is PositionTrailResultWrapper)
+            {
+                TrailResultWrapper result = new PositionTrailResultWrapper(this, order, indexes);
+                this.m_resultsListWrapper.Add(result);
+            }
+            else if (parent is SwimSplitsTrailResultWrapper)
+            {
+                SplitsTrailResultWrapper result = new SwimSplitsTrailResultWrapper(this, indexes, order);
+                this.m_resultsListWrapper.Add(result);
+            }
+            else if (parent is TimeSplitsTrailResultWrapper)
+            {
+                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, indexes.Activity, indexes, order);
+                this.m_resultsListWrapper.Add(result);
+            }
+            else if (parent is SplitsTrailResultWrapper)
+            {
+                SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(this, indexes, order);
+                if (this.Trail.TrailType == Trail.CalcType.SplitsTime &&
+                    indexes.Activity == this.m_controller.ReferenceActivity)
+                {
+                    this.m_resultsListWrapper.Clear();
+                    IList<TrailResultWrapper> ts = new List<TrailResultWrapper>();
+                    foreach (TrailResultWrapper trr in this.m_resultsListWrapper)
                     {
-                        int i = orders[orderIndex % orders.Count] + (orderIndex / orders.Count) * (1 + orders[orders.Count - 1]);
-                        TrailResultPoint t = displayedChildren[childIndex].Result.SubResultInfo.Points[0];
-                        if (childIndex <= i)
-                        {
-                            indexes.Points[indexes.Points.Count - 1].Merge(t);
-                        }
-                        else
-                        {
-                            //First or new start
-                            indexes.Points.Add(t);
-                            orderIndex++;
-                        }
-                        //Set the order to the last merged result
-                        indexes.Points[indexes.Points.Count - 1].Order = displayedChildren[childIndex].Result.Order;
+                        ts.Add(trr);
                     }
-                    //End point always included
-                    indexes.Points.Add(displayedChildren[displayedChildren.Count-1].Result.SubResultInfo.Points[1]);
-
-                    ActivityTrail at = parent.Result.m_activityTrail;
-                    int order = parent.Result.Order;
-                    at.Remove(new List<TrailResultWrapper> { parent }, false);
-                    //All trail types are not handled
-                    if (parent is PositionTrailResultWrapper)
+                    this.Remove(ts, false);
+                    this.m_resultsListWrapper.Add(refRes);
+                    foreach (IActivity activity in this.m_controller.Activities)
                     {
-                        TrailResultWrapper result = new PositionTrailResultWrapper(at, order, indexes);
-                        at.m_resultsListWrapper.Add(result);
-                    }
-                    else if (parent is SwimSplitsTrailResultWrapper)
-                    {
-                        SplitsTrailResultWrapper result = new SwimSplitsTrailResultWrapper(at, indexes, order);
-                        at.m_resultsListWrapper.Add(result);
-                    }
-                    else if (parent is TimeSplitsTrailResultWrapper)
-                    {
-                        SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(at, indexes.Activity, indexes, order);
-                        at.m_resultsListWrapper.Add(result);
-                    }
-                    else if (parent is SplitsTrailResultWrapper)
-                    {
-                        SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(at, indexes, order);
-                        if (at.Trail.TrailType == Trail.CalcType.SplitsTime &&
-                            indexes.Activity == at.m_controller.ReferenceActivity)
+                        if (activity != refRes.Result.Activity &&
+                            refRes.Result.AnyOverlap(activity))
                         {
-                            at.m_resultsListWrapper.Clear();
-                            IList<TrailResultWrapper> ts = new List<TrailResultWrapper>();
-                            foreach (TrailResultWrapper trr in at.m_resultsListWrapper)
-                            {
-                                ts.Add(trr);
-                            }
-                            at.Remove(ts, false);
-                            at.m_resultsListWrapper.Add(refRes);
-                            foreach (IActivity activity in at.m_controller.Activities)
-                            {
-                                if (activity != refRes.Result.Activity &&
-                                    refRes.Result.AnyOverlap(activity))
-                                {
-                                    SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(at, activity, refRes.Result.SubResultInfo, order);
-                                    at.m_resultsListWrapper.Add(result);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            at.m_resultsListWrapper.Add(refRes);
+                            SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, activity, refRes.Result.SubResultInfo, order);
+                            this.m_resultsListWrapper.Add(result);
                         }
                     }
+                }
+                else
+                {
+                    this.m_resultsListWrapper.Add(refRes);
                 }
             }
         }

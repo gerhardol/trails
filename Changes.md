@@ -19,7 +19,7 @@ This page describes the changes between plugin releases. The change log may cont
     * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
   * Pre-defined trails
     * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
-    * New trail: _Swim Splits trail_ analyze swim activities
+    * New trail: _Splits - Swim_ analyze swim activities
     * New trail: _Splits - ReferenceResults_, a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Result list
 	* Added option menu, with "settings" for results. The list context menu (right click on the list) still have context related actions: Insert activities, set reference result, Analyze, etc

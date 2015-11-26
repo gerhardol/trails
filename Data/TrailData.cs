@@ -24,11 +24,11 @@ using ZoneFiveSoftware.Common.Data.GPS;
 
 namespace TrailsPlugin.Data
 {
-    public static class TrailData 
+    public static class TrailData
     {
         private static IDictionary<Guid, Data.Trail> m_AllTrails = defaultTrails();
         public static Data.Trail ElevationPointsTrail;
-   
+
         private static IDictionary<Guid, Data.Trail> defaultTrails()
         {
             IDictionary<Guid, Data.Trail> allTrails = new Dictionary<Guid, Data.Trail>();
@@ -135,28 +135,20 @@ namespace TrailsPlugin.Data
             return null;
         }
 
-        private static void UpdateChildren(Data.Trail trail, bool add)
+        private static void RefreshChildren()
         {
-            //Always remove, also when adding
             foreach (Trail t in m_AllTrails.Values)
             {
-                if (t.Children.Contains(trail))
-                {
-                    t.Children.Remove(trail);
-                }
+                t.Children.Clear();
             }
 
-            if (add)
+            foreach (Trail t in m_AllTrails.Values)
             {
-                foreach (Trail t in m_AllTrails.Values)
+                foreach (Trail t2 in m_AllTrails.Values)
                 {
-                    if (t.IsNameParentTo(trail))
+                    if (t.IsNameParentTo(t2))
                     {
-                        t.Children.Add(trail);
-                    }
-                    else if (trail.IsNameParentTo(t))
-                    {
-                        trail.Children.Add(t);
+                        t.Children.Add(t2);
                     }
                 }
             }
@@ -173,7 +165,7 @@ namespace TrailsPlugin.Data
             }
             trail.Id = System.Guid.NewGuid();
             m_AllTrails.Add(trail.Id, trail);
-            UpdateChildren(trail, true);
+            RefreshChildren();
             AddElevationPoints(trail);
             Plugin.WriteExtensionData();
             return true;
@@ -192,7 +184,7 @@ namespace TrailsPlugin.Data
             if (m_AllTrails.ContainsKey(trail.Id))
             {
                 m_AllTrails[trail.Id] = trail;
-                UpdateChildren(trail, true);
+                RefreshChildren();
                 ElevationPointsTrail.TrailLocations.Clear();
                 foreach (Trail t in m_AllTrails.Values)
                 {
@@ -212,7 +204,7 @@ namespace TrailsPlugin.Data
             if (m_AllTrails.ContainsKey(trail.Id))
             {
                 m_AllTrails.Remove(trail.Id);
-                UpdateChildren(trail, false);
+                RefreshChildren();
                 ElevationPointsTrail.TrailLocations.Clear();
                 foreach (Trail t in m_AllTrails.Values)
                 {
@@ -264,9 +256,9 @@ namespace TrailsPlugin.Data
                 }
                 trail.Name = name;
                 m_AllTrails.Add(trail.Id, trail);
-                UpdateChildren(trail, true);
                 AddElevationPoints(trail);
             }
+            RefreshChildren();
         }
 
         public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)

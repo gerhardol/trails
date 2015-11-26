@@ -173,7 +173,15 @@ namespace TrailsPlugin.Data
                 TrailOrderStatus res = m_status;
                 foreach(Trail t in this.Trail.Children)
                 {
-                    res = BestCalcStatus(res, m_controller.GetActivityTrail(t).Status);
+                    ActivityTrail at = m_controller.GetActivityTrail(t);
+                    if (at != null)
+                    {
+                        res = BestCalcStatus(res, at.Status);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.Assert(false, "Unexpectedly no ActivityTrail for " + t + " in " + this.Trail);
+                    }
                 }
                 return res;
             }

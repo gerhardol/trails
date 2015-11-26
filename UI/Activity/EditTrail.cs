@@ -242,7 +242,7 @@ namespace TrailsPlugin.UI.Activity
             {
                 if (recalculate || this.m_trailResult == null)
                 {
-                    ActivityTrail at = new ActivityTrail(Controller.TrailController.Instance, this.m_TrailToEdit);
+                    ActivityTrail at = new ActivityTrail(this.m_TrailToEdit);
                     at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, this.m_TrailToEdit.MaxRequiredMisses, true, null);
                     if (TrailResultWrapper.Results(at.ResultTreeList).Count > 0)
                     {

@@ -56,7 +56,7 @@ namespace TrailsPlugin.Controller
         {
             foreach (Trail trail in TrailData.AllTrails.Values)
             {
-                ActivityTrail to = new ActivityTrail(this, trail);
+                ActivityTrail to = new ActivityTrail(trail);
                 this.m_CurrentOrderedTrails.Add(to);
                 if (trail.IsReference)
                 {
@@ -664,7 +664,7 @@ namespace TrailsPlugin.Controller
 
         private void NewTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
         {
-            ActivityTrail at = new ActivityTrail(this, trail);
+            ActivityTrail at = new ActivityTrail(trail);
             this.m_CurrentOrderedTrails.Add(at);
 
             //Select this trail

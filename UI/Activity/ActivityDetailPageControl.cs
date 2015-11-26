@@ -64,7 +64,6 @@ namespace TrailsPlugin.UI.Activity {
                 Plugin.GetApplication().SystemPreferences.UICulture;
 #endif
 
-        private Controller.TrailController m_controller;
         private bool m_isExpanded = false;
 
 #if ST_2_1
@@ -98,7 +97,6 @@ namespace TrailsPlugin.UI.Activity {
             m_layerRoutes = TrailPointsLayer.InstanceRoutes(this, m_view);
             m_layerMarked = TrailPointsLayer.InstanceMarked(this, m_view);
 #endif
-            m_controller = Controller.TrailController.Instance;
 
             this.InitializeComponent();
             InitControls();
@@ -110,9 +108,9 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = true;
 #endif
 
-            TrailSelector.SetControl(this, m_controller, m_view, m_layerPoints);
-            ResultList.SetControl(this, m_controller, m_view);
-            MultiCharts.SetControl(this, m_controller, m_view);
+            TrailSelector.SetControl(this, m_view, m_layerPoints);
+            ResultList.SetControl(this, m_view);
+            MultiCharts.SetControl(this, m_view);
 #if ST_2_1
             SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
@@ -145,7 +143,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //Reselecting activities updates calculations
                 System.Windows.Forms.ProgressBar progressBar = this.StartProgressBar(0);
-                m_controller.SetActivities(value, false, progressBar);
+                Controller.TrailController.Instance.SetActivities(value, false, progressBar);
 
                 this.StopProgressBar();
 #if !ST_2_1
@@ -184,7 +182,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 TrailSelector.ShowPage = false; //hide edit dialog if shown
                 //Free memory by destroying all results
-                this.m_controller.Reset();
+                Controller.TrailController.Instance.Reset();
                 ActivityCache.ClearActivityCache();
             }
             return true;
@@ -233,14 +231,14 @@ namespace TrailsPlugin.UI.Activity {
             if (clearResults)
             {
                 //The trail results will be cleared
-                this.m_controller.Clear(false);
+                Controller.TrailController.Instance.Clear(false);
             }
 
             //Calculate results (not needed explicitly)
-            this.m_controller.ReCalcTrails(false, null);
+            Controller.TrailController.Instance.ReCalcTrails(false, null);
             ResultList.RefreshList();
             //Data could be updated and reference changed
-            MultiCharts.ReferenceTrailResult = this.m_controller.ReferenceTrailResult;
+            MultiCharts.ReferenceTrailResult = Controller.TrailController.Instance.ReferenceTrailResult;
             RefreshRoute(true);
             //Charts are refreshed in ShowPage, no need for RefreshChart();
             if (showPage)
@@ -251,7 +249,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshChart()
         {
-            MultiCharts.ReferenceTrailResult = this.m_controller.ReferenceTrailResult;
+            MultiCharts.ReferenceTrailResult = Controller.TrailController.Instance.ReferenceTrailResult;
             MultiCharts.RefreshChart();
         }
 
@@ -292,9 +290,9 @@ namespace TrailsPlugin.UI.Activity {
             //Refreh map when visible
             //for reports view, also the separate Map could be updated
             if ((!m_isExpanded || isReportView)
-                && m_controller.CurrentActivityTrailIsSelected)
+                && Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
-                //m_layerPoints.HighlightRadius = m_controller.CurrentActivityTrail.Trail.Radius;
+                //m_layerPoints.HighlightRadius = Controller.TrailController.Instance.CurrentActivityTrail.Trail.Radius;
 
                 //Clear marked routes layer (set separately, runs after) 
                 m_layerMarked.MarkedTrailRoutesNoShow = new Dictionary<string, MapPolyline>();
@@ -305,7 +303,7 @@ namespace TrailsPlugin.UI.Activity {
                 IList<TrailGPSLocation> trailPoints = new List<TrailGPSLocation>();
                 if (Data.Settings.ShowTrailPointsOnMap)
                 {
-                    foreach (ActivityTrail at in m_controller.CurrentActivityTrails)
+                    foreach (ActivityTrail at in Controller.TrailController.Instance.CurrentActivityTrails)
                     {
                         foreach (TrailGPSLocation point in at.Trail.TrailLocations)
                         {
@@ -318,12 +316,12 @@ namespace TrailsPlugin.UI.Activity {
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                 IList<SplitGPSLocation> splitPoints = new List<SplitGPSLocation>();
                 IList<TrailResult> results;
-                IList<TrailResult> selected = this.m_controller.SelectedResults;
+                IList<TrailResult> selected = Controller.TrailController.Instance.SelectedResults;
                 if (!Data.Settings.ShowOnlyMarkedOnRoute ||
                     (selected == null ||
                     selected.Count == 1 && selected[0] is SummaryTrailResult))
                 {
-                    results = TrailResultWrapper.Results(m_controller.CurrentResultTreeList);
+                    results = TrailResultWrapper.Results(Controller.TrailController.Instance.CurrentResultTreeList);
                 }
                 else
                 {

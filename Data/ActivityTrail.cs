@@ -29,7 +29,6 @@ namespace TrailsPlugin.Data
 {
     public class ActivityTrail : IComparable
     {
-        private Controller.TrailController m_controller;
         private Trail m_trail;
         private IList<TrailResultWrapper> m_resultsListWrapper = null;
         private TrailOrderStatus m_status;
@@ -41,9 +40,8 @@ namespace TrailsPlugin.Data
         private IList<IActivity> m_inBound = new List<IActivity>();
         private bool m_canAddInbound = true;
 
-        public ActivityTrail(Controller.TrailController controller, Trail trail)
+        public ActivityTrail(Trail trail)
         {
-            this.m_controller = controller;
             this.m_trail = trail;
 
             this.Init();
@@ -152,7 +150,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                return m_controller.Activities.Count;
+                return Controller.TrailController.Instance.Activities.Count;
             }
         }
 
@@ -173,7 +171,7 @@ namespace TrailsPlugin.Data
                 TrailOrderStatus res = m_status;
                 foreach(Trail t in this.Trail.Children)
                 {
-                    ActivityTrail at = m_controller.GetActivityTrail(t);
+                    ActivityTrail at = Controller.TrailController.Instance.GetActivityTrail(t);
                     if (at != null)
                     {
                         res = BestCalcStatus(res, at.Status);
@@ -198,7 +196,7 @@ namespace TrailsPlugin.Data
                 if (this.Status == TrailOrderStatus.NoInfo ||
                     m_trail.IsReference && this.Status == TrailOrderStatus.MatchNoCalc)
                 {
-                    this.m_inBound = this.m_trail.InBoundActivities(m_controller.Activities);
+                    this.m_inBound = this.m_trail.InBoundActivities(Controller.TrailController.Instance.Activities);
                     if (this.m_inBound.Count > 0 || 
                         m_trail.IsReference && m_trail.ReferenceActivity == null)
                     {
@@ -295,7 +293,7 @@ namespace TrailsPlugin.Data
 
         public void CalcResults(System.Windows.Forms.ProgressBar progressBar)
         {
-            CalcResults(m_controller.Activities, m_trail.MaxRequiredMisses, m_trail.BiDirectional, progressBar);
+            CalcResults(Controller.TrailController.Instance.Activities, m_trail.MaxRequiredMisses, m_trail.BiDirectional, progressBar);
         }
 
         public void CalcResults(IList<IActivity> activities, int MaxAllowedMisses, bool bidirectional, System.Windows.Forms.ProgressBar progressBar)
@@ -358,15 +356,15 @@ namespace TrailsPlugin.Data
                 {
                     try
                     {
-                        if (m_controller.ReferenceActivity != null)
+                        if (Controller.TrailController.Instance.ReferenceActivity != null)
                         {
                             IList<IActivity> searchActivities = null; //Default, UR settings
-                            if (m_controller.Activities.Count != 1)
+                            if (Controller.TrailController.Instance.Activities.Count != 1)
                             {
-                                searchActivities = m_controller.Activities;
+                                searchActivities = Controller.TrailController.Instance.Activities;
                             }
                             IList<IActivity> resultActivities = Integration.UniqueRoutes.GetUniqueRoutesForActivity(
-                                m_controller.ReferenceActivity.GPSRoute, searchActivities, progressBar);
+                                Controller.TrailController.Instance.ReferenceActivity.GPSRoute, searchActivities, progressBar);
                             foreach (IActivity activity in resultActivities)
                             {
                                 this.Status = TrailOrderStatus.Match;
@@ -382,13 +380,13 @@ namespace TrailsPlugin.Data
                 }
                 else if (this.m_trail.TrailType == Trail.CalcType.SplitsTime)
                 {
-                    IActivity refAct = this.m_controller.ReferenceActivity;
+                    IActivity refAct = Controller.TrailController.Instance.ReferenceActivity;
                     if (refAct != null)
                     {
                         this.Status = TrailOrderStatus.Match;
                         SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(this, refAct, m_resultsListWrapper.Count + 1);
                         m_resultsListWrapper.Add(refRes);
-                        this.m_controller.ReferenceTrailResult = refRes.Result;
+                        Controller.TrailController.Instance.ReferenceTrailResult = refRes.Result;
                         foreach (IActivity activity in activities)
                         {
                             if (activity != refAct &&
@@ -484,9 +482,9 @@ namespace TrailsPlugin.Data
                 }
 
                 if (this.m_trail.IsURFilter &&
-                    m_controller.ReferenceTrailResult != null && m_controller.ReferenceTrailResult.GPSRoute != null)
+                    Controller.TrailController.Instance.ReferenceTrailResult != null && Controller.TrailController.Instance.ReferenceTrailResult.GPSRoute != null)
                 {
-                    this.FilterURRouteSnippet(m_controller.ReferenceTrailResult.GPSRoute, progressBar);
+                    this.FilterURRouteSnippet(Controller.TrailController.Instance.ReferenceTrailResult.GPSRoute, progressBar);
                 }
 
                 if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
@@ -512,13 +510,13 @@ namespace TrailsPlugin.Data
         public void FilterURRouteSnippet(IGPSRoute route, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<IActivity> urActivities = Integration.UniqueRoutes.GetSimilarRoutes(
-                m_controller.ReferenceTrailResult.GPSRoute, this.ResultActivities, progressBar);
+                Controller.TrailController.Instance.ReferenceTrailResult.GPSRoute, this.ResultActivities, progressBar);
 
             IList<TrailResultWrapper> trws = new List<TrailResultWrapper>();
             foreach (TrailResultWrapper trw in m_resultsListWrapper)
             {
                 if (urActivities.Contains(trw.Result.Activity) ||
-                    m_controller.ReferenceActivity == trw.Result.Activity)
+                    Controller.TrailController.Instance.ReferenceActivity == trw.Result.Activity)
                 {
                     trws.Add(trw);
                 }
@@ -621,7 +619,7 @@ namespace TrailsPlugin.Data
             {
                 SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(this, indexes, order);
                 if (this.Trail.TrailType == Trail.CalcType.SplitsTime &&
-                    indexes.Activity == this.m_controller.ReferenceActivity)
+                    indexes.Activity == Controller.TrailController.Instance.ReferenceActivity)
                 {
                     this.m_resultsListWrapper.Clear();
                     IList<TrailResultWrapper> ts = new List<TrailResultWrapper>();
@@ -631,7 +629,7 @@ namespace TrailsPlugin.Data
                     }
                     this.Remove(ts, false);
                     this.m_resultsListWrapper.Add(refRes);
-                    foreach (IActivity activity in this.m_controller.Activities)
+                    foreach (IActivity activity in Controller.TrailController.Instance.Activities)
                     {
                         if (activity != refRes.Result.Activity &&
                             refRes.Result.AnyOverlap(activity))

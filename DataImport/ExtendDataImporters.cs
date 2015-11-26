@@ -45,15 +45,14 @@ namespace TrailsPlugin.DataImport
                 if (item is IActivity)
                 {
                     IActivity activity = (IActivity)item;
-                    Controller.TrailController m_controller = Controller.TrailController.Instance;
                     bool setName = (TrailsPlugin.Data.Settings.SetNameAtImport &&
                         string.IsNullOrEmpty(activity.Name));
                     if (setName)
                     {
                         //Do not keep selection, sort find best
-                        m_controller.SetActivities(new List<IActivity> { activity }, false);
+                        Controller.TrailController.Instance.SetActivities(new List<IActivity> { activity }, false);
 
-                        foreach (ActivityTrail at in m_controller.OrderedTrails())
+                        foreach (ActivityTrail at in Controller.TrailController.Instance.OrderedTrails())
                         {
                             if (at.Status <= TrailOrderStatus.MatchPartial &&
                                 !at.Trail.Generated && !(at.Trail.Children.Count > 0))
@@ -75,7 +74,6 @@ namespace TrailsPlugin.DataImport
                 if (item is IActivity)
                 {
                     IActivity activity = (IActivity)item;
-                    Controller.TrailController m_controller = Controller.TrailController.Instance;
                     //Set for non barometric devices only
                     bool setEle = false;
                     if (TrailsPlugin.Data.Settings.SetAdjustElevationAtImport)
@@ -93,9 +91,9 @@ namespace TrailsPlugin.DataImport
                     if (setEle)
                     {
                         //Do not keep selection, sort find best
-                        m_controller.SetActivities(new List<IActivity> { activity }, false);
+                        Controller.TrailController.Instance.SetActivities(new List<IActivity> { activity }, false);
 
-                        foreach (ActivityTrail at in m_controller.OrderedTrails())
+                        foreach (ActivityTrail at in Controller.TrailController.Instance.OrderedTrails())
                         {
                             if (at.Trail.IsSplits)
                             {

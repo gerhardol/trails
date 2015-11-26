@@ -41,7 +41,6 @@ namespace TrailsPlugin.UI.Activity {
         private bool m_expanded = false;
         private bool m_showPage;
         private ActivityDetailPageControl m_page;
-        private Controller.TrailController m_controller;
         private IList<TrailLineChart> m_lineCharts;
         private TrailLineChart m_multiChart;
 
@@ -54,15 +53,14 @@ namespace TrailsPlugin.UI.Activity {
             InitControls();
         }
 #if ST_2_1
-        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, Object view)
+        public void SetControl(ActivityDetailPageControl page, Object view)
         {
 #else
-        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller, IDailyActivityView view)
+        public void SetControl(ActivityDetailPageControl page, IDailyActivityView view)
         {
             m_view = view;
 #endif
             m_page = page;
-            m_controller = controller;
             foreach (TrailLineChart t in m_lineCharts)
             {
                 t.SetControl(m_page, this);
@@ -311,8 +309,8 @@ namespace TrailsPlugin.UI.Activity {
             {
                 LineChartTypes speedPaceChart = LineChartTypes.Speed;
                 LineChartTypes deviceSpeedPaceChart = LineChartTypes.DeviceSpeed;
-                if (m_controller.ReferenceActivity != null &&
-                    m_controller.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Pace))
+                if (Controller.TrailController.Instance.ReferenceActivity != null &&
+                    Controller.TrailController.Instance.ReferenceActivity.Category.SpeedUnits.Equals(Speed.Units.Pace))
                 {
                     speedPaceChart = LineChartTypes.Pace;
                     deviceSpeedPaceChart = LineChartTypes.DevicePace;
@@ -323,10 +321,10 @@ namespace TrailsPlugin.UI.Activity {
                     diffChart = LineChartTypes.DiffTime;
                 }
 
-                bool isData = m_controller.CurrentActivityTrailIsSelected;
+                bool isData = Controller.TrailController.Instance.CurrentActivityTrailIsSelected;
 
                 IList<Data.TrailResult> selectedPresentableResults = new List<Data.TrailResult>();
-                foreach (TrailResult t in this.m_controller.SelectedResults)
+                foreach (TrailResult t in Controller.TrailController.Instance.SelectedResults)
                 {
                     if (!(t is PausedChildTrailResult))
                     {
@@ -434,7 +432,7 @@ namespace TrailsPlugin.UI.Activity {
                                                 replaceChart.BeginUpdate();
                                                 replaceChart.ShowPage = false;
                                                 replaceChart.XAxisReferential = Data.Settings.XAxisValue;
-                                                IList<Data.TrailResult> list2 = this.m_controller.SelectedResults;
+                                                IList<Data.TrailResult> list2 = Controller.TrailController.Instance.SelectedResults;
                                                 replaceChart.TrailResults = list2;
                                                 if (!m_expanded)
                                                 {
@@ -741,7 +739,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             Data.Settings.SmoothOverTrailPointsToggle();
             RefreshChartMenu();
-            m_controller.CurrentReset(true);
+            Controller.TrailController.Instance.CurrentReset(true);
             m_page.RefreshChart();
         }
 

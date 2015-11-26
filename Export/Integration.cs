@@ -30,11 +30,10 @@ namespace TrailsPlugin.Export
         {
             var results = new Dictionary<string, List<ITrailResult>>();
 
-            Controller.TrailController controller = Controller.TrailController.Instance;
-            controller.Activities = activities;
+            Controller.TrailController.Instance.Activities = activities;
             foreach (Trail trail in Data.TrailData.AllTrails.Values)
             {
-                var activityTrail = new ActivityTrail(controller, trail);
+                var activityTrail = new ActivityTrail(trail);
 
                 List<ITrailResult> trailResults = new List<ITrailResult>();
                 foreach (var result in TrailResultWrapper.Results(activityTrail.ResultTreeList))

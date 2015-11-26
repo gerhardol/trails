@@ -49,7 +49,6 @@ namespace TrailsPlugin.UI.Activity
 
         private ITheme m_visualTheme;
         private CultureInfo m_culture;
-        private TrailController m_controller;
 #if ST_2_1
         private Object m_view = null; //dummy
         private UI.MapLayers.MapControlLayer m_layer;
@@ -70,7 +69,7 @@ namespace TrailsPlugin.UI.Activity
             InitializeComponent();
         }
 
-        public void SetControl(ActivityDetailPageControl page, Controller.TrailController controller,
+        public void SetControl(ActivityDetailPageControl page,
 #if ST_2_1
           Object view, UI.MapLayers.MapControlLayer layer)
 #else
@@ -80,7 +79,6 @@ namespace TrailsPlugin.UI.Activity
             m_view = view;
             m_layer = layer;
             m_page = page;
-            m_controller = controller;
 
             InitControls();
         }
@@ -153,26 +151,26 @@ namespace TrailsPlugin.UI.Activity
 
         public void RefreshControlState() 
         {
-            bool enabled = true;//Enabled also when no trails/activities (m_controller.ReferenceActivity != null);
+            bool enabled = true;//Enabled also when no trails/activities (Controller.TrailController.Instance.ReferenceActivity != null);
             enabled = (m_editTrail == null);
 
             btnAdd.Enabled = enabled;
             TrailName.Enabled = enabled;
 
-            enabled = (m_editTrail == null);//Enabled also when no trails/activities (m_controller.CurrentActivityTrailDisplayed != null);
+            enabled = (m_editTrail == null);//Enabled also when no trails/activities (Controller.TrailController.Instance.CurrentActivityTrailDisplayed != null);
             btnEdit.Enabled = enabled;
             btnEdit.CenterImage = CommonIcons.Edit;
 
-            if (m_controller.CurrentActivityTrailIsSelected)
+            if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
-                TrailName.Text = m_controller.PrimaryCurrentActivityTrail.Trail.Name;
-                if (m_controller.CurrentActivityTrails.Count > 1)
+                TrailName.Text = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name;
+                if (Controller.TrailController.Instance.CurrentActivityTrails.Count > 1)
                 {
                     TrailName.Text += " (*)";
                 }
                 TrailName.Enabled = (m_editTrail == null);
-                if (m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
-                    m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
+                if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
+                    Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
                 {
                     btnEdit.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Settings16;
                 }
@@ -181,7 +179,7 @@ namespace TrailsPlugin.UI.Activity
             {
                 TrailName.Text = Properties.Resources.Trail_NoTrailSelected;
             }
-            enabled = enabled && ((!m_controller.CurrentActivityTrailIsSelected) || !m_controller.PrimaryCurrentActivityTrail.Trail.Generated);
+            enabled = enabled && ((!Controller.TrailController.Instance.CurrentActivityTrailIsSelected) || !Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated);
             btnDelete.Enabled = enabled;
             this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
@@ -214,11 +212,11 @@ namespace TrailsPlugin.UI.Activity
                 m_layer.CaptureSelectedGPSLocations();
 #else
                 //copying the existing result if generated, popup new empty trail otherwise
-                bool copyActivity = m_controller.PrimaryCurrentActivityTrail != null &&
-                    m_controller.PrimaryCurrentActivityTrail.Trail.Generated;
+                bool copyActivity = Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null &&
+                    Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated;
 
                 bool newTrail = true;
-                if (m_controller.CurrentActivityTrailIsSelected)
+                if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
                 {
                     string s;
                     if (copyActivity)
@@ -243,7 +241,7 @@ namespace TrailsPlugin.UI.Activity
                     }
                 }
 
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, newTrail, copyActivity, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, newTrail, copyActivity, Controller.TrailController.Instance.ReferenceTrailResult);
                 if (newTrail)
                 {
                     dialog.Trail.TrailLocations.Clear();
@@ -264,7 +262,7 @@ namespace TrailsPlugin.UI.Activity
                 MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #else
                 //Add a copy of the current activity
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, true, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, true, Controller.TrailController.Instance.ReferenceTrailResult);
                 showEditDialog(dialog);
 #endif
             }
@@ -272,22 +270,22 @@ namespace TrailsPlugin.UI.Activity
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (m_controller.PrimaryCurrentActivityTrail == null)
+            if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail == null)
             {
                 //nothing selected, new trail
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, false, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, false, Controller.TrailController.Instance.ReferenceTrailResult);
                 showEditDialog(dialog);
             }
-            else if (m_controller.PrimaryCurrentActivityTrail.Trail.Generated &&
-                m_controller.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
+            else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated &&
+                Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
             {
                 Guid pageId;
 
-                if (m_controller.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.HighScore)
+                if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.HighScore)
                 {
                     pageId=GUIDs.HighScorePluginMain;
                 }
-                else if (m_controller.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.UniqueRoutes)
+                else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
                     pageId=GUIDs.UniqueRoutesPluginMain;
                 }
@@ -304,7 +302,7 @@ namespace TrailsPlugin.UI.Activity
             else
             {
                 //Do not care about marked points when editing, the user must select add then
-                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, false, m_controller.ReferenceTrailResult);
+                EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, false, Controller.TrailController.Instance.ReferenceTrailResult);
                 showEditDialog(dialog);
             }
         }
@@ -332,11 +330,11 @@ namespace TrailsPlugin.UI.Activity
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (m_controller.CurrentActivityTrailIsSelected &&
-                MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, m_controller.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected &&
+                MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
                 == DialogResult.Yes)
             {
-                m_controller.DeleteCurrentTrail();
+                Controller.TrailController.Instance.DeleteCurrentTrail();
                 m_page.RefreshControlState();
                 m_page.RefreshData(false);
             }
@@ -367,7 +365,7 @@ namespace TrailsPlugin.UI.Activity
         {
             Data.Settings.RestIsPause = !Data.Settings.RestIsPause;
             this.RefreshControlState();
-            this.m_controller.CurrentReset(false); //TBD
+            Controller.TrailController.Instance.CurrentReset(false); //TBD
             m_page.RefreshData(true);
         }
 
@@ -375,7 +373,7 @@ namespace TrailsPlugin.UI.Activity
         {
             Data.Settings.ShowPausesAsResults = !Data.Settings.ShowPausesAsResults;
             this.RefreshControlState();
-            this.m_controller.CurrentReset(false);
+            Controller.TrailController.Instance.CurrentReset(false);
             m_page.RefreshData(true);
         }
 
@@ -533,15 +531,15 @@ namespace TrailsPlugin.UI.Activity
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
 
             //Get the list of ordered activity trails, without forcing calculation
-            treeListPopup.Tree.RowData = m_controller.OrderedTrails();
+            treeListPopup.Tree.RowData = Controller.TrailController.Instance.OrderedTrails();
             //Note: Just checking for current trail could modify the ordered list, so do this first
             System.Collections.IList currSel = null;
-            if (m_controller.CurrentActivityTrailIsSelected)
+            if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
-                currSel = new object[m_controller.CurrentActivityTrails.Count];
-                for (int i = 0; i < m_controller.CurrentActivityTrails.Count; i++)
+                currSel = new object[Controller.TrailController.Instance.CurrentActivityTrails.Count];
+                for (int i = 0; i < Controller.TrailController.Instance.CurrentActivityTrails.Count; i++)
                 {
-                    currSel[i] = m_controller.CurrentActivityTrails[i];
+                    currSel[i] = Controller.TrailController.Instance.CurrentActivityTrails[i];
                 }
             }
 #if ST_2_1
@@ -571,7 +569,7 @@ namespace TrailsPlugin.UI.Activity
             if (m_selectTrailAddMode /*|| this.m_CtrlPressed*/)
             {
                 //Handle all the existing as selected too
-                foreach (ActivityTrail at in this.m_controller.CurrentActivityTrails)
+                foreach (ActivityTrail at in Controller.TrailController.Instance.CurrentActivityTrails)
                 {
                     ats.Add(at);
                 }
@@ -587,7 +585,7 @@ namespace TrailsPlugin.UI.Activity
             }
 
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
-            m_controller.SetCurrentActivityTrail(ats, true, progressBar);
+            Controller.TrailController.Instance.SetCurrentActivityTrail(ats, true, progressBar);
             m_page.StopProgressBar();
             m_page.RefreshData(false);
             m_page.RefreshControlState();

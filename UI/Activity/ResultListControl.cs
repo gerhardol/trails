@@ -47,8 +47,8 @@ namespace TrailsPlugin.UI.Activity {
     {
         ActivityDetailPageControl m_page;
         private ITheme m_visualTheme;
-        private TrailResultWrapper m_summaryTotal;
-        private TrailResultWrapper m_summaryAverage;
+        private SummaryTrailResultWrapper m_summaryTotal;
+        private SummaryTrailResultWrapper m_summaryAverage;
         private TrailResult m_lastSelectedTrailResult = null;
 
 #if !ST_2_1
@@ -560,11 +560,11 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (Data.Settings.ShowSummaryTotal)
             {
-                ((SummaryTrailResultWrapper)m_summaryTotal).SetSummary(selected2);
+                m_summaryTotal.SetSummary(selected2);
             }
             if (Data.Settings.ShowSummaryAverage)
             {
-                ((SummaryTrailResultWrapper)m_summaryAverage).SetSummary(selected2);
+                m_summaryAverage.SetSummary(selected2);
             }
             //TODO: Splits
         }

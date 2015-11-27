@@ -60,6 +60,8 @@ namespace TrailsPlugin.Export  //FilteredStatisticsPlugin
                         {
                             MethodInfo registerMethod = filterCriteriaControllerType.GetMethod("RegisterFilterCriteriaProvider", new Type[] { typeof(object) });
 
+                            m_ControllerInstance = instanceProperty.GetValue(null, null);
+
                             if (registerMethod != null)
                             {
                                 m_RegisterMethod = registerMethod;
@@ -88,7 +90,7 @@ namespace TrailsPlugin.Export  //FilteredStatisticsPlugin
         {
             if (IsPluginInstalled && RegisterMethodAvailable)
             {
-                m_RegisterMethod.Invoke(Controller.TrailController.Instance, new object[] { provider });
+                m_RegisterMethod.Invoke(m_ControllerInstance, new object[] { provider });
             }
         }
 
@@ -103,6 +105,7 @@ namespace TrailsPlugin.Export  //FilteredStatisticsPlugin
         }
 
         private static FilterCriteriaControllerWrapper m_Instance = null;
+        private object m_ControllerInstance = null;
         private bool m_PluginInstalled = false;
         private MethodInfo m_RegisterMethod = null;
     }

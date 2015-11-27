@@ -99,22 +99,9 @@ namespace TrailsPlugin.Data
     public class HighScoreTrailResultWrapper : TrailResultWrapper
     {
         //Create from HighScore, add the first and last time stamps in MarkedTimes
-        public HighScoreTrailResultWrapper(ActivityTrail activityTrail, HighScoreTrailResultWrapper parent, IActivity activity, IItemTrackSelectionInfo selInfo, string tt, int order)
+        public HighScoreTrailResultWrapper(ActivityTrail activityTrail, HighScoreTrailResultWrapper parent, TrailResultInfo indexes, string tt, int order)
             : base()
         {
-            TrailResultInfo indexes = new TrailResultInfo(activity, false);
-            DateTime time = selInfo.MarkedTimes[0].Lower;
-            IGPSPoint p = Utils.TrackUtil.getGpsLoc(activity, time);
-            if (p != null)
-            {
-                indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
-            }
-            time = selInfo.MarkedTimes[0].Upper;
-            p = Utils.TrackUtil.getGpsLoc(activity, time);
-            if (p != null)
-            {
-                indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
-            }
             if (indexes.Count >= 2)
             {
                 if (order == 1 || parent == null)
@@ -129,10 +116,6 @@ namespace TrailsPlugin.Data
                     base.Element = ctr;
                     parent.Children.Add(this);
                     parent.m_allChildren.Add(this);
-                    if (ptr.m_childrenResults == null)
-                    {
-                        ptr.m_childrenResults = new List<ChildTrailResult>();
-                    }
                     ptr.m_childrenResults.Add(ctr);
                 }
             }
@@ -176,11 +159,6 @@ namespace TrailsPlugin.Data
                         //several separate substructues..
                         this.Children.Add(tn);
                         this.m_allChildren.Add(tn);
-                        if (ptr.m_childrenResults == null)
-                        {
-                            ptr.m_childrenResults = new List<ChildTrailResult>();
-                        }
-                        ptr.m_childrenResults.Add(tr);
                     }
                 }
             }

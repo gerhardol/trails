@@ -144,9 +144,10 @@ namespace TrailsPlugin.Data
             {
                 this.m_PoolLengthInfo = this.SubResultInfo.Points[0].PoolLengthInfo;
             }
+            m_childrenResults = splits;
             return splits;
         }
-
-        internal IList<ChildTrailResult> m_childrenResults;
+        //should be temporary, to get (possible) children
+        internal IList<ChildTrailResult> m_childrenResults = new List<ChildTrailResult>();
     }
 }

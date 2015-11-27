@@ -530,9 +530,9 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //only one result, show summary for child results
                     IList<TrailResultWrapper> list2 = new List<TrailResultWrapper>();
-                    foreach (TreeList.TreeListNode t in Controller.TrailController.Instance.CurrentResultTreeList[0].Children)
+                    foreach (TrailResultWrapper t in Controller.TrailController.Instance.CurrentResultTreeList[0].Children)
                     {
-                        list2.Add((TrailResultWrapper)t);
+                        list2.Add(t);
                     }
                     selected2 = list2;
                 }

@@ -3280,10 +3280,10 @@ namespace TrailsPlugin.Data
         {
             TrailResult res = parRes;
             if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent &&
-                parRes != null && parRes is ParentTrailResult && (parRes as ParentTrailResult).m_childrenResults != null)
+                parRes != null && parRes is ParentTrailResult)
             {
-                //This is a subsplit, get the subsplit related to the ref
-                foreach (TrailResult tr in (parRes as ParentTrailResult).m_childrenResults)
+                //If this is a subsplit, get the subsplit related to the ref
+                foreach (ChildTrailResult tr in (parRes as ParentTrailResult).m_childrenResults)
                 {
                     if (this.m_order == tr.Order)
                     {

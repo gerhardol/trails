@@ -645,6 +645,24 @@ namespace TrailsPlugin.Data
             return results;
         }
 
+        static public TrailResultInfo ResultInfoFromSelection(IActivity activity, ZoneFiveSoftware.Common.Visuals.Fitness.IItemTrackSelectionInfo selInfo)
+        {
+            TrailResultInfo indexes = new TrailResultInfo(activity, false);
+            DateTime time = selInfo.MarkedTimes[0].Lower;
+            IGPSPoint p = Utils.TrackUtil.getGpsLoc(activity, time);
+            if (p != null)
+            {
+                indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
+            }
+            time = selInfo.MarkedTimes[0].Upper;
+            p = Utils.TrackUtil.getGpsLoc(activity, time);
+            if (p != null)
+            {
+                indexes.Points.Add(new TrailResultPoint(new TrailGPSLocation(p), time));
+            }
+            return indexes;
+        }
+
         static public IList<Data.TrailGPSLocation> MergeTrailLocations(IList<Data.TrailGPSLocation> t1, IList<Data.TrailGPSLocation> t2)
         {
             foreach (Data.TrailGPSLocation t in t2)

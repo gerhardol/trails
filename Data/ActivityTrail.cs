@@ -330,15 +330,22 @@ namespace TrailsPlugin.Data
                         if (hs != null && hs.Count > 0)
                         {
                             HighScoreTrailResultWrapper parent = null;
-                            this.Status = TrailOrderStatus.Match;
                             foreach (Integration.HighScore.HighScoreResult h in hs)
                             {
                                 TrailResultInfo indexes = Data.Trail.ResultInfoFromSelection(h.activity, h.selInfo);
-                                HighScoreTrailResultWrapper result = new HighScoreTrailResultWrapper(this, parent, indexes, h.tooltip, h.order/* m_resultsListWrapper.Count + 1*/);
-                                if (h.order == 1)
+                                if (indexes.Count >= 2)
                                 {
-                                    m_resultsListWrapper.Add(result);
-                                    parent = result;
+                                    if (h.order == 1 || parent == null)
+                                    {
+                                        this.Status = TrailOrderStatus.Match;
+                                        HighScoreTrailResultWrapper result = new HighScoreTrailResultWrapper(this, indexes, h.tooltip, 1);
+                                        m_resultsListWrapper.Add(result);
+                                        parent = result;
+                                    }
+                                    else
+                                    {
+                                        parent.addChild(indexes, h.tooltip, h.order/* m_resultsListWrapper.Count + 1*/);
+                                    }
                                 }
                             }
                         }
@@ -1512,7 +1519,7 @@ namespace TrailsPlugin.Data
                 //complement to parents only
                 foreach (TrailResultWrapper trr in m_resultsListWrapper)
                 {
-                    trr.RemoveChildren(selected, invertSelection);
+                    trr.RemoveChildren(selected);
                 }
                 foreach (TrailResultWrapper tr in selected)
                 {

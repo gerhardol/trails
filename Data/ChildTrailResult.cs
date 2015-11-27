@@ -37,7 +37,7 @@ namespace TrailsPlugin.Data
         public NormalChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, par, order, indexes, distDiff)
         {
-            createResult(par, indexes, true);
+            createResult(par, indexes);
         }
     }
 
@@ -46,17 +46,18 @@ namespace TrailsPlugin.Data
         public PausedChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, par, order, indexes, distDiff)
         {
-            createResult(par, indexes, true);
+            createResult(par, indexes);
         }
     }
 
     public class HighScoreChildTrailResult : ChildTrailResult
     {
-        public HighScoreChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
+        public HighScoreChildTrailResult(ActivityTrail activityTrail, HighScoreParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
             base(activityTrail, par, order, indexes, distDiff)
         {
             this.m_toolTip = tt;
-            createResult(par, indexes, false);
+            createResult(par, indexes);
+            this.PartOfParent = false;
         }
     }
 
@@ -78,7 +79,7 @@ namespace TrailsPlugin.Data
         {
         }
 
-        protected void createResult(ParentTrailResult par, TrailResultInfo indexes, bool part)
+        protected void createResult(ParentTrailResult par, TrailResultInfo indexes)
         {
             this.m_parentResult = par;
             if (indexes.Count == 2)
@@ -86,7 +87,6 @@ namespace TrailsPlugin.Data
                 //Always overwrite the (possibly) calculated data
                 this.m_duration = indexes.Points[0].Duration;
             }
-            this.PartOfParent = part;
         }
     }
 }

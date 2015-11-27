@@ -147,7 +147,20 @@ namespace TrailsPlugin.Data
             m_childrenResults = splits;
             return splits;
         }
-        //should be temporary, to get (possible) children
+
+        //should be temporary, to get (possible) children that are a part of the parent
         internal IList<ChildTrailResult> m_childrenResults = new List<ChildTrailResult>();
+        internal void RemoveChildren(TrailResultWrapper tr)
+        {
+            if (this.m_childrenResults != null
+                && tr.Result is ChildTrailResult)
+            {
+                ChildTrailResult ctr = tr.Result as ChildTrailResult;
+                if (this.m_childrenResults.Contains(ctr))
+                {
+                    this.m_childrenResults.Remove(ctr);
+                }
+            }
+        }
     }
 }

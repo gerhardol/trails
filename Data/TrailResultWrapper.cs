@@ -99,26 +99,17 @@ namespace TrailsPlugin.Data
     public class HighScoreTrailResultWrapper : TrailResultWrapper
     {
         //Create from HighScore, add the first and last time stamps in MarkedTimes
-        public HighScoreTrailResultWrapper(ActivityTrail activityTrail, HighScoreTrailResultWrapper parent, TrailResultInfo indexes, string tt, int order)
+        public HighScoreTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, string tt, int order)
             : base()
         {
-            if (indexes.Count >= 2)
-            {
-                if (order == 1 || parent == null)
-                {
-                    base.Element = new HighScoreParentTrailResult(activityTrail, order, indexes, 0, tt);
-                }
-                else if (parent.Element != null && parent.Element is ParentTrailResult)
-                {
-                    base.Parent = parent;
-                    ParentTrailResult ptr = parent.Result as ParentTrailResult;
-                    ChildTrailResult ctr = new HighScoreChildTrailResult(activityTrail, ptr, order, indexes, 0, tt);
-                    base.Element = ctr;
-                    parent.Children.Add(this);
-                    parent.m_allChildren.Add(this);
-                    ptr.m_childrenResults.Add(ctr);
-                }
-            }
+            base.Element = new HighScoreParentTrailResult(activityTrail, order, indexes, 0, tt);
+        }
+        //Special children, not part of the activity
+        public void addChild(TrailResultInfo indexes, string tt, int order)
+        {
+            HighScoreParentTrailResult ptr = this.Result as HighScoreParentTrailResult;
+            ChildTrailResult ctr = new HighScoreChildTrailResult(ptr.m_activityTrail, ptr, order, indexes, 0, tt);
+            TrailResultWrapper child = new TrailResultWrapper(this, ctr);
         }
     }
 
@@ -130,9 +121,13 @@ namespace TrailsPlugin.Data
         { }
 
         //Child
-        private TrailResultWrapper(TreeList.TreeListNode parent, object element)
+        internal TrailResultWrapper(TrailResultWrapper parent, ChildTrailResult element)
             : base(parent, element)
-        { }
+        {
+            //several separate substructues..
+            parent.Children.Add(this);
+            parent.m_allChildren.Add(this);
+        }
 
         public TrailResult Result
         {
@@ -156,9 +151,6 @@ namespace TrailsPlugin.Data
                     foreach (ChildTrailResult tr in children)
                     {
                         TrailResultWrapper tn = new TrailResultWrapper(this, tr);
-                        //several separate substructues..
-                        this.Children.Add(tn);
-                        this.m_allChildren.Add(tn);
                     }
                 }
             }
@@ -181,7 +173,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public bool RemoveChildren(IList<TrailResultWrapper> tn, bool invertSelection)
+        public bool RemoveChildren(IList<TrailResultWrapper> tn)
         {
             bool result = false;
             foreach (TrailResultWrapper tr in tn)
@@ -196,14 +188,9 @@ namespace TrailsPlugin.Data
                 {
                     this.Children.Remove(tr);
                 }
-                if (this.Result != null && this.Result is ParentTrailResult && (this.Result as ParentTrailResult).m_childrenResults != null
-                    && tr.Result is ChildTrailResult)
+                if (this.Result != null && this.Result is ParentTrailResult)
                 {
-                    ChildTrailResult ctr = tr.Result as ChildTrailResult;
-                    if ((this.Result as ParentTrailResult).m_childrenResults.Contains(ctr))
-                    {
-                        (this.Result as ParentTrailResult).m_childrenResults.Remove(ctr);
-                    }
+                    (this.Result as ParentTrailResult).RemoveChildren(tr);
                 }
             }
             return result;
@@ -314,7 +301,7 @@ namespace TrailsPlugin.Data
         }
 
         //The Children may not include all (hide paused laps, deleted etc). These are all results
-        protected IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
+        internal IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
 
         #region IComparable<Product> Members
         public int CompareTo(object obj)

@@ -117,7 +117,7 @@ namespace TrailsPlugin.UI.Activity
 #endif
             this.m_trailResult = tr;
             //It is possible that the trail result is not for the trail to edit (if more than one is selected)
-            if (tr != null && tr.m_activityTrail.Trail != Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail)
+            if (tr != null && tr.Trail != Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail)
             {
                 this.m_trailResult = null;
             }

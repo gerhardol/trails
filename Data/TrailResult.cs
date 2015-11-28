@@ -37,7 +37,7 @@ namespace TrailsPlugin.Data
     public class TrailResult : IComparable
     {
         #region private variables
-        public ActivityTrail m_activityTrail;
+        protected ActivityTrail m_activityTrail;
         private IActivity m_activity;
         protected ILapInfo m_LapInfo = null;
         protected IPoolLengthInfo m_PoolLengthInfo = null;
@@ -63,7 +63,7 @@ namespace TrailsPlugin.Data
         private float m_offsetTimeElapsed;
         private float? m_offsetDist;
         //Temporary? (undocumented)
-        public static bool diffToSelf = false;
+        public static bool DiffToSelf = false;
         public static bool PaceTrackIsGradeAdjustedPaceAvg = false;
         public static bool OverlappingResultUseReferencePauses = false;
         public static bool OverlappingResultUseTimeOfDayDiff = false;
@@ -103,8 +103,8 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries m_deviceElevationTrack0;
         private INumericTimeDataSeries m_DiffTimeTrack0;
         private INumericTimeDataSeries m_DiffDistTrack0;
-        IList<float> m_trailPointTime0;
-        IList<float> m_trailPointDist0;
+        private IList<float> m_trailPointTime0;
+        private IList<float> m_trailPointDist0;
         private double? m_ascent;
         private double? m_descent;
 
@@ -1107,11 +1107,35 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public string Trail
+        public ActivityTrail ActivityTrail
         {
             get
             {
-                return this.m_activityTrail.Trail.Name;
+                return this.m_activityTrail;
+            }
+        }
+
+        public Trail Trail
+        {
+            get
+            {
+                if (this.m_activityTrail != null)
+                {
+                    return this.m_activityTrail.Trail;
+                }
+                return null;
+            }
+        }
+
+        public string TrailName
+        {
+            get
+            {
+                if (this.m_activityTrail != null)
+                {
+                    return this.m_activityTrail.Trail.Name;
+                }
+                return null;
             }
         }
 
@@ -3389,7 +3413,7 @@ namespace TrailsPlugin.Data
                                     //elapsed (entry) is elapsed in the series, not result/activity elapsed seconds
                                     float thisTime = (float)this.getTimeResult(d1);
                                     float? refTime = null;
-                                    if (TrailResult.diffToSelf || trRef == this)
+                                    if (TrailResult.DiffToSelf || trRef == this)
                                     {
                                         //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
                                         //refTime = thisTime;
@@ -3562,7 +3586,7 @@ namespace TrailsPlugin.Data
                                     //if (t.ElapsedSeconds + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
                                     {
                                         double? refDist = null;
-                                        if (TrailResult.diffToSelf || trRef == this)
+                                        if (TrailResult.DiffToSelf || trRef == this)
                                         {
                                             double time = this.getTimeResult(d1);
                                             //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed

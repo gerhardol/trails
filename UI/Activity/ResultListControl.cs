@@ -1471,7 +1471,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 foreach (TrailResultWrapper tr in subRes.Keys)
                 {
-                    tr.Result.m_activityTrail.MergeSubResults(tr, subRes[tr]);
+                    tr.Result.ActivityTrail.MergeSubResults(tr, subRes[tr]);
                 }
             }
         }
@@ -1826,7 +1826,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
-                    TrailResult.diffToSelf = !TrailResult.diffToSelf;
+                    TrailResult.DiffToSelf = !TrailResult.DiffToSelf;
                 }
                 else if (e.Modifiers == (Keys.Shift | Keys.Alt))
                 {

@@ -353,7 +353,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     if (Data.Settings.ShowTrailPointsOnMap)
                     {
-                        if (tr.m_activityTrail.Trail.TrailType != Trail.CalcType.TrailPoints)
+                        if (tr.Trail.TrailType != Trail.CalcType.TrailPoints)
                         {
                             foreach (TrailResultPoint tp in tr.SubResultInfo.Points)
                             {

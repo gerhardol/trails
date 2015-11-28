@@ -164,7 +164,7 @@ namespace TrailsPlugin.Data
                 //String output without formatting
                 case TrailResultColumnIds.Order:
                 case TrailResultColumnIds.Name:
-                case TrailResultColumnIds.Trail:
+                case TrailResultColumnIds.TrailName:
                     return base.GetText(row, column);
 
                 case TrailResultColumnIds.StartTime:

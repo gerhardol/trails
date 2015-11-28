@@ -518,7 +518,7 @@ namespace TrailsPlugin.Controller
                     //The ref result is at least possible, set ref activity
                     this.m_referenceActivity = m_referenceTrailResult.Activity;
                     //Save last used activity
-                    this.m_referenceTrailResult.m_activityTrail.Trail.ReferenceActivity = m_referenceActivity;
+                    this.m_referenceTrailResult.Trail.ReferenceActivity = m_referenceActivity;
                     //skip a Contains check...
                     moreChecks = false;
                 }

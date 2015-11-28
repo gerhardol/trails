@@ -121,7 +121,7 @@ namespace TrailsPlugin.Data {
         public const string Diff = "Diff";
         public const string AscendingSpeed_VAM = "AscendingSpeed_VAM";
         public const string Name = "Name";
-        public const string Trail = "Trail";
+        public const string TrailName = "TrailName";
 
         public const string AveragePowerBalance = "AveragePowerBalance";
         public const string AverageTemperature = "AverageTemperature";
@@ -146,7 +146,7 @@ namespace TrailsPlugin.Data {
         internal static IList<string> ActivityFields = new List<string> { TrailResultColumnIds.Category, TrailResultColumnIds.Location, TrailResultColumnIds.MetaData_Source };
 
         //obsolete fields - maybe just in dev versions
-        internal static IList<string> ObsoleteFields = new List<string> { "AvgGrade", "AscMaxGrade", "AvgPaceSpeed", "LapInfo_StartTime", "LapInfo_TotalDistanceMeters", "LapInfo_TotalTime" };
+        internal static IList<string> ObsoleteFields = new List<string> { "AvgGrade", "AscMaxGrade", "AvgPaceSpeed", "LapInfo_StartTime", "LapInfo_TotalDistanceMeters", "LapInfo_TotalTime", "Trail" };
 
         //Splits
         //All lap fields must start with this prefix, to transform the Id back to standard (and to find them, which could be done with a separate structure)
@@ -355,7 +355,7 @@ namespace TrailsPlugin.Data {
             //index++;
             //columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeedPace, columnDefs[index].Text(columnDefs[index].Id), columnDefs[index].GroupName, columnDefs[index].Width, columnDefs[index].Align));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Name, CommonResources.Text.LabelName, ActivityGroup, 70, StringAlignment.Near));
-            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Trail, Properties.Resources.TrailName, ActivityGroup, 70, StringAlignment.Near));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.TrailName, Properties.Resources.TrailName, ActivityGroup, 70, StringAlignment.Near));
 
 
             //Activity

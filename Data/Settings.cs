@@ -270,7 +270,8 @@ namespace TrailsPlugin.Data
         {
             set
             {
-                if (!string.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value)
+                    && !TrailResultColumnIds.ObsoleteFields.Contains(value))
                 {
                     if (m_summaryViewSortColumns.Contains(value))
                     {

@@ -108,7 +108,7 @@ namespace TrailsPlugin.Data
         public void addChild(TrailResultInfo indexes, string tt, int order)
         {
             HighScoreParentTrailResult ptr = this.Result as HighScoreParentTrailResult;
-            ChildTrailResult ctr = new HighScoreChildTrailResult(ptr.m_activityTrail, ptr, order, indexes, 0, tt);
+            ChildTrailResult ctr = ptr.getChild(order, indexes, 0, tt);
             TrailResultWrapper child = new TrailResultWrapper(this, ctr);
         }
     }

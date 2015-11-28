@@ -173,9 +173,9 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             dlg.ThemeChanged(m_visualTheme);
             dlg.FileName = Data.Settings.SaveChartImagePath + Path.DirectorySeparatorChar + "Trails";
-            if (!String.IsNullOrEmpty(this.m_refTrailResult.m_activityTrail.Trail.Name))
+            if (!String.IsNullOrEmpty(this.m_refTrailResult.Trail.Name))
             {
-                dlg.FileName += "-" + this.m_refTrailResult.m_activityTrail.Trail.Name;
+                dlg.FileName += "-" + this.m_refTrailResult.Trail.Name;
             }
             dlg.ImageFormat = System.Drawing.Imaging.ImageFormat.Jpeg;
             if (dlg.ShowDialog() == DialogResult.OK) {
@@ -1186,9 +1186,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
                 }
-                int val = GetSmooth();
-
-                setSmoothingPicker(val);
+                if (this.m_axisCharts.Count > 0)
+                {
+                    int val = GetSmooth();
+                    setSmoothingPicker(val);
+                }
 
                 ///////TrailPoints
                 Data.TrailResult trailPointResult = TrailPointResult();

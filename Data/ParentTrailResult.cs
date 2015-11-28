@@ -65,6 +65,11 @@ namespace TrailsPlugin.Data
         {
             this.m_toolTip = toolTip;
         }
+
+        public HighScoreChildTrailResult getChild(int order, TrailResultInfo indexes, float distDiff, string tt)
+        {
+            return new HighScoreChildTrailResult(this.m_activityTrail, this, order, indexes, distDiff, tt);
+        }
     }
 
     public class ParentTrailResult : TrailResult
@@ -83,7 +88,7 @@ namespace TrailsPlugin.Data
                 for (i = 0; i < m_subResultInfo.Count - 1; i++)
                 {
                     if (m_subResultInfo.Points[i].Time != DateTime.MinValue &&
-                                (!this.m_activityTrail.Trail.IsSplits || !Settings.RestIsPause || m_subResultInfo.Points[i].Required))
+                                (!this.Trail.IsSplits || !Settings.RestIsPause || m_subResultInfo.Points[i].Required))
                     {
                         int j; //end time index
                         for (j = i + 1; j < m_subResultInfo.Points.Count; j++)

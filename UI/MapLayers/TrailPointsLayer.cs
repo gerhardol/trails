@@ -633,7 +633,7 @@ namespace TrailsPlugin.UI.MapLayers
             IDictionary<IGPSPoint, IMapOverlay> newPointOverlays = new Dictionary<IGPSPoint, IMapOverlay>();
             foreach (TrailGPSLocation location in m_TrailPoints)
             {
-                PointMapMarker pointOverlay = new PointMapMarker(location, getCircleIcon(this.MapControl, this.m_icon.radius), MouseEvents && (this.m_editTrail != null));
+                PointMapMarker pointOverlay = new PointMapMarker(location, getCircleIcon(this.MapControl, location.Radius), MouseEvents && (this.m_editTrail != null));
                 if (this.MouseEvents && location.Name != "DebugNotClickableDebug")
                 {
                     pointOverlay.MouseDown += new MouseEventHandler(pointOverlay_MouseDown);

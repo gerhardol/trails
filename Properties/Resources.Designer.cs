@@ -1120,6 +1120,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Route Transparency.
+        /// </summary>
+        internal static string UI_Settings_RouteTransparency {
+            get {
+                return ResourceManager.GetString("UI_Settings_RouteTransparency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stopped Category Override.
         /// </summary>
         internal static string UI_Settings_StoppedCategoryOverride {

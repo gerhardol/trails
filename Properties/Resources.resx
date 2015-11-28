@@ -503,4 +503,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_List_ShowPausesAsResults" xml:space="preserve">
     <value>Show Pauses As Results</value>
   </data>
+  <data name="UI_Settings_RouteTransparency" xml:space="preserve">
+    <value>Route Transparency</value>
+  </data>
 </root>

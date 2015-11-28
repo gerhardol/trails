@@ -359,4 +359,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_List_ShowPausesAsResults" xml:space="preserve">
     <value>Visa pauser som resultat</value>
   </data>
+  <data name="UI_Settings_RouteTransparency" xml:space="preserve">
+    <value>Rutt genomskinlighet</value>
+  </data>
 </root>

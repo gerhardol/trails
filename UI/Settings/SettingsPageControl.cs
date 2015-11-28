@@ -52,6 +52,8 @@ namespace TrailsPlugin.UI.Settings
             this.boxBarometricDevices.Text = Data.Settings.GetBarometricDevices;
             this.txtAdjustElevationAtImport.Checked = Data.Settings.SetAdjustElevationAtImport;
             this.boxPredictDistance.Text = UnitUtil.Distance.ToString(Data.Settings.PredictDistance, "u");
+            this.upDownRouteTransparency.Value = (decimal)Math.Round((double)(100 * (0xff - Data.Settings.RouteLineAlpha) / 0xff));
+            //precedeControl(labelRouteTransparencyPercent, upDownRouteTransparency);
 
             //Present up as negative
             this.boxMervynDaviesUp.Text = (-Data.Settings.MervynDaviesUp).ToString("P1");
@@ -88,6 +90,7 @@ namespace TrailsPlugin.UI.Settings
             this.lblStoppedCategory.Text = Properties.Resources.UI_Settings_StoppedCategoryOverride + ":";
             this.lblBarometricDevices.Text = Properties.Resources.UI_Settings_BarometricDevices + ":";
             this.lblAdjustElevationAtImport.Text = Properties.Resources.UI_Settings_AdjustElevationAtImport + ":";
+            this.labelRouteTransparency.Text = Properties.Resources.UI_Settings_RouteTransparency + " (%):";
 
             this.gradeAdjustedPaceGroup.Text = Properties.Resources.UI_Settings_GradeAdjustedPace;
             this.lblMervynDaviesName.Text = "Mervyn Davies";
@@ -111,6 +114,11 @@ namespace TrailsPlugin.UI.Settings
             this.lblCopyright.Text = Properties.Resources.UI_Settings_Copyright + " " + "Brendan Doherty 2009, Gerhard Olsson 2010-2015";
             this.PluginInfoBanner.Text = Properties.Resources.UI_Settings_Title;
         }
+
+        //private void precedeControl(Control a, Control b)
+        //{
+        //    a.Location = new Point(b.Location.X - a.Size.Width - 5, a.Location.Y);
+        //}
 
         private void lblInfo_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -154,7 +162,13 @@ namespace TrailsPlugin.UI.Settings
             Data.Settings.SetAdjustElevationAtImport = txtAdjustElevationAtImport.Checked;
             presentSettings();
         }
-        
+
+        private void upDownRouteTransparency_LostFocus(object sender, EventArgs e)
+        {
+            Data.Settings.RouteLineAlpha = (byte)Math.Round(0xff - upDownRouteTransparency.Value * 0xff / 100);
+            presentSettings();
+        }
+
         private void boxPredictDistance_LostFocus(object sender, EventArgs e)
         {
             float result;

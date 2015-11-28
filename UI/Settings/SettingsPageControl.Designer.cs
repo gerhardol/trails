@@ -1,4 +1,6 @@
-﻿namespace TrailsPlugin.UI.Settings {
+﻿using System;
+
+namespace TrailsPlugin.UI.Settings {
     partial class SettingsPageControl {
         /// <summary> 
         /// Required designer variable.
@@ -44,6 +46,9 @@
             this.boxPredictDistance = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblCopyright = new System.Windows.Forms.Label();
             this.lblLicense = new System.Windows.Forms.Label();
+            this.labelRouteTransparency = new System.Windows.Forms.Label();
+            this.upDownRouteTransparency = new System.Windows.Forms.NumericUpDown();
+            this.labelRouteTransparencyPercent = new System.Windows.Forms.Label();
             this.gradeAdjustedPaceGroup = new System.Windows.Forms.GroupBox();
             this.tablePanelGradeAdjustedPace = new System.Windows.Forms.TableLayoutPanel();
             this.lblMervynDaviesName = new System.Windows.Forms.Label();
@@ -99,21 +104,25 @@
             this.tableLayoutPanel1.Controls.Add(this.boxBarometricDevices, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.lblAdjustElevationAtImport, 0, 7);
             this.tableLayoutPanel1.Controls.Add(this.txtAdjustElevationAtImport, 1, 7);
-            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 10);
-            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 12);
-            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 13);
-            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 13);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 15);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 16);
+            this.tableLayoutPanel1.Controls.Add(this.labelRouteTransparency, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.upDownRouteTransparency, 1, 8);
+            //this.tableLayoutPanel1.Controls.Add(this.labelRouteTransparencyPercent, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 11);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 12);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 13);
+            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 14);
+            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 14);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 16);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 17);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 14;
+            this.tableLayoutPanel1.RowCount = 15;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -292,6 +301,35 @@
             this.txtAdjustElevationAtImport.Size = new System.Drawing.Size(15, 14);
             this.txtAdjustElevationAtImport.TabIndex = 0;
             this.txtAdjustElevationAtImport.CheckedChanged += new System.EventHandler(this.txtAdjustElevationAtImport_CheckedChanged);
+            // 
+            // labelRouteTransparency
+            // 
+            this.labelRouteTransparency.AutoSize = true;
+            this.labelRouteTransparency.Location = new System.Drawing.Point(3, 133);
+            this.labelRouteTransparency.Name = "labelRouteTransparency";
+            this.labelRouteTransparency.Size = new System.Drawing.Size(142, 13);
+            this.labelRouteTransparency.TabIndex = 3;
+            this.labelRouteTransparency.Text = "<routeTransparency:";
+            // 
+            // upDownRouteTransparency
+            // 
+            this.upDownRouteTransparency.Location = new System.Drawing.Point(155, 133);
+            this.upDownRouteTransparency.Name = "upDownRouteTransparency";
+            this.upDownRouteTransparency.Size = new System.Drawing.Size(39, 20);
+            this.upDownRouteTransparency.TabIndex = 7;
+            this.upDownRouteTransparency.Minimum = 0;
+            this.upDownRouteTransparency.Maximum = 100;
+            this.upDownRouteTransparency.LostFocus += new EventHandler(upDownRouteTransparency_LostFocus);
+            // 
+            // labelRouteTransparencyPercent
+            // (not visible)
+            this.labelRouteTransparencyPercent.AutoSize = true;
+            this.labelRouteTransparencyPercent.Location = new System.Drawing.Point(280, 42);
+            this.labelRouteTransparencyPercent.Name = "labelRouteTransparencyPercent";
+            this.labelRouteTransparencyPercent.Size = new System.Drawing.Size(15, 13);
+            this.labelRouteTransparencyPercent.TabIndex = 10;
+            this.labelRouteTransparencyPercent.Text = "%";
+            this.labelRouteTransparencyPercent.Visible = false;
             // 
             // lblUniqueRoutes
             // 
@@ -616,6 +654,9 @@
         private System.Windows.Forms.Label lblPredictDistance;
         private ZoneFiveSoftware.Common.Visuals.TextBox boxPredictDistance;
         private System.Windows.Forms.Label lblLicense;
+        private System.Windows.Forms.Label labelRouteTransparency;
+        private System.Windows.Forms.NumericUpDown upDownRouteTransparency;
+        private System.Windows.Forms.Label labelRouteTransparencyPercent;
         private System.Windows.Forms.GroupBox gradeAdjustedPaceGroup;
         private System.Windows.Forms.Label lblMervynDaviesName;
         private System.Windows.Forms.Label lblMervynDaviesUp;

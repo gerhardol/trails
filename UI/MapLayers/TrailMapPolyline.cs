@@ -65,13 +65,15 @@ namespace TrailsPlugin.UI.MapLayers
             }
             foreach (IList<IGPSPoint> gp in tr.GpsPoints())
             {
-                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, tr.ResultColor.LineNormal, tr, s + cSeparator + results.Count));
+                Color c = tr.ResultColor.LineNormal;
+                c = Color.FromArgb(Data.Settings.RouteLineAlpha, c.R, c.G, c.B);
+                results.Add(new TrailMapPolyline(gp, UnitUtil.GetApplication().SystemPreferences.RouteSettings.RouteWidth, c, tr, s + cSeparator + results.Count));
             }
             return results;
         }
 
         //Marked part of a track
-        public static IList<TrailMapPolyline> GetTrailMapPolyline(TrailResult tr, TrailsItemTrackSelectionInfo sel)
+        public static IList<TrailMapPolyline> GetTrailMapMarkedPolyline(TrailResult tr, TrailsItemTrackSelectionInfo sel)
         {
             IList<TrailMapPolyline> results = new List<TrailMapPolyline>();
             foreach (IList<IGPSPoint> gp in tr.GpsPoints(sel))

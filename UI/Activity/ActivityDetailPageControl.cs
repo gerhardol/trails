@@ -442,7 +442,7 @@ namespace TrailsPlugin.UI.Activity {
                         //One ST activity is drawn with standard methods
                         //Use ST standard display of track where possible
                         atrST.Add(trm);
-                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapMarkedPolyline(trm.trailResult, trm.selInfo))
                         {
                             if (!marked.ContainsKey(m.key))
                             {
@@ -453,7 +453,7 @@ namespace TrailsPlugin.UI.Activity {
                     else
                     {
                         //Trails display of tracks
-                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(trm.trailResult, trm.selInfo))
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapMarkedPolyline(trm.trailResult, trm.selInfo))
                         {
                             if (!mresult.ContainsKey(m.key))
                             {

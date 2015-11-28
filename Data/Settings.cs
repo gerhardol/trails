@@ -83,6 +83,7 @@ namespace TrailsPlugin.Data
         public static bool ShowTrailPointsOnChart = true;
         public static bool ShowTrailPointsOnMap = true;
         public static bool ShowListToolBar = true;
+        public static byte RouteLineAlpha = 0xa0;
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings
@@ -772,6 +773,8 @@ namespace TrailsPlugin.Data
                 if (attr.Length > 0) { m_JackDanielsUp = Settings.parseFloat(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.sJackDanielsDown);
                 if (attr.Length > 0) { m_JackDanielsDown = Settings.parseFloat(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sRouteLineAlpha);
+                if (attr.Length > 0) { RouteLineAlpha = XmlConvert.ToByte(attr); }
                 //Not read or saved in preferences right now
                 //attr = pluginNode.GetAttribute(xmlTags.sAdjustDiffSplitTimes);
                 //try
@@ -915,6 +918,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.sMervynDaviesDown, XmlConvert.ToString(m_MervynDaviesDown));
             pluginNode.SetAttribute(xmlTags.sJackDanielsUp, XmlConvert.ToString(m_JackDanielsUp));
             pluginNode.SetAttribute(xmlTags.sJackDanielsDown, XmlConvert.ToString(m_JackDanielsDown));
+            pluginNode.SetAttribute(xmlTags.sRouteLineAlpha, XmlConvert.ToString(RouteLineAlpha));
             String colText = null;
             //if (m_AdjustDiffSplitTimes != null)
             //{
@@ -1004,6 +1008,7 @@ namespace TrailsPlugin.Data
             public const string sMervynDaviesDown = "sMervynDaviesDown";
             public const string sJackDanielsUp = "sJackDanielsUp";
             public const string sJackDanielsDown = "sJackDanielsDown";
+            public const string sRouteLineAlpha = "sRouteLineAlpha";
             public const string sAdjustDiffSplitTimes = "sAdjustDiffSplitTimes";
             public const string sResultSummaryStdDev = "sResultSummaryStdDev";
             public const string sCadenceFromOther = "sCadenceFromOther";

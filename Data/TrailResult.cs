@@ -964,6 +964,7 @@ namespace TrailsPlugin.Data
                     {
                         //Special handling, same calc as device
                         source = this.Activity.DistanceMetersTrack;
+                        //This can be incorrect for Pool Swimming
                     }
                     else
                     {

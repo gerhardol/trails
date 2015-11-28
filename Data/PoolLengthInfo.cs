@@ -40,7 +40,7 @@ namespace TrailsPlugin.Data
                 {
                     res.TotalDistanceMeters = 25;
                 }
-                else if (iByte == 0x4423345c)
+                else if (iByte == 0x4423345c || iByte == 0x44233f5c/*??*/)
                 {
                     res.TotalDistanceMeters = 50;
                 }

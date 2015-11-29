@@ -166,7 +166,7 @@ namespace TrailsPlugin.UI.Activity
                 TrailName.Text = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name;
                 if (Controller.TrailController.Instance.CurrentActivityTrails.Count > 1)
                 {
-                    TrailName.Text += " (*)";
+                    TrailName.Text += " (" + Controller.TrailController.Instance.CurrentActivityTrails.Count + ")";
                 }
                 TrailName.Enabled = (m_editTrail == null);
                 if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
@@ -529,23 +529,25 @@ namespace TrailsPlugin.UI.Activity
             TreeListPopup treeListPopup = new TreeListPopup();
             treeListPopup.ThemeChanged(m_visualTheme);
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
+            treeListPopup.Tree.ShowPlusMinus = true;
+            treeListPopup.Tree.ShowLines = true;
 
-            //Get the list of ordered activity trails, without forcing calculation
-            treeListPopup.Tree.RowData = Controller.TrailController.Instance.OrderedTrails();
             //Note: Just checking for current trail could modify the ordered list, so do this first
-            System.Collections.IList currSel = null;
+            IList<ActivityTrail> selectedActivityTrails = null;
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
-                currSel = new object[Controller.TrailController.Instance.CurrentActivityTrails.Count];
-                for (int i = 0; i < Controller.TrailController.Instance.CurrentActivityTrails.Count; i++)
-                {
-                    currSel[i] = Controller.TrailController.Instance.CurrentActivityTrails[i];
-                }
+                selectedActivityTrails = Controller.TrailController.Instance.CurrentActivityTrails;
             }
+            //Get the list of ordered activity trails, without forcing calculation
+            IList<ActivityTrail> allActivityTrails = Controller.TrailController.Instance.OrderedTrails();
+
+            TrailNameWrapper tnw = new TrailNameWrapper(allActivityTrails, selectedActivityTrails);
+            treeListPopup.Tree.RowData = tnw.RowData;
+            treeListPopup.Tree.Expanded = tnw.Expanded;
 #if ST_2_1
-            treeListPopup.Tree.Selected = currSel;
+            treeListPopup.Tree.Selected = tnw.SelectedItems;
 #else
-            treeListPopup.Tree.SelectedItems = currSel;
+            treeListPopup.Tree.SelectedItems = tnw.SelectedItems;
 #endif
             treeListPopup.Tree.LabelProvider = new TrailDropdownLabelProvider();
             m_selectTrailAddMode = false;
@@ -565,33 +567,45 @@ namespace TrailsPlugin.UI.Activity
                 ((TreeListPopup)sender).Hide();
             }
 
-            IList <ActivityTrail> ats = new List<ActivityTrail>();
+            IList <ActivityTrailWrapper> atws = new List<ActivityTrailWrapper>();
             if (m_selectTrailAddMode /*|| this.m_CtrlPressed*/)
             {
                 //Handle all the existing as selected too
-                foreach (ActivityTrail at in Controller.TrailController.Instance.CurrentActivityTrails)
+                foreach (ActivityTrailWrapper atw in (IList<ActivityTrailWrapper>)((TreeListPopup)sender).Tree.RowData)
                 {
-                    ats.Add(at);
+                    foreach (ActivityTrail at in Controller.TrailController.Instance.CurrentActivityTrails)
+                    {
+                        if (atw.ActivityTrail == at)
+                        {
+                            atws.Add(atw);
+                            break;
+                        }
+                    }
                 }
             }
-            ActivityTrail t = ((ActivityTrail)((TreeListPopup.ItemSelectedEventArgs)e).Item);
-            if (ats.Contains(t))
+            ActivityTrailWrapper selAtw = ((ActivityTrailWrapper)((TreeListPopup.ItemSelectedEventArgs)e).Item);
+            if (atws.Contains(selAtw))
             {
-                ats.Remove(t);
+                atws.Remove(selAtw);
             }
             else
             {
-                ats.Add(t);
+                atws.Add(selAtw);
             }
 
             System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
-            Controller.TrailController.Instance.SetCurrentActivityTrail(ats, true, progressBar);
+
+            Controller.TrailController.Instance.SetCurrentActivityTrail(ActivityTrailWrapper.toATList(atws), true, progressBar);
             m_page.StopProgressBar();
             m_page.RefreshData(false);
             m_page.RefreshControlState();
 
-            GPSBounds area = TrailGPSLocation.getGPSBounds(t.Trail.TrailLocations, 3 * t.Trail.Radius);
-            m_layer.SetLocation(area);
+            //Set current viewed area to the selected trail
+            if (atws.Contains(selAtw))
+            {
+                GPSBounds area = TrailGPSLocation.getGPSBounds(selAtw.ActivityTrail.Trail.TrailLocations, 3 * selAtw.ActivityTrail.Trail.Radius);
+                m_layer.SetLocation(area);
+            }
         }
     }
 }

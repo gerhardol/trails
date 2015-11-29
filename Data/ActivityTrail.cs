@@ -168,7 +168,7 @@ namespace TrailsPlugin.Data
             get
             {
                 TrailOrderStatus res = m_status;
-                foreach(Trail t in this.Trail.Children)
+                foreach(Trail t in this.Trail.AllChildren)
                 {
                     ActivityTrail at = Controller.TrailController.Instance.GetActivityTrail(t);
                     if (at != null)

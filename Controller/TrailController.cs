@@ -247,7 +247,7 @@ namespace TrailsPlugin.Controller
                 {
                     activityTrails2.Add(to);
                 }
-                foreach(Trail t2 in to.Trail.Children)
+                foreach(Trail t2 in to.Trail.AllChildren)
                 {
                     ActivityTrail to2 = GetActivityTrail(t2);
                     if (!activityTrails2.Contains(to2))
@@ -346,7 +346,8 @@ namespace TrailsPlugin.Controller
                         //Prev does not match, try matching names
                         foreach (ActivityTrail at in this.OrderedTrails())
                         {
-                            if (at.Trail.Name.StartsWith(this.m_referenceActivity.Name))
+                            if (at.Trail.Name.StartsWith(this.m_referenceActivity.Name) ||
+                                at.Trail.Name.Substring(at.Trail.Name.LastIndexOf(':')+1).StartsWith(this.m_referenceActivity.Name))
                             {
                                 CheckSetCurrentList(new List<ActivityTrail> { at }, progressBar);
                                 if (this.m_currentActivityTrails.Count > 0)

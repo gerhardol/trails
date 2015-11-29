@@ -3,7 +3,7 @@ This page describes the changes between plugin releases. The change log may cont
 ### Changes ###
 
 (unreleased)
-  * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName : Spcific_), selecting the "parent" selects all "child" trails too.
+  * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName : Spcific_), selecting the "parent" selects all "child" trails too. This is visible in the trail selection menu.
   * Possibility to merge subresults with [Ctrl-'l' keyboard shortcut](Features#result-list).
   
   

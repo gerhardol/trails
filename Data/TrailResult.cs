@@ -292,12 +292,13 @@ namespace TrailsPlugin.Data
 
         public float PointDiff(int i)
         {
-            if (i < m_subResultInfo.Count)
+            if (i >= 0 && i < m_subResultInfo.Count)
             {
                 return this.m_subResultInfo.Points[i].DistDiff;
             }
             else
             {
+                Debug.Assert(false, "Illegal pointdiff" + this + " " + i + " " + m_subResultInfo.Count);
                 return float.NaN;
             }
         }

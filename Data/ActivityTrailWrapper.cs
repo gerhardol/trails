@@ -41,6 +41,16 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public static IList<ActivityTrail> toATList(IList<ActivityTrailWrapper> atws)
+        {
+            IList<ActivityTrail> ats = new List<ActivityTrail>();
+            foreach (ActivityTrailWrapper atw in atws)
+            {
+                ats.Add(atw.ActivityTrail);
+            }
+            return ats;
+        }
+
         public override string ToString()
         {
             return this.ActivityTrail.ToString() + ": " + this.Children.Count;
@@ -55,34 +65,34 @@ namespace TrailsPlugin.Data
 
         public TrailNameWrapper(IList<ActivityTrail> allActivityTrails, IList<ActivityTrail> selectedActivityTrails)
         {
-            int expRows = 0;
-            foreach (ActivityTrail at in allActivityTrails)
-            {
-                if (at.Trail.Children.Count > 0)
-                {
-                    expRows++;
-                }
-            }
-            this.Expanded = new object[expRows];
-
             if(selectedActivityTrails != null)
             {
                 this.SelectedItems = new object[selectedActivityTrails.Count];
             }
 
             IDictionary<Trail, ActivityTrailWrapper> ats = new Dictionary<Trail, ActivityTrailWrapper>();
-            IList<ActivityTrailWrapper> all = new List<ActivityTrailWrapper>();
-            int allIndex = 0;
+            IList<ActivityTrailWrapper> children = new List<ActivityTrailWrapper>();
+            IList<ActivityTrailWrapper> exps = new List<ActivityTrailWrapper>();
+            IList<ActivityTrailWrapper> rows = new List<ActivityTrailWrapper>();
             int selIndex = 0;
 
             foreach (ActivityTrail at in allActivityTrails)
             {
                 ActivityTrailWrapper atw = new ActivityTrailWrapper(at);
                 ats[at.Trail] = atw;
-                all.Add(atw);
-                if (at.Trail.Children.Count > 0)
+                if (at.Trail.Parent == null)
                 {
-                    this.Expanded[allIndex++] = atw;
+                    rows.Add(atw);
+                }
+                else
+                {
+                    //added as links to the parent rows below
+                    children.Add(atw);
+                }
+                if (at.Trail.Children.Count > 0 && at.Status < TrailOrderStatus.NotInBound)
+                {
+                    //expand only for (partial) matches
+                    exps.Add(atw);
                 }
                 if (selectedActivityTrails != null && selectedActivityTrails.Contains(at))
                 {
@@ -90,46 +100,25 @@ namespace TrailsPlugin.Data
                 }
             }
 
-            IList<ActivityTrailWrapper> rowdata = new List<ActivityTrailWrapper>();
-            foreach (ActivityTrailWrapper atw in all)
+            foreach (ActivityTrailWrapper atw in children)
             {
-                foreach (Trail t in atw.ActivityTrail.Trail.Children)
+                //Update link to and from parent
+                Trail parentResult = atw.ActivityTrail.Trail.Parent;
+                if (parentResult != null)
                 {
-                    if (ats.ContainsKey(t))
-                    {
-                        if (rowdata.Contains(ats[t]))
-                        {
-                            //Remove, included as subresult
-                            rowdata.Remove(ats[t]);
-                        }
+                    ActivityTrailWrapper parentWrapper = ats[parentResult];
+                    atw.Parent = parentWrapper;
+                    parentWrapper.Children.Add(atw);
+                }
+            }
+            RowData = rows;
 
-                        atw.Children.Add(ats[t]);
-                        ats[t].Parent = atw;
-                    }
-                }
-                if (atw.Parent != null)
-                {
-                    //Not found as child (yet?)
-                    rowdata.Add(atw);
-                }
-            }
-/*            for (int i = 0; i < trees.Count; i++)
+            this.Expanded = new object[exps.Count];
+            int allIndex = 0;
+            foreach (ActivityTrailWrapper atw in exps)
             {
-                ActivityTrailWrapper atw = trees[i];
-                ActivityTrail at = (ActivityTrail)atw.Element;
-                foreach (Trail t in at.Trail.Children)
-                {
-                    if (ats.ContainsKey(t) && trees.Contains(ats[t]))
-                    {
-                        //Remove, included as subresult
-                        trees.Remove(ats[t]);
-                    }
-                    atw.Children.Add(ats[t]);
-                    ats[t].Parent = atw;
-                }
+                this.Expanded[allIndex++] = atw;
             }
-            */
-            RowData = rowdata;
         }
     }
 
@@ -168,6 +157,11 @@ namespace TrailsPlugin.Data
         {
             ActivityTrail t = ((ActivityTrailWrapper)element).ActivityTrail;
             string name = t.Trail.Name;
+            if (t.Trail.Parent != null)
+            {
+                //Remove parent part, colon/space is flexible
+                name = name.Substring(t.Trail.Parent.Name.Length+1).TrimStart(' ',':');
+            }
             if (t.Trail.IsReference && null != t.Trail.ReferenceActivity)
             {
                 DateTime time = ActivityInfoCache.Instance.GetInfo(t.Trail.ReferenceActivity).ActualTrackStart;
@@ -182,7 +176,7 @@ namespace TrailsPlugin.Data
                 t.Status == TrailOrderStatus.MatchPartial)
             {
                 int n = TrailResultWrapper.Results(t.ResultTreeList).Count;
-                foreach (Trail tr in t.Trail.Children)
+                foreach (Trail tr in t.Trail.AllChildren)
                 {
                     n += TrailResultWrapper.Results(Controller.TrailController.Instance.GetActivityTrail(tr).ResultTreeList).Count;
                 }

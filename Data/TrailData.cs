@@ -146,9 +146,32 @@ namespace TrailsPlugin.Data
             {
                 foreach (Trail t2 in m_AllTrails.Values)
                 {
-                    if (t.IsNameParentTo(t2))
+                    if (t != t2 && t.IsNameParentTo(t2))
                     {
-                        t.Children.Add(t2);
+                        //TBD: Review this code, is it working for more than two levels? 
+                        if (!t.AllChildren.Contains(t2))
+                        {
+                            //not appearing in subchilds, remove from parents
+                            foreach(Trail tp in t.AllParents)
+                            {
+                                if(tp.Children.Contains(t))
+                                {
+                                    tp.Children.Remove(t);
+                                }
+                            }
+                            t.Children.Add(t2);
+                        }
+                        if (!t2.AllParents.Contains(t))
+                        {
+                            foreach (Trail tp in t.AllChildren)
+                            {
+                                if (tp.Children.Contains(t))
+                                {
+                                    tp.Children.Remove(t);
+                                }
+                            }
+                            t2.Parent = t;
+                        }
                     }
                 }
             }

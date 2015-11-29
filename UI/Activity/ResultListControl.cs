@@ -564,7 +564,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (Data.Settings.ShowSummaryAverage)
             {
-                (m_summaryTotal.Result as SummaryTrailResult).SetSummary(TrailResultWrapper.GetTrailResults(selected2, false));
+                (m_summaryAverage.Result as SummaryTrailResult).SetSummary(TrailResultWrapper.GetTrailResults(selected2, false));
             }
             //TODO: Splits
         }
@@ -1382,13 +1382,13 @@ namespace TrailsPlugin.UI.Activity {
             IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
             if (atr == null || atr.Count == 0)
             {
-                TrailResultWrapper tr;
-                tr = this.GetSummaryTotal();
-                if (tr == null)
+                TrailResultWrapper trw;
+                trw = this.GetSummaryTotal();
+                if (trw == null)
                 {
-                    tr = this.GetSummaryAverage();
+                    trw = this.GetSummaryAverage();
                 }
-                if (tr == null)
+                if (trw == null)
                 {
                     atr = new List<TrailResultWrapper>();
                 }

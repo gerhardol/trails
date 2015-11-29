@@ -36,7 +36,8 @@ namespace TrailsPlugin.Data
 
         public Guid Id;
         public string Name;
-        public IList<Trail> Children = new List<Trail>(); 
+        public IList<Trail> Children = new List<Trail>();
+        public Trail Parent = null;
 
         //The default reference activity, only makes sense for non-auto trails
         private IActivity m_DefaultRefActivity = null;
@@ -73,6 +74,40 @@ namespace TrailsPlugin.Data
         {
             this.Id = Id;
             this.m_generated = generated;
+        }
+
+        public IList<Trail> AllChildren
+        {
+            get
+            {
+                IList<Trail> all = new List<Trail>();
+                foreach (Trail t in this.Children)
+                {
+                    all.Add(t);
+                    foreach (Trail t2 in t.AllChildren)
+                    {
+                        all.Add(t2);
+                    }
+                }
+                return all;
+            }
+        }
+
+        public IList<Trail> AllParents
+        {
+            get
+            {
+                IList<Trail> all = new List<Trail>();
+                if(this.Parent != null)
+                {
+                    all.Add(this.Parent);
+                    foreach (Trail t2 in this.Parent.AllParents)
+                    {
+                        all.Add(t2);
+                    }
+                }
+                return all;
+            }
         }
 
         /// Copy a trail (same guid, but not auto attributes)
@@ -139,6 +174,7 @@ namespace TrailsPlugin.Data
             result.IsURFilter = this.IsURFilter;
             //result.IsAutoTryAll = this.IsAutoTryAll;
             result.IsTemporary = this.IsTemporary;
+            result.Parent = this.Parent;
             foreach(Trail t in this.Children)
             {
                 result.Children.Add(t);

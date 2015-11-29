@@ -29,88 +29,15 @@ using ITrailExport;
 
 namespace TrailsPlugin.Data
 {
-    public class PositionTrailResultWrapper : TrailResultWrapper
-    {
-        //Normal result
-        public PositionTrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes)
-               : base(new PositionParentTrailResult(activityTrail, order, indexes, indexes.DistDiff, indexes.Reverse))
-        {
-        }
-    }
-
-    public class SummaryTrailResultWrapper : TrailResultWrapper
-    {
-        //Summary line
-        public SummaryTrailResultWrapper(bool isTotal)
-        : base(new SummaryTrailResult(isTotal))
-        {
-        }
-
-        public void SetSummary(IList<TrailResultWrapper> rows)
-        {
-            ((SummaryTrailResult)base.Element).SetSummary(GetTrailResults(rows, false));
-        }
-    }
-
-    public class SplitsTrailResultWrapper : TrailResultWrapper
-    {
-        public SplitsTrailResultWrapper(ActivityTrail activityTrail, IActivity activity, int order)
-            : this(activityTrail, Data.Trail.TrailResultInfoFromSplits(activity, false), order)
-        {
-        }
-        public SplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
-            : base(new SplitsParentTrailResult(activityTrail, order, indexes, 0))
-        {
-        }
-
-        protected SplitsTrailResultWrapper(SplitsParentTrailResult element)
-             : base(element)
-        {
-        }
-   }
-
-    public class TimeSplitsTrailResultWrapper : SplitsTrailResultWrapper
-    {
-        //create results on datetime info
-        public TimeSplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
-            : base(new SplitsParentTrailResult(activityTrail, order, indexes, 0))
-        {
-        }
-    }
-
-    public class SwimSplitsTrailResultWrapper : SplitsTrailResultWrapper
-    {
-        public SwimSplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
-            : base(new SwimSplitsParentTrailResult(activityTrail, order, indexes, 0))
-        {
-        }
-    }
-
-    public class HighScoreTrailResultWrapper : TrailResultWrapper
-    {
-        //Create from HighScore, add the first and last time stamps in MarkedTimes
-        public HighScoreTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, string tt, int order)
-            : base(new HighScoreParentTrailResult(activityTrail, order, indexes, 0, tt))
-        {
-        }
-        //Special children, not part of the activity
-        public void addChild(TrailResultInfo indexes, string tt, int order)
-        {
-            HighScoreParentTrailResult ptr = this.Result as HighScoreParentTrailResult;
-            ChildTrailResult ctr = ptr.getChild(order, indexes, 0, tt);
-            TrailResultWrapper child = new TrailResultWrapper(this, ctr);
-        }
-    }
-
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
         //Parent
-        protected TrailResultWrapper(SummaryTrailResult element)
+        public TrailResultWrapper(SummaryTrailResult element)
             : base(null, element)
         {
         }
 
-        protected TrailResultWrapper(ParentTrailResult element)
+        public TrailResultWrapper(ParentTrailResult element)
             : base(null, element)
         {
             //if (!(element is HighScoreParentTrailResult))
@@ -119,12 +46,12 @@ namespace TrailsPlugin.Data
             }
         }
 
-        protected TrailResultWrapper(HighScoreParentTrailResult element)
+        public TrailResultWrapper(HighScoreParentTrailResult element)
             : base(null, element)
         {
         }
 
-        internal TrailResultWrapper(TrailResultWrapper parent, ChildTrailResult element)
+        public TrailResultWrapper(TrailResultWrapper parent, ChildTrailResult element)
             : base(parent, element)
         {
             //several separate substructues..
@@ -199,7 +126,7 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        protected static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
+        public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
         {
             IList<TrailResult> result = new List<TrailResult>();
             if (tn != null)

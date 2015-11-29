@@ -47,8 +47,8 @@ namespace TrailsPlugin.UI.Activity {
     {
         ActivityDetailPageControl m_page;
         private ITheme m_visualTheme;
-        private SummaryTrailResultWrapper m_summaryTotal;
-        private SummaryTrailResultWrapper m_summaryAverage;
+        private TrailResultWrapper m_summaryTotal;
+        private TrailResultWrapper m_summaryAverage;
         private TrailResult m_lastSelectedTrailResult = null;
 
 #if !ST_2_1
@@ -58,8 +58,8 @@ namespace TrailsPlugin.UI.Activity {
         public ResultListControl()
         {
             InitializeComponent();
-            this.m_summaryTotal = new SummaryTrailResultWrapper(true);
-            this.m_summaryAverage = new SummaryTrailResultWrapper(false);
+            this.m_summaryTotal = new TrailResultWrapper(new SummaryTrailResult(true));
+            this.m_summaryAverage = new TrailResultWrapper(new SummaryTrailResult(false));
         }
 #if ST_2_1
         public void SetControl(ActivityDetailPageControl page, Object view)
@@ -517,7 +517,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (TrailResultWrapper t in selected)
                 {
-                    if (!(t is SummaryTrailResultWrapper))
+                    if (!(t.Result is SummaryTrailResult))
                     {
                         selected2.Add(t);
                     }
@@ -560,11 +560,11 @@ namespace TrailsPlugin.UI.Activity {
             }
             if (Data.Settings.ShowSummaryTotal)
             {
-                m_summaryTotal.SetSummary(selected2);
+                (m_summaryTotal.Result as SummaryTrailResult).SetSummary(TrailResultWrapper.GetTrailResults(selected2, false));
             }
             if (Data.Settings.ShowSummaryAverage)
             {
-                m_summaryAverage.SetSummary(selected2);
+                (m_summaryTotal.Result as SummaryTrailResult).SetSummary(TrailResultWrapper.GetTrailResults(selected2, false));
             }
             //TODO: Splits
         }
@@ -732,7 +732,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (TrailResultWrapper t in Controller.TrailController.Instance.CurrentResultTreeList)
                 {
-                    if (!(t is SummaryTrailResultWrapper))
+                    if (!(t.Result is SummaryTrailResult))
                     {
                         all.Add(t);
                     }
@@ -1457,7 +1457,7 @@ namespace TrailsPlugin.UI.Activity {
                 foreach (TrailResultWrapper tr in atr)
                 {
                     if (tr.Result is ChildTrailResult &&
-                        (tr.Parent is PositionTrailResultWrapper || tr.Parent is SplitsTrailResultWrapper))
+                        ((tr.Parent as TrailResultWrapper).Result is PositionParentTrailResult || (tr.Parent as TrailResultWrapper).Result is SplitsParentTrailResult))
                     {
                         TrailResultWrapper parent = (tr.Parent as TrailResultWrapper);
                         if (!subRes.ContainsKey(parent))

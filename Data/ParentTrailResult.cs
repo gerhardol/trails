@@ -50,6 +50,14 @@ namespace TrailsPlugin.Data
         }
     }
 
+    public class TimeSplitsParentTrailResult : SplitsParentTrailResult
+    {
+        public TimeSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, order, indexes, distDiff)
+        {
+        }
+    }
+
     public class SwimSplitsParentTrailResult : SplitsParentTrailResult
     {
         public SwimSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :

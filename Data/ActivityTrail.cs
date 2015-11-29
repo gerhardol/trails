@@ -263,7 +263,8 @@ namespace TrailsPlugin.Data
             foreach (IActivity activity in m_inBound)
             {
                 //No GPS check: Must have been done when adding to inbound list
-                SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
+                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes, 0));
                 m_resultsListWrapper.Add(result);
                 //Note: status is not updated, cannot be better
             }
@@ -328,22 +329,23 @@ namespace TrailsPlugin.Data
                         IList<Integration.HighScore.HighScoreResult> hs = Integration.HighScore.GetHighScoreForActivity(activities, 10, null/*progressBar*/);
                         if (hs != null && hs.Count > 0)
                         {
-                            HighScoreTrailResultWrapper parent = null;
+                            TrailResultWrapper parentWrapper = null;
                             foreach (Integration.HighScore.HighScoreResult h in hs)
                             {
                                 TrailResultInfo indexes = Data.Trail.ResultInfoFromSelection(h.activity, h.selInfo);
                                 if (indexes.Count >= 2)
                                 {
-                                    if (h.order == 1 || parent == null)
+                                    if (h.order == 1 || parentWrapper == null)
                                     {
                                         this.Status = TrailOrderStatus.Match;
-                                        HighScoreTrailResultWrapper result = new HighScoreTrailResultWrapper(this, indexes, h.tooltip, 1);
-                                        m_resultsListWrapper.Add(result);
-                                        parent = result;
+                                        HighScoreParentTrailResult parentResult = new HighScoreParentTrailResult(this, 1, indexes, 0, h.tooltip);
+                                        parentWrapper = new TrailResultWrapper(parentResult);
+                                        m_resultsListWrapper.Add(parentWrapper);
                                     }
                                     else
                                     {
-                                        parent.addChild(indexes, h.tooltip, h.order/* m_resultsListWrapper.Count + 1*/);
+                                        ChildTrailResult ctr = (parentWrapper.Result as HighScoreParentTrailResult).getChild(h.order/* m_resultsListWrapper.Count + 1*/, indexes, 0, h.tooltip);
+                                        TrailResultWrapper child = new TrailResultWrapper(parentWrapper, ctr);
                                     }
                                 }
                             }
@@ -376,7 +378,8 @@ namespace TrailsPlugin.Data
                             foreach (IActivity activity in resultActivities)
                             {
                                 this.Status = TrailOrderStatus.Match;
-                                SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                                TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
+                                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes, 0));
                                 m_resultsListWrapper.Add(result);
                             }
                         }
@@ -392,7 +395,8 @@ namespace TrailsPlugin.Data
                     if (refAct != null)
                     {
                         this.Status = TrailOrderStatus.Match;
-                        SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(this, refAct, m_resultsListWrapper.Count + 1);
+                        TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(refAct, false);
+                        TrailResultWrapper refRes = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes, 0));
                         m_resultsListWrapper.Add(refRes);
                         Controller.TrailController.Instance.ReferenceTrailResult = refRes.Result;
                         foreach (IActivity activity in activities)
@@ -401,7 +405,7 @@ namespace TrailsPlugin.Data
                                 refRes.Result.AnyOverlap(activity))
                             {
                                 TrailResultInfo indexes = refRes.Result.SubResultInfo.CopyFromReference(activity);
-                                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
+                                TrailResultWrapper result = new TrailResultWrapper(new TimeSplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes, 0));
                                 m_resultsListWrapper.Add(result);
                             }
                         }
@@ -428,7 +432,8 @@ namespace TrailsPlugin.Data
                         if (this.m_trail.TrailType == Trail.CalcType.Splits)
                         {
                             this.Status = TrailOrderStatus.Match;
-                            SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                            TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
+                            TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes, 0));
                             m_resultsListWrapper.Add(result);
                         }
                         else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
@@ -437,7 +442,7 @@ namespace TrailsPlugin.Data
                             foreach (TrailResultInfo indexes in Data.Trail.TrailResultSwimInfoFromSplits(activity, false, subresultIndex))
                             {
                                 this.Status = TrailOrderStatus.Match;
-                                SplitsTrailResultWrapper result = new SwimSplitsTrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
+                                TrailResultWrapper result = new TrailResultWrapper(new SwimSplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes, 0));
                                 m_resultsListWrapper.Add(result);
                                 subresultIndex += indexes.Points.Count;
                             }
@@ -481,7 +486,8 @@ namespace TrailsPlugin.Data
                             {
                                 this.Status = TrailOrderStatus.Match;
                                 //Splits result
-                                SplitsTrailResultWrapper result = new SplitsTrailResultWrapper(this, activity, m_resultsListWrapper.Count + 1);
+                                TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
+                                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes, 0));
                                 m_resultsListWrapper.Add(result);
                             }
                         }
@@ -609,35 +615,35 @@ namespace TrailsPlugin.Data
             int order = parent.Result.Order;
             this.Remove(new List<TrailResultWrapper> { parent }, false);
             //All trail types are not handled
-            if (parent is PositionTrailResultWrapper)
+            if (parent.Result is PositionParentTrailResult)
             {
-                TrailResultWrapper result = new PositionTrailResultWrapper(this, order, indexes);
+                TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, order, indexes, indexes.DistDiff, indexes.Reverse));
                 this.m_resultsListWrapper.Add(result);
             }
-            else if (parent is SwimSplitsTrailResultWrapper)
+            else if (parent.Result is SwimSplitsParentTrailResult)
             {
-                SplitsTrailResultWrapper result = new SwimSplitsTrailResultWrapper(this, indexes, order);
+                TrailResultWrapper result = new TrailResultWrapper(new SwimSplitsParentTrailResult(this, order, indexes, 0));
                 this.m_resultsListWrapper.Add(result);
             }
-            else if (parent is TimeSplitsTrailResultWrapper)
+            else if (parent.Result is TimeSplitsParentTrailResult)
             {
                 TrailResultInfo timeIndexes = indexes.CopyFromReference(indexes.Activity);
-                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, timeIndexes, order);
+                TrailResultWrapper result = new TrailResultWrapper(new TimeSplitsParentTrailResult(this, order, timeIndexes, 0));
                 this.m_resultsListWrapper.Add(result);
             }
-            else if (parent is SplitsTrailResultWrapper)
+            else if (parent.Result is SplitsParentTrailResult)
             {
-                SplitsTrailResultWrapper refRes = new SplitsTrailResultWrapper(this, indexes, order);
+                TrailResultWrapper refRes = new TrailResultWrapper(new SplitsParentTrailResult(this, order, indexes, 0));
                 if (this.Trail.TrailType == Trail.CalcType.SplitsTime &&
                     indexes.Activity == Controller.TrailController.Instance.ReferenceActivity)
                 {
                     this.m_resultsListWrapper.Clear();
-                    IList<TrailResultWrapper> ts = new List<TrailResultWrapper>();
-                    foreach (TrailResultWrapper trr in this.m_resultsListWrapper)
-                    {
-                        ts.Add(trr);
-                    }
-                    this.Remove(ts, false);
+                    //IList<TrailResultWrapper> ts = new List<TrailResultWrapper>();
+                    //foreach (TrailResultWrapper trr in this.m_resultsListWrapper)
+                    //{
+                    //    ts.Add(trr);
+                    //}
+                    //this.Remove(ts, false);
                     this.m_resultsListWrapper.Add(refRes);
                     foreach (IActivity activity in Controller.TrailController.Instance.Activities)
                     {
@@ -645,7 +651,7 @@ namespace TrailsPlugin.Data
                             refRes.Result.AnyOverlap(activity))
                         {
                             TrailResultInfo timeIndexes = refRes.Result.SubResultInfo.CopyFromReference(activity);
-                            SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, timeIndexes, order);
+                            TrailResultWrapper result = new TrailResultWrapper(new TimeSplitsParentTrailResult(this, order, timeIndexes, 0));
                             this.m_resultsListWrapper.Add(result);
                         }
                     }
@@ -664,7 +670,7 @@ namespace TrailsPlugin.Data
 
             foreach (TrailResultInfo resultInfo in trailResults)
             {
-                TrailResultWrapper result = new PositionTrailResultWrapper(this, m_resultsListWrapper.Count + 1, resultInfo);
+                TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, m_resultsListWrapper.Count + 1, resultInfo, resultInfo.DistDiff, resultInfo.Reverse));
                 m_resultsListWrapper.Add(result);
             }
 
@@ -810,7 +816,7 @@ namespace TrailsPlugin.Data
     trailResults, incompleteResults, null);
                 if (trailResults.Count > 0)
                 {
-                    TrailResultWrapper result = new PositionTrailResultWrapper(this, 0, trailResults[0]);
+                    TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, 0, trailResults[0], trailResults[0].DistDiff, trailResults[0].Reverse));
                     tr = result.Result;
                 }
             }

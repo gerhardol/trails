@@ -32,7 +32,7 @@ namespace TrailsPlugin.Data
 
         protected override TreeList.DefaultRowDataRenderer.RowDecoration GetRowDecoration(object element)
         {
-            if (element is SummaryTrailResultWrapper)
+            if (element is TrailResultWrapper && (element as TrailResultWrapper).Result is SummaryTrailResult)
             {
                 return RowDecoration.BottomLineSingle;
             }
@@ -44,7 +44,7 @@ namespace TrailsPlugin.Data
             if (element is TrailResultWrapper)
             {
                 TrailResultWrapper wrapper = (element as TrailResultWrapper);
-                if (wrapper is SummaryTrailResultWrapper)
+                if (wrapper.Result is SummaryTrailResult)
                 {
                     if ((wrapper.Element as SummaryTrailResult).IsTotal)
                     {

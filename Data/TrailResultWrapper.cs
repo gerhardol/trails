@@ -33,10 +33,8 @@ namespace TrailsPlugin.Data
     {
         //Normal result
         public PositionTrailResultWrapper(ActivityTrail activityTrail, int order, TrailResultInfo indexes)
-               : base()
+               : base(new PositionParentTrailResult(activityTrail, order, indexes, indexes.DistDiff, indexes.Reverse))
         {
-            base.Element = new PositionParentTrailResult(activityTrail, order, indexes, indexes.DistDiff, indexes.Reverse);
-            this.getChildren();
         }
     }
 
@@ -44,9 +42,8 @@ namespace TrailsPlugin.Data
     {
         //Summary line
         public SummaryTrailResultWrapper(bool isTotal)
-        : base()
+        : base(new SummaryTrailResult(isTotal))
         {
-            base.Element = new SummaryTrailResult(isTotal);
         }
 
         public void SetSummary(IList<TrailResultWrapper> rows)
@@ -62,14 +59,12 @@ namespace TrailsPlugin.Data
         {
         }
         public SplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
-            : base()
+            : base(new SplitsParentTrailResult(activityTrail, order, indexes, 0))
         {
-            base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
-            this.getChildren();
         }
 
-        protected SplitsTrailResultWrapper()
-             : base()
+        protected SplitsTrailResultWrapper(SplitsParentTrailResult element)
+             : base(element)
         {
         }
    }
@@ -77,22 +72,17 @@ namespace TrailsPlugin.Data
     public class TimeSplitsTrailResultWrapper : SplitsTrailResultWrapper
     {
         //create results on datetime info
-        public TimeSplitsTrailResultWrapper(ActivityTrail activityTrail, IActivity activity, TrailResultInfo tri, int order)
-            : base()
+        public TimeSplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
+            : base(new SplitsParentTrailResult(activityTrail, order, indexes, 0))
         {
-            TrailResultInfo indexes = tri.CopyFromReference(activity);
-            base.Element = new SplitsParentTrailResult(activityTrail, order, indexes, 0);
-            this.getChildren();
         }
     }
 
     public class SwimSplitsTrailResultWrapper : SplitsTrailResultWrapper
     {
         public SwimSplitsTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, int order)
-            : base()
+            : base(new SwimSplitsParentTrailResult(activityTrail, order, indexes, 0))
         {
-            base.Element = new SwimSplitsParentTrailResult(activityTrail, order, indexes, 0);
-            this.getChildren();
         }
     }
 
@@ -100,9 +90,8 @@ namespace TrailsPlugin.Data
     {
         //Create from HighScore, add the first and last time stamps in MarkedTimes
         public HighScoreTrailResultWrapper(ActivityTrail activityTrail, TrailResultInfo indexes, string tt, int order)
-            : base()
+            : base(new HighScoreParentTrailResult(activityTrail, order, indexes, 0, tt))
         {
-            base.Element = new HighScoreParentTrailResult(activityTrail, order, indexes, 0, tt);
         }
         //Special children, not part of the activity
         public void addChild(TrailResultInfo indexes, string tt, int order)
@@ -116,11 +105,25 @@ namespace TrailsPlugin.Data
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
         //Parent
-        protected TrailResultWrapper()
-            : base(null, null)
-        { }
+        protected TrailResultWrapper(SummaryTrailResult element)
+            : base(null, element)
+        {
+        }
 
-        //Child
+        protected TrailResultWrapper(ParentTrailResult element)
+            : base(null, element)
+        {
+            //if (!(element is HighScoreParentTrailResult))
+            {
+                this.getChildren();
+            }
+        }
+
+        protected TrailResultWrapper(HighScoreParentTrailResult element)
+            : base(null, element)
+        {
+        }
+
         internal TrailResultWrapper(TrailResultWrapper parent, ChildTrailResult element)
             : base(parent, element)
         {
@@ -140,7 +143,7 @@ namespace TrailsPlugin.Data
         //TODO: Calculate children when needed, by implementing Children
         //This is currently called after all parent results have been determined
         //A good enough reason is that this will give main activities separate colors, in the intended order
-        protected void getChildren()
+        private void getChildren()
         {
             if (this.Result != null && this.Result is ParentTrailResult)
             {

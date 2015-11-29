@@ -19,7 +19,6 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Text;
 using ZoneFiveSoftware.Common.Data;
 using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
@@ -401,7 +400,8 @@ namespace TrailsPlugin.Data
                             if (activity != refAct &&
                                 refRes.Result.AnyOverlap(activity))
                             {
-                                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, activity, refRes.Result.SubResultInfo, m_resultsListWrapper.Count + 1);
+                                TrailResultInfo indexes = refRes.Result.SubResultInfo.CopyFromReference(activity);
+                                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, indexes, m_resultsListWrapper.Count + 1);
                                 m_resultsListWrapper.Add(result);
                             }
                         }
@@ -621,7 +621,8 @@ namespace TrailsPlugin.Data
             }
             else if (parent is TimeSplitsTrailResultWrapper)
             {
-                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, indexes.Activity, indexes, order);
+                TrailResultInfo timeIndexes = indexes.CopyFromReference(indexes.Activity);
+                SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, timeIndexes, order);
                 this.m_resultsListWrapper.Add(result);
             }
             else if (parent is SplitsTrailResultWrapper)
@@ -643,7 +644,8 @@ namespace TrailsPlugin.Data
                         if (activity != refRes.Result.Activity &&
                             refRes.Result.AnyOverlap(activity))
                         {
-                            SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, activity, refRes.Result.SubResultInfo, order);
+                            TrailResultInfo timeIndexes = refRes.Result.SubResultInfo.CopyFromReference(activity);
+                            SplitsTrailResultWrapper result = new TimeSplitsTrailResultWrapper(this, timeIndexes, order);
                             this.m_resultsListWrapper.Add(result);
                         }
                     }
@@ -1745,96 +1747,6 @@ namespace TrailsPlugin.Data
         public override string ToString()
         {
             return (new TrailDropdownLabelProvider()).GetText(this, null) + ": " + this.Status.ToString();
-        }
-    }
-
-    /*******************************************************/
-
-    public class TrailDropdownLabelProvider : TreeList.ILabelProvider
-    {
-
-        public System.Drawing.Image GetImage(object element, TreeList.Column column)
-        {
-            ActivityTrail t = (ActivityTrail)element;
-            //if (t.ActivityCount == 0)
-            //{
-            //    return Properties.Resources.square_blue;
-            //}
-            switch (t.Status)
-            {
-                case TrailOrderStatus.Match:
-                    return Properties.Resources.square_green;
-                case TrailOrderStatus.MatchNoCalc:
-                    return Properties.Resources.square_green_check;
-                case TrailOrderStatus.MatchPartial:
-                    return Properties.Resources.square_green_minus;
-                case TrailOrderStatus.InBoundNoCalc:
-                    return Properties.Resources.square_green_plus;
-                case TrailOrderStatus.InBoundMatchPartial:
-                    return Properties.Resources.square_red_plus;
-                case TrailOrderStatus.InBound:
-                    return Properties.Resources.square_red;
-                case TrailOrderStatus.NotInBound:
-                    return Properties.Resources.square_blue;
-                default: //NoConfiguration, NoInfo, NotInstalled
-                    return null;
-            }
-        }
-
-        public string GetText(object element, TreeList.Column column)
-        {
-            ActivityTrail t = (ActivityTrail)element;
-            string name = t.Trail.Name;
-            if (t.Trail.IsReference && null != t.Trail.ReferenceActivity)
-            {
-                DateTime time = ActivityInfoCache.Instance.GetInfo(t.Trail.ReferenceActivity).ActualTrackStart;
-                if (DateTime.MinValue == time)
-                {
-                    time = t.Trail.ReferenceActivity.StartTime;
-                }
-                name += " " + time.ToLocalTime().ToString();
-            }
-
-            if (t.Status == TrailOrderStatus.Match ||
-                t.Status == TrailOrderStatus.MatchPartial)
-            {
-                int n = TrailResultWrapper.Results(t.ResultTreeList).Count;
-                foreach (Trail tr in t.Trail.Children)
-                {
-                    n+= TrailResultWrapper.Results(Controller.TrailController.Instance.GetActivityTrail(tr).ResultTreeList).Count;
-                }
-                name += " (" + n;
-                if (t.Trail.IsURFilter && t.FilteredResults.Count > 0)
-                {
-                    name += " ," + t.FilteredResults.Count;
-                }
-                name += ")";
-            }
-            else if (t.Status == TrailOrderStatus.MatchNoCalc)
-            {
-                if (t.Trail.TrailType == Trail.CalcType.Splits ||
-                    t.Trail.TrailType == Trail.CalcType.SplitsTime ||
-                    t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
-                {
-                    name += " (" + t.ActivityCount + ")";
-                }
-            }
-           else if ((t.Status == TrailOrderStatus.InBoundMatchPartial) &&
-                t.m_noResCount.ContainsKey(t.Status))
-            {
-                name += " (" + t.m_noResCount[t.Status];
-                if (t.m_noResCount.ContainsKey(TrailOrderStatus.InBound))
-                {
-                    name += ", " + t.m_noResCount[TrailOrderStatus.InBound];
-                }
-                name += ")";
-            }
-            //Other results
-            else if (t.m_noResCount.ContainsKey(t.Status))
-            {
-                name += " (" + t.m_noResCount[t.Status] + ")";
-            }
-            return name;
         }
     }
 

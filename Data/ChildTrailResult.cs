@@ -37,32 +37,40 @@ namespace TrailsPlugin.Data
         public NormalChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(activityTrail, par, order, indexes, distDiff)
         {
-            createResult(par, indexes);
         }
     }
 
     public class PausedChildTrailResult : ChildTrailResult
     {
-        public PausedChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
-            base(activityTrail, par, order, indexes, distDiff)
+        public PausedChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes) :
+            base(activityTrail, par, order, indexes, 0)
         {
-            createResult(par, indexes);
         }
     }
 
     public class HighScoreChildTrailResult : ChildTrailResult
     {
-        public HighScoreChildTrailResult(ActivityTrail activityTrail, HighScoreParentTrailResult par, int order, TrailResultInfo indexes, float distDiff, string tt) :
-            base(activityTrail, par, order, indexes, distDiff)
+        public HighScoreChildTrailResult(ActivityTrail activityTrail, HighScoreParentTrailResult par, int order, TrailResultInfo indexes, string tt) :
+            base(activityTrail, par, order, indexes, 0)
         {
             this.m_toolTip = tt;
-            createResult(par, indexes);
             this.PartOfParent = false;
         }
     }
 
     public class ChildTrailResult : TrailResult
     {
+        protected ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
+            base(activityTrail, order, indexes, distDiff)
+        {
+            this.m_parentResult = par;
+            if (indexes.Count == 2)
+            {
+                //Always overwrite the (possibly) calculated data
+                this.m_duration = indexes.Points[0].Duration;
+            }
+        }
+
         internal bool PartOfParent = true;
 
         private ParentTrailResult m_parentResult;
@@ -71,21 +79,6 @@ namespace TrailsPlugin.Data
             get
             {
                 return m_parentResult;
-            }
-        }
-
-        protected ChildTrailResult(ActivityTrail activityTrail, ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
-            base(activityTrail, order, indexes, distDiff)
-        {
-        }
-
-        protected void createResult(ParentTrailResult par, TrailResultInfo indexes)
-        {
-            this.m_parentResult = par;
-            if (indexes.Count == 2)
-            {
-                //Always overwrite the (possibly) calculated data
-                this.m_duration = indexes.Points[0].Duration;
             }
         }
     }

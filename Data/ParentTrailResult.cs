@@ -44,39 +44,34 @@ namespace TrailsPlugin.Data
 
     public class SplitsParentTrailResult : ParentTrailResult
     {
-        public SplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
-            base(activityTrail, order, indexes, distDiff)
+        public SplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes) :
+            base(activityTrail, order, indexes, 0)
         {
         }
     }
 
     public class TimeSplitsParentTrailResult : SplitsParentTrailResult
     {
-        public TimeSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
-            base(activityTrail, order, indexes, distDiff)
+        public TimeSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes) :
+            base(activityTrail, order, indexes)
         {
         }
     }
 
     public class SwimSplitsParentTrailResult : SplitsParentTrailResult
     {
-        public SwimSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff) :
-            base(activityTrail, order, indexes, distDiff)
+        public SwimSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes) :
+            base(activityTrail, order, indexes)
         {
         }
     }
 
     public class HighScoreParentTrailResult : ParentTrailResult
     {
-        public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff, string toolTip)
-            : base(activityTrail, order, indexes, distDiff)
+        public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, string toolTip)
+            : base(activityTrail, order, indexes, 0)
         {
             this.m_toolTip = toolTip;
-        }
-
-        public HighScoreChildTrailResult getChild(int order, TrailResultInfo indexes, float distDiff, string tt)
-        {
-            return new HighScoreChildTrailResult(this.m_activityTrail, this, order, indexes, distDiff, tt);
         }
     }
 
@@ -132,7 +127,7 @@ namespace TrailsPlugin.Data
                         TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
                         t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Lower, v.Upper - v.Lower));
                         t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Upper, TimeSpan.Zero));
-                        ChildTrailResult tr = new PausedChildTrailResult(m_activityTrail, this, -1, t, t.DistDiff);
+                        ChildTrailResult tr = new PausedChildTrailResult(m_activityTrail, this, -1, t);
                         splits.Add(tr);
                     }
                 }

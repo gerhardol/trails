@@ -124,11 +124,6 @@ namespace TrailsPlugin.Data
         
         protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
         {
-            createTrailResult(activityTrail, order, indexes, distDiff);
-        }
-        
-        private void createTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
-        {
             m_activityTrail = activityTrail;
             m_activity = indexes.Activity;
             m_order = order;

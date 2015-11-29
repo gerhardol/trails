@@ -55,7 +55,7 @@ namespace TrailsPlugin.DataImport
                         foreach (ActivityTrail at in Controller.TrailController.Instance.OrderedTrails())
                         {
                             if (at.Status <= TrailOrderStatus.MatchPartial &&
-                                !at.Trail.Generated && !(at.Trail.Children.Count > 0))
+                                !at.Trail.Generated && (at.Trail.TrailLocations.Count > 0))
                             {
                                 activity.Name = at.Trail.Name;
                                 break;

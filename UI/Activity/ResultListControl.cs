@@ -192,7 +192,7 @@ namespace TrailsPlugin.UI.Activity {
             if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null)
             {
                 splits = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.IsSplits;
-                swim = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.SwimSplits;
+                swim = splits;// Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.SwimSplits;
             }
             TrailResultColumns cols = new TrailResultColumns(Controller.TrailController.Instance.ReferenceActivity, noResults, MultiActivity(), splits, swim);
 

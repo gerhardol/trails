@@ -76,11 +76,16 @@ namespace TrailsPlugin.Data
             {
                 ParentTrailResult ptr = this.Result as ParentTrailResult;
                 IList<ChildTrailResult> children = ptr.getChildren();
-                if (children != null && children.Count > 1)
+                if (children != null && (children.Count > 1 || 
+                    children.Count == 1 && children[0].SubResults.Count > 0))
                 {
                     foreach (ChildTrailResult tr in children)
                     {
                         TrailResultWrapper tn = new TrailResultWrapper(this, tr);
+                        foreach (ChildTrailResult sctr in tr.SubResults)
+                        {
+                            TrailResultWrapper strw = new TrailResultWrapper(tn, sctr);
+                        }
                     }
                 }
             }

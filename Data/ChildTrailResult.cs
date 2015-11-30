@@ -51,8 +51,9 @@ namespace TrailsPlugin.Data
     public class SubChildTrailResult : ChildTrailResult
     {
         public SubChildTrailResult(ChildTrailResult par, int order, TrailResultInfo indexes) :
-            base(par, order, indexes, 0)
+            base(par, order, indexes)
         {
+            par.SubResults.Add(this);
         }
     }
 
@@ -79,10 +80,11 @@ namespace TrailsPlugin.Data
             }
         }
 
-        protected ChildTrailResult(ChildTrailResult cpar, int order, TrailResultInfo indexes, float distDiff) :
-            base(cpar.ActivityTrail, order, indexes, distDiff)
+        protected ChildTrailResult(ChildTrailResult cpar, int order, TrailResultInfo indexes) :
+            base(cpar.ActivityTrail, order, indexes, 0)
         {
-            cpar.SubResults.Add(this);
+            //Let this point to main parent, no ref to (parent) child (can be derived too)
+            this.m_parentResult = cpar.ParentResult;
         }
 
         internal bool PartOfParent = true;
@@ -96,6 +98,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public IList<ChildTrailResult> SubResults = new List<ChildTrailResult>();
+        //Subresults, not recursively handled
+        public IList<SubChildTrailResult> SubResults = new List<SubChildTrailResult>();
     }
 }

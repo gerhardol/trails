@@ -41,9 +41,26 @@ namespace TrailsPlugin.Data
                 for(int i = 0; i < this.Points.Count-1; i++)
                 {
                     //a summary of all but the end point
-                    if (this.Points[i].PoolLengthInfo != null)
+                    TrailResultPoint trp = this.Points[i];
+                    if (trp.SubPoints.Count == 0)
                     {
-                        res.Add(this.Points[i].PoolLengthInfo);
+                        if (trp.PoolLengthInfo != null)
+                        {
+                            res.Add(trp.PoolLengthInfo);
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 0; j < trp.SubPoints.Count - 1; j++)
+                        {
+                            //a summary of all but the end point
+                            TrailResultPoint strp = trp.SubPoints[j];
+                            if (strp.PoolLengthInfo != null)
+                            {
+                                res.Add(strp.PoolLengthInfo);
+                            }
+                        }
+
                     }
                 }
                 if (res.Count>0)

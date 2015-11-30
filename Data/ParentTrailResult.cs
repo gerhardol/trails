@@ -88,6 +88,7 @@ namespace TrailsPlugin.Data
             if (this.m_subResultInfo.Count > 1)
             {
                 int i; //start time index
+                int subChildIndex = 1; //Swim sub index
                 for (i = 0; i < m_subResultInfo.Count - 1; i++)
                 {
                     if (m_subResultInfo.Points[i].Time != DateTime.MinValue &&
@@ -106,18 +107,25 @@ namespace TrailsPlugin.Data
                         {
                             if (m_subResultInfo.Points[j].Time != DateTime.MinValue)
                             {
-                                TrailResultInfo t = m_subResultInfo.CopyToChild(i, j);
-                                int subresultIndex = i + 1;
+                                TrailResultInfo indexes = m_subResultInfo.CopyToChild(i, j);
+                                int childIndex = i + 1;
                                 if (m_subResultInfo.Points[i].Order >= 0)
                                 {
-                                    subresultIndex = m_subResultInfo.Points[i].Order;
+                                    childIndex = m_subResultInfo.Points[i].Order;
                                 }
-                                ChildTrailResult tr = new NormalChildTrailResult(this, subresultIndex, t);
+                                ChildTrailResult ctr = new NormalChildTrailResult(this, childIndex, indexes);
                                 //Note: paused results may be added, no limit for childresults
-                                splits.Add(tr);
-                                foreach(TrailResultPoint trp in t.Points[0].SubPoints)
+                                splits.Add(ctr);
+                                if (m_subResultInfo.Points[i].SubPoints.Count > 1)
                                 {
-                                    ChildTrailResult sub = new SubChildTrailResult(tr, subresultIndex, t);
+                                    TrailResultInfo indexes2 = m_subResultInfo.Copy();
+                                    for (int k = 0; k < m_subResultInfo.Points[i].SubPoints.Count - 1; k++)
+                                    {
+                                        indexes2.Points.Clear();
+                                        indexes2.Points.Add(m_subResultInfo.Points[i].SubPoints[k]);
+                                        indexes2.Points.Add(m_subResultInfo.Points[i].SubPoints[k + 1]);
+                                        ChildTrailResult sub = new SubChildTrailResult(ctr, subChildIndex++, indexes2);
+                                    }
                                 }
                             }
                         }

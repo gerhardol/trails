@@ -192,7 +192,7 @@ namespace TrailsPlugin.UI.Activity {
             if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null)
             {
                 splits = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.IsSplits;
-                swim = splits;// Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.SwimSplits;
+                swim = splits; //Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.SwimSplits;
             }
             TrailResultColumns cols = new TrailResultColumns(Controller.TrailController.Instance.ReferenceActivity, noResults, MultiActivity(), splits, swim);
 
@@ -483,6 +483,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
+                int resultsInList = atr.Count;
                 if (atr.Count > 0)
                 {
                     TrailResultWrapper t;
@@ -506,6 +507,11 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.RowData = atr;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
+                if ((this.summaryList.Expanded == null || this.summaryList.Expanded.Count==0) 
+                    && resultsInList == 1)
+                {
+                    this.summaryList.Expanded = new object[1] { atr[atr.Count-1] };
+                }
                 Controller.TrailController.Instance.SelectedResults = null;
             }
         }
@@ -555,6 +561,11 @@ namespace TrailsPlugin.UI.Activity {
                                 selected2.Add(ctn);
                             }
                         }
+                    }
+                    if (selected2.Count == 1)
+                    {
+                        //Still 1, use summary
+                        selected2 = Controller.TrailController.Instance.CurrentResultTreeList;
                     }
                 }
             }

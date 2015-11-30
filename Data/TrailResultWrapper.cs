@@ -40,10 +40,7 @@ namespace TrailsPlugin.Data
         public TrailResultWrapper(ParentTrailResult element)
             : base(null, element)
         {
-            //if (!(element is HighScoreParentTrailResult))
-            {
-                this.getChildren();
-            }
+            this.getChildren();
         }
 
         public TrailResultWrapper(HighScoreParentTrailResult element)

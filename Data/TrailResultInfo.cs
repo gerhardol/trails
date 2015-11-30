@@ -249,6 +249,10 @@ namespace TrailsPlugin.Data
             this.LapInfo = t.LapInfo;
             this.PoolLengthInfo = t.PoolLengthInfo;
             this.Order = t.Order;
+            foreach (TrailResultPoint t2 in t.SubPoints)
+            {
+                this.SubPoints.Add(t2);
+            }
         }
 
         public void Merge(TrailResultPoint t)
@@ -271,6 +275,11 @@ namespace TrailsPlugin.Data
             else if (t.PoolLengthInfo != null)
             {
                 this.PoolLengthInfo = t.PoolLengthInfo;
+            }
+
+            foreach(TrailResultPoint t2 in t.SubPoints)
+            {
+                this.SubPoints.Add(t2);
             }
         }
 
@@ -316,6 +325,8 @@ namespace TrailsPlugin.Data
         public ILapInfo LapInfo = null;
         public IPoolLengthInfo PoolLengthInfo = null;
         public int Order = -1;
+        //SubPoints - only swimming now
+        public IList<TrailResultPoint> SubPoints = new List<TrailResultPoint>();
 
         public int CompareTo(object obj)
         {

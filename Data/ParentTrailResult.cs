@@ -112,9 +112,13 @@ namespace TrailsPlugin.Data
                                 {
                                     subresultIndex = m_subResultInfo.Points[i].Order;
                                 }
-                                ChildTrailResult tr = new NormalChildTrailResult(m_activityTrail, this, subresultIndex, t, t.DistDiff);
+                                ChildTrailResult tr = new NormalChildTrailResult(this, subresultIndex, t);
                                 //Note: paused results may be added, no limit for childresults
                                 splits.Add(tr);
+                                foreach(TrailResultPoint trp in t.Points[0].SubPoints)
+                                {
+                                    ChildTrailResult sub = new SubChildTrailResult(tr, subresultIndex, t);
+                                }
                             }
                         }
                         i = j - 1;//Next index to try
@@ -127,7 +131,7 @@ namespace TrailsPlugin.Data
                         TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
                         t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Lower, v.Upper - v.Lower));
                         t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Upper, TimeSpan.Zero));
-                        ChildTrailResult tr = new PausedChildTrailResult(m_activityTrail, this, -1, t);
+                        ChildTrailResult tr = new PausedChildTrailResult(this, -1, t);
                         splits.Add(tr);
                     }
                 }

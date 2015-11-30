@@ -344,7 +344,7 @@ namespace TrailsPlugin.Data
                                     }
                                     else
                                     {
-                                        ChildTrailResult ctr = new HighScoreChildTrailResult(this, (parentWrapper.Result as HighScoreParentTrailResult), h.order/* m_resultsListWrapper.Count + 1*/, indexes, h.tooltip);
+                                        ChildTrailResult ctr = new HighScoreChildTrailResult((parentWrapper.Result as HighScoreParentTrailResult), h.order/* m_resultsListWrapper.Count + 1*/, indexes, h.tooltip);
                                         TrailResultWrapper child = new TrailResultWrapper(parentWrapper, ctr);
                                     }
                                 }

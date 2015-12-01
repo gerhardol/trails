@@ -1206,38 +1206,48 @@ namespace TrailsPlugin.UI.Activity {
 
         void addCurrentTime()
         {
-            IList<IActivity> allActivities = new List<IActivity>();
-            IList<IActivity> addActivities = new List<IActivity>();
-            foreach (IActivity activity in Controller.TrailController.Instance.Activities)
+            IList<TrailResult> srw = TrailResultWrapper.Results(this.SelectedResultWrapper);
+            if ((srw.Count == 0 || srw.Count == 1 && srw[0] is SummaryTrailResult) &&
+                Controller.TrailController.Instance.ReferenceTrailResult != null)
             {
-                allActivities.Add(activity);
+                srw = new List<TrailResult> { Controller.TrailController.Instance.ReferenceTrailResult };
             }
-            if (Controller.TrailController.Instance.ReferenceActivity != null)
+            if (srw.Count > 0)
             {
+                IList<IActivity> allActivities = new List<IActivity>();
+                IList<IActivity> addActivities = new List<IActivity>();
+                foreach (IActivity activity in Controller.TrailController.Instance.Activities)
+                {
+                    allActivities.Add(activity);
+                }
                 foreach (IActivity activity in Plugin.GetApplication().Logbook.Activities)
                 {
-                    if (!Controller.TrailController.Instance.Activities.Contains(activity) && 
-                        Controller.TrailController.Instance.ReferenceTrailResult.AnyOverlap(activity))
+                    foreach (TrailResult tr in srw)
                     {
-                        //Insert after the current activities, then the order is normally OK
-                        allActivities.Insert(Controller.TrailController.Instance.Activities.Count, activity);
-                        addActivities.Add(activity);
+                        if (!Controller.TrailController.Instance.Activities.Contains(activity) &&
+                        tr.AnyOverlap(activity))
+                        {
+                            //Insert after the current activities, then the order is normally OK
+                            allActivities.Insert(Controller.TrailController.Instance.Activities.Count, activity);
+                            addActivities.Add(activity);
+                        }
                     }
+
+                    //Set activities, keep trail/selection
+                    Controller.TrailController.Instance.Activities = allActivities;
+                    m_page.RefreshData(false);
+                    m_page.RefreshControlState();
+                    //if (Controller.TrailController.Instance.ReferenceTrailResult != null && addActivities.Count>0)
+                    //{
+                    //    Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities = new List<IActivity>();
+                    //    foreach (IActivity activity in addActivities)
+                    //    {
+                    //        Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities.Add(activity);
+                    //    }
+                    //    Controller.TrailController.Instance.ReferenceTrailResult.Clear(true);
+                    //}
                 }
             }
-            //Set activities, keep trail/selection
-            Controller.TrailController.Instance.Activities = allActivities;
-            m_page.RefreshData(false);
-            m_page.RefreshControlState();
-            //if (Controller.TrailController.Instance.ReferenceTrailResult != null && addActivities.Count>0)
-            //{
-            //    Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities = new List<IActivity>();
-            //    foreach (IActivity activity in addActivities)
-            //    {
-            //        Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities.Add(activity);
-            //    }
-            //    Controller.TrailController.Instance.ReferenceTrailResult.Clear(true);
-            //}
         }
 
         private enum SplitTimesPopup { AdjustDiff, PandolfTerrain}
@@ -1574,6 +1584,26 @@ namespace TrailsPlugin.UI.Activity {
             l.Rest = true;
         }
 
+        /// <summary>
+        /// Get the first selected or the reference result where activity is not null
+        /// </summary>
+        /// <returns></returns>
+        private TrailResult getFirstSelectedOrReferenceResult()
+        {
+            TrailResult res = null;
+            if (this.SelectedResultWrapper.Count > 0 &&
+                this.SelectedResultWrapper[0].Result.Activity != null)
+            {
+                res = this.SelectedResultWrapper[0].Result;
+            }
+            else if (Controller.TrailController.Instance.ReferenceTrailResult != null &&
+                Controller.TrailController.Instance.ReferenceTrailResult.Activity != null)
+            {
+                res = Controller.TrailController.Instance.ReferenceTrailResult;
+            }
+            return res;
+        }
+
         /*************************************************************************/
         void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
@@ -1764,38 +1794,34 @@ namespace TrailsPlugin.UI.Activity {
                 //Unofficial shortcuts
                 if (e.Modifiers == Keys.Control)
                 {
-                    string refSource = null;
-                    bool found = false;
-                    //Select the results with same import data as the single selected or reference
-                    if (this.SelectedResultWrapper.Count > 0 &&
-                        this.SelectedResultWrapper[0].Result.Activity != null)
+                    IList<TrailResultWrapper> atr = new List<TrailResultWrapper>();
+                    IList<TrailResult> srw = TrailResultWrapper.Results(this.SelectedResultWrapper);
+                    if ((srw.Count == 0 || srw.Count == 1 && srw[0] is SummaryTrailResult) && 
+                        Controller.TrailController.Instance.ReferenceTrailResult != null)
                     {
-                        refSource = this.SelectedResultWrapper[0].Result.Activity.Metadata.Source;
-                        found = true;
+                        srw = new List<TrailResult> { Controller.TrailController.Instance.ReferenceTrailResult };
                     }
-                    else if (Controller.TrailController.Instance.ReferenceTrailResult != null &&
-                        Controller.TrailController.Instance.ReferenceTrailResult.Activity != null)
+                    foreach(TrailResult tr in srw)
                     {
-                        refSource = Controller.TrailController.Instance.ReferenceTrailResult.Activity.Metadata.Source;
-                        found = true;
-                    }
-                    if (found)
-                    { 
-                        IList<TrailResultWrapper> atr = new List<TrailResultWrapper>();
-                        bool nullOrEmpty = string.IsNullOrEmpty(refSource);
-                        foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
+                        if (tr.Activity != null)
                         {
-                            if (trw.Result.Activity != null &&
-                                (string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && nullOrEmpty ||
-                                !string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) &&
-                                  refSource == trw.Result.Activity.Metadata.Source))
+                            //Select the results with the same import metasource
+                            string refSource = tr.Activity.Metadata.Source;
+                            bool nullOrEmpty = string.IsNullOrEmpty(refSource);
+                            foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                             {
-                                atr.Add(trw);
+                                if (trw.Result.Activity != null &&
+                                    (string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && nullOrEmpty ||
+                                    !string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) &&
+                                      refSource == trw.Result.Activity.Metadata.Source) &&
+                                      !atr.Contains(trw))
+                                {
+                                    atr.Add(trw);
+                                }
                             }
                         }
-
-                        this.SelectedResultWrapper = atr;
                     }
+                    this.SelectedResultWrapper = atr;
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {

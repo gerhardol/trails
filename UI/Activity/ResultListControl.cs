@@ -1759,6 +1759,49 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshChart();
                 }
             }
+            else if (e.KeyCode == Keys.G)
+            {
+                //Unofficial shortcuts
+                if (e.Modifiers == Keys.Control)
+                {
+                    string refSource = null;
+                    bool found = false;
+                    //Select the results with same import data as the single selected or reference
+                    if (this.SelectedResultWrapper.Count > 0 &&
+                        this.SelectedResultWrapper[0].Result.Activity != null)
+                    {
+                        refSource = this.SelectedResultWrapper[0].Result.Activity.Metadata.Source;
+                        found = true;
+                    }
+                    else if (Controller.TrailController.Instance.ReferenceTrailResult != null &&
+                        Controller.TrailController.Instance.ReferenceTrailResult.Activity != null)
+                    {
+                        refSource = Controller.TrailController.Instance.ReferenceTrailResult.Activity.Metadata.Source;
+                        found = true;
+                    }
+                    if (found)
+                    { 
+                        IList<TrailResultWrapper> atr = new List<TrailResultWrapper>();
+                        bool nullOrEmpty = string.IsNullOrEmpty(refSource);
+                        foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
+                        {
+                            if (trw.Result.Activity != null &&
+                                (string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && nullOrEmpty ||
+                                !string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) &&
+                                  refSource == trw.Result.Activity.Metadata.Source))
+                            {
+                                atr.Add(trw);
+                            }
+                        }
+
+                        this.SelectedResultWrapper = atr;
+                    }
+                }
+                else if (e.Modifiers == Keys.Alt)
+                {
+                    //TBD set reference results/activities
+                }
+            }
             else if (e.KeyCode == Keys.I)
             {
                 InsertCategoryTypes c = InsertCategoryTypes.CurrentCategory;

@@ -285,7 +285,6 @@ namespace TrailsPlugin.Controller
                 to.CalcResults(progressBar);
             }
 
-            SpecialSelectionResults.Clear();
             //Reference may have been changed
             this.checkReferenceTrailResult(progressBar);
         }
@@ -504,7 +503,6 @@ namespace TrailsPlugin.Controller
             set
             {
                 m_referenceTrailResult = value;
-                SpecialSelectionResults.Clear();
                 //Check that the value is OK, as well as set activity and possibly recalc ref trail
                 this.checkReferenceTrailResult(null);
             }

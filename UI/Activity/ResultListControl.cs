@@ -1739,7 +1739,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null &&
                     !Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated)
                 {
-                    if(e.Modifiers == Keys.Shift)
+                    if (e.Modifiers == Keys.Shift)
                     {
                         Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = null;
                         this.m_page.RefreshData(true);
@@ -1829,6 +1829,24 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     this.SelectedResultWrapper = atr;
                 }
+                else if (e.Modifiers == (Keys.Control | Keys.Shift))
+                {
+                    if (Controller.TrailController.Instance.ReferenceActivity != null)
+                    {
+                        IList<IActivity> atr = TrailResultWrapper.Activities(this.SelectedResultWrapper);
+                        string refSource = Controller.TrailController.Instance.ReferenceActivity.Metadata.Source;
+
+                        DialogResult popRes = MessageDialog.Show(string.Format("Set import source to \"{0}\" for {1} activities?", refSource, atr.Count),
+                         "Set Import Source", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                        if (popRes == DialogResult.OK)
+                        {
+                            foreach (IActivity activity in atr)
+                            {
+                                activity.Metadata.Source = refSource;
+                            }
+                        }
+                    }
+                }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     this.SelectedResultWrapper = TrailResultWrapper.SelectedItems(Controller.TrailController.Instance.CurrentResultTreeList,
@@ -1908,8 +1926,14 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.P)
             {
                 //In context menu, not documented, to be removed?
-                //PerformancePredictorPopup();
-                this.HighScorePopup();
+                if (e.Modifiers == Keys.Shift)
+                {
+                    PerformancePredictorPopup();
+                }
+                else
+                {
+                    this.HighScorePopup();
+                }
             }
             else if (e.KeyCode == Keys.Q)
             {

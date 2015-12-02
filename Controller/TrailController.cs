@@ -141,6 +141,7 @@ namespace TrailsPlugin.Controller
             {
                 at.Init();
             }
+            SpecialSelectionResults.Clear();
             //activityGps handled separately
         }
 
@@ -284,6 +285,7 @@ namespace TrailsPlugin.Controller
                 to.CalcResults(progressBar);
             }
 
+            SpecialSelectionResults.Clear();
             //Reference may have been changed
             this.checkReferenceTrailResult(progressBar);
         }
@@ -491,11 +493,18 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        /// <summary>
+        /// Special persistent selection, used in certain situations
+        /// </summary>
+        /// 
+        public IList<TrailResult> SpecialSelectionResults = new List<TrailResult>();
+
         public TrailResult ReferenceTrailResult
         {
             set
             {
                 m_referenceTrailResult = value;
+                SpecialSelectionResults.Clear();
                 //Check that the value is OK, as well as set activity and possibly recalc ref trail
                 this.checkReferenceTrailResult(null);
             }
@@ -590,6 +599,7 @@ namespace TrailsPlugin.Controller
         private TrailResult checkReferenceTrailResult(System.Windows.Forms.ProgressBar progressBar)
         {
             System.Diagnostics.Debug.Assert(m_currentActivityTrails != null);
+
             if (m_currentActivityTrails.Count > 0)
             {
                 //Check that the ref is for current calculation

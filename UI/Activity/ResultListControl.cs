@@ -372,13 +372,29 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //public IList<TrailResult> SelectedResults
-        //{
-        //    get
-        //    {
-        //        return TrailResultWrapper.ParentResults(SelectedResultsWrapper);
-        //    }
-        //}
+        public IList<TrailResult> SpecialSelectionResults
+        {
+            get
+            {
+                IList<TrailResult> srw = Controller.TrailController.Instance.SpecialSelectionResults;
+                if ((srw.Count == 0 || srw.Count == 1 && srw[0] is SummaryTrailResult))
+                {
+                    srw = TrailResultWrapper.Results(this.SelectedResultWrapper);
+                }
+                if ((srw.Count == 0 || srw.Count == 1 && srw[0] is SummaryTrailResult))
+                {
+                    if (Controller.TrailController.Instance.ReferenceTrailResult != null)
+                    {
+                        srw = new List<TrailResult> { Controller.TrailController.Instance.ReferenceTrailResult };
+                    }
+                    else
+                    {
+                        srw = new List<TrailResult>();
+                    }
+                }
+                return srw;
+            }
+        }
 
         public void EnsureVisible(IList<TrailResult> atr)
         {
@@ -1206,12 +1222,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void addCurrentTime()
         {
-            IList<TrailResult> srw = TrailResultWrapper.Results(this.SelectedResultWrapper);
-            if ((srw.Count == 0 || srw.Count == 1 && srw[0] is SummaryTrailResult) &&
-                Controller.TrailController.Instance.ReferenceTrailResult != null)
-            {
-                srw = new List<TrailResult> { Controller.TrailController.Instance.ReferenceTrailResult };
-            }
+            IList<TrailResult> srw = this.SpecialSelectionResults;
             if (srw.Count > 0)
             {
                 IList<IActivity> allActivities = new List<IActivity>();
@@ -1795,13 +1806,8 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Control)
                 {
                     IList<TrailResultWrapper> atr = new List<TrailResultWrapper>();
-                    IList<TrailResult> srw = TrailResultWrapper.Results(this.SelectedResultWrapper);
-                    if ((srw.Count == 0 || srw.Count == 1 && srw[0] is SummaryTrailResult) && 
-                        Controller.TrailController.Instance.ReferenceTrailResult != null)
-                    {
-                        srw = new List<TrailResult> { Controller.TrailController.Instance.ReferenceTrailResult };
-                    }
-                    foreach(TrailResult tr in srw)
+                    IList<TrailResult> srw = this.SpecialSelectionResults;
+                    foreach (TrailResult tr in srw)
                     {
                         if (tr.Activity != null)
                         {
@@ -1825,7 +1831,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    //TBD set reference results/activities
+                    this.SelectedResultWrapper = TrailResultWrapper.SelectedItems(Controller.TrailController.Instance.CurrentResultTreeList,
+                        Controller.TrailController.Instance.SpecialSelectionResults);
+                }
+                else if (e.Modifiers == (Keys.Alt | Keys.Shift))
+                {
+                    //set special/reference results/activities
+                    Controller.TrailController.Instance.SpecialSelectionResults = TrailResultWrapper.Results(this.SelectedResultWrapper);
+
                 }
             }
             else if (e.KeyCode == Keys.I)

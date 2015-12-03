@@ -1243,21 +1243,21 @@ namespace TrailsPlugin.UI.Activity {
                             addActivities.Add(activity);
                         }
                     }
-
-                    //Set activities, keep trail/selection
-                    Controller.TrailController.Instance.Activities = allActivities;
-                    m_page.RefreshData(false);
-                    m_page.RefreshControlState();
-                    //if (Controller.TrailController.Instance.ReferenceTrailResult != null && addActivities.Count>0)
-                    //{
-                    //    Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities = new List<IActivity>();
-                    //    foreach (IActivity activity in addActivities)
-                    //    {
-                    //        Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities.Add(activity);
-                    //    }
-                    //    Controller.TrailController.Instance.ReferenceTrailResult.Clear(true);
-                    //}
                 }
+
+                //Set activities, keep trail/selection
+                Controller.TrailController.Instance.Activities = allActivities;
+                m_page.RefreshData(false);
+                m_page.RefreshControlState();
+                //if (Controller.TrailController.Instance.ReferenceTrailResult != null && addActivities.Count>0)
+                //{
+                //    Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities = new List<IActivity>();
+                //    foreach (IActivity activity in addActivities)
+                //    {
+                //        Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities.Add(activity);
+                //    }
+                //    Controller.TrailController.Instance.ReferenceTrailResult.Clear(true);
+                //}
             }
         }
 
@@ -1480,12 +1480,13 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
         
-        private void MergeSubResults(IList<TrailResultWrapper> atr)
+        private void MergeSubResults(IList<TrailResultWrapper> atr, bool all)
         {
             if (atr != null && atr.Count > 0)
             {
                 //Get all relevant child results
                 IDictionary<TrailResultWrapper, IList<TrailResultWrapper>> subRes = new Dictionary<TrailResultWrapper, IList<TrailResultWrapper>>();
+                IDictionary<ActivityTrail, bool> multipleActivityTrails = new Dictionary<ActivityTrail, bool>();
                 foreach (TrailResultWrapper tr in atr)
                 {
                     if (tr.Result is ChildTrailResult &&
@@ -1498,12 +1499,20 @@ namespace TrailsPlugin.UI.Activity {
                         }
 
                         subRes[parent].Add(tr);
+                        if (multipleActivityTrails.ContainsKey(parent.Result.ActivityTrail))
+                        {
+                            multipleActivityTrails[parent.Result.ActivityTrail] = false;
+                        }
+                        else
+                        {
+                            multipleActivityTrails[parent.Result.ActivityTrail] = true;
+                        }
                     }
                 }
 
-                foreach (TrailResultWrapper tr in subRes.Keys)
+                foreach (TrailResultWrapper trw in subRes.Keys)
                 {
-                    tr.Result.ActivityTrail.MergeSubResults(tr, subRes[tr]);
+                    trw.Result.ActivityTrail.MergeSubResults(trw, subRes[trw], all && multipleActivityTrails[trw.Result.ActivityTrail]);
                 }
             }
         }
@@ -1884,10 +1893,10 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.L)
             {
-                if (e.Modifiers == Keys.Control)
+                if ((e.Modifiers & Keys.Control) != 0)
                 {
                     //Unofficial
-                    this.MergeSubResults(this.SelectedResultWrapper);
+                    this.MergeSubResults(this.SelectedResultWrapper, (e.Modifiers & Keys.Shift) != 0);
                     this.m_page.RefreshData(false);
                     this.m_page.RefreshRoute(false);
                 }

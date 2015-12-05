@@ -384,6 +384,59 @@ namespace TrailsPlugin.Data
                         MessageDialog.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+                else if (this.m_trail.TrailType == Trail.CalcType.Splits)
+                {
+                    IList<IActivity> handledActivities = new List<IActivity>(); 
+                    //Calculate the results for the selected activities
+                    if (Data.Settings.TimeOverlapShareTime)
+                    {
+                        IList<IActivity> refActivities = new List<IActivity>();
+                        foreach (TrailResult tr in Controller.TrailController.Instance.SelectedResults)
+                        {
+                            IActivity refAct = tr.Activity;
+                            if (activities.Contains(refAct) && !refActivities.Contains(refAct))
+                            {
+                                this.Status = TrailOrderStatus.Match;
+                                TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(refAct, false);
+                                SplitsParentTrailResult str = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes);
+                                str.OverlapParent = true;
+                                TrailResultWrapper refWrapper = new TrailResultWrapper(str);
+                                m_resultsListWrapper.Add(refWrapper);
+                                handledActivities.Add(refAct);
+                                refActivities.Add(refAct);
+
+                                if (refAct == Controller.TrailController.Instance.ReferenceActivity)
+                                {
+                                    Controller.TrailController.Instance.ReferenceTrailResult = refWrapper.Result;
+                                }
+                                foreach (IActivity activity in activities)
+                                {
+                                    //Handle all activities, also if they are previously a ref
+                                    if (refAct != activity)
+                                    {
+                                        TrailResultInfo indexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
+                                        SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes);
+                                        TrailResultWrapper result = new TrailResultWrapper(str2);
+                                        m_resultsListWrapper.Add(result);
+                                        handledActivities.Add(activity);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //Remaining results
+                    foreach (IActivity activity in activities)
+                    {
+                        if (!handledActivities.Contains(activity))
+                        {
+                            this.Status = TrailOrderStatus.Match;
+                            TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
+                            SplitsParentTrailResult str = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes);
+                            TrailResultWrapper result = new TrailResultWrapper(str);
+                            m_resultsListWrapper.Add(result);
+                        }
+                    }
+                }
                 else if (this.m_trail.TrailType == Trail.CalcType.SplitsTime)
                 {
                     IActivity refAct = Controller.TrailController.Instance.ReferenceActivity;
@@ -571,7 +624,7 @@ namespace TrailsPlugin.Data
             ((List<int>)orders).Sort();
 
             IList<TrailResultWrapper> mergeResults;
-            if(all)
+            if (all)
             {
                 mergeResults = new List<TrailResultWrapper>();
                 foreach (TrailResultWrapper tr in this.ResultTreeList)
@@ -582,6 +635,40 @@ namespace TrailsPlugin.Data
             else
             {
                 mergeResults = new List<TrailResultWrapper> { parent };
+            }
+
+            IDictionary<TrailResultWrapper, IList<TrailResultWrapper>> overlapResults = new Dictionary<TrailResultWrapper, IList<TrailResultWrapper>>();
+            if (this.Trail.TrailType == Trail.CalcType.Splits && Data.Settings.TimeOverlapShareTime)
+            {
+                foreach (TrailResultWrapper tr2 in this.ResultTreeList)
+                {
+                    if (tr2.Result is SplitsParentTrailResult &&
+                        (tr2.Result as SplitsParentTrailResult).OverlapParent)
+                    {
+                        if (overlapResults.ContainsKey(tr2))
+                        {
+                            overlapResults[tr2] = new List<TrailResultWrapper>();
+                        }
+                    }
+                }
+
+                //All overlapping results are handled separetly
+                foreach (TrailResultWrapper tr in this.ResultTreeList)
+                {
+                    if (tr.Result is SplitsParentTrailResult &&
+                       !(tr.Result as SplitsParentTrailResult).OverlapParent)
+                    {
+                        foreach (TrailResultWrapper tr2 in overlapResults.Keys)
+                        {
+                            if (tr2.Result.AnyOverlap(tr.Result))
+                            {
+                                overlapResults[tr2].Add(tr);
+                                mergeResults.Remove(tr);
+                                this.Remove(new List<TrailResultWrapper> { tr }, false);
+                            }
+                        }
+                    }
+                }
             }
 
             foreach (TrailResultWrapper trw in mergeResults)
@@ -630,7 +717,8 @@ namespace TrailsPlugin.Data
                 else if (trw.Result is SplitsParentTrailResult)
                 {
                     //Note: Adding duplicate when using All. To be removed?
-                    TrailResultWrapper refRes = new TrailResultWrapper(new SplitsParentTrailResult(this, order, indexes));
+                    SplitsParentTrailResult str = new SplitsParentTrailResult(this, order, indexes);
+                    TrailResultWrapper refWrapper = new TrailResultWrapper(str);
                     if (this.Trail.TrailType == Trail.CalcType.SplitsTime &&
                         indexes.Activity == Controller.TrailController.Instance.ReferenceActivity)
                     {
@@ -641,21 +729,37 @@ namespace TrailsPlugin.Data
                         //    ts.Add(trr);
                         //}
                         //this.Remove(ts, false);
-                        this.m_resultsListWrapper.Add(refRes);
+                        this.m_resultsListWrapper.Add(refWrapper);
                         foreach (IActivity activity in Controller.TrailController.Instance.Activities)
                         {
-                            if (activity != refRes.Result.Activity &&
-                                refRes.Result.AnyOverlap(activity))
+                            if (activity != refWrapper.Result.Activity &&
+                                refWrapper.Result.AnyOverlap(activity))
                             {
-                                TrailResultInfo timeIndexes = refRes.Result.SubResultInfo.CopyFromReference(activity);
+                                TrailResultInfo timeIndexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
                                 TrailResultWrapper result = new TrailResultWrapper(new TimeSplitsParentTrailResult(this, order, timeIndexes));
                                 this.m_resultsListWrapper.Add(result);
                             }
                         }
+                    } else if (this.Trail.TrailType == Trail.CalcType.Splits && 
+                        (trw.Result as SplitsParentTrailResult).OverlapParent)
+                    {
+                        str.OverlapParent = true;
+                        IActivity refAct = trw.Result.Activity;
+                        if (refAct == Controller.TrailController.Instance.ReferenceActivity)
+                        {
+                            Controller.TrailController.Instance.ReferenceTrailResult = str;
+                        }
+                        foreach (TrailResultWrapper tr in overlapResults[trw])
+                        {
+                            TrailResultInfo indexes2 = refWrapper.Result.SubResultInfo.CopyFromReference(tr.Result.Activity);
+                            SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes2);
+                            TrailResultWrapper result = new TrailResultWrapper(str2);
+                            m_resultsListWrapper.Add(result);
+                        }
                     }
                     else
                     {
-                        this.m_resultsListWrapper.Add(refRes);
+                        this.m_resultsListWrapper.Add(refWrapper);
                     }
                 }
             }

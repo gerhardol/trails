@@ -145,15 +145,7 @@ namespace TrailsPlugin.Data
                     loc = new TrailGPSLocation(p.Name, p.Required);
                 }
 
-                TrailResultPoint p2;
-                if (p.Duration != null)
-                {
-                    p2 = new TrailResultPoint(loc, p.Time, (TimeSpan)p.Duration);
-                }
-                else
-                {
-                    p2 = new TrailResultPoint(loc, p.Time);
-                }
+                TrailResultPoint p2 = new TrailResultPoint(p, loc);
                 result.Points.Add(p2);
             }
             return result;
@@ -257,7 +249,11 @@ namespace TrailsPlugin.Data
             this.Order = subresultIndex;
         }
         public TrailResultPoint(TrailResultPoint t)
-            : base(t)
+            : this(t,t)
+        {
+        }
+        public TrailResultPoint(TrailResultPoint t, TrailGPSLocation loc)
+            : base(loc)
         {
             this.m_time = t.Time;
             //this.m_name = t.Name;

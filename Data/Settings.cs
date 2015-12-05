@@ -84,6 +84,7 @@ namespace TrailsPlugin.Data
         public static bool ShowTrailPointsOnMap = true;
         public static bool ShowListToolBar = true;
         public static byte RouteLineAlpha = 0xa0;
+        public static bool TimeOverlapShareTime = false; //not in xml
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings

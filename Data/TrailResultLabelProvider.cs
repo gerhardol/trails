@@ -173,6 +173,20 @@ namespace TrailsPlugin.Data
                 }
             }
 
+            if (row is SubChildTrailResult)
+            {
+                switch (column.Id)
+                {
+                    //Ignore wildly inaccurate data, few points for Pool swimming, can be lower than Avg
+                    //(not always good on lap level too)
+                    case TrailResultColumnIds.FastestSpeed:
+                    case TrailResultColumnIds.FastestPace:
+                        return null;
+                    default:
+                        break;
+                }
+            }
+
             switch (column.Id)
             {
                 case TrailResultColumnIds.ResultColor:

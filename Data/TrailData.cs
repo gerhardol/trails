@@ -44,16 +44,6 @@ namespace TrailsPlugin.Data
             trail.TrailPriority = -11;
             allTrails.Add(trail.Id, trail);
 
-            //Splits Trail - use time-of-day for others
-            trail = new Data.Trail(GUIDs.SplitsTimeTrail, true);
-            trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits + " - " +
-                Properties.Resources.Trail_Reference_Name;
-            trail.IsSplits = true;
-            trail.IsCompleteActivity = true;
-            trail.TrailType = Trail.CalcType.SplitsTime;
-            trail.TrailPriority = -99;
-            allTrails.Add(trail.Id, trail);
-
             //Reference Activity Trail
             trail = new Data.Trail(GUIDs.ReferenceTrail, true);
             trail.Name = Properties.Resources.Trail_Reference_Name;

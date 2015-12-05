@@ -31,7 +31,7 @@ namespace TrailsPlugin.Data
         //Also used when sorting trails
         public enum CalcType
         {
-            TrailPoints, Splits, SplitsTime, HighScore, UniqueRoutes, ElevationPoints
+            TrailPoints, Splits, HighScore, UniqueRoutes, ElevationPoints
         }
 
         public Guid Id;

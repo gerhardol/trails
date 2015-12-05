@@ -190,7 +190,6 @@ namespace TrailsPlugin.Data
             else if (t.Status == TrailOrderStatus.MatchNoCalc)
             {
                 if (t.Trail.TrailType == Trail.CalcType.Splits ||
-                    t.Trail.TrailType == Trail.CalcType.SplitsTime ||
                     t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
                     name += " (" + t.ActivityCount + ")";

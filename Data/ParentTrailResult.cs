@@ -50,14 +50,6 @@ namespace TrailsPlugin.Data
         }
     }
 
-    public class TimeSplitsParentTrailResult : SplitsParentTrailResult
-    {
-        public TimeSplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes) :
-            base(activityTrail, order, indexes)
-        {
-        }
-    }
-
     public class HighScoreParentTrailResult : ParentTrailResult
     {
         public HighScoreParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, string toolTip)

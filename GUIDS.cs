@@ -46,7 +46,7 @@ namespace TrailsPlugin {
 
         //Generated Trails
         public static readonly Guid SplitsTrail = new Guid("30681520-b220-11e0-a00b-0800200c9a66");
-        public static readonly Guid SplitsTimeTrail = new Guid("00c0959e-181f-4923-9e83-1fcd9dad34ed");
+        //public static readonly Guid SplitsTimeTrail = new Guid("00c0959e-181f-4923-9e83-1fcd9dad34ed");
         //public static readonly Guid SwimSplitsTrail = new Guid("c35b7cad-cb7a-4040-a498-11ad813aa0ef");
         public static readonly Guid ReferenceTrail = new Guid("30681521-b220-11e0-a00b-0800200c9a66");
         public static readonly Guid HighScoreTrail = new Guid("30681522-b220-11e0-a00b-0800200c9a66");

@@ -993,6 +993,10 @@ namespace TrailsPlugin.UI.Activity {
                                 tr.LapInfo.Rest = !tr.LapInfo.Rest;
                             }
                         }
+                        else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && tr.Activity != null)
+                        {
+                            setMetaImportSource(tr.Activity);
+                        }
                         else if (tr.Activity != null)
                         {
                             Guid view = GUIDs.DailyActivityView;
@@ -1225,10 +1229,52 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        private void setMetaImportSource(IActivity activity)
+        {
+            //Cannot use ST controls for most part here, similar in setAdjustSplitTimesPopup
+            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
+            p.Size = new System.Drawing.Size(410, 105);
+            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+            ZoneFiveSoftware.Common.Visuals.TextBox Panel_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
+            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
+            p.Text = "Set Import Source";
+            p.Controls.Add(pa);
+            pa.Dock = DockStyle.Fill;
+            pa.Controls.Add(Panel_TextBox);
+            pa.Controls.Add(b);
+            pa.Controls.Add(c);
+            p.AcceptButton = b;
+            p.CancelButton = c;
+            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
+            b.DialogResult = DialogResult.OK;
+            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
+            c.DialogResult = DialogResult.Cancel;
+            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
+            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
+            pa.ThemeChanged(this.m_visualTheme);
+            pa.BackColor = this.m_visualTheme.Control;
+            //p.ThemeChanged(this.m_visualTheme);
+            Panel_TextBox.ThemeChanged(this.m_visualTheme);
+            Panel_TextBox.Width = p.Width - 37;
+            Panel_TextBox.Location = new System.Drawing.Point(10, 10);
+
+            Panel_TextBox.Text = activity.Metadata.Source;
+
+            b.Click +=
+                delegate (object sender2, EventArgs args)
+                {
+                    activity.Metadata.Source = Panel_TextBox.Text;
+                };
+
+            //update is done in clicking OK/Enter
+            p.ShowDialog();
+        }
+
         private enum SplitTimesPopup { AdjustDiff, PandolfTerrain}
         private void setAdjustSplitTimesPopup(SplitTimesPopup splitTimesPopup)
         {
-            //Cannot use ST controls for most part here
+            //Cannot use ST controls for most part here, similar in setMetaImportSource
             System.Windows.Forms.Form p = new System.Windows.Forms.Form();
             p.Size = new System.Drawing.Size(410, 105);
             ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
@@ -1257,6 +1303,7 @@ namespace TrailsPlugin.UI.Activity {
             b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
             c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
             pa.ThemeChanged(this.m_visualTheme);
+            pa.BackColor = this.m_visualTheme.Control;
             //p.ThemeChanged(this.m_visualTheme);
             SplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
             SplitTimes_TextBox.Width = p.Width - 37;
@@ -1529,6 +1576,7 @@ namespace TrailsPlugin.UI.Activity {
                             b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
                             c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
                             pa.ThemeChanged(this.m_visualTheme);
+                            pa.BackColor = this.m_visualTheme.Control;
                             //p.ThemeChanged(this.m_visualTheme);
                             AdjustDiffSplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
                             AdjustDiffSplitTimes_TextBox.Width = p.Width - 37;

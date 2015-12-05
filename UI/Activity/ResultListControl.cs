@@ -188,13 +188,11 @@ namespace TrailsPlugin.UI.Activity {
                 noResults = Controller.TrailController.Instance.CurrentResultTreeList.Count;
             }
             bool splits = false;
-            bool swim = false;
             if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null)
             {
                 splits = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.IsSplits;
-                swim = splits; //Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.SwimSplits;
             }
-            TrailResultColumns cols = new TrailResultColumns(Controller.TrailController.Instance.ReferenceActivity, noResults, MultiActivity(), splits, swim);
+            TrailResultColumns cols = new TrailResultColumns(Controller.TrailController.Instance.ReferenceActivity, noResults, MultiActivity(), splits);
 
             foreach (string id in Data.Settings.ActivityPageColumns)
             {

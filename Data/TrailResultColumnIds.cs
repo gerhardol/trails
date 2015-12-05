@@ -281,17 +281,17 @@ namespace TrailsPlugin.Data {
             return m_columnDefs;
         }
 
-        public TrailResultColumns(IActivity activity, int noRes, bool multAct, bool laps, bool swim)
-        : this(activity, noRes, multAct, false, laps, swim)
+        public TrailResultColumns(IActivity activity, int noRes, bool multAct, bool laps)
+        : this(activity, noRes, multAct, false, laps)
         {
         }
 
         public TrailResultColumns(IActivity activity, int noRes, bool multAct)
-        : this(activity, noRes, multAct, true, true, true)
+        : this(activity, noRes, multAct, true, true)
         {
         }
 
-        private TrailResultColumns(IActivity activity, int noRes, bool multAct, bool all, bool laps, bool swim)
+        private TrailResultColumns(IActivity activity, int noRes, bool multAct, bool all, bool laps)
         {
             string TrailsGroup = "";// Properties.Resources.ApplicationName;
             string ActivityGroup = CommonResources.Text.LabelActivity;
@@ -309,33 +309,21 @@ namespace TrailsPlugin.Data {
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgHR, CommonResources.Text.LabelAvgHR, TrailsGroup, 50, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.MaxHR, CommonResources.Text.LabelMaxHR, TrailsGroup, 50, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPower, CommonResources.Text.LabelAvgPower + " (" + CommonResources.Text.LabelWatts + ")", TrailsGroup, 70, StringAlignment.Far));
-            if (all || !swim)
-            {
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Ascent, CommonResources.Text.LabelAscending + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 60, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Descent, CommonResources.Text.LabelDescending + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 60, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscAvgGrade, CommonResources.Text.LabelAscending + " " + CommonResources.Text.LabelAvgGrade, TrailsGroup, 70, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscMaxAvgGrade, CommonResources.Text.LabelMaxAvgGrade, TrailsGroup, 70, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.DescAvgGrade, CommonResources.Text.LabelDescending + " " + CommonResources.Text.LabelAvgGrade, TrailsGroup, 70, StringAlignment.Far));
-                m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscendingSpeed_VAM, Properties.Resources.UI_Activity_List_AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", TrailsGroup, 70, StringAlignment.Far));
-            }
-            else
-            {
-                m_ignoredColumnDict.Add(TrailResultColumnIds.Ascent);
-                m_ignoredColumnDict.Add(TrailResultColumnIds.Descent);
-                m_ignoredColumnDict.Add(TrailResultColumnIds.ElevChg);
-                m_ignoredColumnDict.Add(TrailResultColumnIds.AscAvgGrade);
-                m_ignoredColumnDict.Add(TrailResultColumnIds.AscMaxAvgGrade);
-                m_ignoredColumnDict.Add(TrailResultColumnIds.DescAvgGrade);
-                m_ignoredColumnDict.Add(TrailResultColumnIds.AscendingSpeed_VAM);
-            }
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Ascent, CommonResources.Text.LabelAscending + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 60, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Descent, CommonResources.Text.LabelDescending + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 60, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.ElevChg, CommonResources.Text.LabelElevationChange + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscAvgGrade, CommonResources.Text.LabelAscending + " " + CommonResources.Text.LabelAvgGrade, TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscMaxAvgGrade, CommonResources.Text.LabelMaxAvgGrade, TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.DescAvgGrade, CommonResources.Text.LabelDescending + " " + CommonResources.Text.LabelAvgGrade, TrailsGroup, 70, StringAlignment.Far));
+            m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AscendingSpeed_VAM, Properties.Resources.UI_Activity_List_AscendingSpeed_VAM + " (" + UnitUtil.Elevation.LabelAbbrAct(activity) + "/h)", TrailsGroup, 70, StringAlignment.Far));
+
             int speedIndex = m_columnDefs.Count;
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgSpeed, CommonResources.Text.LabelAvgSpeed + " (" + UnitUtil.Speed.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestSpeed, CommonResources.Text.LabelFastestSpeed + " (" + UnitUtil.Speed.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
             int paceIndex = m_columnDefs.Count;
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AvgPace, CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.FastestPace, CommonResources.Text.LabelFastestPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
-            
+
             //SpeedPace columns are handled as Speed, except that the headline differs
             //(the headline is likely to narrow, but Speed should be visible)
             IListColumnDefinition col = m_columnDefs[speedIndex];
@@ -363,7 +351,7 @@ namespace TrailsPlugin.Data {
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.Category, CommonResources.Text.LabelCategory, ActivityGroup, 70, StringAlignment.Near));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.MetaData_Source, Properties.Resources.Metadata_Source, ActivityGroup, 70, StringAlignment.Near));
 
-            if (all || !swim && TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
+            if (all || TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {
                 string PerformancePredictorGroup = Properties.Resources.PerformancePredictorPluginName;
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.PredictDistance, CommonResources.Text.LabelTime + " (" + UnitUtil.Distance.ToString(Settings.PredictDistance, "u") + ")", PerformancePredictorGroup, 70, StringAlignment.Far));
@@ -374,7 +362,7 @@ namespace TrailsPlugin.Data {
                 m_ignoredColumnDict.Add(TrailResultColumnIds.PredictDistance);
                 m_ignoredColumnDict.Add(TrailResultColumnIds.IdealTime);
             }
-            if (all || !swim && Settings.RunningGradeAdjustMethod != Data.RunningGradeAdjustMethodEnum.None)
+            if (all || Settings.RunningGradeAdjustMethod != Data.RunningGradeAdjustMethodEnum.None)
             {
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedTime, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelTime, TrailsGroup, 60, StringAlignment.Far));
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.GradeRunAdjustedPace, CommonResources.Text.LabelGrade + " " + CommonResources.Text.LabelAvgPace + " (" + UnitUtil.Pace.LabelAbbrAct(activity) + ")", TrailsGroup, 70, StringAlignment.Far));
@@ -388,7 +376,7 @@ namespace TrailsPlugin.Data {
 
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AveragePowerBalance, CommonResources.Text.LabelPowerBalance, TrailsGroup, 70, StringAlignment.Far));
             m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageTemperature, CommonResources.Text.LabelTemperature + UnitUtil.Temperature.LabelAbbr2, TrailsGroup, 70, StringAlignment.Far));
-            if (all || !swim)
+            if (all)
             {
                 //Hardcoded to cm, as in track?
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.AverageGroundContactTime, CommonResources.Text.LabelGroundContactTime + " (ms)", TrailsGroup, 70, StringAlignment.Far));
@@ -406,7 +394,7 @@ namespace TrailsPlugin.Data {
             }
             //Reset every refresh
             m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
-           
+
             foreach (ICustomDataFieldDefinition custDataDef in TrailsPlugin.Plugin.GetApplication().Logbook.CustomDataFieldDefinitions)
             {
                 if (custDataDef.ObjectType.Type.Equals(typeof(IActivity)))
@@ -441,7 +429,7 @@ namespace TrailsPlugin.Data {
                 m_ignoredColumnDict.Add(TrailResultColumnIds.LapInfo_Rest);
                 m_ignoredColumnDict.Add(TrailResultColumnIds.LapInfo_TotalCalories);
             }
-            if (all || swim)
+            if (all || laps)
             {
                 string SwimLapGroup = Properties.Resources.UI_Activity_List_SwimLap;
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.SwimLapInfo_AverageStrokeDistance, Properties.Resources.UI_Activity_List_AverageStrokeDistance, SwimLapGroup, 60, StringAlignment.Far));
@@ -503,7 +491,7 @@ namespace TrailsPlugin.Data {
             int result = 0;
 
             {
-                //The pause is compared to the normal result, keep close in list
+                //The pause is compared to the normal result, always display after
                 TrailResult x0 = x;
                 TrailResult y0 = y;
                 if (x is PausedChildTrailResult)

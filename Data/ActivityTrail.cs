@@ -93,11 +93,6 @@ namespace TrailsPlugin.Data
                 //By default, always match
                 this.m_status = TrailOrderStatus.MatchNoCalc;
             }
-            else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
-            {
-                //A possible match
-                this.m_status = TrailOrderStatus.InBoundNoCalc;
-            }
             else if (this.m_trail.TrailType == Trail.CalcType.ElevationPoints)
             {
                 //By default, never match
@@ -436,17 +431,6 @@ namespace TrailsPlugin.Data
                             TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes));
                             m_resultsListWrapper.Add(result);
                         }
-                        else if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
-                        {
-                            int subresultIndex = 1;
-                            foreach (TrailResultInfo indexes in Data.Trail.TrailResultSwimInfoFromSplits(activity, false, subresultIndex))
-                            {
-                                this.Status = TrailOrderStatus.Match;
-                                TrailResultWrapper result = new TrailResultWrapper(new SwimSplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes));
-                                m_resultsListWrapper.Add(result);
-                                subresultIndex += indexes.Points.Count;
-                            }
-                        }
                         else
                         {
                             TrailOrderStatus activityStatus = TrailOrderStatus.NoInfo;
@@ -505,14 +489,7 @@ namespace TrailsPlugin.Data
                 if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
                 {
                     //Downgrade status from "speculative match"
-                    if (this.m_trail.TrailType == Trail.CalcType.SwimSplits)
-                    {
-                        this.m_status = TrailOrderStatus.NotInBound;
-                    }
-                    else
-                    {
-                        this.m_status = TrailOrderStatus.InBound;
-                    }
+                    this.m_status = TrailOrderStatus.InBound;
                 }
             }
 
@@ -642,11 +619,6 @@ namespace TrailsPlugin.Data
                 if (trw.Result is PositionParentTrailResult)
                 {
                     TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, order, indexes, indexes.DistDiff, indexes.Reverse));
-                    this.m_resultsListWrapper.Add(result);
-                }
-                else if (trw.Result is SwimSplitsParentTrailResult)
-                {
-                    TrailResultWrapper result = new TrailResultWrapper(new SwimSplitsParentTrailResult(this, order, indexes));
                     this.m_resultsListWrapper.Add(result);
                 }
                 else if (trw.Result is TimeSplitsParentTrailResult)

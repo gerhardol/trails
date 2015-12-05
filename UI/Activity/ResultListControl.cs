@@ -2076,6 +2076,11 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResult.OverlappingResultUseReferencePauses = true;
                     this.addCurrentTime();
                 }
+                else if (e.Modifiers == (Keys.Alt | Keys.Shift))
+                {
+                    //Temporary - add setting?
+                    TrailsPlugin.Data.Settings.TimeOverlapShareTime = !TrailsPlugin.Data.Settings.TimeOverlapShareTime;
+                }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
                 {
                     TrailResult.OverlappingResultUseTimeOfDayDiff = !TrailResult.OverlappingResultUseTimeOfDayDiff;

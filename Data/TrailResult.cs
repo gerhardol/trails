@@ -332,7 +332,7 @@ namespace TrailsPlugin.Data
                     {
                         m_duration = this.PoolLengthInfo.TotalTime;
                     }
-                    else if (this.LapInfo != null && this.LapInfo.TotalTime > TimeSpan.Zero)
+                    else if (Data.Settings.UseDeviceDistance && this.LapInfo != null && this.LapInfo.TotalTime > TimeSpan.Zero)
                     {
                         m_duration = this.LapInfo.TotalTime;
                     }
@@ -359,7 +359,7 @@ namespace TrailsPlugin.Data
                 {
                     return this.PoolLengthInfo.TotalDistanceMeters;
                 }
-                else if (this.LapInfo != null && !float.IsNaN(this.LapInfo.TotalDistanceMeters))
+                else if (Data.Settings.UseDeviceDistance && this.LapInfo != null && !float.IsNaN(this.LapInfo.TotalDistanceMeters))
                 {
                     return this.LapInfo.TotalDistanceMeters;
                 }
@@ -410,7 +410,7 @@ namespace TrailsPlugin.Data
                     {
                         m_startTime = this.PoolLengthInfo.StartTime;
                     }
-                    else if (this.LapInfo != null && this.LapInfo.StartTime > DateTime.MinValue)
+                    else if (Data.Settings.UseDeviceDistance && this.LapInfo != null && this.LapInfo.StartTime > DateTime.MinValue)
                     {
                         m_startTime = this.LapInfo.StartTime;
                     }

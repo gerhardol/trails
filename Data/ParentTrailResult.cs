@@ -74,6 +74,8 @@ namespace TrailsPlugin.Data
         {
         }
 
+        public bool OverlapParent = true;
+
         public IList<ChildTrailResult> getChildren()
         {
             IList<ChildTrailResult> splits = new List<ChildTrailResult>();
@@ -107,16 +109,20 @@ namespace TrailsPlugin.Data
                                 }
                                 ChildTrailResult ctr = new NormalChildTrailResult(this, childIndex, indexes);
                                 //Note: paused results may be added, no limit for childresults
-                                splits.Add(ctr);
-                                if (m_subResultInfo.Points[i].SubPoints.Count > 1)
+                                TimeSpan duration = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(ctr.StartTime, ctr.EndTime, this.Pauses);
+                                if (duration > TimeSpan.FromSeconds(1))
                                 {
-                                    TrailResultInfo indexes2 = m_subResultInfo.Copy();
-                                    for (int k = 0; k < m_subResultInfo.Points[i].SubPoints.Count - 1; k++)
+                                    splits.Add(ctr);
+                                    if (m_subResultInfo.Points[i].SubPoints.Count > 1)
                                     {
-                                        indexes2.Points.Clear();
-                                        indexes2.Points.Add(m_subResultInfo.Points[i].SubPoints[k]);
-                                        indexes2.Points.Add(m_subResultInfo.Points[i].SubPoints[k + 1]);
-                                        ChildTrailResult sub = new SubChildTrailResult(ctr, subChildIndex++, indexes2);
+                                        TrailResultInfo indexes2 = m_subResultInfo.Copy();
+                                        for (int k = 0; k < m_subResultInfo.Points[i].SubPoints.Count - 1; k++)
+                                        {
+                                            indexes2.Points.Clear();
+                                            indexes2.Points.Add(m_subResultInfo.Points[i].SubPoints[k]);
+                                            indexes2.Points.Add(m_subResultInfo.Points[i].SubPoints[k + 1]);
+                                            ChildTrailResult sub = new SubChildTrailResult(ctr, subChildIndex++, indexes2);
+                                        }
                                     }
                                 }
                             }
@@ -130,12 +136,30 @@ namespace TrailsPlugin.Data
                     foreach (IValueRange<DateTime> v in this.Pauses)
                     {
                         TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
-                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Lower, v.Upper - v.Lower));
-                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Upper, TimeSpan.Zero));
+                        DateTime lower = v.Lower;
+                        if(lower == DateTime.MinValue)
+                        {
+                            lower = m_subResultInfo.Points[0].Time;
+                        }
+                        DateTime upper = v.Upper;
+                        if (upper == DateTime.MaxValue)
+                        {
+                            upper = m_subResultInfo.Points[m_subResultInfo.Points.Count-1].Time;
+                        }
+                        TimeSpan duration = upper - lower;
+                        if(duration < TimeSpan.FromSeconds(2) && 
+                            (this.StartTime - lower < TimeSpan.FromSeconds(1) ||
+                            upper - this.EndTime < TimeSpan.FromSeconds(1)))
+                        {
+                            continue;
+                        }
+                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), lower, duration));
+                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), upper, TimeSpan.Zero));
                         PausedChildTrailResult tr = new PausedChildTrailResult(this, -1, t);
                         for(int j = 0; j <= maxChildIndex; j++)
                         {
-                            if (j == maxChildIndex || splits[j].StartTime <= v.Lower && splits[j+1].StartTime > v.Lower)
+                            if (j == maxChildIndex || lower < splits[j].StartTime || 
+                                splits[j].StartTime <= lower && lower < splits[j+1].StartTime)
                             {
                                 tr.RelatedChildResult = splits[j];
                                 break;
@@ -153,7 +177,10 @@ namespace TrailsPlugin.Data
                         ok = false;
                         break;
                     }
-                    sp = sp.Add((TimeSpan)ctr.Duration);
+                    if (!(ctr is PausedChildTrailResult))
+                    {
+                        sp = sp.Add(ctr.Duration);
+                    }
                 }
                 if (ok)
                 {

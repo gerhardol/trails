@@ -74,7 +74,7 @@ namespace TrailsPlugin.Data
             base(par.ActivityTrail, order, indexes, distDiff)
         {
             this.m_parentResult = par;
-            if (indexes.Count == 2)
+            if (this is PausedChildTrailResult/* indexes.Count == 2*/)
             {
                 //Always overwrite the (possibly) calculated data
                 this.m_duration = indexes.Points[0].Duration;

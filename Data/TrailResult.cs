@@ -731,8 +731,9 @@ namespace TrailsPlugin.Data
                     if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                     {
                         this.m_includeStopped = (this as ChildTrailResult).ParentResult.IncludeStopped;
-                        return (bool)this.m_includeStopped;
                     }
+                    else
+                    {
 #if ST_2_1
             // If UseEnteredData is set, exclude Stopped
             if (info.Activity.UseEnteredData == false && info.Time.Equals(info.ActualTrackTime))
@@ -740,11 +741,12 @@ namespace TrailsPlugin.Data
                 m_includeStopped = true;
             }
 #else
-                    this.m_includeStopped = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
+                        this.m_includeStopped = TrailsPlugin.Plugin.GetApplication().SystemPreferences.AnalysisSettings.IncludeStopped;
 #endif
-                    if ((bool)this.m_includeStopped)
-                    {
-                        this.m_includeStopped = isIncludeStoppedCategory(this.Category);
+                        if ((bool)this.m_includeStopped)
+                        {
+                            this.m_includeStopped = isIncludeStoppedCategory(this.Category);
+                        }
                     }
                 }
                 return (bool)this.m_includeStopped;
@@ -2230,16 +2232,18 @@ namespace TrailsPlugin.Data
         public INumericTimeDataSeries SpeedTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
-            {
-                m_speedTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0,
-                    UnitUtil.ConvertNone, this.m_cacheTrackRef);
-                return m_speedTrack0;
-            }
             if (m_speedTrack0 == null)
             {
-                m_speedTrack0 = copySmoothTrack(this.SpeedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                 new UnitUtil.Convert(UnitUtil.Speed.ConvertFrom), this.m_cacheTrackRef);
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
+                {
+                    m_speedTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0,
+                        UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    m_speedTrack0 = copySmoothTrack(this.SpeedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
+                                     new UnitUtil.Convert(UnitUtil.Speed.ConvertFrom), this.m_cacheTrackRef);
+                }
             }
             return m_speedTrack0;
         }
@@ -2251,84 +2255,86 @@ namespace TrailsPlugin.Data
         public INumericTimeDataSeries PaceTrack0(TrailResult refRes)
         {
             checkCacheRef(refRes);
-            if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
-            {
-                m_paceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.PaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
-                return m_paceTrack0;
-            }
             if (m_paceTrack0 == null)
             {
-                INumericTimeDataSeries speedTrack = null;
-                if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None)
+                if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
-                   //grade adjusted track
-                    speedTrack = new TrackUtil.NumericTimeDataSeries();
-                    if (!TrailResult.PaceTrackIsGradeAdjustedPaceAvg)
+                    m_paceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.PaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                }
+                else
+                {
+                    INumericTimeDataSeries speedTrack = null;
+                    if (Settings.RunningGradeAdjustMethod != RunningGradeAdjustMethodEnum.None)
                     {
-                        TrackUtil.setCapacity(speedTrack, this.m_grades.Count);
-                        //Show pace adjusted to flat ground
-                        this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
-                        if (this.m_grades.Count > 1)
+                        //grade adjusted track
+                        speedTrack = new TrackUtil.NumericTimeDataSeries();
+                        if (!TrailResult.PaceTrackIsGradeAdjustedPaceAvg)
                         {
-                            foreach (ginfo t in this.m_grades)
+                            TrackUtil.setCapacity(speedTrack, this.m_grades.Count);
+                            //Show pace adjusted to flat ground
+                            this.calcGradeRunAdjustedTime(this.m_cacheTrackRef);
+                            if (this.m_grades.Count > 1)
                             {
-                                if (!float.IsNaN(t.adjSpeed))
+                                foreach (ginfo t in this.m_grades)
                                 {
-                                    speedTrack.Add(t.dateTime, t.adjSpeed);
+                                    if (!float.IsNaN(t.adjSpeed))
+                                    {
+                                        speedTrack.Add(t.dateTime, t.adjSpeed);
+                                    }
                                 }
                             }
+                        }
+                        else
+                        {
+                            //Show pace as it should have been with "even pace" (the adjusted pace will not give same "total time")
+                            //Undocumented
+                            if (this.HasAdjustedTimeTrack(this.m_cacheTrackRef))
+                            {
+                                IDistanceDataTrack timeTrack = this.AverageAdjustedTimeTrack(this.m_cacheTrackRef);
+                                TrackUtil.setCapacity(speedTrack, timeTrack.Count - 1);
+
+                                //No data in first point - could use dummy
+                                for (int i = 1; i < timeTrack.Count; i++)
+                                {
+                                    ginfo t = this.m_grades[i];
+                                    speedTrack.Add(t.dateTime, t.dist / (timeTrack[i].Value - timeTrack[i - 1].Value));
+                                }
+                            }
+                        }
+                        if (speedTrack != null && speedTrack.Count > 2)
+                        {
+                            //Distance calculation is not always "stable" at start/end, partly due to rounding of seconds.
+                            //Just one point with lets say 10m instead of 5m will offset the smoothing
+                            //To minimize this, remove the points
+                            const int minCheck = 10;
+                            if (speedTrack[speedTrack.Count - 1].ElapsedSeconds - speedTrack[speedTrack.Count - 2].ElapsedSeconds < minCheck)
+                            {
+                                speedTrack.RemoveAt(speedTrack.Count - 1);
+                            }
+                            if (speedTrack[1].ElapsedSeconds - speedTrack[0].ElapsedSeconds < minCheck)
+                            {
+                                speedTrack.RemoveAt(0);
+                            }
+                        }
+                    }
+                    if (speedTrack == null || speedTrack.Count == 0)
+                    {
+                        speedTrack = this.SpeedTrack;
+                    }
+                    if (speedTrack != null && speedTrack.Count > 1)
+                    {
+                        //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
+                        this.m_paceTrack0 = copySmoothTrack(speedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
+                                        new UnitUtil.Convert(UnitUtil.ConvertNone), this.m_cacheTrackRef);
+                        for (int i = 0; i < this.m_paceTrack0.Count; i++)
+                        {
+                            this.m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
                         }
                     }
                     else
                     {
-                        //Show pace as it should have been with "even pace" (the adjusted pace will not give same "total time")
-                        //Undocumented
-                        if (this.HasAdjustedTimeTrack(this.m_cacheTrackRef))
-                        {
-                            IDistanceDataTrack timeTrack = this.AverageAdjustedTimeTrack(this.m_cacheTrackRef);
-                            TrackUtil.setCapacity(speedTrack, timeTrack.Count - 1);
-
-                            //No data in first point - could use dummy
-                            for (int i = 1; i < timeTrack.Count; i++)
-                            {
-                                ginfo t = this.m_grades[i];
-                                speedTrack.Add(t.dateTime, t.dist / (timeTrack[i].Value - timeTrack[i - 1].Value));
-                            }
-                        }
+                        this.m_paceTrack0 = new TrackUtil.NumericTimeDataSeries();
                     }
-                    if (speedTrack != null && speedTrack.Count > 2)
-                    {
-                        //Distance calculation is not always "stable" at start/end, partly due to rounding of seconds.
-                        //Just one point with lets say 10m instead of 5m will offset the smoothing
-                        //To minimize this, remove the points
-                        const int minCheck = 10;
-                        if (speedTrack[speedTrack.Count - 1].ElapsedSeconds - speedTrack[speedTrack.Count - 2].ElapsedSeconds < minCheck)
-                        {
-                            speedTrack.RemoveAt(speedTrack.Count - 1);
-                        }
-                        if (speedTrack[1].ElapsedSeconds - speedTrack[0].ElapsedSeconds < minCheck)
-                        {
-                            speedTrack.RemoveAt(0);
-                        }
-                    }
-                }
-                if (speedTrack == null || speedTrack.Count == 0)
-                {
-                    speedTrack = this.SpeedTrack;
-                }
-                if (speedTrack != null && speedTrack.Count > 1)
-                {
-                    //Smooth speed track, as smoothing pace gives incorrect data (when fast is close to slow)
-                    this.m_paceTrack0 = copySmoothTrack(speedTrack, true, TrailActivityInfoOptions.SpeedSmoothingSeconds,
-                                    new UnitUtil.Convert(UnitUtil.ConvertNone), this.m_cacheTrackRef);
-                    for (int i = 0; i < this.m_paceTrack0.Count; i++)
-                    {
-                        this.m_paceTrack0.SetValueAt(i, (float)UnitUtil.Pace.ConvertFrom(m_paceTrack0[i].Value, this.m_cacheTrackRef.Activity));
-                    }
-                }
-                else
-                {
-                    this.m_paceTrack0 = new TrackUtil.NumericTimeDataSeries();
                 }
             }
             return this.m_paceTrack0;
@@ -2374,71 +2380,73 @@ namespace TrailsPlugin.Data
                 if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
                     m_deviceSpeedPaceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
-                    return m_deviceSpeedPaceTrack0;
                 }
-                bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
-                //About the same as copySmoothTrack()
-                m_deviceSpeedPaceTrack0 = new TrackUtil.NumericTimeDataSeries();
-                if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
+                else
                 {
-                    IDistanceDataTrack source;
-                    if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
+                    bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
+                    //About the same as copySmoothTrack()
+                    m_deviceSpeedPaceTrack0 = new TrackUtil.NumericTimeDataSeries();
+                    if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                     {
-                        source = this.Activity.DistanceMetersTrack;
-                    }
-                    else
-                    {
-                        //The device distance is the "normal" show calculated instead
-                        source = Info.MovingDistanceMetersTrack;
-                    }
-                    TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(source));
-                    ITimeValueEntry<float> prev = null;
-                    //Similar to CopySmoothTrack, but this is a IDistanceDataTrack
-
-                    foreach (ITimeValueEntry<float> t in source)
-                    {
-                        if (t != null)
+                        IDistanceDataTrack source;
+                        if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
                         {
-                            DateTime dateTime = source.EntryDateTime(t);
-                            if (prev != null &&
-                                this.StartTime <= dateTime && dateTime <= this.EndTime &&
-                                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
+                            source = this.Activity.DistanceMetersTrack;
+                        }
+                        else
+                        {
+                            //The device distance is the "normal" show calculated instead
+                            source = Info.MovingDistanceMetersTrack;
+                        }
+                        TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(source));
+                        ITimeValueEntry<float> prev = null;
+                        //Similar to CopySmoothTrack, but this is a IDistanceDataTrack
+
+                        foreach (ITimeValueEntry<float> t in source)
+                        {
+                            if (t != null)
                             {
-                                //Ignore 0 time and infinity pace
-                                if (t.ElapsedSeconds - prev.ElapsedSeconds > 0 && 
-                                    (!isPace || (t.Value - prev.Value > 0)))
+                                DateTime dateTime = source.EntryDateTime(t);
+                                if (prev != null &&
+                                    this.StartTime <= dateTime && dateTime <= this.EndTime &&
+                                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                                 {
-                                    float val = (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds);
-                                    if (val > 0)
+                                    //Ignore 0 time and infinity pace
+                                    if (t.ElapsedSeconds - prev.ElapsedSeconds > 0 &&
+                                        (!isPace || (t.Value - prev.Value > 0)))
                                     {
-                                        if (m_deviceSpeedPaceTrack0.Count == 0)
+                                        float val = (t.Value - prev.Value) / (t.ElapsedSeconds - prev.ElapsedSeconds);
+                                        if (val > 0)
                                         {
-                                            m_deviceSpeedPaceTrack0.Add(this.StartTime, val);
+                                            if (m_deviceSpeedPaceTrack0.Count == 0)
+                                            {
+                                                m_deviceSpeedPaceTrack0.Add(this.StartTime, val);
+                                            }
+                                            m_deviceSpeedPaceTrack0.Add(dateTime, val);
+                                            //TBD: Use next point for current speed?
                                         }
-                                        m_deviceSpeedPaceTrack0.Add(dateTime, val);
-                                        //TBD: Use next point for current speed?
                                     }
                                 }
-                            }
-                            if (prev == null || t.ElapsedSeconds - prev.ElapsedSeconds > 0)
-                            {
-                                //Update previous only if more than one sec has passed
-                                prev = t;
-                            }
-                            if (dateTime >= this.EndTime)
-                            {
-                                break;
+                                if (prev == null || t.ElapsedSeconds - prev.ElapsedSeconds > 0)
+                                {
+                                    //Update previous only if more than one sec has passed
+                                    prev = t;
+                                }
+                                if (dateTime >= this.EndTime)
+                                {
+                                    break;
+                                }
                             }
                         }
+                        InsertValues<float> iv = new InsertValues<float>(this);
+                        iv.insertValues(m_deviceSpeedPaceTrack0, m_deviceSpeedPaceTrack0);
                     }
-                    InsertValues<float> iv = new InsertValues<float>(this);
-                    iv.insertValues(m_deviceSpeedPaceTrack0, m_deviceSpeedPaceTrack0);
-                }
-                m_deviceSpeedPaceTrack0 = SmoothTrack(m_deviceSpeedPaceTrack0, TrailActivityInfoOptions.SpeedSmoothingSeconds);
-                //Convert after smoothing (limits errors for pace)
-                for (int i = 0; i < m_deviceSpeedPaceTrack0.Count; i++)
-                {
-                    m_deviceSpeedPaceTrack0.SetValueAt(i, (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace, m_deviceSpeedPaceTrack0[i].Value, this.m_cacheTrackRef.Activity));
+                    m_deviceSpeedPaceTrack0 = SmoothTrack(m_deviceSpeedPaceTrack0, TrailActivityInfoOptions.SpeedSmoothingSeconds);
+                    //Convert after smoothing (limits errors for pace)
+                    for (int i = 0; i < m_deviceSpeedPaceTrack0.Count; i++)
+                    {
+                        m_deviceSpeedPaceTrack0.SetValueAt(i, (float)UnitUtil.PaceOrSpeed.ConvertFrom(isPace, m_deviceSpeedPaceTrack0[i].Value, this.m_cacheTrackRef.Activity));
+                    }
                 }
             }
             return m_deviceSpeedPaceTrack0;
@@ -2819,43 +2827,45 @@ namespace TrailsPlugin.Data
                 if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
                     m_deviceDiffDistTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceDiffDistTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
-                    return m_deviceDiffDistTrack0;
                 }
-                m_deviceDiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
-                if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
+                else
                 {
-                    IDistanceDataTrack source;
-                    if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
+                    m_deviceDiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
+                    if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                     {
-                        source = this.Activity.DistanceMetersTrack;
-                    }
-                    else
-                    {
-                        //The device distance is the "normal" show calculated instead
-                        source = Info.MovingDistanceMetersTrack;
-                    }
-                    float? start2 = null;
-                    UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
-                    foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
-                    {
-                        DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
-                        ITimeValueEntry<float> t2 = source.GetInterpolatedValue(dateTime);
-                        if (t2 != null &&
-                                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
+                        IDistanceDataTrack source;
+                        if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
                         {
-                            if (start2 == null)
-                            {
-                                start2 = t2.Value;
-                            }
-                            float val = (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
-                            if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
-                            {
-                                val *= -1;
-                            }
-                            m_deviceDiffDistTrack0.Add(dateTime, val);
+                            source = this.Activity.DistanceMetersTrack;
                         }
                         else
-                        { }
+                        {
+                            //The device distance is the "normal" show calculated instead
+                            source = Info.MovingDistanceMetersTrack;
+                        }
+                        float? start2 = null;
+                        UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
+                        foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
+                        {
+                            DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
+                            ITimeValueEntry<float> t2 = source.GetInterpolatedValue(dateTime);
+                            if (t2 != null &&
+                                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
+                            {
+                                if (start2 == null)
+                                {
+                                    start2 = t2.Value;
+                                }
+                                float val = (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
+                                if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
+                                {
+                                    val *= -1;
+                                }
+                                m_deviceDiffDistTrack0.Add(dateTime, val);
+                            }
+                            else
+                            { }
+                        }
                     }
                 }
             }

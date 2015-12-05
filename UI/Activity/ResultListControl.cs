@@ -1834,13 +1834,14 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             //Select the results with the same import metasource
                             string refSource = tr.Activity.Metadata.Source;
-                            bool nullOrEmpty = string.IsNullOrEmpty(refSource);
                             foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
                             {
                                 if (trw.Result.Activity != null &&
-                                    (string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && nullOrEmpty ||
-                                    !string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) &&
-                                      refSource == trw.Result.Activity.Metadata.Source) &&
+                                    (string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && string.IsNullOrEmpty(refSource) ||
+                                    !string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && !string.IsNullOrEmpty(refSource) &&
+                                      //ExportToFunbeat adds suffix to meta data...
+                                      (refSource.StartsWith(trw.Result.Activity.Metadata.Source) ||
+                                      trw.Result.Activity.Metadata.Source .StartsWith(refSource))) &&
                                       !atr.Contains(trw))
                                 {
                                     atr.Add(trw);

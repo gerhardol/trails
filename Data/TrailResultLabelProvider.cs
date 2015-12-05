@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
 
         public override Image GetImage(object element, TreeList.Column column)
         {
-            Data.TrailResult row = TrailsPlugin.UI.Activity.ResultListControl.getTrailResultRow(element);
+            Data.TrailResult row = (element as TrailResultWrapper).Result;
 
             if (column.Id == TrailResultColumnIds.ResultColor)
             {
@@ -61,81 +61,98 @@ namespace TrailsPlugin.Data
 
         public override string GetText(object element, TreeList.Column column)
         {
-            Data.TrailResult row = TrailsPlugin.UI.Activity.ResultListControl.getTrailResultRow(element);
+            Data.TrailResult row = (element as TrailResultWrapper).Result;
 
             //Some special for Summary
-            if (TrailsPlugin.Data.Settings.ResultSummaryStdDev && row is SummaryTrailResult)
+            if (row is SummaryTrailResult)
             {
-                SummaryTrailResult row2 = row as SummaryTrailResult;
-                if (!row2.IsTotal && row2.Results.Count > 1)
+                switch (column.Id)
                 {
-                    switch (column.Id)
+                    case TrailResultColumnIds.AveragePowerBalance:
+                    case TrailResultColumnIds.AverageTemperature:
+                    case TrailResultColumnIds.AverageGroundContactTime:
+                    case TrailResultColumnIds.AverageVerticalOscillation:
+                    case TrailResultColumnIds.AverageSaturatedHemoglobin:
+                    case TrailResultColumnIds.AverageTotalHemoglobinConcentration:
+                        //No implementation, ignore
+                        return null;
+                    default:
+                        break;
+                }
+
+                if (TrailsPlugin.Data.Settings.ResultSummaryStdDev)
+                {
+                    SummaryTrailResult row2 = row as SummaryTrailResult;
+                    if (!row2.IsTotal && row2.Results.Count > 1)
                     {
-                        case TrailResultColumnIds.StartTime:
-                            //Not interesting to average time when only one activity. Other multi may be interesting.
-                            if (row2.Activities.Count <= 1){return null;}
-                            //Only time of day, averaged
-                            return row.StartTime.ToLocalTime().ToString("T");
-                        case TrailResultColumnIds.Duration:
-                            {
-                                SummaryValue<TimeSpan> a = row2.DurationStdDev();
-                                return UnitUtil.Time.ToString(a.Value, "") + " σ" + UnitUtil.Time.ToString(a.StdDev, "");
-                            }
-                        case TrailResultColumnIds.Distance:
-                            {
-                                SummaryValue<double> a = row2.DistanceStdDev();
-                                string d;
-                                if (row.PoolLengthInfo != null)
+                        switch (column.Id)
+                        {
+                            case TrailResultColumnIds.StartTime:
+                                //Not interesting to average time when only one activity. Other multi may be interesting.
+                                if (row2.Activities.Count <= 1) { return null; }
+                                //Only time of day, averaged
+                                return row.StartTime.ToLocalTime().ToString("T");
+                            case TrailResultColumnIds.Duration:
                                 {
-                                    d = UnitUtil.Distance.ToString(a.Value, row.PoolLengthInfo.DistanceUnits, "F0");
+                                    SummaryValue<TimeSpan> a = row2.DurationStdDev();
+                                    return UnitUtil.Time.ToString(a.Value, "") + " σ" + UnitUtil.Time.ToString(a.StdDev, "");
                                 }
-                                else
+                            case TrailResultColumnIds.Distance:
                                 {
-                                    d = UnitUtil.Distance.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "");
+                                    SummaryValue<double> a = row2.DistanceStdDev();
+                                    string d;
+                                    if (row.PoolLengthInfo != null)
+                                    {
+                                        d = UnitUtil.Distance.ToString(a.Value, row.PoolLengthInfo.DistanceUnits, "F0");
+                                    }
+                                    else
+                                    {
+                                        d = UnitUtil.Distance.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "");
+                                    }
+                                    return d + " σ" + UnitUtil.Elevation.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
                                 }
-                                return d + " σ" + UnitUtil.Elevation.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
-                            }
-                        case TrailResultColumnIds.AvgPace:
-                            {
-                                SummaryValue<double> a = row2.AvgPaceStdDev();
-                                return UnitUtil.Pace.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
-                            }
-                        case TrailResultColumnIds.AvgSpeed:
-                            {
-                                SummaryValue<double> a = row2.AvgSpeedStdDev();
-                                return UnitUtil.Speed.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Speed.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
-                            }
-                        case TrailResultColumnIds.AvgSpeedPace:
-                            {
-                                SummaryValue<double> a;
-                                if (UnitUtil.PaceOrSpeed.IsPace(Controller.TrailController.Instance.ReferenceActivity))
+                            case TrailResultColumnIds.AvgPace:
                                 {
-                                    a = row2.AvgPaceStdDev();
+                                    SummaryValue<double> a = row2.AvgPaceStdDev();
                                     return UnitUtil.Pace.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
                                 }
-                                else
+                            case TrailResultColumnIds.AvgSpeed:
                                 {
-                                    a = row2.AvgSpeedStdDev();
+                                    SummaryValue<double> a = row2.AvgSpeedStdDev();
                                     return UnitUtil.Speed.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Speed.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
                                 }
-                            }
-                        //case TrailResultColumnIds.GradeRunAdjustedTime:
-                        //    {
-                        //        SummaryValue<double> a = row2.GradeRunAdjustedTimeStdDev();
-                        //        return UnitUtil.Time.ToString(a.Value, "") + " σ" + UnitUtil.Time.ToString(a.StdDev, "");
-                        //    }
-                        //case TrailResultColumnIds.GradeRunAdjustedPace:
-                        //    {
-                        //        SummaryValue<TimeSpan> a = row2.GradeRunAdjustedPaceStdDev();
-                        //        return UnitUtil.Pace.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
-                        //    }
-                        //case TrailResultColumnIds.Diff:
-                        //    {
-                        //        SummaryValue<double> a = row2.DiffStdDev();
-                        //        return UnitUtil.Elevation.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Elevation.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
-                        //    }
-                        default:
-                            break;
+                            case TrailResultColumnIds.AvgSpeedPace:
+                                {
+                                    SummaryValue<double> a;
+                                    if (UnitUtil.PaceOrSpeed.IsPace(Controller.TrailController.Instance.ReferenceActivity))
+                                    {
+                                        a = row2.AvgPaceStdDev();
+                                        return UnitUtil.Pace.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
+                                    }
+                                    else
+                                    {
+                                        a = row2.AvgSpeedStdDev();
+                                        return UnitUtil.Speed.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Speed.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
+                                    }
+                                }
+                            //case TrailResultColumnIds.GradeRunAdjustedTime:
+                            //    {
+                            //        SummaryValue<double> a = row2.GradeRunAdjustedTimeStdDev();
+                            //        return UnitUtil.Time.ToString(a.Value, "") + " σ" + UnitUtil.Time.ToString(a.StdDev, "");
+                            //    }
+                            //case TrailResultColumnIds.GradeRunAdjustedPace:
+                            //    {
+                            //        SummaryValue<TimeSpan> a = row2.GradeRunAdjustedPaceStdDev();
+                            //        return UnitUtil.Pace.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Pace.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
+                            //    }
+                            //case TrailResultColumnIds.Diff:
+                            //    {
+                            //        SummaryValue<double> a = row2.DiffStdDev();
+                            //        return UnitUtil.Elevation.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") + " σ" + UnitUtil.Elevation.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
+                            //    }
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -243,40 +260,16 @@ namespace TrailsPlugin.Data
                 case TrailResultColumnIds.AscendingSpeed_VAM:
                     return UnitUtil.Elevation.ToString(row.AscendingSpeed_VAM, "");
                 case TrailResultColumnIds.AveragePowerBalance:
-                    if (row is SummaryTrailResult)
-                    {
-                        return null;
-                    }
                     return (row.AveragePowerBalance / 100).ToString("0.0%");
                 case TrailResultColumnIds.AverageTemperature:
-                    if (row is SummaryTrailResult)
-                    {
-                        return null;
-                    }
                     return (row.AverageTemperature).ToString("0.0");
                 case TrailResultColumnIds.AverageGroundContactTime:
-                    if (row is SummaryTrailResult)
-                    {
-                        return null;
-                    }
                     return (row.AverageGroundContactTime).ToString("0");
                 case TrailResultColumnIds.AverageVerticalOscillation:
-                    if (row is SummaryTrailResult)
-                    {
-                        return null;
-                    }
                     return (row.AverageVerticalOscillation).ToString("0.0");
                 case TrailResultColumnIds.AverageSaturatedHemoglobin:
-                    if (row is SummaryTrailResult)
-                    {
-                        return null;
-                    }
                     return (row.AverageSaturatedHemoglobin / 100).ToString("0.0%");
                 case TrailResultColumnIds.AverageTotalHemoglobinConcentration:
-                    if (row is SummaryTrailResult)
-                    {
-                        return null;
-                    }
                     return (row.AverageTotalHemoglobinConcentration).ToString("0.0");
 
                 default:

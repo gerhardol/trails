@@ -40,7 +40,21 @@ namespace TrailsPlugin.Data
         public TrailResultWrapper(ParentTrailResult element)
             : base(null, element)
         {
-            this.getChildren();
+            //TODO: Calculate children when needed, by implementing Children
+            //This is currently called after all parent results have been determined
+            //A good enough reason is that this will give main activities separate colors, in the intended order
+            if (element != null)
+            {
+                IList<ChildTrailResult> children = element.getChildren();
+                if (children != null && (children.Count > 1 ||
+                    children.Count == 1 && children[0].SubResults.Count > 0))
+                {
+                    foreach (ChildTrailResult tr in children)
+                    {
+                        TrailResultWrapper tn = new TrailResultWrapper(this, tr);
+                    }
+                }
+            }
         }
 
         public TrailResultWrapper(HighScoreParentTrailResult element)
@@ -54,6 +68,14 @@ namespace TrailsPlugin.Data
             //several separate substructues..
             parent.Children.Add(this);
             parent.m_allChildren.Add(this);
+
+            if (element.SubResults.Count > 1)
+            {
+                foreach (ChildTrailResult sctr in element.SubResults)
+                {
+                    TrailResultWrapper strw = new TrailResultWrapper(this, sctr);
+                }
+            }
         }
 
         public TrailResult Result
@@ -64,28 +86,21 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //TODO: Calculate children when needed, by implementing Children
-        //This is currently called after all parent results have been determined
-        //A good enough reason is that this will give main activities separate colors, in the intended order
-        private void getChildren()
+        public TrailResultWrapper getTrailResultRow(bool ensureParent)
         {
-            if (this.Result != null && this.Result is ParentTrailResult)
+            TrailResultWrapper result = this;
+            if (ensureParent)
             {
-                ParentTrailResult ptr = this.Result as ParentTrailResult;
-                IList<ChildTrailResult> children = ptr.getChildren();
-                if (children != null && (children.Count > 1 || 
-                    children.Count == 1 && children[0].SubResults.Count > 0))
+                if (result.Parent != null)
                 {
-                    foreach (ChildTrailResult tr in children)
+                    result = (TrailResultWrapper)result.Parent;
+                    if (result.Parent != null)
                     {
-                        TrailResultWrapper tn = new TrailResultWrapper(this, tr);
-                        foreach (ChildTrailResult sctr in tr.SubResults)
-                        {
-                            TrailResultWrapper strw = new TrailResultWrapper(tn, sctr);
-                        }
+                        result = (TrailResultWrapper)result.Parent;
                     }
                 }
             }
+            return result;
         }
 
         public void Sort()
@@ -230,6 +245,22 @@ namespace TrailsPlugin.Data
                 catch { }
             }
             return result;
+        }
+
+        public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist)
+        {
+            IList<TrailResultWrapper> aTr = new List<TrailResultWrapper>();
+            if (tlist != null)
+            {
+                foreach (object t in tlist)
+                {
+                    if (t != null && t is TrailResultWrapper)
+                    {
+                        aTr.Add(((TrailResultWrapper)t));
+                    }
+                }
+            }
+            return aTr;
         }
 
         //The Children may not include all (hide paused laps, deleted etc). These are all results

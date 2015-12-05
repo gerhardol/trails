@@ -311,7 +311,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         //Get all current values in prev selection
                         setValue = TrailResultWrapper.SelectedItems(Controller.TrailController.Instance.CurrentResultTreeList,
-                            TrailResultWrapper.Results(getTrailResultWrapperSelection(m_lastSelectedItems)));
+                            TrailResultWrapper.Results(TrailResultWrapper.getTrailResultWrapperSelection(m_lastSelectedItems)));
                         if (null == setValue || setValue.Count == 0)
                         {
                             //get a result for the reference activity
@@ -368,7 +368,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
                 System.Collections.IList SelectedItemsRaw = this.summaryList.SelectedItems;
 #endif
-                return getTrailResultWrapperSelection(SelectedItemsRaw);
+                return TrailResultWrapper.getTrailResultWrapperSelection(SelectedItemsRaw);
             }
         }
 
@@ -429,40 +429,6 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*********************************************************/
-        public static TrailResult getTrailResultRow(object element)
-        {
-            return getTrailResultRow(element, false);
-        }
-
-        public static TrailResult getTrailResultRow(object element, bool ensureParent)
-        {
-            TrailResultWrapper result = (TrailResultWrapper)element;
-            if (ensureParent)
-            {
-                if (result.Parent != null)
-                {
-                    result = (TrailResultWrapper)result.Parent;
-                }
-            }
-            return result.Result;
-        }
-
-        public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist)
-        {
-            IList<TrailResultWrapper> aTr = new List<TrailResultWrapper>();
-            if (tlist != null)
-            {
-                foreach (object t in tlist)
-                {
-                    if (t != null)
-                    {
-                        aTr.Add(((TrailResultWrapper)t));
-                    }
-                }
-            }
-            return aTr;
-        }
-
         private void summaryList_Sort()
         {
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
@@ -926,9 +892,9 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
-                    if (row != null)
+                    if (row != null && row is TrailResultWrapper)
                     {
-                        TrailResult tr = getTrailResultRow(row);
+                        TrailResult tr = (row as TrailResultWrapper).Result;
                         if (tr != null)
                         {
                             //RowHitState is always Row, use position to filter out likely plus clicks
@@ -1014,9 +980,9 @@ namespace TrailsPlugin.UI.Activity {
                 MouseEventArgs e2 = (MouseEventArgs)e;
                 TreeList.RowHitState hit;
                 object row = this.summaryList.RowHitTest(e2.Location, out hit);
-                if (row != null && hit == TreeList.RowHitState.Row)
+                if (row != null && hit == TreeList.RowHitState.Row && row is TrailResultWrapper)
                 {
-                    TrailResult tr = getTrailResultRow(row);
+                    TrailResult tr = (row as TrailResultWrapper).Result;
                     if (tr != null)
                     {
                         TreeList.Column selectedColumn = getColumn(l, e2.X + l.HScrollBar.Value);
@@ -2171,9 +2137,13 @@ namespace TrailsPlugin.UI.Activity {
                 object row = null;
                 TreeList.RowHitState dummy;
                 row = this.summaryList.RowHitTest(m_mouseClickArgs.Location, out dummy);
-                if (row != null)
+                if (row != null && row is TrailResultWrapper)
                 {
-                    tr = getTrailResultRow(row, ensureParent);
+                    TrailResultWrapper trw = (row as TrailResultWrapper).getTrailResultRow(ensureParent);
+                    if (trw != null)
+                    {
+                        tr = trw.Result;
+                    }
                 }
             }
             return tr;

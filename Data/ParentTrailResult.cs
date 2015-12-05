@@ -134,12 +134,21 @@ namespace TrailsPlugin.Data
                 }
                 if (Data.Settings.ShowPausesAsResults)
                 {
+                    int maxChildIndex = splits.Count - 1;
                     foreach (IValueRange<DateTime> v in this.Pauses)
                     {
                         TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
                         t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Lower, v.Upper - v.Lower));
                         t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), v.Upper, TimeSpan.Zero));
-                        ChildTrailResult tr = new PausedChildTrailResult(this, -1, t);
+                        PausedChildTrailResult tr = new PausedChildTrailResult(this, -1, t);
+                        for(int j = 0; j <= maxChildIndex; j++)
+                        {
+                            if (j == maxChildIndex || splits[j].StartTime <= v.Lower && splits[j+1].StartTime > v.Lower)
+                            {
+                                tr.RelatedChildResult = splits[j];
+                                break;
+                            }
+                        }
                         splits.Add(tr);
                     }
                 }

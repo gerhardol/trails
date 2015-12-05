@@ -661,6 +661,10 @@ namespace TrailsPlugin.Controller
         {
             get
             {
+                if(this.m_selectedResults==null)
+                {
+                    this.m_selectedResults = new List<TrailResult>();
+                }
                 return this.m_selectedResults;
             }
             set

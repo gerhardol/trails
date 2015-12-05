@@ -486,6 +486,8 @@ namespace TrailsPlugin.Data {
             {
                 return -1;
             }
+
+            //Summary results are not supposed to be sorted, this should not be used
             if (x is SummaryTrailResult)
             {
                 if ((x as SummaryTrailResult).IsTotal || !(y is SummaryTrailResult))
@@ -497,15 +499,36 @@ namespace TrailsPlugin.Data {
             {
                 return -1;
             }
-            if ((x is PausedChildTrailResult || y is PausedChildTrailResult) &&
-                !(TrailsPlugin.Data.Settings.SummaryViewSortColumns.Count>0 && 
-                TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == TrailResultColumnIds.StartTime))
-            {
-                //Keep close to normal result TBD, not working properly
-                return x.StartTime.CompareTo(y.StartTime);
-            }
 
             int result = 0;
+
+            {
+                //The pause is compared to the normal result, keep close in list
+                TrailResult x0 = x;
+                TrailResult y0 = y;
+                if (x is PausedChildTrailResult)
+                {
+                    x = (x as PausedChildTrailResult).RelatedChildResult;
+                }
+                if (y is PausedChildTrailResult)
+                {
+                    y = (y as PausedChildTrailResult).RelatedChildResult;
+                }
+                if (x == y)
+                {
+                    result = x0.StartTime.CompareTo(y0.StartTime);
+                    if(x0 is PausedChildTrailResult)
+                    {
+                        result = Math.Abs(result);
+                    }
+                    else if (y0 is PausedChildTrailResult)
+                    {
+                        result = -Math.Abs(result);
+                    }
+                    return result;
+                }
+            }
+
             const string GradeRunAdjustedPace_Field = "GradeRunAdjustedSpeed";
             foreach (string id0 in TrailsPlugin.Data.Settings.SummaryViewSortColumns)
             {

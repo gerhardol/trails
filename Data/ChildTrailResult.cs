@@ -46,6 +46,7 @@ namespace TrailsPlugin.Data
             base(par, order, indexes, 0)
         {
         }
+        public ChildTrailResult RelatedChildResult = null;
     }
 
     public class SubChildTrailResult : ChildTrailResult

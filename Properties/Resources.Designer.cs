@@ -742,15 +742,6 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Splits - Swim.
-        /// </summary>
-        internal static string UI_Activity_List_SwimLap {
-            get {
-                return ResourceManager.GetString("UI_Activity_List_SwimLap", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SWOLF.
         /// </summary>
         internal static string UI_Activity_List_SWOLF {

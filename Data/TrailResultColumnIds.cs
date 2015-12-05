@@ -431,7 +431,7 @@ namespace TrailsPlugin.Data {
             }
             if (all || laps)
             {
-                string SwimLapGroup = Properties.Resources.UI_Activity_List_SwimLap;
+                string SwimLapGroup = CommonResources.Text.LabelLap;
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.SwimLapInfo_AverageStrokeDistance, Properties.Resources.UI_Activity_List_AverageStrokeDistance, SwimLapGroup, 60, StringAlignment.Far));
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.SwimLapInfo_AverageStrokeRate, Properties.Resources.UI_Activity_List_AverageStrokeRate, SwimLapGroup, 60, StringAlignment.Far));
                 m_columnDefs.Add(new ListColumnDefinition(TrailResultColumnIds.SwimLapInfo_Efficiency, Properties.Resources.UI_Activity_List_Efficiency, SwimLapGroup, 60, StringAlignment.Far));

@@ -1459,15 +1459,15 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //Smoothing could differ speed/pace, why this is separate
-        public virtual double FastestPace
-        {
-            get
-            {
-                checkCacheRef(m_cacheTrackRef);
-                return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity);
-            }
-        }
+        ////Smoothing could differ speed/pace, why this is separate
+        //public virtual double FastestPace
+        //{
+        //    get
+        //    {
+        //        checkCacheRef(m_cacheTrackRef);
+        //        return UnitUtil.Pace.ConvertTo(this.PaceTrack0(m_cacheTrackRef).Min, m_cacheTrackRef.Activity);
+        //    }
+        //}
 
         public virtual double Ascent
         {

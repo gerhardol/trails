@@ -123,7 +123,7 @@ namespace TrailsPlugin.Export
         {
             get
             {
-                return UnitUtil.Pace.ConvertFrom(this.m_tr.FastestPace, this.m_tr.Activity);
+                return UnitUtil.Pace.ConvertFrom(this.m_tr.FastestSpeed, this.m_tr.Activity);
             }
         }
 

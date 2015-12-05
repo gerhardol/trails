@@ -315,13 +315,13 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public override double FastestPace
-        {
-            get
-            {
-                return this.GetSummaryValue(delegate (TrailResult tr) { return tr.FastestPace; }, false, false);
-            }
-        }
+        //public override double FastestPace
+        //{
+        //    get
+        //    {
+        //        return this.GetSummaryValue(delegate (TrailResult tr) { return tr.FastestPace; }, false, false);
+        //    }
+        //}
 
         public override float FastestSpeed
         {

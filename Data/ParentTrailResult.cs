@@ -66,8 +66,6 @@ namespace TrailsPlugin.Data
         {
         }
 
-        public bool OverlapParent = true;
-
         public IList<ChildTrailResult> getChildren()
         {
             IList<ChildTrailResult> splits = new List<ChildTrailResult>();

@@ -2072,23 +2072,24 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Shift)
                 {
                     TrailsPlugin.Data.Settings.XAxisValue = TrailsPlugin.Utils.XAxisValue.Time;
-                    TrailResult.OverlappingResultUseTimeOfDayDiff = true;
-                    TrailResult.OverlappingResultUseReferencePauses = true;
+                    TrailsPlugin.Data.Settings.OverlappingResultUseTimeOfDayDiff = true;
+                    TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses = true;
+                    TrailsPlugin.Data.Settings.OverlappingResultShareSplitTime = true;
                     this.addCurrentTime();
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
-                    //Temporary - add setting?
-                    TrailsPlugin.Data.Settings.TimeOverlapShareTime = !TrailsPlugin.Data.Settings.TimeOverlapShareTime;
+                     TrailsPlugin.Data.Settings.OverlappingResultShareSplitTime = false;
+                    this.m_page.RefreshData(true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
                 {
-                    TrailResult.OverlappingResultUseTimeOfDayDiff = !TrailResult.OverlappingResultUseTimeOfDayDiff;
+                    TrailsPlugin.Data.Settings.OverlappingResultUseTimeOfDayDiff = false;
                     this.m_page.RefreshData(true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt))
                 {
-                    TrailResult.OverlappingResultUseReferencePauses = !TrailResult.OverlappingResultUseReferencePauses;
+                    TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses = false;
                     this.m_page.RefreshData(true);
                 }
                 //else if (e.Modifiers == Keys.Control)

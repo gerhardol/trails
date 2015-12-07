@@ -62,11 +62,9 @@ namespace TrailsPlugin.Data
         private float? m_offsetTime;
         private float m_offsetTimeElapsed;
         private float? m_offsetDist;
-        //Temporary? (undocumented)
+        //Settings related (undocumented)
         public static bool DiffToSelf = false;
         public static bool PaceTrackIsGradeAdjustedPaceAvg = false;
-        public static bool OverlappingResultUseReferencePauses = false;
-        public static bool OverlappingResultUseTimeOfDayDiff = false;
 
         private IValueRangeSeries<DateTime> m_pauses;
         private IDistanceDataTrack m_distanceMetersTrack;
@@ -135,13 +133,18 @@ namespace TrailsPlugin.Data
             {
                 this.m_name = this.m_activity.Name;
             }
-            m_subResultInfo = indexes.Copy();
             m_totalDistDiff = distDiff;
+            updateIndexes(indexes);
+        }
+
+        public void updateIndexes(TrailResultInfo indexes)
+        {
+            m_subResultInfo = indexes.Copy();
             this.m_LapInfo = indexes.LapInfo;
             this.m_PoolLengthInfo = indexes.PoolLengthInfo;
         }
 
-#endregion
+        #endregion
 
         /**********************************************************/
         #region state
@@ -787,7 +790,7 @@ namespace TrailsPlugin.Data
                         m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
                     }
                     //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
-                    else if (OverlappingResultUseReferencePauses &&
+                    else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
                         null != refTr &&
                         this != refTr &&
                         //Note: All cached values (including Start/End) must be set after Pauses
@@ -3331,7 +3334,7 @@ namespace TrailsPlugin.Data
             get
             {
                 TrailResult refTr = Controller.TrailController.Instance.ReferenceTrailResult;
-                if (OverlappingResultUseTimeOfDayDiff &&
+                if (TrailsPlugin.Data.Settings.OverlappingResultUseTimeOfDayDiff &&
                     null != refTr &&
                     this != refTr &&
                     this.AnyOverlap(refTr))

@@ -31,7 +31,6 @@ namespace TrailsPlugin.Data
 {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
-        //Parent
         public TrailResultWrapper(SummaryTrailResult element)
             : base(null, element)
         {
@@ -40,12 +39,17 @@ namespace TrailsPlugin.Data
         public TrailResultWrapper(ParentTrailResult element)
             : base(null, element)
         {
+            getChildren();
+        }
+
+        private void getChildren()
+        {
             //TODO: Calculate children when needed, by implementing Children
             //This is currently called after all parent results have been determined
             //A good enough reason is that this will give main activities separate colors, in the intended order
-            if (element != null)
+            if (this.Element != null && this.Element is ParentTrailResult)
             {
-                IList<ChildTrailResult> children = element.getChildren();
+                IList<ChildTrailResult> children = (this.Element as ParentTrailResult).getChildren();
                 if (children != null && (children.Count > 1 ||
                     children.Count == 1 && children[0].SubResults.Count > 0))
                 {
@@ -55,6 +59,14 @@ namespace TrailsPlugin.Data
                     }
                 }
             }
+        }
+
+        public void updateIndexes(TrailResultInfo indexes)
+        {
+            this.Children.Clear();
+            this.m_allChildren.Clear();
+            this.Result.updateIndexes(indexes);
+            getChildren();
         }
 
         public TrailResultWrapper(HighScoreParentTrailResult element)
@@ -263,8 +275,13 @@ namespace TrailsPlugin.Data
             return aTr;
         }
 
+        /// <summary>
+        /// The overlapping results, uses the same split times as this result
+        /// </summary>
+        public IList<TrailResultWrapper> Overlaps = new List<TrailResultWrapper>();
+
         //The Children may not include all (hide paused laps, deleted etc). These are all results
-        internal IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
+        private IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
 
         #region IComparable<Product> Members
         public int CompareTo(object obj)

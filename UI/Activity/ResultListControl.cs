@@ -503,7 +503,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 foreach (TrailResultWrapper t in selected)
                 {
-                    if (!(t.Result is SummaryTrailResult))
+                    if (!(t.Result is SummaryTrailResult) && !(t.Result is PausedChildTrailResult))
                     {
                         selected2.Add(t);
                     }

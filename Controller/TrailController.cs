@@ -361,6 +361,25 @@ namespace TrailsPlugin.Controller
                     }
                 }
 
+                //Prefer specific first, not the general
+                if (this.m_currentActivityTrails.Count == 0)
+                {
+                    //Try to get the best match from non-auto trails
+                    //The ordered list should be basically sorted, so the best candidates should be first
+                    int recalc = 3;
+                    foreach (ActivityTrail at in this.OrderedTrails())
+                    {
+                        if (at.Status != TrailOrderStatus.MatchNoCalc && at.Trail.Children.Count == 0)
+                        {
+                            if (this.CheckSetCurrentList(new List<ActivityTrail> { at }, progressBar) ||
+                                recalc-- <= 0)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 if (this.m_currentActivityTrails.Count == 0)
                 {
                     //Try to get the best match from non-auto trails
@@ -575,7 +594,7 @@ namespace TrailsPlugin.Controller
                     }
                 }
 
-                else
+                if (m_referenceActivity == null)
                 {
                     //Last resort, use first activity
                     //This also covers the trivial situation with only one activity

@@ -2652,54 +2652,52 @@ namespace TrailsPlugin.Data
 
             foreach (TrailResultPoint t in points)
             {
-                if (!float.IsNaN(t.ElevationMeters))
+                DateTime d1 = t.Time;
+                if (!float.IsNaN(t.ElevationMeters) && d1 != DateTime.MinValue &&
+                    deviceElevationTrack0 != null && deviceElevationTrack0.Count > 0)
                 {
-                    DateTime d1 = t.Time;
-                    if (d1 != DateTime.MinValue)
+                    float ele = float.NaN;
+                    const int extendSeconds = 60;
+                    //deviceElevationTrack0 is not trimmed and therefore "maximum" size
+                    if (deviceElevationTrack0.StartTime <= d1 && d1 <= deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[deviceElevationTrack0.Count - 1]))
                     {
-                        float ele = float.NaN;
-                        const int extendSeconds = 60;
-                        //deviceElevationTrack0 is not trimmed and therefore "maximum" size
-                        if (deviceElevationTrack0.StartTime <= d1 && d1 <= deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[deviceElevationTrack0.Count - 1]))
+                        try
                         {
-                            try
-                            {
-                                ele = deviceElevationTrack0.GetInterpolatedValue(d1).Value;
-                            }
-                            catch { }
+                            ele = deviceElevationTrack0.GetInterpolatedValue(d1).Value;
+                        }
+                        catch { }
+                    }
+                    else
+                    {
+                        //Allow some extending, if the elevation track is not matching completely (separate start for instance)
+                        double offset;
+                        int index = -1;
+                        offset = (deviceElevationTrack0.StartTime - d1).TotalSeconds;
+                        if (offset >= 0 && offset <= extendSeconds)
+                        {
+                            index = 0;
                         }
                         else
                         {
-                            //Allow some extending, if the elevation track is not matching completely (separate start for instance)
-                            double offset;
-                            int index = -1;
-                            offset = (deviceElevationTrack0.StartTime - d1).TotalSeconds;
-                            if (offset >= 0 && offset <= extendSeconds)
+                            index = deviceElevationTrack0.Count - 1;
+                            offset = (d1 - deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[index])).TotalSeconds;
+                            if (offset < 0 && offset > extendSeconds)
                             {
-                                index = 0;
-                            }
-                            else
-                            {
-                                index = deviceElevationTrack0.Count - 1;
-                                offset = (d1 - deviceElevationTrack0.EntryDateTime(deviceElevationTrack0[index])).TotalSeconds;
-                                if (offset < 0 && offset > extendSeconds)
-                                {
-                                    index = -1;
-                                }
-                            }
-                            if (index >= 0)
-                            {
-                                ele = deviceElevationTrack0[index].Value;
+                                index = -1;
                             }
                         }
-                        if (!float.IsNaN(ele))
+                        if (index >= 0 && index < deviceElevationTrack0.Count)
                         {
-                            //elevation track is already in display unit
-                            float eleOffset = (float)convertFrom(t.ElevationMeters, refAct);
-                            eleOffset -= ele;
-                            DateEle e = new DateEle(d1, eleOffset);
-                            elevationOffset.Add(e);
+                            ele = deviceElevationTrack0[index].Value;
                         }
+                    }
+                    if (!float.IsNaN(ele))
+                    {
+                        //elevation track is already in display unit
+                        float eleOffset = (float)convertFrom(t.ElevationMeters, refAct);
+                        eleOffset -= ele;
+                        DateEle e = new DateEle(d1, eleOffset);
+                        elevationOffset.Add(e);
                     }
                 }
             }

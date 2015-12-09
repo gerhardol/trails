@@ -410,7 +410,7 @@ namespace TrailsPlugin.Data
                                 foreach (IActivity activity in activities)
                                 {
                                     //Handle all activities, also if they are previously a ref
-                                    if (refAct != activity)
+                                    if (refAct != activity && refWrapper.Result.AnyOverlap(activity))
                                     {
                                         TrailResultInfo indexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
                                         SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes);
@@ -439,6 +439,7 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
+                    //PositionTrails
                     IList<TrailGPSLocation> trailgps = null;
                     IList<IGPSBounds> locationBounds = new List<IGPSBounds>();
                     if (m_trail.TrailType == Trail.CalcType.TrailPoints ||

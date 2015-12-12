@@ -135,10 +135,7 @@ namespace TrailsPlugin.Data
                             //not appearing in subchilds, remove from parents
                             foreach(Trail tp in t.AllParents)
                             {
-                                if(tp.Children.Contains(t))
-                                {
-                                    tp.Children.Remove(t);
-                                }
+                                tp.Children.Remove(t);
                             }
                             t.Children.Add(t2);
                         }
@@ -146,10 +143,7 @@ namespace TrailsPlugin.Data
                         {
                             foreach (Trail tp in t.AllChildren)
                             {
-                                if (tp.Children.Contains(t))
-                                {
-                                    tp.Children.Remove(t);
-                                }
+                                tp.Children.Remove(t);
                             }
                             t2.Parent = t;
                         }

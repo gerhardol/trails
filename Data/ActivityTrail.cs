@@ -29,7 +29,7 @@ namespace TrailsPlugin.Data
     public class ActivityTrail : IComparable
     {
         private Trail m_trail;
-        private IList<TrailResultWrapper> m_resultsListWrapper = null;
+        private IList<TrailResultWrapper> m_results = null;
         private TrailOrderStatus m_status;
 
         private IList<IncompleteTrailResult> m_incompleteResults;
@@ -48,7 +48,7 @@ namespace TrailsPlugin.Data
 
         public void Init()
         {
-            this.m_resultsListWrapper = null;
+            this.m_results = null;
             m_incompleteResults = new List<IncompleteTrailResult>();
             m_filteredResults = new List<TrailResultWrapper>();
 
@@ -118,9 +118,9 @@ namespace TrailsPlugin.Data
         //Clear all calculated data for the result, do not affect trail calculations
         public void Clear(bool onlyDisplay)
         {
-            if (this.m_resultsListWrapper != null)
+            if (this.m_results != null)
             {
-                foreach (TrailResultWrapper t in this.m_resultsListWrapper)
+                foreach (TrailResultWrapper t in this.m_results)
                 {
                     t.Result.Clear(onlyDisplay);
                 }
@@ -216,18 +216,13 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public IList<TrailResultWrapper> ResultTreeList
+        public IList<TrailResultWrapper> Results
         {
             get
             {
-                return ResultTreeListRows(null);
+                this.CalcResults(null);
+                return this.m_results;
             }
-        }
-
-        public IList<TrailResultWrapper> ResultTreeListRows(System.Windows.Forms.ProgressBar progressBar)
-        {
-            this.CalcResults(progressBar);
-            return this.m_resultsListWrapper;
         }
 
         //public void Sort()
@@ -258,8 +253,8 @@ namespace TrailsPlugin.Data
             {
                 //No GPS check: Must have been done when adding to inbound list
                 TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes));
-                m_resultsListWrapper.Add(result);
+                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_results.Count + 1, splitIndexes));
+                m_results.Add(result);
                 //Note: status is not updated, cannot be better
             }
             //No progress update
@@ -270,9 +265,9 @@ namespace TrailsPlugin.Data
             get
             {
                 IList<IActivity> activities = new List<IActivity>();
-                if (m_resultsListWrapper != null)
+                if (m_results != null)
                 {
-                    foreach(TrailResultWrapper trw in m_resultsListWrapper)
+                    foreach(TrailResultWrapper trw in m_results)
                     {
                         IActivity act = trw.Result.Activity;
                         if (!activities.Contains(act))
@@ -292,7 +287,7 @@ namespace TrailsPlugin.Data
 
         public void CalcResults(IList<IActivity> activities, int MaxAllowedMisses, bool bidirectional, System.Windows.Forms.ProgressBar progressBar)
         {
-            if (m_resultsListWrapper == null)
+            if (m_results == null)
             {
                 //Avoid calculations with only one null activity
                 //(assume this is a race condition, do not set m_resultsListWrapper)
@@ -301,7 +296,7 @@ namespace TrailsPlugin.Data
                     return;
                 }
 
-                m_resultsListWrapper = new List<TrailResultWrapper>();
+                m_results = new List<TrailResultWrapper>();
 
                 //Calculation depends on TrailType
                 if (m_trail.TrailType == Trail.CalcType.HighScore)
@@ -334,7 +329,7 @@ namespace TrailsPlugin.Data
                                         this.Status = TrailOrderStatus.Match;
                                         HighScoreParentTrailResult parentResult = new HighScoreParentTrailResult(this, 1, indexes, h.tooltip);
                                         parentWrapper = new TrailResultWrapper(parentResult);
-                                        m_resultsListWrapper.Add(parentWrapper);
+                                        m_results.Add(parentWrapper);
                                     }
                                     else
                                     {
@@ -373,8 +368,8 @@ namespace TrailsPlugin.Data
                             {
                                 this.Status = TrailOrderStatus.Match;
                                 TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-                                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes));
-                                m_resultsListWrapper.Add(result);
+                                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_results.Count + 1, splitIndexes));
+                                m_results.Add(result);
                             }
                         }
                     }
@@ -385,27 +380,27 @@ namespace TrailsPlugin.Data
                 }
                 else if (this.m_trail.TrailType == Trail.CalcType.Splits)
                 {
-                    IList<IActivity> handledActivities = new List<IActivity>(); 
+                    IList<IActivity> handledActivities = new List<IActivity>();
                     //Calculate the results for the selected activities
                     if (Data.Settings.OverlappingResultShareSplitTime)
                     {
                         IList<IActivity> refActivities = new List<IActivity>();
-                        foreach (TrailResult tr in Controller.TrailController.Instance.SelectedResults)
+                        foreach (TrailResultWrapper tr in Controller.TrailController.Instance.SelectedResults)
                         {
-                            IActivity refAct = tr.Activity;
+                            IActivity refAct = tr.Result.Activity;
                             if (activities.Contains(refAct) && !refActivities.Contains(refAct))
                             {
                                 this.Status = TrailOrderStatus.Match;
                                 TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(refAct, false);
-                                SplitsParentTrailResult str = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes);
+                                SplitsParentTrailResult str = new SplitsParentTrailResult(this, m_results.Count + 1, splitIndexes);
                                 TrailResultWrapper refWrapper = new TrailResultWrapper(str);
-                                m_resultsListWrapper.Add(refWrapper);
+                                m_results.Add(refWrapper);
                                 handledActivities.Add(refAct);
                                 refActivities.Add(refAct);
 
                                 if (refAct == Controller.TrailController.Instance.ReferenceActivity)
                                 {
-                                    Controller.TrailController.Instance.ReferenceTrailResult = refWrapper.Result;
+                                    Controller.TrailController.Instance.ReferenceResult = refWrapper;
                                 }
                                 foreach (IActivity activity in activities)
                                 {
@@ -413,11 +408,11 @@ namespace TrailsPlugin.Data
                                     if (refAct != activity && refWrapper.Result.AnyOverlap(activity))
                                     {
                                         TrailResultInfo indexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
-                                        SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, indexes);
+                                        SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_results.Count + 1, indexes);
                                         TrailResultWrapper result = new TrailResultWrapper(str2);
                                         refWrapper.Overlaps.Add(result);
 
-                                        m_resultsListWrapper.Add(result);
+                                        m_results.Add(result);
                                         handledActivities.Add(activity);
                                     }
                                 }
@@ -431,9 +426,9 @@ namespace TrailsPlugin.Data
                         {
                             this.Status = TrailOrderStatus.Match;
                             TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-                            SplitsParentTrailResult str = new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes);
+                            SplitsParentTrailResult str = new SplitsParentTrailResult(this, m_results.Count + 1, splitIndexes);
                             TrailResultWrapper result = new TrailResultWrapper(str);
-                            m_resultsListWrapper.Add(result);
+                            m_results.Add(result);
                         }
                     }
                 }
@@ -460,8 +455,8 @@ namespace TrailsPlugin.Data
                         {
                             this.Status = TrailOrderStatus.Match;
                             TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-                            TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes));
-                            m_resultsListWrapper.Add(result);
+                            TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_results.Count + 1, splitIndexes));
+                            m_results.Add(result);
                         }
                         else
                         {
@@ -503,8 +498,8 @@ namespace TrailsPlugin.Data
                                 this.Status = TrailOrderStatus.Match;
                                 //Splits result
                                 TrailResultInfo splitIndexes = Data.Trail.TrailResultInfoFromSplits(activity, false);
-                                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_resultsListWrapper.Count + 1, splitIndexes));
-                                m_resultsListWrapper.Add(result);
+                                TrailResultWrapper result = new TrailResultWrapper(new SplitsParentTrailResult(this, m_results.Count + 1, splitIndexes));
+                                m_results.Add(result);
                             }
                         }
                     }
@@ -513,12 +508,12 @@ namespace TrailsPlugin.Data
                 }
 
                 if (this.m_trail.IsURFilter &&
-                    Controller.TrailController.Instance.ReferenceTrailResult != null && Controller.TrailController.Instance.ReferenceTrailResult.GPSRoute != null)
+                    Controller.TrailController.Instance.ReferenceResult != null && Controller.TrailController.Instance.ReferenceResult.Result.GPSRoute != null)
                 {
-                    this.FilterURRouteSnippet(Controller.TrailController.Instance.ReferenceTrailResult.GPSRoute, progressBar);
+                    this.FilterURRouteSnippet(Controller.TrailController.Instance.ReferenceResult.Result.GPSRoute, progressBar);
                 }
 
-                if (m_resultsListWrapper.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
+                if (m_results.Count == 0 && m_status < TrailOrderStatus.InBound && this.IsNoCalc)
                 {
                     //Downgrade status from "speculative match"
                     this.m_status = TrailOrderStatus.InBound;
@@ -534,10 +529,10 @@ namespace TrailsPlugin.Data
         public void FilterURRouteSnippet(IGPSRoute route, System.Windows.Forms.ProgressBar progressBar)
         {
             IList<IActivity> urActivities = Integration.UniqueRoutes.GetSimilarRoutes(
-                Controller.TrailController.Instance.ReferenceTrailResult.GPSRoute, this.ResultActivities, progressBar);
+                Controller.TrailController.Instance.ReferenceResult.Result.GPSRoute, this.ResultActivities, progressBar);
 
             IList<TrailResultWrapper> trws = new List<TrailResultWrapper>();
-            foreach (TrailResultWrapper trw in m_resultsListWrapper)
+            foreach (TrailResultWrapper trw in m_results)
             {
                 if (urActivities.Contains(trw.Result.Activity) ||
                     Controller.TrailController.Instance.ReferenceActivity == trw.Result.Activity)
@@ -549,7 +544,7 @@ namespace TrailsPlugin.Data
                     this.m_filteredResults.Add(trw);
                 }
             }
-            m_resultsListWrapper = trws;
+            m_results = trws;
         }
 
         private class pInfo
@@ -612,14 +607,14 @@ namespace TrailsPlugin.Data
             if (all)
             {
                 mergeResults = new List<TrailResultWrapper>();
-                foreach (TrailResultWrapper tr in this.ResultTreeList)
+                foreach (TrailResultWrapper tr in this.Results)
                 {
                     mergeResults.Add(tr);
                 }
                 if (this.Trail.TrailType == Trail.CalcType.Splits && Data.Settings.OverlappingResultShareSplitTime)
                 {
                     IList<TrailResultWrapper> overlapResults = new List<TrailResultWrapper>();
-                    foreach (TrailResultWrapper tr in this.ResultTreeList)
+                    foreach (TrailResultWrapper tr in this.Results)
                     {
                         if (tr.Overlaps.Count > 0 &&
                             !overlapResults.Contains(tr))
@@ -629,7 +624,7 @@ namespace TrailsPlugin.Data
                     }
 
                     //All (only) overlapping results are handled separetly
-                    foreach (TrailResultWrapper tr in this.ResultTreeList)
+                    foreach (TrailResultWrapper tr in this.Results)
                     {
                         foreach (TrailResultWrapper tr2 in tr.Overlaps)
                         {
@@ -701,8 +696,8 @@ namespace TrailsPlugin.Data
 
             foreach (TrailResultInfo resultInfo in trailResults)
             {
-                TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, m_resultsListWrapper.Count + 1, resultInfo, resultInfo.DistDiff, resultInfo.Reverse));
-                m_resultsListWrapper.Add(result);
+                TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, m_results.Count + 1, resultInfo, resultInfo.DistDiff, resultInfo.Reverse));
+                m_results.Add(result);
             }
 
             if (status != TrailOrderStatus.Match)
@@ -847,8 +842,8 @@ namespace TrailsPlugin.Data
     trailResults, incompleteResults, null);
                 if (trailResults.Count > 0)
                 {
-                    TrailResultWrapper result = new TrailResultWrapper(new PositionParentTrailResult(this, 0, trailResults[0], trailResults[0].DistDiff, trailResults[0].Reverse));
-                    tr = result.Result;
+                    tr = new PositionParentTrailResult(this, 0, trailResults[0], trailResults[0].DistDiff, trailResults[0].Reverse);
+                    TrailResultWrapper result = new TrailResultWrapper((ParentTrailResult)tr);
                 }
             }
             return tr;
@@ -1515,74 +1510,17 @@ namespace TrailsPlugin.Data
         }
 
         ///////////////////////////////////////////
-        public void Remove(IList<TrailResultWrapper> atr, bool invertSelection)
+        public void Remove(TrailResultWrapper tr)
         {
-            if (this.m_resultsListWrapper != null)
+            if (this.m_results != null)
             {
-                IList<TrailResultWrapper> selected = atr;
-                if (invertSelection)
+                foreach (TrailResultWrapper trr in m_results)
                 {
-                    selected = new List<TrailResultWrapper>();
-                    foreach (TrailResultWrapper tr in this.m_resultsListWrapper)
-                    {
-                        if (!atr.Contains(tr))
-                        {
-                            selected.Add(tr);
-                        }
-                    }
-                    //Exclude parents to selected
-                    foreach (TrailResultWrapper tr in atr)
-                    {
-                        if (tr.Parent != null)
-                        {
-                            TrailResultWrapper tr2 = tr.Parent as TrailResultWrapper;
-                            if (selected.Contains(tr2))
-                            {
-                                selected.Remove(tr2);
-                            }
-                        }
-                    }
-
+                    trr.AllChildren.Remove(tr);
+                    //May not be needed as Children are added when sorting
+                    trr.Children.Remove(tr);
                 }
-                if (invertSelection && selected.Count == m_resultsListWrapper.Count)
-                {
-                    //Must keep at least one in "inverted"
-                    return;
-                }
-                //Needed?
-                //foreach (TrailResult trr in m_resultsList)
-                //{
-                //    trr.RemoveChildren(atr[0].Result);
-                //}
-                //This will not have any effect with invertSelection, as 'selected' contains
-                //complement to parents only
-                foreach (TrailResultWrapper trr in m_resultsListWrapper)
-                {
-                    trr.RemoveChildren(selected);
-                }
-                foreach (TrailResultWrapper tr in selected)
-                {
-                    if (TrailResultWrapper.Results(this.ResultTreeList).Contains(tr.Result))
-                    {
-                        TrailResultWrapper.Results(this.ResultTreeList).Remove(tr.Result);
-                    }
-                    if (ResultTreeList.Contains(tr))
-                    {
-                        ResultTreeList.Remove(tr);
-                    }
-                    //if (tr.Result is ChildTrailResult)
-                    //{
-                    //    IList<TrailResultPoint> tps = ((TrailResultWrapper)tr.Parent).Result.SubResultInfo.Points;
-                    //    for (int i = 0; i < tps.Count; i++)
-                    //    {
-                    //        if (tps[i].Time == tr.Result.StartTime)
-                    //        {
-                    //            tps.RemoveAt(i);
-                    //            break;
-                    //        }
-                    //    }
-                    //}
-                }
+                this.m_results.Remove(tr);
             }
         }
 
@@ -1607,7 +1545,7 @@ namespace TrailsPlugin.Data
                     {
                         resultInfo.Points.Add(new TrailResultPoint(m_trail.TrailLocations[i], DateTime.MinValue, TrailResultPoint.DiffDistMax));
                     }
-                    TrailResult tr = new PositionParentTrailResult(this, m_resultsListWrapper.Count + 1,
+                    TrailResult tr = new PositionParentTrailResult(this, m_results.Count + 1,
                         resultInfo, resultInfo.DistDiff, t.Reverse);
                     result.Add(tr);
                 }
@@ -1633,12 +1571,12 @@ namespace TrailsPlugin.Data
                 if (sortValue == null)
                 {
                     sortValue = 0;
-                    foreach (Data.TrailResult tr in TrailResultWrapper.Results(this.ResultTreeList))
+                    IList<TrailResultWrapper> visible = TrailResultWrapper.UnpausedResults(this.Results);
+                    foreach (Data.TrailResultWrapper tr in visible)
                     {
-                        sortValue += tr.SortQuality;
+                        sortValue += tr.Result.SortQuality;
                     }
-                    sortValue = sortValue / (float)Math.Pow(TrailResultWrapper.Results(this.ResultTreeList).Count, 1.5);
-
+                    sortValue = sortValue / (float)Math.Pow(visible.Count, 1.5);
                 }
                 return (float)sortValue;
             }

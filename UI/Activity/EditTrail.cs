@@ -244,23 +244,23 @@ namespace TrailsPlugin.UI.Activity
                 {
                     ActivityTrail at = new ActivityTrail(this.m_TrailToEdit);
                     at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, this.m_TrailToEdit.MaxRequiredMisses, true, null);
-                    if (TrailResultWrapper.Results(at.ResultTreeList).Count > 0)
+                    if (at.Results.Count > 0)
                     {
-                        this.m_trailResult = TrailResultWrapper.Results(at.ResultTreeList)[0];
+                        this.m_trailResult = at.Results[0].Result;
                     }
                     else
                     {
                         at.Init();
                         at.CalcResults(new List<IActivity> { Controller.TrailController.Instance.ReferenceActivity }, 99, true, null);
-                        if (TrailResultWrapper.Results(at.ResultTreeList).Count > 0)
+                        if (at.Results.Count > 0)
                         {
                             //The best result is the result with most matches
                             //forward may be better than reverse, but those should be sorted first anyway
                             int currMaxRes = -1;
-                            foreach (TrailResult tr in TrailResultWrapper.Results(at.ResultTreeList))
+                            foreach (TrailResultWrapper tr in at.Results)
                             {
                                 int res = 0;
-                                foreach (DateTime d in tr.TrailPointDateTime)
+                                foreach (DateTime d in tr.Result.TrailPointDateTime)
                                 {
                                     if (d > DateTime.MinValue)
                                     {
@@ -270,7 +270,7 @@ namespace TrailsPlugin.UI.Activity
                                 if (res > currMaxRes)
                                 {
                                     currMaxRes = res;
-                                    this.m_trailResult = tr;
+                                    this.m_trailResult = tr.Result;
                                 }
                             }
                         }
@@ -685,7 +685,7 @@ namespace TrailsPlugin.UI.Activity
 
             IList<object> acts = new List<object>{ TrailsPlugin.Properties.Resources.UI_EditList_AutomaticRefActivity };//TBD: How to handle null activity?
             System.Collections.IList currSel = new object[1] { acts[0] };
-            foreach (IActivity act in TrailResultWrapper.Activities(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
+            foreach (IActivity act in TrailResultWrapper.Activities(TrailsPlugin.Controller.TrailController.Instance.Results))
             {
                 acts.Add(act);
                 if (act != null && act == this.Trail.DefaultRefActivity)

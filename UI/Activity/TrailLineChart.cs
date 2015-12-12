@@ -524,12 +524,12 @@ namespace TrailsPlugin.UI.Activity {
                         if (addReference)
                         {
                             //find the results for the view activity
-                            IList<TrailResult> allResults = TrailResultWrapper.Results(Controller.TrailController.Instance.CurrentResultTreeList);
-                            foreach (TrailResult tr2 in allResults)
+                            IList<TrailResultWrapper> allResults = Controller.TrailController.Instance.Results;
+                            foreach (TrailResultWrapper tr2 in allResults)
                             {
-                                if (tr2.Activity == m_page.ViewSingleActivity())
+                                if (tr2.Result.Activity == m_page.ViewSingleActivity())
                                 {
-                                    markResults.Add(tr2);
+                                    markResults.Add(tr2.Result);
                                 }
                             }
                         }

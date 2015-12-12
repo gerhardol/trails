@@ -2,12 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-(unreleased)
-  * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName : Spcific_), selecting the "parent" selects all "child" trails too. This is visible in the trail selection menu.
-  * Possibility to merge subresults with [Ctrl-'l' keyboard shortcut](Features#result-list).
-  
-  
-1.3.10 2015-11-20 (GitHub)
+(unreleased) 1.3.11 2015-12- (GitHub)
   * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
   * Tweaked UI, updating icons, sizes etc. See Charts and Result List changes
   * Charts
@@ -17,10 +12,11 @@ This page describes the changes between plugin releases. The change log may cont
     * Copy Chart option
     * Chart toolbar: Add option to hide/show trailpoints in charts
     * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
-  * Pre-defined trails
+  * Trails
+    * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName : Spcific_), selecting the "parent" selects all "child" trails too. This is visible in the trail selection menu.
     * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
-    * New trail: _Splits - Swim_ analyze swim activities
-    * New trail: _Splits - ReferenceResults_, a variant of the Splits trail. It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
+    * _Splits_: Swim information displayed, to analyze swim activities (priarily for Garmin 910XT and later)
+  * Analyze multiple data sources: It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Result list
 	* Added option menu, with "settings" for results. The list context menu (right click on the list) still have context related actions: Insert activities, set reference result, Analyze, etc
     * Result list toolbar, to emphasis help and insert of activities, that seem to not always be recognized. (The toolbar can be hidden)
@@ -32,6 +28,7 @@ This page describes the changes between plugin releases. The change log may cont
       * Show Only Marked Results On Map
       * Summary Average Standard Deviation
     * Option to show pauses as results in the list (can be marked on the map too). SportTracks will by default only show that pauses have occurred, this show the time and length of pauses.
+    * Possibility to merge subresults with [Ctrl-'l' keyboard shortcut](Features#result-list).
     * Save column size in list when changing. Previously the size was reset to default at updates.
     * Possibility to show Custom Data fields. They are for the activity, not trail, so not all are useful.
     * Show Lap fields for _Splits_ trail

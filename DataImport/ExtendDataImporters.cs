@@ -107,9 +107,9 @@ namespace TrailsPlugin.DataImport
                                     //Recalculate, to get "full" result
                                     tr = at.CalcTrailCompleteResult(activity);
                                 }
-                                else if (at.ResultTreeList.Count > 0)
+                                else if (at.Results.Count > 0)
                                 {
-                                    tr = at.ResultTreeList[0].Result;
+                                    tr = at.Results[0].Result;
                                 }
                                 if (tr != null)
                                 {

@@ -60,12 +60,36 @@ namespace TrailsPlugin.Data
             this.results = new List<TrailResult>();
         }
 
-        public void SetSummary(IList<TrailResult> list)
+        /// <summary>
+        /// If none or just summary, this is similar to all in some situations
+        /// </summary>
+        /// <param name="srw"></param>
+        /// <returns></returns>
+        public static bool IsSummarySelection(IList<TrailResultWrapper> srw)
         {
-            this.results = list; //must not be summary...
+            if (srw == null || srw.Count == 0 ||
+                srw.Count == 1 && srw[0].Result is SummaryTrailResult ||
+                srw.Count == 2 && srw[0].Result is SummaryTrailResult && srw[1].Result is SummaryTrailResult)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void SetSummary(IList<TrailResultWrapper> list)
+        {
+            this.results.Clear();
+            //Get summary from upaused and not summary
+            foreach(TrailResultWrapper t in TrailResultWrapper.UnpausedResults(list))
+            {
+                if(!(t.Result is SummaryTrailResult))
+                {
+                    this.results.Add(t.Result);
+                }
+            }
             this.m_order = list.Count;
             this.Clear(false);
-            this.m_PoolLengthInfo = Data.PoolLengthInfo.GetPoolLength(list);
+            this.m_PoolLengthInfo = Data.PoolLengthInfo.GetPoolLength(this.results);
         }
 
         private delegate double FieldGetter(TrailResult tr);

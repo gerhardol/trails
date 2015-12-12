@@ -763,7 +763,7 @@ namespace TrailsPlugin.Utils
             //    }
             //    if (elapsedDate >= elapsedSrc)
             //    {
-            //        //xxx
+            //        
             //    }
             //}
             //ST bug: track could be out of order (due to insert at least)

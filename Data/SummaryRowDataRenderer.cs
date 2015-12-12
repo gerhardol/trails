@@ -54,7 +54,7 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    if (wrapper.Result.Equals(Controller.TrailController.Instance.ReferenceTrailResult))
+                    if (wrapper.Result.Equals(Controller.TrailController.Instance.ReferenceResult.Result))
                     {
                         return System.Drawing.FontStyle.Italic;
                     }

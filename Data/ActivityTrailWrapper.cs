@@ -155,60 +155,60 @@ namespace TrailsPlugin.Data
 
         public string GetText(object element, TreeList.Column column)
         {
-            ActivityTrail t = ((ActivityTrailWrapper)element).ActivityTrail;
-            string name = t.Trail.Name;
-            if (t.Trail.Parent != null)
+            ActivityTrail at = ((ActivityTrailWrapper)element).ActivityTrail;
+            string name = at.Trail.Name;
+            if (at.Trail.Parent != null)
             {
                 //Remove parent part, colon/space is flexible
-                name = name.Substring(t.Trail.Parent.Name.Length+1).TrimStart(' ',':');
+                name = name.Substring(at.Trail.Parent.Name.Length+1).TrimStart(' ',':');
             }
-            if (t.Trail.IsReference && null != t.Trail.ReferenceActivity)
+            if (at.Trail.IsReference && null != at.Trail.ReferenceActivity)
             {
-                DateTime time = ActivityInfoCache.Instance.GetInfo(t.Trail.ReferenceActivity).ActualTrackStart;
+                DateTime time = ActivityInfoCache.Instance.GetInfo(at.Trail.ReferenceActivity).ActualTrackStart;
                 if (DateTime.MinValue == time)
                 {
-                    time = t.Trail.ReferenceActivity.StartTime;
+                    time = at.Trail.ReferenceActivity.StartTime;
                 }
                 name += " " + time.ToLocalTime().ToString();
             }
 
-            if (t.Status == TrailOrderStatus.Match ||
-                t.Status == TrailOrderStatus.MatchPartial)
+            if (at.Status == TrailOrderStatus.Match ||
+                at.Status == TrailOrderStatus.MatchPartial)
             {
-                int n = TrailResultWrapper.Results(t.ResultTreeList).Count;
-                foreach (Trail tr in t.Trail.AllChildren)
+                int n = at.Results.Count;
+                foreach (Trail t2 in at.Trail.AllChildren)
                 {
-                    n += TrailResultWrapper.Results(Controller.TrailController.Instance.GetActivityTrail(tr).ResultTreeList).Count;
+                    n += Controller.TrailController.Instance.GetActivityTrail(t2).Results.Count;
                 }
                 name += " (" + n;
-                if (t.Trail.IsURFilter && t.FilteredResults.Count > 0)
+                if (at.Trail.IsURFilter && at.FilteredResults.Count > 0)
                 {
-                    name += " ," + t.FilteredResults.Count;
+                    name += " ," + at.FilteredResults.Count;
                 }
                 name += ")";
             }
-            else if (t.Status == TrailOrderStatus.MatchNoCalc)
+            else if (at.Status == TrailOrderStatus.MatchNoCalc)
             {
-                if (t.Trail.TrailType == Trail.CalcType.Splits ||
-                    t.Trail.TrailType == Trail.CalcType.UniqueRoutes)
+                if (at.Trail.TrailType == Trail.CalcType.Splits ||
+                    at.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
-                    name += " (" + t.ActivityCount + ")";
+                    name += " (" + at.ActivityCount + ")";
                 }
             }
-            else if ((t.Status == TrailOrderStatus.InBoundMatchPartial) &&
-                 t.m_noResCount.ContainsKey(t.Status))
+            else if ((at.Status == TrailOrderStatus.InBoundMatchPartial) &&
+                 at.m_noResCount.ContainsKey(at.Status))
             {
-                name += " (" + t.m_noResCount[t.Status];
-                if (t.m_noResCount.ContainsKey(TrailOrderStatus.InBound))
+                name += " (" + at.m_noResCount[at.Status];
+                if (at.m_noResCount.ContainsKey(TrailOrderStatus.InBound))
                 {
-                    name += ", " + t.m_noResCount[TrailOrderStatus.InBound];
+                    name += ", " + at.m_noResCount[TrailOrderStatus.InBound];
                 }
                 name += ")";
             }
             //Other results
-            else if (t.m_noResCount.ContainsKey(t.Status))
+            else if (at.m_noResCount.ContainsKey(at.Status))
             {
-                name += " (" + t.m_noResCount[t.Status] + ")";
+                name += " (" + at.m_noResCount[at.Status] + ")";
             }
             return name;
         }

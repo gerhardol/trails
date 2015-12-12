@@ -16,37 +16,36 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 
-using ZoneFiveSoftware.Common.Data;
-using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
-using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Visuals;
-using ZoneFiveSoftware.Common.Visuals.Fitness;
-using ITrailExport;
 
 namespace TrailsPlugin.Data
 {
     public class TrailResultWrapper : TreeList.TreeListNode, IComparable
     {
+        private TrailResultWrapper(TrailResultWrapper parent, TrailResult element)
+            : base(parent, element)
+        {
+            element.Wrapper = this;
+        }
+
         public TrailResultWrapper(SummaryTrailResult element)
-            : base(null, element)
+            : this(null, element)
         {
         }
 
         public TrailResultWrapper(ParentTrailResult element)
-            : base(null, element)
+            : this(null, element)
         {
             getChildren();
         }
 
         private void getChildren()
         {
-            //TODO: Calculate children when needed, by implementing Children
-            //This is currently called after all parent results have been determined
-            //A good enough reason is that this will give main activities separate colors, in the intended order
+            //TODO This should be lazy (calculated if children visible), 
+            //requires overiding Children
             if (this.Element != null && this.Element is ParentTrailResult)
             {
                 IList<ChildTrailResult> children = (this.Element as ParentTrailResult).getChildren();
@@ -66,17 +65,18 @@ namespace TrailsPlugin.Data
             this.Children.Clear();
             this.m_allChildren.Clear();
             this.Result.updateIndexes(indexes);
-            getChildren();
+            this.getChildren();
         }
 
         public TrailResultWrapper(HighScoreParentTrailResult element)
-            : base(null, element)
+            : this(null, element)
         {
         }
 
         public TrailResultWrapper(TrailResultWrapper parent, ChildTrailResult element)
             : base(parent, element)
         {
+            element.Wrapper = this;
             //several separate substructues..
             parent.Children.Add(this);
             parent.m_allChildren.Add(this);
@@ -98,23 +98,6 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public TrailResultWrapper getTrailResultRow(bool ensureParent)
-        {
-            TrailResultWrapper result = this;
-            if (ensureParent)
-            {
-                if (result.Parent != null)
-                {
-                    result = (TrailResultWrapper)result.Parent;
-                    if (result.Parent != null)
-                    {
-                        result = (TrailResultWrapper)result.Parent;
-                    }
-                }
-            }
-            return result;
-        }
-
         public void Sort()
         {
             if (m_allChildren.Count > 0)
@@ -132,47 +115,24 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public bool RemoveChildren(IList<TrailResultWrapper> tn)
+        private static IList<TrailResultWrapper> GetUnpausedResults(IList<TrailResultWrapper> tn, bool includeChildren)
         {
-            bool result = false;
-            foreach (TrailResultWrapper tr in tn)
-            {
-                if (this.m_allChildren.Contains(tr))
-                {
-                    this.m_allChildren.Remove(tr);
-                    result = true;
-                }
-                //May not be needed as Children are added when sorting
-                if (this.Children.Contains(tr))
-                {
-                    this.Children.Remove(tr);
-                }
-                if (this.Result != null && this.Result is ParentTrailResult)
-                {
-                    (this.Result as ParentTrailResult).RemoveChildren(tr);
-                }
-            }
-            return result;
-        }
-
-        public static IList<TrailResult> GetTrailResults(IList<TrailResultWrapper> tn, bool includeChildren)
-        {
-            IList<TrailResult> result = new List<TrailResult>();
+            IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
             if (tn != null)
             {
                 foreach (TrailResultWrapper tnp in tn)
                 {
                     if (!(tnp.Result is PausedChildTrailResult))
                     {
-                        result.Add(tnp.Result);
+                        result.Add(tnp);
                     }
                     if (includeChildren)
                     {
                         foreach (TrailResultWrapper tnc in tnp.Children)
                         {
-                            if (!result.Contains(tnc.Result) && !(tnc.Result is PausedChildTrailResult))
+                            if (!result.Contains(tnc) && !(tnc.Result is PausedChildTrailResult))
                             {
-                                result.Add(tnc.Result);
+                                result.Add(tnc);
                             }
                         }
                     }
@@ -181,17 +141,36 @@ namespace TrailsPlugin.Data
             return result;
         }
 
+        public static IList<TrailResultWrapper> UnpausedResults(IList<TrailResultWrapper> tn)
+        {
+            return TrailResultWrapper.GetUnpausedResults(tn, false);
+        }
+
+        //Convert from TrailResult to TrailResultWrapper
+        public static IList<TrailResultWrapper> Results(IList<TrailResult> tn)
+        {
+            IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
+            foreach(TrailResult t in tn)
+            {
+                if (t.Wrapper != null)
+                {
+                    results.Add(t.Wrapper);
+                }
+            }
+            return results;
+        }
+
         /// <summary>
         /// Return only Parent results (not the Splits/SubResults)
         /// </summary>
-        public static IList<TrailResult> Results(IList<TrailResultWrapper> tn)
+        public static IList<TrailResult> TrailResults(IList<TrailResultWrapper> tn)
         {
-            return TrailResultWrapper.GetTrailResults(tn, false);
-        }
-
-        public static IList<TrailResult> IncludeSubResults(IList<TrailResultWrapper> tn)
-        {
-            return TrailResultWrapper.GetTrailResults(tn, true);
+            IList<TrailResult> result = new List<TrailResult>();
+            foreach (TrailResultWrapper tnp in tn)
+            {
+                result.Add(tnp.Result);
+            }
+            return result;
         }
 
         public static IList<IActivity> Activities(IList<TrailResultWrapper> tn)
@@ -210,56 +189,7 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        //Get all TrailResultWrapper (including children) for the provided TrailResult in the list
-        //The check uses CompareTo() instead of Contains() as the result list may be for previous calculations
-        public static IList<TrailResultWrapper> SelectedItems(IList<TrailResultWrapper> trws, IList<TrailResult> tr)
-        {
-            IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
-            if (trws != null && tr != null)
-            {
-                //This should not be needed, but a crash when developing occurred here set breakpoint
-                try
-                {
-                    foreach (TrailResult trr in tr)
-                    {
-                        bool isMatch = false;
-                        foreach (TrailResultWrapper tnp in trws)
-                        {
-                            if (isMatch)
-                            {
-                                break;
-                            }
-                            if (!(trr is ChildTrailResult))
-                            {
-                                if (tnp.Result.CompareTo(trr) == 0)
-                                {
-                                    result.Add(tnp);
-                                    //Break the loop
-                                    isMatch = true;
-                                }
-                            }
-                            else
-                            {
-                                foreach (TrailResultWrapper tnc in tnp.m_allChildren)
-                                {
-                                    if (tnc.Result.CompareTo(trr) == 0)
-                                    {
-                                        result.Add(tnc);
-                                        //break from two levels of foreach
-                                        isMatch = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch { }
-            }
-            return result;
-        }
-
-        public static IList<TrailResultWrapper> getTrailResultWrapperSelection(System.Collections.IList tlist)
+        public static IList<TrailResultWrapper> SelectedResults(System.Collections.IList tlist)
         {
             IList<TrailResultWrapper> aTr = new List<TrailResultWrapper>();
             if (tlist != null)
@@ -282,6 +212,7 @@ namespace TrailsPlugin.Data
 
         //The Children may not include all (hide paused laps, deleted etc). These are all results
         private IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
+        public IList<TrailResultWrapper> AllChildren {  get { return m_allChildren; } }
 
         #region IComparable<Product> Members
         public int CompareTo(object obj)

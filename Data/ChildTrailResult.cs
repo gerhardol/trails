@@ -95,6 +95,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                //Note: This is used also at creation, why Wrapper.Parent is not possible 
                 return m_parentResult;
             }
         }

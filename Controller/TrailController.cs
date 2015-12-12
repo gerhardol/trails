@@ -46,7 +46,7 @@ namespace TrailsPlugin.Controller
         private IList<ActivityTrail> m_prevSelectedTrails = new List<ActivityTrail>();
         private IList<ActivityTrail> m_prevActivityTrails = new List<ActivityTrail>();
         
-        private TrailResult m_referenceTrailResult = null;
+        private TrailResultWrapper m_refResultWrapper = null;
         private IActivity m_referenceActivity = null;
 
         private IList<ActivityTrail> m_CurrentOrderedTrails = new List<ActivityTrail>();
@@ -141,7 +141,6 @@ namespace TrailsPlugin.Controller
             {
                 at.Init();
             }
-            SpecialSelectionResults.Clear();
             //activityGps handled separately
         }
 
@@ -199,21 +198,80 @@ namespace TrailsPlugin.Controller
             }
         }
 
-        public IList<TrailResultWrapper> CurrentResultTreeList
+        public IList<TrailResultWrapper> Results
         {
             get
             {
                 IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
                 foreach (ActivityTrail at in this.CurrentActivityTrails)
                 {
-                    foreach (TrailResultWrapper tw in at.ResultTreeList)
+                    foreach (TrailResultWrapper tw in at.Results)
                     {
                         result.Add(tw);
                     }
                 }
-                
                 return result;
             }
+        }
+
+        //Get all TrailResultWrapper (including children) for the provided results
+        //The check uses CompareTo() instead of Contains() as the results may be for previous calculations
+        public IList<TrailResultWrapper> UpdateResults(IList<TrailResultWrapper> tr)
+        {
+            IList<TrailResultWrapper> trws = this.Results;
+            IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
+            if (trws != null && tr != null)
+            {
+                //This should not be needed, but a crash when developing occurred here set breakpoint
+                try
+                {
+                    foreach (TrailResultWrapper trr in tr)
+                    {
+                        bool isMatch = false;
+                        foreach (TrailResultWrapper tnp in trws)
+                        {
+                            if (isMatch)
+                            {
+                                break;
+                            }
+                            if ((trr.Result is ChildTrailResult))
+                            {
+                                foreach (TrailResultWrapper tnc in tnp.AllChildren)
+                                {
+                                    if (tnc.Result.CompareTo(trr.Result) == 0)
+                                    {
+                                        result.Add(tnc);
+                                        //break from two levels of foreach
+                                        isMatch = true;
+                                        break;
+                                    }
+                                    foreach (TrailResultWrapper tnc2 in tnc.AllChildren)
+                                    {
+                                        if (tnc2.Result.CompareTo(trr.Result) == 0)
+                                        {
+                                            result.Add(tnc2);
+                                            //break from two levels of foreach
+                                            isMatch = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (tnp.Result.CompareTo(trr.Result) == 0)
+                                {
+                                    result.Add(tnp);
+                                    //Break the loop
+                                    isMatch = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
+            return result;
         }
 
         private TrailOrderStatus CurrentStatus()
@@ -302,7 +360,7 @@ namespace TrailsPlugin.Controller
                     at.CalcResults(progressBar);
                 }
                 if (at.Status <= TrailOrderStatus.MatchPartial &&
-                    at.ResultTreeList.Count <= Settings.MaxAutoCalcResults)
+                    at.Results.Count <= Settings.MaxAutoCalcResults)
                 {
                     useSelected = true;
                     break;
@@ -428,7 +486,7 @@ namespace TrailsPlugin.Controller
             get { return m_AutomaticUpdate; }
             set
             {
-                if (value && this.CurrentResultTreeList.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
+                if (value && this.Results.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
                 {
                     //Avoid sort on some fields that are heavy to calculate at auto updates
                     m_AutomaticUpdate = true;
@@ -497,10 +555,10 @@ namespace TrailsPlugin.Controller
             {
                 if (this.m_referenceActivity==null || !this.m_activities.Contains(this.m_referenceActivity))
                 {
-                    if (m_referenceTrailResult!= null && this.m_referenceTrailResult.Activity!= null &&
-                        this.m_activities.Contains(this.m_referenceTrailResult.Activity))
+                    if (m_refResultWrapper!= null && this.m_refResultWrapper.Result.Activity!= null &&
+                        this.m_activities.Contains(this.m_refResultWrapper.Result.Activity))
                     {
-                        this.m_referenceActivity = this.m_referenceTrailResult.Activity;
+                        this.m_referenceActivity = this.m_refResultWrapper.Result.Activity;
                     }
                     else if (this.m_activities.Count > 0)
                     {
@@ -512,22 +570,45 @@ namespace TrailsPlugin.Controller
         }
 
         /// <summary>
-        /// Special persistent selection, used in certain situations
+        /// Special persistent selection
         /// </summary>
         /// 
-        public IList<TrailResult> SpecialSelectionResults = new List<TrailResult>();
+        private IList<TrailResultWrapper> m_PersistentSelectionResults = new List<TrailResultWrapper>();
+        public IList<TrailResultWrapper> PersistentSelectionResults
+        {
+            get
+            {
+                return Controller.TrailController.Instance.UpdateResults(m_PersistentSelectionResults);
+            }
+            set
+            {
+                m_PersistentSelectionResults = value;
+            }
+        }
 
-        public TrailResult ReferenceTrailResult
+        public TrailResultWrapper ReferenceResult
         {
             set
             {
-                m_referenceTrailResult = value;
+                m_refResultWrapper = value;
                 //Check that the value is OK, as well as set activity and possibly recalc ref trail
                 this.checkReferenceTrailResult(null);
             }
             get
             {
-                return this.m_referenceTrailResult;
+                return this.m_refResultWrapper;
+            }
+        }
+
+        public TrailResult ReferenceTrailResult
+        {
+            get
+            {
+                if(this.m_refResultWrapper == null)
+                {
+                    return null;
+                }
+                return this.m_refResultWrapper.Result;
             }
         }
 
@@ -538,21 +619,21 @@ namespace TrailsPlugin.Controller
             bool moreChecks = true;
 
             //Should always follow the trail result, if it exists
-            if (m_referenceTrailResult != null)
+            if (m_refResultWrapper != null)
             {
-                if (this.m_activities.Contains(this.m_referenceTrailResult.Activity))
+                if (this.m_activities.Contains(this.m_refResultWrapper.Result.Activity))
                 {
                     //The ref result is at least possible, set ref activity
-                    this.m_referenceActivity = m_referenceTrailResult.Activity;
+                    this.m_referenceActivity = m_refResultWrapper.Result.Activity;
                     //Save last used activity
-                    this.m_referenceTrailResult.Trail.ReferenceActivity = m_referenceActivity;
+                    this.m_refResultWrapper.Result.Trail.ReferenceActivity = m_referenceActivity;
                     //skip a Contains check...
                     moreChecks = false;
                 }
                 else
                 {
                     //result not possible
-                    this.m_referenceTrailResult = null;
+                    this.m_refResultWrapper = null;
                 }
             }
 
@@ -613,7 +694,7 @@ namespace TrailsPlugin.Controller
             return m_referenceActivity;
         }
 
-        private TrailResult checkReferenceTrailResult(System.Windows.Forms.ProgressBar progressBar)
+        private TrailResultWrapper checkReferenceTrailResult(System.Windows.Forms.ProgressBar progressBar)
         {
             System.Diagnostics.Debug.Assert(m_currentActivityTrails != null);
 
@@ -622,19 +703,18 @@ namespace TrailsPlugin.Controller
                 //Check that the ref is for current calculation
                 if (this.CurrentStatus() <= TrailOrderStatus.MatchPartial)
                 {
-                    if (m_referenceTrailResult != null)
+                    if (m_refResultWrapper != null)
                     {
                         //Check if ref is in all results (may have changed, Contains() will not work)
-                        IList<TrailResultWrapper> trs = TrailResultWrapper.SelectedItems(this.CurrentResultTreeList,
-                            new List<TrailResult> { m_referenceTrailResult });
+                        IList<TrailResultWrapper> trs = this.UpdateResults(new List<TrailResultWrapper> { m_refResultWrapper });
                         System.Diagnostics.Debug.Assert(trs != null);
                         if (trs.Count > 0)
                         {
-                            m_referenceTrailResult = trs[0].Result;
+                            m_refResultWrapper = trs[0];
                         }
                         else
                         {
-                            m_referenceTrailResult = null;
+                            m_refResultWrapper = null;
                         }
                     }
                 }
@@ -642,27 +722,27 @@ namespace TrailsPlugin.Controller
                 //If the reference result is not set, try a result for current reference activity,
                 // secondly the first result
                 //No forced calculations, should already be done
-                if (this.m_referenceTrailResult == null &&
+                if (this.m_refResultWrapper == null &&
                     this.m_referenceActivity != null &&
                     this.CurrentStatus() <= TrailOrderStatus.MatchPartial)
                 {
-                    TrailResult firstResult = null;
+                    TrailResultWrapper firstResult = null;
 
-                    foreach (TrailResult tr in TrailResultWrapper.Results(this.CurrentResultTreeList))
+                    foreach (TrailResultWrapper tr in TrailResultWrapper.UnpausedResults(this.Results))
                     {
                         if (firstResult == null)
                         {
                             firstResult = tr;
                         }
-                        if (this.m_referenceActivity.Equals(tr.Activity))
+                        if (this.m_referenceActivity.Equals(tr.Result.Activity))
                         {
-                            this.m_referenceTrailResult = tr;
+                            this.m_refResultWrapper = tr;
                             break;
                         }
                     }
-                    if (this.m_referenceTrailResult == null && firstResult != null)
+                    if (this.m_refResultWrapper == null && firstResult != null)
                     {
-                        this.m_referenceTrailResult = firstResult;
+                        this.m_refResultWrapper = firstResult;
                     }
                 }
             }
@@ -670,19 +750,19 @@ namespace TrailsPlugin.Controller
             //Reference activity may have to be updated
             checkReferenceActivity(progressBar);
 
-            return m_referenceTrailResult;
+            return m_refResultWrapper;
         }
 
         /***********************************************************/
 
-        private IList<TrailResult> m_selectedResults = null;
-        public IList<TrailResult> SelectedResults
+        private IList<TrailResultWrapper> m_selectedResults = null;
+        public IList<TrailResultWrapper> SelectedResults
         {
             get
             {
-                if(this.m_selectedResults==null)
+                if (this.m_selectedResults == null)
                 {
-                    this.m_selectedResults = new List<TrailResult>();
+                    this.m_selectedResults = new List<TrailResultWrapper>();
                 }
                 return this.m_selectedResults;
             }

@@ -315,20 +315,28 @@ namespace TrailsPlugin.UI.Activity {
 
                 IDictionary<string, MapPolyline> routes = new Dictionary<string, MapPolyline>();
                 IList<SplitGPSLocation> splitPoints = new List<SplitGPSLocation>();
-                IList<TrailResult> results;
-                IList<TrailResult> selected = Controller.TrailController.Instance.SelectedResults;
-                if (!Data.Settings.ShowOnlyMarkedOnRoute ||
-                    (selected == null ||
-                    selected.Count == 1 && selected[0] is SummaryTrailResult))
+                IList<TrailResultWrapper> results;
+                IList<TrailResultWrapper> selected;
+                if (Data.Settings.ShowOnlyMarkedOnRoute)
                 {
-                    results = TrailResultWrapper.Results(Controller.TrailController.Instance.CurrentResultTreeList);
+                    selected = Controller.TrailController.Instance.SelectedResults;
                 }
                 else
                 {
-                    results = new List<TrailResult>();
-                    foreach (TrailResult tr in selected)
+                    selected = Controller.TrailController.Instance.Results;
+                }
+                if (SummaryTrailResult.IsSummarySelection(selected))
+                {
+                    //Show all results also with ShowOnlyMarkedOnRoute
+                    results = TrailResultWrapper.UnpausedResults(Controller.TrailController.Instance.Results);
+                }
+                else
+                {
+                    //There are results other than Summary, show them
+                    results = new List<TrailResultWrapper>();
+                    foreach (TrailResultWrapper tr in selected)
                     {
-                        if (!(tr is SummaryTrailResult))
+                        if (!(tr.Result is SummaryTrailResult))
                         {
                             results.Add(tr);
                         }
@@ -336,13 +344,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Result related - routes and splitpoints
-                foreach (TrailResult tr in results)
+                foreach (TrailResultWrapper tr in results)
                 {
                     //Do not map routes displayed already by ST
-                    if (ViewSingleActivity() != tr.Activity)
+                    if (ViewSingleActivity() != tr.Result.Activity)
                     {
                         //Note: Possibly limit no of Trails shown, it slows down Gmaps some
-                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr))
+                        foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr.Result))
                         {
                             m.Click += new MouseEventHandler(mapPoly_Click);
                             if (!routes.ContainsKey(m.key))
@@ -353,11 +361,11 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     if (Data.Settings.ShowTrailPointsOnMap)
                     {
-                        if (tr.Trail.TrailType != Trail.CalcType.TrailPoints)
+                        if (tr.Result.Trail.TrailType != Trail.CalcType.TrailPoints)
                         {
-                            foreach (TrailResultPoint tp in tr.SubResultInfo.Points)
+                            foreach (TrailResultPoint tp in tr.Result.SubResultInfo.Points)
                             {
-                                SplitGPSLocation tl = new SplitGPSLocation(tp, tr.ResultColor.FillSelected);
+                                SplitGPSLocation tl = new SplitGPSLocation(tp, tr.Result.ResultColor.FillSelected);
                                 splitPoints.Add(tl);
                             }
                         }
@@ -730,14 +738,14 @@ namespace TrailsPlugin.UI.Activity {
                 if (selected != null)
                 {
                     //Note: All results, not just the displayed
-                    IList<TrailResult> t = TrailResultWrapper.Results(Controller.TrailController.Instance.CurrentResultTreeList);
+                    IList<TrailResultWrapper> t = Controller.TrailController.Instance.Results;
                     foreach (IItemTrackSelectionInfo sel in selected.SelectedItems)
                     {
-                        foreach (TrailResult tr in t)
+                        foreach (TrailResultWrapper tr in t)
                         {
-                            if (tr.Activity.ToString() == sel.ItemReferenceId)
+                            if (tr.Result.Activity.ToString() == sel.ItemReferenceId)
                             {
-                                trSel = tr;
+                                trSel = tr.Result;
                                 break;
                             }
                         }

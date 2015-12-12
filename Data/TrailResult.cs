@@ -37,9 +37,11 @@ namespace TrailsPlugin.Data
     public class TrailResult : IComparable
     {
         #region private variables
-        protected ActivityTrail m_activityTrail;
+        //Wrapper set after result is created, may be null
+        internal TrailResultWrapper Wrapper;
+        private ActivityTrail m_activityTrail;
         private IActivity m_activity;
-        protected ILapInfo m_LapInfo = null;
+        private ILapInfo m_LapInfo = null;
         protected IPoolLengthInfo m_PoolLengthInfo = null;
         protected int m_order;
         private string m_name;
@@ -485,6 +487,11 @@ namespace TrailsPlugin.Data
             {
                 DateTime startTime = m_subResultInfo.Points[0].Time;
                 DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
+                if (endTime < startTime)
+                {
+                    Debug.Assert(endTime < startTime, "Start time: " + startTime + " is unexpectedly later than end time: " + endTime);
+                    endTime = startTime;
+                }
                 resTime = TrackUtil.getFirstUnpausedTime(endTime, pauses, false);
                 if (startTime.CompareTo(resTime) >= 0)
                 {
@@ -779,7 +786,7 @@ namespace TrailsPlugin.Data
             {
                 if (m_pauses == null)
                 {
-                    TrailResult refTr = Controller.TrailController.Instance.ReferenceTrailResult;
+                    TrailResultWrapper refTr = Controller.TrailController.Instance.ReferenceResult;
                     if (this is SummaryTrailResult)
                     {
                         Debug.Assert(false, "Unexpectedly requesting pauses for summary result");
@@ -792,13 +799,13 @@ namespace TrailsPlugin.Data
                     //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
                     else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
                         null != refTr &&
-                        this != refTr &&
+                        this != refTr.Result &&
                         //Note: All cached values (including Start/End) must be set after Pauses
-                        this.AnyOverlap(refTr, refTr.ExternalPauses))
+                        this.AnyOverlap(refTr.Result, refTr.Result.ExternalPauses))
                     {
                         //For Splits, the duration is set when updating splits, may be incorrect
                         this.m_duration = null;
-                        this.m_pauses = refTr.ExternalPauses;
+                        this.m_pauses = refTr.Result.ExternalPauses;
                     }
                     else
                     {
@@ -2005,7 +2012,7 @@ namespace TrailsPlugin.Data
                 if ((m_cadencePerMinuteTrack0 == null || m_cadencePerMinuteTrack0.Count == 0) && TrailsPlugin.Data.Settings.CadenceFromOther)
                 {
                     //Get device elevation from another activity in results
-                    foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
+                    foreach (TrailResultWrapper trw in Controller.TrailController.Instance.Results)
                     {
                         IActivity activity = trw.Result.Activity;
                         if (this.AnyOverlap(activity) && activity.CadencePerMinuteTrack != null)
@@ -2458,11 +2465,13 @@ namespace TrailsPlugin.Data
         private INumericTimeDataSeries DeviceElevationTrackFromActivity(IActivity activity, bool trim, int eleSmooth)
         {
             INumericTimeDataSeries deviceElevationTrack0 = null;
-            if (activity != null)
+            if (activity != null && 
+                this.StartTime != DateTime.MinValue &&
+                this.EndTime != DateTime.MinValue)
             {
+                //Check for a track that mostly overlaps, rather than AnyOverlap
                 INumericTimeDataSeries sourceTrack = null;
                 const int maxTimeDiff = 60;
-                Debug.Assert(this.EndTime > DateTime.MinValue, this.StartTime + " " + this.EndTime + " " + maxTimeDiff);
                 DateTime start2 = this.StartTime.AddSeconds(+maxTimeDiff);
                 DateTime end2 = this.EndTime.AddSeconds(-maxTimeDiff);
 
@@ -2543,7 +2552,7 @@ namespace TrailsPlugin.Data
             if (deviceElevationTrack0 == null && TrailsPlugin.Data.Settings.DeviceElevationFromOther)
             {
                 //Get device elevation from another activity in results
-                foreach (TrailResultWrapper trw in Controller.TrailController.Instance.CurrentResultTreeList)
+                foreach (TrailResultWrapper trw in Controller.TrailController.Instance.Results)
                 {
                     IActivity activity = trw.Result.Activity;
                     if (this.AnyOverlap(activity))
@@ -2901,9 +2910,13 @@ namespace TrailsPlugin.Data
                 TrailsPlugin.Data.Settings.RunningGradeAdjustMethod--;
             }
 
-            foreach (TrailResult t in TrailResultWrapper.IncludeSubResults(TrailsPlugin.Controller.TrailController.Instance.CurrentResultTreeList))
+            foreach (TrailResultWrapper t in TrailsPlugin.Controller.TrailController.Instance.Results)
             {
-                t.m_gradeRunAdjustedTime = null;
+                t.Result.m_gradeRunAdjustedTime = null;
+                foreach (TrailResultWrapper t2 in t.AllChildren)
+                {
+                    t2.Result.m_gradeRunAdjustedTime = null;
+                }
             }
         }
 
@@ -2994,7 +3007,6 @@ namespace TrailsPlugin.Data
                         UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
                         foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
                         {
-                            //TODO insert when sparse
                             DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
                             ITimeValueEntry<float> t2 = eleTrack.GetInterpolatedValue(dateTime);
                             float dist = t.Value;
@@ -3312,14 +3324,15 @@ namespace TrailsPlugin.Data
         {
             TrailResult res = parRes;
             if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent &&
-                parRes != null && parRes is ParentTrailResult)
+                parRes != null && parRes is ParentTrailResult &&
+                parRes.Wrapper != null)
             {
                 //If this is a subsplit, get the subsplit related to the ref
-                foreach (ChildTrailResult tr in (parRes as ParentTrailResult).m_childrenResults)
+                foreach (TrailResultWrapper tr in parRes.Wrapper.AllChildren)
                 {
-                    if (this.m_order == tr.Order)
+                    if (this.m_order == tr.Result.Order)
                     {
-                        res = tr;
+                        res = tr.Result;
                         break;
                     }
                 }
@@ -3331,11 +3344,11 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                TrailResult refTr = Controller.TrailController.Instance.ReferenceTrailResult;
+                TrailResultWrapper refTr = Controller.TrailController.Instance.ReferenceResult;
                 if (TrailsPlugin.Data.Settings.OverlappingResultUseTimeOfDayDiff &&
                     null != refTr &&
-                    this != refTr &&
-                    this.AnyOverlap(refTr))
+                    this != refTr.Result &&
+                    this.AnyOverlap(refTr.Result))
                 {
                     return true;
                 }
@@ -3901,17 +3914,16 @@ namespace TrailsPlugin.Data
             get
             {
                 ChartColors result = null;
-
+                IList<TrailResultWrapper> selected = Controller.TrailController.Instance.SelectedResults;
                 if (!m_colorOverridden &&
                     (this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent &&
-                    Controller.TrailController.Instance.SelectedResults != null &&
-                    Controller.TrailController.Instance.SelectedResults.Count > 1)
+                    selected.Count > 1)
                 {
                     bool useParentColor = false;
                     //Find if any other trailresult with this parent exists
-                    foreach (TrailResult tr in Controller.TrailController.Instance.SelectedResults)
+                    foreach (TrailResultWrapper tr in selected)
                     {
-                        TrailResult parent = tr;
+                        TrailResult parent = tr.Result;
                         if (parent is ChildTrailResult)
                         {
                             parent = (parent as ChildTrailResult).ParentResult;

@@ -32,7 +32,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
     {
         public TrailResultNamedZone(TrailsPlugin.Data.ActivityTrail trail, IActivity activity)
         {
-            m_Trail = trail;
+            m_ActivityTrail = trail;
             m_Activity = activity;
 
             m_ValidTimesDirty = true;
@@ -40,7 +40,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         }
         public TrailResultNamedZone(TrailsPlugin.Data.ActivityTrail trail, TrailsPlugin.Data.TrailResult tr)
         {
-            m_Trail = trail;
+            m_ActivityTrail = trail;
             m_TrailResult = tr;
 
             m_ValidTimesDirty = true;
@@ -53,10 +53,10 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         {
             get
             {
-                string result = m_Trail.Trail.Name;
+                string result = m_ActivityTrail.Trail.Name;
                 if (m_TrailResult != null)
                 {
-                    if (m_Trail.Trail.TrailType == Data.Trail.CalcType.HighScore)
+                    if (m_ActivityTrail.Trail.TrailType == Data.Trail.CalcType.HighScore)
                     {
                         result += " (" +
                             UnitUtil.Distance.ToString(m_TrailResult.Distance, "u") + ")";
@@ -102,7 +102,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
             {
                 TrailResultNamedZone namedZone = obj as TrailResultNamedZone;
 
-                return namedZone.m_Trail.Equals(m_Trail);
+                return namedZone.m_ActivityTrail.Equals(m_ActivityTrail);
             }
 
             return base.Equals(obj);
@@ -123,9 +123,9 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                 {
                     //Do not keep selection, sort find best
                     TrailsPlugin.Controller.TrailController.Instance.SetActivities(new List<IActivity> { m_Activity }, false);
-                    foreach (TrailsPlugin.Data.TrailResult tr in TrailsPlugin.Data.TrailResultWrapper.Results(m_Trail.ResultTreeList))
+                    foreach (Data.TrailResultWrapper tr in m_ActivityTrail.Results)
                     {
-                        foreach(IValueRange<DateTime> t in tr.getSelInfo(false))
+                        foreach(IValueRange<DateTime> t in tr.Result.getSelInfo(false))
                         {
                             m_ValidTimes.Add(t);
                         }
@@ -135,7 +135,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
         }
 
         private IActivity m_Activity = null;
-        private TrailsPlugin.Data.ActivityTrail m_Trail;
+        private TrailsPlugin.Data.ActivityTrail m_ActivityTrail;
         private TrailsPlugin.Data.TrailResult m_TrailResult = null;
         private IValueRangeSeries<DateTime> m_ValidTimes = new ValueRangeSeries<DateTime>();
         private bool m_ValidTimesDirty = false;

@@ -651,6 +651,10 @@ namespace TrailsPlugin.Data
                 }
 
                 IList<TrailResultWrapper> mergeChildren = ChildrenTimeSorted(trw);
+                if(mergeChildren == null || mergeChildren.Count == 0)
+                {
+                    continue;
+                }
                 int orderIndex = 0; //wrap around the index (mark only last if offset is the same)
                 TrailResultInfo indexes = trw.Result.SubResultInfo.Copy();
                 indexes.Points = new List<TrailResultPoint> { mergeChildren[0].Result.SubResultInfo.Points[0] };

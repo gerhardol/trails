@@ -326,10 +326,10 @@ namespace TrailsPlugin.UI.Activity {
                 IList<Data.TrailResult> selectedPresentableResults =
                     TrailResultWrapper.TrailResults(
                     TrailResultWrapper.UnpausedResults(Controller.TrailController.Instance.SelectedResults));
-                if(selectedPresentableResults.Count > Data.Settings.MaxAutoDisplayedResults)
+                if(selectedPresentableResults.Count > Data.Settings.MaxChartResults)
                 {
-                    ((List<Data.TrailResult>)selectedPresentableResults).RemoveRange(Data.Settings.MaxAutoDisplayedResults,
-                        selectedPresentableResults.Count- Data.Settings.MaxAutoDisplayedResults);
+                    ((List<Data.TrailResult>)selectedPresentableResults).RemoveRange(Data.Settings.MaxChartResults,
+                        selectedPresentableResults.Count- Data.Settings.MaxChartResults);
                 }
 
                 m_multiChart.ChartTypes=new List<LineChartTypes>();

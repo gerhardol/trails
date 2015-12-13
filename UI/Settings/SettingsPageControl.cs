@@ -54,6 +54,7 @@ namespace TrailsPlugin.UI.Settings
             this.boxPredictDistance.Text = UnitUtil.Distance.ToString(Data.Settings.PredictDistance, "u");
             this.upDownRouteTransparency.Value = (decimal)Math.Round((double)(100 * (0xff - Data.Settings.RouteLineAlpha) / 0xff));
             //precedeControl(labelRouteTransparencyPercent, upDownRouteTransparency);
+            this.upDownMaxChartResults.Value = Data.Settings.MaxChartResults;
 
             //Present up as negative
             this.boxMervynDaviesUp.Text = (-Data.Settings.MervynDaviesUp).ToString("P1");
@@ -91,6 +92,7 @@ namespace TrailsPlugin.UI.Settings
             this.lblBarometricDevices.Text = Properties.Resources.UI_Settings_BarometricDevices + ":";
             this.lblAdjustElevationAtImport.Text = Properties.Resources.UI_Settings_AdjustElevationAtImport + ":";
             this.labelRouteTransparency.Text = Properties.Resources.UI_Settings_RouteTransparency + " (%):";
+            this.labelMaxChartResults.Text = "Max Chart Results";
 
             this.gradeAdjustedPaceGroup.Text = Properties.Resources.UI_Settings_GradeAdjustedPace;
             this.lblMervynDaviesName.Text = "Mervyn Davies";
@@ -166,6 +168,12 @@ namespace TrailsPlugin.UI.Settings
         private void upDownRouteTransparency_LostFocus(object sender, EventArgs e)
         {
             Data.Settings.RouteLineAlpha = (byte)Math.Round(0xff - upDownRouteTransparency.Value * 0xff / 100);
+            presentSettings();
+        }
+
+        private void upDownMaxChartResults_LostFocus(object sender, EventArgs e)
+        {
+            Data.Settings.MaxChartResults = (int)this.upDownMaxChartResults.Value;
             presentSettings();
         }
 

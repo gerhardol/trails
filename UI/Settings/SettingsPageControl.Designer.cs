@@ -49,6 +49,8 @@ namespace TrailsPlugin.UI.Settings {
             this.labelRouteTransparency = new System.Windows.Forms.Label();
             this.upDownRouteTransparency = new System.Windows.Forms.NumericUpDown();
             this.labelRouteTransparencyPercent = new System.Windows.Forms.Label();
+            this.labelMaxChartResults = new System.Windows.Forms.Label();
+            this.upDownMaxChartResults = new System.Windows.Forms.NumericUpDown();
             this.gradeAdjustedPaceGroup = new System.Windows.Forms.GroupBox();
             this.tablePanelGradeAdjustedPace = new System.Windows.Forms.TableLayoutPanel();
             this.lblMervynDaviesName = new System.Windows.Forms.Label();
@@ -107,21 +109,24 @@ namespace TrailsPlugin.UI.Settings {
             this.tableLayoutPanel1.Controls.Add(this.labelRouteTransparency, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.upDownRouteTransparency, 1, 8);
             //this.tableLayoutPanel1.Controls.Add(this.labelRouteTransparencyPercent, 1, 8);
-            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 9);
-            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 11);
-            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 12);
-            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 13);
-            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 14);
-            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 14);
-            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 16);
-            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 17);
+            this.tableLayoutPanel1.Controls.Add(this.labelMaxChartResults, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.upDownMaxChartResults, 1, 9);
+            this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 10);
+            this.tableLayoutPanel1.Controls.Add(this.lblUniqueRoutes, 0, 12);
+            this.tableLayoutPanel1.Controls.Add(this.lblHighScore, 0, 13);
+            this.tableLayoutPanel1.Controls.Add(this.lblPerformancePredictor, 0, 14);
+            this.tableLayoutPanel1.Controls.Add(this.lblPredictDistance, 0, 15);
+            this.tableLayoutPanel1.Controls.Add(this.boxPredictDistance, 1, 15);
+            this.tableLayoutPanel1.Controls.Add(this.lblCopyright, 0, 17);
+            this.tableLayoutPanel1.Controls.Add(this.lblLicense, 0, 18);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 15;
+            this.tableLayoutPanel1.RowCount = 19;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -330,6 +335,25 @@ namespace TrailsPlugin.UI.Settings {
             this.labelRouteTransparencyPercent.TabIndex = 10;
             this.labelRouteTransparencyPercent.Text = "%";
             this.labelRouteTransparencyPercent.Visible = false;
+            // 
+            // labelMaxChartResults
+            // 
+            this.labelMaxChartResults.AutoSize = true;
+            this.labelMaxChartResults.Location = new System.Drawing.Point(3, 133);
+            this.labelMaxChartResults.Name = "labelMaxChartResults";
+            this.labelMaxChartResults.Size = new System.Drawing.Size(142, 13);
+            this.labelMaxChartResults.TabIndex = 3;
+            this.labelMaxChartResults.Text = "<MaxChartResults:";
+            // 
+            // upDownMaxChartResults
+            // 
+            this.upDownMaxChartResults.Location = new System.Drawing.Point(155, 133);
+            this.upDownMaxChartResults.Name = "upDownMaxChartResults";
+            this.upDownMaxChartResults.Size = new System.Drawing.Size(39, 20);
+            this.upDownMaxChartResults.TabIndex = 7;
+            this.upDownMaxChartResults.Minimum = 0;
+            this.upDownMaxChartResults.Maximum = 10000;
+            this.upDownMaxChartResults.LostFocus += new EventHandler(upDownMaxChartResults_LostFocus);
             // 
             // lblUniqueRoutes
             // 
@@ -657,6 +681,8 @@ namespace TrailsPlugin.UI.Settings {
         private System.Windows.Forms.Label labelRouteTransparency;
         private System.Windows.Forms.NumericUpDown upDownRouteTransparency;
         private System.Windows.Forms.Label labelRouteTransparencyPercent;
+        private System.Windows.Forms.Label labelMaxChartResults;
+        private System.Windows.Forms.NumericUpDown upDownMaxChartResults;
         private System.Windows.Forms.GroupBox gradeAdjustedPaceGroup;
         private System.Windows.Forms.Label lblMervynDaviesName;
         private System.Windows.Forms.Label lblMervynDaviesUp;

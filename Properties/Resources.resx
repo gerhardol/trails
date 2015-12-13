@@ -503,4 +503,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Settings_RouteTransparency" xml:space="preserve">
     <value>Route Transparency</value>
   </data>
+  <data name="UI_Settings_MaxChartResults" xml:space="preserve">
+    <value>Max Chart Results</value>
+  </data>
 </root>

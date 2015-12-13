@@ -1093,6 +1093,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Max Chart Results.
+        /// </summary>
+        internal static string UI_Settings_MaxChartResults {
+            get {
+                return ResourceManager.GetString("UI_Settings_MaxChartResults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin Webpage.
         /// </summary>
         internal static string UI_Settings_PageControl_linkInformativeUrl_Text {

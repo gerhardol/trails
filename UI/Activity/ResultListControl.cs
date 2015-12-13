@@ -1902,14 +1902,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if ((e.Modifiers & Keys.Control) != 0)
                 {
-                    //Unofficial
                     this.MergeSubResults(this.SelectedResults, (e.Modifiers & Keys.Shift) != 0);
                     this.m_page.RefreshData(false);
                     this.m_page.RefreshRoute(false);
                 }
                 else
                 {
-                    //tmp, to be removed
+                    //Unofficial
                     Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
                     this.m_page.RefreshRoute(false);
                 }

@@ -359,4 +359,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Settings_RouteTransparency" xml:space="preserve">
     <value>Rutt genomskinlighet</value>
   </data>
+  <data name="UI_Settings_MaxChartResults" xml:space="preserve">
+    <value>Max resultat i diagram</value>
+  </data>
 </root>

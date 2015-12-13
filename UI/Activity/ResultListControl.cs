@@ -1200,7 +1200,8 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     foreach (TrailResultWrapper tr in srw)
                     {
-                        if (!Controller.TrailController.Instance.Activities.Contains(activity) &&
+                        if (!addActivities.Contains(activity) &&
+                            !Controller.TrailController.Instance.Activities.Contains(activity) &&
                         tr.Result.AnyOverlap(activity))
                         {
                             //Insert after the current activities, then the order is normally OK

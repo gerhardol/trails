@@ -1627,6 +1627,14 @@ namespace TrailsPlugin.UI.Activity {
                 TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
                 this.selectSimilarSplitsChanged();
             }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                this.m_page.ResultList_Collapse(null, null);
+            }
+            else if (e.KeyCode == Keys.F11)
+            {
+                this.m_page.ResultList_Expand(null, null);
+            }
             else if (e.KeyCode == Keys.A)
             {
                 if (e.Modifiers == (Keys.Control | Keys.Shift | Keys.Alt))

@@ -214,6 +214,8 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
+        public bool ChartVisible = true;
+
         public bool Expanded
         {
             set
@@ -305,7 +307,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void RefreshChart()
         {
-            if (m_showPage)
+            if (m_showPage && this.ChartVisible)
             {
                 LineChartTypes speedPaceChart = LineChartTypes.Speed;
                 LineChartTypes deviceSpeedPaceChart = LineChartTypes.DeviceSpeed;

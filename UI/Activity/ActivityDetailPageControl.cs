@@ -64,7 +64,8 @@ namespace TrailsPlugin.UI.Activity {
                 Plugin.GetApplication().SystemPreferences.UICulture;
 #endif
 
-        private bool m_isExpanded = false;
+        //If chart is expanded, route is hidden too
+        private bool m_isChartExpanded = false;
 
 #if ST_2_1
         private Object m_view = null;
@@ -289,7 +290,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             //Refreh map when visible
             //for reports view, also the separate Map could be updated
-            if ((!m_isExpanded || isReportView)
+            if ((!m_isChartExpanded || isReportView)
                 && Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
                 //m_layerPoints.HighlightRadius = Controller.TrailController.Instance.CurrentActivityTrail.Trail.Radius;
@@ -681,19 +682,20 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = false;
             this.ExpandSplitContainer.SplitterDistance = width;
 #endif
-            m_isExpanded = true;
-            MultiCharts.Expanded = m_isExpanded;
+            m_isChartExpanded = true;
+            MultiCharts.Expanded = m_isChartExpanded;
 #if ST_2_1
              }
 #endif
         }
+
         private void MultiCharts_Collapse(object sender, EventArgs e)
         {
 #if !ST_2_1
             this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
 #endif
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
-            
+
             LowerSplitContainer.Panel2Collapsed = false;
 #if ST_2_1
             SplitContainer sc = DailyActivitySplitter;
@@ -709,10 +711,38 @@ namespace TrailsPlugin.UI.Activity {
             this.ExpandSplitContainer.Panel2Collapsed = true;
             m_DetailPage.PageMaximized = false;
 #endif
-            m_isExpanded = false;
-            MultiCharts.Expanded = m_isExpanded;
+            m_isChartExpanded = false;
+            MultiCharts.Expanded = m_isChartExpanded;
         }
-        
+
+        public void ResultList_Expand(object sender, EventArgs e)
+        {
+            this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+            this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+
+            LowerSplitContainer.Panel2Collapsed = true;
+            this.ExpandSplitContainer.Panel2Collapsed = true;
+            m_DetailPage.PageMaximized = true;
+            MultiCharts.ChartVisible = false;
+            MultiCharts.ShowPage = false;
+            m_isChartExpanded = true;
+            MultiCharts.Expanded = m_isChartExpanded;
+        }
+
+        public void ResultList_Collapse(object sender, EventArgs e)
+        {
+            this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
+            this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+
+            LowerSplitContainer.Panel2Collapsed = false;
+            this.ExpandSplitContainer.Panel2Collapsed = true;
+            m_DetailPage.PageMaximized = false;
+            m_isChartExpanded = false;
+            MultiCharts.ChartVisible = true;
+            MultiCharts.ShowPage = true;
+            MultiCharts.Expanded = m_isChartExpanded;
+        }
+
 #if !ST_2_1
         void RouteSelectionProvider_SelectedItemsUpdate(IList<IItemTrackSelectionInfo> sels)
         {

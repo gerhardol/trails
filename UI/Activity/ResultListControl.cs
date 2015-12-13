@@ -1820,7 +1820,7 @@ namespace TrailsPlugin.UI.Activity {
                                     !string.IsNullOrEmpty(trw.Result.Activity.Metadata.Source) && !string.IsNullOrEmpty(refSource) &&
                                       //ExportToFunbeat adds suffix to meta data...
                                       (refSource.StartsWith(trw.Result.Activity.Metadata.Source) ||
-                                      trw.Result.Activity.Metadata.Source .StartsWith(refSource))) &&
+                                      trw.Result.Activity.Metadata.Source.StartsWith(refSource))) &&
                                       !atr.Contains(trw))
                                 {
                                     atr.Add(trw);
@@ -1860,14 +1860,16 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift | Keys.Control))
                 {
+                    IList<IActivity> allActivities = Controller.TrailController.Instance.Activities;
                     foreach (TrailResultWrapper t in m_PersistentSelectionResults)
                     {
-                        if(!Controller.TrailController.Instance.Activities.Contains(t.Result.Activity))
+                        if(!allActivities.Contains(t.Result.Activity))
                         {
-                            Controller.TrailController.Instance.Activities.Add(t.Result.Activity);
+                            allActivities.Add(t.Result.Activity);
                         }
                         t.Result.ActivityTrail.ReAdd(t);
                     }
+                    Controller.TrailController.Instance.Activities = allActivities;
                     this.SelectedResults = m_PersistentSelectionResults;
                     this.m_page.RefreshData(false);
                     this.m_page.RefreshChart();

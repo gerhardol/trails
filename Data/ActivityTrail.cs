@@ -225,17 +225,24 @@ namespace TrailsPlugin.Data
             }
         }
 
-        //public void Sort()
-        //{
-        //    ((List<TrailResultWrapper>)ResultTreeList).Sort();
-        //    int i = 1;
-        //    foreach (TrailResultWrapper tr in ResultTreeList)
-        //    {
-        //        tr.Result.Order = i;
-        //        i++;
-        //        tr.Sort();
-        //    }
-        //}
+        public void ReAdd(TrailResultWrapper t)
+        {
+            bool found = false;
+            foreach (TrailResultWrapper t2 in this.m_results)
+            {
+                if (t.Result.CompareTo(t2.Result) == 0)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                this.m_results.Add(t);
+                //We do not know initial status, assume match...
+                this.Status = TrailOrderStatus.Match;
+            }
+        }
 
         public bool CanAddInbound
         {
@@ -625,14 +632,14 @@ namespace TrailsPlugin.Data
             if (all)
             {
                 mergeResults = new List<TrailResultWrapper>();
-                foreach (TrailResultWrapper tr in this.Results)
+                foreach (TrailResultWrapper tr in this.m_results)
                 {
                     mergeResults.Add(tr);
                 }
                 if (this.Trail.TrailType == Trail.CalcType.Splits && Data.Settings.OverlappingResultShareSplitTime)
                 {
                     IList<TrailResultWrapper> overlapResults = new List<TrailResultWrapper>();
-                    foreach (TrailResultWrapper tr in this.Results)
+                    foreach (TrailResultWrapper tr in this.m_results)
                     {
                         if (tr.Result.Overlaps.Count > 0 &&
                             !overlapResults.Contains(tr))
@@ -642,7 +649,7 @@ namespace TrailsPlugin.Data
                     }
 
                     //All (only) overlapping results are handled separetly
-                    foreach (TrailResultWrapper tr in this.Results)
+                    foreach (TrailResultWrapper tr in this.m_results)
                     {
                         foreach (TrailResult tr2 in tr.Result.Overlaps)
                         {

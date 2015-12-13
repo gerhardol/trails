@@ -50,6 +50,7 @@ namespace TrailsPlugin.UI.Activity {
         private TrailResultWrapper m_summaryTotal;
         private TrailResultWrapper m_summaryAverage;
         private TrailResultWrapper m_lastClickedResult = null;
+        private IList<TrailResultWrapper> m_PersistentSelectionResults = new List<TrailResultWrapper>();
 
 #if !ST_2_1
         private IDailyActivityView m_view = null;
@@ -359,7 +360,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                IList<TrailResultWrapper> srw = Controller.TrailController.Instance.PersistentSelectionResults;
+                IList<TrailResultWrapper> srw = m_PersistentSelectionResults;
                 if (SummaryTrailResult.IsSummarySelection(srw))
                 {
                     srw = this.SelectedResults;
@@ -1849,13 +1850,27 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    this.SelectedResults = Controller.TrailController.Instance.PersistentSelectionResults;
+                    this.SelectedResults = Controller.TrailController.Instance.UpdateResults(
+                        m_PersistentSelectionResults);
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
                     //set special/reference results/activities
-                    Controller.TrailController.Instance.PersistentSelectionResults = this.SelectedResults;
-
+                    m_PersistentSelectionResults = this.SelectedResults;
+                }
+                else if (e.Modifiers == (Keys.Alt | Keys.Shift | Keys.Control))
+                {
+                    foreach (TrailResultWrapper t in m_PersistentSelectionResults)
+                    {
+                        if(!Controller.TrailController.Instance.Activities.Contains(t.Result.Activity))
+                        {
+                            Controller.TrailController.Instance.Activities.Add(t.Result.Activity);
+                        }
+                        t.Result.ActivityTrail.ReAdd(t);
+                    }
+                    this.SelectedResults = m_PersistentSelectionResults;
+                    this.m_page.RefreshData(false);
+                    this.m_page.RefreshChart();
                 }
             }
             else if (e.KeyCode == Keys.I)

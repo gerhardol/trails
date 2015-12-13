@@ -569,23 +569,6 @@ namespace TrailsPlugin.Controller
             }
         }
 
-        /// <summary>
-        /// Special persistent selection
-        /// </summary>
-        /// 
-        private IList<TrailResultWrapper> m_PersistentSelectionResults = new List<TrailResultWrapper>();
-        public IList<TrailResultWrapper> PersistentSelectionResults
-        {
-            get
-            {
-                return Controller.TrailController.Instance.UpdateResults(m_PersistentSelectionResults);
-            }
-            set
-            {
-                m_PersistentSelectionResults = value;
-            }
-        }
-
         public TrailResultWrapper ReferenceResult
         {
             set

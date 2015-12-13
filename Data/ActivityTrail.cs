@@ -408,9 +408,8 @@ namespace TrailsPlugin.Data
                                     if (refAct != activity && refWrapper.Result.AnyOverlap(activity))
                                     {
                                         TrailResultInfo indexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
-                                        SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_results.Count + 1, indexes);
+                                        SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_results.Count + 1, indexes, refWrapper.Result);
                                         TrailResultWrapper result = new TrailResultWrapper(str2);
-                                        refWrapper.Overlaps.Add(result);
 
                                         m_results.Add(result);
                                         handledActivities.Add(activity);
@@ -505,6 +504,25 @@ namespace TrailsPlugin.Data
                     }
                     //Always set InBound count, used in some displays
                     m_noResCount[TrailOrderStatus.InBound] = m_inBound.Count;
+
+                    if (Data.Settings.OverlappingResultShareSplitTime)
+                    {
+                        foreach (TrailResultWrapper tr in Controller.TrailController.Instance.SelectedResults)
+                        {
+                            foreach (TrailResultWrapper trw in this.m_results)
+                            {
+                                //Handle all activities, also if they are previously a ref
+                                if (tr.Result.Activity != trw.Result.Activity && 
+                                    //Not using AnyOverlap (multiple matches), just check first
+                                   Math.Abs((tr.Result.StartTime - trw.Result.StartTime).TotalSeconds) < 9)
+                                {
+                                    TrailResultInfo indexes = tr.Result.SubResultInfo.CopyFromReference(trw.Result.Activity);
+                                    trw.Result.updateOverlap(tr.Result);
+                                    trw.updateIndexes(indexes);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 if (this.m_trail.IsURFilter &&
@@ -616,7 +634,7 @@ namespace TrailsPlugin.Data
                     IList<TrailResultWrapper> overlapResults = new List<TrailResultWrapper>();
                     foreach (TrailResultWrapper tr in this.Results)
                     {
-                        if (tr.Overlaps.Count > 0 &&
+                        if (tr.Result.Overlaps.Count > 0 &&
                             !overlapResults.Contains(tr))
                         {
                             overlapResults.Add(tr);
@@ -626,11 +644,11 @@ namespace TrailsPlugin.Data
                     //All (only) overlapping results are handled separetly
                     foreach (TrailResultWrapper tr in this.Results)
                     {
-                        foreach (TrailResultWrapper tr2 in tr.Overlaps)
+                        foreach (TrailResult tr2 in tr.Result.Overlaps)
                         {
-                            if (!overlapResults.Contains(tr2))
+                            if (!overlapResults.Contains(tr2.Wrapper))
                             {
-                                mergeResults.Remove(tr2);
+                                mergeResults.Remove(tr2.Wrapper);
                             }
                         }
                     }
@@ -685,10 +703,10 @@ namespace TrailsPlugin.Data
                 trw.updateIndexes(indexes);
 
                 IActivity refAct = trw.Result.Activity;
-                foreach (TrailResultWrapper trw2 in trw.Overlaps)
+                foreach (TrailResult tr2 in trw.Result.Overlaps)
                 {
-                    TrailResultInfo indexes2 = trw.Result.SubResultInfo.CopyFromReference(trw2.Result.Activity);
-                    trw2.updateIndexes(indexes2);
+                    TrailResultInfo indexes2 = trw.Result.SubResultInfo.CopyFromReference(tr2.Activity);
+                    tr2.Wrapper.updateIndexes(indexes2);
                 }
             }
         }

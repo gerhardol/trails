@@ -116,12 +116,17 @@ namespace TrailsPlugin.Data
         private static IActivity m_cacheTrackActivity;
         private static IDictionary<IActivity, IItemTrackSelectionInfo[]> m_commonStretches;
         private static ActivityInfoOptions m_TrailActivityInfoOptions;
-        //internal IList<IActivity> SameTimeActivities = null;
+
+        /// <summary>
+        /// The overlapping results, uses the same split times as this result
+        /// </summary>
+        public IList<TrailResult> Overlaps = new List<TrailResult>();
+        public TrailResult OverlapRef = null;
         #endregion
 
         /**********************************************************/
         #region contructors
-        
+
         protected TrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, float distDiff)
         {
             m_activityTrail = activityTrail;
@@ -136,7 +141,6 @@ namespace TrailsPlugin.Data
                 this.m_name = this.m_activity.Name;
             }
             m_totalDistDiff = distDiff;
-            updateIndexes(indexes);
         }
 
         public void updateIndexes(TrailResultInfo indexes)
@@ -144,6 +148,18 @@ namespace TrailsPlugin.Data
             m_subResultInfo = indexes.Copy();
             this.m_LapInfo = indexes.LapInfo;
             this.m_PoolLengthInfo = indexes.PoolLengthInfo;
+        }
+
+        public void updateOverlap(TrailResult overlapRef)
+        {
+            if (overlapRef != null)
+            {
+                this.OverlapRef = overlapRef;
+                if (!overlapRef.Overlaps.Contains(this))
+                {
+                    overlapRef.Overlaps.Add(this);
+                }
+            }
         }
 
         #endregion
@@ -795,6 +811,10 @@ namespace TrailsPlugin.Data
                     else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                     {
                         m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
+                    }
+                    else if (this.OverlapRef != null)
+                    {
+                        m_pauses = this.OverlapRef.Pauses;
                     }
                     //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
                     else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&

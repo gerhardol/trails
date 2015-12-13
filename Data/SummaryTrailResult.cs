@@ -53,6 +53,7 @@ namespace TrailsPlugin.Data
             //a summary result is not related to an activity trail
             base(null, 0, new TrailResultInfo(null, false), float.NaN)
         {
+            //updateIndexes() not needed
             m_toolTip = "";
             m_trailColor = TrailsPlugin.Utils.ColorUtil.SummaryColor;
 

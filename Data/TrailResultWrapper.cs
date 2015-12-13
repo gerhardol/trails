@@ -205,11 +205,6 @@ namespace TrailsPlugin.Data
             return aTr;
         }
 
-        /// <summary>
-        /// The overlapping results, uses the same split times as this result
-        /// </summary>
-        public IList<TrailResultWrapper> Overlaps = new List<TrailResultWrapper>();
-
         //The Children may not include all (hide paused laps, deleted etc). These are all results
         private IList<TrailResultWrapper> m_allChildren = new List<TrailResultWrapper>();
         public IList<TrailResultWrapper> AllChildren {  get { return m_allChildren; } }

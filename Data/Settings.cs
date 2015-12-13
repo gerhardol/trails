@@ -46,6 +46,7 @@ namespace TrailsPlugin.Data
         private static bool m_SetAdjustElevationAtImport = false;
         private static int m_MaxAutoCalcActivitiesTrails = 10000;
         private static int m_MaxAutoCalcActivitiesSingleTrail = 10000;
+        public static int MaxAutoDisplayedResults = 5;
         private static bool m_restLapIsPause = false;
         public static bool ShowPausesAsResults = false;
         private static bool m_nonReqIsPause = false;
@@ -803,16 +804,18 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
                 if (attr.Length > 0)
                 {
-                    m_MaxAutoCalcActivitiesTrails = (Int16)XmlConvert.ToInt16(attr);
+                    m_MaxAutoCalcActivitiesTrails = XmlConvert.ToInt32(attr);
                     //Change defaults without version number
                     if (m_MaxAutoCalcActivitiesTrails == 500) { m_MaxAutoCalcActivitiesTrails = 10000; }
                 }
                 attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
                 if (attr.Length > 0) {
-                    m_MaxAutoCalcActivitiesSingleTrail = (Int16)XmlConvert.ToInt16(attr);
+                    m_MaxAutoCalcActivitiesSingleTrail = XmlConvert.ToInt32(attr);
                     if (m_MaxAutoCalcActivitiesSingleTrail == 200) { m_MaxAutoCalcActivitiesSingleTrail = 10000; }
                 }
-
+                attr = pluginNode.GetAttribute(xmlTags.sMaxAutoDisplayedResults);
+                if (attr.Length > 0) { MaxAutoDisplayedResults = XmlConvert.ToInt32(attr); }
+                
                 attr = pluginNode.GetAttribute(xmlTags.sColumns);
                 if (attr.Length > 0)
                 {
@@ -938,6 +941,7 @@ namespace TrailsPlugin.Data
 
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
+            pluginNode.SetAttribute(xmlTags.sMaxAutoDisplayedResults, XmlConvert.ToString(MaxAutoDisplayedResults));
 
             colText = null;
             foreach (String column in m_activityPageColumns)
@@ -988,6 +992,7 @@ namespace TrailsPlugin.Data
             public const string AddCurrentActivity = "AddCurrentActivity";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
             public const string MaxAutoCalcActivitiesSingleTrail = "MaxAutoCalcActivitiesSingleTrail";
+            public const string sMaxAutoDisplayedResults = "sMaxAutoDisplayedResults";
             public const string SetNameAtImport = "SetNameAtImport";
             public const string SetAdjustElevationAtImport = "SetAdjustElevationAtImport";
             public const string RestLapIsPause = "RestIsPause";

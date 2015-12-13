@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-(unreleased) 1.3.11 2015-12- (GitHub)
+(unreleased) 1.3.11 2015-12-13
   * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
   * Tweaked UI, updating icons, sizes etc. See Charts and Result List changes
   * Charts
@@ -12,14 +12,18 @@ This page describes the changes between plugin releases. The change log may cont
     * Copy Chart option
     * Chart toolbar: Add option to hide/show trailpoints in charts
     * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
+	* Limit results displayed in charts, configurable in Settings. Chart handling is slow in ST, more than a handful is normally not meaningful anyway.
   * Trails
-    * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName : Spcific_), selecting the "parent" selects all "child" trails too. This is visible in the trail selection menu.
+    * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName: Specific_), selecting _BaseName_ selects _BaseName: Specific_ too. This is visible in the trail selection menu.
     * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
     * _Splits_: Swim information displayed, to analyze swim activities (priarily for Garmin 910XT and later)
   * Analyze multiple data sources: It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Result list
 	* Added option menu, with "settings" for results. The list context menu (right click on the list) still have context related actions: Insert activities, set reference result, Analyze, etc
-    * Result list toolbar, to emphasis help and insert of activities, that seem to not always be recognized. (The toolbar can be hidden)
+    * Result list toolbar, to emphasis help and insert of activities, that seem to not always be recognized. (The toolbar can be hidden).
+	* Expand view to maximize result list
+	  * ESCAPE: Collapse expanded result list view, see F11.
+      * 'F11': Expand Result List, maximizing view of the result list by hiding chart and route. Return to normal with Escape.
     * Move "insert activity" related actions from _Advanced_ submenu to new _Insert activities_ submenu to be able to describe the functionality better.
     * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
       * Add Top Category
@@ -40,6 +44,14 @@ This page describes the changes between plugin releases. The change log may cont
     * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
     * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
     * Viewer for UniqueRoutes was not always showing time and date.
+	* Selection and manipulation of "Import Source" field. This field is set in most device imports and can be used when comparing datasources.
+	  * Double-click the field for a result to set the import source.
+	  * [Ctrl-G](Features#result-list) Select all results with the same import source(s) as the current selection.
+	  * [Shift-Ctrl-G](Features#result-list) Update the import source for the selected activities from the current reference result.
+	* Persistent result selection. This can be used to make specific selections, edit a single activity, then return to the selection.
+	  * [Shift-Alt-G](Features#result-list) Set selection from current selection
+	  * [Alt-G](Features#result-list) Reselect the persistent selection from the results.
+	  * [Shift-Alt-Ctrl-G](Features#result-list) Re-add the persistent selection, also if no longer in the result list.
   * Updated Spanish translation, thanks to AlexMTB
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default
   * Documentation updated

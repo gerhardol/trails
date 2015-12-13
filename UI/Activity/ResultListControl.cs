@@ -500,11 +500,19 @@ namespace TrailsPlugin.UI.Activity {
             if (selected2.Count <= 1)
             {
                 //0 or 1 selected, show something "smarter" in summary instead
-                if (Controller.TrailController.Instance.Results.Count == 1 && Controller.TrailController.Instance.Results[0].Children.Count > 0)
+                if (selected2.Count == 1 &&
+                    (selected2[0].Children.Count > 0 ||
+                    Controller.TrailController.Instance.Results.Count == 1 && 
+                    ((TrailResultWrapper)selected2[0].Result.Wrapper.Parent).Children.Count > 0))
                 {
                     //only one result, show summary for child results
+                    IList<TreeList.TreeListNode> clist = selected2[0].Children;
+                    if (clist.Count == 0)
+                    {
+                        clist = ((TrailResultWrapper)selected2[0].Result.Wrapper.Parent).Children;
+                    }
                     IList<TrailResultWrapper> list2 = new List<TrailResultWrapper>();
-                    foreach (TrailResultWrapper t in Controller.TrailController.Instance.Results[0].Children)
+                    foreach (TrailResultWrapper t in clist)
                     {
                         list2.Add(t);
                     }

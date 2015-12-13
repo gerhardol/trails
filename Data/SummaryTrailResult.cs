@@ -81,14 +81,15 @@ namespace TrailsPlugin.Data
         {
             this.results.Clear();
             //Get summary from upaused and not summary
-            foreach(TrailResultWrapper t in TrailResultWrapper.UnpausedResults(list))
+            IList<TrailResultWrapper> unpaused = TrailResultWrapper.UnpausedResults(list);
+            foreach (TrailResultWrapper t in unpaused)
             {
                 if(!(t.Result is SummaryTrailResult))
                 {
                     this.results.Add(t.Result);
                 }
             }
-            this.m_order = list.Count;
+            this.m_order = unpaused.Count;
             this.Clear(false);
             this.m_PoolLengthInfo = Data.PoolLengthInfo.GetPoolLength(this.results);
         }

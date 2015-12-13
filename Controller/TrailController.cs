@@ -579,6 +579,10 @@ namespace TrailsPlugin.Controller
             }
             get
             {
+                if(this.m_refResultWrapper == null)
+                {
+                    this.checkReferenceTrailResult(null);
+                }
                 return this.m_refResultWrapper;
             }
         }
@@ -706,26 +710,24 @@ namespace TrailsPlugin.Controller
                 // secondly the first result
                 //No forced calculations, should already be done
                 if (this.m_refResultWrapper == null &&
-                    this.m_referenceActivity != null &&
                     this.CurrentStatus() <= TrailOrderStatus.MatchPartial)
                 {
-                    TrailResultWrapper firstResult = null;
-
-                    foreach (TrailResultWrapper tr in TrailResultWrapper.UnpausedResults(this.Results))
+                    IList<TrailResultWrapper> unpaused = TrailResultWrapper.UnpausedResults(this.Results);
+                    if (this.m_referenceActivity != null)
                     {
-                        if (firstResult == null)
+                        foreach (TrailResultWrapper tr in unpaused)
                         {
-                            firstResult = tr;
-                        }
-                        if (this.m_referenceActivity.Equals(tr.Result.Activity))
-                        {
-                            this.m_refResultWrapper = tr;
-                            break;
+                            if (this.m_referenceActivity.Equals(tr.Result.Activity))
+                            {
+                                this.m_refResultWrapper = tr;
+                                break;
+                            }
                         }
                     }
-                    if (this.m_refResultWrapper == null && firstResult != null)
+
+                    if (this.m_refResultWrapper == null && unpaused.Count > 0)
                     {
-                        this.m_refResultWrapper = firstResult;
+                        this.m_refResultWrapper = unpaused[0];
                     }
                 }
             }

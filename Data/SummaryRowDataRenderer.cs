@@ -54,9 +54,10 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    if (wrapper.Result.Equals(Controller.TrailController.Instance.ReferenceResult.Result))
+                    if (Controller.TrailController.Instance.ReferenceResult != null &&
+                        wrapper.Result == Controller.TrailController.Instance.ReferenceResult.Result)
                     {
-                        return System.Drawing.FontStyle.Italic;
+                            return System.Drawing.FontStyle.Italic;
                     }
                 }
             }

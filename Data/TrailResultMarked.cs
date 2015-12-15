@@ -32,10 +32,19 @@ namespace TrailsPlugin.Data {
                 //Just fake a selection, dont care if time is enough...
                 this.selInfo.Activity = Controller.TrailController.Instance.ReferenceActivity;
                 this.selInfo.MarkedTimes = new ValueRangeSeries<DateTime>();
+                DateTime endTime;
+                try
+                {
+                    endTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                          this.selInfo.Activity.StartTime, tr.Duration, this.selInfo.Activity.TimerPauses);
+                }
+                catch
+                {
+                    endTime = this.selInfo.Activity.StartTime + tr.Duration;
+                }
                 this.selInfo.MarkedTimes.Add(new ValueRange<DateTime>(
                     this.selInfo.Activity.StartTime,
-                    ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
-                          this.selInfo.Activity.StartTime, tr.Duration, this.selInfo.Activity.TimerPauses)));
+                    endTime));
             }
             else
             {

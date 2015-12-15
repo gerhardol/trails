@@ -677,17 +677,27 @@ namespace TrailsPlugin.Data
                 dateTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(this.StartTime, TimeSpan.FromSeconds(t), Pauses);
             }
             catch 
-            { }
+            {
+                dateTime = this.EndTime;
+            }
             return adjustTimeToLimits(dateTime);
         }
 
         public DateTime getDateTimeFromTimeActivity(float t)
         {
-            if (this.Info == null)
+            DateTime dateTime = DateTime.MinValue;
+            if (this.Info != null)
             {
-                return DateTime.MinValue;
+                try
+                {
+                    dateTime = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(this.Info.ActualTrackStart, TimeSpan.FromSeconds(t), Pauses);
+                }
+                catch
+                {
+                    dateTime = this.Info.ActualTrackEnd;
+                }
             }
-            return ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(this.Info.ActualTrackStart, TimeSpan.FromSeconds(t), Pauses);
+            return dateTime;
         }
 
         private DateTime adjustTimeToLimits(DateTime dateTime)
@@ -3313,8 +3323,16 @@ namespace TrailsPlugin.Data
                     }
                     if (tr != null)
                     {
-                        DateTime d1 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                        DateTime d1;
+                        try
+                        {
+                            d1 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
                              tr.StartTime, TimeSpan.FromSeconds(Math.Abs(offset)), tr.Pauses);
+                        }
+                        catch
+                        {
+                            d1 = tr.EndTime;
+                        }
                         int status;
                         this.m_offsetDist = TrackUtil.getValFromDateTime(tr.DistanceMetersTrack, d1, out status);
                         if (this == tr)
@@ -3656,8 +3674,14 @@ namespace TrailsPlugin.Data
                                                 }
                                                 else
                                                 {
-                                                    d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
-                                                      trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
+                                                    try {
+                                                        d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                                                          trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
+                                                    }
+                                                    catch {
+                                                        //This seem to occur if offset extends the time after the activity end (and external pauses isset)
+                                                        d2 = trRef.EndTime;
+                                                    }
                                                 }
 
                                                 int status = -1;

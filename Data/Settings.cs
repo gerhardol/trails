@@ -88,6 +88,7 @@ namespace TrailsPlugin.Data
         public static bool OverlappingResultUseTimeOfDayDiff = false; //not in xml
         public static bool OverlappingResultUseReferencePauses = false; //not in xml
         public static bool OverlappingResultShareSplitTime = false; //not in xml
+        public static bool ShowSummaryForChildren = false; //not in xml
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings

@@ -547,6 +547,26 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 
+            if (Data.Settings.ShowSummaryForChildren)
+            {
+                IList<TrailResultWrapper> selected3 = new List<TrailResultWrapper>();
+                foreach (TrailResultWrapper t in selected2)
+                {
+                    if (t.Result is ParentTrailResult)
+                    {
+                        foreach (TrailResultWrapper t2 in t.Children)
+                        {
+                            selected3.Add(t2);
+                        }
+                    }
+                    else
+                    {
+                        selected3.Add(t);
+                    }
+                }
+                selected2 = selected3;
+            }
+
             if (Data.Settings.ShowSummaryTotal)
             {
                 (m_summaryTotal.Result as SummaryTrailResult).SetSummary(selected2);
@@ -2068,6 +2088,11 @@ namespace TrailsPlugin.UI.Activity {
                     TrailsPlugin.Data.Settings.ResultSummaryIsDevice = !TrailsPlugin.Data.Settings.ResultSummaryIsDevice;
                     //This is all dynamic, but we want to retrigger sort
                     this.m_page.RefreshData(false);
+                }
+                else if (e.Modifiers == Keys.Alt)
+                {
+                    Data.Settings.ShowSummaryForChildren = !Data.Settings.ShowSummaryForChildren;
+                    this.RefreshSummary();
                 }
                 else
                 {

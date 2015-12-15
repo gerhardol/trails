@@ -228,6 +228,10 @@ namespace TrailsPlugin.Data
         public void ReAdd(TrailResultWrapper t)
         {
             bool found = false;
+            if (this.m_results == null)
+            {
+                this.m_results = new List<TrailResultWrapper>();
+            }
             foreach (TrailResultWrapper t2 in this.m_results)
             {
                 if (t.Result.CompareTo(t2.Result) == 0)

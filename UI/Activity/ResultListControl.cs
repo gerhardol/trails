@@ -502,7 +502,8 @@ namespace TrailsPlugin.UI.Activity {
                 //0 or 1 selected, show something "smarter" in summary instead
                 if (selected2.Count == 1 &&
                     (selected2[0].Children.Count > 0 ||
-                    Controller.TrailController.Instance.Results.Count == 1 && 
+                    Controller.TrailController.Instance.Results.Count == 1 &&
+                    selected2[0].Result.Wrapper.Parent != null &&
                     ((TrailResultWrapper)selected2[0].Result.Wrapper.Parent).Children.Count > 0))
                 {
                     //only one result, show summary for child results
@@ -1879,7 +1880,11 @@ namespace TrailsPlugin.UI.Activity {
                     IList<IActivity> allActivities = Controller.TrailController.Instance.Activities;
                     foreach (TrailResultWrapper t in m_PersistentSelectionResults)
                     {
-                        if(!allActivities.Contains(t.Result.Activity))
+                        if (!Controller.TrailController.Instance.CurrentActivityTrails.Contains(t.Result.ActivityTrail))
+                        {
+                            Controller.TrailController.Instance.CurrentActivityTrails.Add(t.Result.ActivityTrail);
+                        }
+                        if (!allActivities.Contains(t.Result.Activity))
                         {
                             allActivities.Add(t.Result.Activity);
                         }
@@ -2088,7 +2093,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
-                     TrailsPlugin.Data.Settings.OverlappingResultShareSplitTime = false;
+                    TrailsPlugin.Data.Settings.OverlappingResultShareSplitTime = false;
                     this.m_page.RefreshData(true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))

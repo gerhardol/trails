@@ -154,6 +154,7 @@ namespace TrailsPlugin.Data
         {
             if (overlapRef != null)
             {
+                this.Clear(false);
                 this.OverlapRef = overlapRef;
                 if (!overlapRef.Overlaps.Contains(this))
                 {
@@ -820,11 +821,12 @@ namespace TrailsPlugin.Data
                     }
                     else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                     {
-                        m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
+                        this.m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
                     }
-                    else if (this.OverlapRef != null)
+                    else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses && 
+                        this.OverlapRef != null)
                     {
-                        m_pauses = this.OverlapRef.Pauses;
+                        this.m_pauses = this.OverlapRef.Pauses;
                     }
                     //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
                     else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
@@ -835,11 +837,11 @@ namespace TrailsPlugin.Data
                     {
                         //For Splits, the duration is set when updating splits, may be incorrect
                         this.m_duration = null;
-                        this.m_pauses = refTr.Result.ExternalPauses;
+                        this.m_pauses = refTr.Result.Pauses;
                     }
                     else
                     {
-                        m_pauses = new ValueRangeSeries<DateTime>();
+                        this.m_pauses = new ValueRangeSeries<DateTime>();
                         IValueRangeSeries<DateTime> actPause;
                         actPause = this.Info.NonMovingTimes;
                         foreach (ValueRange<DateTime> t in actPause)

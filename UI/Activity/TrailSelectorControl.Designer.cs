@@ -199,12 +199,12 @@
             this.showSummaryTotalMenuItem,
             this.showSummaryAverageMenuItem,
             this.ResultSummaryStdDevMenuItem,
-            this.showOnlyMarkedResultsOnMapMenuItem,
-            this.selectSimilarSplitsMenuItem,
             this.useDeviceDistanceMenuItem,
             this.setRestLapsAsPausesMenuItem,
             this.ShowPausesAsResultsMenuItem,
+            this.showOnlyMarkedResultsOnMapMenuItem,
             this.trailPointsMenuItem,
+            this.selectSimilarSplitsMenuItem,
             this.runGradeAdjustMenuItem,
             this.showToolBarMenuItem});
             this.chartPanelMenu.Name = "chartPanelMenu";

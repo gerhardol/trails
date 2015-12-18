@@ -350,7 +350,8 @@ namespace TrailsPlugin.UI.Activity
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
         {
-            TrailsPlugin.Data.Settings.SelectSimilarResults = this.selectSimilarSplitsMenuItem.Checked;
+            Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
+            this.RefreshControlState();
             m_page.selectSimilarSplitsChanged();
         }
 

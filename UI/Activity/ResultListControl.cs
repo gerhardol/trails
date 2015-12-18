@@ -344,6 +344,8 @@ namespace TrailsPlugin.UI.Activity {
 #endif
                 Controller.TrailController.Instance.SelectedResults = setValue;
                 this.SetSummary(setValue);
+                this.m_page.RefreshRouteCheck();
+                this.m_page.RefreshChart();
             }
             get
             {
@@ -611,7 +613,7 @@ namespace TrailsPlugin.UI.Activity {
             return null;
         }
 
-        bool selectSimilarSplits()
+        internal bool selectSimilarSplitsChanged()
         {
             bool isChange = false;
             IList<TrailResultWrapper> atr = this.SelectedResults;
@@ -766,29 +768,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             this.SelectedResults = all;
-            if (Data.Settings.ShowOnlyMarkedOnRoute)
-            {
-                this.m_page.RefreshRoute(false);
-            }
-            this.m_page.RefreshChart();
         }
 
         void copyTable()
         {
             this.summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-        }
-
-        internal void selectSimilarSplitsChanged()
-        {
-            if (selectSimilarSplits())
-            {
-                this.m_page.RefreshChart();
-            }
-            if (Data.Settings.ShowOnlyMarkedOnRoute)
-            {
-                this.m_page.RefreshRoute(false);
-            }
-            RefreshControlState();
         }
 
         void selectWithUR()
@@ -1089,30 +1073,19 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
-            Controller.TrailController.Instance.SelectedResults = this.SelectedResults;
-
-            bool isChange;
             if (Data.Settings.SelectSimilarResults)
             {
-                isChange = selectSimilarSplits();
+                this.selectSimilarSplitsChanged();
             }
             else
             {
+                Controller.TrailController.Instance.SelectedResults = this.SelectedResults;
+
                 //Always assume change
-                isChange = true;
-            }
-            if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
-            {
                 this.SetSummary(this.SelectedResults);
-            }
-            if (isChange)
-            {
                 this.m_page.RefreshChart();
-            }
-            //Trails track display update
-            if (Data.Settings.ShowOnlyMarkedOnRoute)
-            {
-                this.m_page.RefreshRoute(false);
+                //Trails track display update
+                this.m_page.RefreshRouteCheck();
             }
 
             //Save previous items for selecting at updates of results
@@ -1154,11 +1127,6 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
             this.SelectedResults = selected;
-            if (Data.Settings.ShowOnlyMarkedOnRoute)
-            {
-                this.m_page.RefreshRoute(false);
-            }
-            this.m_page.RefreshChart();
         }
 
         private enum InsertCategoryTypes { CurrentCategory, SelectedTree, All };
@@ -1653,8 +1621,9 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.Space)
             {
-                TrailsPlugin.Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
+                Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
                 this.selectSimilarSplitsChanged();
+                m_page.RefreshControlState();
             }
             else if (e.KeyCode == Keys.Escape)
             {
@@ -1912,8 +1881,6 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     Controller.TrailController.Instance.Activities = allActivities;
                     this.SelectedResults = m_PersistentSelectionResults;
-                    this.m_page.RefreshData(false);
-                    this.m_page.RefreshChart();
                 }
             }
             else if (e.KeyCode == Keys.I)
@@ -2110,25 +2077,26 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Shift)
                 {
-                    TrailsPlugin.Data.Settings.XAxisValue = TrailsPlugin.Utils.XAxisValue.Time;
-                    TrailsPlugin.Data.Settings.OverlappingResultUseTimeOfDayDiff = true;
-                    TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses = true;
-                    TrailsPlugin.Data.Settings.OverlappingResultShareSplitTime = true;
+                    Data.Settings.XAxisValue = TrailsPlugin.Utils.XAxisValue.Time;
+                    Data.Settings.OverlappingResultUseTimeOfDayDiff = true;
+                    Data.Settings.OverlappingResultUseReferencePauses = true;
+                    Data.Settings.OverlappingResultShareSplitTime = 
+                        (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.Splits);
                     this.addCurrentTime();
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
-                    TrailsPlugin.Data.Settings.OverlappingResultShareSplitTime = false;
-                    this.m_page.RefreshData(true);
+                    Data.Settings.OverlappingResultShareSplitTime = !Data.Settings.OverlappingResultShareSplitTime;
+                    this.m_page.RefreshData(true, true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
                 {
-                    TrailsPlugin.Data.Settings.OverlappingResultUseTimeOfDayDiff = false;
+                    Data.Settings.OverlappingResultUseTimeOfDayDiff = !Data.Settings.OverlappingResultUseTimeOfDayDiff;
                     this.m_page.RefreshData(true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt))
                 {
-                    TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses = false;
+                    Data.Settings.OverlappingResultUseReferencePauses = !Data.Settings.OverlappingResultUseReferencePauses;
                     this.m_page.RefreshData(true);
                 }
                 //else if (e.Modifiers == Keys.Control)

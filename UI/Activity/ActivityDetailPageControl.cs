@@ -85,7 +85,7 @@ namespace TrailsPlugin.UI.Activity {
         //Selected on ST drawn activities
         private IList<IItemTrackSelectionInfo> m_currentItemTrackSelected = new List<IItemTrackSelectionInfo>();
         internal IList<TrailResultMarked> m_lastMarkedResult = null; //Fix: save last part of a result marked
-        
+
 #if ST_2_1
         public ActivityDetailPageControl()
         {
@@ -204,7 +204,7 @@ namespace TrailsPlugin.UI.Activity {
             //Avoid reregistering
             if (!showPage)
             {
-                 m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
+                m_view.RouteSelectionProvider.SelectedItemsChanged += new EventHandler(RouteSelectionProvider_SelectedItemsChanged);
             }
 #endif
         }
@@ -216,7 +216,7 @@ namespace TrailsPlugin.UI.Activity {
             TrailSelector.UpdatePointFromMap(point);
         }
 
-        public void RefreshControlState() 
+        public void RefreshControlState()
         {
             ResultList.RefreshControlState();
             TrailSelector.RefreshControlState();
@@ -226,6 +226,11 @@ namespace TrailsPlugin.UI.Activity {
         //Refresh the data displayed, recalculate if needed
         public void RefreshData(bool clearResults)
         {
+            RefreshData(clearResults, false);
+        }
+
+        public void RefreshData(bool clearResults, bool reCalcTrails)
+        {
             bool showPage = m_showPage;
             m_lastMarkedResult = null;
             HidePage(false); //defer updates
@@ -234,9 +239,13 @@ namespace TrailsPlugin.UI.Activity {
                 //The trail results will be cleared
                 Controller.TrailController.Instance.Clear(false);
             }
+            if (reCalcTrails)
+            {
+                Controller.TrailController.Instance.Reset();
+            }
 
             //Calculate results (not needed explicitly)
-            Controller.TrailController.Instance.ReCalcTrails(false, null);
+            Controller.TrailController.Instance.ReCalcTrails(reCalcTrails, null);
             ResultList.RefreshList();
             //Data could be updated and reference changed
             MultiCharts.ReferenceTrailResult = Controller.TrailController.Instance.ReferenceTrailResult;
@@ -284,6 +293,14 @@ namespace TrailsPlugin.UI.Activity {
         public void StopProgressBar()
         {
             ResultList.StopProgressBar();
+        }
+
+        public void RefreshRouteCheck()
+        {
+            if (Data.Settings.ShowOnlyMarkedOnRoute)
+            {
+                RefreshRoute(false);
+            }
         }
 
         public void RefreshRoute(bool zoomOrVisible)

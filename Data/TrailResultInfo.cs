@@ -146,6 +146,8 @@ namespace TrailsPlugin.Data
                 }
 
                 TrailResultPoint p2 = new TrailResultPoint(p, loc);
+                p2.LapInfo = null;
+                p2.PoolLengthInfo = null;
                 result.Points.Add(p2);
             }
             return result;

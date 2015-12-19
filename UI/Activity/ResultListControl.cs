@@ -1721,6 +1721,18 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.copyTable();
                 }
+                else if (e.Modifiers == (Keys.Shift| Keys.Control))
+                {
+                    //Unofficial, undocumented
+                    try {
+                        this.summaryList.CopyTextToClipboard(false, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+                        String s = System.Windows.Forms.Clipboard.GetText();
+                        s =this.SpecialSelectionResults[0].Result.Activity.Metadata.Source + s.Split('\n')[1];
+                        System.Windows.Forms.Clipboard.SetText(s);
+                    }
+                    catch(Exception e1)
+                    { }
+                }
                 else if (e.Modifiers == Keys.Shift)
                 {
                     TrailsPlugin.Data.Settings.DiffUsingCommonStretches = !TrailsPlugin.Data.Settings.DiffUsingCommonStretches;

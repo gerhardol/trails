@@ -362,11 +362,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             get
             {
-                IList<TrailResultWrapper> srw = m_PersistentSelectionResults;
-                if (SummaryTrailResult.IsSummarySelection(srw))
-                {
-                    srw = this.SelectedResults;
-                }
+                IList<TrailResultWrapper> srw = this.SelectedResults;
                 if (SummaryTrailResult.IsSummarySelection(srw))
                 {
                     if (Controller.TrailController.Instance.ReferenceResult != null)

@@ -823,27 +823,22 @@ namespace TrailsPlugin.Data
                     {
                         this.m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
                     }
-                    else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses && 
-                        this.OverlapRef != null)
-                    {
-                        this.m_pauses = this.OverlapRef.Pauses;
-                    }
-                    //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
-                    else if (TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
-                        null != refTr &&
-                        this != refTr.Result &&
-                        //Note: All cached values (including Start/End) must be set after Pauses
-                        this.AnyOverlap(refTr.Result, refTr.Result.ExternalPauses))
-                    {
-                        //For Splits, the duration is set when updating splits, may be incorrect
-                        this.m_duration = null;
-                        this.m_pauses = refTr.Result.Pauses;
-                    }
                     else
                     {
+                        //Note: All cached values (including Start/End) must be set after Pauses
+                        bool overlap = TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
+                           this.OverlapRef != null;
                         this.m_pauses = new ValueRangeSeries<DateTime>();
                         IValueRangeSeries<DateTime> actPause;
-                        actPause = this.Info.NonMovingTimes;
+                        //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
+                        if (overlap)
+                        {
+                            actPause = this.OverlapRef.Pauses;
+                        }
+                        else
+                        {
+                            actPause = this.Info.NonMovingTimes;
+                        }
                         foreach (ValueRange<DateTime> t in actPause)
                         {
                             m_pauses.Add(t);
@@ -855,16 +850,50 @@ namespace TrailsPlugin.Data
                             bool isActive = false;
                             if (this.Activity != null && this.Activity.Laps != null)
                             {
+                                int i = 0;
+                                int firstActive = -1;
+                                int lastActive = -1;
                                 foreach (ILapInfo lap in Activity.Laps)
                                 {
                                     if (!lap.Rest)
                                     {
+                                        if (firstActive < 0)
+                                        {
+                                            firstActive = i;
+                                        }
+                                        lastActive = i;
                                         isActive = true;
-                                        break;
+                                    }
+                                    i++;
+                                }
+
+                                if (overlap)
+                                {
+                                    if (firstActive >= 0)
+                                    {
+                                        DateTime startTimeOverlap = Activity.Laps[firstActive].StartTime;
+                                        m_startTime = getStartTime(this.m_pauses);
+                                        if ((DateTime)m_startTime < startTimeOverlap)
+                                        {
+                                            this.m_pauses.Add(new ValueRange<DateTime>((DateTime)m_startTime, startTimeOverlap));
+                                            m_startTime = startTimeOverlap;
+                                        }
+                                    }
+                                    if (lastActive >= 0)
+                                    {
+                                        DateTime endTimeOverlap = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                                            Activity.Laps[lastActive].StartTime, Activity.Laps[lastActive].TotalTime, Activity.TimerPauses);
+                                        m_endTime = getEndTime(this.m_pauses);
+                                        if (endTimeOverlap < (DateTime)m_endTime)
+                                        {
+                                            this.m_pauses.Add(new ValueRange<DateTime>(endTimeOverlap, (DateTime)m_endTime));
+                                            m_endTime = endTimeOverlap;
+                                        }
                                     }
                                 }
                             }
-                            if (isActive)
+
+                            if (isActive && !overlap)
                             {
                                 for (int i = 0; i < Activity.Laps.Count; i++)
                                 {
@@ -900,77 +929,64 @@ namespace TrailsPlugin.Data
                                     }
                                 }
                             }
-                        }
-                        if (Settings.RestIsPause)
-                        {
-                            //Non required trail points
-                            for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
+
+                            if (!overlap)
                             {
-                                if (i < this.m_subResultInfo.Points.Count &&
-                                    !this.m_subResultInfo.Points[i].Required &&
-                                    this.TrailPointDateTime[i] > DateTime.MinValue)
+                                //Non required trail points
+                                for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
                                 {
-                                    DateTime lower = this.TrailPointDateTime[i];
-                                    DateTime upper = this.EndTime;
-                                    while (i < this.TrailPointDateTime.Count &&
-                                        i < this.m_subResultInfo.Points.Count &&
-                                        (!this.m_subResultInfo.Points[i].Required ||
-                                        this.TrailPointDateTime[i] == DateTime.MinValue))
-                                    {
-                                        i++;
-                                    }
-                                    if (i < this.TrailPointDateTime.Count &&
+                                    if (i < this.m_subResultInfo.Points.Count &&
+                                        !this.m_subResultInfo.Points[i].Required &&
                                         this.TrailPointDateTime[i] > DateTime.MinValue)
                                     {
-                                        upper = this.TrailPointDateTime[i];
+                                        DateTime lower = this.TrailPointDateTime[i];
+                                        DateTime upper = this.EndTime;
+                                        while (i < this.TrailPointDateTime.Count &&
+                                            i < this.m_subResultInfo.Points.Count &&
+                                            (!this.m_subResultInfo.Points[i].Required ||
+                                            this.TrailPointDateTime[i] == DateTime.MinValue))
+                                        {
+                                            i++;
+                                        }
+                                        if (i < this.TrailPointDateTime.Count &&
+                                            this.TrailPointDateTime[i] > DateTime.MinValue)
+                                        {
+                                            upper = this.TrailPointDateTime[i];
+                                        }
+                                        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
                                     }
-                                    m_pauses.Add(new ValueRange<DateTime>(lower, upper));
                                 }
+                                //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
+                                //if (m_activityTrail.Trail.IsSplits)
+                                //{
+                                //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
+                                //}
+                                //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
+                                //{
+                                //    if (i < trailLocations.Count &&
+                                //        !trailLocations[i].Required &&
+                                //        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                //    {
+                                //        DateTime lower = this.TrailPointDateTime[i];
+                                //        DateTime upper = this.EndTime;
+                                //        while (i < this.TrailPointDateTime.Count &&
+                                //            i < trailLocations.Count &&
+                                //            (!trailLocations[i].Required ||
+                                //            this.TrailPointDateTime[i] == DateTime.MinValue))
+                                //        {
+                                //            i++;
+                                //        }
+                                //        if (i < this.TrailPointDateTime.Count &&
+                                //            this.TrailPointDateTime[i] > DateTime.MinValue)
+                                //        {
+                                //            upper = this.TrailPointDateTime[i];
+                                //        }
+                                //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                                //    }
+                                //}
                             }
-                            //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                            //if (m_activityTrail.Trail.IsSplits)
-                            //{
-                            //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
-                            //}
-                            //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
-                            //{
-                            //    if (i < trailLocations.Count &&
-                            //        !trailLocations[i].Required &&
-                            //        this.TrailPointDateTime[i] > DateTime.MinValue)
-                            //    {
-                            //        DateTime lower = this.TrailPointDateTime[i];
-                            //        DateTime upper = this.EndTime;
-                            //        while (i < this.TrailPointDateTime.Count &&
-                            //            i < trailLocations.Count &&
-                            //            (!trailLocations[i].Required ||
-                            //            this.TrailPointDateTime[i] == DateTime.MinValue))
-                            //        {
-                            //            i++;
-                            //        }
-                            //        if (i < this.TrailPointDateTime.Count &&
-                            //            this.TrailPointDateTime[i] > DateTime.MinValue)
-                            //        {
-                            //            upper = this.TrailPointDateTime[i];
-                            //        }
-                            //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                            //    }
-                            //}
                         }
-                        //if (ParentResult != null)
-                        //{
-                        //    if (this.ParentResult.StartDateTime_0 < this.StartDateTime_0)
-                        //    {
-                        //        m_pauses.Add(new ValueRange<DateTime>(this.ParentResult.StartDateTime_0, this.StartDateTime_0));
-                        //    }
-                        //    if (this.EndDateTime_0 < this.ParentResult.EndDateTime_0)
-                        //    {
-                        //        m_pauses.Add(new ValueRange<DateTime>(this.EndDateTime_0, this.ParentResult.EndDateTime_0));
-                        //    }
-                        //}
                     }
-                    //ExternalPauses
-                    //m_pauses.Add(new ValueRange<DateTime>(DateTime.MinValue, this.StartTime.AddSeconds(-1)));
-                    //m_pauses.Add(new ValueRange<DateTime>(this.EndTime.AddSeconds(1), DateTime.MaxValue));
                 }
                 return m_pauses;
             }
@@ -1053,7 +1069,7 @@ namespace TrailsPlugin.Data
 #if !NO_ST_INSERT_START_TIME
                     //There is a bug if a second point is added at the same second as starttime
                     while (i < m_activityDistanceMetersTrack.Count &&
-                        (m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i])-this.StartTime).TotalSeconds < 1)
+                        (m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]) - this.StartTime).TotalSeconds < 1)
                     {
                         i++;
                     }

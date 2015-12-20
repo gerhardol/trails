@@ -369,7 +369,7 @@ namespace TrailsPlugin.Data
                     foreach (Integration.HighScore.HighScoreResult h in hs)
                     {
                         TrailResultInfo indexes = Data.Trail.ResultInfoFromSelection(h.activity, h.selInfo);
-                        if (indexes.Count >= 2)
+                        if (indexes.Count > 1)
                         {
                             if (h.order == 1 || parentWrapper == null)
                             {
@@ -380,7 +380,7 @@ namespace TrailsPlugin.Data
                             }
                             else
                             {
-                                ChildTrailResult ctr = new HighScoreChildTrailResult((parentWrapper.Result as HighScoreParentTrailResult), h.order/* m_resultsListWrapper.Count + 1*/, indexes, h.tooltip);
+                                ChildTrailResult ctr = new HighScoreChildTrailResult((parentWrapper.Result as HighScoreParentTrailResult), h.order, indexes, h.tooltip);
                                 TrailResultWrapper child = new TrailResultWrapper(parentWrapper, ctr);
                             }
                         }
@@ -457,8 +457,9 @@ namespace TrailsPlugin.Data
                             if (refAct != activity && refWrapper.Result.AnyOverlap(activity))
                             {
                                 TrailResultInfo indexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
-                                SplitsParentTrailResult str2 = new SplitsParentTrailResult(this, m_results.Count + 1, indexes, refWrapper.Result);
-                                TrailResultWrapper result = new TrailResultWrapper(str2);
+                                SplitsParentTrailResult cstr = new SplitsParentTrailResult(this, m_results.Count + 1, indexes);
+                                cstr.updateOverlap(str);
+                                TrailResultWrapper result = new TrailResultWrapper(cstr);
 
                                 m_results.Add(result);
                                 handledActivities.Add(activity);

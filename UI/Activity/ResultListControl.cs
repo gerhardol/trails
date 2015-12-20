@@ -1730,7 +1730,8 @@ namespace TrailsPlugin.UI.Activity {
                         s =this.SpecialSelectionResults[0].Result.Activity.Metadata.Source + s.Split('\n')[1];
                         System.Windows.Forms.Clipboard.SetText(s);
                     }
-                    catch(Exception e1)
+#pragma warning disable 0168
+                    catch (Exception e1)
                     { }
                 }
                 else if (e.Modifiers == Keys.Shift)

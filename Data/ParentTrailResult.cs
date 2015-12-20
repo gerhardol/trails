@@ -50,12 +50,6 @@ namespace TrailsPlugin.Data
         {
             this.updateIndexes(indexes);
         }
-        public SplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes, TrailResult refOverlap) :
-            base(activityTrail, order, indexes, 0)
-        {
-            this.updateOverlap(refOverlap);
-            this.updateIndexes(indexes);
-        }
     }
 
     public class HighScoreParentTrailResult : ParentTrailResult

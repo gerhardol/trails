@@ -170,6 +170,13 @@ namespace TrailsPlugin.Data
         //Reset values used in calculations
         public void Clear(bool onlyDisplay)
         {
+            if (this.Wrapper != null)
+            {
+                foreach (TrailResultWrapper t in this.Wrapper.AllChildren)
+                {
+                    t.Result.Clear(onlyDisplay);
+                }
+            }
             m_distanceMetersTrack0 = null;
             m_elevationMetersTrack0 = null;
             m_gradeTrack0 = null;

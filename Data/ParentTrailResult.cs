@@ -103,7 +103,7 @@ namespace TrailsPlugin.Data
                                 ChildTrailResult ctr = new NormalChildTrailResult(this, childIndex, indexes);
                                 //Note: paused results may be added, no limit for childresults
                                 TimeSpan duration = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.TimeNotPaused(ctr.StartTime, ctr.EndTime, this.Pauses);
-                                if (duration > TimeSpan.FromSeconds(1) && this.OverlapRef == null ||
+                                if (duration > TimeSpan.FromSeconds(3) && this.OverlapRef == null ||
                                     duration > TimeSpan.FromSeconds(20))
                                 {
                                     splits.Add(ctr);

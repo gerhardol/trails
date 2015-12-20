@@ -359,7 +359,7 @@ namespace TrailsPlugin.Data
                         m_duration = this.LapInfo.TotalTime;
                     }
                     else if (!(this is ChildTrailResult) &&
-                        TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                        TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                         this.Activity != null)
                     {
                         m_duration = this.Activity.TotalTimeEntered;
@@ -386,7 +386,7 @@ namespace TrailsPlugin.Data
                     return this.LapInfo.TotalDistanceMeters;
                 }
                 else if (!(this is ChildTrailResult) &&
-                TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                 this.Activity != null)
                 {
                     return this.Activity.TotalDistanceMetersEntered;
@@ -404,7 +404,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.StartTime.ToLocalTime().TimeOfDay;
@@ -1222,7 +1222,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.AverageCadencePerMinuteEntered;
@@ -1245,7 +1245,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.AverageHeartRatePerMinuteEntered;
@@ -1268,7 +1268,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.MaximumHeartRatePerMinuteEntered;
@@ -1291,7 +1291,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.AveragePowerWattsEntered;
@@ -1451,7 +1451,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null &&
                     this.Activity.TotalDistanceMetersEntered > 0)
                 {
@@ -1485,7 +1485,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null &&
                     this.Activity.TotalDistanceMetersEntered > 0)
                 {
@@ -1500,7 +1500,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null &&
                     this.Activity.TotalTimeEntered.TotalSeconds > 0)
                 {
@@ -1534,7 +1534,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.TotalAscendMetersEntered;
@@ -1552,7 +1552,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice &&
+                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.TotalDescendMetersEntered;

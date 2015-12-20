@@ -56,7 +56,7 @@ namespace TrailsPlugin.Data
         private static bool m_onlyReferenceRight = false;
         private static bool m_zoomToSelection = false;
         private static bool m_showOnlyMarkedOnRoute = false;
-        private static bool m_resultSummaryIsDevice = false;
+        private static bool m_ShowActivityValuesForResults = false;
         private static bool m_resultSummaryStdDev = false;
         private static bool m_resultSummaryTotal = false;
         private static String[] m_excludeStoppedCategory = new String[0];
@@ -662,12 +662,12 @@ namespace TrailsPlugin.Data
         }
 
         /// <summary>
-        /// Show the summary from the device, instead of the track summaries
+        /// Show the summary from the activity, instead of the track result summaries
         /// </summary>
-        public static bool ResultSummaryIsDevice
+        public static bool ShowActivityValuesForResults
         {
-            get { return m_resultSummaryIsDevice; }
-            set { m_resultSummaryIsDevice = value; }
+            get { return m_ShowActivityValuesForResults; }
+            set { m_ShowActivityValuesForResults = value; }
         }
         public static string SaveChartImagePath
         {

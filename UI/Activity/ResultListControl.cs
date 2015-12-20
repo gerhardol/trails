@@ -227,7 +227,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 RefreshColumns();
 
-                if (Controller.TrailController.Instance.Results.Count > TrailsPlugin.Data.Settings.MaxAutoCalcResults)
+                if (Controller.TrailController.Instance.Results.Count > Data.Settings.MaxAutoCalcResults)
                 {
                     //Avoid sort on some fields that are heavy to calculate at auto updates
                     Controller.TrailController.Instance.AutomaticUpdate = true;
@@ -417,8 +417,8 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
-                this.summaryList.SetSortIndicator(TrailsPlugin.Data.Settings.SummaryViewSortColumns[0],
-                    TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
+                this.summaryList.SetSortIndicator(Data.Settings.SummaryViewSortColumns[0],
+                    Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending);
 
                 IList<TrailResultWrapper> atr = Controller.TrailController.Instance.Results;
                 ((List<TrailResultWrapper>)(atr)).Sort();
@@ -482,7 +482,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void SetSummary(IList<TrailResultWrapper> selected)
+        private void SetSummary(IList<TrailResultWrapper> selected)
         {
             IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
             if (selected != null)
@@ -591,7 +591,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public TrailResultWrapper GetSummaryTotal()
+        private TrailResultWrapper GetSummaryTotal()
         {
             if (Data.Settings.ShowSummaryTotal)
             {
@@ -600,7 +600,7 @@ namespace TrailsPlugin.UI.Activity {
             return null;
         }
 
-        public TrailResultWrapper GetSummaryAverage()
+        private TrailResultWrapper GetSummaryAverage()
         {
             if (Data.Settings.ShowSummaryAverage)
             {
@@ -940,7 +940,7 @@ namespace TrailsPlugin.UI.Activity {
                             if (clickSelected)
                             {
                                 IList<TrailResult> aTr = new List<TrailResult>();
-                                //if (TrailsPlugin.Data.Settings.SelectSimilarResults)
+                                //if (Data.Settings.SelectSimilarResults)
                                 {
                                     //Select the single row only
                                     aTr.Add(tr.Result);
@@ -1058,12 +1058,12 @@ namespace TrailsPlugin.UI.Activity {
 
         private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
         {
-            if (TrailsPlugin.Data.Settings.SummaryViewSortColumns[0] == e.Id)
+            if (Data.Settings.SummaryViewSortColumns[0] == e.Id)
             {
-                TrailsPlugin.Data.Settings.SummaryViewSortDirection = TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ?
+                Data.Settings.SummaryViewSortDirection = Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ?
                        ListSortDirection.Descending : ListSortDirection.Ascending;
             }
-            TrailsPlugin.Data.Settings.UpdateSummaryViewSortColumn = e.Id;
+            Data.Settings.UpdateSummaryViewSortColumn = e.Id;
             this.summaryList_Sort();
         }
 
@@ -1305,11 +1305,11 @@ namespace TrailsPlugin.UI.Activity {
             float[,] splitTimes;
             if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
             {
-                splitTimes = TrailsPlugin.Data.Settings.AdjustDiffSplitTimes;
+                splitTimes = Data.Settings.AdjustDiffSplitTimes;
             }
             else
             {
-                splitTimes = TrailsPlugin.Data.Settings.PandolfTerrainDist;
+                splitTimes = Data.Settings.PandolfTerrainDist;
             }
             if (splitTimes != null)
             {
@@ -1339,7 +1339,7 @@ namespace TrailsPlugin.UI.Activity {
                             float f = 0;
                             if (!string.IsNullOrEmpty(column))
                             {
-                                f = TrailsPlugin.Data.Settings.parseFloat(column);
+                                f = Data.Settings.parseFloat(column);
                             }
                             if (i % 2 == 0)
                             {
@@ -1356,11 +1356,11 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
                         {
-                            TrailsPlugin.Data.Settings.AdjustDiffSplitTimes = splitTimes;
+                            Data.Settings.AdjustDiffSplitTimes = splitTimes;
                         }
                         else
                         {
-                            TrailsPlugin.Data.Settings.PandolfTerrainDist = splitTimes;
+                            Data.Settings.PandolfTerrainDist = splitTimes;
                         }
                     }
                     catch { }
@@ -1619,7 +1619,6 @@ namespace TrailsPlugin.UI.Activity {
             {
                 Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
                 this.selectSimilarSplitsChanged();
-                m_page.RefreshControlState();
             }
             else if (e.KeyCode == Keys.Escape)
             {
@@ -1700,11 +1699,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (e.Modifiers == Keys.Shift)
                     {
-                        TrailsPlugin.Data.Settings.RestIsPause = false;
+                        Data.Settings.RestIsPause = false;
                     }
                     else
                     {
-                        TrailsPlugin.Data.Settings.RestIsPause = true;
+                        Data.Settings.RestIsPause = true;
                     }
                     Controller.TrailController.Instance.CurrentReset(false); //TBD
                     this.m_page.RefreshData(true);
@@ -1721,13 +1720,18 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.copyTable();
                 }
-                else if (e.Modifiers == (Keys.Shift| Keys.Control))
+                else if (e.Modifiers == (Keys.Shift | Keys.Control))
                 {
-                    //Unofficial, undocumented
-                    try {
-                        this.summaryList.CopyTextToClipboard(false, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+                    //Unofficial, undocumented, to simplify comparisions
+                    try
+                    {
                         String s = System.Windows.Forms.Clipboard.GetText();
-                        s =this.SpecialSelectionResults[0].Result.Activity.Metadata.Source + s.Split('\n')[1];
+                        SummaryTrailResult avg = this.m_summaryAverage.Result as SummaryTrailResult;
+                        SummaryValue<double> a = avg.DistanceStdDev();
+                        s += "\n" + Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name + " " + Data.Settings.UseDeviceDistance + " " +
+                            this.SelectedResults[0].Result.Activity.Metadata.Source + " " + avg.Order + " " +
+                            GpsRunningPlugin.Util.UnitUtil.Distance.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") +
+                            " σ" + GpsRunningPlugin.Util.UnitUtil.Elevation.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
                         System.Windows.Forms.Clipboard.SetText(s);
                     }
 #pragma warning disable 0168
@@ -1736,7 +1740,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
-                    TrailsPlugin.Data.Settings.DiffUsingCommonStretches = !TrailsPlugin.Data.Settings.DiffUsingCommonStretches;
+                    Data.Settings.DiffUsingCommonStretches = !Data.Settings.DiffUsingCommonStretches;
                     this.m_page.RefreshData(true);
                 }
                 else
@@ -1748,8 +1752,9 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    TrailsPlugin.Data.Settings.UseDeviceDistance = !TrailsPlugin.Data.Settings.UseDeviceDistance;
+                    Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
                     this.m_page.RefreshData(true);
+                    this.SetSummary(this.SelectedResults);
                 }
                 else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null &&
                     !Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated)
@@ -1769,7 +1774,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))
                 {
-                    TrailsPlugin.Data.Settings.UseTrailElevationAdjust = !TrailsPlugin.Data.Settings.UseTrailElevationAdjust;
+                    Data.Settings.UseTrailElevationAdjust = !Data.Settings.UseTrailElevationAdjust;
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
@@ -1779,13 +1784,13 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    TrailsPlugin.Data.Settings.DeviceElevationFromOther = !TrailsPlugin.Data.Settings.DeviceElevationFromOther;
+                    Data.Settings.DeviceElevationFromOther = !Data.Settings.DeviceElevationFromOther;
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
-                    TrailsPlugin.Data.Settings.UseDeviceElevationForCalc = !TrailsPlugin.Data.Settings.UseDeviceElevationForCalc;
+                    Data.Settings.UseDeviceElevationForCalc = !Data.Settings.UseDeviceElevationForCalc;
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
@@ -1802,7 +1807,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         foreach (TrailResultWrapper trw in atr)
                         {
-                            trw.Result.SetDeviceElevation(TrailsPlugin.Data.Settings.UseTrailElevationAdjust);
+                            trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust);
                         }
                         m_page.RefreshData(true);
                     }
@@ -1910,7 +1915,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Alt)
                 {
-                    TrailsPlugin.Data.Settings.CadenceFromOther = !TrailsPlugin.Data.Settings.CadenceFromOther;
+                    Data.Settings.CadenceFromOther = !Data.Settings.CadenceFromOther;
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
@@ -1934,11 +1939,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Shift)
                 {
-                    TrailsPlugin.Data.Settings.NonReqIsPause = false;
+                    Data.Settings.NonReqIsPause = false;
                 }
                 else
                 {
-                    TrailsPlugin.Data.Settings.NonReqIsPause = true;
+                    Data.Settings.NonReqIsPause = true;
                 }
                 this.m_page.RefreshData(true);
             }
@@ -1946,11 +1951,11 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    TrailsPlugin.Data.Settings.ResultSummaryStdDev = !TrailsPlugin.Data.Settings.ResultSummaryStdDev;
+                    Data.Settings.ResultSummaryStdDev = !Data.Settings.ResultSummaryStdDev;
                 }
                 else
                 {
-                    TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint = !TrailsPlugin.Data.Settings.StartDistOffsetFromStartPoint;
+                    Data.Settings.StartDistOffsetFromStartPoint = !Data.Settings.StartDistOffsetFromStartPoint;
                 }
                 this.summaryList.Refresh();
                 //Only in table, no need to refresh
@@ -2061,14 +2066,14 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    TrailsPlugin.Data.Settings.ResultSummaryIsDevice = !TrailsPlugin.Data.Settings.ResultSummaryIsDevice;
+                    Data.Settings.ShowActivityValuesForResults = !Data.Settings.ShowActivityValuesForResults;
                     //This is all dynamic, but we want to retrigger sort
                     this.m_page.RefreshData(false);
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.ShowSummaryForChildren = !Data.Settings.ShowSummaryForChildren;
-                    this.RefreshSummary();
+                    this.SetSummary(this.SelectedResults);
                 }
                 else
                 {
@@ -2086,7 +2091,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Shift)
                 {
-                    Data.Settings.XAxisValue = TrailsPlugin.Utils.XAxisValue.Time;
+                    Data.Settings.XAxisValue = Utils.XAxisValue.Time;
                     Data.Settings.OverlappingResultUseTimeOfDayDiff = true;
                     Data.Settings.OverlappingResultUseReferencePauses = true;
                     Data.Settings.OverlappingResultShareSplitTime = 
@@ -2116,7 +2121,7 @@ namespace TrailsPlugin.UI.Activity {
                 else
                 {
                     //Depreciated since adding both average/total
-                    TrailsPlugin.Data.Settings.ResultSummaryTotal = !TrailsPlugin.Data.Settings.ResultSummaryTotal;
+                    Data.Settings.ResultSummaryTotal = !Data.Settings.ResultSummaryTotal;
                     RefreshSummary();
                 }
             }
@@ -2141,6 +2146,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.ZoomMarked();
                 }
             }
+            m_page.RefreshControlState();
         }
 
         private void SummaryList_ColumnResized(object sender, ZoneFiveSoftware.Common.Visuals.TreeList.ColumnEventArgs e)

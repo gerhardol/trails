@@ -52,7 +52,8 @@ This page describes the changes between plugin releases. The change log may cont
 	  * [Shift-Alt-G](Features#result-list) Set selection from current selection
 	  * [Alt-G](Features#result-list) Reselect the persistent selection in the current results.
 	  * [Shift-Alt-Ctrl-G](Features#result-list) Re-add the persistent selection, also if no longer in the result list.
-	* ShowSummaryForChildren, result list shortcut Alt-s. Instead of showing the averages for selected parent results, show the averages for the children.
+	* Simple GPS filter to filter points closer than 2s and 10m [Alt-s](Features#result-list)
+	* Show Summary For Children, result list shortcut Alt-s. Instead of showing the averages for selected parent results, show the averages for the children.
   * Updated Spanish translation, thanks to AlexMTB
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default
   * Documentation updated

@@ -1534,7 +1534,8 @@ namespace TrailsPlugin.UI.Activity {
                     if (activity != null && activity.DistanceMetersTrack != null && activity.DistanceMetersTrack.Count > 0 &&
                         activity.GPSRoute != null && activity.GPSRoute.Count < activity.DistanceMetersTrack.Count)
                     {
-                        IDistanceDataTrack track = new DistanceDataTrack();
+                        IDistanceDataTrack track = new TrackUtil.DistanceDataTrack();
+                        TrackUtil.setCapacity(track, activity.DistanceMetersTrack.Count);
                         int prev = int.MinValue;
                         foreach (ITimeValueEntry<float> t in activity.DistanceMetersTrack)
                         {
@@ -1755,6 +1756,16 @@ namespace TrailsPlugin.UI.Activity {
                     Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
                     this.m_page.RefreshData(true);
                     this.SetSummary(this.SelectedResults);
+                }
+                else if (e.Modifiers == Keys.Alt)
+                {
+                    Data.Settings.UseGpsFilter = !Data.Settings.UseGpsFilter;
+                    Data.Settings.GpsFilterMinimumDistance = 10;
+                    Data.Settings.GpsFilterMinimumTime = 2;
+                    if (!Data.Settings.UseDeviceDistance)
+                    {
+                        this.m_page.RefreshData(true);
+                    }
                 }
                 else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null &&
                     !Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated)

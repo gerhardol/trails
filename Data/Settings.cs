@@ -89,6 +89,9 @@ namespace TrailsPlugin.Data
         public static bool OverlappingResultUseReferencePauses = false; //not in xml
         public static bool OverlappingResultShareSplitTime = false; //not in xml
         public static bool ShowSummaryForChildren = false; //not in xml
+        public static bool UseGpsFilter = false; //not in xml
+        public static int GpsFilterMinimumTime = 2; //not in xml
+        public static float GpsFilterMinimumDistance = 10f; //not in xml
 
         //Note: The data structures need restructuring...
         //Temporary hack to translate to strings

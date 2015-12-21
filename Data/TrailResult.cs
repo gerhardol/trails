@@ -1005,7 +1005,7 @@ namespace TrailsPlugin.Data
         {
             if (null == m_distanceMetersTrack || null == m_activityDistanceMetersTrack || float.IsNaN(m_startDistance))
             {
-                m_distanceMetersTrack = new DistanceDataTrack();
+                m_distanceMetersTrack = new TrackUtil.DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = false;
                 if (this is SummaryTrailResult)
                 {
@@ -1021,25 +1021,32 @@ namespace TrailsPlugin.Data
                 }
                 else
                 {
-                    IDistanceDataTrack source;
-                    if (TrailsPlugin.Data.Settings.UseDeviceDistance && this.Activity != null && 
+                    IDistanceDataTrack source = null;
+                    if (Data.Settings.UseDeviceDistance && this.Activity != null &&
                         this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 1)
                     {
                         //Special handling, same calc as device
                         source = this.Activity.DistanceMetersTrack;
                         //This can be incorrect for Pool Swimming
                     }
-                    else
+                    else if (Data.Settings.UseGpsFilter && m_activityDistanceMetersTrack == null)
+                    {
+                        //Try getting m_activityDistanceMetersTrack and gps with filter
+                        getGps();
+                        //Do not set source, nothing to insert from
+                    }
+                    if (m_activityDistanceMetersTrack == null)
                     {
                         source = Info.MovingDistanceMetersTrack;
                     }
-                    //Make a copy, as we insert values
-                    m_activityDistanceMetersTrack = new DistanceDataTrack(source);
-                    m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
 
-                    //There are occasional 0 or decreasing distance values, that disrupt insertion
                     if (source != null && source.Count > 0)
                     {
+                        //Make a copy, as we insert values
+                        m_activityDistanceMetersTrack = new TrackUtil.DistanceDataTrack(source);
+                        TrackUtil.setCapacity(m_activityDistanceMetersTrack, source.Count);
+                        m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
+                        //There are occasional 0 or decreasing distance values, that disrupt insertion
                         for (int i = 0; i < source.Count; i++)
                         {
                             ITimeValueEntry<float> t = source[i];
@@ -1049,12 +1056,13 @@ namespace TrailsPlugin.Data
                                 m_activityDistanceMetersTrack.Add(d, t.Value);
                             }
                         }
-                        //insert points at borders in m_activityDistanceMetersTrack
-                        //Less special handling when transversing the activity track
-                        (new InsertValues<float>(this)).
-                            insertValues(m_activityDistanceMetersTrack, source);
+                                //insert points at borders in m_activityDistanceMetersTrack
+                                //Less special handling when transversing the activity track
+                                (new InsertValues<float>(this)).
+                                    insertValues(m_activityDistanceMetersTrack, source);
                     }
                 }
+
                 if (m_activityDistanceMetersTrack != null && m_activityDistanceMetersTrack.Count > 0)
                 {
                     int i = 0;
@@ -1573,7 +1581,7 @@ namespace TrailsPlugin.Data
         }
 
         //Calculate ascent/descent for the trail
-        public void GetTotalClimbValue()
+        private void GetTotalClimbValue()
         {
             //ActivityInfoCache.Instance.GetInfo(this.Activity).SmoothedGradeTrack;// 
             INumericTimeDataSeries track = this.GradeTrack0(m_cacheTrackRef);
@@ -1930,7 +1938,8 @@ namespace TrailsPlugin.Data
             if (m_distanceMetersTrack0 == null)
             {
                 //Just copy the track. No smoothing or inserting of values
-                this.m_distanceMetersTrack0 = new DistanceDataTrack();
+                this.m_distanceMetersTrack0 = new TrackUtil.DistanceDataTrack();
+                TrackUtil.setCapacity(this.m_distanceMetersTrack0, this.DistanceMetersTrack.Count);
                 UnitUtil.Convert convert = UnitUtil.Distance.ConvertFromDelegate(m_cacheTrackRef.Activity);
                 foreach (ITimeValueEntry<float> entry in this.DistanceMetersTrack)
                 {
@@ -3123,12 +3132,13 @@ namespace TrailsPlugin.Data
             checkCacheRef(refRes);
             if (this.m_averageAdjustedTime == null)
             {
-                this.m_averageAdjustedTime = new DistanceDataTrack();
+                this.m_averageAdjustedTime = new TrackUtil.DistanceDataTrack();
+                TrackUtil.setCapacity(this.m_averageAdjustedTime, this.m_grades.Count);
                 if (HasAdjustedTimeTrack(this.m_cacheTrackRef))
                 {
                     //Iterate to get new time apropriate for "adjusted time"
                     float newTime = this.m_gradeRunAdjustedTime[this.m_gradeRunAdjustedTime.Count - 1].Value; //time derived from predictTime, should converge to resultTime
-                    float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime;//Time used to predict resultTime - seed with most likely
+                    float predictTime = (float)this.Duration.TotalSeconds * 2 - newTime; //Time used to predict resultTime - seed with most likely
                     float[,] splitTime = Settings.AdjustDiffSplitTimes;
 
                     int i = 0; //limit iterations - should iterate within 3 tries
@@ -3881,39 +3891,60 @@ namespace TrailsPlugin.Data
         /**********************************************************/
         #region GPS
 
-        private IGPSRoute getGps()
+        private void getGps()
         {
             IGPSRoute gpsTrack = new TrackUtil.GPSRoute();
             gpsTrack.AllowMultipleAtSameTime = false;
+            bool dist;
+            if (Data.Settings.UseGpsFilter && !Data.Settings.UseDeviceDistance &&
+                this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 0)
+            {
+                dist = true;
+            }
+            else
+            {
+                dist = false;
+            }
+            if (dist)
+            {
+                m_activityDistanceMetersTrack = new TrackUtil.DistanceDataTrack();
+                TrackUtil.setCapacity(m_activityDistanceMetersTrack, this.Activity.GPSRoute.Count);
+            }
+
             if (m_activity != null && m_activity.GPSRoute != null && m_activity.GPSRoute.Count > 0 &&
                 StartTime != DateTime.MinValue && EndTime != DateTime.MinValue)
             {
                 TrackUtil.setCapacity(gpsTrack, MaxCopyCapacity(this.Activity.GPSRoute));
                 int i = 0;
-                while (i < m_activity.GPSRoute.Count)
+                float prevDist = 0;
+                int prevIndex = 0;
+                if (dist)
                 {
-                    DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
-                    if (this.StartTime < dateTime)
-                    {
-                        break;
-                    }
-                    i++;
+                    m_activityDistanceMetersTrack.Add(this.Activity.GPSRoute.StartTime, 0);
                 }
 
                 while (i < m_activity.GPSRoute.Count)
                 {
                     DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
 
-                    if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses) ||
+                    if (this.StartTime <=  dateTime && dateTime <= this.EndTime &&
+                        (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses) ||
                         //Special handling: Return GPS for the activity, to mark them
-                        this is PausedChildTrailResult)
+                        this is PausedChildTrailResult))
                     {
                         IGPSPoint point = m_activity.GPSRoute[i].Value;
                         gpsTrack.Add(dateTime, point);
                     }
-                    if (dateTime >= this.EndTime)
+                    if (dist)
                     {
-                        break;
+                        float d2 = this.Activity.GPSRoute[i].Value.DistanceMetersToPoint(this.Activity.GPSRoute[prevIndex].Value);
+                        if (this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime ||
+                            d2 > Data.Settings.GpsFilterMinimumDistance)
+                        {
+                            prevIndex = i;
+                            prevDist += d2;
+                            m_activityDistanceMetersTrack.Add(dateTime, prevDist);
+                        }
                     }
                     i++;
                 }
@@ -3926,7 +3957,7 @@ namespace TrailsPlugin.Data
                 //debug
             }
 
-            return gpsTrack;
+            m_gpsTrack = gpsTrack;
         }
 
         public IGPSRoute GPSRoute
@@ -3935,7 +3966,7 @@ namespace TrailsPlugin.Data
             {
                 if (m_gpsTrack == null)
                 {
-                    m_gpsTrack = getGps();
+                    getGps();
                     m_gpsPoints = null;
                 }
                 return m_gpsTrack;

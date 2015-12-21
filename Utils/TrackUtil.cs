@@ -40,7 +40,10 @@ namespace TrailsPlugin.Utils
         //Changed interfaces in ST, memory performance improvements
 #if ST_3_1_5314
         internal class NumericTimeDataSeries : ZoneFiveSoftware.Common.Data.NumericTimeDataSeries2 {}
-        internal class DistanceDataTrack : ZoneFiveSoftware.Common.Data.DistanceDataTrack2 { }
+        internal class DistanceDataTrack : ZoneFiveSoftware.Common.Data.DistanceDataTrack2 {
+            internal DistanceDataTrack() : base() { }
+            internal DistanceDataTrack(IDistanceDataTrack d) : base(d) { }
+        }
         internal class GPSRoute : ZoneFiveSoftware.Common.Data.GPS.GPSRoute2 { }
 #else
         internal class NumericTimeDataSeries : ZoneFiveSoftware.Common.Data.NumericTimeDataSeries { }

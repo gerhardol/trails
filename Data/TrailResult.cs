@@ -1035,7 +1035,7 @@ namespace TrailsPlugin.Data
                         getGps();
                         //Do not set source, nothing to insert from
                     }
-                    if (m_activityDistanceMetersTrack == null)
+                    if (source == null && m_activityDistanceMetersTrack == null)
                     {
                         source = Info.MovingDistanceMetersTrack;
                     }
@@ -2470,7 +2470,7 @@ namespace TrailsPlugin.Data
                         else
                         {
                             //The device distance is the "normal" show calculated instead
-                            source = Info.MovingDistanceMetersTrack;
+                            source = this.Info.MovingDistanceMetersTrack;
                         }
                         TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(source));
                         ITimeValueEntry<float> prev = null;
@@ -2908,14 +2908,16 @@ namespace TrailsPlugin.Data
                     if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                     {
                         IDistanceDataTrack source;
+                        int invertDiff = 1;
                         if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
                         {
                             source = this.Activity.DistanceMetersTrack;
                         }
                         else
                         {
-                            //The device distance is the "normal" show calculated instead
+                            //The device distance is the "normal" show calculated instead, invert
                             source = Info.MovingDistanceMetersTrack;
+                            invertDiff = -1;
                         }
                         float? start2 = null;
                         UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
@@ -2924,17 +2926,13 @@ namespace TrailsPlugin.Data
                             DateTime dateTime = this.DistanceMetersTrack.EntryDateTime(t);
                             ITimeValueEntry<float> t2 = source.GetInterpolatedValue(dateTime);
                             if (t2 != null &&
-                                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
+                                !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                             {
                                 if (start2 == null)
                                 {
                                     start2 = t2.Value;
                                 }
-                                float val = (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
-                                if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
-                                {
-                                    val *= -1;
-                                }
+                                float val = invertDiff * (float)convertFrom(-t.Value + t2.Value - (float)start2, this.Activity);
                                 m_deviceDiffDistTrack0.Add(dateTime, val);
                             }
                             else

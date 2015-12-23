@@ -473,16 +473,21 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.RowData = atr;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
-                if ((this.summaryList.Expanded == null || this.summaryList.Expanded.Count==0) 
+                if ((this.summaryList.Expanded == null || this.summaryList.Expanded.Count == 0)
                     && resultsInList == 1)
                 {
-                    this.summaryList.Expanded = new object[1] { atr[atr.Count-1] };
+                    this.summaryList.Expanded = new object[1] { atr[atr.Count - 1] };
                 }
                 this.SelectedResults = null;
             }
         }
 
         private void SetSummary(IList<TrailResultWrapper> selected)
+        {
+            this.SetSummary(selected, false);
+        }
+
+        private void SetSummary(IList<TrailResultWrapper> selected, bool explicitlySelected)
         {
             IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
             if (selected != null)
@@ -516,6 +521,8 @@ namespace TrailsPlugin.UI.Activity {
                         list2.Add(t);
                     }
                     selected2 = list2;
+                    //simply result, allow summary
+                    explicitlySelected = true;
                 }
                 else if (selected2.Count == 0 || !(selected2[0].Result is ChildTrailResult))
                 {
@@ -573,7 +580,20 @@ namespace TrailsPlugin.UI.Activity {
             {
                 (m_summaryAverage.Result as SummaryTrailResult).SetSummary(selected2);
             }
+            this.SetExplicitlySelected(explicitlySelected);
             RefreshSummary();
+        }
+
+        private void SetExplicitlySelected(bool explicitlySelected)
+        {
+            if (Data.Settings.ShowSummaryTotal)
+            {
+                (m_summaryTotal.Result as SummaryTrailResult).SetExplicitlySelected(explicitlySelected);
+            }
+            if (Data.Settings.ShowSummaryAverage)
+            {
+                (m_summaryAverage.Result as SummaryTrailResult).SetExplicitlySelected(explicitlySelected);
+            }
         }
 
         public void RefreshSummary()
@@ -1075,10 +1095,10 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
+                //Always assume change
                 Controller.TrailController.Instance.SelectedResults = this.SelectedResults;
 
-                //Always assume change
-                this.SetSummary(this.SelectedResults);
+                this.SetExplicitlySelected(true);
                 this.m_page.RefreshChart();
                 //Trails track display update
                 this.m_page.RefreshRouteCheck();

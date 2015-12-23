@@ -247,11 +247,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.RowData = null;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
-                // controller is set below: Controller.TrailController.Instance.SelectedResults = null;
             }
-
-            //By setting to null, the last used is selected, or some defaults
-            this.SelectedResults = null;
             SummaryPanel_HandleCreated(this.SummaryPanel, null);
         }
 
@@ -341,6 +337,9 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
                 this.summaryList.SelectedItems = (List<TrailResultWrapper>)setValue;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+
+                //Save previous items for selecting at updates of results
+                this.m_lastSelectedItems = this.summaryList.SelectedItems;
 #endif
                 Controller.TrailController.Instance.SelectedResults = setValue;
                 bool explicitSelect = this.SetSummary(setValue);
@@ -1081,6 +1080,9 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
+                //Save previous items for selecting at updates of results
+                this.m_lastSelectedItems = this.summaryList.SelectedItems;
+
                 //Always assume change
                 Controller.TrailController.Instance.SelectedResults = this.SelectedResults;
 
@@ -1090,9 +1092,6 @@ namespace TrailsPlugin.UI.Activity {
                 //Trails track display update
                 this.m_page.RefreshRouteCheck();
             }
-
-            //Save previous items for selecting at updates of results
-            this.m_lastSelectedItems = this.summaryList.SelectedItems;
         }
 
         /************************************************/

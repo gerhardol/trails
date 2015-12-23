@@ -76,7 +76,14 @@ namespace TrailsPlugin.Data
                     case TrailResultColumnIds.AverageTotalHemoglobinConcentration:
                         //No implementation, ignore
                         return null;
+
                     default:
+                        if (!Controller.TrailController.Instance.ExplicitSelection &&
+                            TrailResultColumnIds.ClimbFields.Contains(column.Id) && !row.ClimbCalculated)
+                        {
+                            //Potentially many selections (of Ascent etc), no value set
+                            return null;
+                        }
                         break;
                 }
 

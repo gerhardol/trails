@@ -48,8 +48,6 @@ namespace TrailsPlugin.Data
         {
             get { return m_isTotal; }
         }
-        //Some calculations (like Ascent/Descent) requires a lot of resources, limit unless explicitly selected
-        private bool m_explicitlySelected;
 
         public SummaryTrailResult(bool isTotal) :
             //a summary result is not related to an activity trail
@@ -94,12 +92,6 @@ namespace TrailsPlugin.Data
             this.m_order = unpaused.Count;
             this.Clear(false);
             this.m_PoolLengthInfo = Data.PoolLengthInfo.GetPoolLength(this.results);
-            m_explicitlySelected = false;
-        }
-
-        public void SetExplicitlySelected(bool explicitlySelected)
-        {
-            m_explicitlySelected = explicitlySelected;
         }
 
         private delegate double FieldGetter(TrailResult tr);
@@ -297,7 +289,6 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if(!m_explicitlySelected && this.results.Count > 1) { return double.NaN; }
                 return this.GetSummaryValue(delegate (TrailResult tr) { return tr.Ascent; }, false, true);
             }
         }
@@ -306,8 +297,22 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (!m_explicitlySelected && this.results.Count > 1) { return double.NaN; }
                 return this.GetSummaryValue(delegate (TrailResult tr) { return tr.Descent; }, false, true);
+            }
+        }
+
+        public override bool ClimbCalculated
+        {
+            get
+            {
+                foreach (TrailResult tr in results)
+                {
+                    if (!tr.ClimbCalculated)
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
 

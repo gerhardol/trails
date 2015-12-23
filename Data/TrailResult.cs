@@ -1567,7 +1567,7 @@ namespace TrailsPlugin.Data
             get
             {
                 if (!(this is ChildTrailResult) &&
-                    TrailsPlugin.Data.Settings.ShowActivityValuesForResults &&
+                    Data.Settings.ShowActivityValuesForResults &&
                     this.Activity != null)
                 {
                     return this.Activity.TotalDescendMetersEntered;
@@ -1577,6 +1577,15 @@ namespace TrailsPlugin.Data
                     GetTotalClimbValue();
                 }
                 return (double)m_descent;
+            }
+        }
+
+        //Heavy calculation, limit in certain situations
+        public virtual bool ClimbCalculated
+        {
+            get
+            {
+                return this.m_ascent != null;
             }
         }
 

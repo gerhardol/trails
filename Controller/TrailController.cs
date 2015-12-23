@@ -479,6 +479,24 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        //Some calculations requires resources, disable unless mouse selection
+        public bool m_ExplicitSelection = false;
+        public bool ExplicitSelection
+        {
+            get
+            {
+                if (!m_ExplicitSelection && this.SelectedResults.Count > 1)
+                {
+                    return false;
+                }
+                return m_ExplicitSelection;
+            }
+            set
+            {
+                m_ExplicitSelection = value;
+            }
+        }
+
         //Set at automatic updates, to possibly limit calculations
         private bool m_AutomaticUpdate = false;
         public bool AutomaticUpdate
@@ -753,6 +771,7 @@ namespace TrailsPlugin.Controller
             }
             set
             {
+                this.m_ExplicitSelection = false;
                 this.m_selectedResults = value;
             }
         }

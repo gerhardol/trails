@@ -148,6 +148,13 @@ namespace TrailsPlugin.Data {
         //obsolete fields - maybe just in dev versions
         internal static IList<string> ObsoleteFields = new List<string> { "AvgGrade", "AscMaxGrade", "AvgPaceSpeed", "LapInfo_StartTime", "LapInfo_TotalDistanceMeters", "LapInfo_TotalTime", "Trail" };
 
+        //Heavy calculations, limit
+        internal static IList<string> ClimbFields = new List<string>
+        {
+            TrailResultColumnIds.Ascent, TrailResultColumnIds.Descent, TrailResultColumnIds.AscMaxAvgGrade, TrailResultColumnIds.DescAvgGrade
+        };
+
+
         //Splits
         //All lap fields must start with this prefix, to transform the Id back to standard (and to find them, which could be done with a separate structure)
         internal const string LapInfoPrefix = "LapInfo_";
@@ -552,6 +559,10 @@ namespace TrailsPlugin.Data {
                     {
                         id = TrailResultColumnIds.AvgPace;
                     }
+                }
+                if (TrailResultColumnIds.ClimbFields.Contains(id) &&(!x.ClimbCalculated || !y.ClimbCalculated))
+                {
+                    continue;
                 }
 
                 try

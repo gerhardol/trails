@@ -364,8 +364,8 @@ namespace TrailsPlugin.UI.Activity {
                 //Result related - routes and splitpoints
                 foreach (TrailResultWrapper tr in results)
                 {
-                    //Do not map routes displayed already by ST
-                    if (ViewSingleActivity() != tr.Result.Activity)
+                    //Do not map routes displayed already by ST (unless GPS filter)
+                    if (ViewSingleActivity() != tr.Result.Activity || Data.Settings.UseGpsFilter)
                     {
                         //Note: Possibly limit no of Trails shown, it slows down Gmaps some
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr.Result))

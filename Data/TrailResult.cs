@@ -2463,13 +2463,14 @@ namespace TrailsPlugin.Data
                     if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)
                     {
                         IDistanceDataTrack source;
-                        if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
+                        if (!Data.Settings.UseDeviceDistance)
                         {
                             source = this.Activity.DistanceMetersTrack;
                         }
                         else
                         {
                             //The device distance is the "normal" show calculated instead
+                            //(ignore UseGpsFilter)
                             source = this.Info.MovingDistanceMetersTrack;
                         }
                         TrackUtil.setCapacity(this.m_deviceSpeedPaceTrack0, MaxCopyCapacity(source));
@@ -2909,16 +2910,17 @@ namespace TrailsPlugin.Data
                     {
                         IDistanceDataTrack source;
                         int invertDiff = 1;
-                        if (!TrailsPlugin.Data.Settings.UseDeviceDistance)
+                        if (Data.Settings.UseDeviceDistance || Data.Settings.UseGpsFilter)
                         {
-                            source = this.Activity.DistanceMetersTrack;
-                        }
-                        else
-                        {
-                            //The device distance is the "normal" show calculated instead, invert
+                            //The device distance (or GPS filter) is the "normal" show calculated instead, invert
                             source = Info.MovingDistanceMetersTrack;
                             invertDiff = -1;
                         }
+                        else
+                        {
+                            source = this.Activity.DistanceMetersTrack;
+                        }
+
                         float? start2 = null;
                         UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(this.Activity);
                         foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
@@ -3913,38 +3915,33 @@ namespace TrailsPlugin.Data
                 StartTime != DateTime.MinValue && EndTime != DateTime.MinValue)
             {
                 TrackUtil.setCapacity(gpsTrack, MaxCopyCapacity(this.Activity.GPSRoute));
-                int i = 0;
                 float prevDist = 0;
                 int prevIndex = 0;
-                if (dist)
-                {
-                    m_activityDistanceMetersTrack.Add(this.Activity.GPSRoute.StartTime, 0);
-                }
 
-                while (i < m_activity.GPSRoute.Count)
+                for (int i = 0; i < m_activity.GPSRoute.Count; i++)
                 {
-                    DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
+                    float d2 = this.Activity.GPSRoute[i].Value.DistanceMetersToPoint(this.Activity.GPSRoute[prevIndex].Value);
+                    if (!Data.Settings.UseGpsFilter || prevIndex == 0 ||
+                        this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime ||
+                        d2 > Data.Settings.GpsFilterMinimumDistance)
+                    {
+                        prevIndex = i;
+                        prevDist += d2;
+                        DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
 
-                    if (this.StartTime <=  dateTime && dateTime <= this.EndTime &&
-                        (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses) ||
-                        //Special handling: Return GPS for the activity, to mark them
-                        this is PausedChildTrailResult))
-                    {
-                        IGPSPoint point = m_activity.GPSRoute[i].Value;
-                        gpsTrack.Add(dateTime, point);
-                    }
-                    if (dist)
-                    {
-                        float d2 = this.Activity.GPSRoute[i].Value.DistanceMetersToPoint(this.Activity.GPSRoute[prevIndex].Value);
-                        if (this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime ||
-                            d2 > Data.Settings.GpsFilterMinimumDistance)
+                        if (this.StartTime <= dateTime && dateTime <= this.EndTime &&
+                            (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses) ||
+                            //Special handling: Return GPS for the activity, to mark them
+                            this is PausedChildTrailResult))
                         {
-                            prevIndex = i;
-                            prevDist += d2;
+                            IGPSPoint point = m_activity.GPSRoute[i].Value;
+                            gpsTrack.Add(dateTime, point);
+                        }
+                        if (dist)
+                        {
                             m_activityDistanceMetersTrack.Add(dateTime, prevDist);
                         }
                     }
-                    i++;
                 }
 
                 //Insert values at borders in m_gpsTrack

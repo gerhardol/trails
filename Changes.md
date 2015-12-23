@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-(unreleased) 1.3.11 2015-12-13
+(unreleased) 1.3.12 2015-12-23
   * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
   * Tweaked UI, updating icons, sizes etc. See Charts and Result List changes
   * Charts
@@ -41,6 +41,7 @@ This page describes the changes between plugin releases. The change log may cont
     * Use device distance calculations for distance and pace/speed if existing. (List option or Result list shortcut Ctrl-D)
 	* Sort on the last three selected columns (if the primary field is the same, sort on secondary). It is possible to group results by for instance selecting Duration, then Categories.
     * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there are not much difference.
+	* Do not calculate Ascent/Descent for Summary and sort unless the fields have been displayed first (or selected with the mouse). As these calculations are slow (done in ST core), Ascent/Descent can slow down the GUI considerably.
     * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
     * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
     * Viewer for UniqueRoutes was not always showing time and date.

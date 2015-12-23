@@ -5,4 +5,4 @@ obj/
 bin/
 _UpgradeReport_Files/
 *.csproj.user
-/trails.wiki
+*.tmp

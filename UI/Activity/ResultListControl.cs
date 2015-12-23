@@ -1760,11 +1760,35 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.UseGpsFilter = !Data.Settings.UseGpsFilter;
-                    Data.Settings.GpsFilterMinimumDistance = 10;
-                    Data.Settings.GpsFilterMinimumTime = 2;
                     if (!Data.Settings.UseDeviceDistance)
                     {
                         this.m_page.RefreshData(true);
+                        this.m_page.RefreshRoute(false);
+                    }
+                }
+                else if (e.Modifiers == (Keys.Alt | Keys.Shift))
+                {
+                    //Undocumented, toggle through some presets
+                    Data.Settings.UseGpsFilter = true;
+                    if (Data.Settings.GpsFilterMinimumTime == 2)
+                    {
+                        Data.Settings.GpsFilterMinimumDistance = 15;
+                        Data.Settings.GpsFilterMinimumTime = 3;
+                    }
+                    else if (Data.Settings.GpsFilterMinimumTime == 3)
+                    {
+                        Data.Settings.GpsFilterMinimumDistance = 25;
+                        Data.Settings.GpsFilterMinimumTime = 5;
+                    }
+                    else
+                    {
+                        Data.Settings.GpsFilterMinimumDistance = 10;
+                        Data.Settings.GpsFilterMinimumTime = 2;
+                    }
+                    if (!Data.Settings.UseDeviceDistance)
+                    {
+                        this.m_page.RefreshData(true);
+                        this.m_page.RefreshRoute(false);
                     }
                 }
                 else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail != null &&

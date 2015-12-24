@@ -14,7 +14,7 @@ This page describes the changes between plugin releases. The change log may cont
     * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
 	* Limit results displayed in charts, configurable in Settings. Chart handling is slow in ST, more than a handful is normally not meaningful anyway.
   * Trails
-    * [Multiple Trails](Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName: Specific_), selecting _BaseName_ selects _BaseName: Specific_ too. This is visible in the trail selection menu.
+    * [Multiple Trails](http://github.com/gerhardol/trails/wiki/Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName: Specific_), selecting _BaseName_ selects _BaseName: Specific_ too. This is visible in the trail selection menu.
     * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
     * _Splits_: Swim information displayed, to analyze swim activities (priarily for Garmin 910XT and later)
   * Analyze multiple data sources: It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
@@ -32,7 +32,7 @@ This page describes the changes between plugin releases. The change log may cont
       * Show Only Marked Results On Map
       * Summary Average Standard Deviation
     * Option to show pauses as results in the list (can be marked on the map too). SportTracks will by default only show that pauses have occurred, this show the time and length of pauses.
-    * Possibility to merge subresults with [Ctrl-'l' keyboard shortcut](Features#result-list).
+    * Possibility to merge subresults with [Ctrl-'l' keyboard shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
     * Save column size in list when changing. Previously the size was reset to default at updates.
     * Possibility to show Custom Data fields. They are for the activity, not trail, so not all are useful.
     * Show Lap fields for _Splits_ trail
@@ -47,13 +47,13 @@ This page describes the changes between plugin releases. The change log may cont
     * Viewer for UniqueRoutes was not always showing time and date.
 	* Selection and manipulation of "Import Source" field. This field is set in most device imports and can be used when comparing datasources.
 	  * Double-click the field for a result to set the import source.
-	  * [Ctrl-G](Features#result-list) Select all results with the same import source(s) as the current selection.
-	  * [Shift-Ctrl-G](Features#result-list) Update the import source for the selected activities from the current reference result.
+	  * [Ctrl-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Select all results with the same import source(s) as the current selection.
+	  * [Shift-Ctrl-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Update the import source for the selected activities from the current reference result.
 	* Persistent result selection. This can be used to make specific selections, edit a single activity, then return to the selection.
-	  * [Shift-Alt-G](Features#result-list) Set selection from current selection
-	  * [Alt-G](Features#result-list) Reselect the persistent selection in the current results.
-	  * [Shift-Alt-Ctrl-G](Features#result-list) Re-add the persistent selection, also if no longer in the result list.
-	* Simple GPS filter to filter points closer than 2s and 10m [Alt-s](Features#result-list)
+	  * [Shift-Alt-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Set selection from current selection
+	  * [Alt-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Reselect the persistent selection in the current results.
+	  * [Shift-Alt-Ctrl-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Re-add the persistent selection, also if no longer in the result list.
+	* Simple GPS filter to filter points closer than 2s and 10m [Alt-s](http://github.com/gerhardol/trails/wiki/Features#result-list)
 	* Show Summary For Children, result list shortcut Alt-s. Instead of showing the averages for selected parent results, show the averages for the children.
   * Updated Spanish translation, thanks to AlexMTB
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default
@@ -66,9 +66,9 @@ This page describes the changes between plugin releases. The change log may cont
 
 
 1.2.964 2014-11-29 (Plugin Catalog)
-  * Possibility to [Filter Results with UniqueRoutes](Features#filter-with-uniqueroutes). The trails will then behave a little more like Strava segments.
-  * Possibility to set a [Default Reference Activity](Features#default-reference-activity). The default reference activity can be used to get a fixed activity to compare to or more predictive filter results with UniqueRoutes.
-  * Improvements to comparing [Multiple Data Sources](Tutorials#multiple-data-sources), especially when the sources has different sets of pauses. See documentation for details.
+  * Possibility to [Filter Results with UniqueRoutes](http://github.com/gerhardol/trails/wiki/Features#filter-with-uniqueroutes). The trails will then behave a little more like Strava segments.
+  * Possibility to set a [Default Reference Activity](http://github.com/gerhardol/trails/wiki/Features#default-reference-activity). The default reference activity can be used to get a fixed activity to compare to or more predictive filter results with UniqueRoutes.
+  * Improvements to comparing [Multiple Data Sources](http://github.com/gerhardol/trails/wiki/Tutorials#multiple-data-sources), especially when the sources has different sets of pauses. See documentation for details.
   * Graphs over Distance shorter than the total distance and the graph had an offset (not starting at 0 x), the graph was cut.
   * Trails painted the graphs the same as standard ST, i.e. left to right. This means that the fill graph is painted on top of the other graphs. The order is now changed to draw the graphs right to left so the fill graph is in the lowest layer, not hiding other graphs.
 
@@ -106,7 +106,7 @@ This page describes the changes between plugin releases. The change log may cont
 
   * Edit Trail: Deleting a trail point selects the previous point instead of the first
 
-  * GradeAdjustedPace related, [Grade Adjusted Pace](Features#grade-adjusted-pace) for more details
+  * GradeAdjustedPace related, [Grade Adjusted Pace](http://github.com/gerhardol/trails/wiki/Features#grade-adjusted-pace) for more details
 
     * MervynDavies, GregMaclin and JackDaniels formula previously adjusted speed, not pace. This resulted in a little more aggressive adjustment uphill, a little less downhill.
 
@@ -124,12 +124,12 @@ This page describes the changes between plugin releases. The change log may cont
 
     * The Vdot/Energy based formulas AlbertoMinetti and ACSM, Pandolf adjusted too much, using linear conversion from energy to speed. Jack Daniels tables uses a smaller factor, not linear dependency energy`<->`speed. (At at least downhill more than 15%, the Minetti study indicates that the efficiency is not exponential either, so the formulas may be off here.)
 
-    * Full implementation of Pandolf formula. It takes the weight of the athlete and equipment into account. The formula also has a terrain factor, that can be set to handle sections of an activity. See [Grade Adjusted Pace](Features#grade-adjusted-pace).
+    * Full implementation of Pandolf formula. It takes the weight of the athlete and equipment into account. The formula also has a terrain factor, that can be set to handle sections of an activity. See [Grade Adjusted Pace](http://github.com/gerhardol/trails/wiki/Features#grade-adjusted-pace).
 
 
 1.2.917 2014-10-10 (Plugin Catalog)
   * Grade Adjusted Pace: Add Kay calculations to the existing methods. Background [Pace and Critical Gradient for Hill Runners: An Analysis of Race Records](http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf), hint from a [ST forum post](http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?p=85774&sid=cac957fef0d213becd6b06f6140cda0d#p85774). The algoritm study compared hilly races to flat races, with a time based component too.
-  * [UniqueRoutes Trail](Features#uniqueroutes-trail) - use Trails as a viewer for Unique Routes. This adds the activities matched by UR as results. The previous integration, to insert activities in the selection is not changed.
+  * [UniqueRoutes Trail](http://github.com/gerhardol/trails/wiki/Features#uniqueroutes-trail) - use Trails as a viewer for Unique Routes. This adds the activities matched by UR as results. The previous integration, to insert activities in the selection is not changed.
   * The "Modify" button for the built-in trails Splits, Reference Activity, High Score and Unique Routes will now go to the related plugin settings. As the generated trails cannot be modified directly, the Modify button previously had the same functionality as the add button, adding a copy of the activity as a new trail.
 
 
@@ -140,9 +140,9 @@ This page describes the changes between plugin releases. The change log may cont
   * Smoothing in the graph is changed with 10 s with PageUp/PageDown. See [Smoothing](Features#smoothing) for details.
   * When changing smoothing in the chart, the zooming level is unchanged.
   * Result List keyboard shortcut Alt-K to get Cadence from other activities (compare to Alt-E for elevation).
-  * [Offset](Features#offset) for results. Normal trails are compared based on the trail points. Splits trail do not have any trail points and an offset can be used to adjust comparison start. This is similar to offset in Overlay plugin. Offset is normally not relevant for normal trails, but can be applied to all trails. Offset can be applied in several ways:
+  * [Offset](http://github.com/gerhardol/trails/wiki/Features#offset) for results. Normal trails are compared based on the trail points. Splits trail do not have any trail points and an offset can be used to adjust comparison start. This is similar to offset in Overlay plugin. Offset is normally not relevant for normal trails, but can be applied to all trails. Offset can be applied in several ways:
     * If the trail is Splits and a track overlap in time compared to the reference trail result, an offset is applied based on time automatically.
-    * Chart keyboard shortcuts similar to [Smoothing](Features#smoothing) ('o', PageUp), except that offset is changed instead of smoothing.
+    * Chart keyboard shortcuts similar to [Smoothing](http://github.com/gerhardol/trails/wiki/Features#smoothing) ('o', PageUp), except that offset is changed instead of smoothing.
     * Chart keyboard shortcut Alt-'o': select any graph for a result and drag it in the direction you want to offset the result.
     * Chart keyboard shortcut Shift-Ctrl-'o': Apply the displayed offset for a result to the activity itself. This can be used to update activities that has incorrect time.
   * Selecting in the chart for results with pauses were slightly incorrect. Similarly for the speed tooltip for selected result.
@@ -159,7 +159,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 1.2.844 2013-05-03 (Plugin Catalog)
   * With only one result and one selected, show summary for child results
-  * ['t' shortcut](Features#result-list): Toggle show total instead of average in the summary line.
+  * ['t' shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list): Toggle show total instead of average in the summary line.
   * Result List Summary: Ignore Not-a-Number for averages.
   * Better precision for start/end positions on the route. Previously only second resolution was used, even if the start was determined with sub-second precision.
 

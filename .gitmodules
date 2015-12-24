@@ -1,0 +1,4 @@
+[submodule "trails.wiki"]
+	path = trails.wiki
+	url = git@github.com:gerhardol/trails.wiki.git
+	branch = master

@@ -560,7 +560,7 @@ namespace TrailsPlugin.Data {
                         id = TrailResultColumnIds.AvgPace;
                     }
                 }
-                if (TrailResultColumnIds.ClimbFields.Contains(id) &&(!x.ClimbCalculated || !y.ClimbCalculated))
+                if (TrailResultColumnIds.ClimbFields.Contains(id) && (!x.ClimbCalculated || !y.ClimbCalculated))
                 {
                     continue;
                 }
@@ -734,7 +734,7 @@ namespace TrailsPlugin.Data {
             if (result == 0)
             {
                 //Fallback sorting
-                result = x.Order.CompareTo(y.Order);
+                result = x.StartTime.CompareTo(y.StartTime);
             }
             result *= (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
             return result;

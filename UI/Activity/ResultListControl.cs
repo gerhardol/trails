@@ -235,6 +235,9 @@ namespace TrailsPlugin.UI.Activity {
                 summaryList_Sort();
                 Controller.TrailController.Instance.AutomaticUpdate = false;
                 ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = MultiActivity();
+
+                //Set to previous selection (or default)
+                this.SelectedResults = null;
             }
             else
             {
@@ -292,19 +295,24 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private System.Collections.IList m_lastSelectedItems = null;
+        private IList<TrailResultWrapper> m_lastSelectedItems = null;
         //Wrap the table SelectedItems, from a generic type
         private IList<TrailResultWrapper> SelectedResults
         {
             set
             {
                 IList<TrailResultWrapper> setValue = value;
+                if (null != setValue)
+                {
+                    //Explicit selection of results (null is used for previous/defaults)
+                    this.m_lastSelectedItems = setValue;
+                }
                 if (null == setValue || !setValue.Equals(m_lastSelectedItems))
                 {
                     if ((setValue == null || setValue.Count == 0))
                     {
                         //Get all current values in prev selection
-                        setValue = Controller.TrailController.Instance.UpdateResults(TrailResultWrapper.SelectedResults(m_lastSelectedItems));
+                        setValue = Controller.TrailController.Instance.UpdateResults(m_lastSelectedItems);
                         if (null == setValue || setValue.Count == 0)
                         {
                             //get a result for the reference activity
@@ -337,15 +345,8 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
                 this.summaryList.SelectedItems = (List<TrailResultWrapper>)setValue;
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
-
-                //Save previous items for selecting at updates of results
-                this.m_lastSelectedItems = this.summaryList.SelectedItems;
 #endif
-                Controller.TrailController.Instance.SelectedResults = setValue;
-                bool explicitSelect = this.SetSummary(setValue);
-                Controller.TrailController.Instance.ExplicitSelection |= explicitSelect;
-                this.m_page.RefreshRouteCheck();
-                this.m_page.RefreshChart();
+                this.updateSelectedItems(this.SelectedResults);
             }
             get
             {
@@ -354,7 +355,7 @@ namespace TrailsPlugin.UI.Activity {
 #else
                 System.Collections.IList selectedItemsRaw = this.summaryList.SelectedItems;
 #endif
-                return TrailResultWrapper.SelectedResults(selectedItemsRaw);
+                return TrailResultWrapper.WrapperIList(selectedItemsRaw);
             }
         }
 
@@ -478,13 +479,11 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.summaryList.Expanded = new object[1] { atr[atr.Count - 1] };
                 }
-                this.SelectedResults = null;
             }
         }
 
-        private bool SetSummary(IList<TrailResultWrapper> selected)
+        private void SetSummary(IList<TrailResultWrapper> selected)
         {
-            bool explicitlySelected = false;
             IList<TrailResultWrapper> selected2 = new List<TrailResultWrapper>();
             if (selected != null)
             {
@@ -517,14 +516,11 @@ namespace TrailsPlugin.UI.Activity {
                         list2.Add(t);
                     }
                     selected2 = list2;
-                    //simply result, allow summary
-                    explicitlySelected = true;
                 }
                 else if (selected2.Count == 0 || !(selected2[0].Result is ChildTrailResult))
                 {
                     //Show summary for all current results
                     selected2 = Controller.TrailController.Instance.Results;
-                    explicitlySelected = true;
                 }
                 else
                 {
@@ -578,7 +574,6 @@ namespace TrailsPlugin.UI.Activity {
                 (m_summaryAverage.Result as SummaryTrailResult).SetSummary(selected2);
             }
             RefreshSummary();
-            return explicitlySelected;
         }
 
         public void RefreshSummary()
@@ -1080,20 +1075,23 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                //Save previous items for selecting at updates of results
-                this.m_lastSelectedItems = this.summaryList.SelectedItems;
+                //Explicit selection of results
+                this.m_lastSelectedItems = this.SelectedResults;
 
-                //Always assume change
-                Controller.TrailController.Instance.SelectedResults = this.SelectedResults;
-
-                this.SetSummary(this.SelectedResults);
+                this.updateSelectedItems(this.SelectedResults);
                 Controller.TrailController.Instance.ExplicitSelection = true;
-                this.m_page.RefreshChart();
-                //Trails track display update
-                this.m_page.RefreshRouteCheck();
             }
         }
 
+        //Summary list updated (possibly by the mose selection), other related changes
+        private void updateSelectedItems(IList<TrailResultWrapper> setValue)
+        {
+            Controller.TrailController.Instance.SelectedResults = setValue;
+            this.SetSummary(setValue);
+            this.m_page.RefreshRouteCheck();
+            this.m_page.RefreshChart();
+        }
+      
         /************************************************/
 
         bool IsCurrentCategory(IActivityCategory activityCat, IActivityCategory filterCat)
@@ -1215,15 +1213,6 @@ namespace TrailsPlugin.UI.Activity {
                 Controller.TrailController.Instance.Activities = allActivities;
                 m_page.RefreshData(false);
                 m_page.RefreshControlState();
-                //if (Controller.TrailController.Instance.ReferenceTrailResult != null && addActivities.Count>0)
-                //{
-                //    Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities = new List<IActivity>();
-                //    foreach (IActivity activity in addActivities)
-                //    {
-                //        Controller.TrailController.Instance.ReferenceTrailResult.SameTimeActivities.Add(activity);
-                //    }
-                //    Controller.TrailController.Instance.ReferenceTrailResult.Clear(true);
-                //}
             }
         }
 
@@ -1625,7 +1614,10 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.Space)
             {
                 Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
-                this.selectSimilarSplitsChanged();
+                if (Data.Settings.SelectSimilarResults)
+                {
+                    this.selectSimilarSplitsChanged();
+                }
             }
             else if (e.KeyCode == Keys.Escape)
             {

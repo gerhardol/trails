@@ -188,8 +188,8 @@ namespace TrailsPlugin.Data
             }
             return result;
         }
-
-        public static IList<TrailResultWrapper> SelectedResults(System.Collections.IList tlist)
+        
+        public static IList<TrailResultWrapper> WrapperIList(System.Collections.IList tlist)
         {
             IList<TrailResultWrapper> aTr = new List<TrailResultWrapper>();
             if (tlist != null)

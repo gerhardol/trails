@@ -82,6 +82,8 @@ namespace TrailsPlugin.Data
         {
             get
             {
+                //Make sure trails are read
+                Plugin.ReadExtensionData();
                 return m_AllTrails;
             }
         }
@@ -217,18 +219,9 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
+        public static void FromXml(XmlNode pluginNode)
         {
-            String attr;
-            attr = pluginNode.GetAttribute(xmlTags.tTrails);
-            XmlDocument doc = new XmlDocument();
-            if (null == attr || 0 == attr.Length)
-            {
-                attr = "<Trails/>";
-            }
-            doc.LoadXml(attr);
-
-            foreach (XmlNode node in doc.DocumentElement.SelectNodes("Trail"))
+            foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail"))
             {
                 Data.Trail trail = Data.Trail.FromXml(node);
                 string name = trail.Name;
@@ -256,10 +249,24 @@ namespace TrailsPlugin.Data
                 m_AllTrails.Add(trail.Id, trail);
                 AddElevationPoints(trail);
             }
+        }
+
+        public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
+        {
+            String attr;
+            attr = pluginNode.GetAttribute(xmlTags.tTrails);
+            XmlDocument doc = new XmlDocument();
+            if (null == attr || 0 == attr.Length)
+            {
+                attr = "<Trails/>";
+            }
+            doc.LoadXml(attr);
+
+            FromXml(doc.DocumentElement);
             RefreshChildren();
         }
 
-        public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
+        public static XmlNode ToXml(XmlDocument doc)
         {
             XmlNode trails = doc.CreateElement("Trails");
             foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
@@ -269,34 +276,18 @@ namespace TrailsPlugin.Data
                     trails.AppendChild(trail.ToXml(doc));
                 }
             }
-            pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
+            return trails;
+        }
 
+        public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
+        {
+            XmlNode trails = ToXml(doc);
+            pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
         }
 
         private static class xmlTags
         {
             public const string tTrails = "tTrails";
-        }
-
-        //Old version, read from logbook
-        public static void FromXml(XmlNode pluginNode)
-        {
-            //foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail")) {
-            //    Data.Trail trail = Data.Trail.FromXml(node);
-            //    m_AllTrails.Add(trail.Id, trail);
-            //}
-
-        }
-
-        //This is not called by default
-        public static XmlNode ToXml(XmlDocument doc)
-        {
-            XmlNode trails = doc.CreateElement("Trails");
-            //foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
-            //{
-            //    trails.AppendChild(trail.ToXml(doc));
-            //}
-            return trails;
         }
 
         //Matrix integration, old call path

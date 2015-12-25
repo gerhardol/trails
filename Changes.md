@@ -23,7 +23,7 @@ This page describes the changes between plugin releases. The change log may cont
     * Result list toolbar, to emphasis help and insert of activities, that seem to not always be recognized. (The toolbar can be hidden).
 	* Expand view to maximize result list
 	  * ESCAPE: Collapse expanded result list view, see F11.
-      * 'F11': Expand Result List, maximizing view of the result list by hiding chart and route. Return to normal with Escape.
+      * 'F11': [Expand Result List](http://github.com/gerhardol/trails/wiki/Features#expanded-view), maximizing view of the result list by hiding chart and route. Return to normal with Escape.
     * Move "insert activity" related actions from _Advanced_ submenu to new _Insert activities_ submenu to be able to describe the functionality better.
     * Add GUI settings for some options that previously only could be activated with keyboard shortcuts:
       * Add Top Category

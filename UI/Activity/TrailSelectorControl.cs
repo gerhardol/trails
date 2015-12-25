@@ -187,6 +187,7 @@ namespace TrailsPlugin.UI.Activity
             this.ResultSummaryStdDevMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
             this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
             this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
+            this.ResultSummaryStdDevMenuItem.Checked = Data.Settings.ResultSummaryStdDev;
             this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
             this.selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             this.trailPointsMenuItem.Checked = Data.Settings.ShowTrailPointsOnMap;

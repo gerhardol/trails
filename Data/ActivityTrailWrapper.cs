@@ -65,7 +65,7 @@ namespace TrailsPlugin.Data
 
         public TrailNameWrapper(IList<ActivityTrail> allActivityTrails, IList<ActivityTrail> selectedActivityTrails)
         {
-            if(selectedActivityTrails != null)
+            if(selectedActivityTrails != null && selectedActivityTrails.Count > 0)
             {
                 this.SelectedItems = new object[selectedActivityTrails.Count];
             }
@@ -106,6 +106,7 @@ namespace TrailsPlugin.Data
                 Trail parentResult = atw.ActivityTrail.Trail.Parent;
                 if (parentResult != null)
                 {
+                    System.Diagnostics.Debug.Assert(ats.ContainsKey(parentResult), "Parent unexpectedly not in all trails");
                     ActivityTrailWrapper parentWrapper = ats[parentResult];
                     atw.Parent = parentWrapper;
                     parentWrapper.Children.Add(atw);

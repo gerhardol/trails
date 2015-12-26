@@ -83,9 +83,9 @@ namespace TrailsPlugin {
                 trailsAreRead = true;
 
                 //In case user do not save logbook when exiting, save backup
-                string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName);
+                string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Name);
                 System.IO.Directory.CreateDirectory(xml);
-                xml = System.IO.Path.Combine(xml, "Backup." + preferencesSettingsVersion + "-" + Version + ".xml");
+                xml = System.IO.Path.Combine(xml, "Backup-" + preferencesSettingsVersion + "-" + Version + "-" + DateTime.Now.ToString("o").Replace(':', '_') + ".xml");
                 SettingsToFile(xml);
             }
             else
@@ -94,8 +94,7 @@ namespace TrailsPlugin {
                 //{
                 //    Data.Settings.ReadOptions(xmlDoc, nsmgr, node);
                 //}
-                //Try reading data, probably not yet available though
-                ReadExtensionData();
+                //Read when logbook is loaded
             }
         }
 
@@ -109,11 +108,6 @@ namespace TrailsPlugin {
             }
             pluginNode.SetAttribute(xmlTags.Verbose, XmlConvert.ToString(Verbose));
             pluginNode.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(preferencesSettingsVersion));
-            //For testing, Trails not handled
-            //if (preferencesSettingsVersion == 2)
-            //{
-            //    Data.Settings.WriteOptions(xmlDoc, pluginNode);
-            //}
 
             //XmlElement settings = xmlDoc.CreateElement(xmlTags.sSettings);
             //Data.Settings.WriteOptions(xmlDoc, settings);
@@ -134,6 +128,9 @@ namespace TrailsPlugin {
                 //Should be only one Trails, but simple way to get the XmlElement
                 Data.TrailData.ReadOptions(xmlDoc, new XmlNamespaceManager(xmlDoc.NameTable), node);
             }
+
+            //Reinit the controller (control state should be updated too)
+            Controller.TrailController.Instance.ReReadTrails();
         }
 
         private static XmlDocument WriteXml()
@@ -155,7 +152,7 @@ namespace TrailsPlugin {
             return doc;
         }
 
-        public static int ReadExtensionVersion()
+        private int ReadExtensionVersion()
         {
             int version = 0;
             if (null != Plugin.GetApplication().Logbook)
@@ -173,7 +170,7 @@ namespace TrailsPlugin {
             return version;
         }
 
-        public static void ReadExtensionData()
+        private static void ReadExtensionData()
         {
             if (!trailsAreRead && null != Plugin.GetApplication().Logbook)
             {
@@ -193,9 +190,9 @@ namespace TrailsPlugin {
         {
             if (null != Plugin.GetApplication().Logbook)
             {
-                XmlDocument doc = WriteXml();
+                XmlDocument xmlDoc = WriteXml();
 
-                Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
+                Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, xmlDoc.OuterXml);
                 Plugin.GetApplication().Logbook.Modified = true;
             }
         }
@@ -207,6 +204,8 @@ namespace TrailsPlugin {
 
             ParseXml(xmlDoc);
             trailsAreRead = true;
+            Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, xmlDoc.OuterXml);
+            Plugin.GetApplication().Logbook.Modified = true;
         }
 
         public static void SettingsToFile(string f)
@@ -228,6 +227,7 @@ namespace TrailsPlugin {
                 if (preferencesSettingsVersion != 2)
                 {
                     trailsAreRead = false;
+                    ReadExtensionData();
                 }
                 else
                 {
@@ -235,12 +235,12 @@ namespace TrailsPlugin {
                     if (version > preferencesSettingsVersion)
                     {
                         //Trails read from logbook are newer, use those in logbook, save a backup
-                        string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName);
+                        string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Name);
                         System.IO.Directory.CreateDirectory(xml);
-                        xml = System.IO.Path.Combine(xml, "Backup." + preferencesSettingsVersion + "-" + Version + DateTime.Now.ToString("o")+ ".xml");
+                        xml = System.IO.Path.Combine(xml, "Backup." + preferencesSettingsVersion + "-" + Version + "-" + DateTime.Now.ToString("o").Replace(':','_') + ".xml");
                         SettingsToFile(xml);
                         trailsAreRead = false;
-                        ReadExtensionVersion();
+                        ReadExtensionData();
                     }
                     else
                     {

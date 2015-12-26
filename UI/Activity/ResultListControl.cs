@@ -2195,7 +2195,6 @@ namespace TrailsPlugin.UI.Activity {
                             else
                             {
                                 Plugin.SettingsFromFile(xmlFile);
-                                Controller.TrailController.Instance.ReReadTrails();
                                 this.m_page.RefreshData(true);
                                 this.m_page.RefreshControlState();
                             }

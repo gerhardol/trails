@@ -82,8 +82,6 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                //Make sure trails are read
-                Plugin.ReadExtensionData();
                 return m_AllTrails;
             }
         }
@@ -123,6 +121,7 @@ namespace TrailsPlugin.Data
             foreach (Trail t in m_AllTrails.Values)
             {
                 t.Children.Clear();
+                t.Parent = null;
             }
 
             foreach (Trail t in m_AllTrails.Values)

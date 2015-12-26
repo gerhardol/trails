@@ -2,9 +2,10 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-(unreleased) 1.3.12 2015-12-23
+(unreleased) 1.3.13 2015-12-
   * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
-  * Tweaked UI, updating icons, sizes etc. See Charts and Result List changes
+  * Trails (including settings) are stored in the logbook instead of preferences). This means that the logbook must be stored after upgrading. The settings and trails are backed up at the upgrade to a separate file. It is also possible to explicitly copy to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and restore settings with [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
+  * Tweaked UI, updating icons, sizes etc. See Charts and Result List for more details
   * Charts
     * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
       The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
@@ -32,7 +33,7 @@ This page describes the changes between plugin releases. The change log may cont
       * Show Only Marked Results On Map
       * Summary Average Standard Deviation
     * Option to show pauses as results in the list (can be marked on the map too). SportTracks will by default only show that pauses have occurred, this show the time and length of pauses.
-    * Possibility to merge subresults with [Ctrl-'l' keyboard shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
+    * Possibility to merge subresults with [Ctrl-l keyboard shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
     * Save column size in list when changing. Previously the size was reset to default at updates.
     * Possibility to show Custom Data fields. They are for the activity, not trail, so not all are useful.
     * Show Lap fields for _Splits_ trail

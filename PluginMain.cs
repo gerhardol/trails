@@ -52,7 +52,8 @@ namespace TrailsPlugin {
             }
         }
 
-        public string Version {
+        public string Version
+        {
             get { return GetType().Assembly.GetName().Version.ToString(4); }
         }
 
@@ -62,84 +63,157 @@ namespace TrailsPlugin {
             attr = pluginNode.GetAttribute(xmlTags.Verbose);
             if (attr.Length > 0) { Verbose = XmlConvert.ToInt16(attr); }
             attr = pluginNode.GetAttribute(xmlTags.settingsVersion);
-            if (attr.Length > 0) { settingsVersion = (Int16)XmlConvert.ToInt16(attr); }
-            if (settingsVersion == 2)
-            {
-                trailsReadLogbook = false;
-                //Setting migrate is not needed here, just one time override read
-            }
-            //Set version so Preferences are loaded next time
-            if (settingsVersion <= 2)
-            {
-                settingsVersion = 3;
-            }
+            if (attr.Length > 0) { preferencesSettingsVersion = (Int16)XmlConvert.ToInt16(attr); }
 
-            attr = pluginNode.GetAttribute(xmlTags.trailsInLogbook);
-            if (attr.Length > 0) {
-                trailsWriteLogbook = XmlConvert.ToBoolean(attr);
-                trailsReadLogbook = trailsWriteLogbook;
-            }
-            attr = pluginNode.GetAttribute(xmlTags.trailsReadLogbook);
-            if (attr.Length > 0) { trailsReadLogbook = XmlConvert.ToBoolean(attr); }//Override
-            attr = pluginNode.GetAttribute(xmlTags.trailsMigrateLogbook);
-            if (attr.Length > 0) {
-                trailsWriteLogbook = !trailsWriteLogbook;
-            }
-            //TBD Cleanup at migration
-
-            Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
-            ReadExtensionData();
-            if (!trailsReadLogbook)
+            if (preferencesSettingsVersion == 2)
             {
-                Data.TrailData.ReadOptions(xmlDoc, nsmgr, pluginNode);
+                //Stored "flat" under the main
+                Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
+
+                //Stored as one attribute
+                attr = pluginNode.GetAttribute(xmlTags.tTrails_ver2);
+                XmlDocument doc = new XmlDocument();
+                if (null == attr || 0 == attr.Length)
+                {
+                    attr = "<" + xmlTags.sTrails + "/>";
+                }
+                doc.LoadXml(attr);
+                Data.TrailData.ReadOptions(doc, nsmgr, doc.DocumentElement);
+                //Trails are read, must wait for logbook open to call WriteTrailData();
                 trailsAreRead = true;
+
+                //In case user do not save logbook when exiting, save backup
+                string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName);
+                System.IO.Directory.CreateDirectory(xml);
+                xml = System.IO.Path.Combine(xml, "Backup." + preferencesSettingsVersion + "-" + Version + ".xml");
+                SettingsToFile(xml);
+            }
+            else
+            {
+                //foreach (XmlElement node in pluginNode.SelectNodes(xmlTags.sSettings))
+                //{
+                //    Data.Settings.ReadOptions(xmlDoc, nsmgr, node);
+                //}
+                //Try reading data, probably not yet available though
+                ReadExtensionData();
             }
         }
 
         public void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
         {
-            pluginNode.SetAttribute(xmlTags.Verbose, XmlConvert.ToString(Verbose));
-            pluginNode.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(settingsVersion));
-
-            //pluginNode.SetAttribute(xmlTags.trailsReadLogbook, XmlConvert.ToString(trailsReadLogbook));
-            pluginNode.SetAttribute(xmlTags.trailsInLogbook, XmlConvert.ToString(trailsWriteLogbook));
-            //pluginNode.SetAttribute(xmlTags.trailsMigrateLogbook, XmlConvert.ToString(false));
-
-            Data.Settings.WriteOptions(xmlDoc, pluginNode);
-            if (!trailsWriteLogbook)
+            //Set version so Preferences are loaded next time
+            if (preferencesSettingsVersion <= 2)
             {
-                Data.TrailData.WriteOptions(xmlDoc, pluginNode);
+                preferencesSettingsVersion = 4;
+                //TrailData must be stored prior to this, logbook is likely closed already
             }
+            pluginNode.SetAttribute(xmlTags.Verbose, XmlConvert.ToString(Verbose));
+            pluginNode.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(preferencesSettingsVersion));
+            //For testing, Trails not handled
+            //if (preferencesSettingsVersion == 2)
+            //{
+            //    Data.Settings.WriteOptions(xmlDoc, pluginNode);
+            //}
+
+            //XmlElement settings = xmlDoc.CreateElement(xmlTags.sSettings);
+            //Data.Settings.WriteOptions(xmlDoc, settings);
+            //pluginNode.AppendChild(settings);
         }
         #endregion
 
-        public static void ReadExtensionData()
+        private static void ParseXml(XmlDocument xmlDoc)
         {
-            if (!trailsAreRead && trailsReadLogbook && null != Plugin.GetApplication().Logbook)
+            String attr = xmlDoc.DocumentElement.GetAttribute(xmlTags.settingsVersion);
+            if (attr.Length > 0) { logbookSettingsVersion = (Int16)XmlConvert.ToInt16(attr); }
+            foreach (XmlElement node in xmlDoc.DocumentElement.SelectNodes(xmlTags.sSettings))
             {
-                XmlDocument doc = new XmlDocument();
+                Data.Settings.ReadOptions(xmlDoc, new XmlNamespaceManager(xmlDoc.NameTable), node);
+            }
+            foreach (XmlElement node in xmlDoc.DocumentElement.SelectNodes(xmlTags.sTrails))
+            {
+                //Should be only one Trails, but simple way to get the XmlElement
+                Data.TrailData.ReadOptions(xmlDoc, new XmlNamespaceManager(xmlDoc.NameTable), node);
+            }
+        }
+
+        private static XmlDocument WriteXml()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml("<" + xmlTags.sTrailsPlugin + "/>");
+
+            logbookSettingsVersion = 4;
+            doc.DocumentElement.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(logbookSettingsVersion));
+
+            XmlElement settings = doc.CreateElement(xmlTags.sSettings);
+            Data.Settings.WriteOptions(doc, settings);
+            doc.DocumentElement.AppendChild(settings);
+
+            XmlElement trails = doc.CreateElement(xmlTags.sTrails);
+            Data.TrailData.WriteOptions(doc, trails);
+            doc.DocumentElement.AppendChild(trails);
+
+            return doc;
+        }
+
+        public static int ReadExtensionVersion()
+        {
+            int version = 0;
+            if (null != Plugin.GetApplication().Logbook)
+            {
+                XmlDocument xmlDoc = new XmlDocument();
                 string xml = Plugin.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
                 if (xml == "")
                 {
-                    xml = "<TrailsPlugin/>";
+                    xml = "<" + xmlTags.sTrailsPlugin + "/>";
                 }
-                doc.LoadXml(xml);
-                Data.TrailData.FromXml(doc.DocumentElement);
+                xmlDoc.LoadXml(xml);
+                String attr = xmlDoc.DocumentElement.GetAttribute(xmlTags.settingsVersion);
+                if (attr.Length > 0) { version = (Int16)XmlConvert.ToInt16(attr); }
+            }
+            return version;
+        }
+
+        public static void ReadExtensionData()
+        {
+            if (!trailsAreRead && null != Plugin.GetApplication().Logbook)
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                string xml = Plugin.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
+                if (xml == "")
+                {
+                    xml = "<" + xmlTags.sTrailsPlugin + "/>";
+                }
+                xmlDoc.LoadXml(xml);
+                ParseXml(xmlDoc);
                 trailsAreRead = true;
             }
         }
 
-        public static void WriteExtensionData() 
+        public static void WriteExtensionData()
         {
-            if (trailsWriteLogbook && null != Plugin.GetApplication().Logbook)
+            if (null != Plugin.GetApplication().Logbook)
             {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml("<TrailsPlugin/>");
-                XmlNode trails = Data.TrailData.ToXml(doc);
-                doc.DocumentElement.AppendChild(trails);
+                XmlDocument doc = WriteXml();
+
                 Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, doc.OuterXml);
                 Plugin.GetApplication().Logbook.Modified = true;
             }
+        }
+
+        public static void SettingsFromFile(string f)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(f);
+
+            ParseXml(xmlDoc);
+            trailsAreRead = true;
+        }
+
+        public static void SettingsToFile(string f)
+        {
+            XmlDocument doc = WriteXml();
+
+            doc.Save(f);
         }
 
         public static IApplication GetApplication()
@@ -151,9 +225,28 @@ namespace TrailsPlugin {
         {
             if (e != null && e.PropertyName == "Logbook")
             {
-                if (trailsReadLogbook)
+                if (preferencesSettingsVersion != 2)
                 {
                     trailsAreRead = false;
+                }
+                else
+                {
+                    int version = ReadExtensionVersion();
+                    if (version > preferencesSettingsVersion)
+                    {
+                        //Trails read from logbook are newer, use those in logbook, save a backup
+                        string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName);
+                        System.IO.Directory.CreateDirectory(xml);
+                        xml = System.IO.Path.Combine(xml, "Backup." + preferencesSettingsVersion + "-" + Version + DateTime.Now.ToString("o")+ ".xml");
+                        SettingsToFile(xml);
+                        trailsAreRead = false;
+                        ReadExtensionVersion();
+                    }
+                    else
+                    {
+                        //Logbook is not available during startup
+                        WriteExtensionData();
+                    }
                 }
 
                 // Register our filter criteria provider
@@ -170,24 +263,25 @@ namespace TrailsPlugin {
         private class xmlTags
         {
             public const string settingsVersion = "settingsVersion";
-            public const string trailsReadLogbook = "trailsReadLogbook"; //Override
-            public const string trailsInLogbook = "trailsInLogbook";
-            public const string trailsMigrateLogbook = "trailsMigrateLogbook";
             public const string Verbose = "Verbose";
+
+            public const string tTrails_ver2 = "tTrails";
+            public const string sTrails = "Trails";
+            public const string sTrailsPlugin = "TrailsPlugin";
+            public const string sSettings = "Settings";
         }
         private static IApplication m_App = null;
-        private static int settingsVersion = 0;
+        private static int preferencesSettingsVersion = 0;
+        private static int logbookSettingsVersion = 0;
         //Versions:
         //0 default when not existing
         //1 (pre 1.0?) old logbook, both settings/trails. No longer supported, handled as 0.
         // All Settings in Preferences since ver 2 (used in plugin version 1.2). Setting versions higher than 2 in 2.0.
         //2 Trails in Preferences
-        //3 Use separate settings
+        //3 Reserved
+        //4 Settings (structured), Trails in Logbook
 
-        private const int settingsVersionCurrent = 4;
         private static bool trailsAreRead = false;
-        private static bool trailsReadLogbook = true;
-        private static bool trailsWriteLogbook = true;
         public static int Verbose = 0;  //Only changed in xml file
         private bool m_FilterCriteriaProviderRegistered = false;
     }

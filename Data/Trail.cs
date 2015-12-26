@@ -670,7 +670,7 @@ namespace TrailsPlugin.Data
             return t1;
         }
 
-        static public Trail FromXml(XmlNode node)
+        public static Trail ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement node)
         {
             Guid Id;
             if (node.Attributes[xmlTags.sId] == null || String.IsNullOrEmpty(node.Attributes[xmlTags.sId].Value))
@@ -754,10 +754,8 @@ namespace TrailsPlugin.Data
             return trail;
         }
 
-        public XmlNode ToXml(XmlDocument doc)
+        public void WriteOptions(XmlDocument doc, XmlElement trailNode)
         {
-            XmlNode trailNode = doc.CreateElement(xmlTags.sTrail);
-
             XmlAttribute a = doc.CreateAttribute(xmlTags.sId);
             a.Value = XmlConvert.ToString(this.Id);
             trailNode.Attributes.Append(a);
@@ -828,12 +826,10 @@ namespace TrailsPlugin.Data
             {
                 trailNode.AppendChild(point.ToXml(doc));
             }
-            return trailNode;
         }
 
         private class xmlTags
         {
-            public const string sTrail = "Trail";
             public const string sId = "id";
             public const string sName = "name";
             public const string sRadius = "radius";

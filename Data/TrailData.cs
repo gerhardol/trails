@@ -135,7 +135,7 @@ namespace TrailsPlugin.Data
                         if (!t.AllChildren.Contains(t2))
                         {
                             //not appearing in subchilds, remove from parents
-                            foreach(Trail tp in t.AllParents)
+                            foreach (Trail tp in t.AllParents)
                             {
                                 tp.Children.Remove(t);
                             }
@@ -192,8 +192,8 @@ namespace TrailsPlugin.Data
                 }
                 Plugin.WriteExtensionData();
                 return true;
-            } 
-            else 
+            }
+            else
             {
                 return false;
             }
@@ -219,11 +219,12 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static void FromXml(XmlNode pluginNode)
+        public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            foreach (XmlNode node in pluginNode.SelectNodes("Trails/Trail"))
+            m_AllTrails = defaultTrails();
+            foreach (XmlElement node in pluginNode.SelectNodes(xmlTags.sTrail))
             {
-                Data.Trail trail = Data.Trail.FromXml(node);
+                Data.Trail trail = Data.Trail.ReadOptions(xmlDoc, nsmgr, node);
                 string name = trail.Name;
                 int extraId = 0;
                 bool isUnique = false;
@@ -246,48 +247,34 @@ namespace TrailsPlugin.Data
                     }
                 }
                 trail.Name = name;
-                m_AllTrails.Add(trail.Id, trail);
+                if (!m_AllTrails.ContainsKey(trail.Id))
+                {
+                    m_AllTrails.Add(trail.Id, trail);
+                }
+                else
+                { }
                 AddElevationPoints(trail);
             }
-        }
 
-        public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
-        {
-            String attr;
-            attr = pluginNode.GetAttribute(xmlTags.tTrails);
-            XmlDocument doc = new XmlDocument();
-            if (null == attr || 0 == attr.Length)
-            {
-                attr = "<Trails/>";
-            }
-            doc.LoadXml(attr);
-
-            FromXml(doc.DocumentElement);
             RefreshChildren();
-        }
-
-        public static XmlNode ToXml(XmlDocument doc)
-        {
-            XmlNode trails = doc.CreateElement("Trails");
-            foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
-            {
-                if (!trail.Generated && !trail.IsTemporary)
-                {
-                    trails.AppendChild(trail.ToXml(doc));
-                }
-            }
-            return trails;
         }
 
         public static void WriteOptions(XmlDocument doc, XmlElement pluginNode)
         {
-            XmlNode trails = ToXml(doc);
-            pluginNode.SetAttribute(xmlTags.tTrails, trails.OuterXml.ToString());
+            foreach (Data.Trail trail in Data.TrailData.AllTrails.Values)
+            {
+                if (!trail.Generated && !trail.IsTemporary)
+                {
+                    XmlElement trailNode = doc.CreateElement(xmlTags.sTrail);
+                    trail.WriteOptions(doc, trailNode);
+                    pluginNode.AppendChild(trailNode);
+                }
+            }
         }
 
         private static class xmlTags
         {
-            public const string tTrails = "tTrails";
+            public const string sTrail = "Trail";
         }
 
         //Matrix integration, old call path

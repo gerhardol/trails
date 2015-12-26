@@ -2127,7 +2127,7 @@ namespace TrailsPlugin.UI.Activity {
                     Data.Settings.XAxisValue = Utils.XAxisValue.Time;
                     Data.Settings.OverlappingResultUseTimeOfDayDiff = true;
                     Data.Settings.OverlappingResultUseReferencePauses = true;
-                    Data.Settings.OverlappingResultShareSplitTime = 
+                    Data.Settings.OverlappingResultShareSplitTime =
                         (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.Splits);
                     this.addCurrentTime();
                 }
@@ -2161,6 +2161,51 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.U)
             {
                 this.selectWithUR();
+            }
+            else if (e.KeyCode == Keys.X)
+            {
+                if (e.Modifiers == Keys.Alt || e.Modifiers == (Keys.Alt | Keys.Shift))
+                {
+                    bool save = (e.Modifiers == Keys.Alt);
+                    FileDialog fileDialog;
+                    if (save)
+                    {
+                        fileDialog = new SaveFileDialog();
+                    }
+                    else
+                    {
+                        fileDialog = new OpenFileDialog();
+                    }
+
+                    fileDialog.InitialDirectory = System.IO.Path.Combine(
+                        Plugin.GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName+"xxx");
+                    fileDialog.FileName = Properties.Resources.ApplicationName + ".backup.xml";
+                    fileDialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+                    fileDialog.FilterIndex = 1;
+
+                    if (fileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string xmlFile = fileDialog.FileName;
+                        try
+                        {
+                            if (save)
+                            {
+                                Plugin.SettingsToFile(xmlFile);
+                            }
+                            else
+                            {
+                                Plugin.SettingsFromFile(xmlFile);
+                                Controller.TrailController.Instance.ReReadTrails();
+                                this.m_page.RefreshData(true);
+                                this.m_page.RefreshControlState();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                        }
+                    }
+                }
             }
             else if (e.KeyCode == Keys.Z)
             {

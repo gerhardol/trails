@@ -54,6 +54,13 @@ namespace TrailsPlugin.Controller
 
         private TrailController()
         {
+            ReReadTrails();
+        }
+
+        public void ReReadTrails()
+        {
+            m_CurrentOrderedTrails = new List<ActivityTrail>();
+            m_currentActivityTrails = new List<ActivityTrail>();
             foreach (Trail trail in TrailData.AllTrails.Values)
             {
                 ActivityTrail to = new ActivityTrail(trail);

@@ -83,10 +83,7 @@ namespace TrailsPlugin {
                 trailsAreRead = true;
 
                 //In case user do not save logbook when exiting, save backup
-                string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Name);
-                System.IO.Directory.CreateDirectory(xml);
-                xml = System.IO.Path.Combine(xml, "Backup-" + preferencesSettingsVersion + "-" + Version + "-" + DateTime.Now.ToString("o").Replace(':', '_') + ".xml");
-                SettingsToFile(xml);
+                SettingsToFile();
             }
             else
             {
@@ -192,14 +189,26 @@ namespace TrailsPlugin {
             }
         }
 
+        private static void WriteExtensionData(XmlDocument xmlDoc)
+        {
+            if (null != Plugin.GetApplication().Logbook)
+            {
+                String prev = Plugin.GetApplication().Logbook.GetExtensionText(GUIDs.PluginMain);
+                String upd = xmlDoc.OuterXml;
+                if (prev != upd)
+                {
+                    Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, upd);
+                    Plugin.GetApplication().Logbook.Modified = true;
+                }
+            }
+        }
+
         public static void WriteExtensionData()
         {
             if (null != Plugin.GetApplication().Logbook)
             {
                 XmlDocument xmlDoc = WriteXml();
-
-                Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, xmlDoc.OuterXml);
-                Plugin.GetApplication().Logbook.Modified = true;
+                WriteExtensionData(xmlDoc);
             }
         }
 
@@ -211,8 +220,15 @@ namespace TrailsPlugin {
 
             ParseXml(xmlDoc, true);
             trailsAreRead = true;
-            Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, xmlDoc.OuterXml);
-            Plugin.GetApplication().Logbook.Modified = true;
+            WriteExtensionData(xmlDoc);
+        }
+
+        private void SettingsToFile()
+        {
+            string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Name);
+            System.IO.Directory.CreateDirectory(xml);
+            xml = System.IO.Path.Combine(xml, "Backup-" + preferencesSettingsVersion + "-" + Version + "-" + DateTime.Now.ToString("o").Replace(':', '_') + ".xml");
+            SettingsToFile(xml);
         }
 
         public static void SettingsToFile(string f)
@@ -231,6 +247,7 @@ namespace TrailsPlugin {
         {
             if (e != null && e.PropertyName == "Logbook")
             {
+                //Logbook is read (possibly changed)
                 if (preferencesSettingsVersion != 2)
                 {
                     trailsAreRead = false;
@@ -238,20 +255,19 @@ namespace TrailsPlugin {
                 }
                 else
                 {
+                    //Migration, first startup on old preferences file
                     int version = ReadExtensionVersion();
                     if (version > preferencesSettingsVersion)
                     {
-                        //Trails read from logbook are newer, use those in logbook, save a backup
-                        string xml = System.IO.Path.Combine(GetApplication().Configuration.UserPluginsDataFolder, Name);
-                        System.IO.Directory.CreateDirectory(xml);
-                        xml = System.IO.Path.Combine(xml, "Backup." + preferencesSettingsVersion + "-" + Version + "-" + DateTime.Now.ToString("o").Replace(':','_') + ".xml");
-                        SettingsToFile(xml);
+                        //Mostly unexpected:
+                        // Trails read from logbook are newer, use those in logbook, save a backup
+                        SettingsToFile();
                         trailsAreRead = false;
                         ReadExtensionData();
                     }
                     else
                     {
-                        //Logbook is not available during startup, migrate trails
+                        //Logbook is not available during startup, save migrated trails
                         WriteExtensionData();
                     }
                 }

@@ -54,7 +54,7 @@ namespace TrailsPlugin.Controller
 
         private TrailController()
         {
-            ReReadTrails();
+            //No need to read trails, done after reading from logbook: ReReadTrails();
         }
 
         public void ReReadTrails()

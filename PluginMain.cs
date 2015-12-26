@@ -90,11 +90,12 @@ namespace TrailsPlugin {
             }
             else
             {
-                //foreach (XmlElement node in pluginNode.SelectNodes(xmlTags.sSettings))
-                //{
-                //    Data.Settings.ReadOptions(xmlDoc, nsmgr, node);
-                //}
-                //Read when logbook is loaded
+                Data.Settings.Init();
+                foreach (XmlElement node in pluginNode.SelectNodes(xmlTags.sSettings))
+                {
+                    Data.Settings.ReadOptions(xmlDoc, nsmgr, node);
+                }
+                //Read trails when logbook is loaded
             }
         }
 
@@ -109,19 +110,23 @@ namespace TrailsPlugin {
             pluginNode.SetAttribute(xmlTags.Verbose, XmlConvert.ToString(Verbose));
             pluginNode.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(preferencesSettingsVersion));
 
-            //XmlElement settings = xmlDoc.CreateElement(xmlTags.sSettings);
-            //Data.Settings.WriteOptions(xmlDoc, settings);
-            //pluginNode.AppendChild(settings);
+            XmlElement settings = xmlDoc.CreateElement(xmlTags.sSettings);
+            Data.Settings.WriteOptions(xmlDoc, settings);
+            pluginNode.AppendChild(settings);
         }
         #endregion
 
-        private static void ParseXml(XmlDocument xmlDoc)
+        //Parse/Write the trails xml, (trails only) from logbook or (settings and trails) from separate file (user triggered)
+        private static void ParseXml(XmlDocument xmlDoc, bool includeSettings)
         {
             String attr = xmlDoc.DocumentElement.GetAttribute(xmlTags.settingsVersion);
             if (attr.Length > 0) { logbookSettingsVersion = (Int16)XmlConvert.ToInt16(attr); }
-            foreach (XmlElement node in xmlDoc.DocumentElement.SelectNodes(xmlTags.sSettings))
+            if (includeSettings)
             {
-                Data.Settings.ReadOptions(xmlDoc, new XmlNamespaceManager(xmlDoc.NameTable), node);
+                foreach (XmlElement node in xmlDoc.DocumentElement.SelectNodes(xmlTags.sSettings))
+                {
+                    Data.Settings.ReadOptions(xmlDoc, new XmlNamespaceManager(xmlDoc.NameTable), node);
+                }
             }
             foreach (XmlElement node in xmlDoc.DocumentElement.SelectNodes(xmlTags.sTrails))
             {
@@ -141,6 +146,7 @@ namespace TrailsPlugin {
             logbookSettingsVersion = 4;
             doc.DocumentElement.SetAttribute(xmlTags.settingsVersion, XmlConvert.ToString(logbookSettingsVersion));
 
+            //Settings data always written, normally not read from logbook
             XmlElement settings = doc.CreateElement(xmlTags.sSettings);
             Data.Settings.WriteOptions(doc, settings);
             doc.DocumentElement.AppendChild(settings);
@@ -181,7 +187,7 @@ namespace TrailsPlugin {
                     xml = "<" + xmlTags.sTrailsPlugin + "/>";
                 }
                 xmlDoc.LoadXml(xml);
-                ParseXml(xmlDoc);
+                ParseXml(xmlDoc, false);
                 trailsAreRead = true;
             }
         }
@@ -197,12 +203,13 @@ namespace TrailsPlugin {
             }
         }
 
+        //Both settings and trails
         public static void SettingsFromFile(string f)
         {
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(f);
 
-            ParseXml(xmlDoc);
+            ParseXml(xmlDoc, true);
             trailsAreRead = true;
             Plugin.GetApplication().Logbook.SetExtensionText(GUIDs.PluginMain, xmlDoc.OuterXml);
             Plugin.GetApplication().Logbook.Modified = true;
@@ -244,7 +251,7 @@ namespace TrailsPlugin {
                     }
                     else
                     {
-                        //Logbook is not available during startup
+                        //Logbook is not available during startup, migrate trails
                         WriteExtensionData();
                     }
                 }
@@ -265,10 +272,10 @@ namespace TrailsPlugin {
             public const string settingsVersion = "settingsVersion";
             public const string Verbose = "Verbose";
 
-            public const string tTrails_ver2 = "tTrails";
-            public const string sTrails = "Trails";
             public const string sTrailsPlugin = "TrailsPlugin";
             public const string sSettings = "Settings";
+            public const string sTrails = "Trails";
+            public const string tTrails_ver2 = "tTrails";
         }
         private static IApplication m_App = null;
         private static int preferencesSettingsVersion = 0;
@@ -276,10 +283,10 @@ namespace TrailsPlugin {
         //Versions:
         //0 default when not existing
         //1 (pre 1.0?) old logbook, both settings/trails. No longer supported, handled as 0.
-        // All Settings in Preferences since ver 2 (used in plugin version 1.2). Setting versions higher than 2 in 2.0.
-        //2 Trails in Preferences
+        // Preferences ver 2 (used in plugin version 1.2). Versions higher than 2 in 2.0.
+        //2 Settings/Trails in Preferences
         //3 Reserved
-        //4 Settings (structured), Trails in Logbook
+        //4 Settings (structured) in preferences, Trails in Logbook
 
         private static bool trailsAreRead = false;
         public static int Verbose = 0;  //Only changed in xml file

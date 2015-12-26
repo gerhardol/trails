@@ -95,6 +95,11 @@ namespace TrailsPlugin.Data
         public static int GpsFilterMinimumTime; //not in xml
         public static float GpsFilterMinimumDistance; //not in xml
 
+        public static void Init()
+        {
+            defaults();
+        }
+
         private static void defaults()
         {
             m_activityPageColumns = TrailResultColumns.DefaultColumns();
@@ -169,7 +174,8 @@ namespace TrailsPlugin.Data
             //Intercept triggering of xml update while parsing/writing xml
             if (!isHandlingXml)
             {
-                Plugin.WriteExtensionData();
+                //The settings are stored in preferences, so this trigger is currently not used
+                //Plugin.WriteExtensionData();
             }
         }
 

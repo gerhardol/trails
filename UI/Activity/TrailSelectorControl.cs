@@ -40,7 +40,6 @@ using TrailsPlugin.UI.MapLayers;
 using TrailsPlugin.UI.MapLayers;
 #endif
 using TrailsPlugin.Data;
-using TrailsPlugin.Controller;
 
 namespace TrailsPlugin.UI.Activity
 {
@@ -95,7 +94,9 @@ namespace TrailsPlugin.UI.Activity
             btnDelete.Text = "";
             btnMenu.CenterImage = Properties.Resources.ChartMenuButton;
             btnMenu.Text = "";
-            this.trailPointsMenuItem.Image = Properties.Resources.SplitPoints;
+            //this.trailPointsMenuItem.Image = Properties.Resources.SplitPoints;
+            this.showToolBarMenuItem.Image = Properties.Resources.ChartTools;
+            this.settingsToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Settings16;
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -115,12 +116,14 @@ namespace TrailsPlugin.UI.Activity
             this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
             this.trailPointsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSplitPointsOnMap;
             this.showToolBarMenuItem.Text = Properties.Resources.UI_Activity_Menu_ShowToolBar;
+            this.settingsToolBarMenuItem.Text = Properties.Resources.Settings;
         }
 
         public void ThemeChanged(ITheme visualTheme)
         {
             m_visualTheme = visualTheme;
             TrailName.ThemeChanged(visualTheme);
+            this.chartPanelMenu.Renderer = new ThemedContextMenuStripRenderer(visualTheme);
         }
 
         private bool m_showPage = false;
@@ -192,6 +195,9 @@ namespace TrailsPlugin.UI.Activity
             this.selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             this.trailPointsMenuItem.Checked = Data.Settings.ShowTrailPointsOnMap;
             this.showToolBarMenuItem.Checked = Data.Settings.ShowListToolBar;
+            this.showToolBarMenuItem.Text = Data.Settings.ShowListToolBar ?
+                Properties.Resources.UI_Activity_Menu_HideToolBar :
+                Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
 
 
@@ -432,6 +438,15 @@ namespace TrailsPlugin.UI.Activity
         {
             Data.Settings.ShowListToolBar = !Data.Settings.ShowListToolBar;
             m_page.ShowListToolBar();
+            RefreshControlState();
+        }
+
+        private void settingsToolBarMenuItem_Click(object sender, EventArgs e)
+        {
+            // go to Trails settings
+            Guid view = GUIDs.SettingsView;
+            String bookmark = "PageId=" + GUIDs.Settings.ToString();
+            Plugin.GetApplication().ShowView(view, bookmark);
         }
 
         /*************************************************************************************************************/

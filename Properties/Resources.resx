@@ -337,7 +337,7 @@ Make sure that {1} is installed.</value>
     <value>Install at least version {0} of {1} to analyze with PerformancePredictor.</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <value>Show Chart Tools</value>
+    <value>Show Tool Bar</value>
   </data>
   <data name="UniqueRoutes_Trail" xml:space="preserve">
     <value>UniqueRoutes</value>
@@ -483,7 +483,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
     <value>Add Activities</value>
   </data>
   <data name="SplitPoints" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SplitPoints.PNG;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\SplitPoints.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ChartMenuButton" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ChartMenuButton.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -505,5 +505,14 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   </data>
   <data name="UI_Settings_MaxChartResults" xml:space="preserve">
     <value>Max Chart Results</value>
+  </data>
+  <data name="ChartTools" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ChartTools.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
+    <value>Hide Tool Bar</value>
   </data>
 </root>

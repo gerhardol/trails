@@ -245,4 +245,7 @@ Assicurarsi che {1} sia installato.</value>
   <data name="UI_Settings_PageControl_linkInformativeUrl_Text" xml:space="preserve">
     <value>Pagina web del plugin</value>
   </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
 </root>

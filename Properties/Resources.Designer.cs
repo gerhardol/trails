@@ -82,6 +82,16 @@ namespace TrailsPlugin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ChartTools {
+            get {
+                object obj = ResourceManager.GetObject("ChartTools", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap delta {
             get {
                 object obj = ResourceManager.GetObject("delta", resourceCulture);
@@ -262,6 +272,15 @@ namespace TrailsPlugin.Properties {
         internal static string SetNameAtImport {
             get {
                 return ResourceManager.GetString("SetNameAtImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
         
@@ -787,7 +806,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Chart Tools.
+        ///   Looks up a localized string similar to Hide Tool Bar.
+        /// </summary>
+        internal static string UI_Activity_Menu_HideToolBar {
+            get {
+                return ResourceManager.GetString("UI_Activity_Menu_HideToolBar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Tool Bar.
         /// </summary>
         internal static string UI_Activity_Menu_ShowToolBar {
             get {

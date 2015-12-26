@@ -92,9 +92,9 @@ namespace TrailsPlugin.UI.Activity {
 
             this.PowerBalanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackPower16;
 
-            this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
-            this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
-            //this.showToolBarMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.
+            //this.distanceToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.TrackGPS16;
+            //this.timeToolStripMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Calendar16;
+            this.showToolBarMenuItem.Image = Properties.Resources.ChartTools;
 
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Visible = false;
 
@@ -154,6 +154,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 t.ThemeChanged(visualTheme);
             }
+            this.detailMenu.Renderer = new ThemedContextMenuStripRenderer(visualTheme);
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -519,7 +520,10 @@ namespace TrailsPlugin.UI.Activity {
             timeToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Time;
             distanceToolStripMenuItem.Checked = Data.Settings.XAxisValue == XAxisValue.Distance;
             this.chartSmoothMenuItem.Text = LineChartUtil.SmoothOverTrailBordersString(Data.Settings.SmoothOverTrailPoints);
-            this.showToolBarMenuItem.Checked = Data.Settings.ShowChartToolBar;
+            //this.showToolBarMenuItem.Checked = Data.Settings.ShowChartToolBar;
+            this.showToolBarMenuItem.Text = Data.Settings.ShowChartToolBar ?
+                Properties.Resources.UI_Activity_Menu_HideToolBar :
+                Properties.Resources.UI_Activity_Menu_ShowToolBar;
         }
 
         private void RefreshChart(LineChartTypes t)

@@ -394,4 +394,7 @@ http://www.gnu.org/licenses/lgpl.html</value>
   <data name="UI_Activity_List_ShowPausesAsResults" xml:space="preserve">
     <value>Mostrar pausas como resultados</value>
   </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configuraciones</value>
+  </data>
 </root>

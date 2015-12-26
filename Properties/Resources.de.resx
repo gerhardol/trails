@@ -226,4 +226,7 @@ Stellen Sie sicher, dass {1} installiert ist.</value>
   <data name="UI_Activity_List_AddActivities" xml:space="preserve">
     <value>Aktivitäten einfügen</value>
   </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
 </root>

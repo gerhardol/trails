@@ -141,6 +141,7 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryList.ThemeChanged(visualTheme);
             this.ButtonPanel.ThemeChanged(visualTheme);
             //this.ButtonPanel.BackColor = visualTheme.Control;
+            this.listMenu.Renderer = new ThemedContextMenuStripRenderer(visualTheme);
         }
 
         private bool _showPage = false;

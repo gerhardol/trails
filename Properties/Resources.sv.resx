@@ -217,7 +217,7 @@ Du kan kopiera Trail punkter i nuvarande referens aktivitet genom att välja Tra
     <value>Problem att kommunicera med {0}. Se till att {1} är installerad.</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
-    <value>Visa kartverktyg</value>
+    <value>Visa verktygsfält</value>
   </data>
   <data name="UI_Activity_Page_AddTrail_Generated" xml:space="preserve">
     <value>Välj {0} för att skapa trail av nuvarande aktivitet, {1} för att lägga valda punkter till ny trail.</value>
@@ -361,5 +361,11 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   </data>
   <data name="UI_Settings_MaxChartResults" xml:space="preserve">
     <value>Max resultat i diagram</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Inställningar</value>
+  </data>
+  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
+    <value>Dölj verktygsfält</value>
   </data>
 </root>

@@ -43,6 +43,7 @@
             this.showOnlyMarkedResultsOnMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trailPointsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.TrailSelectorPanel.SuspendLayout();
             this.chartPanelMenu.SuspendLayout();
@@ -206,7 +207,8 @@
             this.trailPointsMenuItem,
             this.selectSimilarSplitsMenuItem,
             this.runGradeAdjustMenuItem,
-            this.showToolBarMenuItem});
+            this.showToolBarMenuItem,
+            this.settingsToolBarMenuItem});
             this.chartPanelMenu.Name = "chartPanelMenu";
             this.chartPanelMenu.Size = new System.Drawing.Size(199, 48);
             this.chartPanelMenu.Opening += new System.ComponentModel.CancelEventHandler(chartPanelMenu_Opening);
@@ -288,6 +290,13 @@
             this.showToolBarMenuItem.Text = "showToolBarMenuItem";
             this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
             // 
+            // settingsToolBarMenuItem
+            // 
+            this.settingsToolBarMenuItem.Name = "settingsToolBarMenuItem";
+            this.settingsToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.settingsToolBarMenuItem.Text = "settingsToolBarMenuItem";
+            this.settingsToolBarMenuItem.Click += new System.EventHandler(this.settingsToolBarMenuItem_Click);
+            // 
             // TrailSelectorControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -325,6 +334,7 @@
         private System.Windows.Forms.ToolStripMenuItem showOnlyMarkedResultsOnMapMenuItem;
         private System.Windows.Forms.ToolStripMenuItem trailPointsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolBarMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolBarMenuItem;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Panel TrailSelectorPanel;
     }

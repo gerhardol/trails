@@ -109,6 +109,7 @@ namespace TrailsPlugin.UI.Activity {
             this.MainChart.ThemeChanged(visualTheme);
             this.ButtonPanel.ThemeChanged(visualTheme);
             this.ButtonPanel.BackColor = visualTheme.Window;
+            this.chartContextMenu.Renderer = new ThemedContextMenuStripRenderer(visualTheme);
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -173,7 +174,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
             dlg.ThemeChanged(m_visualTheme);
             dlg.FileName = Data.Settings.SaveChartImagePath + Path.DirectorySeparatorChar + "Trails";
-            if (!String.IsNullOrEmpty(this.m_refTrailResult.Trail.Name))
+            if (this.m_refTrailResult != null && !String.IsNullOrEmpty(this.m_refTrailResult.Trail.Name))
             {
                 dlg.FileName += "-" + this.m_refTrailResult.Trail.Name;
             }
@@ -383,10 +384,11 @@ namespace TrailsPlugin.UI.Activity {
                         e.DataSeries.ValueAxis.LabelColor = Color.Black;
                         this.m_lastSelectedType = chartType;
                     }
-                    else
+                    else if (m_axisCharts.Count > 0)
                     {
                         LineChartTypes axisType = LineChartUtil.ChartToAxis(chartType);
-                        if (axisType == chartType || !m_ChartTypes.Contains(axisType))
+                        System.Diagnostics.Debug.Assert(m_axisCharts.ContainsKey(axisType), "no axis for " + axisType);
+                        if (m_axisCharts.ContainsKey (axisType) && (axisType == chartType || !m_ChartTypes.Contains(axisType)))
                         {
                             m_axisCharts[axisType].LabelColor = ColorUtil.ChartColor[axisType].LineNormal;
                         }

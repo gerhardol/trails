@@ -3,9 +3,9 @@ This page describes the changes between plugin releases. The change log may cont
 ### Changes ###
 
 (unreleased) 1.3.13 2015-12-
-  * Changed version numbering after source repository was moved to GitHub. The plugin catalog version to be released as 2.0.
-  * Trails (including settings) are stored in the logbook instead of preferences). This means that the logbook must be stored after upgrading. The settings and trails are backed up at the upgrade to a separate file. It is also possible to explicitly copy to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and restore settings with [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
-  * Tweaked UI, updating icons, sizes etc. See Charts and Result List for more details
+  * Changed version numbering after source repository was moved to GitHub. The version in the plugin catalog to be released as 2.0.
+  * Trails (not settings) are stored in the logbook instead of preferences. This means that the logbook must be stored after upgrading to save the trails. When detecting old preferences, the settings and trails are backed up at the upgrade to a separate file. It is possible to explicitly save/restore settings/trails to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
+  * Tweaked UI, updating icons, sizes etc. See Charts and Result List for specific details
   * Charts
     * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
       The average for the charts is available in the list (not available in ST). Smoothing can be customized too.

@@ -1413,6 +1413,7 @@ namespace TrailsPlugin.UI.Activity {
         /*********************************************/
         private void SetupAxes()
         {
+            smoothingLabel.Text = "";
             if (m_visible && ReferenceTrailResult != null)
             {
                 // X axis

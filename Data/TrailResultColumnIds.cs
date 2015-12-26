@@ -231,8 +231,9 @@ namespace TrailsPlugin.Data {
             else if (!m_ignoredColumnDict.Contains(id))
             {
                 //It is OK to have lap fields defined, but this is not a Splits trail
+                //This could also be a CustomField no longer available
                 //Unknown column, not ignored
-                Debug.Assert(false, string.Format("Unknown column {0}", id));
+                Debug.Assert(false, string.Format("Ignoring unknown column {0}", id));
             }
             return null;
         }

@@ -535,7 +535,7 @@ namespace TrailsPlugin.UI.Activity
             treeListPopup.Tree.ShowLines = true;
 
             //Note: Just checking for current trail could modify the ordered list, so do this first
-            IList<ActivityTrail> selectedActivityTrails = null;
+            IList<ActivityTrail> selectedActivityTrails = new List<ActivityTrail>();
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
                 selectedActivityTrails = Controller.TrailController.Instance.CurrentActivityTrails;

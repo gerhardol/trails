@@ -2,14 +2,14 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-(unreleased) 1.3.13 2015-12-
-  * Changed version numbering after source repository was moved to GitHub. The version in the plugin catalog to be released as 2.0.
-  * Trails (not settings) are stored in the logbook instead of preferences. This means that the logbook must be stored after upgrading to save the trails. When detecting old preferences, the settings and trails are backed up at the upgrade to a separate file. It is possible to explicitly save/restore settings/trails to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
+2.0.1 2015-12-27 (GitHub)
+  * Changed version numbering after source repository was moved to GitHub.
+  * Trails (not settings) are stored in the logbook instead of preferences. This means that the logbook must be stored after upgrading to save the trails. When detecting old preferences, the settings and trails are backed up to a separate file. It is possible to explicitly save/restore settings/trails to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
   * Tweaked UI, updating icons, sizes etc. See Charts and Result List for specific details
   * Charts
     * Support for the ST standard charts previously missing: PowerBalance, Temperature, GroundContactTime, VerticalOscillation, SaturatedHemoglobin, TotalHemoglobinConcentration
       The average for the charts is available in the list (not available in ST). Smoothing can be customized too.
-    * Standard ST chart selection dialog. This also allows to reorder charts in a simpler. Chart selection in dropdown menu is removed.
+    * Standard ST chart selection dialog. This also allows to reorder charts in a simpler. Chart selection in the dropdown menu is removed.
     * Copy Chart option
     * Chart toolbar: Add option to hide/show trailpoints in charts
     * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
@@ -17,10 +17,10 @@ This page describes the changes between plugin releases. The change log may cont
   * Trails
     * [Multiple Trails](http://github.com/gerhardol/trails/wiki/Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName: Specific_), selecting _BaseName_ selects _BaseName: Specific_ too. This is visible in the trail selection menu.
     * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
-    * _Splits_: Swim information displayed, to analyze swim activities (priarily for Garmin 910XT and later)
+    * _Splits_: Swim information displayed, to analyze swim activities (primarily for Garmin 910XT and later)
   * Analyze multiple data sources: It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Result list
-	* Added option menu, with "settings" for results. The list context menu (right click on the list) still have context related actions: Insert activities, set reference result, Analyze, etc
+	* Added option menu, with settings related to results. The list context menu (right click on the list) still have context related actions: Insert activities, set reference result, Analyze, etc
     * Result list toolbar, to emphasis help and insert of activities, that seem to not always be recognized. (The toolbar can be hidden).
 	* Expand view to maximize result list
 	  * ESCAPE: Collapse expanded result list view, see F11.
@@ -39,27 +39,26 @@ This page describes the changes between plugin releases. The change log may cont
     * Show Lap fields for _Splits_ trail
     * For _Splits_ trail, Distance and Time shows lap data (not the data calculated from track data)
     * Add support for column _Max (Avg) Grade_
-    * Use device distance calculations for distance and pace/speed if existing. (List option or Result list shortcut Ctrl-D)
+    * Use device distance calculations for distance and pace/speed if existing. (List option or Result list shortcut Ctrl-d)
 	* Sort on the last three selected columns (if the primary field is the same, sort on secondary). It is possible to group results by for instance selecting Duration, then Categories.
     * Sort was slow with many hundreds results. For simple fields like duration, the sort is instant now. More complex fields like average HR that has to be determined from the track, there are not much difference.
-	* Do not calculate Ascent/Descent for Summary and sort unless the fields have been displayed first (or selected with the mouse). As these calculations are slow (done in ST core), Ascent/Descent can slow down the GUI considerably.
+	* Do not calculate Ascent/Descent for Summary and sort unless the fields have been displayed first (or rows selected with the mouse). As these calculations are slow (done in ST core), Ascent/Descent can slow down the GUI considerably.
     * Add summary row for Totals, in addition to Average. The rows can be hidden from the list menu.
     * Average time-of-day for summary results (in list) with more than two activities. Can give indication when a ride is normally at a certain point.
     * Viewer for UniqueRoutes was not always showing time and date.
 	* Selection and manipulation of "Import Source" field. This field is set in most device imports and can be used when comparing datasources.
 	  * Double-click the field for a result to set the import source.
-	  * [Ctrl-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Select all results with the same import source(s) as the current selection.
-	  * [Shift-Ctrl-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Update the import source for the selected activities from the current reference result.
+	  * [Ctrl-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Select all results with the same import source(s) as the current selection.
+	  * [Shift-Ctrl-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Update the import source for the selected activities from the current reference result.
 	* Persistent result selection. This can be used to make specific selections, edit a single activity, then return to the selection.
-	  * [Shift-Alt-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Set selection from current selection
-	  * [Alt-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Reselect the persistent selection in the current results.
-	  * [Shift-Alt-Ctrl-G](http://github.com/gerhardol/trails/wiki/Features#result-list) Re-add the persistent selection, also if no longer in the result list.
+	  * [Shift-Alt-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Set selection from current selection
+	  * [Alt-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Reselect the persistent selection in the current results.
+	  * [Shift-Alt-Ctrl-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Re-add the persistent selection, also if the results are no longer in the result list.
 	* Simple GPS filter to filter points closer than 2s and 10m [Alt-s](http://github.com/gerhardol/trails/wiki/Features#result-list)
 	* Show Summary For Children, result list shortcut Alt-s. Instead of showing the averages for selected parent results, show the averages for the children.
   * Updated Spanish translation, thanks to AlexMTB
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default
-  * Documentation updated
-
+  * Documentation updated. An example describing some of the new features was added to the documantation: [920XT](https://github.com/gerhardol/trails/wiki/Tutorials#920xt-example).
 
 1.2.971 2015-01-30 (Plugin Catalog)
   * Pressing '+' when viewing automatically generated trail will offer to add a new trail with selected points, not just creating a copy of the generated trail.

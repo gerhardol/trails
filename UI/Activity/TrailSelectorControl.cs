@@ -194,7 +194,7 @@ namespace TrailsPlugin.UI.Activity
             this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
             this.selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
             this.trailPointsMenuItem.Checked = Data.Settings.ShowTrailPointsOnMap;
-            this.showToolBarMenuItem.Checked = Data.Settings.ShowListToolBar;
+            //this.showToolBarMenuItem.Checked = Data.Settings.ShowListToolBar;
             this.showToolBarMenuItem.Text = Data.Settings.ShowListToolBar ?
                 Properties.Resources.UI_Activity_Menu_HideToolBar :
                 Properties.Resources.UI_Activity_Menu_ShowToolBar;

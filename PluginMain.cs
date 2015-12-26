@@ -70,7 +70,7 @@ namespace TrailsPlugin {
                 //Stored "flat" under the main
                 Data.Settings.ReadOptions(xmlDoc, nsmgr, pluginNode);
 
-                //Stored as one attribute
+                //Trails stored as one attribute
                 attr = pluginNode.GetAttribute(xmlTags.tTrails_ver2);
                 XmlDocument doc = new XmlDocument();
                 if (null == attr || 0 == attr.Length)
@@ -81,6 +81,7 @@ namespace TrailsPlugin {
                 Data.TrailData.ReadOptions(doc, nsmgr, doc.DocumentElement);
                 //Trails are read, must wait for logbook open to call WriteTrailData();
                 trailsAreRead = true;
+                Controller.TrailController.Instance.ReReadTrails();
 
                 //In case user do not save logbook when exiting, save backup
                 SettingsToFile();
@@ -88,9 +89,13 @@ namespace TrailsPlugin {
             else
             {
                 Data.Settings.Init();
-                foreach (XmlElement node in pluginNode.SelectNodes(xmlTags.sSettings))
+                foreach (XmlElement node in pluginNode.ChildNodes)
                 {
-                    Data.Settings.ReadOptions(xmlDoc, nsmgr, node);
+                    //Workaround, no hit with SelectNodes(xmlTags.sSettings))
+                    if (node.Name == xmlTags.sSettings)
+                    {
+                        Data.Settings.ReadOptions(xmlDoc, nsmgr, node);
+                    }
                 }
                 //Read trails when logbook is loaded
             }

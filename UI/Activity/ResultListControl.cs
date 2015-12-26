@@ -112,6 +112,7 @@ namespace TrailsPlugin.UI.Activity {
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.summaryListToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
+            ShowListToolBar();
         }
 
         public void UICultureChanged(CultureInfo culture)
@@ -2179,7 +2180,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
 
                     fileDialog.InitialDirectory = System.IO.Path.Combine(
-                        Plugin.GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName+"xxx");
+                        Plugin.GetApplication().Configuration.UserPluginsDataFolder, Properties.Resources.ApplicationName);
                     fileDialog.FileName = Properties.Resources.ApplicationName + ".backup.xml";
                     fileDialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
                     fileDialog.FilterIndex = 1;

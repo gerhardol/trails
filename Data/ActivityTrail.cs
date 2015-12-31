@@ -601,29 +601,11 @@ namespace TrailsPlugin.Data
             public float prevDist;
         }
 
-        /// <summary>
-        /// Sort the children by time, exclude pauses
-        /// </summary>
-        private static IList<TrailResultWrapper> ChildrenTimeSorted(TrailResultWrapper parent)
-        {
-            IList<TrailResultWrapper> displayedChildren = new List<TrailResultWrapper>();
-            foreach (TrailResultWrapper tr in parent.Children)
-            {
-                if (!(tr.Result is PausedChildTrailResult))
-                {
-                    displayedChildren.Add(tr);
-                }
-            }
-            ((List<TrailResultWrapper>)displayedChildren).Sort((x, y) => x.Result.StartTime.CompareTo(y.Result.StartTime));
-
-            return displayedChildren;
-        }
-
         internal void MergeSubResults(TrailResultWrapper parent, IList<TrailResultWrapper> ctr, bool all)
         {
             //Get the indexes from the displayed results
             //Using the order of displayed results (results may have been excluded (pauses) or deleted)
-            IList<TrailResultWrapper> displayedChildren = ChildrenTimeSorted(parent);
+            IList<TrailResultWrapper> displayedChildren = TrailResultWrapper.ChildrenTimeSorted(parent);
 
             IList<int> orders = new List<int>();
             foreach (TrailResultWrapper tr in ctr)
@@ -690,7 +672,7 @@ namespace TrailsPlugin.Data
                     continue;
                 }
 
-                IList<TrailResultWrapper> mergeChildren = ChildrenTimeSorted(trw);
+                IList<TrailResultWrapper> mergeChildren = TrailResultWrapper.ChildrenTimeSorted(trw);
                 if (mergeChildren == null || mergeChildren.Count == 0)
                 {
                     continue;

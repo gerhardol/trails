@@ -430,7 +430,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     tr.Result.Order = i;
                     i++;
-                    Boolean expanded = Data.Settings.SelectSimilarResults || this.summaryList.IsExpanded(tr)
+                    Boolean expanded = Data.Settings.SelectSimilarSplits || this.summaryList.IsExpanded(tr)
                         //workaround for incorrect expand detection
                         || atr.Count < 9;
                     if (!expanded)
@@ -615,7 +615,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             bool isChange = false;
             IList<TrailResultWrapper> atr = this.SelectedResults;
-            if (Data.Settings.SelectSimilarResults && atr != null && atr.Count > 0)
+            if (Data.Settings.SelectSimilarSplits && atr != null && atr.Count > 0)
             {
                 //The implementation only supports adding new splits not deselecting
                 //Note that selecting will scroll, changing offsets why check what is clicked does not work well
@@ -647,15 +647,18 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else
                         {
-                            foreach (TrailResultWrapper ctn in rtn.Children)
+                            int i = 0;
+                            foreach (TrailResultWrapper ctn in TrailResultWrapper.ChildrenTimeSorted(rtn))
                             {
-                                if (ctn.Result.Order == splitIndex)
+                                if (Data.Settings.SelectSimilarModulu == 0 && ctn.Result.Order == splitIndex ||
+                                    Data.Settings.SelectSimilarModulu > 0 && i % Data.Settings.SelectSimilarModulu == splitIndex - 1)
                                 {
                                     if (!results.Contains(ctn))
                                     {
                                         results.Add(ctn);
                                     }
                                 }
+                                i++;
                             }
                         }
                     }
@@ -1071,7 +1074,7 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
-            if (Data.Settings.SelectSimilarResults)
+            if (Data.Settings.SelectSimilarSplits)
             {
                 this.selectSimilarSplitsChanged();
             }
@@ -1615,8 +1618,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.Space)
             {
-                Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
-                if (Data.Settings.SelectSimilarResults)
+                Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
+                if (Data.Settings.SelectSimilarSplits)
                 {
                     this.selectSimilarSplitsChanged();
                 }
@@ -1932,6 +1935,27 @@ namespace TrailsPlugin.UI.Activity {
                     this.SelectedResults = m_PersistentSelectionResults;
                 }
             }
+            else if (e.KeyCode == Keys.H)
+            {
+                //Unofficial
+                if (e.Modifiers == Keys.Alt)
+                {
+                    //Select Similar splits that matches a certain modulo
+                    //Used similar to lap merge, when Splits have several laps for one "loop"
+                    Data.Settings.SelectSimilarModulu++;
+                }
+                else if (e.Modifiers == (Keys.Alt | Keys.Shift))
+                {
+                    //Default, select similar from child index
+                    Data.Settings.SelectSimilarModulu = 0;
+                }
+                this.summaryListToolTip.Show("Select Similar Modulo: " + Data.Settings.SelectSimilarModulu.ToString(),
+                   this.summaryList,
+                   new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
+                   Cursor.Current.Size.Width / 2,
+                   this.summaryListCursorLocationAtMouseMove.Y),
+                   this.summaryListToolTip.AutoPopDelay);
+            }
             else if (e.KeyCode == Keys.I)
             {
                 InsertCategoryTypes c = InsertCategoryTypes.CurrentCategory;
@@ -1946,6 +1970,7 @@ namespace TrailsPlugin.UI.Activity {
 
                 this.addActivityFromCategory(this.getCurrentCategory(c));
             }
+
             else if (e.KeyCode == Keys.K)
             {
                 if (e.Modifiers == Keys.Alt)

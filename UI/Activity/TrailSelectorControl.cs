@@ -192,7 +192,7 @@ namespace TrailsPlugin.UI.Activity
             this.showSummaryAverageMenuItem.Checked = Data.Settings.ShowSummaryAverage;
             this.ResultSummaryStdDevMenuItem.Checked = Data.Settings.ResultSummaryStdDev;
             this.showOnlyMarkedResultsOnMapMenuItem.Checked = Data.Settings.ShowOnlyMarkedOnRoute;
-            this.selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarResults;
+            this.selectSimilarSplitsMenuItem.Checked = Data.Settings.SelectSimilarSplits;
             this.trailPointsMenuItem.Checked = Data.Settings.ShowTrailPointsOnMap;
             //this.showToolBarMenuItem.Checked = Data.Settings.ShowListToolBar;
             this.showToolBarMenuItem.Text = Data.Settings.ShowListToolBar ?
@@ -357,7 +357,7 @@ namespace TrailsPlugin.UI.Activity
 
         void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
         {
-            Data.Settings.SelectSimilarResults = !Data.Settings.SelectSimilarResults;
+            Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
             this.RefreshControlState();
             m_page.selectSimilarSplitsChanged();
         }

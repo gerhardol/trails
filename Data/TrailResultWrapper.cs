@@ -115,6 +115,24 @@ namespace TrailsPlugin.Data
             }
         }
 
+        /// <summary>
+        /// Sort the children by time, exclude pauses
+        /// </summary>
+        public static IList<TrailResultWrapper> ChildrenTimeSorted(TrailResultWrapper parent)
+        {
+            IList<TrailResultWrapper> displayedChildren = new List<TrailResultWrapper>();
+            foreach (TrailResultWrapper tr in parent.Children)
+            {
+                if (!(tr.Result is PausedChildTrailResult))
+                {
+                    displayedChildren.Add(tr);
+                }
+            }
+            ((List<TrailResultWrapper>)displayedChildren).Sort((x, y) => x.Result.StartTime.CompareTo(y.Result.StartTime));
+
+            return displayedChildren;
+        }
+
         private static IList<TrailResultWrapper> GetUnpausedResults(IList<TrailResultWrapper> tn, bool includeChildren)
         {
             IList<TrailResultWrapper> result = new List<TrailResultWrapper>();

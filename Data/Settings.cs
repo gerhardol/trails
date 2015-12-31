@@ -38,7 +38,7 @@ namespace TrailsPlugin.Data
         private static IList<LineChartTypes> m_MultiChartTypes;
         private static IList<LineChartTypes> m_MultiGraphTypes;
         private static bool m_ShowChartToolBar;
-        private static bool m_SelectSimilarResults;
+        private static bool m_SelectSimilarSplits;
         private static bool m_AddCurrentCategory;
         private static IList<string> m_SummaryViewSortColumns;
         private static ListSortDirection m_SummaryViewSortDirection;
@@ -94,6 +94,7 @@ namespace TrailsPlugin.Data
         public static bool UseGpsFilter; //not in xml
         public static int GpsFilterMinimumTime; //not in xml
         public static float GpsFilterMinimumDistance; //not in xml
+        public static int SelectSimilarModulu; //not in xml
 
         public static void Init()
         {
@@ -111,7 +112,7 @@ namespace TrailsPlugin.Data
             m_MultiChartTypes = LineChartUtil.DefaultLineChartTypes();
             m_MultiGraphTypes = LineChartUtil.DefaultLineChartTypes();
             m_ShowChartToolBar = true;
-            m_SelectSimilarResults = false;
+            m_SelectSimilarSplits = false;
             m_AddCurrentCategory = false;
             m_SummaryViewSortColumns = new List<string>(3) { TrailResultColumns.DefaultSortColumn() };
             m_SummaryViewSortDirection = ListSortDirection.Descending;
@@ -166,6 +167,7 @@ namespace TrailsPlugin.Data
             UseGpsFilter = false;
             GpsFilterMinimumTime = 2;
             GpsFilterMinimumDistance = 10f;
+            SelectSimilarModulu = 0;
         }
 
         private static bool isHandlingXml = false;
@@ -327,15 +329,15 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public static bool SelectSimilarResults
+        public static bool SelectSimilarSplits
         {
             get
             {
-                return m_SelectSimilarResults;
+                return m_SelectSimilarSplits;
             }
             set
             {
-                m_SelectSimilarResults = value; WriteExtensionData();
+                m_SelectSimilarSplits = value; WriteExtensionData();
             }
         }
 
@@ -881,8 +883,8 @@ namespace TrailsPlugin.Data
                     }
                 }
                 catch { }
-                attr = pluginNode.GetAttribute(xmlTags.SelectSimilarResults);
-                if (attr.Length > 0) { m_SelectSimilarResults = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.SelectSimilarSplits);
+                if (attr.Length > 0) { m_SelectSimilarSplits = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
                 if (attr.Length > 0) { m_AddCurrentCategory = XmlConvert.ToBoolean(attr); }
                 attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
@@ -1073,7 +1075,7 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_SummaryViewSortDirection.ToString());
             pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
             pluginNode.SetAttribute(xmlTags.ShowListToolBar, XmlConvert.ToString(m_ShowListToolBar));
-            pluginNode.SetAttribute(xmlTags.SelectSimilarResults, XmlConvert.ToString(m_SelectSimilarResults));
+            pluginNode.SetAttribute(xmlTags.SelectSimilarSplits, XmlConvert.ToString(m_SelectSimilarSplits));
             pluginNode.SetAttribute(xmlTags.AddCurrentActivity, XmlConvert.ToString(m_AddCurrentCategory));
             pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
             pluginNode.SetAttribute(xmlTags.SetAdjustElevationAtImport, XmlConvert.ToString(m_SetAdjustElevationAtImport));
@@ -1177,7 +1179,7 @@ namespace TrailsPlugin.Data
             public const string summaryViewSortDirection = "summaryViewSortDirection";
             public const string ShowChartToolBar = "ShowChartToolBar";
             public const string ShowListToolBar = "ShowListToolBar";
-            public const string SelectSimilarResults = "SelectSimilarResults";
+            public const string SelectSimilarSplits = "SelectSimilarSplits";
             public const string AddCurrentActivity = "AddCurrentActivity";
             public const string MaxAutoCalcActivitiesTrails = "MaxAutoCalcActivitiesTrails";
             public const string MaxAutoCalcActivitiesSingleTrail = "MaxAutoCalcActivitiesSingleTrail";

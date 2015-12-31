@@ -609,6 +609,26 @@ namespace TrailsPlugin.Data
             }
         }
 
+        internal static void IncreaseRunningGradeCalcMethod(bool increase)
+        {
+            if (increase)
+            {
+                m_RunningGradeAdjustMethod++;
+                if (m_RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Last)
+                {
+                    m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
+                }
+            }
+            else
+            {
+                if (m_RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.None)
+                {
+                    m_RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.Last;
+                }
+                m_RunningGradeAdjustMethod--;
+            }
+        }
+
         public static float MervynDaviesUp
         {
             get

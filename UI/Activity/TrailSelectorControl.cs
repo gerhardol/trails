@@ -424,7 +424,8 @@ namespace TrailsPlugin.UI.Activity
 
         private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
         {
-            TrailResult.IncreaseRunningGradeCalcMethod(true);
+            Data.Settings.IncreaseRunningGradeCalcMethod(true);
+            //Must reset calculations (if not refreshing)
             m_page.RefreshData(true);
         }
 

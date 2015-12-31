@@ -67,6 +67,8 @@ namespace TrailsPlugin.Data
         //Settings related (undocumented)
         public static bool DiffToSelf = false;
         public static bool PaceTrackIsGradeAdjustedPaceAvg = false;
+        public static bool CalculateGradeInCadence = false;
+        private static int nextTrailColor = 0;
 
         private IValueRangeSeries<DateTime> m_pauses;
         private IDistanceDataTrack m_distanceMetersTrack;
@@ -2001,7 +2003,6 @@ namespace TrailsPlugin.Data
             return m_elevationMetersTrack0;
         }
 
-        public static bool CalculateGrade = false;
         public INumericTimeDataSeries GradeTrack0()
         {
             return this.copySmoothTrack(this.GradeTrack, true, TrailActivityInfoOptions.ElevationSmoothingSeconds,
@@ -2024,7 +2025,7 @@ namespace TrailsPlugin.Data
                         new UnitUtil.Convert(UnitUtil.Grade.ConvertFrom), this.m_cacheTrackRef);
                 }
 
-                if (CalculateGrade && this.Activity.CadencePerMinuteTrack == null)
+                if (CalculateGradeInCadence && this.Activity.CadencePerMinuteTrack == null)
                 {
                     //Some temporary handling of Grade. The standard ST Grade smooth grade after finding grade which smooth too much
                     //Use smoothed elevation instead should give better representaion, but it seems like to need some combination
@@ -2954,43 +2955,14 @@ namespace TrailsPlugin.Data
             }
             return m_deviceDiffDistTrack0;
         }
-#endregion
+        #endregion
 
         /**********************************************************/
         #region GradeAdjust
 
-        internal static void ResetRunningGradeCalcMethod()
+        internal void ResetRunningGradeCalc()
         {
-            Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
-        }
-
-        internal static void IncreaseRunningGradeCalcMethod(bool increase)
-        {
-            if (increase)
-            {
-                Settings.RunningGradeAdjustMethod++;
-                if (Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.Last)
-                {
-                    Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
-                }
-            }
-            else
-            {
-                if (TrailsPlugin.Data.Settings.RunningGradeAdjustMethod == RunningGradeAdjustMethodEnum.None)
-                {
-                    TrailsPlugin.Data.Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.Last;
-                }
-                TrailsPlugin.Data.Settings.RunningGradeAdjustMethod--;
-            }
-
-            foreach (TrailResultWrapper t in TrailsPlugin.Controller.TrailController.Instance.Results)
-            {
-                t.Result.m_gradeRunAdjustedTime = null;
-                foreach (TrailResultWrapper t2 in t.AllChildren)
-                {
-                    t2.Result.m_gradeRunAdjustedTime = null;
-                }
-            }
+            this.m_gradeRunAdjustedTime = null;
         }
 
         private class ginfo
@@ -4010,7 +3982,6 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region Color
-        private static int nextTrailColor = 0;
 
         private bool m_colorOverridden = false;
         public ChartColors ResultColor

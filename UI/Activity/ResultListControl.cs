@@ -715,7 +715,7 @@ namespace TrailsPlugin.UI.Activity {
             return isChange;
         }
 
-        void excludeSelectedResults(bool invertSelection)
+        private int excludeSelectedResults(bool invertSelection)
         {
             IList<TrailResultWrapper> atr = this.SelectedResults;
             if (atr != null && atr.Count > 0 &&
@@ -742,7 +742,7 @@ namespace TrailsPlugin.UI.Activity {
                     if (onlyChildren)
                     {
                         //unclear how to handle only children, just selected results?
-                        return;
+                        return 0;
                     }
                     atr = selected;
                 }
@@ -753,6 +753,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshData(false);
                 m_page.RefreshControlState();
             }
+            return atr.Count;
         }
 
         void selectAll()
@@ -776,8 +777,9 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
-        void selectWithUR()
+        private int selectWithUR()
         {
+            int res = 0;
             if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled && Controller.TrailController.Instance.ReferenceActivity != null)
             {
                 try
@@ -808,6 +810,7 @@ namespace TrailsPlugin.UI.Activity {
                             if (!Controller.TrailController.Instance.Activities.Contains(activity))
                             {
                                 allActivities.Add(activity);
+                                res++;
                             }
                         }
                         //Set activities, keep trail/selection
@@ -821,6 +824,7 @@ namespace TrailsPlugin.UI.Activity {
                     MessageDialog.Show(ex.Message, "Plugin error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            return res;
         }
 
         void markCommonStretches()
@@ -1166,8 +1170,9 @@ namespace TrailsPlugin.UI.Activity {
             return cat;
         }
 
-        void addActivityFromCategory(IActivityCategory cat)
+        private int addActivityFromCategory(IActivityCategory cat)
         {
+            int res = 0;
             IList<IActivity> allActivities = new List<IActivity>();
             foreach (IActivity activity in Controller.TrailController.Instance.Activities)
             {
@@ -1180,16 +1185,19 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Insert after the current activities, then the order is normally OK
                     allActivities.Insert(Controller.TrailController.Instance.Activities.Count, activity);
+                    res++;
                 }
             }
             //Set activities, keep trail/selection
             Controller.TrailController.Instance.Activities = allActivities;
             m_page.RefreshData(false);
             m_page.RefreshControlState();
+            return res;
         }
 
-        void addCurrentTime()
+        private int addCurrentTime()
         {
+            int res = 0;
             IList<TrailResultWrapper> srw = this.SpecialSelectionResults;
             if (srw.Count > 0)
             {
@@ -1210,6 +1218,7 @@ namespace TrailsPlugin.UI.Activity {
                             //Insert after the current activities, then the order is normally OK
                             allActivities.Insert(Controller.TrailController.Instance.Activities.Count, activity);
                             addActivities.Add(activity);
+                            res++;
                         }
                     }
                 }
@@ -1219,6 +1228,7 @@ namespace TrailsPlugin.UI.Activity {
                 m_page.RefreshData(false);
                 m_page.RefreshControlState();
             }
+            return res;
         }
 
         private void setMetaImportSource(IActivity activity)
@@ -1614,11 +1624,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (e.KeyCode == Keys.Delete)
             {
-                this.excludeSelectedResults(e.Modifiers == Keys.Shift);
+                int c = this.excludeSelectedResults(e.Modifiers == Keys.Shift);
+                ShowToolTip(this.excludeResultsMenuItem + ": " + c);
             }
             else if (e.KeyCode == Keys.Space)
             {
                 Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
+                ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits);
                 if (Data.Settings.SelectSimilarSplits)
                 {
                     this.selectSimilarSplitsChanged();
@@ -1634,13 +1646,14 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.A)
             {
-                if (e.Modifiers == (Keys.Control | Keys.Shift | Keys.Alt))
+                if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
                 {
                     //Unofficial
                     //Set the part marked (on chart on map) as a "Rest" lap
                     //A little inconveient to use. After marking right click in list to get focus, then activate
                     if (this.m_page.m_lastMarkedResult != null)
                     {
+                        int res = 0;
                         foreach (TrailResultMarked mtr in this.m_page.m_lastMarkedResult)
                         {
                             foreach (IValueRange<DateTime> t in mtr.selInfo.MarkedTimes)
@@ -1650,9 +1663,11 @@ namespace TrailsPlugin.UI.Activity {
                                 if (duration.TotalSeconds >= 1)
                                 {
                                     InsertRestLap(mtr.trailResult.Activity.Laps, t.Lower, duration);
+                                    res++;
                                 }
                             }
                         }
+                        ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelLap + ": " + res);
                     }
 
                     ////Fix to remove laps added last insert of inserted (code to be removed)
@@ -1683,6 +1698,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == (Keys.Control | Keys.Shift))
                 {
                     //Unofficial
+                    int res = 0;
                     IList<TrailResultWrapper> atr = this.SelectedResults;
                     if (atr != null && atr.Count > 0)
                     {
@@ -1691,9 +1707,11 @@ namespace TrailsPlugin.UI.Activity {
                             if (tr.Result is ChildTrailResult)
                             {
                                 InsertRestLap(tr.Result.Activity.Laps, tr.Result.StartTime, tr.Result.Duration);
+                                res++;
                             }
                         }
                     }
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelLap + ": " + res);
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
@@ -1709,14 +1727,19 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         Data.Settings.RestIsPause = true;
                     }
+                    ShowToolTip(Properties.Resources.UI_Activity_List_SetRestLapsAsPauses + ": " + Data.Settings.RestIsPause);
                     Controller.TrailController.Instance.CurrentReset(false); //TBD
                     this.m_page.RefreshData(true);
                 }
             }
             else if (e.KeyCode == Keys.B)
             {
-                //Unofficial temp fix
-                FixDistanceTrack();
+                if (e.Modifiers == (Keys.Shift | Keys.Control))
+                {
+                    //Unofficial temp fix
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDistance + " Fix");
+                    FixDistanceTrack();
+                }
             }
             else if (e.KeyCode == Keys.C)
             {
@@ -1729,14 +1752,14 @@ namespace TrailsPlugin.UI.Activity {
                     //Unofficial, undocumented, to simplify comparisions
                     try
                     {
-                        String s = System.Windows.Forms.Clipboard.GetText();
                         SummaryTrailResult avg = this.m_summaryAverage.Result as SummaryTrailResult;
                         SummaryValue<double> a = avg.DistanceStdDev();
-                        s += "\n" + Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name + " " + Data.Settings.UseDeviceDistance + " " +
+                        String s = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name + " " + Data.Settings.UseDeviceDistance + " " +
                             this.SelectedResults[0].Result.Activity.Metadata.Source + " " + avg.Order + " " +
                             GpsRunningPlugin.Util.UnitUtil.Distance.ToString(a.Value, Controller.TrailController.Instance.ReferenceActivity, "") +
                             " σ" + GpsRunningPlugin.Util.UnitUtil.Elevation.ToString(a.StdDev, Controller.TrailController.Instance.ReferenceActivity, "");
-                        System.Windows.Forms.Clipboard.SetText(s);
+                        System.Windows.Forms.Clipboard.SetText(System.Windows.Forms.Clipboard.GetText() + "\n" + s);
+                        ShowToolTip(s);
                     }
 #pragma warning disable 0168
                     catch (Exception e1)
@@ -1745,10 +1768,12 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == Keys.Shift)
                 {
                     Data.Settings.DiffUsingCommonStretches = !Data.Settings.DiffUsingCommonStretches;
+                    ShowToolTip(Properties.Resources.UI_Activity_List_URCommon + ": " + Data.Settings.DiffUsingCommonStretches);
                     this.m_page.RefreshData(true);
                 }
                 else
                 {
+                    ShowToolTip(Properties.Resources.UI_Activity_List_URCommon + "...");
                     this.markCommonStretches();
                 }
             }
@@ -1757,12 +1782,16 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Control)
                 {
                     Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + ": " + Data.Settings.UseDeviceDistance);
                     this.m_page.RefreshData(true);
                     this.SetSummary(this.SelectedResults);
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.UseGpsFilter = !Data.Settings.UseGpsFilter;
+                    ShowToolTip("GPS: " + Data.Settings.UseGpsFilter + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDistance + ": " + Data.Settings.GpsFilterMinimumDistance + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelTime + ": " + Data.Settings.GpsFilterMinimumTime);
                     if (!Data.Settings.UseDeviceDistance)
                     {
                         this.m_page.RefreshData(true);
@@ -1788,6 +1817,9 @@ namespace TrailsPlugin.UI.Activity {
                         Data.Settings.GpsFilterMinimumDistance = 10;
                         Data.Settings.GpsFilterMinimumTime = 2;
                     }
+                    ShowToolTip("GPS: " + Data.Settings.UseGpsFilter + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDistance + ": " + Data.Settings.GpsFilterMinimumDistance + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelTime + ": " + Data.Settings.GpsFilterMinimumTime);
                     if (!Data.Settings.UseDeviceDistance)
                     {
                         this.m_page.RefreshData(true);
@@ -1804,8 +1836,11 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = Controller.TrailController.Instance.ReferenceActivity;
+                        Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = 
+                            Controller.TrailController.Instance.ReferenceActivity;
                     }
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity +
+                        Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity);
                 }
             }
             else if (e.KeyCode == Keys.E)
@@ -1813,22 +1848,32 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))
                 {
                     Data.Settings.UseTrailElevationAdjust = !Data.Settings.UseTrailElevationAdjust;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation + ": " +
+                        Data.Settings.UseTrailElevationAdjust);
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + " " + 
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation);
                     this.selectResultsWithDeviceElevation();
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.DeviceElevationFromOther = !Data.Settings.DeviceElevationFromOther;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
+                        Data.Settings.DeviceElevationFromOther);
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
                     Data.Settings.UseDeviceElevationForCalc = !Data.Settings.UseDeviceElevationForCalc;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + ": " +
+                        Data.Settings.UseDeviceElevationForCalc);
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
@@ -1847,13 +1892,19 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust);
                         }
+                        ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation + " " +
+                            ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + ": " +
+                            Data.Settings.UseTrailElevationAdjust + " " + atr.Count);
                         m_page.RefreshData(true);
                     }
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     //Put alternatively calculated grade in Cadence
-                    TrailResult.CalculateGrade = !TrailResult.CalculateGrade;
+                    TrailResult.CalculateGradeInCadence = !TrailResult.CalculateGradeInCadence;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + " " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelCadence + ": " +
+                        TrailResult.CalculateGradeInCadence);
                     m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
@@ -1886,6 +1937,8 @@ namespace TrailsPlugin.UI.Activity {
                             }
                         }
                     }
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + ": " +
+                        atr.Count);
                     this.SelectedResults = atr;
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Shift))
@@ -1910,27 +1963,39 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.SelectedResults = Controller.TrailController.Instance.UpdateResults(
                         m_PersistentSelectionResults);
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionReplace + ": " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
+                        this.SelectedResults.Count);
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
                     //set special/reference results/activities
                     m_PersistentSelectionResults = this.SelectedResults;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSave + ": " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
+                        this.SelectedResults.Count);
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift | Keys.Control))
                 {
+                    int res = 0;
                     IList<IActivity> allActivities = Controller.TrailController.Instance.Activities;
                     foreach (TrailResultWrapper t in m_PersistentSelectionResults)
                     {
                         if (!Controller.TrailController.Instance.CurrentActivityTrails.Contains(t.Result.ActivityTrail))
                         {
                             Controller.TrailController.Instance.CurrentActivityTrails.Add(t.Result.ActivityTrail);
+                            res++;
                         }
                         if (!allActivities.Contains(t.Result.Activity))
                         {
                             allActivities.Add(t.Result.Activity);
+                            res++;
                         }
                         t.Result.ActivityTrail.ReAdd(t);
                     }
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionAdd + ": " +
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
+                        m_PersistentSelectionResults.Count+ " (" + res + ")");
                     Controller.TrailController.Instance.Activities = allActivities;
                     this.SelectedResults = m_PersistentSelectionResults;
                 }
@@ -1949,12 +2014,8 @@ namespace TrailsPlugin.UI.Activity {
                     //Default, select similar from child index
                     Data.Settings.SelectSimilarModulu = 0;
                 }
-                this.summaryListToolTip.Show("Select Similar Modulo: " + Data.Settings.SelectSimilarModulu.ToString(),
-                   this.summaryList,
-                   new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
-                   Cursor.Current.Size.Width / 2,
-                   this.summaryListCursorLocationAtMouseMove.Y),
-                   this.summaryListToolTip.AutoPopDelay);
+                ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits + " (" +
+                    Data.Settings.SelectSimilarModulu + ")");
             }
             else if (e.KeyCode == Keys.I)
             {
@@ -1968,7 +2029,9 @@ namespace TrailsPlugin.UI.Activity {
                     c = InsertCategoryTypes.SelectedTree;
                 }
 
-                this.addActivityFromCategory(this.getCurrentCategory(c));
+                int res = this.addActivityFromCategory(this.getCurrentCategory(c));
+                ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionAdd + " " +
+                    ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " + c + " " + res);
             }
 
             else if (e.KeyCode == Keys.K)
@@ -1976,6 +2039,8 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.CadenceFromOther = !Data.Settings.CadenceFromOther;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + " " + 
+                        ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelCadence + ": " + Data.Settings.CadenceFromOther);
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
                 }
@@ -1992,6 +2057,8 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Unofficial
                     Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelRoute + ": " +
+                        Data.Settings.ShowTrailPointsOnMap);
                     this.m_page.RefreshRoute(false);
                 }
             }
@@ -2005,6 +2072,8 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     Data.Settings.NonReqIsPause = true;
                 }
+                ShowToolTip(Properties.Resources.Required + ": " +
+                    Data.Settings.NonReqIsPause);
                 this.m_page.RefreshData(true);
             }
             else if (e.KeyCode == Keys.O)
@@ -2012,10 +2081,14 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Control)
                 {
                     Data.Settings.ResultSummaryStdDev = !Data.Settings.ResultSummaryStdDev;
+                    ShowToolTip(Properties.Resources.UI_Activity_List_ResultSummaryStdDev + ": " +
+                        Data.Settings.ResultSummaryStdDev);
                 }
                 else
                 {
                     Data.Settings.StartDistOffsetFromStartPoint = !Data.Settings.StartDistOffsetFromStartPoint;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelStart + ": " +
+                        Data.Settings.StartDistOffsetFromStartPoint);
                 }
                 this.summaryList.Refresh();
                 //Only in table, no need to refresh
@@ -2025,7 +2098,7 @@ namespace TrailsPlugin.UI.Activity {
                 //In context menu, not documented, to be removed?
                 if (e.Modifiers == Keys.Shift)
                 {
-                    PerformancePredictorPopup();
+                    this.PerformancePredictorPopup();
                 }
                 else
                 {
@@ -2037,15 +2110,14 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))
                 {
                     TrailResult.PaceTrackIsGradeAdjustedPaceAvg = !TrailResult.PaceTrackIsGradeAdjustedPaceAvg;
+                    ShowToolTip(Properties.Resources.UI_Settings_GradeAdjustedPace + ": " +
+                        TrailResult.PaceTrackIsGradeAdjustedPaceAvg);
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
                     TrailResult.DiffToSelf = !TrailResult.DiffToSelf;
-                }
-                else if (e.Modifiers == (Keys.Shift | Keys.Alt))
-                {
-                    //Running out of key combinations
-                    TrailResult.IncreaseRunningGradeCalcMethod(false);
+                    ShowToolTip(Properties.Resources.UI_Chart_Difference + ": " +
+                        TrailResult.DiffToSelf);
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
@@ -2055,20 +2127,30 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     this.setAdjustSplitTimesPopup(SplitTimesPopup.PandolfTerrain);
                 }
-                else if (e.Modifiers == Keys.Shift)
-                {
-                    TrailResult.ResetRunningGradeCalcMethod();
-                }
                 else
                 {
-                    TrailResult.IncreaseRunningGradeCalcMethod(true);
+                    if (e.Modifiers == (Keys.Shift | Keys.Alt))
+                    {
+                        Data.Settings.IncreaseRunningGradeCalcMethod(false);
+                    }
+                    else if (e.Modifiers == Keys.Shift)
+                    {
+                        Data.Settings.RunningGradeAdjustMethod = RunningGradeAdjustMethodEnum.None;
+                    }
+                    else
+                    {
+                        Data.Settings.IncreaseRunningGradeCalcMethod(false);
+                    }
+                    //foreach (TrailResultWrapper t in TrailsPlugin.Controller.TrailController.Instance.Results)
+                    //{
+                    //    t.Result.ResetRunningGradeCalc();
+                    //    foreach (TrailResultWrapper t2 in t.AllChildren)
+                    //    {
+                    //        t.Result.ResetRunningGradeCalc();
+                    //    }
+                    //}
+                    ShowToolTip(Properties.Resources.UI_Settings_GradeAdjustedPace + ": " + Data.Settings.RunningGradeAdjustMethod);
                 }
-                this.summaryListToolTip.Show(Data.Settings.RunningGradeAdjustMethod.ToString(),
-                              this.summaryList,
-                              new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
-                                  Cursor.Current.Size.Width / 2,
-                                        this.summaryListCursorLocationAtMouseMove.Y),
-                              this.summaryListToolTip.AutoPopDelay);
                 this.m_page.RefreshData(true);
             }
             else if (e.KeyCode == Keys.R || e.KeyCode == Keys.F5)
@@ -2114,12 +2196,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (allRefresh)
                 {
                     //For debugging, the tooltip can be overwritten by other info in list
-                    this.summaryListToolTip.Show((DateTime.Now - startTime).ToString(),
-                                  this.summaryList,
-                                  new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
-                                      Cursor.Current.Size.Width / 2,
-                                            this.summaryListCursorLocationAtMouseMove.Y),
-                                  this.summaryListToolTip.AutoPopDelay);
+                    ShowToolTip((DateTime.Now - startTime).ToString());
                 }
             }
             else if (e.KeyCode == Keys.S)
@@ -2128,11 +2205,15 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     Data.Settings.ShowActivityValuesForResults = !Data.Settings.ShowActivityValuesForResults;
                     //This is all dynamic, but we want to retrigger sort
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text .LabelActivity + ": " + 
+                        Data.Settings.ShowActivityValuesForResults);
                     this.m_page.RefreshData(false);
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.ShowSummaryForChildren = !Data.Settings.ShowSummaryForChildren;
+                    ShowToolTip(Properties.Resources.UI_Activity_List_ShowSummaryAverage + ": " +
+                        Data.Settings.ShowSummaryForChildren);
                     this.SetSummary(this.SelectedResults);
                 }
                 else
@@ -2156,21 +2237,28 @@ namespace TrailsPlugin.UI.Activity {
                     Data.Settings.OverlappingResultUseReferencePauses = true;
                     Data.Settings.OverlappingResultShareSplitTime =
                         (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.Splits);
-                    this.addCurrentTime();
+                    int res = this.addCurrentTime();
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelNumActivities + ": " + res);
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
                     Data.Settings.OverlappingResultShareSplitTime = !Data.Settings.OverlappingResultShareSplitTime;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelTime + ": " +
+                        Data.Settings.OverlappingResultShareSplitTime);
                     this.m_page.RefreshData(true, true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
                 {
                     Data.Settings.OverlappingResultUseTimeOfDayDiff = !Data.Settings.OverlappingResultUseTimeOfDayDiff;
+                    ShowToolTip(Properties.Resources.UI_Activity_List_DiffPresent + ": " +
+                        Data.Settings.OverlappingResultUseTimeOfDayDiff);
                     this.m_page.RefreshData(true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt))
                 {
                     Data.Settings.OverlappingResultUseReferencePauses = !Data.Settings.OverlappingResultUseReferencePauses;
+                    ShowToolTip("Pause" + ": " +
+                        Data.Settings.OverlappingResultUseReferencePauses);
                     this.m_page.RefreshData(true);
                 }
                 //else if (e.Modifiers == Keys.Control)
@@ -2182,12 +2270,15 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     //Depreciated since adding both average/total
                     Data.Settings.ResultSummaryTotal = !Data.Settings.ResultSummaryTotal;
+                    ShowToolTip(Properties.Resources.UI_Activity_List_ShowSummaryTotal + ": " +
+                        Data.Settings.ResultSummaryTotal);
                     RefreshSummary();
                 }
             }
             else if (e.KeyCode == Keys.U)
             {
-                this.selectWithUR();
+                int res = this.selectWithUR();
+                ShowToolTip(string.Format(Properties.Resources.UI_Activity_List_URSelect, res));
             }
             else if (e.KeyCode == Keys.X)
             {
@@ -2238,15 +2329,18 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Control)
                 {
                     Data.Settings.ZoomToSelection = !Data.Settings.ZoomToSelection;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionZoomIn + ": " + Data.Settings.ZoomToSelection);
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
                     Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelRoute + ": " + Data.Settings.ShowOnlyMarkedOnRoute);
                     this.m_page.RefreshData(false);
                 }
                 else
                 {
                     //Zoom to selected parts
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionZoomIn);
                     this.m_page.ZoomMarked();
                 }
             }
@@ -2260,6 +2354,16 @@ namespace TrailsPlugin.UI.Activity {
             int width = col.Width;
             if (l.Columns[0].Id == col.Id) { width -= cPlusMinusWidth; }
             Data.Settings.ActivityPageColumnsSizeSet(col.Id, width);
+        }
+
+        private void ShowToolTip(string s)
+        {
+            this.summaryListToolTip.Show(s,
+                this.summaryList,
+                new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
+                  Cursor.Current.Size.Width / 2,
+                  this.summaryListCursorLocationAtMouseMove.Y),
+                this.summaryListToolTip.AutoPopDelay);
         }
 
         private System.Windows.Forms.MouseEventArgs m_mouseClickArgs = null;
@@ -2284,6 +2388,7 @@ namespace TrailsPlugin.UI.Activity {
             else
                 this.summaryListToolTipTimer.Stop();
         }
+
         private void summaryList_MouseLeave(object sender, EventArgs e)
         {
             this.summaryListToolTipTimer.Stop();

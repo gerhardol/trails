@@ -966,7 +966,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     if (tr is SummaryTrailResult)
                     {
-                        if (summaryResult!= null)
+                        if (summaryResult != null)
                         {
                             //total or average already selected, use one of them (could ignore total)
                             continue;
@@ -1294,10 +1294,14 @@ namespace TrailsPlugin.UI.Activity {
 
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
-            float xOffset = tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
-            if (XAxisReferential != XAxisValue.Time)
+            float xOffset = 0;
+            if (!(tr is ChildTrailResult) || this.TrailResults.Contains((tr as ChildTrailResult).ParentResult))
             {
-                xOffset = (float)TrackUtil.DistanceConvertFrom(xOffset, this.ReferenceTrailResult);
+                xOffset = tr.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                if (XAxisReferential != XAxisValue.Time)
+                {
+                    xOffset = (float)TrackUtil.DistanceConvertFrom(xOffset, this.ReferenceTrailResult);
+                }
             }
 
             foreach (ITimeValueEntry<float> entry in dataPoints)

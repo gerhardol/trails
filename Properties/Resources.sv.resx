@@ -368,4 +368,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <value>Dölj verktygsfält</value>
   </data>
+  <data name="UI_Chart_PaceInverted" xml:space="preserve">
+    <value>Tempo Inverterat</value>
+  </data>
 </root>

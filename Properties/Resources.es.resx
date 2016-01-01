@@ -406,4 +406,7 @@ http://www.gnu.org/licenses/lgpl.html</value>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <value>Ocultar herramientas gráficas</value>
   </data>
+  <data name="UI_Chart_PaceInverted" xml:space="preserve">
+    <value>Paso</value>
+  </data>
 </root>

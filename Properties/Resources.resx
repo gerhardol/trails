@@ -515,4 +515,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
     <value>Hide Tool Bar</value>
   </data>
+  <data name="UI_Chart_PaceInverted" xml:space="preserve">
+    <value>Pace Inverted</value>
+  </data>
 </root>

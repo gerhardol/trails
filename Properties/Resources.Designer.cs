@@ -947,6 +947,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pace Inverted.
+        /// </summary>
+        internal static string UI_Chart_PaceInverted {
+            get {
+                return ResourceManager.GetString("UI_Chart_PaceInverted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resync Diff at Trail Points.
         /// </summary>
         internal static string UI_Chart_resyncDiffAtTrailPoints {

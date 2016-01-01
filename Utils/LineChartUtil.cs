@@ -49,6 +49,7 @@ namespace TrailsPlugin.Utils
         Unknown,
         Speed,
         Pace,
+        Pace2,
         SpeedPace,
         Elevation,
         Grade,
@@ -67,6 +68,7 @@ namespace TrailsPlugin.Utils
         TotalHemoglobinConcentration,
         DeviceSpeed,
         DevicePace,
+        DevicePace2, //Unused
         DeviceSpeedPace,
         DeviceElevation,
         DeviceDiffDist,
@@ -194,7 +196,8 @@ namespace TrailsPlugin.Utils
                 if (l > LineChartTypes.Unknown && 
                     (charts && l < LineChartTypes.DiffHeartRateBPM ||
                      !charts && l < LineChartTypes.PowerBalance) &&
-                    l != LineChartTypes.DiffDist && l != LineChartTypes.DiffTime)
+                    l != LineChartTypes.DiffDist && l != LineChartTypes.DiffTime &&
+                    l != LineChartTypes.DevicePace && l != LineChartTypes.DevicePace2 && l != LineChartTypes.DeviceSpeed)
                 {
                     r.Add(new ChartTypeDefinition(l));
                 }
@@ -320,6 +323,12 @@ namespace TrailsPlugin.Utils
                         yAxisLabel = CommonResources.Text.LabelPace;
                         break;
                     }
+                case LineChartTypes.Pace2:
+                case LineChartTypes.DevicePace2: 
+                    {
+                        yAxisLabel = Properties.Resources.UI_Chart_PaceInverted;
+                        break;
+                    }
                 case LineChartTypes.SpeedPace: //Only chart selector
                 case LineChartTypes.DeviceSpeedPace: //Only chart selector
                     {
@@ -425,8 +434,10 @@ namespace TrailsPlugin.Utils
 
                 case LineChartTypes.Speed:
                 case LineChartTypes.Pace:
+                case LineChartTypes.Pace2:
                 case LineChartTypes.DeviceSpeed:
                 case LineChartTypes.DevicePace:
+                case LineChartTypes.DevicePace2:
                     res = "SpeedSmoothingSeconds";
                     break;
 
@@ -563,6 +574,13 @@ namespace TrailsPlugin.Utils
                         axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(activity);
                         break;
                     }
+                case LineChartTypes.Pace2:
+                case LineChartTypes.DevicePace2:
+                    {
+                        axis.Formatter = new PaceFormatter();
+                        axis.Label = CommonResources.Text.LabelPace + UnitUtil.Pace.LabelAbbrAct2(activity);
+                        break;
+                    }
                 case LineChartTypes.PowerBalance:
                     {
                         axis.Formatter = new Formatter.Percent();
@@ -645,6 +663,10 @@ namespace TrailsPlugin.Utils
             {
                 axis = LineChartTypes.Pace;
             }
+            else if (chart == LineChartTypes.DevicePace2)
+            {
+                axis = LineChartTypes.Pace2;
+            }
             else if (chart == LineChartTypes.DeviceElevation)
             {
                 axis = LineChartTypes.Elevation;
@@ -696,6 +718,7 @@ namespace TrailsPlugin.Utils
                     }
 
                 case LineChartTypes.Speed:
+                case LineChartTypes.Pace2:
                     {
                         track = result.SpeedTrack0(refRes);
                         break;
@@ -749,9 +772,14 @@ namespace TrailsPlugin.Utils
                         break;
                     }
                 case LineChartTypes.DeviceSpeed:
+                case LineChartTypes.DevicePace2:
+                    {
+                        track = result.DeviceSpeedPaceTrack0(refRes, false);
+                        break;
+                    }
                 case LineChartTypes.DevicePace:
                     {
-                        track = result.DeviceSpeedPaceTrack0(refRes);
+                        track = result.DeviceSpeedPaceTrack0(refRes, true);
                         break;
                     }
                 case LineChartTypes.DeviceElevation:
@@ -815,5 +843,43 @@ namespace TrailsPlugin.Utils
             }
             return syncGraphOffset;
         }
+    }
+
+    class PaceFormatter : IAxisFormatter
+    {
+        private Formatter.SecondsToTime m_pace;
+        public PaceFormatter() : base()
+        {
+            m_pace = new Formatter.SecondsToTime();
+        }
+
+        #region IAxisFormatter Members
+        //TBD How to truncate TickLabel, ValueLabel
+        public string DiffLabel(double value, System.Drawing.Graphics graphics)
+        {
+            return m_pace.DiffLabel(3600 / value, graphics);
+        }
+
+        public string TickLabel(double value, System.Drawing.Graphics graphics)
+        {
+            return m_pace.TickLabel(3600 / value, graphics);
+        }
+
+        public double TickValueSpacing(int minPixelSpacing, double pixelsPerValue)
+        {
+            return m_pace.TickValueSpacing(minPixelSpacing, pixelsPerValue);
+        }
+
+        public string ValueLabel(double value, System.Drawing.Graphics graphics)
+        {
+            return m_pace.ValueLabel(3600 / value, graphics);
+        }
+
+        protected double FractionOfSixty(double value)
+        {
+            return 3600 / value;
+        }
+
+        #endregion
     }
 }

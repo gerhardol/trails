@@ -100,7 +100,6 @@
     <Compile Include="UI\Activity\ResultListControl.Designer.cs">
       <DependentUpon>ResultListControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Activity\Percent100.cs" />
     <Compile Include="UI\Activity\TrailLineChart.cs">
       <SubType>UserControl</SubType>
     </Compile>

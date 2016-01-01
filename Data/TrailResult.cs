@@ -2456,18 +2456,18 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region device tracks
-        public INumericTimeDataSeries DeviceSpeedPaceTrack0(TrailResult refRes)
+        public INumericTimeDataSeries DeviceSpeedPaceTrack0(TrailResult refRes, bool isPace)
         {
             checkCacheRef(refRes);
             if (m_deviceSpeedPaceTrack0 == null)
             {
                 if ((this is ChildTrailResult) && (this as ChildTrailResult).PartOfParent)
                 {
-                    m_deviceSpeedPaceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                    m_deviceSpeedPaceTrack0 = copySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(this.m_cacheTrackRef, isPace), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
                 {
-                    bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
+                    //bool isPace = this.m_cacheTrackRef.Activity.Category.SpeedUnits.Equals(Speed.Units.Pace);
                     //About the same as copySmoothTrack()
                     m_deviceSpeedPaceTrack0 = new TrackUtil.NumericTimeDataSeries();
                     if (this.Activity != null && this.Activity.DistanceMetersTrack != null && this.Activity.DistanceMetersTrack.Count > 0)

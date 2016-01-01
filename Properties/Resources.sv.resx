@@ -133,7 +133,7 @@
     <value>Sätt referens resultat ({0}, Nuvarande: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
-    <value>Markera liknade trail eller etapper i listan</value>
+    <value>Välj liknade subresultat</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
     <value>Begränsa aktiviter med Unique Routes från referens resultat ({0})</value>

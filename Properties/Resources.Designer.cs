@@ -536,7 +536,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add InBound activities as results.
+        ///   Looks up a localized string similar to Add InBound Activities as Results.
         /// </summary>
         internal static string UI_Activity_List_AddInBound {
             get {
@@ -617,7 +617,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exclude result from list.
+        ///   Looks up a localized string similar to Exclude Results from List.
         /// </summary>
         internal static string UI_Activity_List_ExcludeResult {
             get {
@@ -644,7 +644,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Limit activities to activities selected in list.
+        ///   Looks up a localized string similar to Limit activities to those selected in list.
         /// </summary>
         internal static string UI_Activity_List_LimitSelection {
             get {
@@ -689,7 +689,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Only Marked Results On Map.
+        ///   Looks up a localized string similar to Show Only Selected Results On Route.
         /// </summary>
         internal static string UI_Activity_List_ShowOnlyMarkedResultsOnMap {
             get {
@@ -707,7 +707,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Split Points On Map.
+        ///   Looks up a localized string similar to Show Split Points On Route.
         /// </summary>
         internal static string UI_Activity_List_ShowSplitPointsOnMap {
             get {
@@ -734,7 +734,7 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mark other sub Trails or splits in list.
+        ///   Looks up a localized string similar to Select Similar Splits.
         /// </summary>
         internal static string UI_Activity_List_Splits {
             get {

@@ -215,7 +215,7 @@ Changing this value will not effect existing trails.</value>
     <value>..\Resources\DropDown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="UI_Activity_List_LimitSelection" xml:space="preserve">
-    <value>Limit activities to activities selected in list</value>
+    <value>Limit activities to those selected in list</value>
   </data>
   <data name="square_green_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\square-green-plus.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -224,7 +224,7 @@ Changing this value will not effect existing trails.</value>
     <value>Set Reference result ({0}, Current: {1})</value>
   </data>
   <data name="UI_Activity_List_Splits" xml:space="preserve">
-    <value>Mark other sub Trails or splits in list</value>
+    <value>Select Similar Splits</value>
   </data>
   <data name="UI_Activity_List_URLimit" xml:space="preserve">
     <value>Limit activities with UniqueRoutes from reference result ({0})</value>
@@ -274,7 +274,7 @@ Make sure that {1} is installed.</value>
     <comment>Matrix</comment>
   </data>
   <data name="UI_Activity_List_ExcludeResult" xml:space="preserve">
-    <value>Exclude result from list</value>
+    <value>Exclude Results from List</value>
   </data>
   <data name="SetNameAtImport" xml:space="preserve">
     <value>Set Name At Import</value>
@@ -310,7 +310,7 @@ Make sure that {1} is installed.</value>
     <value>Export Trail as activity?</value>
   </data>
   <data name="UI_Activity_List_AddInBound" xml:space="preserve">
-    <value>Add InBound activities as results</value>
+    <value>Add InBound Activities as Results</value>
   </data>
   <data name="delta" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\delta.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -432,10 +432,10 @@ http://www.gnu.org/licenses/lgpl.html.</value>
     <value>Set Rest Laps As Pauses</value>
   </data>
   <data name="UI_Activity_List_ShowOnlyMarkedResultsOnMap" xml:space="preserve">
-    <value>Show Only Marked Results On Map</value>
+    <value>Show Only Selected Results On Route</value>
   </data>
   <data name="UI_Activity_List_ShowSplitPointsOnMap" xml:space="preserve">
-    <value>Show Split Points On Map</value>
+    <value>Show Split Points On Route</value>
   </data>
   <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">
     <value>Summary Average Standard Deviation</value>

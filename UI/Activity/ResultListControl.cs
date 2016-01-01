@@ -611,11 +611,11 @@ namespace TrailsPlugin.UI.Activity {
             return null;
         }
 
-        internal bool selectSimilarSplitsChanged()
+        internal bool selectSimilarSplits()
         {
             bool isChange = false;
             IList<TrailResultWrapper> atr = this.SelectedResults;
-            if (Data.Settings.SelectSimilarSplits && atr != null && atr.Count > 0)
+            if (atr != null && atr.Count > 0)
             {
                 //The implementation only supports adding new splits not deselecting
                 IList<TrailResultWrapper> selectResults = new List<TrailResultWrapper>();
@@ -1055,14 +1055,14 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
-            bool update = true;
+            bool updated = false;
             if (Data.Settings.SelectSimilarSplits)
             {
                 //At changes: Updates m_lastSelectedItems too, but clears ExplicitSelection
-                update = !this.selectSimilarSplitsChanged();
+                updated = this.selectSimilarSplits();
             }
 
-            if (update)
+            if (!updated)
             {
                 //Explicit selection of results
                 this.m_lastSelectedItems = this.SelectedResults;
@@ -1611,9 +1611,8 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.Space)
             {
-                Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
                 ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits);
-                this.selectSimilarSplitsChanged();
+                this.selectSimilarSplits();
             }
             else if (e.KeyCode == Keys.Escape)
             {

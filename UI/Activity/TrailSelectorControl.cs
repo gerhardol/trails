@@ -359,7 +359,10 @@ namespace TrailsPlugin.UI.Activity
         {
             Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
             this.RefreshControlState();
-            m_page.selectSimilarSplitsChanged();
+            if (Data.Settings.SelectSimilarSplits)
+            {
+                m_page.selectSimilarSplitsChanged();
+            }
         }
 
         void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)

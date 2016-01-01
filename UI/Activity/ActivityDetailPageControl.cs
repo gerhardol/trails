@@ -275,7 +275,7 @@ namespace TrailsPlugin.UI.Activity {
 
         public void selectSimilarSplitsChanged()
         {
-            ResultList.selectSimilarSplitsChanged();
+            ResultList.selectSimilarSplits();
         }
         //public IList<TrailResult> SelectedItems
         //{

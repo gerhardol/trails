@@ -619,43 +619,31 @@ namespace TrailsPlugin.UI.Activity {
             {
                 //The implementation only supports adding new splits not deselecting
                 //Note that selecting will scroll, changing offsets why check what is clicked does not work well
-                int? lastSplitIndex = null;
-                bool isSingleIndex = false;
                 IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
+                IList<TrailResult> trailResults = new List<TrailResult>(); //To find what is added
                 foreach (TrailResultWrapper t in atr)
                 {
-                    int splitIndex = -1; //Index for parent, not for child(subsplit)
-                    if (t.Result is SummaryTrailResult)
+                    if (!trailResults.Contains(t.Result))
                     {
-                        //Summary, always parent
                         results.Add(t);
+                        trailResults.Add(t.Result);
                     }
-                    else if (t.Parent != null)
+                    //Add matching children with same match
+                    if (t.Result is ChildTrailResult)
                     {
-                        splitIndex = t.Result.Order;
-                    }
-                    isSingleIndex = (lastSplitIndex == null || lastSplitIndex == splitIndex) ? true : false;
-                    lastSplitIndex = splitIndex;
-                    foreach (TrailResultWrapper rtn in Controller.TrailController.Instance.Results)
-                    {
-                        if (splitIndex < 0)
-                        {
-                            if (!results.Contains(rtn))
-                            {
-                                results.Add(rtn);
-                            }
-                        }
-                        else
+                        int splitIndex = t.Result.Order;
+                        foreach (TrailResultWrapper rtn in Controller.TrailController.Instance.Results)
                         {
                             int i = 0;
                             foreach (TrailResultWrapper ctn in TrailResultWrapper.ChildrenTimeSorted(rtn))
                             {
                                 if (Data.Settings.SelectSimilarModulu == 0 && ctn.Result.Order == splitIndex ||
-                                    Data.Settings.SelectSimilarModulu > 0 && i % Data.Settings.SelectSimilarModulu == splitIndex - 1)
+                                    Data.Settings.SelectSimilarModulu > 0 && i % Data.Settings.SelectSimilarModulu == (splitIndex - 1) % Data.Settings.SelectSimilarModulu)
                                 {
-                                    if (!results.Contains(ctn))
+                                    if (!trailResults.Contains(ctn.Result))
                                     {
                                         results.Add(ctn);
+                                        trailResults.Add(ctn.Result);
                                     }
                                 }
                                 i++;
@@ -671,44 +659,21 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //If a single index is selected, let the reference follow the current result
-                if (isSingleIndex && Controller.TrailController.Instance.ReferenceResult != null)
+                if (atr.Count == 1)
                 {
-                    if (Controller.TrailController.Instance.ReferenceResult.Result.Order != lastSplitIndex)
+                    TrailResultWrapper refRes;
+                    if (!(atr[0].Result is ChildTrailResult))
                     {
-                        if (lastSplitIndex < 0)
-                        {
-                            //This should be a child(subsplit)
-                            if (Controller.TrailController.Instance.ReferenceResult.Result is ChildTrailResult)
-                            {
-                                Controller.TrailController.Instance.ReferenceResult = Controller.TrailController.Instance.ReferenceResult.Parent as TrailResultWrapper;
-                            }
-                            isChange = true;
-                        }
-                        else
-                        {
-                            TrailResultWrapper rtr;
-                            if (Controller.TrailController.Instance.ReferenceResult.Result is ChildTrailResult)
-                            {
-                                rtr = Controller.TrailController.Instance.ReferenceResult.Parent as TrailResultWrapper;
-                            }
-                            else
-                            {
-                                rtr = Controller.TrailController.Instance.ReferenceResult;
-                            }
-
-                            if (rtr != null)
-                            {
-                                foreach (TrailResultWrapper trc in rtr.Children)
-                                {
-                                    if (trc.Result.Order == lastSplitIndex)
-                                    {
-                                        Controller.TrailController.Instance.ReferenceResult = trc;
-                                        isChange = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        refRes = atr[0];
+                    }
+                    else
+                    {
+                        refRes = (atr[0].Result as ChildTrailResult).ParentResult.Wrapper;
+                    }
+                    if (refRes != Controller.TrailController.Instance.ReferenceResult)
+                    {
+                        Controller.TrailController.Instance.ReferenceResult = refRes;
+                        isChange = true;
                     }
                 }
             }
@@ -1080,13 +1045,13 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (Data.Settings.SelectSimilarSplits)
             {
+                //Updates m_lastSelectedItems too, but clears ExplicitSelection
                 this.selectSimilarSplitsChanged();
             }
             else
             {
                 //Explicit selection of results
                 this.m_lastSelectedItems = this.SelectedResults;
-
                 this.updateSelectedItems(this.SelectedResults);
                 Controller.TrailController.Instance.ExplicitSelection = true;
             }
@@ -1095,9 +1060,10 @@ namespace TrailsPlugin.UI.Activity {
         //Summary list updated (possibly by the mose selection), other related changes
         private void updateSelectedItems(IList<TrailResultWrapper> setValue)
         {
+            Controller.TrailController.Instance.ExplicitSelection = false;
             Controller.TrailController.Instance.SelectedResults = setValue;
             this.SetSummary(setValue);
-            this.m_page.RefreshRouteCheck();
+            this.m_page.RefreshRoute(false);
             this.m_page.RefreshChart();
         }
       
@@ -1631,10 +1597,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
                 ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits);
-                if (Data.Settings.SelectSimilarSplits)
-                {
-                    this.selectSimilarSplitsChanged();
-                }
+                this.selectSimilarSplitsChanged();
             }
             else if (e.KeyCode == Keys.Escape)
             {

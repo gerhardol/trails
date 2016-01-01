@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-2.0.1 2015-12-27 (GitHub)
+2.0.2 2016-01-01 (Plugin Catalog)
   * Changed version numbering after source repository was moved to GitHub.
   * Trails (not settings) are stored in the logbook instead of preferences. This means that the logbook must be stored after upgrading to save the trails. When detecting old preferences, the settings and trails are backed up to a separate file. It is possible to explicitly save/restore settings/trails to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).
   * Tweaked UI, updating icons, sizes etc. See Charts and Result List for specific details
@@ -13,7 +13,8 @@ This page describes the changes between plugin releases. The change log may cont
     * Copy Chart option
     * Chart toolbar: Add option to hide/show trailpoints in charts
     * Chart toolbar: Control smoothing with numeric picker. Click the Y-axis for the chart to change smoothing for. When selecting the Difference Y-axis, the offset is changed instead. The keyboard shortcuts control to change smoothing still exists.
-	* Limit results displayed in charts, configurable in Settings. Chart handling is slow in ST, more than a handful is normally not meaningful anyway.
+	* Limit results displayed in charts, configurable in Settings. Chart handling is slow in ST, more than a handful is normally not meaningful anyway. Summary (Average) are shown first if selected.
+	* "Pace - Inverted" axis, to show faster pace upwards as for speed.
   * Trails
     * [Multiple Trails](http://github.com/gerhardol/trails/wiki/Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName: Specific_), selecting _BaseName_ selects _BaseName: Specific_ too. This is visible in the trail selection menu.
     * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
@@ -54,12 +55,21 @@ This page describes the changes between plugin releases. The change log may cont
 	  * [Shift-Alt-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Set selection from current selection
 	  * [Alt-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Reselect the persistent selection in the current results.
 	  * [Shift-Alt-Ctrl-g](http://github.com/gerhardol/trails/wiki/Features#result-list) Re-add the persistent selection, also if the results are no longer in the result list.
-	* Simple GPS filter to filter points closer than 2s and 10m [Alt-s](http://github.com/gerhardol/trails/wiki/Features#result-list)
+	* Simple GPS filter to filter points closer than 2s and 10m [Alt-d](http://github.com/gerhardol/trails/wiki/Features#result-list)
 	* Show Summary For Children, result list shortcut Alt-s. Instead of showing the averages for selected parent results, show the averages for the children.
+    * _Select Similar Splits_ changes: 
+	  * Space always updates but do not change setting
+	  * Functionly updating child results
+	  * Possibility to limit selection by selecting top-level results
+	  * No change to reference results (previously the reference were automatically updated)
+	  * Unofficial Alt-h shortcut to match _Select Similar Splits_ on modulo matches (similar to Ctrl-l).
+	* ToolTip for result list keyboard shortcuts
+	* Result list colors were not updated immediately after selection changes
   * Updated Spanish translation, thanks to AlexMTB
   * Set Garmin fenix, 920xt, 910xt as barometric devices by default
-  * Documentation updated. An example describing some of the new features was added to the documantation: [920XT](https://github.com/gerhardol/trails/wiki/Tutorials#920xt-example).
+  * Documentation updated. A use case describing some of the new features was added to the documantation: [920XT](https://github.com/gerhardol/trails/wiki/Analysis920XT).
 
+  
 1.2.971 2015-01-30 (Plugin Catalog)
   * Pressing '+' when viewing automatically generated trail will offer to add a new trail with selected points, not just creating a copy of the generated trail.
   * New interface to Performance Predictor: Predict from the best result, not the average. Requires Performance Predictor 2.0.467.

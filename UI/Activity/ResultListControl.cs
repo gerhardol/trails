@@ -1069,12 +1069,14 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        //Summary list updated (possibly by the mose selection), other related changes
+        //Summary list updated (possibly by mouse selection), other related changes
         private void updateSelectedItems(IList<TrailResultWrapper> setValue)
         {
             Controller.TrailController.Instance.ExplicitSelection = false;
             Controller.TrailController.Instance.SelectedResults = setValue;
             this.SetSummary(setValue);
+            //For instance colors change after selection changes
+            this.summaryList.Refresh();
             this.m_page.RefreshRoute(false);
             this.m_page.RefreshChart();
         }

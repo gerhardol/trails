@@ -331,6 +331,18 @@ namespace TrailsPlugin.UI.Activity {
                     TrailResultWrapper.UnpausedResults(Controller.TrailController.Instance.SelectedResults));
                 if(selectedPresentableResults.Count > Data.Settings.MaxChartResults)
                 {
+                    //Move summary first, so it is not truncated
+                    for(int i= 0; i < selectedPresentableResults.Count; i++)
+                    {
+                        TrailResult t = selectedPresentableResults[i];
+                        if (t is SummaryTrailResult)
+                        {
+                            selectedPresentableResults.RemoveAt(i);
+                            selectedPresentableResults.Insert(0, t);
+                            break;
+                        }
+                    }
+
                     ((List<Data.TrailResult>)selectedPresentableResults).RemoveRange(Data.Settings.MaxChartResults,
                         selectedPresentableResults.Count- Data.Settings.MaxChartResults);
                 }

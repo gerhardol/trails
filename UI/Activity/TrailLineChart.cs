@@ -968,7 +968,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         if (summaryResult != null)
                         {
-                            //total or average already selected, use one of them (could ignore total)
+                            //total or average already selected, use one of them
                             continue;
                         }
                         summaryResult = (tr as SummaryTrailResult);
@@ -1056,12 +1056,12 @@ namespace TrailsPlugin.UI.Activity {
 
                         ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
 
-                        //Add to the chart only if result is visible (no "summary" results)
+                        //Add to the chart only if result is visible. "summary" results are only for calculation
                         if (m_trailResults.Contains(tr))
                         {
                             //Note: Add empty Dataseries even if no graphpoints. index must match results
                             MainChart.DataSeries.Add(dataLine);
-
+                            
                             //Update display only data
                             //It could be possible to add basis for dataseries in .Data, to only recalc the points. Not so much gain
                             dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;

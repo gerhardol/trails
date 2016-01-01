@@ -1055,12 +1055,14 @@ namespace TrailsPlugin.UI.Activity {
 
         void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
+            bool update = true;
             if (Data.Settings.SelectSimilarSplits)
             {
-                //Updates m_lastSelectedItems too, but clears ExplicitSelection
-                this.selectSimilarSplitsChanged();
+                //At changes: Updates m_lastSelectedItems too, but clears ExplicitSelection
+                update = !this.selectSimilarSplitsChanged();
             }
-            else
+
+            if (update)
             {
                 //Explicit selection of results
                 this.m_lastSelectedItems = this.SelectedResults;

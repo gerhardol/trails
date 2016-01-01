@@ -2531,7 +2531,9 @@ namespace TrailsPlugin.UI.Activity {
             TrailResultWrapper tr = getMouseResult();
             if (tr != Controller.TrailController.Instance.ReferenceResult)
             {
+                TrailResultWrapper prev = Controller.TrailController.Instance.ReferenceResult;
                 Controller.TrailController.Instance.ReferenceResult = tr;
+                this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr, prev });
                 this.m_page.RefreshChart();
             }
         }

@@ -43,20 +43,14 @@ namespace TrailsPlugin.Data
 
             if (column.Id == TrailResultColumnIds.ResultColor)
             {
-                Bitmap image = new Bitmap(column.Width, 15);
-                for (int x = 0; x < image.Width; x++)
-                {
-                    for (int y = 0; y < image.Height; y++)
-                    {
-                        image.SetPixel(x, y, row.ResultColor.LineNormal);
-                    }
-                }
-                return image;
+                return CommonIcons.ResultColorCache(column.Width, 15, row.ResultColor.LineNormal);
             }
             else
             {
-                return base.GetImage(row.Activity, column);
+                //No other image used, no need for reflection
+                //return base.GetImage(row.Activity, column);
             }
+            return null;
         }
 
         public override string GetText(object element, TreeList.Column column)

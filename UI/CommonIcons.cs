@@ -25,6 +25,7 @@ using System.Globalization;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.IO;
+using System.Collections.Generic;
 
 //Used in both Trails and Matrix plugin, slightly reduced and modified in Matrix
 
@@ -220,6 +221,37 @@ namespace TrailsPlugin
         {
             const int brushSize = 4;
             return "file://" + fileImage(sizeX, sizeY, brushSize, c, false, IconType.Rhombus, out iconSize);
+        }
+
+        private static IDictionary<string, Image> resultColorCache = new Dictionary<string, Image>();
+        public static void ResultColorCacheClean()
+        {
+            resultColorCache.Clear();
+        }
+        public static Image ResultColorCache(int width, int height, Color col)
+        {
+            if (resultColorCache.Count > 16*3*2)
+            {
+                //Do not let cache grow infinetely. It should be sufficient with 16 standard colors for 3 levels
+                //More can be added when changing col sizes or using custom colors
+                ResultColorCacheClean();
+            }
+
+            string key = width + "_" + height + "_" + col;
+            if (!resultColorCache.ContainsKey(key))
+            {
+                Bitmap image = new Bitmap(width, height);
+                for (int x = 0; x < image.Width; x++)
+                {
+                    for (int y = 0; y < image.Height; y++)
+                    {
+                        //SetPixel is slow, but image is small and this is a cache
+                        image.SetPixel(x, y, col);
+                    }
+                }
+                resultColorCache[key] = image;
+            }
+            return resultColorCache[key];
         }
     }
 }

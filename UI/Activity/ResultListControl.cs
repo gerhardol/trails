@@ -618,21 +618,33 @@ namespace TrailsPlugin.UI.Activity {
             if (Data.Settings.SelectSimilarSplits && atr != null && atr.Count > 0)
             {
                 //The implementation only supports adding new splits not deselecting
-                //Note that selecting will scroll, changing offsets why check what is clicked does not work well
-                IList<TrailResultWrapper> results = new List<TrailResultWrapper>();
+                IList<TrailResultWrapper> selectResults = new List<TrailResultWrapper>();
                 IList<TrailResult> trailResults = new List<TrailResult>(); //To find what is added
+                IList<TrailResultWrapper> searchResults = new List<TrailResultWrapper>();
+
                 foreach (TrailResultWrapper t in atr)
                 {
-                    if (!trailResults.Contains(t.Result))
+                    //These results are included 
+                    selectResults.Add(t);
+                    trailResults.Add(t.Result);
+                    if (!(t.Result is ChildTrailResult))
                     {
-                        results.Add(t);
-                        trailResults.Add(t.Result);
+                        searchResults.Add(t);
                     }
-                    //Add matching children with same match
+                }
+                if(searchResults.Count == 0)
+                {
+                    //No parent selected, search subresults from all results
+                    searchResults = Controller.TrailController.Instance.Results;
+                }
+
+                foreach (TrailResultWrapper t in atr)
+                {
+                    //Add matching children
                     if (t.Result is ChildTrailResult)
                     {
-                        int splitIndex = t.Result.Order;
-                        foreach (TrailResultWrapper rtn in Controller.TrailController.Instance.Results)
+                        int splitIndex = t.Result.Order; //Only match on order, not position in list....
+                        foreach (TrailResultWrapper rtn in searchResults)
                         {
                             int i = 0;
                             foreach (TrailResultWrapper ctn in TrailResultWrapper.ChildrenTimeSorted(rtn))
@@ -642,7 +654,7 @@ namespace TrailsPlugin.UI.Activity {
                                 {
                                     if (!trailResults.Contains(ctn.Result))
                                     {
-                                        results.Add(ctn);
+                                        selectResults.Add(ctn);
                                         trailResults.Add(ctn.Result);
                                     }
                                 }
@@ -652,30 +664,30 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
 
-                if (results != this.SelectedResults)
+                if (selectResults != this.SelectedResults)
                 {
-                    this.SelectedResults = results;
+                    this.SelectedResults = selectResults;
                     isChange = true;
                 }
 
-                //If a single index is selected, let the reference follow the current result
-                if (atr.Count == 1)
-                {
-                    TrailResultWrapper refRes;
-                    if (!(atr[0].Result is ChildTrailResult))
-                    {
-                        refRes = atr[0];
-                    }
-                    else
-                    {
-                        refRes = (atr[0].Result as ChildTrailResult).ParentResult.Wrapper;
-                    }
-                    if (refRes != Controller.TrailController.Instance.ReferenceResult)
-                    {
-                        Controller.TrailController.Instance.ReferenceResult = refRes;
-                        isChange = true;
-                    }
-                }
+                ////If a single index is selected, let the reference follow the current result
+                //if (atr.Count == 1)
+                //{
+                //    TrailResultWrapper refRes;
+                //    if (!(atr[0].Result is ChildTrailResult))
+                //    {
+                //        refRes = atr[0];
+                //    }
+                //    else
+                //    {
+                //        refRes = (atr[0].Result as ChildTrailResult).ParentResult.Wrapper;
+                //    }
+                //    if (refRes != Controller.TrailController.Instance.ReferenceResult)
+                //    {
+                //        Controller.TrailController.Instance.ReferenceResult = refRes;
+                //        isChange = true;
+                //    }
+                //}
             }
             return isChange;
         }

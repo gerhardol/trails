@@ -52,7 +52,10 @@ namespace TrailsPlugin.Data
                     d = tr.TrailPointDateTime[m_resultPointIndex];
                 }
                 SetDistance(tr, d);
-                this.m_diff = tr.PointDiff(this.m_resultPointIndex);
+                if (this.m_resultPointIndex < tr.SubResultInfo.Count)
+                {
+                    this.m_diff = tr.PointDiff(this.m_resultPointIndex);
+                }
             }
         }
 

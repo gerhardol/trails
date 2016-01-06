@@ -36,6 +36,10 @@ namespace TrailsPlugin.UI.Settings
         public SettingsPageControl()
         {
             this.InitializeComponent();
+            this.upDownRouteTransparency.Minimum = 0;
+            this.upDownRouteTransparency.Maximum = 100;
+            this.upDownMaxChartResults.Minimum = 0;
+            this.upDownMaxChartResults.Maximum = 10000;
             this.presentSettings();
             if (!TrailsPlugin.Integration.PerformancePredictor.PerformancePredictorIntegrationEnabled)
             {

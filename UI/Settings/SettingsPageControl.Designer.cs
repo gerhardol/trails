@@ -39,16 +39,8 @@ namespace TrailsPlugin.UI.Settings {
             this.boxBarometricDevices = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblAdjustElevationAtImport = new System.Windows.Forms.Label();
             this.txtAdjustElevationAtImport = new System.Windows.Forms.CheckBox();
-            this.lblUniqueRoutes = new System.Windows.Forms.Label();
-            this.lblHighScore = new System.Windows.Forms.Label();
-            this.lblPerformancePredictor = new System.Windows.Forms.Label();
-            this.lblPredictDistance = new System.Windows.Forms.Label();
-            this.boxPredictDistance = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            this.lblCopyright = new System.Windows.Forms.Label();
-            this.lblLicense = new System.Windows.Forms.Label();
             this.labelRouteTransparency = new System.Windows.Forms.Label();
             this.upDownRouteTransparency = new System.Windows.Forms.NumericUpDown();
-            this.labelRouteTransparencyPercent = new System.Windows.Forms.Label();
             this.labelMaxChartResults = new System.Windows.Forms.Label();
             this.upDownMaxChartResults = new System.Windows.Forms.NumericUpDown();
             this.gradeAdjustedPaceGroup = new System.Windows.Forms.GroupBox();
@@ -63,8 +55,18 @@ namespace TrailsPlugin.UI.Settings {
             this.boxJackDanielsUp = new ZoneFiveSoftware.Common.Visuals.TextBox();
             this.lblJackDanielsDown = new System.Windows.Forms.Label();
             this.boxJackDanielsDown = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblUniqueRoutes = new System.Windows.Forms.Label();
+            this.lblHighScore = new System.Windows.Forms.Label();
+            this.lblPerformancePredictor = new System.Windows.Forms.Label();
+            this.lblPredictDistance = new System.Windows.Forms.Label();
+            this.boxPredictDistance = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            this.lblCopyright = new System.Windows.Forms.Label();
+            this.lblLicense = new System.Windows.Forms.Label();
+            this.labelRouteTransparencyPercent = new System.Windows.Forms.Label();
             this.PluginInfoPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownRouteTransparency)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownMaxChartResults)).BeginInit();
             this.gradeAdjustedPaceGroup.SuspendLayout();
             this.tablePanelGradeAdjustedPace.SuspendLayout();
             this.SuspendLayout();
@@ -85,7 +87,7 @@ namespace TrailsPlugin.UI.Settings {
             this.PluginInfoPanel.HeadingTopMargin = 3;
             this.PluginInfoPanel.Location = new System.Drawing.Point(0, 0);
             this.PluginInfoPanel.Name = "PluginInfoPanel";
-            this.PluginInfoPanel.Size = new System.Drawing.Size(362, 466);
+            this.PluginInfoPanel.Size = new System.Drawing.Size(362, 519);
             this.PluginInfoPanel.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -108,7 +110,6 @@ namespace TrailsPlugin.UI.Settings {
             this.tableLayoutPanel1.Controls.Add(this.txtAdjustElevationAtImport, 1, 7);
             this.tableLayoutPanel1.Controls.Add(this.labelRouteTransparency, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.upDownRouteTransparency, 1, 8);
-            //this.tableLayoutPanel1.Controls.Add(this.labelRouteTransparencyPercent, 1, 8);
             this.tableLayoutPanel1.Controls.Add(this.labelMaxChartResults, 0, 9);
             this.tableLayoutPanel1.Controls.Add(this.upDownMaxChartResults, 1, 9);
             this.tableLayoutPanel1.Controls.Add(this.gradeAdjustedPaceGroup, 0, 10);
@@ -142,7 +143,7 @@ namespace TrailsPlugin.UI.Settings {
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(362, 466);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(362, 519);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // PluginInfoBanner
@@ -167,17 +168,18 @@ namespace TrailsPlugin.UI.Settings {
             this.lblInfo.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.lblInfo, 2);
             this.lblInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblInfo.Location = new System.Drawing.Point(3, 407);
+            this.lblInfo.Location = new System.Drawing.Point(3, 30);
             this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(356, 20);
+            this.lblInfo.Size = new System.Drawing.Size(356, 13);
             this.lblInfo.TabIndex = 1;
+            this.lblInfo.TabStop = true;
             this.lblInfo.Text = "<info";
             this.lblInfo.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblInfo_LinkClicked);
             // 
             // lblDefaultRadius
             // 
             this.lblDefaultRadius.AutoSize = true;
-            this.lblDefaultRadius.Location = new System.Drawing.Point(3, 33);
+            this.lblDefaultRadius.Location = new System.Drawing.Point(3, 46);
             this.lblDefaultRadius.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblDefaultRadius.Name = "lblDefaultRadius";
             this.lblDefaultRadius.Size = new System.Drawing.Size(86, 13);
@@ -191,7 +193,7 @@ namespace TrailsPlugin.UI.Settings {
             this.txtDefaultRadius.BackColor = System.Drawing.Color.White;
             this.txtDefaultRadius.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.txtDefaultRadius.ButtonImage = null;
-            this.txtDefaultRadius.Location = new System.Drawing.Point(155, 30);
+            this.txtDefaultRadius.Location = new System.Drawing.Point(155, 43);
             this.txtDefaultRadius.Margin = new System.Windows.Forms.Padding(0);
             this.txtDefaultRadius.MaxLength = 32767;
             this.txtDefaultRadius.Multiline = false;
@@ -208,7 +210,7 @@ namespace TrailsPlugin.UI.Settings {
             // lblSetNameAtImport
             // 
             this.lblSetNameAtImport.AutoSize = true;
-            this.lblSetNameAtImport.Location = new System.Drawing.Point(3, 53);
+            this.lblSetNameAtImport.Location = new System.Drawing.Point(3, 66);
             this.lblSetNameAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblSetNameAtImport.Name = "lblSetNameAtImport";
             this.lblSetNameAtImport.Size = new System.Drawing.Size(96, 13);
@@ -218,7 +220,7 @@ namespace TrailsPlugin.UI.Settings {
             // txtSetNameAtImport
             // 
             this.txtSetNameAtImport.AutoSize = true;
-            this.txtSetNameAtImport.Location = new System.Drawing.Point(158, 53);
+            this.txtSetNameAtImport.Location = new System.Drawing.Point(158, 66);
             this.txtSetNameAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.txtSetNameAtImport.Name = "txtSetNameAtImport";
             this.txtSetNameAtImport.Size = new System.Drawing.Size(15, 14);
@@ -228,7 +230,7 @@ namespace TrailsPlugin.UI.Settings {
             // lblStoppedCategory
             // 
             this.lblStoppedCategory.AutoSize = true;
-            this.lblStoppedCategory.Location = new System.Drawing.Point(3, 73);
+            this.lblStoppedCategory.Location = new System.Drawing.Point(3, 86);
             this.lblStoppedCategory.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblStoppedCategory.Name = "lblStoppedCategory";
             this.lblStoppedCategory.Size = new System.Drawing.Size(95, 13);
@@ -242,7 +244,7 @@ namespace TrailsPlugin.UI.Settings {
             this.boxStoppedCategory.BackColor = System.Drawing.Color.White;
             this.boxStoppedCategory.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxStoppedCategory.ButtonImage = null;
-            this.boxStoppedCategory.Location = new System.Drawing.Point(155, 70);
+            this.boxStoppedCategory.Location = new System.Drawing.Point(155, 83);
             this.boxStoppedCategory.Margin = new System.Windows.Forms.Padding(0);
             this.boxStoppedCategory.MaxLength = 32767;
             this.boxStoppedCategory.Multiline = false;
@@ -259,7 +261,7 @@ namespace TrailsPlugin.UI.Settings {
             // lblBarometricDevices
             // 
             this.lblBarometricDevices.AutoSize = true;
-            this.lblBarometricDevices.Location = new System.Drawing.Point(3, 93);
+            this.lblBarometricDevices.Location = new System.Drawing.Point(3, 106);
             this.lblBarometricDevices.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblBarometricDevices.Name = "lblBarometricDevices";
             this.lblBarometricDevices.Size = new System.Drawing.Size(102, 13);
@@ -273,7 +275,7 @@ namespace TrailsPlugin.UI.Settings {
             this.boxBarometricDevices.BackColor = System.Drawing.Color.White;
             this.boxBarometricDevices.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxBarometricDevices.ButtonImage = null;
-            this.boxBarometricDevices.Location = new System.Drawing.Point(155, 90);
+            this.boxBarometricDevices.Location = new System.Drawing.Point(155, 103);
             this.boxBarometricDevices.Margin = new System.Windows.Forms.Padding(0);
             this.boxBarometricDevices.MaxLength = 32767;
             this.boxBarometricDevices.Multiline = false;
@@ -290,7 +292,7 @@ namespace TrailsPlugin.UI.Settings {
             // lblAdjustElevationAtImport
             // 
             this.lblAdjustElevationAtImport.AutoSize = true;
-            this.lblAdjustElevationAtImport.Location = new System.Drawing.Point(3, 113);
+            this.lblAdjustElevationAtImport.Location = new System.Drawing.Point(3, 126);
             this.lblAdjustElevationAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.lblAdjustElevationAtImport.Name = "lblAdjustElevationAtImport";
             this.lblAdjustElevationAtImport.Size = new System.Drawing.Size(125, 13);
@@ -300,7 +302,7 @@ namespace TrailsPlugin.UI.Settings {
             // txtAdjustElevationAtImport
             // 
             this.txtAdjustElevationAtImport.AutoSize = true;
-            this.txtAdjustElevationAtImport.Location = new System.Drawing.Point(158, 113);
+            this.txtAdjustElevationAtImport.Location = new System.Drawing.Point(158, 126);
             this.txtAdjustElevationAtImport.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.txtAdjustElevationAtImport.Name = "txtAdjustElevationAtImport";
             this.txtAdjustElevationAtImport.Size = new System.Drawing.Size(15, 14);
@@ -310,134 +312,41 @@ namespace TrailsPlugin.UI.Settings {
             // labelRouteTransparency
             // 
             this.labelRouteTransparency.AutoSize = true;
-            this.labelRouteTransparency.Location = new System.Drawing.Point(3, 133);
+            this.labelRouteTransparency.Location = new System.Drawing.Point(3, 143);
             this.labelRouteTransparency.Name = "labelRouteTransparency";
-            this.labelRouteTransparency.Size = new System.Drawing.Size(142, 13);
+            this.labelRouteTransparency.Size = new System.Drawing.Size(105, 13);
             this.labelRouteTransparency.TabIndex = 3;
             this.labelRouteTransparency.Text = "<routeTransparency:";
             // 
             // upDownRouteTransparency
             // 
-            this.upDownRouteTransparency.Location = new System.Drawing.Point(155, 133);
+            this.upDownRouteTransparency.Location = new System.Drawing.Point(158, 146);
             this.upDownRouteTransparency.Name = "upDownRouteTransparency";
             this.upDownRouteTransparency.Size = new System.Drawing.Size(39, 20);
             this.upDownRouteTransparency.TabIndex = 7;
-            this.upDownRouteTransparency.Minimum = 0;
-            this.upDownRouteTransparency.Maximum = 100;
-            this.upDownRouteTransparency.LostFocus += new EventHandler(upDownRouteTransparency_LostFocus);
-            // 
-            // labelRouteTransparencyPercent
-            // (not visible)
-            this.labelRouteTransparencyPercent.AutoSize = true;
-            this.labelRouteTransparencyPercent.Location = new System.Drawing.Point(280, 42);
-            this.labelRouteTransparencyPercent.Name = "labelRouteTransparencyPercent";
-            this.labelRouteTransparencyPercent.Size = new System.Drawing.Size(15, 13);
-            this.labelRouteTransparencyPercent.TabIndex = 10;
-            this.labelRouteTransparencyPercent.Text = "%";
-            this.labelRouteTransparencyPercent.Visible = false;
+            this.upDownRouteTransparency.LostFocus += new System.EventHandler(this.upDownRouteTransparency_LostFocus);
             // 
             // labelMaxChartResults
             // 
             this.labelMaxChartResults.AutoSize = true;
-            this.labelMaxChartResults.Location = new System.Drawing.Point(3, 133);
+            this.labelMaxChartResults.Location = new System.Drawing.Point(3, 163);
             this.labelMaxChartResults.Name = "labelMaxChartResults";
-            this.labelMaxChartResults.Size = new System.Drawing.Size(142, 13);
+            this.labelMaxChartResults.Size = new System.Drawing.Size(96, 13);
             this.labelMaxChartResults.TabIndex = 3;
             this.labelMaxChartResults.Text = "<MaxChartResults:";
             // 
             // upDownMaxChartResults
             // 
-            this.upDownMaxChartResults.Location = new System.Drawing.Point(155, 133);
+            this.upDownMaxChartResults.Location = new System.Drawing.Point(158, 166);
+            this.upDownMaxChartResults.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.upDownMaxChartResults.Name = "upDownMaxChartResults";
             this.upDownMaxChartResults.Size = new System.Drawing.Size(39, 20);
             this.upDownMaxChartResults.TabIndex = 7;
-            this.upDownMaxChartResults.Minimum = 0;
-            this.upDownMaxChartResults.Maximum = 10000;
-            this.upDownMaxChartResults.LostFocus += new EventHandler(upDownMaxChartResults_LostFocus);
-            // 
-            // lblUniqueRoutes
-            // 
-            this.lblUniqueRoutes.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.lblUniqueRoutes, 2);
-            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 282);
-            this.lblUniqueRoutes.Name = "lblUniqueRoutes";
-            this.lblUniqueRoutes.Size = new System.Drawing.Size(93, 26);
-            this.lblUniqueRoutes.TabIndex = 1;
-            this.lblUniqueRoutes.Text = "<UR placeholder>\r\nline2";
-            // 
-            // lblHighScore
-            // 
-            this.lblHighScore.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.lblHighScore, 2);
-            this.lblHighScore.Location = new System.Drawing.Point(3, 312);
-            this.lblHighScore.Name = "lblHighScore";
-            this.lblHighScore.Size = new System.Drawing.Size(92, 26);
-            this.lblHighScore.TabIndex = 1;
-            this.lblHighScore.Text = "<HS placeholder>\r\nline2";
-            // 
-            // lblPerformancePredictor
-            // 
-            this.lblPerformancePredictor.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.lblPerformancePredictor, 2);
-            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 342);
-            this.lblPerformancePredictor.Name = "lblPerformancePredictor";
-            this.lblPerformancePredictor.Size = new System.Drawing.Size(91, 26);
-            this.lblPerformancePredictor.TabIndex = 1;
-            this.lblPerformancePredictor.Text = "<PP placeholder>\r\nline2";
-            // 
-            // lblPredictDistance
-            // 
-            this.lblPredictDistance.AutoSize = true;
-            this.lblPredictDistance.Location = new System.Drawing.Point(3, 375);
-            this.lblPredictDistance.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.lblPredictDistance.Name = "lblPredictDistance";
-            this.lblPredictDistance.Size = new System.Drawing.Size(91, 13);
-            this.lblPredictDistance.TabIndex = 0;
-            this.lblPredictDistance.Text = "<PredictDistance:";
-            // 
-            // boxPredictDistance
-            // 
-            this.boxPredictDistance.AcceptsReturn = false;
-            this.boxPredictDistance.AcceptsTab = false;
-            this.boxPredictDistance.BackColor = System.Drawing.Color.White;
-            this.boxPredictDistance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
-            this.boxPredictDistance.ButtonImage = null;
-            this.boxPredictDistance.Location = new System.Drawing.Point(155, 372);
-            this.boxPredictDistance.Margin = new System.Windows.Forms.Padding(0);
-            this.boxPredictDistance.MaxLength = 32767;
-            this.boxPredictDistance.Multiline = false;
-            this.boxPredictDistance.Name = "boxPredictDistance";
-            this.boxPredictDistance.ReadOnly = false;
-            this.boxPredictDistance.ReadOnlyColor = System.Drawing.SystemColors.Control;
-            this.boxPredictDistance.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
-            this.boxPredictDistance.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.boxPredictDistance.Size = new System.Drawing.Size(100, 19);
-            this.boxPredictDistance.TabIndex = 1;
-            this.boxPredictDistance.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.boxPredictDistance.LostFocus += new System.EventHandler(this.boxPredictDistance_LostFocus);
-            // 
-            // lblCopyright
-            // 
-            this.lblCopyright.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.lblCopyright, 2);
-            this.lblCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblCopyright.Location = new System.Drawing.Point(3, 407);
-            this.lblCopyright.Name = "lblCopyright";
-            this.lblCopyright.Size = new System.Drawing.Size(356, 20);
-            this.lblCopyright.TabIndex = 1;
-            this.lblCopyright.Text = "<Copyright Brendan Doherty 2009";
-            // 
-            // lblLicense
-            // 
-            this.lblLicense.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.lblLicense, 2);
-            this.lblLicense.Location = new System.Drawing.Point(3, 427);
-            this.lblLicense.Name = "lblLicense";
-            this.lblLicense.Size = new System.Drawing.Size(356, 39);
-            this.lblLicense.TabIndex = 3;
-            this.lblLicense.Text = "<Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe L" +
-    "icense is included in the plugin installation directory and at:\r\nhttp://www.gnu." +
-    "org/licenses/lgpl.html.";
+            this.upDownMaxChartResults.LostFocus += new System.EventHandler(this.upDownMaxChartResults_LostFocus);
             // 
             // gradeAdjustedPaceGroup
             // 
@@ -447,7 +356,7 @@ namespace TrailsPlugin.UI.Settings {
             this.gradeAdjustedPaceGroup.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.gradeAdjustedPaceGroup, 2);
             this.gradeAdjustedPaceGroup.Controls.Add(this.tablePanelGradeAdjustedPace);
-            this.gradeAdjustedPaceGroup.Location = new System.Drawing.Point(3, 133);
+            this.gradeAdjustedPaceGroup.Location = new System.Drawing.Point(3, 186);
             this.gradeAdjustedPaceGroup.Name = "gradeAdjustedPaceGroup";
             this.gradeAdjustedPaceGroup.Size = new System.Drawing.Size(356, 131);
             this.gradeAdjustedPaceGroup.TabIndex = 6;
@@ -631,6 +540,100 @@ namespace TrailsPlugin.UI.Settings {
             this.boxJackDanielsDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.boxJackDanielsDown.LostFocus += new System.EventHandler(this.boxJackDaniels_LostFocus);
             // 
+            // lblUniqueRoutes
+            // 
+            this.lblUniqueRoutes.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblUniqueRoutes, 2);
+            this.lblUniqueRoutes.Location = new System.Drawing.Point(3, 335);
+            this.lblUniqueRoutes.Name = "lblUniqueRoutes";
+            this.lblUniqueRoutes.Size = new System.Drawing.Size(93, 26);
+            this.lblUniqueRoutes.TabIndex = 1;
+            this.lblUniqueRoutes.Text = "<UR placeholder>\r\nline2";
+            // 
+            // lblHighScore
+            // 
+            this.lblHighScore.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblHighScore, 2);
+            this.lblHighScore.Location = new System.Drawing.Point(3, 365);
+            this.lblHighScore.Name = "lblHighScore";
+            this.lblHighScore.Size = new System.Drawing.Size(92, 26);
+            this.lblHighScore.TabIndex = 1;
+            this.lblHighScore.Text = "<HS placeholder>\r\nline2";
+            // 
+            // lblPerformancePredictor
+            // 
+            this.lblPerformancePredictor.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblPerformancePredictor, 2);
+            this.lblPerformancePredictor.Location = new System.Drawing.Point(3, 395);
+            this.lblPerformancePredictor.Name = "lblPerformancePredictor";
+            this.lblPerformancePredictor.Size = new System.Drawing.Size(91, 26);
+            this.lblPerformancePredictor.TabIndex = 1;
+            this.lblPerformancePredictor.Text = "<PP placeholder>\r\nline2";
+            // 
+            // lblPredictDistance
+            // 
+            this.lblPredictDistance.AutoSize = true;
+            this.lblPredictDistance.Location = new System.Drawing.Point(3, 428);
+            this.lblPredictDistance.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.lblPredictDistance.Name = "lblPredictDistance";
+            this.lblPredictDistance.Size = new System.Drawing.Size(91, 13);
+            this.lblPredictDistance.TabIndex = 0;
+            this.lblPredictDistance.Text = "<PredictDistance:";
+            // 
+            // boxPredictDistance
+            // 
+            this.boxPredictDistance.AcceptsReturn = false;
+            this.boxPredictDistance.AcceptsTab = false;
+            this.boxPredictDistance.BackColor = System.Drawing.Color.White;
+            this.boxPredictDistance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
+            this.boxPredictDistance.ButtonImage = null;
+            this.boxPredictDistance.Location = new System.Drawing.Point(155, 425);
+            this.boxPredictDistance.Margin = new System.Windows.Forms.Padding(0);
+            this.boxPredictDistance.MaxLength = 32767;
+            this.boxPredictDistance.Multiline = false;
+            this.boxPredictDistance.Name = "boxPredictDistance";
+            this.boxPredictDistance.ReadOnly = false;
+            this.boxPredictDistance.ReadOnlyColor = System.Drawing.SystemColors.Control;
+            this.boxPredictDistance.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
+            this.boxPredictDistance.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.boxPredictDistance.Size = new System.Drawing.Size(100, 19);
+            this.boxPredictDistance.TabIndex = 1;
+            this.boxPredictDistance.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.boxPredictDistance.LostFocus += new System.EventHandler(this.boxPredictDistance_LostFocus);
+            // 
+            // lblCopyright
+            // 
+            this.lblCopyright.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblCopyright, 2);
+            this.lblCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCopyright.Location = new System.Drawing.Point(3, 460);
+            this.lblCopyright.Name = "lblCopyright";
+            this.lblCopyright.Size = new System.Drawing.Size(356, 20);
+            this.lblCopyright.TabIndex = 1;
+            this.lblCopyright.Text = "<Copyright Brendan Doherty 2009";
+            // 
+            // lblLicense
+            // 
+            this.lblLicense.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.lblLicense, 2);
+            this.lblLicense.Location = new System.Drawing.Point(3, 480);
+            this.lblLicense.Name = "lblLicense";
+            this.lblLicense.Size = new System.Drawing.Size(356, 39);
+            this.lblLicense.TabIndex = 3;
+            this.lblLicense.Text = "<Trails Plugin is distributed under the GNU Lesser General Public Licence.\r\nThe L" +
+    "icense is included in the plugin installation directory and at:\r\nhttp://www.gnu." +
+    "org/licenses/lgpl.html.";
+            // 
+            // labelRouteTransparencyPercent
+            // 
+            this.labelRouteTransparencyPercent.AutoSize = true;
+            this.labelRouteTransparencyPercent.Location = new System.Drawing.Point(280, 42);
+            this.labelRouteTransparencyPercent.Name = "labelRouteTransparencyPercent";
+            this.labelRouteTransparencyPercent.Size = new System.Drawing.Size(15, 13);
+            this.labelRouteTransparencyPercent.TabIndex = 10;
+            this.labelRouteTransparencyPercent.Text = "%";
+            this.labelRouteTransparencyPercent.Visible = false;
+            // 
             // SettingsPageControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -640,11 +643,13 @@ namespace TrailsPlugin.UI.Settings {
             this.Controls.Add(this.PluginInfoPanel);
             this.MinimumSize = new System.Drawing.Size(350, 450);
             this.Name = "SettingsPageControl";
-            this.Size = new System.Drawing.Size(362, 466);
+            this.Size = new System.Drawing.Size(362, 519);
             this.PluginInfoPanel.ResumeLayout(false);
             this.PluginInfoPanel.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownRouteTransparency)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.upDownMaxChartResults)).EndInit();
             this.gradeAdjustedPaceGroup.ResumeLayout(false);
             this.gradeAdjustedPaceGroup.PerformLayout();
             this.tablePanelGradeAdjustedPace.ResumeLayout(false);

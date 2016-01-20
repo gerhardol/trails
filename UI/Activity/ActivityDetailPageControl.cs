@@ -674,17 +674,19 @@ namespace TrailsPlugin.UI.Activity {
 
         private void btnExpand_Click(object sender, EventArgs e)
         {
-            this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+            if (this.IsActivityPage)
+            {
+                this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
 #if !ST_2_1
-            this.ExpandSplitContainer.Panel2.Controls.Add(this.MultiCharts);
+                this.ExpandSplitContainer.Panel2.Controls.Add(this.MultiCharts);
 #else
             SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
             {
 #endif
-            int width = this.UpperSplitContainer.Width;
+                int width = this.UpperSplitContainer.Width;
 
-            LowerSplitContainer.Panel2Collapsed = true;
+                LowerSplitContainer.Panel2Collapsed = true;
 #if ST_2_1
                 if (sc.Panel2.Controls != null && sc.Panel2.Controls.Count<=1)
                 {
@@ -695,25 +697,28 @@ namespace TrailsPlugin.UI.Activity {
                 MultiCharts.Width = p2.Width;
                 MultiCharts.Height = p2.Height;
 #else
-            m_DetailPage.PageMaximized = true;
-            this.ExpandSplitContainer.Panel2Collapsed = false;
-            this.ExpandSplitContainer.SplitterDistance = width;
+                m_DetailPage.PageMaximized = true;
+                this.ExpandSplitContainer.Panel2Collapsed = false;
+                this.ExpandSplitContainer.SplitterDistance = width;
 #endif
-            m_isChartExpanded = true;
-            MultiCharts.Expanded = m_isChartExpanded;
+                m_isChartExpanded = true;
+                MultiCharts.Expanded = m_isChartExpanded;
 #if ST_2_1
              }
 #endif
+            }
         }
 
         private void MultiCharts_Collapse(object sender, EventArgs e)
         {
+            if (this.IsActivityPage)
+            {
 #if !ST_2_1
-            this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
+                this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
 #endif
-            this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
+                this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
 
-            LowerSplitContainer.Panel2Collapsed = false;
+                LowerSplitContainer.Panel2Collapsed = false;
 #if ST_2_1
             SplitContainer sc = DailyActivitySplitter;
             if (sc != null)
@@ -725,35 +730,45 @@ namespace TrailsPlugin.UI.Activity {
                 }
             }
 #else
-            this.ExpandSplitContainer.Panel2Collapsed = true;
-            m_DetailPage.PageMaximized = false;
+                this.ExpandSplitContainer.Panel2Collapsed = true;
+                m_DetailPage.PageMaximized = false;
 #endif
-            m_isChartExpanded = false;
-            MultiCharts.Expanded = m_isChartExpanded;
+                m_isChartExpanded = false;
+                MultiCharts.Expanded = m_isChartExpanded;
+            }
         }
 
-        public void ResultList_Expand(object sender, EventArgs e)
+        public void ResultList_Expand(bool actPage)
         {
             this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
             this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
 
             LowerSplitContainer.Panel2Collapsed = true;
             this.ExpandSplitContainer.Panel2Collapsed = true;
-            m_DetailPage.PageMaximized = true;
+            if (actPage && m_DetailPage !=null)
+            {
+                m_DetailPage.PageMaximized = true;
+            }
             MultiCharts.ChartVisible = false;
             MultiCharts.ShowPage = false;
-            m_isChartExpanded = true;
-            MultiCharts.Expanded = m_isChartExpanded;
+            if (actPage)
+            {
+                m_isChartExpanded = true;
+                MultiCharts.Expanded = m_isChartExpanded;
+            }
         }
 
-        public void ResultList_Collapse(object sender, EventArgs e)
+        public void ResultList_Collapse()
         {
             this.LowerSplitContainer.Panel2.Controls.Add(this.MultiCharts);
             this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
 
             LowerSplitContainer.Panel2Collapsed = false;
             this.ExpandSplitContainer.Panel2Collapsed = true;
-            m_DetailPage.PageMaximized = false;
+            if (m_DetailPage != null)
+            {
+                m_DetailPage.PageMaximized = false;
+            }
             m_isChartExpanded = false;
             MultiCharts.ChartVisible = true;
             MultiCharts.ShowPage = true;

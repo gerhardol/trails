@@ -1616,11 +1616,11 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.Escape)
             {
-                this.m_page.ResultList_Collapse(null, null);
+                this.m_page.ResultList_Collapse();
             }
             else if (e.KeyCode == Keys.F11)
             {
-                this.m_page.ResultList_Expand(null, null);
+                this.m_page.ResultList_Expand((e.Modifiers & Keys.Shift) == 0 && m_page.IsActivityPage);
             }
             else if (e.KeyCode == Keys.A)
             {

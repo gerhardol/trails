@@ -73,6 +73,7 @@
             this.chartTablePanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.chartTablePanel.Size = new System.Drawing.Size(400, 60);
             this.chartTablePanel.TabIndex = 0;
+            this.chartTablePanel.SizeChanged += ChartTablePanel_SizeChanged;
             // 
             // ButtonPanel
             // 
@@ -162,8 +163,8 @@
             this.listSettingsBtn.TextAlign = System.Drawing.StringAlignment.Center;
             this.listSettingsBtn.TextLeftMargin = 2;
             this.listSettingsBtn.TextRightMargin = 2;
-            this.listSettingsBtn.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
             this.listSettingsBtn.Visible = false;
+            this.listSettingsBtn.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
             // 
             // insertActivitiesBtn
             // 
@@ -247,7 +248,7 @@
             this.analyzeMenuItem,
             this.advancedMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
-            this.listMenu.Size = new System.Drawing.Size(207, 158);
+            this.listMenu.Size = new System.Drawing.Size(207, 136);
             this.listMenu.Opening += new System.ComponentModel.CancelEventHandler(this.listMenu_Opening);
             // 
             // copyTableMenuItem

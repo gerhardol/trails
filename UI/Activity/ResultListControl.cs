@@ -2668,5 +2668,15 @@ namespace TrailsPlugin.UI.Activity {
         {
             selectWithUR();
         }
+
+        private void ChartTablePanel_SizeChanged(object sender, System.EventArgs e)
+        {
+            //Fix for Summary panel not shrinking
+            int h = this.chartTablePanel.Height - (int)this.chartTablePanel.RowStyles[0].Height;
+            if (h < this.SummaryPanel.Size.Height)
+            {
+                this.SummaryPanel.Size = new System.Drawing.Size(this.SummaryPanel.Size.Width, h);
+            }
+        }
     }
 }

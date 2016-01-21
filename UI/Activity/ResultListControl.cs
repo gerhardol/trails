@@ -253,7 +253,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #endif
             }
-            SummaryPanel_HandleCreated(this.SummaryPanel, null);
+            SummaryPanel_HandleCreated(this.summaryList, null);
         }
 
         public void ShowListToolBar()
@@ -2671,11 +2671,11 @@ namespace TrailsPlugin.UI.Activity {
 
         private void ChartTablePanel_SizeChanged(object sender, System.EventArgs e)
         {
-            //Fix for Summary panel not shrinking
+            //Fix for Summary List not shrinking (related to the table panel)
             int h = this.chartTablePanel.Height - (int)this.chartTablePanel.RowStyles[0].Height;
-            if (h < this.SummaryPanel.Size.Height)
+            if (h < this.summaryList.Size.Height)
             {
-                this.SummaryPanel.Size = new System.Drawing.Size(this.SummaryPanel.Size.Width, h);
+                this.summaryList.Size = new System.Drawing.Size(this.summaryList.Size.Width, h);
             }
         }
     }

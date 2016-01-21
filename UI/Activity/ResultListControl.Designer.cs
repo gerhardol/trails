@@ -30,7 +30,6 @@
             this.HelpFeaturesBtn = new ZoneFiveSoftware.Common.Visuals.Button();
             this.listSettingsBtn = new ZoneFiveSoftware.Common.Visuals.Button();
             this.insertActivitiesBtn = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.SummaryPanel = new System.Windows.Forms.Panel();
             this.summaryList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.listMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyTableMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +51,6 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.chartTablePanel.SuspendLayout();
             this.ButtonPanel.SuspendLayout();
-            this.SummaryPanel.SuspendLayout();
             this.listMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,7 +61,7 @@
             this.chartTablePanel.ColumnCount = 1;
             this.chartTablePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.chartTablePanel.Controls.Add(this.ButtonPanel, 0, 0);
-            this.chartTablePanel.Controls.Add(this.SummaryPanel, 0, 1);
+            this.chartTablePanel.Controls.Add(this.summaryList, 0, 1);
             this.chartTablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chartTablePanel.Location = new System.Drawing.Point(0, 0);
             this.chartTablePanel.Margin = new System.Windows.Forms.Padding(0);
@@ -187,19 +185,6 @@
             this.insertActivitiesBtn.TextLeftMargin = 2;
             this.insertActivitiesBtn.TextRightMargin = 2;
             this.insertActivitiesBtn.Click += new System.EventHandler(this.insertActivitiesBtn_Click);
-            // 
-            // SummaryPanel
-            // 
-            this.SummaryPanel.AutoSize = true;
-            this.SummaryPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.SummaryPanel.Controls.Add(this.summaryList);
-            this.SummaryPanel.Controls.Add(this.progressBar);
-            this.SummaryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SummaryPanel.Location = new System.Drawing.Point(0, 25);
-            this.SummaryPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.SummaryPanel.Name = "SummaryPanel";
-            this.SummaryPanel.Size = new System.Drawing.Size(400, 35);
-            this.SummaryPanel.TabIndex = 1;
             // 
             // summaryList
             // 
@@ -395,8 +380,6 @@
             this.chartTablePanel.ResumeLayout(false);
             this.chartTablePanel.PerformLayout();
             this.ButtonPanel.ResumeLayout(false);
-            this.SummaryPanel.ResumeLayout(false);
-            this.SummaryPanel.PerformLayout();
             this.listMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -411,7 +394,6 @@
         private ZoneFiveSoftware.Common.Visuals.Button HelpFeaturesBtn;
         private ZoneFiveSoftware.Common.Visuals.Button listSettingsBtn;
         private ZoneFiveSoftware.Common.Visuals.Button insertActivitiesBtn;
-        private System.Windows.Forms.Panel SummaryPanel;
         private ZoneFiveSoftware.Common.Visuals.TreeList summaryList;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.ContextMenuStrip listMenu;

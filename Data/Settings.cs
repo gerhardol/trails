@@ -24,6 +24,7 @@ using TrailsPlugin.UI.Activity;
 
 using TrailsPlugin.Utils;
 using ZoneFiveSoftware.Common.Data.Fitness;
+using System.Drawing;
 
 namespace TrailsPlugin.Data
 {
@@ -95,6 +96,10 @@ namespace TrailsPlugin.Data
         public static int GpsFilterMinimumTime; //not in xml
         public static float GpsFilterMinimumDistance; //not in xml
         public static int SelectSimilarModulu; //not in xml
+        public static Size PopupSize = new Size(600, 450); //not in xml
+        public static int PopupDivider = 100; //not in xml
+        public static bool PopupInActionMenu = true; //not in xml
+        public static bool PopupUpdatedBySelection = false; //not in xml
 
         public static void Init()
         {

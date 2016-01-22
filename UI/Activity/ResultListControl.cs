@@ -1620,7 +1620,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else if (e.KeyCode == Keys.F11)
             {
-                this.m_page.ResultList_Expand((e.Modifiers & Keys.Shift) == 0 && m_page.IsActivityPage);
+                this.m_page.ResultList_Expand((e.Modifiers & Keys.Shift) == 0 && !m_page.IsPopup);
             }
             else if (e.KeyCode == Keys.A)
             {

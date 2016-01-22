@@ -518,4 +518,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Chart_PaceInverted" xml:space="preserve">
     <value>Pace Inverted</value>
   </data>
+  <data name="trails" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\trails.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

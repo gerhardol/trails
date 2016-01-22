@@ -65,6 +65,10 @@ namespace TrailsPlugin.UI.Activity {
             {
                 t.SetControl(m_page, this);
             }
+            if (this.m_page.IsPopup)
+            {
+                this.btnExpand.Visible = false;
+            }
         }
 
         void InitControls()

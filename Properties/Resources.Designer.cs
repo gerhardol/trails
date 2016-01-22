@@ -410,6 +410,16 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap trails {
+            get {
+                object obj = ResourceManager.GetObject("trails", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Trail.
         /// </summary>
         internal static string UI_Activity_EditTrail_AddTrail {

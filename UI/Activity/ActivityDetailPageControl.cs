@@ -47,6 +47,8 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 #endif
 using TrailsPlugin.Data;
 using TrailsPlugin.Utils;
+using System.Drawing;
+using System.ComponentModel;
 
 namespace TrailsPlugin.UI.Activity {
     public partial class ActivityDetailPageControl : UserControl {
@@ -78,6 +80,8 @@ namespace TrailsPlugin.UI.Activity {
         private TrailPointsLayer m_layerMarked = null;
 #endif
 
+        public bool IsPopup;
+        private System.Windows.Forms.Form popupForm;
         private TrailResult m_currentSelectedMapResult = null;
         private IGPSLocation m_currentSelectedMapLocation = null;
         //Marked on Trails marking
@@ -90,17 +94,62 @@ namespace TrailsPlugin.UI.Activity {
         public ActivityDetailPageControl()
         {
 #else
+#endif
         public ActivityDetailPageControl(IDetailPage detailPage, IDailyActivityView view)
+            : this(detailPage, view, false)
+        { }
+
+        private ActivityDetailPageControl(IDetailPage detailPage, IDailyActivityView view, bool isPopUp)
         {
             m_DetailPage = detailPage;
             m_view = view;
-            m_layerPoints = TrailPointsLayer.InstancePoints(this, m_view);
-            m_layerRoutes = TrailPointsLayer.InstanceRoutes(this, m_view);
-            m_layerMarked = TrailPointsLayer.InstanceMarked(this, m_view);
-#endif
+            IsPopup = isPopUp;
+
+            m_layerPoints = TrailPointsLayer.InstancePoints(this, view);
+            m_layerRoutes = TrailPointsLayer.InstanceRoutes(this, view);
+            m_layerMarked = TrailPointsLayer.InstanceMarked(this, view);
 
             this.InitializeComponent();
+            if(this.IsPopup)
+            {
+               // this.LowerSplitContainer.SplitterDistance = Data.Settings.PopupDivider;
+            }
             InitControls();
+        }
+
+        public ActivityDetailPageControl(IDailyActivityView view)
+            : this(null, view, true)
+        {
+            if (Data.Settings.PopupUpdatedBySelection)
+            {
+                view.SelectionProvider.SelectedItemsChanged += new EventHandler(popupForm_OnViewSelectedItemsChanged);
+            }
+
+            //Theme and Culture must be set manually
+            this.ThemeChanged(m_visualTheme);
+            this.UICultureChanged(m_culture);
+            this.ShowDialog();
+            ShowPage("");
+        }
+
+        public void ShowDialog()
+        {
+            popupForm = new Form();
+            popupForm.Size = Data.Settings.PopupSize;
+            popupForm.Controls.Add(this);
+
+            popupForm.StartPosition = FormStartPosition.CenterScreen;
+            this.Size = new Size(Parent.Size.Width - 17, Parent.Size.Height - 38);
+            this.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                    | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
+            popupForm.Icon = Icon.FromHandle(Properties.Resources.trails.GetHicon());
+            popupForm.Text = Properties.Resources.PluginTitle;
+
+            popupForm.SizeChanged += new EventHandler(popupForm_SizeChanged);
+            popupForm.FormClosed += new FormClosedEventHandler(popupForm_FormClosed);
+            this.LowerSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(LowerSplitContainer_SplitterMoved);
+
+            popupForm.Show();
         }
 
         void InitControls()
@@ -674,7 +723,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void btnExpand_Click(object sender, EventArgs e)
         {
-            if (this.IsActivityPage)
+            if (!this.IsPopup)
             {
                 this.LowerSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
 #if !ST_2_1
@@ -711,7 +760,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void MultiCharts_Collapse(object sender, EventArgs e)
         {
-            if (this.IsActivityPage)
+            if (!this.IsPopup)
             {
 #if !ST_2_1
                 this.ExpandSplitContainer.Panel2.Controls.Remove(this.MultiCharts);
@@ -858,5 +907,34 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 #endif
+
+        private void LowerSplitContainer_SplitterMoved(object sender, System.Windows.Forms.SplitterEventArgs e)
+        {
+            if (this.IsPopup)
+            {
+                Data.Settings.PopupDivider = this.LowerSplitContainer.SplitterDistance;
+            }
+        }
+
+        private void popupForm_OnViewSelectedItemsChanged(object sender, EventArgs e)
+        {
+            this.Activities = CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
+        }
+
+        private void popupForm_SizeChanged(object sender, EventArgs e)
+        {
+            if (m_showPage)
+            {
+                if (popupForm != null)
+                {
+                    Data.Settings.PopupSize = popupForm.Size;
+                }
+            }
+        }
+
+        void popupForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.HidePage();
+        }
     }
 }

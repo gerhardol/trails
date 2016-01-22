@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
@@ -50,6 +50,8 @@
     <Compile Include="Data\SummaryTrailResult.cs" />
     <Compile Include="Data\EditTrailLabelProvider.cs" />
     <Compile Include="Export\CFTrailResult.cs" />
+    <Compile Include="UI\Edit\TrailsAction.cs" />
+    <Compile Include="UI\Edit\TrailsEdit.cs" />
     <Compile Include="Utils\LineChartUtil.cs" />
     <Compile Include="Data\TrailResultInfo.cs" />
     <Compile Include="Data\TrailsActivityInfoOptions.cs" />

@@ -110,10 +110,6 @@ namespace TrailsPlugin.UI.Activity {
             m_layerMarked = TrailPointsLayer.InstanceMarked(this, view);
 
             this.InitializeComponent();
-            if(this.IsPopup)
-            {
-               // this.LowerSplitContainer.SplitterDistance = Data.Settings.PopupDivider;
-            }
             InitControls();
         }
 
@@ -907,6 +903,11 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 #endif
+
+        public void PopupAdjustSize()
+        {
+            this.LowerSplitContainer.SplitterDistance = Data.Settings.PopupDivider;
+        }
 
         private void LowerSplitContainer_SplitterMoved(object sender, System.Windows.Forms.SplitterEventArgs e)
         {

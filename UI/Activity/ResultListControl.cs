@@ -268,31 +268,38 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (m_page != null)
             {
-                //Set size, to not waste chart
-                int minRows = 2;
-                const int maxRows = 8;
-                int listRows = minRows;
-                if (this.summaryList.RowData != null)
+                if (m_page.IsPopup)
                 {
-                    listRows = ((IList<TrailResultWrapper>)this.summaryList.RowData).Count;
+                    m_page.PopupAdjustSize();
                 }
-                int setRows = Math.Max(minRows, listRows);
-                setRows = Math.Min(maxRows, setRows);
-                int displayRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
-                if (this.summaryList.HorizontalScroll.Enabled)
+                else
                 {
-                    //About one row hidden
-                    displayRows--;
-                    setRows++;
-                }
+                    //Set size, to not waste chart
+                    int minRows = 2;
+                    const int maxRows = 8;
+                    int listRows = minRows;
+                    if (this.summaryList.RowData != null)
+                    {
+                        listRows = ((IList<TrailResultWrapper>)this.summaryList.RowData).Count;
+                    }
+                    int setRows = Math.Max(minRows, listRows);
+                    setRows = Math.Min(maxRows, setRows);
+                    int displayRows = (m_page.SetResultListHeight - 16 - this.summaryList.HeaderRowHeight) / cResultListHeight;
+                    if (this.summaryList.HorizontalScroll.Enabled)
+                    {
+                        //About one row hidden
+                        displayRows--;
+                        setRows++;
+                    }
 
-                //Change size if much too small/big only
-                if (//listRows + 1 < displayRows && setRows < displayRows || //wasted space //disabled decreasing
-                    listRows > displayRows && displayRows <= maxRows //Too small, increase
-                    )
-                {
-                    m_page.SetResultListHeight = this.summaryList.HeaderRowHeight + 16 +
-                        cResultListHeight * setRows;
+                    //Change size if much too small/big only
+                    if (//listRows + 1 < displayRows && setRows < displayRows || //wasted space //disabled decreasing
+                        listRows > displayRows && displayRows <= maxRows //Too small, increase
+                        )
+                    {
+                        m_page.SetResultListHeight = this.summaryList.HeaderRowHeight + 16 +
+                            cResultListHeight * setRows;
+                    }
                 }
             }
         }

@@ -86,6 +86,10 @@ namespace TrailsPlugin.Data
         private static bool m_ShowTrailPointsOnMap;
         private static bool m_ShowListToolBar;
         private static byte m_RouteLineAlpha;
+        private static Size m_PopupSize = new Size(600, 450);
+        private static int m_PopupDivider = 100;
+        private static bool m_PopupInActionMenu = true;
+        private static bool m_PopupUpdatedBySelection = false;
 
         //properties not in xml can be handled as variables, no write trigger needed
         public static bool OverlappingResultUseTimeOfDayDiff; //not in xml
@@ -96,10 +100,6 @@ namespace TrailsPlugin.Data
         public static int GpsFilterMinimumTime; //not in xml
         public static float GpsFilterMinimumDistance; //not in xml
         public static int SelectSimilarModulu; //not in xml
-        public static Size PopupSize = new Size(600, 450); //not in xml
-        public static int PopupDivider = 100; //not in xml
-        public static bool PopupInActionMenu = true; //not in xml
-        public static bool PopupUpdatedBySelection = false; //not in xml
 
         public static void Init()
         {
@@ -173,6 +173,11 @@ namespace TrailsPlugin.Data
             GpsFilterMinimumTime = 2;
             GpsFilterMinimumDistance = 10f;
             SelectSimilarModulu = 0;
+
+            m_PopupSize = new Size(600, 450);
+            m_PopupDivider = 100;
+            m_PopupInActionMenu = true;
+            m_PopupUpdatedBySelection = false;
         }
 
         private static bool isHandlingXml = false;
@@ -883,6 +888,46 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public static Size PopupSize
+        {
+            get { return m_PopupSize; }
+            set
+            {
+                m_PopupSize = value;
+                WriteExtensionData();
+            }
+        }
+
+        public static int PopupDivider
+        {
+            get { return m_PopupDivider; }
+            set
+            {
+                m_PopupDivider = value;
+                WriteExtensionData();
+            }
+        }
+
+        public static bool PopupInActionMenu
+        {
+            get { return m_PopupInActionMenu; }
+            set
+            {
+                m_PopupInActionMenu = value;
+                WriteExtensionData();
+            }
+        }
+
+        public static bool PopupUpdatedBySelection
+        {
+            get { return m_PopupUpdatedBySelection; }
+            set
+            {
+                m_PopupUpdatedBySelection = value;
+                WriteExtensionData();
+            }
+        }
+
         /******************************************************/
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
@@ -1024,7 +1069,24 @@ namespace TrailsPlugin.Data
                 attr = pluginNode.GetAttribute(xmlTags.sMaxChartResults);
                 if (attr.Length > 0) { m_MaxChartResults = XmlConvert.ToInt32(attr); }
 
-                attr = pluginNode.GetAttribute(xmlTags.sColumns);
+                int popupWidth = 0;
+                int popupHeight = 0;
+                attr = pluginNode.GetAttribute(xmlTags.sPopupSizeWidth);
+                if (attr.Length > 0) { popupWidth = XmlConvert.ToInt16(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sPopupSizeHeight);
+                if (attr.Length > 0) { popupHeight = XmlConvert.ToInt16(attr); }
+                if (popupWidth > 0 && popupHeight > 0)
+                {
+                    m_PopupSize = new Size(popupWidth, popupHeight);
+                }
+                attr = pluginNode.GetAttribute(xmlTags.sPopupDivider);
+                if (attr.Length > 0) { m_PopupDivider = XmlConvert.ToInt32(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sPopupInActionMenu);
+                if (attr.Length > 0) { m_PopupInActionMenu = XmlConvert.ToBoolean(attr); }
+                attr = pluginNode.GetAttribute(xmlTags.sPopupUpdatedBySelection);
+                if (attr.Length > 0) { m_PopupUpdatedBySelection = XmlConvert.ToBoolean(attr); }
+
+                 attr = pluginNode.GetAttribute(xmlTags.sColumns);
                 if (attr.Length > 0)
                 {
                     m_activityPageColumns.Clear();
@@ -1153,6 +1215,12 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
             pluginNode.SetAttribute(xmlTags.sMaxChartResults, XmlConvert.ToString(m_MaxChartResults));
 
+            pluginNode.SetAttribute(xmlTags.sPopupSizeWidth, XmlConvert.ToString(m_PopupSize.Width));
+            pluginNode.SetAttribute(xmlTags.sPopupSizeHeight, XmlConvert.ToString(m_PopupSize.Height));
+            pluginNode.SetAttribute(xmlTags.sPopupDivider, XmlConvert.ToString(m_PopupDivider));
+            pluginNode.SetAttribute(xmlTags.sPopupInActionMenu, XmlConvert.ToString(m_PopupInActionMenu));
+            pluginNode.SetAttribute(xmlTags.sPopupUpdatedBySelection, XmlConvert.ToString(m_PopupUpdatedBySelection));
+
             colText = null;
             TrailResultColumns cols = new TrailResultColumns(null, 1, true, true);
             foreach (String column in m_activityPageColumns)
@@ -1242,6 +1310,12 @@ namespace TrailsPlugin.Data
             public const string sSaveChartImagePath = "sSaveChartImagePath";
             public const string sShowTrailPointsOnChart = "sShowTrailPointsOnChart";
             public const string sShowTrailPointsOnMap = "sShowTrailPointsOnMap";
+
+            public const string sPopupSizeWidth = "sPopupSizeWidth";
+            public const string sPopupSizeHeight = "sPopupSizeHeight";
+            public const string sPopupDivider = "sPopupDivider";
+            public const string sPopupInActionMenu = "sPopupInActionMenu";
+            public const string sPopupUpdatedBySelection = "sPopupUpdatedBySelection";
 
             public const string sColumns = "sColumns";
         }

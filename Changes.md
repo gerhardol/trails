@@ -2,6 +2,12 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
+2.0.3 2016-01-23 (GitHub)
+  * Popup form from Analyze menu for Activity Reports.
+  * Result list shortcut Shift-F11 to expand only result List
+  * Workaround for summary list not displaying scrollbar when shrinking
+  
+
 2.0.2 2016-01-01 (Plugin Catalog)
   * Changed version numbering after source repository was moved to GitHub.
   * Trails (not settings) are stored in the logbook instead of preferences. This means that the logbook must be stored after upgrading to save the trails. When detecting old preferences, the settings and trails are backed up to a separate file. It is possible to explicitly save/restore settings/trails to a backup file with [Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list) and [Shift-Alt-x result list shortcut](http://github.com/gerhardol/trails/wiki/Features#result-list).

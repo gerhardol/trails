@@ -302,6 +302,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+            ChartTablePanel_SizeChanged(null, null);
         }
 
         private IList<TrailResultWrapper> m_lastSelectedItems = null;
@@ -1616,19 +1617,23 @@ namespace TrailsPlugin.UI.Activity {
                 int c = this.excludeSelectedResults(e.Modifiers == Keys.Shift);
                 ShowToolTip(this.excludeResultsMenuItem + ": " + c);
             }
+
             else if (e.KeyCode == Keys.Space)
             {
                 ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits);
                 this.selectSimilarSplits();
             }
+
             else if (e.KeyCode == Keys.Escape)
             {
                 this.m_page.ResultList_Collapse();
             }
+
             else if (e.KeyCode == Keys.F11)
             {
                 this.m_page.ResultList_Expand((e.Modifiers & Keys.Shift) == 0 && !m_page.IsPopup);
             }
+
             else if (e.KeyCode == Keys.A)
             {
                 if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
@@ -1717,6 +1722,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshData(true);
                 }
             }
+
             else if (e.KeyCode == Keys.B)
             {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))
@@ -1726,6 +1732,7 @@ namespace TrailsPlugin.UI.Activity {
                     FixDistanceTrack();
                 }
             }
+
             else if (e.KeyCode == Keys.C)
             {
                 if (e.Modifiers == Keys.Control)
@@ -1762,6 +1769,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.markCommonStretches();
                 }
             }
+
             else if (e.KeyCode == Keys.D)
             {
                 if (e.Modifiers == Keys.Control)
@@ -1828,6 +1836,7 @@ namespace TrailsPlugin.UI.Activity {
                         Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity);
                 }
             }
+
             else if (e.KeyCode == Keys.E)
             {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))
@@ -1863,6 +1872,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshChart();
                 }
             }
+
             else if (e.KeyCode == Keys.F)
             {
                 //Unofficial shortcuts
@@ -1894,6 +1904,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshChart();
                 }
             }
+
             else if (e.KeyCode == Keys.G)
             {
                 //Unofficial shortcuts
@@ -1985,6 +1996,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.SelectedResults = m_PersistentSelectionResults;
                 }
             }
+
             else if (e.KeyCode == Keys.H)
             {
                 //Unofficial
@@ -2002,6 +2014,7 @@ namespace TrailsPlugin.UI.Activity {
                 ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits + " (" +
                     Data.Settings.SelectSimilarModulu + ")");
             }
+
             else if (e.KeyCode == Keys.I)
             {
                 InsertCategoryTypes c = InsertCategoryTypes.CurrentCategory;
@@ -2030,6 +2043,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshChart();
                 }
             }
+
             else if (e.KeyCode == Keys.L)
             {
                 if ((e.Modifiers & Keys.Control) != 0)
@@ -2047,6 +2061,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.m_page.RefreshRoute(false);
                 }
             }
+
             else if (e.KeyCode == Keys.N)
             {
                 if (e.Modifiers == Keys.Shift)
@@ -2061,6 +2076,7 @@ namespace TrailsPlugin.UI.Activity {
                     Data.Settings.NonReqIsPause);
                 this.m_page.RefreshData(true);
             }
+
             else if (e.KeyCode == Keys.O)
             {
                 if (e.Modifiers == Keys.Control)
@@ -2078,6 +2094,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.Refresh();
                 //Only in table, no need to refresh
             }
+
             else if (e.KeyCode == Keys.P)
             {
                 //In context menu, not documented, to be removed?
@@ -2090,6 +2107,7 @@ namespace TrailsPlugin.UI.Activity {
                     this.HighScorePopup();
                 }
             }
+
             else if (e.KeyCode == Keys.Q)
             {
                 if (e.Modifiers == (Keys.Shift | Keys.Control))
@@ -2138,6 +2156,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 this.m_page.RefreshData(true);
             }
+
             else if (e.KeyCode == Keys.R || e.KeyCode == Keys.F5)
             {
                 //'r' or f5 can beused to recalc when an activity is changed
@@ -2184,6 +2203,7 @@ namespace TrailsPlugin.UI.Activity {
                     ShowToolTip((DateTime.Now - startTime).ToString());
                 }
             }
+
             else if (e.KeyCode == Keys.S)
             {
                 if (e.Modifiers == Keys.Control)
@@ -2213,6 +2233,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+
             else if (e.KeyCode == Keys.T)
             {
                 if (e.Modifiers == Keys.Shift)
@@ -2260,11 +2281,13 @@ namespace TrailsPlugin.UI.Activity {
                     RefreshSummary();
                 }
             }
+
             else if (e.KeyCode == Keys.U)
             {
                 int res = this.selectWithUR();
                 ShowToolTip(string.Format(Properties.Resources.UI_Activity_List_URSelect, res));
             }
+            
             else if (e.KeyCode == Keys.X)
             {
                 if (e.Modifiers == Keys.Alt || e.Modifiers == (Keys.Alt | Keys.Shift))
@@ -2309,6 +2332,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
+
             else if (e.KeyCode == Keys.Z)
             {
                 if (e.Modifiers == Keys.Control)

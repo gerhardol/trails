@@ -917,7 +917,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private void popupForm_OnViewSelectedItemsChanged(object sender, EventArgs e)
+        internal void popupForm_OnViewSelectedItemsChanged(object sender, EventArgs e)
         {
             this.Activities = CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }

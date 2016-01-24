@@ -2097,8 +2097,24 @@ namespace TrailsPlugin.UI.Activity {
 
             else if (e.KeyCode == Keys.P)
             {
+                //Unofficial
+                if (e.Modifiers == Keys.Control)
+                {
+                    Data.Settings.PopupUpdatedBySelection = !Data.Settings.PopupUpdatedBySelection;
+                    if (this.m_page.IsPopup)
+                    {
+                        if (Data.Settings.PopupUpdatedBySelection)
+                        {
+                            m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(m_page.popupForm_OnViewSelectedItemsChanged);
+                        }
+                        else
+                        {
+                            m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(m_page.popupForm_OnViewSelectedItemsChanged);
+                        }
+                    }
+                }
                 //In context menu, not documented, to be removed?
-                if (e.Modifiers == Keys.Shift)
+                else if (e.Modifiers == Keys.Shift)
                 {
                     this.PerformancePredictorPopup();
                 }

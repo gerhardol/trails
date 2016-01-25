@@ -101,7 +101,7 @@ namespace TrailsPlugin.Data
         public static float GpsFilterMinimumDistance; //not in xml
         public static int SelectSimilarModulu; //not in xml
 
-        public static void Init()
+        static Settings()
         {
             defaults();
         }

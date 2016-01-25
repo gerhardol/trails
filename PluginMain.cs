@@ -88,7 +88,6 @@ namespace TrailsPlugin {
             }
             else
             {
-                Data.Settings.Init();
                 foreach (XmlElement node in pluginNode.ChildNodes)
                 {
                     //Workaround, no hit with SelectNodes(xmlTags.sSettings))

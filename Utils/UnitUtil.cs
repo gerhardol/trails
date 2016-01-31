@@ -24,7 +24,6 @@ using ZoneFiveSoftware.Common.Data.Measurement;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
-using GpsRunningPlugin;
 
 namespace GpsRunningPlugin.Util
 {
@@ -41,6 +40,20 @@ namespace GpsRunningPlugin.Util
 #else // TRAILSPLUGIN
             return TrailsPlugin.Plugin.GetApplication();
 #endif
+        }
+
+        private static ISystemPreferences SystemPreferences
+        {
+            get
+            {
+                IApplication app = GetApplication();
+
+                if (app == null)
+                {
+                    return null;
+                }
+                return app.SystemPreferences;
+            }
         }
 
         //Convert to/from internal format to display format
@@ -278,7 +291,8 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class Energy
         {
-            private static ZoneFiveSoftware.Common.Data.Measurement.Energy.Units Unit { get { return GetApplication().SystemPreferences.EnergyUnits; } }
+            private static ZoneFiveSoftware.Common.Data.Measurement.Energy.Units Unit
+            { get { return SystemPreferences == null ? ZoneFiveSoftware.Common.Data.Measurement.Energy.Units.Kilocalorie : SystemPreferences.EnergyUnits; } }
             public static int DefaultDecimalPrecision { get { return 0; } }
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
 
@@ -341,7 +355,8 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class Temperature
         {
-            private static ZoneFiveSoftware.Common.Data.Measurement.Temperature.Units Unit { get { return GetApplication().SystemPreferences.TemperatureUnits; } }
+            private static ZoneFiveSoftware.Common.Data.Measurement.Temperature.Units Unit
+            { get { return SystemPreferences == null ? ZoneFiveSoftware.Common.Data.Measurement.Temperature.Units.Celsius : SystemPreferences.TemperatureUnits; } }
             public static int DefaultDecimalPrecision { get { return 1; } }
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
 
@@ -407,7 +422,8 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class Weight
         {
-            public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units Unit { get { return GetApplication().SystemPreferences.WeightUnits; } }
+            public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units Unit
+            { get { return SystemPreferences == null ? ZoneFiveSoftware.Common.Data.Measurement.Weight.Units.Kilogram : SystemPreferences.WeightUnits; } }
             public static int DefaultDecimalPrecision { get { return 1; } }
             private static string DefFmt { get { return "F" + DefaultDecimalPrecision; } }
             public static ZoneFiveSoftware.Common.Data.Measurement.Weight.Units SmallUnit(ZoneFiveSoftware.Common.Data.Measurement.Weight.Units unit)
@@ -677,7 +693,8 @@ namespace GpsRunningPlugin.Util
         /*********************************************************************************/
         public static class Elevation
         {
-            private static Length.Units Unit { get { return GetApplication().SystemPreferences.ElevationUnits; } }
+            private static Length.Units Unit
+            { get { return SystemPreferences == null ? ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Meter : SystemPreferences.ElevationUnits; } }
             public static int DefaultDecimalPrecision { get { return Length.DefaultDecimalPrecision(Unit); } }
             private static string DefFmt { get { return defFmt(Unit); } }
             private static string defFmt(Length.Units unit) { return "F" + Length.DefaultDecimalPrecision(unit); }
@@ -814,7 +831,7 @@ namespace GpsRunningPlugin.Util
         public static class Distance
         {
             //Some lists uses unit when storing user entered data, why this is public
-            public static Length.Units Unit { get { return GetApplication().SystemPreferences.DistanceUnits; } }
+            public static Length.Units Unit { get { return getDistUnit(); } }
             public static int DefaultDecimalPrecision { get { return Length.DefaultDecimalPrecision(Unit); } }
             private static string DefFmt { get { return defFmt(Unit); } }
             private static string defFmt(Length.Units unit) { return "F" + Length.DefaultDecimalPrecision(unit); }
@@ -990,9 +1007,13 @@ namespace GpsRunningPlugin.Util
         //Limit distance to units where we have pace/speed labels
         //(meter is available for distance as well, but no labels are available)
 
+        private static Length.Units getDistUnit()
+        {
+            return SystemPreferences == null ? ZoneFiveSoftware.Common.Data.Measurement.Length.Units.Kilometer : SystemPreferences.DistanceUnits;
+        }
         private static Length.Units getDistUnit(bool isPace)
         {
-            Length.Units distUnit = GetApplication().SystemPreferences.DistanceUnits;
+            Length.Units distUnit = getDistUnit();
             //Add all known statute length units, in case they are added to ST
             if (distUnit.Equals(Length.Units.Mile) || distUnit.Equals(Length.Units.Inch) ||
                 distUnit.Equals(Length.Units.Foot) || distUnit.Equals(Length.Units.Yard))
@@ -1023,7 +1044,7 @@ namespace GpsRunningPlugin.Util
                 }
                 else
                 {
-                    du = new Length(1, GetApplication().SystemPreferences.DistanceUnits);
+                    du = new Length(1, getDistUnit());
                 }
                 return du;
             }
@@ -1156,7 +1177,7 @@ namespace GpsRunningPlugin.Util
                 }
                 else
                 {
-                    du = new Length(1, GetApplication().SystemPreferences.DistanceUnits);
+                    du = new Length(1, getDistUnit());
                 }
                 return du;
             }
@@ -1341,7 +1362,7 @@ namespace GpsRunningPlugin.Util
                 }
                 else
                 {
-                    du = GetApplication().SystemPreferences.DistanceUnits;
+                    du = getDistUnit();
                 }
                 return du;
             }

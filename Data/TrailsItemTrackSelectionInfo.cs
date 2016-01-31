@@ -189,7 +189,14 @@ namespace TrailsPlugin.Data
                 {
                     if (activities == null)
                     {
-                        activities = UnitUtil.GetApplication().Logbook.Activities;
+                        if (UnitUtil.GetApplication() == null || UnitUtil.GetApplication().Logbook == null)
+                        {
+                            activities = new List<IActivity>();
+                        }
+                        else
+                        {
+                            activities = UnitUtil.GetApplication().Logbook.Activities;
+                        }
                     }
                     foreach (IActivity a in activities)
                     {

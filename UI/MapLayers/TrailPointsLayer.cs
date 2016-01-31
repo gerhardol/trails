@@ -66,15 +66,18 @@ namespace TrailsPlugin.UI.MapLayers
         public TrailPointsLayer(IRouteControlLayerProvider provider, IRouteControl control, int zorder, bool mouseEvents)
             : base(provider, control, zorder, mouseEvents)
         {
-            Guid currentView = UnitUtil.GetApplication().ActiveView.Id;
-            string key = currentView.ToString()+zorder;
-            if (m_layers.ContainsKey(key))
+            if (UnitUtil.GetApplication() != null && UnitUtil.GetApplication().ActiveView != null)
             {
-                m_layers[key].m_extraMapLayer = this;
-            }
-            else
-            {
-                m_layers[key] = this;
+                Guid currentView = UnitUtil.GetApplication().ActiveView.Id;
+                string key = currentView.ToString() + zorder;
+                if (m_layers.ContainsKey(key))
+                {
+                    m_layers[key].m_extraMapLayer = this;
+                }
+                else
+                {
+                    m_layers[key] = this;
+                }
             }
         }
 

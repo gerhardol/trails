@@ -403,13 +403,16 @@ namespace TrailsPlugin.Data {
             //Reset every refresh
             m_custColumnDict = new Dictionary<string, ICustomDataFieldDefinition>();
 
-            foreach (ICustomDataFieldDefinition custDataDef in TrailsPlugin.Plugin.GetApplication().Logbook.CustomDataFieldDefinitions)
+            if (Plugin.GetApplication() != null && Plugin.GetApplication().Logbook != null)
             {
-                if (custDataDef.ObjectType.Type.Equals(typeof(IActivity)))
+                foreach (ICustomDataFieldDefinition custDataDef in Plugin.GetApplication().Logbook.CustomDataFieldDefinitions)
                 {
-                    IListColumnDefinition cust = new ListColumnDefinition(custDataDef.Id.ToString(), custDataDef.Name, Properties.Resources.List_CustomFields + " - " + custDataDef.GroupAggregation.ToString(), 70, StringAlignment.Far);
-                    m_columnDefs.Add(cust);
-                    m_custColumnDict[custDataDef.Id.ToString()] = custDataDef;
+                    if (custDataDef.ObjectType.Type.Equals(typeof(IActivity)))
+                    {
+                        IListColumnDefinition cust = new ListColumnDefinition(custDataDef.Id.ToString(), custDataDef.Name, Properties.Resources.List_CustomFields + " - " + custDataDef.GroupAggregation.ToString(), 70, StringAlignment.Far);
+                        m_columnDefs.Add(cust);
+                        m_custColumnDict[custDataDef.Id.ToString()] = custDataDef;
+                    }
                 }
             }
 

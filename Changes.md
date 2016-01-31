@@ -2,11 +2,12 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-2.0.4 2016-01-25 (GitHub)
+2.0.5 2016-01-30 (GitHub)
   * Popup form from Analyze menu for Activity Reports.
   * Result list shortcut Shift-F11 to expand only result List
   * Workaround for summary list not displaying scrollbar when shrinking
   * Workaround for an exception in (unexplained) update scenario.
+  * Trails could cause exception if logbook was not available when SportTracks was closing
   
 
 2.0.2 2016-01-01 (Plugin Catalog)

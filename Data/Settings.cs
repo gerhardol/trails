@@ -20,7 +20,6 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
-using TrailsPlugin.UI.Activity;
 
 using TrailsPlugin.Utils;
 using ZoneFiveSoftware.Common.Data.Fitness;
@@ -1222,11 +1221,9 @@ namespace TrailsPlugin.Data
             pluginNode.SetAttribute(xmlTags.sPopupUpdatedBySelection, XmlConvert.ToString(m_PopupUpdatedBySelection));
 
             colText = null;
-            TrailResultColumns cols = new TrailResultColumns(null, 1, true, true);
             foreach (String column in m_activityPageColumns)
             {
-                ZoneFiveSoftware.Common.Visuals.IListColumnDefinition columnDef = cols.ColumnDef(column);
-                if (columnDef != null)
+                if (TrailResultColumns.IsColumn(column))
                 {
                     if (colText == null) { colText = column; }
                     else { colText += ";" + column; }
@@ -1234,6 +1231,10 @@ namespace TrailsPlugin.Data
                     {
                         colText += ":" + ActivityPageColumnsSizeGet(column);
                     }
+                }
+                else
+                {
+                    System.Diagnostics.Debug.Assert(false, string.Format("Ignoring unknown column {0}", column));
                 }
             }
             pluginNode.SetAttribute(xmlTags.sColumns, colText);

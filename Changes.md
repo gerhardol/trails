@@ -2,7 +2,7 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-2.0.5 2016-01-30 (GitHub)
+2.0.6 2016-02-02 (Plugin Catalog)
   * Popup form from Analyze menu for Activity Reports.
   * Result list shortcut Shift-F11 to expand only result List
   * Workaround for summary list not displaying scrollbar when shrinking

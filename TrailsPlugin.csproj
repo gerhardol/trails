@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}</ProjectGuid>
@@ -139,7 +139,6 @@
       <DependentUpon>ActivityDetailPageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\ColorUtil.cs" />
-    <Compile Include="Utils\Dialog.cs" />
     <Compile Include="Utils\GPS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\TrackUtil.cs" />

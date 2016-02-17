@@ -317,7 +317,7 @@ namespace TrailsPlugin.UI.Activity
         {
             if (string.IsNullOrEmpty(this.TrailName.Text))
             {
-                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
+                MessageDialog.Show(Properties.Resources.UI_Activity_EditTrail_TrailNameReqiured);
                 return;
             }
 
@@ -325,13 +325,13 @@ namespace TrailsPlugin.UI.Activity
             if (trail != null && (this.m_addMode ||
                 !this.m_addMode && trail.Id != this.m_TrailToEdit.Id))
             {
-                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
+                MessageDialog.Show(Properties.Resources.UI_Activity_EditTrail_UniqueTrailNameRequired);
                 return;
             }
             if (this.m_addMode && !Controller.TrailController.Instance.AddTrail(this.m_TrailToEdit, null) ||
                 !this.m_addMode && !Controller.TrailController.Instance.UpdateTrail(this.m_TrailToEdit, null))
             {
-                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_UpdateFailed);
+                MessageDialog.Show(Properties.Resources.UI_Activity_EditTrail_UpdateFailed);
                 return;
             }
             this.DialogResult = DialogResult.OK;
@@ -352,7 +352,7 @@ namespace TrailsPlugin.UI.Activity
 
         void btnExport_Click(object sender, System.EventArgs e)
         {
-            if (MessageBox.Show(string.Format(Properties.Resources.UI_Activity_EditTrail_Export, CommonResources.Text.ActionOk, CommonResources.Text.ActionCancel),
+            if (MessageDialog.Show(string.Format(Properties.Resources.UI_Activity_EditTrail_Export, CommonResources.Text.ActionOk, CommonResources.Text.ActionCancel),
                 "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 DateTime startTime = DateTime.UtcNow;
@@ -600,7 +600,7 @@ namespace TrailsPlugin.UI.Activity
             }
             else
             {
-                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
+                MessageDialog.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
             }
             this.presentRadius();
             //Refresh on map
@@ -858,7 +858,7 @@ namespace TrailsPlugin.UI.Activity
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_EditRow);
+            MessageDialog.Show(Properties.Resources.UI_Activity_EditTrail_EditRow);
         }
 
         private void btnUp_Click(object sender, EventArgs e)

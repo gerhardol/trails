@@ -1223,7 +1223,7 @@ namespace TrailsPlugin.UI.Activity {
 
         private void setMetaImportSource(IActivity activity)
         {
-            //Cannot use ST controls for most part here, similar in setAdjustSplitTimesPopup
+            //Cannot use MessageDialog for most part here, similar in setAdjustSplitTimesPopup
             System.Windows.Forms.Form p = new System.Windows.Forms.Form();
             p.Size = new System.Drawing.Size(410, 105);
             ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
@@ -2343,7 +2343,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                            MessageDialog.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                         }
                     }
                 }

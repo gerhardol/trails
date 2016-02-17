@@ -142,7 +142,7 @@ namespace TrailsPlugin.UI.Settings
             }
             else
             {
-                MessageBox.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
+                MessageDialog.Show(Properties.Resources.UI_Activity_EditTrail_RadiusNumeric);
             }
             this.presentSettings();
         }
@@ -191,7 +191,7 @@ namespace TrailsPlugin.UI.Settings
             }
             else
             {
-                MessageBox.Show("Incorrect distance format"); //TODO: Translate
+                MessageDialog.Show("Incorrect distance format"); //TODO: Translate
             }
             presentSettings();
         }
@@ -218,7 +218,7 @@ namespace TrailsPlugin.UI.Settings
             }
             else
             {
-                MessageBox.Show("Incorrect percent format"); //TODO: Translate
+                MessageDialog.Show("Incorrect percent format"); //TODO: Translate
             }
             presentSettings();
         }
@@ -251,7 +251,7 @@ namespace TrailsPlugin.UI.Settings
             }
             else
             {
-                MessageBox.Show("Incorrect time format"); //TODO: Translate
+                MessageDialog.Show("Incorrect time format"); //TODO: Translate
             }
             presentSettings();
         }

@@ -266,7 +266,7 @@ namespace TrailsPlugin.UI.Activity
 #if ST_2_1
                 string message = String.Format(Properties.Resources.UI_Activity_Page_SelectPointsError_ST2, 
                    Properties.Resources.Trail_Reference_Name);
-                MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageDialog.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #else
                 //Add a copy of the current activity
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, true, Controller.TrailController.Instance.ReferenceTrailResult);

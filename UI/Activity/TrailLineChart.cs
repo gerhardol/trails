@@ -1701,7 +1701,7 @@ namespace TrailsPlugin.UI.Activity {
                             //}
                             String s = "Adjust starttime on activity " + t1.ToLocalTime().ToString() + " to " + t2.ToLocalTime().ToString() + "?";
                             DialogResult popRes = MessageDialog.Show(string.Format(s,
-                            CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
+                               CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
                                "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                             if (popRes == DialogResult.Yes)
                             {

@@ -408,10 +408,10 @@ namespace TrailsPlugin.UI.Activity
             this.TrailName.Focus();
         }
 
-        //protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
-        //    base.OnPaint(e);
-        //    Utils.Dialog.DrawButtonRowBackground(e.Graphics, ClientRectangle, m_visualTheme);
-        //}
+        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e) {
+            base.OnPaint(e);
+            ZoneFiveSoftware.Common.Visuals.MessageDialog.DrawButtonRowBackground(e.Graphics, this, m_visualTheme);
+        }
 
         private void EditTrail_Shown(object sender, System.EventArgs e)
         {

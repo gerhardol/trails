@@ -37,7 +37,6 @@
             this.numericSortPrio = new System.Windows.Forms.NumericUpDown();
             this.btnOk = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnCancel = new ZoneFiveSoftware.Common.Visuals.Button();
-            this.Panel = new System.Windows.Forms.TableLayoutPanel();
             this.lblTrail = new System.Windows.Forms.Label();
             this.EList = new ZoneFiveSoftware.Common.Visuals.TreeList();
             this.editBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
@@ -52,12 +51,13 @@
             this.btnUp = new ZoneFiveSoftware.Common.Visuals.Button();
             this.btnDown = new ZoneFiveSoftware.Common.Visuals.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericSortPrio)).BeginInit();
-            this.Panel.SuspendLayout();
             this.EList.SuspendLayout();
             this.SuspendLayout();
             // 
             // chkTemporaryTrail
             // 
+            this.chkTemporaryTrail.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.chkTemporaryTrail.AutoSize = true;
             this.chkTemporaryTrail.Checked = true;
             this.chkTemporaryTrail.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -70,6 +70,8 @@
             // 
             // chkTwoWay
             // 
+            this.chkTwoWay.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.chkTwoWay.AutoSize = true;
             this.chkTwoWay.Checked = true;
             this.chkTwoWay.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -82,6 +84,8 @@
             // 
             // chkName
             // 
+            this.chkName.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.chkName.AutoSize = true;
             this.chkName.Checked = true;
             this.chkName.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -94,6 +98,8 @@
             // 
             // chkCompleteActivity
             // 
+            this.chkCompleteActivity.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.chkCompleteActivity.AutoSize = true;
             this.chkCompleteActivity.Checked = true;
             this.chkCompleteActivity.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -106,6 +112,8 @@
             // 
             // chkURFilter
             // 
+            this.chkURFilter.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.chkURFilter.AutoSize = true;
             this.chkURFilter.Checked = true;
             this.chkURFilter.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -118,13 +126,15 @@
             // 
             // btnCopy
             // 
+            this.btnCopy.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.btnCopy.BackColor = System.Drawing.Color.Transparent;
             this.btnCopy.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnCopy.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnCopy.CenterImage = null;
             this.btnCopy.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnCopy.HyperlinkStyle = false;
-            //this.btnCopy.ImageMargin = 1;
+            this.btnCopy.ImageMargin = 2;
             this.btnCopy.LeftImage = null;
             this.btnCopy.Location = new System.Drawing.Point(18, 297);
             this.btnCopy.Name = "btnCopy";
@@ -141,13 +151,15 @@
             // 
             // btnExport
             // 
+            this.btnExport.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.btnExport.BackColor = System.Drawing.Color.Transparent;
             this.btnExport.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnExport.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnExport.CenterImage = null;
             this.btnExport.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnExport.HyperlinkStyle = false;
-            //this.btnExport.ImageMargin = 1;
+            this.btnExport.ImageMargin = 2;
             this.btnExport.LeftImage = null;
             this.btnExport.Location = new System.Drawing.Point(52, 297);
             this.btnExport.Name = "btnExport";
@@ -164,13 +176,15 @@
             // 
             // btnRefresh
             // 
+            this.btnRefresh.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.btnRefresh.BackColor = System.Drawing.Color.Transparent;
             this.btnRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnRefresh.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnRefresh.CenterImage = null;
             this.btnRefresh.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnRefresh.HyperlinkStyle = false;
-            //this.btnRefresh.ImageMargin = 1;
+            this.btnRefresh.ImageMargin = 2;
             this.btnRefresh.LeftImage = null;
             this.btnRefresh.Location = new System.Drawing.Point(86, 297);
             this.btnRefresh.Name = "btnRefresh";
@@ -187,13 +201,15 @@
             // 
             // btnReverse
             // 
+            this.btnReverse.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.btnReverse.BackColor = System.Drawing.Color.Transparent;
             this.btnReverse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnReverse.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnReverse.CenterImage = null;
             this.btnReverse.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnReverse.HyperlinkStyle = false;
-            //this.btnReverse.ImageMargin = 1;
+            this.btnReverse.ImageMargin = 2;
             this.btnReverse.LeftImage = null;
             this.btnReverse.Location = new System.Drawing.Point(120, 297);
             this.btnReverse.Name = "btnReverse";
@@ -210,6 +226,8 @@
             // 
             // numericSortPrio
             // 
+            this.numericSortPrio.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Bottom)));
             this.numericSortPrio.Location = new System.Drawing.Point(272, 298);
             this.numericSortPrio.Minimum = new decimal(new int[] {
             -2147483648,
@@ -223,6 +241,7 @@
             // 
             // btnOk
             // 
+            this.btnOk.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.btnOk.BackColor = System.Drawing.Color.Transparent;
             this.btnOk.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnOk.CenterImage = null;
@@ -244,6 +263,7 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.btnCancel.BackColor = System.Drawing.Color.Transparent;
             this.btnCancel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnCancel.CenterImage = null;
@@ -263,44 +283,10 @@
             this.btnCancel.TextRightMargin = 2;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // Panel
-            // 
-            this.Panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Panel.ColumnCount = 7;
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 309F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.Panel.Controls.Add(this.lblTrail, 0, 0);
-            this.Panel.Controls.Add(this.EList, 0, 2);
-            this.Panel.Controls.Add(this.lblRadius, 0, 1);
-            this.Panel.Controls.Add(this.radiusBox, 1, 1);
-            this.Panel.Controls.Add(this.TrailName, 1, 0);
-            this.Panel.Controls.Add(this.lblDefActivity, 2, 1);
-            this.Panel.Controls.Add(this.boxDefActivity, 3, 1);
-            this.Panel.Controls.Add(this.btnAdd, 4, 0);
-            this.Panel.Controls.Add(this.btnEdit, 5, 0);
-            this.Panel.Controls.Add(this.btnDelete, 6, 0);
-            this.Panel.Controls.Add(this.btnUp, 5, 1);
-            this.Panel.Controls.Add(this.btnDown, 6, 1);
-            this.Panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Panel.Location = new System.Drawing.Point(0, 0);
-            this.Panel.Name = "Panel";
-            this.Panel.RowCount = 4;
-            this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.Panel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.Panel.Size = new System.Drawing.Size(555, 325);
-            this.Panel.TabIndex = 9;
-            // 
             // lblTrail
             // 
-            this.lblTrail.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblTrail.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTrail.AutoSize = true;
             this.lblTrail.Location = new System.Drawing.Point(3, 6);
             this.lblTrail.Margin = new System.Windows.Forms.Padding(3);
@@ -312,16 +298,16 @@
             // 
             // EList
             // 
+            this.EList.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.EList.AutoScroll = true;
             this.EList.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.EList.BackColor = System.Drawing.Color.Transparent;
             this.EList.Border = ZoneFiveSoftware.Common.Visuals.ControlBorder.Style.SmallRoundShadow;
             this.EList.CheckBoxes = false;
-            this.Panel.SetColumnSpan(this.EList, 7);
             this.EList.Controls.Add(this.editBox);
             this.EList.DefaultIndent = 15;
             this.EList.DefaultRowHeight = -1;
-            this.EList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.EList.HeaderRowHeight = 21;
             this.EList.Location = new System.Drawing.Point(3, 53);
             this.EList.MultiSelect = true;
@@ -337,7 +323,7 @@
             this.EList.RowSeparatorLines = true;
             this.EList.ShowLines = false;
             this.EList.ShowPlusMinus = false;
-            this.EList.Size = new System.Drawing.Size(549, 243);
+            this.EList.Size = new System.Drawing.Size(549, 234);
             this.EList.TabIndex = 11;
             this.EList.DoubleClick += new System.EventHandler(this.SMKDoubleClick);
             this.EList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EList_KeyDown);
@@ -345,6 +331,8 @@
             // 
             // editBox
             // 
+            this.editBox.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
             this.editBox.AcceptsReturn = false;
             this.editBox.AcceptsTab = false;
             this.editBox.BackColor = System.Drawing.Color.White;
@@ -367,12 +355,13 @@
             // 
             // lblRadius
             // 
-            this.lblRadius.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblRadius.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRadius.AutoSize = true;
-            this.lblRadius.Location = new System.Drawing.Point(3, 28);
+            this.lblRadius.Location = new System.Drawing.Point(3, 31);
             this.lblRadius.Margin = new System.Windows.Forms.Padding(3);
             this.lblRadius.Name = "lblRadius";
-            this.lblRadius.Size = new System.Drawing.Size(41, 19);
+            this.lblRadius.Size = new System.Drawing.Size(49, 13);
             this.lblRadius.TabIndex = 19;
             this.lblRadius.Text = "<Radius:";
             this.lblRadius.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -381,8 +370,7 @@
             // 
             this.radiusBox.AcceptsReturn = false;
             this.radiusBox.AcceptsTab = false;
-            this.radiusBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.radiusBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left))));
             this.radiusBox.BackColor = System.Drawing.Color.White;
             this.radiusBox.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.radiusBox.ButtonImage = null;
@@ -408,7 +396,6 @@
             this.TrailName.BackColor = System.Drawing.Color.White;
             this.TrailName.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.TrailName.ButtonImage = null;
-            this.Panel.SetColumnSpan(this.TrailName, 3);
             this.TrailName.Location = new System.Drawing.Point(53, 3);
             this.TrailName.MaxLength = 32767;
             this.TrailName.Multiline = false;
@@ -417,19 +404,20 @@
             this.TrailName.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.TrailName.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.TrailName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TrailName.Size = new System.Drawing.Size(418, 19);
+            this.TrailName.Size = new System.Drawing.Size(448, 19);
             this.TrailName.TabIndex = 1;
             this.TrailName.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.TrailName.LostFocus += new System.EventHandler(this.TrailName_LostFocus);
             // 
             // lblDefActivity
             // 
-            this.lblDefActivity.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lblDefActivity.Anchor = this.TrailName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDefActivity.AutoSize = true;
-            this.lblDefActivity.Location = new System.Drawing.Point(103, 28);
+            this.lblDefActivity.Location = new System.Drawing.Point(103, 31);
             this.lblDefActivity.Margin = new System.Windows.Forms.Padding(3);
             this.lblDefActivity.Name = "lblDefActivity";
-            this.lblDefActivity.Size = new System.Drawing.Size(50, 19);
+            this.lblDefActivity.Size = new System.Drawing.Size(84, 13);
             this.lblDefActivity.TabIndex = 23;
             this.lblDefActivity.Text = "<Default Activity";
             this.lblDefActivity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -440,13 +428,13 @@
             this.boxDefActivity.AcceptsTab = false;
             this.boxDefActivity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.boxDefActivity.AutoSize = true;
+            //this.boxDefActivity.AutoSize = true;
             this.boxDefActivity.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.boxDefActivity.BackColor = System.Drawing.Color.White;
             this.boxDefActivity.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(114)))), ((int)(((byte)(108)))));
             this.boxDefActivity.ButtonImage = null;
             this.boxDefActivity.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.boxDefActivity.Location = new System.Drawing.Point(168, 28);
+            this.boxDefActivity.Location = new System.Drawing.Point(169, 28);
             this.boxDefActivity.MaxLength = 32767;
             this.boxDefActivity.Multiline = false;
             this.boxDefActivity.Name = "boxDefActivity";
@@ -454,20 +442,21 @@
             this.boxDefActivity.ReadOnlyColor = System.Drawing.SystemColors.Control;
             this.boxDefActivity.ReadOnlyTextColor = System.Drawing.SystemColors.ControlLight;
             this.boxDefActivity.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.boxDefActivity.Size = new System.Drawing.Size(303, 18);
+            this.boxDefActivity.Size = new System.Drawing.Size(330, 18);
             this.boxDefActivity.TabIndex = 24;
             this.boxDefActivity.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.boxDefActivity.ButtonClick += new System.EventHandler(this.boxDefActivity_ButtonClick);
             // 
             // btnAdd
             // 
+            this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAdd.BackColor = System.Drawing.Color.Transparent;
             this.btnAdd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnAdd.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnAdd.CenterImage = null;
             this.btnAdd.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnAdd.HyperlinkStyle = false;
-            //this.btnAdd.ImageMargin = 1;
+            this.btnAdd.ImageMargin = 2;
             this.btnAdd.LeftImage = null;
             this.btnAdd.Location = new System.Drawing.Point(477, 3);
             this.btnAdd.Name = "btnAdd";
@@ -483,13 +472,14 @@
             // 
             // btnEdit
             // 
+            this.btnEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEdit.BackColor = System.Drawing.Color.Transparent;
             this.btnEdit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnEdit.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnEdit.CenterImage = null;
             this.btnEdit.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnEdit.HyperlinkStyle = false;
-            //this.btnEdit.ImageMargin = 1;
+            this.btnEdit.ImageMargin = 2;
             this.btnEdit.LeftImage = null;
             this.btnEdit.Location = new System.Drawing.Point(502, 3);
             this.btnEdit.Name = "btnEdit";
@@ -505,13 +495,14 @@
             // 
             // btnDelete
             // 
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDelete.BackColor = System.Drawing.Color.Transparent;
             this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnDelete.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnDelete.CenterImage = null;
             this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnDelete.HyperlinkStyle = false;
-            //this.btnDelete.ImageMargin = 1;
+            this.btnDelete.ImageMargin = 2;
             this.btnDelete.LeftImage = null;
             this.btnDelete.Location = new System.Drawing.Point(527, 3);
             this.btnDelete.Name = "btnDelete";
@@ -527,13 +518,14 @@
             // 
             // btnUp
             // 
+            this.btnUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnUp.BackColor = System.Drawing.Color.Transparent;
             this.btnUp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnUp.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnUp.CenterImage = null;
             this.btnUp.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnUp.HyperlinkStyle = false;
-            //this.btnUp.ImageMargin = 1;
+            this.btnUp.ImageMargin = 2;
             this.btnUp.LeftImage = null;
             this.btnUp.Location = new System.Drawing.Point(502, 28);
             this.btnUp.Name = "btnUp";
@@ -549,13 +541,14 @@
             // 
             // btnDown
             // 
+            this.btnDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDown.BackColor = System.Drawing.Color.Transparent;
             this.btnDown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.btnDown.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(40)))), ((int)(((byte)(50)))), ((int)(((byte)(120)))));
             this.btnDown.CenterImage = null;
             this.btnDown.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnDown.HyperlinkStyle = false;
-            //this.btnDown.ImageMargin = 0;
+            this.btnDown.ImageMargin = 2;
             this.btnDown.LeftImage = null;
             this.btnDown.Location = new System.Drawing.Point(527, 28);
             this.btnDown.Name = "btnDown";
@@ -571,11 +564,21 @@
             // 
             // EditTrail
             // 
-            this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(555, 325);
+            this.Controls.Add(this.lblTrail);
+            this.Controls.Add(this.EList);
+            this.Controls.Add(this.lblRadius);
+            this.Controls.Add(this.radiusBox);
+            this.Controls.Add(this.TrailName);
+            this.Controls.Add(this.lblDefActivity);
+            this.Controls.Add(this.boxDefActivity);
+            this.Controls.Add(this.btnAdd);
+            this.Controls.Add(this.btnEdit);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.btnUp);
+            this.Controls.Add(this.btnDown);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.numericSortPrio);
@@ -588,8 +591,7 @@
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnCopy);
-            this.Controls.Add(this.Panel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            //this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditTrail";
@@ -597,8 +599,6 @@
             this.Activated += new System.EventHandler(this.EditTrail_Activated);
             this.Shown += new System.EventHandler(this.EditTrail_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.numericSortPrio)).EndInit();
-            this.Panel.ResumeLayout(false);
-            this.Panel.PerformLayout();
             this.EList.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -611,7 +611,6 @@
         private System.Windows.Forms.ToolTip toolTip;
         private ZoneFiveSoftware.Common.Visuals.Button btnOk;
         private ZoneFiveSoftware.Common.Visuals.Button btnCancel;
-        private System.Windows.Forms.TableLayoutPanel Panel;
         private System.Windows.Forms.Label lblTrail;
         private ZoneFiveSoftware.Common.Visuals.Button btnAdd;
         private ZoneFiveSoftware.Common.Visuals.TextBox TrailName;

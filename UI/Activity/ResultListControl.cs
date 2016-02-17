@@ -1223,83 +1223,44 @@ namespace TrailsPlugin.UI.Activity {
 
         private void setMetaImportSource(IActivity activity)
         {
-            //Cannot use MessageDialog for most part here, similar in setAdjustSplitTimesPopup
-            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
-            p.Size = new System.Drawing.Size(410, 105);
-            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
-            ZoneFiveSoftware.Common.Visuals.TextBox Panel_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
-            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
-            p.Text = "Set Import Source";
-            p.Controls.Add(pa);
-            pa.Dock = DockStyle.Fill;
-            pa.Controls.Add(Panel_TextBox);
-            pa.Controls.Add(b);
-            pa.Controls.Add(c);
-            p.AcceptButton = b;
-            p.CancelButton = c;
-            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
-            b.DialogResult = DialogResult.OK;
-            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
-            c.DialogResult = DialogResult.Cancel;
-            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
-            pa.ThemeChanged(this.m_visualTheme);
-            pa.BackColor = this.m_visualTheme.Control;
-            //p.ThemeChanged(this.m_visualTheme);
-            Panel_TextBox.ThemeChanged(this.m_visualTheme);
-            Panel_TextBox.Width = p.Width - 37;
-            Panel_TextBox.Location = new System.Drawing.Point(10, 10);
+            STForm form = new STForm(m_visualTheme, 410, 105);
+            ZoneFiveSoftware.Common.Visuals.TextBox textBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
+            form.Controls.Add(textBox);
 
-            Panel_TextBox.Text = activity.Metadata.Source;
+            textBox.Width = form.Width - 37;
+            textBox.Location = new System.Drawing.Point(10, 8);
 
-            b.Click +=
-                delegate (object sender2, EventArgs args)
-                {
-                    activity.Metadata.Source = Panel_TextBox.Text;
-                };
+            textBox.ThemeChanged(this.m_visualTheme);
 
-            //update is done in clicking OK/Enter
-            p.ShowDialog();
+            form.Text = "Set Import Source";
+            textBox.Text = activity.Metadata.Source;
+
+            DialogResult r = form.ShowDialog();
+            if (r == DialogResult.OK)
+            {
+                activity.Metadata.Source = textBox.Text;
+            }
         }
 
-        private enum SplitTimesPopup { AdjustDiff, PandolfTerrain}
+        private enum SplitTimesPopup { AdjustDiff, PandolfTerrain }
         private void setAdjustSplitTimesPopup(SplitTimesPopup splitTimesPopup)
         {
-            //Cannot use ST controls for most part here, similar in setMetaImportSource
-            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
-            p.Size = new System.Drawing.Size(410, 105);
-            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+            STForm form = new STForm(m_visualTheme, 410, 105);
+
             ZoneFiveSoftware.Common.Visuals.TextBox SplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
-            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
+            form.Controls.Add(SplitTimes_TextBox);
+            SplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
+            SplitTimes_TextBox.Width = form.Width - 37;
+            SplitTimes_TextBox.Location = new System.Drawing.Point(10, 8);
+
             if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
             {
-                p.Text = string.Format("Diff Adjust: dist ({0}); timeOffset (s)", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(Controller.TrailController.Instance.ReferenceActivity));
+                form.Text = string.Format("Diff Adjust: dist ({0}); timeOffset (s)", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(Controller.TrailController.Instance.ReferenceActivity));
             }
             else
             {
-                p.Text = string.Format("Pandolf Terrain: dist ({0}); factor", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(Controller.TrailController.Instance.ReferenceActivity));
+                form.Text = string.Format("Pandolf Terrain: dist ({0}); factor", GpsRunningPlugin.Util.UnitUtil.Distance.LabelAbbrAct(Controller.TrailController.Instance.ReferenceActivity));
             }
-            p.Controls.Add(pa);
-            pa.Dock = DockStyle.Fill;
-            pa.Controls.Add(SplitTimes_TextBox);
-            pa.Controls.Add(b);
-            pa.Controls.Add(c);
-            p.AcceptButton = b;
-            p.CancelButton = c;
-            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
-            b.DialogResult = DialogResult.OK;
-            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
-            c.DialogResult = DialogResult.Cancel;
-            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
-            pa.ThemeChanged(this.m_visualTheme);
-            pa.BackColor = this.m_visualTheme.Control;
-            //p.ThemeChanged(this.m_visualTheme);
-            SplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
-            SplitTimes_TextBox.Width = p.Width - 37;
-            SplitTimes_TextBox.Location = new System.Drawing.Point(10, 10);
 
             String colText = "";
             float[,] splitTimes;
@@ -1326,48 +1287,45 @@ namespace TrailsPlugin.UI.Activity {
             }
             SplitTimes_TextBox.Text = colText;
 
-            b.Click +=
-                delegate(object sender2, EventArgs args)
+            DialogResult r = form.ShowDialog();
+            if (r == DialogResult.OK)
+            {
+                try
                 {
-                    try
+                    string[] values = SplitTimes_TextBox.Text.Split(';');
+                    splitTimes = new float[(1 + values.Length) / 2, 2];
+                    int i = 0;
+                    foreach (string column in values)
                     {
-                        string[] values = SplitTimes_TextBox.Text.Split(';');
-                        splitTimes = new float[(1 + values.Length) / 2, 2];
-                        int i = 0;
-                        foreach (string column in values)
+                        float f = 0;
+                        if (!string.IsNullOrEmpty(column))
                         {
-                            float f = 0;
-                            if (!string.IsNullOrEmpty(column))
-                            {
-                                f = Data.Settings.parseFloat(column);
-                            }
-                            if (i % 2 == 0)
-                            {
-                                f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f, Controller.TrailController.Instance.ReferenceActivity);
-                            }
-                            splitTimes[i / 2, i % 2] = f;
-                            i++;
+                            f = Data.Settings.parseFloat(column);
                         }
-                        if (splitTimes == null || splitTimes.Length == 0 ||
-                            splitTimes.Length == 2 && splitTimes[0, 0] == 0 && splitTimes[0, 1] == 0)
+                        if (i % 2 == 0)
                         {
-                            //empty is null
-                            splitTimes = null;
+                            f = (float)GpsRunningPlugin.Util.UnitUtil.Distance.ConvertTo(f, Controller.TrailController.Instance.ReferenceActivity);
                         }
-                        if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
-                        {
-                            Data.Settings.AdjustDiffSplitTimes = splitTimes;
-                        }
-                        else
-                        {
-                            Data.Settings.PandolfTerrainDist = splitTimes;
-                        }
+                        splitTimes[i / 2, i % 2] = f;
+                        i++;
                     }
-                    catch { }
-                };
-
-            //update is done in clicking OK/Enter
-            p.ShowDialog();
+                    if (splitTimes == null || splitTimes.Length == 0 ||
+                        splitTimes.Length == 2 && splitTimes[0, 0] == 0 && splitTimes[0, 1] == 0)
+                    {
+                        //empty is null
+                        splitTimes = null;
+                    }
+                    if (splitTimesPopup == SplitTimesPopup.AdjustDiff)
+                    {
+                        Data.Settings.AdjustDiffSplitTimes = splitTimes;
+                    }
+                    else
+                    {
+                        Data.Settings.PandolfTerrainDist = splitTimes;
+                    }
+                }
+                catch { }
+            }
         }
 
         private TrailResult GetSingleSelectedTrailResult()
@@ -1548,37 +1506,18 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         if (track.Count != activity.DistanceMetersTrack.Count)
                         {
-                            System.Windows.Forms.Form p = new System.Windows.Forms.Form();
-                            p.Size = new System.Drawing.Size(370, 105);
-                            ZoneFiveSoftware.Common.Visuals.Panel pa = new ZoneFiveSoftware.Common.Visuals.Panel();
+                            STForm form = new STForm(m_visualTheme, 370, 105);
                             ZoneFiveSoftware.Common.Visuals.TextBox AdjustDiffSplitTimes_TextBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
-                            System.Windows.Forms.Button b = new System.Windows.Forms.Button();
-                            System.Windows.Forms.Button c = new System.Windows.Forms.Button();
-                            p.Text = string.Format("{0} {1}", activity.Name,  activity.StartTime);
-                            p.Controls.Add(pa);
-                            pa.Dock = DockStyle.Fill;
-                            pa.Controls.Add(AdjustDiffSplitTimes_TextBox);
-                            pa.Controls.Add(b);
-                            pa.Controls.Add(c);
-                            p.AcceptButton = b;
-                            p.CancelButton = c;
-                            b.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width, p.Height - 40 - b.Height);
-                            b.DialogResult = DialogResult.OK;
-                            c.Location = new System.Drawing.Point(p.Size.Width - 25 - b.Size.Width - 15 - c.Size.Width, p.Height - 40 - c.Height);
-                            c.DialogResult = DialogResult.Cancel;
-                            b.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
-                            c.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
-                            pa.ThemeChanged(this.m_visualTheme);
-                            pa.BackColor = this.m_visualTheme.Control;
-                            //p.ThemeChanged(this.m_visualTheme);
+                            form.Text = string.Format("{0} {1}", activity.Name,  activity.StartTime);
+                            form.Controls.Add(AdjustDiffSplitTimes_TextBox);
                             AdjustDiffSplitTimes_TextBox.ThemeChanged(this.m_visualTheme);
-                            AdjustDiffSplitTimes_TextBox.Width = p.Width - 37;
-                            AdjustDiffSplitTimes_TextBox.Location = new System.Drawing.Point(10, 10);
+                            AdjustDiffSplitTimes_TextBox.Width = form.Width - 37;
+                            AdjustDiffSplitTimes_TextBox.Location = new System.Drawing.Point(10, 8);
 
                             AdjustDiffSplitTimes_TextBox.Text = string.Format("{0}/{1}/ {2} {3} {4}", track.Count, activity.DistanceMetersTrack.Count, activity.GPSRoute.Count, activity.Name, activity.StartTime);
 
                             //update is done in clicking OK/Enter
-                            if (p.ShowDialog() == DialogResult.OK)
+                            if (form.ShowDialog() == DialogResult.OK)
                             {
                                 activity.DistanceMetersTrack = track;
                             }

@@ -561,7 +561,7 @@ namespace TrailsPlugin.Data
                 if (float.IsNaN(m_startDistance))
                 {
                     if (Settings.StartDistOffsetFromStartPoint &&
-                    this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 0)
+                      this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 0)
                     {
                         //Get offset from start point, regardless if there is a pause
                         DateTime startTime = StartTime;

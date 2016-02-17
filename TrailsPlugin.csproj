@@ -52,6 +52,9 @@
     <Compile Include="Export\CFTrailResult.cs" />
     <Compile Include="UI\Edit\TrailsAction.cs" />
     <Compile Include="UI\Edit\TrailsEdit.cs" />
+    <Compile Include="Utils\STForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Utils\LineChartUtil.cs" />
     <Compile Include="Data\TrailResultInfo.cs" />
     <Compile Include="Data\TrailsActivityInfoOptions.cs" />

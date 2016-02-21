@@ -169,7 +169,17 @@ namespace TrailsPlugin.UI.Activity
                 TrailName.Text = Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name;
                 if (Controller.TrailController.Instance.CurrentActivityTrails.Count > 1)
                 {
-                    TrailName.Text += " (" + Controller.TrailController.Instance.CurrentActivityTrails.Count + ")";
+                    string s = "";
+                    for (int i = 1; i < Controller.TrailController.Instance.CurrentActivityTrails.Count; i++)
+                    {
+                        ActivityTrail at = Controller.TrailController.Instance.CurrentActivityTrails[i];
+                        s += at.Trail.Name;
+                        if(i < Controller.TrailController.Instance.CurrentActivityTrails.Count-1)
+                        {
+                            s += ", ";
+                        }
+                    }
+                    TrailName.Text += " (" + Controller.TrailController.Instance.CurrentActivityTrails.Count + ": "+s+")";
                 }
                 TrailName.Enabled = (m_editTrail == null);
                 if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
@@ -545,9 +555,13 @@ namespace TrailsPlugin.UI.Activity
         //    this.m_CtrlPressed = e.Modifiers == Keys.Control;
         //}
 
+        private class TrailNameTreeListPopup : TreeListPopup
+        {
+            public ICollection<ActivityTrailWrapper> all;
+        }
         private void TrailName_ButtonClick(object sender, EventArgs e)
         {
-            TreeListPopup treeListPopup = new TreeListPopup();
+            TrailNameTreeListPopup treeListPopup = new TrailNameTreeListPopup();
             treeListPopup.ThemeChanged(m_visualTheme);
             treeListPopup.Tree.Columns.Add(new TreeList.Column());
             treeListPopup.Tree.ShowPlusMinus = true;
@@ -564,6 +578,7 @@ namespace TrailsPlugin.UI.Activity
 
             TrailNameWrapper tnw = new TrailNameWrapper(allActivityTrails, selectedActivityTrails);
             treeListPopup.Tree.RowData = tnw.RowData;
+            treeListPopup.all = tnw.All;
             treeListPopup.Tree.Expanded = tnw.Expanded;
 #if ST_2_1
             treeListPopup.Tree.Selected = tnw.SelectedItems;
@@ -583,49 +598,50 @@ namespace TrailsPlugin.UI.Activity
         /*******************************************************/
         private void TrailName_ItemSelected(object sender, EventArgs e)
         {
-            if (sender is TreeListPopup)
+            if (sender is TrailNameTreeListPopup)
             {
-                ((TreeListPopup)sender).Hide();
-            }
+                TrailNameTreeListPopup popup = sender as TrailNameTreeListPopup;
+                popup.Hide();
 
-            IList <ActivityTrailWrapper> atws = new List<ActivityTrailWrapper>();
-            if (m_selectTrailAddMode /*|| this.m_CtrlPressed*/)
-            {
-                //Handle all the existing as selected too
-                foreach (ActivityTrailWrapper atw in (IList<ActivityTrailWrapper>)((TreeListPopup)sender).Tree.RowData)
+                IList<ActivityTrailWrapper> atws = new List<ActivityTrailWrapper>();
+                if (m_selectTrailAddMode /*|| this.m_CtrlPressed*/)
                 {
-                    foreach (ActivityTrail at in Controller.TrailController.Instance.CurrentActivityTrails)
+                    //Handle all the existing as selected too
+                    foreach (ActivityTrailWrapper atw in popup.all)
                     {
-                        if (atw.ActivityTrail == at)
+                        foreach (ActivityTrail at in Controller.TrailController.Instance.CurrentActivityTrails)
                         {
-                            atws.Add(atw);
-                            break;
+                            if (atw.ActivityTrail == at)
+                            {
+                                atws.Add(atw);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            ActivityTrailWrapper selAtw = ((ActivityTrailWrapper)((TreeListPopup.ItemSelectedEventArgs)e).Item);
-            if (atws.Contains(selAtw))
-            {
-                atws.Remove(selAtw);
-            }
-            else
-            {
-                atws.Add(selAtw);
-            }
+                ActivityTrailWrapper selAtw = ((ActivityTrailWrapper)((TreeListPopup.ItemSelectedEventArgs)e).Item);
+                if (atws.Contains(selAtw))
+                {
+                    atws.Remove(selAtw);
+                }
+                else
+                {
+                    atws.Add(selAtw);
+                }
 
-            System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
+                System.Windows.Forms.ProgressBar progressBar = m_page.StartProgressBar(0);
 
-            Controller.TrailController.Instance.SetCurrentActivityTrail(ActivityTrailWrapper.toATList(atws), true, progressBar);
-            m_page.StopProgressBar();
-            m_page.RefreshData(false);
-            m_page.RefreshControlState();
+                Controller.TrailController.Instance.SetCurrentActivityTrail(ActivityTrailWrapper.toATList(atws), true, progressBar);
+                m_page.StopProgressBar();
+                m_page.RefreshData(false);
+                m_page.RefreshControlState();
 
-            //Set current viewed area to the selected trail
-            if (atws.Contains(selAtw))
-            {
-                GPSBounds area = TrailGPSLocation.getGPSBounds(selAtw.ActivityTrail.Trail.TrailLocations, 3 * selAtw.ActivityTrail.Trail.Radius);
-                m_layer.SetLocation(area);
+                //Set current viewed area to the selected trail
+                if (atws.Contains(selAtw))
+                {
+                    GPSBounds area = TrailGPSLocation.getGPSBounds(selAtw.ActivityTrail.Trail.TrailLocations, 3 * selAtw.ActivityTrail.Trail.Radius);
+                    m_layer.SetLocation(area);
+                }
             }
         }
     }

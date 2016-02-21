@@ -63,7 +63,6 @@ namespace TrailsPlugin.Data
         public IList<ActivityTrailWrapper> RowData = new List<ActivityTrailWrapper>();
         public System.Collections.IList Expanded = null;
         public System.Collections.IList SelectedItems = null;
-        public ICollection<ActivityTrailWrapper> All;
 
         public TrailNameWrapper(IList<ActivityTrail> allActivityTrails, IList<ActivityTrail> selectedActivityTrails)
         {
@@ -115,7 +114,6 @@ namespace TrailsPlugin.Data
                 }
             }
             RowData = rows;
-            All = ats.Values;
 
             this.Expanded = new object[exps.Count];
             int allIndex = 0;

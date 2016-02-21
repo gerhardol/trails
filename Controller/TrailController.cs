@@ -77,11 +77,32 @@ namespace TrailsPlugin.Controller
         {
             get
             {
-                return m_activities;
+                return this.m_activities;
             }
             set
             {
                 this.SetActivities(value, true, null);
+            }
+        }
+
+        //Include the "trail default" activities
+        private IList<IActivity> PossibleActivities
+        {
+            get
+            {
+                IList<IActivity> res = new List<IActivity>();
+                foreach (ActivityTrail at in this.CurrentActivityTrails)
+                {
+                    if (at.Trail.DefaultRefActivity != null)
+                    {
+                        res.Add(at.Trail.DefaultRefActivity);
+                    }
+                }
+                foreach (IActivity a in this.m_activities)
+                {
+                    res.Add(a);
+                }
+                return res;
             }
         }
 
@@ -102,12 +123,6 @@ namespace TrailsPlugin.Controller
                 else
                 {
                     this.m_activities = activities;
-                }
-                if (this.PrimaryCurrentActivityTrail != null &&
-                    this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity != null &&
-                    !this.m_activities.Contains(this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity))
-                {
-                    this.m_activities.Add(this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity);
                 }
 
                 if (!keepSelectedTrail)
@@ -205,6 +220,7 @@ namespace TrailsPlugin.Controller
             }
         }
 
+        //The currently displayed results
         public IList<TrailResultWrapper> Results
         {
             get
@@ -212,7 +228,7 @@ namespace TrailsPlugin.Controller
                 IList<TrailResultWrapper> result = new List<TrailResultWrapper>();
                 foreach (ActivityTrail at in this.CurrentActivityTrails)
                 {
-                    foreach (TrailResultWrapper tw in at.Results)
+                    foreach (TrailResultWrapper tw in at.DisplayResults)
                     {
                         result.Add(tw);
                     }
@@ -578,16 +594,16 @@ namespace TrailsPlugin.Controller
             //No special set, implicitly from switching activity or setting result
             get
             {
-                if (this.m_referenceActivity==null || !this.m_activities.Contains(this.m_referenceActivity))
+                if (this.m_referenceActivity==null || !this.PossibleActivities.Contains(this.m_referenceActivity))
                 {
                     if (m_refResultWrapper!= null && this.m_refResultWrapper.Result.Activity!= null &&
-                        this.m_activities.Contains(this.m_refResultWrapper.Result.Activity))
+                        this.PossibleActivities.Contains(this.m_refResultWrapper.Result.Activity))
                     {
                         this.m_referenceActivity = this.m_refResultWrapper.Result.Activity;
                     }
-                    else if (this.m_activities.Count > 0)
+                    else if (this.PossibleActivities.Count > 0)
                     {
-                        this.m_referenceActivity = this.m_activities[0];
+                        this.m_referenceActivity = this.PossibleActivities[0];
                     }
                 }
                 return this.m_referenceActivity;
@@ -633,7 +649,7 @@ namespace TrailsPlugin.Controller
             //Should always follow the trail result, if it exists
             if (m_refResultWrapper != null)
             {
-                if (this.m_activities.Contains(this.m_refResultWrapper.Result.Activity))
+                if (this.PossibleActivities.Contains(this.m_refResultWrapper.Result.Activity))
                 {
                     //The ref result is at least possible, set ref activity
                     this.m_referenceActivity = m_refResultWrapper.Result.Activity;
@@ -652,17 +668,17 @@ namespace TrailsPlugin.Controller
             //If refAct no longer in activities, reset (if set from result or not does not matter)
             if (moreChecks && m_referenceActivity != null)
             {
-                if (!this.m_activities.Contains(this.m_referenceActivity))
+                if (!this.PossibleActivities.Contains(this.m_referenceActivity))
                 {
                     this.m_referenceActivity = null;
                 }
             }
 
-            if (m_referenceActivity == null && this.m_activities.Count > 0)
+            if (m_referenceActivity == null && this.PossibleActivities.Count > 0)
             {
                 if (this.PrimaryCurrentActivityTrail != null &&
                     this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity != null &&
-                    this.m_activities.Contains(this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity))
+                    this.PossibleActivities.Contains(this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity))
                 {
                     //Switch back to a trail with prev activities (not used in most usage patterns, but from m_prevSelectedTrails)
                     this.m_referenceActivity = this.PrimaryCurrentActivityTrail.Trail.ReferenceActivity;
@@ -670,7 +686,7 @@ namespace TrailsPlugin.Controller
                 else if (this.PrimaryCurrentActivityTrail != null &&
                          this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity != null)
                 {
-                    //Use the reference activity, must already have been inserted
+                    //Use the reference activity, result added separetly
                     this.m_referenceActivity = this.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity;
                 }
                 else if (this.PrimaryCurrentActivityTrail == null)
@@ -678,7 +694,7 @@ namespace TrailsPlugin.Controller
                     foreach (ActivityTrail at in this.m_prevSelectedTrails)
                     {
                         if (at.Trail.ReferenceActivity != null &&
-                            this.m_activities.Contains(at.Trail.ReferenceActivity))
+                            this.PossibleActivities.Contains(at.Trail.ReferenceActivity))
                         {
                             //Switch back to a trail with prev activities (not used in most usage patterns)
                             this.m_referenceActivity = at.Trail.ReferenceActivity;
@@ -691,7 +707,7 @@ namespace TrailsPlugin.Controller
                 {
                     //Last resort, use first activity
                     //This also covers the trivial situation with only one activity
-                    this.m_referenceActivity = this.m_activities[0];
+                    this.m_referenceActivity = this.PossibleActivities[0];
                 }
             }
 

@@ -74,7 +74,7 @@ namespace TrailsPlugin.DataImport
                 if (item is IActivity)
                 {
                     IActivity activity = (IActivity)item;
-                    //Set for non barometric devices only
+                    //Set for barometric devices only
                     bool setEle = false;
                     if (TrailsPlugin.Data.Settings.SetAdjustElevationAtImport)
                     {
@@ -104,8 +104,12 @@ namespace TrailsPlugin.DataImport
                                 TrailResult tr = null;
                                 if (!at.Trail.IsCompleteActivity)
                                 {
-                                    //Recalculate, to get "full" result
-                                    tr = at.CalcTrailCompleteResult(activity);
+                                    //Recalculate, to get "full" first result
+                                    IList<TrailResultWrapper> ats = at.CalcTrailCompleteResult(activity);
+                                    if(ats.Count > 0)
+                                    {
+                                        tr = ats[0].Result;
+                                    }
                                 }
                                 else if (at.Results.Count > 0)
                                 {

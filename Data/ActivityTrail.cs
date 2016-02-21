@@ -30,6 +30,7 @@ namespace TrailsPlugin.Data
     {
         private Trail m_trail;
         private IList<TrailResultWrapper> m_results = null;
+        private IList<TrailResultWrapper> m_defResults = null;
         private TrailOrderStatus m_status;
 
         private IList<IncompleteTrailResult> m_incompleteResults;
@@ -49,6 +50,7 @@ namespace TrailsPlugin.Data
         public void Init()
         {
             this.m_results = null;
+            this.m_defResults = null;
             m_incompleteResults = new List<IncompleteTrailResult>();
             m_filteredResults = new List<TrailResultWrapper>();
 
@@ -139,14 +141,6 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public int ActivityCount
-        {
-            get
-            {
-                return Controller.TrailController.Instance.Activities.Count;
-            }
-        }
-
         private static TrailOrderStatus BestCalcStatus(TrailOrderStatus current, TrailOrderStatus upd)
         {
             //Set "better" status only
@@ -216,12 +210,45 @@ namespace TrailsPlugin.Data
             }
         }
 
+        //The results for the normal, not including references
         public IList<TrailResultWrapper> Results
         {
             get
             {
                 this.CalcResults(null);
                 return this.m_results;
+            }
+        }
+
+        public IList<TrailResultWrapper> DisplayResults
+        {
+            get
+            {
+                //First add the (possible) results related to the default activity
+                IList<TrailResultWrapper> displayResults = new List<TrailResultWrapper>();
+                if (this.m_defResults == null)
+                {
+                    this.m_defResults = new List<TrailResultWrapper>();
+                    if (this.Trail.DefaultRefActivity != null &&
+                        !Controller.TrailController.Instance.Activities.Contains(this.Trail.DefaultRefActivity))
+                    {
+                        foreach (TrailResultWrapper tw2 in this.CalcTrailCompleteResult(this.Trail.DefaultRefActivity))
+                        {
+                            this.m_defResults.Add(tw2);
+                        }
+                    }
+                }
+                foreach(TrailResultWrapper trw in this.m_defResults)
+                {
+                    displayResults.Add(trw);
+                }
+
+                //The "normal" results
+                foreach (TrailResultWrapper trw in this.Results)
+                {
+                    displayResults.Add(trw);
+                }
+                return displayResults;
             }
         }
 
@@ -851,9 +878,9 @@ namespace TrailsPlugin.Data
             return status;
         }
 
-        public TrailResult CalcTrailCompleteResult(IActivity activity)
+        public IList<TrailResultWrapper> CalcTrailCompleteResult(IActivity activity)
         {
-            TrailResult tr = null;
+            IList<TrailResultWrapper> res = new List<TrailResultWrapper>();
             if (activity != null && activity.GPSRoute != null && activity.GPSRoute.Count > 0)
             {
                 IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
@@ -864,15 +891,16 @@ namespace TrailsPlugin.Data
                 int MaxAllowedMisses = Math.Min(trailgps.Count - noNonReq, m_trail.MaxRequiredMisses);
 
                 CalcGpsTrail(activity, null, this.Trail.TrailLocations, locationBounds,
-    this.Trail.Radius, this.Trail.MinDistance, 0, false, MaxAllowedMisses, true,
-    trailResults, incompleteResults, null);
-                if (trailResults.Count > 0)
+                    this.Trail.Radius, this.Trail.MinDistance, 0, false, MaxAllowedMisses, true,
+                    trailResults, incompleteResults, null);
+                foreach (TrailResultInfo tri in trailResults)
                 {
-                    tr = new PositionParentTrailResult(this, 0, trailResults[0], trailResults[0].DistDiff, trailResults[0].Reverse);
+                    TrailResult tr = new PositionParentTrailResult(this, 0, tri, tri.DistDiff, tri.Reverse);
                     TrailResultWrapper result = new TrailResultWrapper((ParentTrailResult)tr);
+                    res.Add(result);
                 }
             }
-            return tr;
+            return res;
         }
 
         /// <summary>

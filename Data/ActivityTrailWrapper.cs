@@ -194,7 +194,7 @@ namespace TrailsPlugin.Data
                 if (at.Trail.TrailType == Trail.CalcType.Splits ||
                     at.Trail.TrailType == Trail.CalcType.UniqueRoutes)
                 {
-                    name += " (" + at.ActivityCount + ")";
+                    name += " (" + Controller.TrailController.Instance.Activities.Count + ")";
                 }
             }
             else if ((at.Status == TrailOrderStatus.InBoundMatchPartial) &&

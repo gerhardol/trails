@@ -1031,7 +1031,7 @@ namespace TrailsPlugin.Data
                         source = this.Activity.DistanceMetersTrack;
                         //This can be incorrect for Pool Swimming
                     }
-                    else if (Data.Settings.UseGpsFilter && m_activityDistanceMetersTrack == null)
+                    else if (Data.Settings.UseGpsFilter != GpsFilterType.None && m_activityDistanceMetersTrack == null)
                     {
                         //Try getting m_activityDistanceMetersTrack and gps with filter
                         getGps();
@@ -2920,7 +2920,7 @@ namespace TrailsPlugin.Data
                     {
                         IDistanceDataTrack source;
                         int invertDiff = 1;
-                        if (Data.Settings.UseDeviceDistance || Data.Settings.UseGpsFilter)
+                        if (Data.Settings.UseDeviceDistance || Data.Settings.UseGpsFilter != GpsFilterType.None)
                         {
                             //The device distance (or GPS filter) is the "normal" show calculated instead, invert
                             source = Info.MovingDistanceMetersTrack;
@@ -3877,7 +3877,7 @@ namespace TrailsPlugin.Data
             IGPSRoute gpsTrack = new TrackUtil.GPSRoute();
             gpsTrack.AllowMultipleAtSameTime = false;
             bool dist;
-            if (Data.Settings.UseGpsFilter && !Data.Settings.UseDeviceDistance &&
+            if (Data.Settings.UseGpsFilter != GpsFilterType.None && !Data.Settings.UseDeviceDistance &&
                 this.Activity.GPSRoute != null && this.Activity.GPSRoute.Count > 0)
             {
                 dist = true;
@@ -3902,9 +3902,13 @@ namespace TrailsPlugin.Data
                 for (int i = 0; i < m_activity.GPSRoute.Count; i++)
                 {
                     float d2 = this.Activity.GPSRoute[i].Value.DistanceMetersToPoint(this.Activity.GPSRoute[prevIndex].Value);
-                    if (!Data.Settings.UseGpsFilter || prevIndex == 0 ||
-                        this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime ||
-                        d2 > Data.Settings.GpsFilterMinimumDistance)
+                    if (Data.Settings.UseGpsFilter == GpsFilterType.None || prevIndex == 0 ||
+                        Data.Settings.UseGpsFilter == GpsFilterType.DistanceOrTime && 
+                        (this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime ||
+                        d2 > Data.Settings.GpsFilterMinimumDistance) ||
+                        Data.Settings.UseGpsFilter == GpsFilterType.DistanceAndTime && 
+                        (this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime &&
+                        d2 > Data.Settings.GpsFilterMinimumDistance))
                     {
                         prevIndex = i;
                         prevDist += d2;

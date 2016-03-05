@@ -1720,7 +1720,14 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    Data.Settings.UseGpsFilter = !Data.Settings.UseGpsFilter;
+                    if (Data.Settings.UseGpsFilter == GpsFilterType.DistanceAndTime)
+                    {
+                        Data.Settings.UseGpsFilter = GpsFilterType.None;
+                    }
+                    else
+                    {
+                        Data.Settings.UseGpsFilter++;
+                    }
                     ShowToolTip("GPS: " + Data.Settings.UseGpsFilter + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDistance + ": " + Data.Settings.GpsFilterMinimumDistance + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelTime + ": " + Data.Settings.GpsFilterMinimumTime);
@@ -1733,7 +1740,10 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
                     //Undocumented, toggle through some presets
-                    Data.Settings.UseGpsFilter = true;
+                    if (Data.Settings.UseGpsFilter == GpsFilterType.None)
+                    {
+                        Data.Settings.UseGpsFilter = GpsFilterType.DistanceOrTime;
+                    }
                     if (Data.Settings.GpsFilterMinimumTime == 2)
                     {
                         Data.Settings.GpsFilterMinimumDistance = 15;

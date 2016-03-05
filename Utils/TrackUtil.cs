@@ -35,6 +35,8 @@ using GpsRunningPlugin.Util;
 
 namespace TrailsPlugin.Utils
 {
+    public enum GpsFilterType { None, DistanceOrTime, DistanceAndTime };
+
     public static class TrackUtil
     {
         //Changed interfaces in ST, memory performance improvements

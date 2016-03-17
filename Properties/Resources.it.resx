@@ -236,16 +236,183 @@ Assicurarsi che {1} sia installato.</value>
   <data name="UI_Chart_syncChartAtTrailPoints" xml:space="preserve">
     <value>Sincronizzare il grafico nei punti Trail</value>
   </data>
+  <data name="UI_Chart_adjustResyncDiffAtTrailPoints" xml:space="preserve">
+    <value>Correggere le differenze di risincronizzazione nei punti del Trail</value>
+  </data>
   <data name="UI_Activity_List_AddReferenceCategory" xml:space="preserve">
     <value>Aggiungere attività con l'attuale Categoria di Riferimento: {0}</value>
+  </data>
+  <data name="PerformancePredictorCompatible" xml:space="preserve">
+    <value>Analisi possibile con Performance Predictor</value>
+  </data>
+  <data name="PerformancePredictorPluginName" xml:space="preserve">
+    <value>Performance Predictor</value>
+  </data>
+  <data name="PerformancePredictorToInstall" xml:space="preserve">
+    <value>Installa almeno la versione {0} di {1} per analizzare con PerformancePredictor.</value>
   </data>
   <data name="UI_Activity_Menu_ShowToolBar" xml:space="preserve">
     <value>Mostrare gli strumenti del grafico</value>
   </data>
+  <data name="UniqueRoutes_Trail" xml:space="preserve">
+    <value>Unique Routes</value>
+  </data>
+  <data name="UI_Activity_Page_AddTrail_Generated" xml:space="preserve">
+    <value>Premi {0} per aggiungere l'attività selezionata come nuova Trail, {1} per aggiungere i punti selezionati alla nuova Trail</value>
+  </data>
+  <data name="UI_Activity_List_AscendingSpeed_VAM" xml:space="preserve">
+    <value>Velocità di ascesa</value>
+  </data>
+  <data name="UI_Activity_List_DiffPresent" xml:space="preserve">
+    <value>Differenza</value>
+  </data>
+  <data name="UI_Activity_List_IdealTime" xml:space="preserve">
+    <value>Tempo ideale</value>
+  </data>
+  <data name="UI_Chart_ChartBorderSmooth" xml:space="preserve">
+    <value>Smussare bordi del grafico</value>
+  </data>
+  <data name="UI_EditList_AutomaticRefActivity" xml:space="preserve">
+    <value>Automatico</value>
+  </data>
+  <data name="UI_Settings_AdjustElevationAtImport" xml:space="preserve">
+    <value>Correggere la quota in fase di importazione</value>
+  </data>
+  <data name="UI_Settings_BarometricDevices" xml:space="preserve">
+    <value>Dispositivi barometrici</value>
+  </data>
+  <data name="UI_Settings_GradeAdjustedPace" xml:space="preserve">
+    <value>Passo corretto sulla base della pendenza</value>
+  </data>
+  <data name="UI_Settings_PredictTimeForDistance" xml:space="preserve">
+    <value>Predirre tempo sulla distanza</value>
+  </data>
+  <data name="UI_Settings_StoppedCategoryOverride" xml:space="preserve">
+    <value>Ignorare categorie arrestate</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_All" xml:space="preserve">
+    <value>Tutto</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_None" xml:space="preserve">
+    <value>Nessuno</value>
+  </data>
+  <data name="UI_Chart_SmoothOverTrailBorders_Unchanged" xml:space="preserve">
+    <value>Nessun cambiamento</value>
+  </data>
+  <data name="UI_Settings_Copyright" xml:space="preserve">
+    <value>Copyright</value>
+  </data>
+  <data name="UI_Settings_License" xml:space="preserve">
+    <value>Il Plugin Trails è distribuito con GNU, Licenza Pubblica Generale Ridotta.
+La Licenza è inclusa nella directory di installazione del plugin e presso:
+http://www.gnu.org/licenses/lgpl.html.&quot;</value>
+  </data>
+  <data name="UI_Settings_Title" xml:space="preserve">
+    <value>Informazioni sul plugin</value>
+  </data>
+  <data name="List_CustomFields" xml:space="preserve">
+    <value>Elenca campi personalizzati</value>
+  </data>
+  <data name="List_RestLap" xml:space="preserve">
+    <value>Intervallo di recupero</value>
+  </data>
+  <data name="UI_Activity_List_AverageStrokeDistance" xml:space="preserve">
+    <value>Distanza media per bracciata</value>
+  </data>
+  <data name="UI_Activity_List_AverageStrokeRate" xml:space="preserve">
+    <value>Rateo medio di bracciata</value>
+  </data>
+  <data name="UI_Activity_List_Efficiency" xml:space="preserve">
+    <value>Efficienza</value>
+  </data>
+  <data name="UI_Activity_List_LengthCount" xml:space="preserve">
+    <value>Numero di vasche</value>
+  </data>
+  <data name="UI_Activity_List_StrokeCount" xml:space="preserve">
+    <value>Numero di bracciate</value>
+  </data>
+  <data name="UI_Activity_List_StrokeType" xml:space="preserve">
+    <value>Tipo di bracciate</value>
+  </data>
+  <data name="UI_Activity_List_SWOLF" xml:space="preserve">
+    <value>SWOLF</value>
+  </data>
+  <data name="Metadata_Source" xml:space="preserve">
+    <value>Importa fonte</value>
+  </data>
+  <data name="UI_Activity_List_AddTopCategory" xml:space="preserve">
+    <value>Aggiungi categoria</value>
+  </data>
+  <data name="UI_Activity_List_SetRestLapsAsPauses" xml:space="preserve">
+    <value>Imposta intervalli di recupero come pause</value>
+  </data>
+  <data name="UI_Activity_List_ShowOnlyMarkedResultsOnMap" xml:space="preserve">
+    <value>Mostra solo i risultati selezionati sulla mappa</value>
+  </data>
+  <data name="UI_Activity_List_ShowSplitPointsOnMap" xml:space="preserve">
+    <value>Mostra gli Split sul percorso</value>
+  </data>
+  <data name="UI_Activity_List_ResultSummaryStdDev" xml:space="preserve">
+    <value>Riepiloga la deviazione media standard</value>
+  </data>
+  <data name="UI_Activity_List_UseDeviceDistance" xml:space="preserve">
+    <value>Usa la distanza del dispositivo</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryAverage" xml:space="preserve">
+    <value>Riepiloga la media</value>
+  </data>
+  <data name="UI_Activity_List_ShowSummaryTotal" xml:space="preserve">
+    <value>Riepiloga il totale</value>
+  </data>
+  <data name="UI_Chart_AddChart" xml:space="preserve">
+    <value>Aggiungi grafico</value>
+  </data>
+  <data name="UI_Chart_SelectChartsTitle" xml:space="preserve">
+    <value>Dettagli del grafico</value>
+  </data>
+  <data name="UI_Chart_SelectedCharts" xml:space="preserve">
+    <value>Grafici selezionati</value>
+  </data>
+  <data name="UI_Chart_SelectMoreCharts" xml:space="preserve">
+    <value>Seleziona altri grafici</value>
+  </data>
+  <data name="UI_Chart_AddGraph" xml:space="preserve">
+    <value>Aggiungi grafico</value>
+  </data>
+  <data name="UI_Chart_Difference" xml:space="preserve">
+    <value>Differenza</value>
+  </data>
+  <data name="UI_Chart_SelectedGraphs" xml:space="preserve">
+    <value>Grafici selezionati</value>
+  </data>
+  <data name="UI_Chart_SelectGraphsTitle" xml:space="preserve">
+    <value>Dettagli del grafico</value>
+  </data>
+  <data name="UI_Chart_SelectMoreGraphs" xml:space="preserve">
+    <value>Seleziona altri grafici</value>
+  </data>
+  <data name="UI_Activity_List_AddActivities" xml:space="preserve">
+    <value>Aggiungi attività</value>
+  </data>
   <data name="UI_Settings_PageControl_linkInformativeUrl_Text" xml:space="preserve">
     <value>Pagina web del plugin</value>
   </data>
+  <data name="UI_Activity_List_ShowPausesAsResults" xml:space="preserve">
+    <value>Mostra le pause nei risultati</value>
+  </data>
+  <data name="UI_Settings_RouteTransparency" xml:space="preserve">
+    <value>Trasparenza del percorso</value>
+  </data>
+  <data name="UI_Settings_MaxChartResults" xml:space="preserve">
+    <value>Risultati massimi del grafico</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Impostazioni</value>
+  </data>
+  <data name="UI_Activity_Menu_HideToolBar" xml:space="preserve">
+    <value>Nascondi barra degli strumenti</value>
+  </data>
+  <data name="UI_Chart_PaceInverted" xml:space="preserve">
+    <value>Passo invertito</value>
   </data>
 </root>

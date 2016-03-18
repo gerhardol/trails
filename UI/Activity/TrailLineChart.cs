@@ -114,6 +114,21 @@ namespace TrailsPlugin.UI.Activity {
 
         public void UICultureChanged(CultureInfo culture)
         {
+            summaryListToolTip.SetToolTip(this.ZoomInButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionZoomIn);
+            summaryListToolTip.SetToolTip(this.ZoomOutButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionZoomOut);
+            //summaryListToolTip.SetToolTip(this.ZoomToContentButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text);
+            summaryListToolTip.SetToolTip(this.SaveImageButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSaveImage);
+            if (this.MultipleCharts)
+            {
+                summaryListToolTip.SetToolTip(this.MoreChartsButton, Properties.Resources.UI_Chart_SelectMoreCharts);
+            }
+            else
+            {
+                summaryListToolTip.SetToolTip(this.MoreChartsButton, Properties.Resources.UI_Chart_SelectMoreGraphs);
+            }
+            summaryListToolTip.SetToolTip(this.TrailPointsButton, Properties.Resources.TrailPointsControlLayer);
+            //summaryListToolTip.SetToolTip(this.smoothingPicker, Properties.Resources);
+
             copyChartMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
 #if ST_2_1
             saveImageMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSave;

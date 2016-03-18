@@ -117,6 +117,10 @@ namespace TrailsPlugin.UI.Activity {
 
         public void UICultureChanged(CultureInfo culture)
         {
+            summaryListToolTip.SetToolTip(this.insertActivitiesBtn, Properties.Resources.UI_Activity_List_AddActivities);
+            summaryListToolTip.SetToolTip(this.HelpFeaturesBtn, Properties.Resources.UI_Settings_PageControl_linkInformativeUrl_Text);
+            summaryListToolTip.SetToolTip(this.HelpTutorialBtn, HelpTutorialBtn_url);
+
             this.copyTableMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
             this.listSettingsMenuItem.Text = Properties.Resources.UI_Activity_List_ListSettings;
             this.insertActivitiesMenuItem.Text = Properties.Resources.UI_Activity_List_AddActivities;
@@ -1598,7 +1602,10 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelLap + ": " + res);
                     }
-
+                    else
+                    {
+                        ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSelectNone);
+                    }
                     ////Fix to remove laps added last insert of inserted (code to be removed)
                     //IList<TrailResultWrapper> atr = this.SelectedResultWrapper;
                     //if (atr != null && atr.Count > 0)
@@ -2474,9 +2481,10 @@ namespace TrailsPlugin.UI.Activity {
             e.Cancel = false;
         }
 
+        static string HelpTutorialBtn_url = "https://github.com/gerhardol/trails/wiki/Tutorials";
         private void HelpTutorialBtn_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/gerhardol/trails/wiki/Tutorials");
+            System.Diagnostics.Process.Start(HelpTutorialBtn_url);
         }
 
         private void HelpFeaturesBtn_Click(object sender, EventArgs e)

@@ -1534,9 +1534,9 @@ namespace TrailsPlugin.UI.Activity {
         private void InsertRestLap(IActivityLaps laps, DateTime startTime, TimeSpan duration)
         {
             ILapInfo l = null;
-            if(laps.Count>0)
+            if (laps.Count > 0)
             {
-                for (int i = 0; i < laps.Count; i++ )
+                for (int i = 0; i < laps.Count; i++)
                 {
                     if (laps[i].StartTime > startTime)
                     {
@@ -1786,7 +1786,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     else
                     {
-                        Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity = 
+                        Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.DefaultRefActivity =
                             Controller.TrailController.Instance.ReferenceActivity;
                     }
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity +
@@ -1806,7 +1806,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
-                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + " " + 
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation);
                     this.selectResultsWithDeviceElevation();
                 }
@@ -1948,7 +1948,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionAdd + ": " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
-                        m_PersistentSelectionResults.Count+ " (" + res + ")");
+                        m_PersistentSelectionResults.Count + " (" + res + ")");
                     Controller.TrailController.Instance.Activities = allActivities;
                     this.SelectedResults = m_PersistentSelectionResults;
                 }
@@ -1994,7 +1994,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (e.Modifiers == Keys.Alt)
                 {
                     Data.Settings.CadenceFromOther = !Data.Settings.CadenceFromOther;
-                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + " " + 
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelCadence + ": " + Data.Settings.CadenceFromOther);
                     this.m_page.RefreshData(true);
                     this.m_page.RefreshChart();
@@ -2183,7 +2183,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     Data.Settings.ShowActivityValuesForResults = !Data.Settings.ShowActivityValuesForResults;
                     //This is all dynamic, but we want to retrigger sort
-                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text .LabelActivity + ": " + 
+                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
                         Data.Settings.ShowActivityValuesForResults);
                     this.m_page.RefreshData(false);
                 }
@@ -2260,7 +2260,7 @@ namespace TrailsPlugin.UI.Activity {
                 int res = this.selectWithUR();
                 ShowToolTip(string.Format(Properties.Resources.UI_Activity_List_URSelect, res));
             }
-            
+
             else if (e.KeyCode == Keys.X)
             {
                 if (e.Modifiers == Keys.Alt || e.Modifiers == (Keys.Alt | Keys.Shift))

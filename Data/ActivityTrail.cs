@@ -786,22 +786,17 @@ namespace TrailsPlugin.Data
             return result;
         }
 
-        internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, IGPSLocation gps, float radius)
-        {
-            TrailGPSLocation trailgps = new TrailGPSLocation(gps, radius);
-            trailgps.Radius = radius;
-            return GetClosestMatch(activity, pauses, trailgps);
-        }
-
-        internal static IList<TrailResultPoint> GetClosestMatches(IActivity activity, IValueRangeSeries<DateTime> pauses, TrailGPSLocation trailgps)
+        private static IList<TrailResultPoint> GetClosestMatches(IActivity activity, IValueRangeSeries<DateTime> pauses, TrailGPSLocation trailgps)
         {
             //A fix to get best point. 
-            //Done rather that destroying trail detection furthe
-            IList<TrailResultInfo> trailResults = new List<TrailResultInfo>(); //Unused
+            //Done rather that destroying trail detection further
+            IList<TrailResultInfo> trailResults = new List<TrailResultInfo>();
             IList<ActivityTrail.IncompleteTrailResult> incompleteResults = new List<ActivityTrail.IncompleteTrailResult>();
+
             //Force all results to be incomplete, to match all matches along a track (to avoid best match is thrown away)
             GetTrailResultInfo(activity, pauses, new List<TrailGPSLocation> { trailgps }, trailgps.Radius, false, 1, trailResults, incompleteResults);
 
+            //Should never give any trailResults, max results set to 1
             IList<TrailResultPoint> points = new List<TrailResultPoint>();
             foreach (TrailResultInfo l in trailResults)
             {
@@ -823,7 +818,13 @@ namespace TrailsPlugin.Data
             return points;
         }
 
-        internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, TrailGPSLocation trailgps)
+        internal static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, IGPSLocation gps, float radius)
+        {
+            TrailGPSLocation trailgps = new TrailGPSLocation(gps, radius);
+            return GetClosestMatch(activity, pauses, trailgps);
+        }
+
+        private static TrailResultPoint GetClosestMatch(IActivity activity, IValueRangeSeries<DateTime> pauses, TrailGPSLocation trailgps)
         {
             IList<TrailResultPoint> points = GetClosestMatches(activity, pauses, trailgps);
             ((List<TrailResultPoint>)points).Sort();

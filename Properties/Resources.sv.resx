@@ -371,4 +371,13 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Chart_PaceInverted" xml:space="preserve">
     <value>Tempo Inverterat</value>
   </data>
+  <data name="UI_Chart_FitToWindow" xml:space="preserve">
+    <value>Passa i fönster</value>
+  </data>
+  <data name="UI_Chart_PickerOffset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="UI_Chart_PickerSmoothing" xml:space="preserve">
+    <value>Utjämning</value>
+  </data>
 </root>

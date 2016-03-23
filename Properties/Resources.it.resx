@@ -341,7 +341,7 @@ http://www.gnu.org/licenses/lgpl.html.&quot;</value>
     <value>Importa fonte</value>
   </data>
   <data name="UI_Activity_List_AddTopCategory" xml:space="preserve">
-    <value>Aggiungi categoria</value>
+    <value>Aggiungi categoria {0}</value>
   </data>
   <data name="UI_Activity_List_SetRestLapsAsPauses" xml:space="preserve">
     <value>Imposta intervalli di recupero come pause</value>

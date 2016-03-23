@@ -361,7 +361,7 @@ foreach my$sname (keys %{$db->{sections}})
                 my$m=$1;
                 if ($section->{$j}[$i] !~ /\Q${m}\E/)
                 {
-                  print STDOUT "Error: Incorrect formatting for $code \"$j\", $m: $section->{$j}[$i] ($xmlexists{$j}[1])\n";
+                  print STDOUT "Error: Incorrect formatting for $code \"$j\", missing '$m': $section->{$j}[$i] ($xmlexists{$j}[1])\n";
                 }
               }
             }

@@ -116,7 +116,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             summaryListToolTip.SetToolTip(this.ZoomInButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionZoomIn);
             summaryListToolTip.SetToolTip(this.ZoomOutButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionZoomOut);
-            //summaryListToolTip.SetToolTip(this.ZoomToContentButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text);
+            summaryListToolTip.SetToolTip(this.ZoomToContentButton, Properties.Resources.UI_Chart_FitToWindow);
             summaryListToolTip.SetToolTip(this.SaveImageButton, ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSaveImage);
             if (this.MultipleCharts)
             {
@@ -127,6 +127,7 @@ namespace TrailsPlugin.UI.Activity {
                 summaryListToolTip.SetToolTip(this.MoreChartsButton, Properties.Resources.UI_Chart_SelectMoreGraphs);
             }
             summaryListToolTip.SetToolTip(this.TrailPointsButton, Properties.Resources.TrailPointsControlLayer);
+            //set smoothingLabel,smoothingPicker in SetupData:  setSmoothingPicker(GetSmooth());
             //summaryListToolTip.SetToolTip(this.smoothingPicker, Properties.Resources);
 
             copyChartMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCopy;
@@ -135,9 +136,9 @@ namespace TrailsPlugin.UI.Activity {
 #else
             saveImageMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionSaveImage;
 #endif
-            fitToWindowMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionRefresh;
+            fitToWindowMenuItem.Text = Properties.Resources.UI_Chart_FitToWindow;
             moreChartsMenuItem.Text = Properties.Resources.UI_Chart_SelectMoreCharts;
-            //set smoothingLabel in SetupData:  setSmoothingPicker(GetSmooth());
+            //set smoothingLabel,smoothingPicker in SetupData:  setSmoothingPicker(GetSmooth());
             SetupAxes();
         }
 
@@ -299,12 +300,14 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.smoothingPicker.Maximum = decimal.MaxValue;
                 this.smoothingPicker.Minimum = decimal.MinValue;
+                summaryListToolTip.SetToolTip(this.smoothingPicker, Properties.Resources.UI_Chart_PickerOffset);
             }
             else
             {
                 //Some resonable, to keep size
                 this.smoothingPicker.Maximum = 9999;
                 this.smoothingPicker.Minimum = 0;
+                summaryListToolTip.SetToolTip(this.smoothingPicker, Properties.Resources.UI_Chart_PickerSmoothing);
             }
             if (val > this.smoothingPicker.Maximum)
             {

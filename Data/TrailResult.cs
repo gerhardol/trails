@@ -3901,17 +3901,19 @@ namespace TrailsPlugin.Data
 
                 for (int i = 0; i < m_activity.GPSRoute.Count; i++)
                 {
-                    float d2 = this.Activity.GPSRoute[i].Value.DistanceMetersToPoint(this.Activity.GPSRoute[prevIndex].Value);
+                    float diffDist = this.Activity.GPSRoute[i].Value.DistanceMetersToPoint(this.Activity.GPSRoute[prevIndex].Value);
+                    uint diffTime = this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds;
                     if (Data.Settings.UseGpsFilter == GpsFilterType.None || prevIndex == 0 ||
                         Data.Settings.UseGpsFilter == GpsFilterType.DistanceOrTime && 
-                        (this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime ||
-                        d2 > Data.Settings.GpsFilterMinimumDistance) ||
+                        (diffTime >= Data.Settings.GpsFilterMinimumTime ||
+                        diffDist > Data.Settings.GpsFilterMinimumDistance) ||
                         Data.Settings.UseGpsFilter == GpsFilterType.DistanceAndTime && 
-                        (this.Activity.GPSRoute[i].ElapsedSeconds - this.Activity.GPSRoute[prevIndex].ElapsedSeconds >= Data.Settings.GpsFilterMinimumTime &&
-                        d2 > Data.Settings.GpsFilterMinimumDistance))
+                        (diffTime >= Data.Settings.GpsFilterMaximumTime ||
+                        diffTime >= Data.Settings.GpsFilterMinimumTime &&
+                        diffDist > Data.Settings.GpsFilterMinimumDistance))
                     {
                         prevIndex = i;
-                        prevDist += d2;
+                        prevDist += diffDist;
                         DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
 
                         if (this.StartTime <= dateTime && dateTime <= this.EndTime &&

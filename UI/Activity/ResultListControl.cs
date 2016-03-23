@@ -1765,6 +1765,7 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         Data.Settings.GpsFilterMinimumDistance = 10;
                         Data.Settings.GpsFilterMinimumTime = 2;
+                        Data.Settings.GpsFilterMaximumTime = 5;
                     }
                     ShowToolTip("GPS: " + Data.Settings.UseGpsFilter + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDistance + ": " + Data.Settings.GpsFilterMinimumDistance + " " +

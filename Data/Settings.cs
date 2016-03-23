@@ -96,6 +96,7 @@ namespace TrailsPlugin.Data
         public static bool OverlappingResultShareSplitTime; //not in xml
         public static bool ShowSummaryForChildren; //not in xml
         public static GpsFilterType UseGpsFilter; //not in xml
+        public static int GpsFilterMaximumTime; //not in xml
         public static int GpsFilterMinimumTime; //not in xml
         public static float GpsFilterMinimumDistance; //not in xml
         public static int SelectSimilarModulu; //not in xml
@@ -170,6 +171,7 @@ namespace TrailsPlugin.Data
             ShowSummaryForChildren = false;
             UseGpsFilter = GpsFilterType.None;
             GpsFilterMinimumTime = 2;
+            GpsFilterMaximumTime = 5;
             GpsFilterMinimumDistance = 10f;
             SelectSimilarModulu = 0;
 

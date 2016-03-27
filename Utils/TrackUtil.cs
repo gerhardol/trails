@@ -571,7 +571,7 @@ namespace TrailsPlugin.Utils
         {
             bool res = false;
             //Skip short overlaps. They are not interesting and could be border effects for multi matches
-            if (start1 >= start2 && start1 <= end2 && (end2 - start1) > TimeSpan.FromSeconds(9) ||
+            if (start1 >= start2 && (end2 == DateTime.MinValue || start1 <= end2 && (end2 - start1) > TimeSpan.FromSeconds(9)) ||
                 start2 >= start1 && start2 <= end1 && (end1 - start2) > TimeSpan.FromSeconds(9))
             {
                 res = true;

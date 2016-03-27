@@ -3227,7 +3227,28 @@ namespace TrailsPlugin.Data
                 return false;
             }
             //aprox end, excluding TimerPauses
-            DateTime end2 = activity.StartTime + activity.TotalTimeEntered;
+            DateTime end2 = activity.StartTime;
+            if (end2 == DateTime.MinValue)
+            {
+                Debug.Assert(false, "No activity start time");
+                if (activity.GPSRoute != null && activity.GPSRoute.StartTime != DateTime.MinValue)
+                {
+                    end2 = activity.GPSRoute.StartTime;
+                }
+            }
+            if (activity.TotalTimeEntered > TimeSpan.Zero)
+            {
+                end2 += activity.TotalTimeEntered;
+            }
+            else if (activity.GPSRoute != null && activity.GPSRoute.TotalElapsedSeconds > 0)
+            {
+                end2 += TimeSpan.FromSeconds(activity.GPSRoute.TotalElapsedSeconds);
+            }
+            else
+            {
+                //Debug.Assert(false, "Unexpected time span " + end2);
+                end2 += TimeSpan.FromDays(1);
+            }
             return TrackUtil.AnyOverlap(this.StartTime, this.EndTime, activity.StartTime, end2);
         }
 

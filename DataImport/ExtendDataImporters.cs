@@ -15,10 +15,9 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
@@ -46,7 +45,11 @@ namespace TrailsPlugin.DataImport
                 {
                     IActivity activity = (IActivity)item;
                     bool setName = (TrailsPlugin.Data.Settings.SetNameAtImport &&
-                        string.IsNullOrEmpty(activity.Name));
+                        (string.IsNullOrEmpty(activity.Name) ||
+                        //Obvious timestamps
+                        Regex.IsMatch(activity.Name, "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{1,2}:\\d{1,2}Z$") ||
+                        Regex.IsMatch(activity.Name, "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{1,2}$")
+                        ));
                     if (setName)
                     {
                         //Do not keep selection, sort find best

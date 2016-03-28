@@ -2,6 +2,17 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
+2.0.9 2016-04-
+  * Updated Italian translation
+  * Added tooltips on buttons missing
+  * Popup forms are now themed as other SportTracks popups
+  * Added filter for GPS distances, (Keyboard shortcut Alt-d), using time and distance (previously time or distance only).
+  * Multi-select (right click to add) did not work for hierarchichal TrailSelectorControl
+  * List all selected trail in multi selections
+  * Set Trail name at import also for obvious timestamp names
+  * The default reference activity was added as an activity for all trails, so always set as at least one result
+  * Varios bugfixes
+
 2.0.6 2016-02-02 (Plugin Catalog)
   * Popup form from Analyze menu for Activity Reports.
   * Result list shortcut Shift-F11 to expand only result List

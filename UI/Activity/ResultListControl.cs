@@ -999,13 +999,29 @@ namespace TrailsPlugin.UI.Activity {
                             if (popRes == DialogResult.OK)
                             {
                                 tr.Result.LapInfo.Rest = !tr.Result.LapInfo.Rest;
+                                this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
                             }
                         }
                         else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && tr.Result.Activity != null)
                         {
                             setMetaImportSource(tr.Result.Activity);
+                            this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
                         }
-                        else if (tr.Result.Activity != null)
+                        //else if (selectedColumn.Id == TrailResultColumnIds.StartTime)
+                        //{
+                        //    TBD
+                        //}
+                        else if (tr.Result.Activity != null && tr.Result is PausedChildTrailResult)
+                        {
+                            DialogResult popRes = MessageDialog.Show("Remove clicked pause from result?",
+                                  "Remove Pause", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                            if (popRes == DialogResult.OK)
+                            {
+                                tr.Result.Pauses.Remove(new ValueRange<DateTime>(tr.Result.StartTime, tr.Result.EndTime));
+                                m_page.RefreshData(false);
+                            }
+                        }
+                        else if (tr.Result.Activity != null && tr.Result is ParentTrailResult)
                         {
                             Guid view = GUIDs.DailyActivityView;
                             Controller.TrailController.Instance.ReferenceResult = tr;
@@ -1634,20 +1650,55 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == (Keys.Control | Keys.Shift))
                 {
                     //Unofficial
-                    int res = 0;
-                    IList<TrailResultWrapper> atr = this.SelectedResults;
-                    if (atr != null && atr.Count > 0)
+                    DialogResult popRes = MessageDialog.Show("Set marked pauses as rest laps?",
+                        "Remove Pauses", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                    if (popRes == DialogResult.OK)
                     {
-                        foreach (TrailResultWrapper tr in atr)
+                        int res = 0;
+                        IList<TrailResultWrapper> atr = this.SelectedResults;
+                        if (atr != null && atr.Count > 0)
                         {
-                            if (tr.Result is ChildTrailResult)
+                            foreach (TrailResultWrapper tr in atr)
                             {
-                                InsertRestLap(tr.Result.Activity.Laps, tr.Result.StartTime, tr.Result.Duration);
-                                res++;
+                                if (tr.Result is ChildTrailResult)
+                                {
+                                    if (tr.Result is PausedChildTrailResult)
+                                    {
+                                        TrackUtil.removePause(tr.Result.Activity.TimerPauses, tr.Result.StartTime, tr.Result.EndTime);
+                                        TrackUtil.removePause(tr.Result.Pauses, tr.Result.StartTime, tr.Result.EndTime);
+                                        InsertRestLap(tr.Result.Activity.Laps, tr.Result.StartTime, tr.Result.Duration);
+                                        res++;
+                                    }
+                                }
                             }
                         }
+                        ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelLap + ": " + res);
+                        this.m_page.RefreshData(true);
                     }
-                    ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelLap + ": " + res);
+                }
+                else if (e.Modifiers == (Keys.Alt | Keys.Shift))
+                {
+                    //Unofficial
+                    DialogResult popRes = MessageDialog.Show("Set marked laps as pauses?",
+                        "Add Pause", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                    if (popRes == DialogResult.OK)
+                    {
+                        int res = 0;
+                        IList<TrailResultWrapper> atr = this.SelectedResults;
+                        if (atr != null && atr.Count > 0)
+                        {
+                            foreach (TrailResultWrapper tr in atr)
+                            {
+                                if (tr.Result is ChildTrailResult)
+                                {
+                                    tr.Result.Activity.TimerPauses.Add(new ValueRange<DateTime>(tr.Result.StartTime, tr.Result.EndTime));
+                                    res++;
+                                }
+                            }
+                        }
+                        ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelEndTime + ": " + res);
+                        this.m_page.RefreshData(true);
+                    }
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
@@ -1909,6 +1960,7 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 activity.Metadata.Source = refSource;
                             }
+                            this.summaryList.RefreshElements( this.summaryList.SelectedItems );
                         }
                     }
                 }

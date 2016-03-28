@@ -214,6 +214,33 @@ namespace TrailsPlugin.Utils
 
         /***************************************************/
 
+        internal static void removePause(IValueRangeSeries<DateTime> pauses, DateTime startTime, DateTime endTime)
+        {
+            for (int i = 0; i < pauses.Count;)
+            {
+                IValueRange<DateTime> t = pauses[i];
+                if (t.Lower < startTime && startTime <= t.Upper)
+                {
+                    pauses.RemoveAt(i);
+                    if (endTime < t.Upper)
+                    {
+                        IValueRange<DateTime> t2 = new ValueRange<DateTime>(endTime, t.Upper);
+                        pauses.Add(t2);
+                    }
+                }
+                else if (t.Lower < endTime && endTime <= t.Upper)
+                {
+                    pauses.RemoveAt(i);
+                    IValueRange<DateTime> t2 = new ValueRange<DateTime>(startTime, t.Lower);
+                    pauses.Add(t2);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+
         internal static DateTime getFirstUnpausedTime(DateTime dateTime, IValueRangeSeries<DateTime> pauses, bool next)
         {
             return getFirstUnpausedTime(dateTime, ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, pauses), pauses, next);

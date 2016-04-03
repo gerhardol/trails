@@ -498,14 +498,23 @@ namespace TrailsPlugin.Data {
                 //The pause is compared to the normal result, always display after
                 TrailResult x0 = x;
                 TrailResult y0 = y;
-                if (x is PausedChildTrailResult)
+                if (x is PausedChildTrailResult && y is PausedChildTrailResult)
+                {
+                    if ((x as PausedChildTrailResult).RelatedChildResult != (y as PausedChildTrailResult).RelatedChildResult)
+                    {
+                        x = (x as PausedChildTrailResult).RelatedChildResult;
+                        y = (y as PausedChildTrailResult).RelatedChildResult;
+                    }
+                }
+                else if (x is PausedChildTrailResult)
                 {
                     x = (x as PausedChildTrailResult).RelatedChildResult;
                 }
-                if (y is PausedChildTrailResult)
+                else if (y is PausedChildTrailResult)
                 {
                     y = (y as PausedChildTrailResult).RelatedChildResult;
                 }
+
                 if (x == y)
                 {
                     result = x0.StartTime.CompareTo(y0.StartTime);

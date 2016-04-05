@@ -269,8 +269,20 @@ namespace TrailsPlugin.Data
                                 tmpSel.MarkedDistances = new ValueRangeSeries<double>();
                                 foreach (ValueRange<DateTime> t in sel.MarkedTimes)
                                 {
-                                    double d1 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Lower).Value;
-                                    double d2 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(t.Upper).Value;
+                                    //If real time differs with a couple of seconds, use that
+                                    const int maxTimeDiff = 2;
+                                    DateTime start = t.Lower;
+                                    if (start < activityUnpausedDistanceMetersTrack.StartTime &&
+                                        start > activityUnpausedDistanceMetersTrack.StartTime - TimeSpan.FromSeconds(maxTimeDiff))
+                                    { start = activityUnpausedDistanceMetersTrack.StartTime; }
+                                    DateTime end = t.Upper;
+                                    if (end > activityUnpausedDistanceMetersTrack.StartTime + 
+                                        TimeSpan.FromSeconds(activityUnpausedDistanceMetersTrack.TotalElapsedSeconds) &&
+                                        end < activityUnpausedDistanceMetersTrack.StartTime + 
+                                        TimeSpan.FromSeconds(activityUnpausedDistanceMetersTrack.TotalElapsedSeconds - maxTimeDiff))
+                                    { end = activityUnpausedDistanceMetersTrack.StartTime + TimeSpan.FromSeconds(activityUnpausedDistanceMetersTrack.TotalElapsedSeconds); }
+                                    double d1 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(start).Value;
+                                    double d2 = activityUnpausedDistanceMetersTrack.GetInterpolatedValue(end).Value;
                                     AddMarkedOrSelectedDistance(tmpSel, singleSelection, d1, d2);
                                 }
                                 tmpSel.MarkedTimes = null;

@@ -530,4 +530,7 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="UI_Chart_PickerSmoothing" xml:space="preserve">
     <value>Smoothing</value>
   </data>
+  <data name="List_TimerPause" xml:space="preserve">
+    <value>Timer Pause</value>
+  </data>
 </root>

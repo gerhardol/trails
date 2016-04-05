@@ -184,6 +184,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timer Pause.
+        /// </summary>
+        internal static string List_TimerPause {
+            get {
+                return ResourceManager.GetString("List_TimerPause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import Source.
         /// </summary>
         internal static string Metadata_Source {

@@ -162,15 +162,11 @@ namespace TrailsPlugin.Data
             {
                 switch (column.Id)
                 {
-                    case TrailResultColumnIds.StartTime:
-                    case TrailResultColumnIds.StartDistance:
-                    case TrailResultColumnIds.EndTime:
-                    case TrailResultColumnIds.Duration:
-                        //Show with default formatting
-                        break;
-                    default:
-                        //Not for pauses
+                    //Some paused fields should not be visible
+                    case TrailResultColumnIds.Order:
                         return null;
+                    default:
+                        break;
                 }
             }
 

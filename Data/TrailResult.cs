@@ -71,6 +71,7 @@ namespace TrailsPlugin.Data
         private static int nextTrailColor = 0;
 
         private IValueRangeSeries<DateTime> m_pauses;
+        private IValueRangeSeries<DateTime> m_lapPauses;
         private IDistanceDataTrack m_distanceMetersTrack;
         private IDistanceDataTrack m_activityDistanceMetersTrack;
         //private INumericTimeDataSeries m_elevationMetersTrack;
@@ -229,6 +230,7 @@ namespace TrailsPlugin.Data
                     m_activityDistanceMetersTrack = null;
                     //m_ActivityInfo = null;
                     m_pauses = null;
+                    m_lapPauses = null;
                 }
             }
         }
@@ -547,7 +549,7 @@ namespace TrailsPlugin.Data
         public IValueRangeSeries<DateTime> getSelInfo(bool excludePauses)
         {
             IValueRangeSeries<DateTime> res = new ValueRangeSeries<DateTime> { new ValueRange<DateTime>(this.StartTime, this.EndTime) };
-            if (excludePauses && !(this is PausedChildTrailResult))
+            if (excludePauses)
             {
                 res = TrailsItemTrackSelectionInfo.excludePauses(res, this.Pauses);
             }
@@ -820,184 +822,272 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if (m_pauses == null)
+                calcPauses();
+                return m_pauses;
+            }
+        }
+
+        public IValueRangeSeries<DateTime> TimerPauses
+        {
+            get
+            {
+                IValueRangeSeries<DateTime> pauses = new ValueRangeSeries<DateTime>();
+                if (this.Activity != null && this.Activity.TimerPauses != null)
                 {
-                    TrailResultWrapper refTr = Controller.TrailController.Instance.ReferenceResult;
-                    if (this is SummaryTrailResult)
+                    //TBD first non mandatory time?
+                    DateTime startTime = m_subResultInfo.Points[0].Time;
+                    DateTime endTime = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
+                    foreach (IValueRange<DateTime> v in this.Activity.TimerPauses)
                     {
-                        Debug.Assert(false, "Unexpectedly requesting pauses for summary result");
-                        this.m_pauses = new ValueRangeSeries<DateTime>();
-                    }
-                    else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
-                    {
-                        this.m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
-                    }
-                    else
-                    {
-                        //Note: All cached values (including Start/End) must be set after Pauses
-                        bool overlap = TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
-                           this.OverlapRef != null;
-                        this.m_pauses = new ValueRangeSeries<DateTime>();
-                        IValueRangeSeries<DateTime> actPause;
-                        //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
-                        if (overlap)
+                        //Add pauses also if the limit is outside the result
+                        if (startTime <= v.Lower && v.Lower <= endTime ||
+                            startTime <= v.Upper && v.Upper <= endTime)
                         {
-                            actPause = this.OverlapRef.Pauses;
-                        }
-                        else
-                        {
-                            actPause = this.Info.NonMovingTimes;
-                        }
-                        foreach (ValueRange<DateTime> t in actPause)
-                        {
-                            m_pauses.Add(t);
-                        }
-
-                        if (Settings.RestIsPause)
-                        {
-                            //Check for active laps first, if all laps are inactive show anyway
-                            bool isActive = false;
-                            if (this.Activity != null && this.Activity.Laps != null)
-                            {
-                                int i = 0;
-                                int firstActive = -1;
-                                int lastActive = -1;
-                                foreach (ILapInfo lap in Activity.Laps)
-                                {
-                                    if (!lap.Rest)
-                                    {
-                                        if (firstActive < 0)
-                                        {
-                                            firstActive = i;
-                                        }
-                                        lastActive = i;
-                                        isActive = true;
-                                    }
-                                    i++;
-                                }
-
-                                if (overlap)
-                                {
-                                    if (firstActive >= 0)
-                                    {
-                                        DateTime startTimeOverlap = Activity.Laps[firstActive].StartTime;
-                                        m_startTime = getStartTime(this.m_pauses);
-                                        if ((DateTime)m_startTime < startTimeOverlap)
-                                        {
-                                            this.m_pauses.Add(new ValueRange<DateTime>((DateTime)m_startTime, startTimeOverlap));
-                                            m_startTime = startTimeOverlap;
-                                        }
-                                    }
-                                    if (lastActive >= 0)
-                                    {
-                                        DateTime endTimeOverlap = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
-                                            Activity.Laps[lastActive].StartTime, Activity.Laps[lastActive].TotalTime, Activity.TimerPauses);
-                                        m_endTime = getEndTime(this.m_pauses);
-                                        if (endTimeOverlap < (DateTime)m_endTime)
-                                        {
-                                            this.m_pauses.Add(new ValueRange<DateTime>(endTimeOverlap, (DateTime)m_endTime));
-                                            m_endTime = endTimeOverlap;
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (isActive && !overlap)
-                            {
-                                for (int i = 0; i < Activity.Laps.Count; i++)
-                                {
-                                    ILapInfo lap = Activity.Laps[i];
-                                    if (lap.Rest)
-                                    {
-                                        //pauses are set on next second
-                                        DateTime lower = lap.StartTime;
-                                        if (i == 0)
-                                        {
-                                            lower = lower.AddSeconds(-1);
-                                        }
-                                        DateTime upper;
-                                        if (i < Activity.Laps.Count - 1)
-                                        {
-                                            upper = Activity.Laps[i + 1].StartTime;
-                                            if (!Activity.Laps[i + 1].Rest)
-                                            {
-                                                upper = upper.AddSeconds(-1);
-                                            }
-                                            //Fix: Lap start time is in seconds, precision could be lost
-                                            DateTime upper2 = lower.Add(lap.TotalTime);
-                                            if (upper.Millisecond == 0 && Math.Abs((upper2 - upper).TotalSeconds) < 2)
-                                            {
-                                                upper = upper2;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            upper = this.Info.EndTime.AddSeconds(1);
-                                        }
-                                        this.m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                                    }
-                                }
-                            }
-
-                            if (!overlap)
-                            {
-                                //Non required trail points
-                                for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
-                                {
-                                    if (i < this.m_subResultInfo.Points.Count &&
-                                        !this.m_subResultInfo.Points[i].Required &&
-                                        this.TrailPointDateTime[i] > DateTime.MinValue)
-                                    {
-                                        DateTime lower = this.TrailPointDateTime[i];
-                                        DateTime upper = this.EndTime;
-                                        while (i < this.TrailPointDateTime.Count &&
-                                            i < this.m_subResultInfo.Points.Count &&
-                                            (!this.m_subResultInfo.Points[i].Required ||
-                                            this.TrailPointDateTime[i] == DateTime.MinValue))
-                                        {
-                                            i++;
-                                        }
-                                        if (i < this.TrailPointDateTime.Count &&
-                                            this.TrailPointDateTime[i] > DateTime.MinValue)
-                                        {
-                                            upper = this.TrailPointDateTime[i];
-                                        }
-                                        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                                    }
-                                }
-                                //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                                //if (m_activityTrail.Trail.IsSplits)
-                                //{
-                                //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
-                                //}
-                                //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
-                                //{
-                                //    if (i < trailLocations.Count &&
-                                //        !trailLocations[i].Required &&
-                                //        this.TrailPointDateTime[i] > DateTime.MinValue)
-                                //    {
-                                //        DateTime lower = this.TrailPointDateTime[i];
-                                //        DateTime upper = this.EndTime;
-                                //        while (i < this.TrailPointDateTime.Count &&
-                                //            i < trailLocations.Count &&
-                                //            (!trailLocations[i].Required ||
-                                //            this.TrailPointDateTime[i] == DateTime.MinValue))
-                                //        {
-                                //            i++;
-                                //        }
-                                //        if (i < this.TrailPointDateTime.Count &&
-                                //            this.TrailPointDateTime[i] > DateTime.MinValue)
-                                //        {
-                                //            upper = this.TrailPointDateTime[i];
-                                //        }
-                                //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                                //    }
-                                //}
-                            }
+                            pauses.Add(v);
                         }
                     }
                 }
-                return m_pauses;
+                return pauses;
+            }
+        }
+
+        public IValueRangeSeries<DateTime> LapPauses
+        {
+            get
+            {
+                calcPauses();
+                return m_lapPauses;
+            }
+        }
+
+        public IValueRangeSeries<DateTime> StoppedPauses
+        {
+            get
+            {
+                IValueRangeSeries<DateTime> pauses = new ValueRangeSeries<DateTime>();
+                foreach (IValueRange<DateTime> v in this.Pauses)
+                {
+                    pauses.Add(v);
+                }
+                foreach (IValueRange<DateTime> v in this.TimerPauses)
+                {
+                   TrackUtil.removePause(pauses, v.Lower, v.Upper);
+                }
+                foreach (IValueRange<DateTime> v in this.LapPauses)
+                {
+                    TrackUtil.removePause(pauses, v.Lower, v.Upper);
+                }
+                return pauses;
+            }
+        }
+
+        private void calcPauses()
+        {
+            if (m_pauses == null)
+            {
+                TrailResultWrapper refTr = Controller.TrailController.Instance.ReferenceResult;
+                this.m_pauses = new ValueRangeSeries<DateTime>();
+                this.m_lapPauses = new ValueRangeSeries<DateTime>();
+
+                if (this is SummaryTrailResult)
+                {
+                    Debug.Assert(false, "Unexpectedly requesting pauses for summary result");
+                }
+                else if (this is PausedChildTrailResult)
+                {
+                    //Stopped use both Timer/Rest, must calculate m_lapPauses
+                    PausedChildTrailResult tr = this as PausedChildTrailResult;
+                    if (tr.pauseType == PauseType.Timer)
+                    {
+                        //No other pause, use all 
+                    }
+                    else if (tr.pauseType == PauseType.RestLap)
+                    {
+                        this.m_pauses = this.TimerPauses;
+                    }
+                    else if ((this as ChildTrailResult).PartOfParent)
+                    {
+                        this.m_lapPauses = (this as ChildTrailResult).ParentResult.m_lapPauses;
+                        foreach (IValueRange<DateTime> v in this.TimerPauses)
+                        {
+                            this.m_pauses.Add(v);
+                        }
+                        foreach (IValueRange<DateTime> v in this.LapPauses)
+                        {
+                            this.m_pauses.Add(v);
+                        }
+                    }
+                }
+                else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
+                {
+                    this.m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
+                    this.m_lapPauses = (this as ChildTrailResult).ParentResult.m_lapPauses;
+                }
+                else
+                {
+                    //Note: All cached values (including Start/End) must be set after Pauses
+                    bool overlap = TrailsPlugin.Data.Settings.OverlappingResultUseReferencePauses &&
+                       this.OverlapRef != null;
+                    IValueRangeSeries<DateTime> actPause;
+                    //OverlappingResultUseTimeOfDayDiff really implies OverlappingResultUseReferencePauses, handled when setting
+                    if (overlap)
+                    {
+                        actPause = this.OverlapRef.Pauses;
+                    }
+                    else
+                    {
+                        actPause = this.Info.NonMovingTimes;
+                    }
+                    foreach (ValueRange<DateTime> t in actPause)
+                    {
+                        m_pauses.Add(t);
+                    }
+
+                    if (Settings.RestIsPause)
+                    {
+                        //Check for active laps first, if all laps are inactive show anyway
+                        bool isActive = false;
+                        if (this.Activity != null && this.Activity.Laps != null)
+                        {
+                            int i = 0;
+                            int firstActive = -1;
+                            int lastActive = -1;
+                            foreach (ILapInfo lap in Activity.Laps)
+                            {
+                                if (!lap.Rest)
+                                {
+                                    if (firstActive < 0)
+                                    {
+                                        firstActive = i;
+                                    }
+                                    lastActive = i;
+                                    isActive = true;
+                                }
+                                i++;
+                            }
+
+                            if (overlap)
+                            {
+                                if (firstActive >= 0)
+                                {
+                                    DateTime startTimeOverlap = Activity.Laps[firstActive].StartTime;
+                                    m_startTime = getStartTime(this.m_pauses);
+                                    if ((DateTime)m_startTime < startTimeOverlap)
+                                    {
+                                        this.m_pauses.Add(new ValueRange<DateTime>((DateTime)m_startTime, startTimeOverlap));
+                                        m_startTime = startTimeOverlap;
+                                    }
+                                }
+                                if (lastActive >= 0)
+                                {
+                                    DateTime endTimeOverlap = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                                        Activity.Laps[lastActive].StartTime, Activity.Laps[lastActive].TotalTime, Activity.TimerPauses);
+                                    m_endTime = getEndTime(this.m_pauses);
+                                    if (endTimeOverlap < (DateTime)m_endTime)
+                                    {
+                                        this.m_pauses.Add(new ValueRange<DateTime>(endTimeOverlap, (DateTime)m_endTime));
+                                        m_endTime = endTimeOverlap;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (isActive && !overlap)
+                        {
+                            for (int i = 0; i < Activity.Laps.Count; i++)
+                            {
+                                ILapInfo lap = Activity.Laps[i];
+                                if (lap.Rest)
+                                {
+                                    //pauses are set on next second
+                                    DateTime lower = lap.StartTime;
+                                    if (i == 0)
+                                    {
+                                        lower = lower.AddSeconds(-1);
+                                    }
+                                    DateTime upper;
+                                    if (i < Activity.Laps.Count - 1)
+                                    {
+                                        upper = Activity.Laps[i + 1].StartTime;
+                                        if (!Activity.Laps[i + 1].Rest)
+                                        {
+                                            upper = upper.AddSeconds(-1);
+                                        }
+                                        //Fix: Lap start time is in seconds, precision could be lost
+                                        DateTime upper2 = lower.Add(lap.TotalTime);
+                                        if (upper.Millisecond == 0 && Math.Abs((upper2 - upper).TotalSeconds) < 2)
+                                        {
+                                            upper = upper2;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        upper = this.Info.EndTime.AddSeconds(1);
+                                    }
+                                    this.m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                                    this.m_lapPauses.Add(new ValueRange<DateTime>(lower, upper));
+                                }
+                            }
+                        }
+
+                        if (!overlap)
+                        {
+                            //Non required trail points
+                            for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
+                            {
+                                if (i < this.m_subResultInfo.Points.Count &&
+                                    !this.m_subResultInfo.Points[i].Required &&
+                                    this.TrailPointDateTime[i] > DateTime.MinValue)
+                                {
+                                    DateTime lower = this.TrailPointDateTime[i];
+                                    DateTime upper = this.EndTime;
+                                    while (i < this.TrailPointDateTime.Count &&
+                                        i < this.m_subResultInfo.Points.Count &&
+                                        (!this.m_subResultInfo.Points[i].Required ||
+                                        this.TrailPointDateTime[i] == DateTime.MinValue))
+                                    {
+                                        i++;
+                                    }
+                                    if (i < this.TrailPointDateTime.Count &&
+                                        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                    {
+                                        upper = this.TrailPointDateTime[i];
+                                    }
+                                    this.m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                                    this.m_lapPauses.Add(new ValueRange<DateTime>(lower, upper));
+                                }
+                            }
+                            //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
+                            //if (m_activityTrail.Trail.IsSplits)
+                            //{
+                            //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
+                            //}
+                            //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
+                            //{
+                            //    if (i < trailLocations.Count &&
+                            //        !trailLocations[i].Required &&
+                            //        this.TrailPointDateTime[i] > DateTime.MinValue)
+                            //    {
+                            //        DateTime lower = this.TrailPointDateTime[i];
+                            //        DateTime upper = this.EndTime;
+                            //        while (i < this.TrailPointDateTime.Count &&
+                            //            i < trailLocations.Count &&
+                            //            (!trailLocations[i].Required ||
+                            //            this.TrailPointDateTime[i] == DateTime.MinValue))
+                            //        {
+                            //            i++;
+                            //        }
+                            //        if (i < this.TrailPointDateTime.Count &&
+                            //            this.TrailPointDateTime[i] > DateTime.MinValue)
+                            //        {
+                            //            upper = this.TrailPointDateTime[i];
+                            //        }
+                            //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
+                            //    }
+                            //}
+                        }
+                    }
+                }
             }
         }
 
@@ -1219,11 +1309,19 @@ namespace TrailsPlugin.Data
             {
                 if (m_toolTip != null)
                 {
+                    //Highscore or Summary
                     return m_toolTip;
                 }
                 else if (this.Activity != null)
                 {
-                    string s = string.Format("{0} {1} {2}", this.StartTime.ToLocalTime(), Activity.Name, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
+                    string p = "";
+                    if (this is PausedChildTrailResult)
+                    {
+                        PausedChildTrailResult pause = this as PausedChildTrailResult;
+                        p = " (" + PausedChildTrailResult.PauseName(pause.pauseType) + ")";
+                    }
+
+                    string s = string.Format("{0} {1}{2} {3}", this.StartTime.ToLocalTime(), Activity.Name, p, Activity.Notes.Substring(0, Math.Min(Activity.Notes.Length, 40)));
                     if (m_offsetTime != null || this.m_offsetDist != null)
                     {
                         s += " " + Activity.Metadata.Source;
@@ -3591,194 +3689,198 @@ namespace TrailsPlugin.Data
 
         public INumericTimeDataSeries DiffDistTrack0(TrailResult refRes)
         {
-            checkCacheRef(refRes);
-            if (m_DiffDistTrack0 == null)
-            {
-                TrailResult trRef = getRefSub(m_cacheTrackRef);
-                //Calc elapsed offsets
-                this.GetTimeXOffset(trRef);
-                trRef.GetTimeXOffset(trRef);
-                UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(trRef.Activity);
-
-                m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
-                if (this.DistanceMetersTrack.Count > 0 && trRef != null)
+            try {
+                checkCacheRef(refRes);
+                if (m_DiffDistTrack0 == null)
                 {
-                    int oldElapsed = int.MinValue;
-                    float lastValue = 0;
-                    int dateTrailPointIndex = -1;
-                    float refTimeOffset = this.m_offsetTimeElapsed - trRef.m_offsetTimeElapsed;
-                    double? firstDifference = null; //Let diff start from zero
-                    float diffOffset = 0;
-                    double prevDist = 0;
-                    double prevRefDist = 0;
-                    bool isTimeOfDayDiff = IsTimeOfDayDiff;
+                    TrailResult trRef = getRefSub(m_cacheTrackRef);
+                    //Calc elapsed offsets
+                    this.GetTimeXOffset(trRef);
+                    trRef.GetTimeXOffset(trRef);
+                    UnitUtil.Convert convertFrom = UnitUtil.Elevation.ConvertFromDelegate(trRef.Activity);
 
-                    bool prevCommonStreches = false;
-                    IValueRangeSeries<DateTime> commonStretches = null;
-                    if (Settings.DiffUsingCommonStretches && trRef.Activity != null)
+                    m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
+                    if (this.DistanceMetersTrack.Count > 0 && trRef != null)
                     {
-                        commonStretches = CommonStretches(trRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
-                        m_DiffDistTrack0.Add(StartTime, 0);
-                    }
-                    foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
-                    {
-                        uint elapsed = t.ElapsedSeconds;
-                        float thisDist = t.Value;
-                        if (elapsed > oldElapsed)
+                        int oldElapsed = int.MinValue;
+                        float lastValue = 0;
+                        int dateTrailPointIndex = -1;
+                        float refTimeOffset = this.m_offsetTimeElapsed - trRef.m_offsetTimeElapsed;
+                        double? firstDifference = null; //Let diff start from zero
+                        float diffOffset = 0;
+                        double prevDist = 0;
+                        double prevRefDist = 0;
+                        bool isTimeOfDayDiff = IsTimeOfDayDiff;
+
+                        bool prevCommonStreches = false;
+                        IValueRangeSeries<DateTime> commonStretches = null;
+                        if (Settings.DiffUsingCommonStretches && trRef.Activity != null)
                         {
-                            DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
-                            if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
+                            commonStretches = CommonStretches(trRef.Activity, new List<IActivity> { this.Activity }, null)[this.Activity][0].MarkedTimes;
+                            m_DiffDistTrack0.Add(StartTime, 0);
+                        }
+                        foreach (ITimeValueEntry<float> t in this.DistanceMetersTrack)
+                        {
+                            uint elapsed = t.ElapsedSeconds;
+                            float thisDist = t.Value;
+                            if (elapsed > oldElapsed)
                             {
-                                //TODO ActivityStart
-                                while (Settings.ResyncDiffAtTrailPoints &&
-                                    this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
-                                    (dateTrailPointIndex == -1 ||
-                                    dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
-                                    d1 > this.TrailPointDateTime[dateTrailPointIndex + 1]))
+                                DateTime d1 = DistanceMetersTrack.EntryDateTime(t);
+                                if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, Pauses))
                                 {
-                                    dateTrailPointIndex++;
-                                    if (dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
-                                        dateTrailPointIndex < trRef.TrailPointDateTime.Count - 1 &&
-                                        this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
-                                        trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
+                                    //TODO ActivityStart
+                                    while (Settings.ResyncDiffAtTrailPoints &&
+                                        this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
+                                        (dateTrailPointIndex == -1 ||
+                                        dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
+                                        d1 > this.TrailPointDateTime[dateTrailPointIndex + 1]))
                                     {
-                                        refTimeOffset = (float)(trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]) -
-                                           this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]));
-                                        //TODO: Configure, explain (or remove)
-                                        if (Settings.AdjustResyncDiffAtTrailPoints)
+                                        dateTrailPointIndex++;
+                                        if (dateTrailPointIndex < this.TrailPointDateTime.Count - 1 &&
+                                            dateTrailPointIndex < trRef.TrailPointDateTime.Count - 1 &&
+                                            this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
+                                            trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                                         {
-                                            //diffdist over time will normally "jump" at each trail point
-                                            //I.e. if the reference is behind, the distance suddenly gained must be subtracted
-                                            int status2;
-                                            double refDistP = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack,
-                                                trRef.TrailPointDateTime[dateTrailPointIndex], out status2);
-                                            if (status2 == 0)
+                                            refTimeOffset = (float)(trRef.getTimeResult(trRef.TrailPointDateTime[dateTrailPointIndex]) -
+                                               this.getTimeResult(this.TrailPointDateTime[dateTrailPointIndex]));
+                                            //TODO: Configure, explain (or remove)
+                                            if (Settings.AdjustResyncDiffAtTrailPoints)
                                             {
-                                                //getDistResult
-                                                double distP = TrackUtil.getValFromDateTime(this.DistanceMetersTrack,
-                                                    this.TrailPointDateTime[dateTrailPointIndex], out status2);
+                                                //diffdist over time will normally "jump" at each trail point
+                                                //I.e. if the reference is behind, the distance suddenly gained must be subtracted
+                                                int status2;
+                                                double refDistP = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack,
+                                                    trRef.TrailPointDateTime[dateTrailPointIndex], out status2);
                                                 if (status2 == 0)
                                                 {
-                                                    diffOffset += (float)(refDistP - prevRefDist - (distP - prevDist));
+                                                    //getDistResult
+                                                    double distP = TrackUtil.getValFromDateTime(this.DistanceMetersTrack,
+                                                        this.TrailPointDateTime[dateTrailPointIndex], out status2);
+                                                    if (status2 == 0)
+                                                    {
+                                                        diffOffset += (float)(refDistP - prevRefDist - (distP - prevDist));
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
 
-                                if (Settings.DiffUsingCommonStretches &&
-                                    //IsPaused is in the series here...
-                                    !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches))
-                                {
-                                    prevCommonStreches = true;
-                                }
-                                else
-                                {
-                                    //Only check if possible (ignore pauses when pruning)
-                                    //if (t.ElapsedSeconds + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
+                                    if (Settings.DiffUsingCommonStretches &&
+                                        //IsPaused is in the series here...
+                                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, commonStretches))
                                     {
-                                        double? refDist = null;
-                                        if (TrailResult.DiffToSelf || trRef == this)
+                                        prevCommonStreches = true;
+                                    }
+                                    else
+                                    {
+                                        //Only check if possible (ignore pauses when pruning)
+                                        //if (t.ElapsedSeconds + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds)
                                         {
-                                            double time = this.getTimeResult(d1);
-                                            //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
-                                            //get diff from average (HasAdjustedTimeTrack() is not really needed here, mostly kept for precision and testing reasons)
-                                            if (HasAdjustedTimeTrack(this.m_cacheTrackRef))
+                                            double? refDist = null;
+                                            if (TrailResult.DiffToSelf || trRef == this)
                                             {
-                                                IDistanceDataTrack dtrack = this.AverageAdjustedTimeTrack(this.m_cacheTrackRef);
-                                                DateTime d2 = dtrack.GetTimeAtDistanceMeters(time);
-                                                refDist = this.getDistResult(d2);
-                                            }
-                                            else
-                                            {
-                                                //get diff from average
-                                                refDist = time * this.AvgSpeed;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (elapsed + refTimeOffset >= 0 && elapsed + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds &&
-                                                (!isTimeOfDayDiff || !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, trRef.ExternalPauses)))
-                                            {
-                                                DateTime d2;
-                                                if (isTimeOfDayDiff)
+                                                double time = this.getTimeResult(d1);
+                                                //"inconsistency" from getDateTimeFromTrack() can happen if the ref stands still, getDateTimeFromTrack returns first elapsed
+                                                //get diff from average (HasAdjustedTimeTrack() is not really needed here, mostly kept for precision and testing reasons)
+                                                if (HasAdjustedTimeTrack(this.m_cacheTrackRef))
                                                 {
-                                                    d2 = d1;
+                                                    IDistanceDataTrack dtrack = this.AverageAdjustedTimeTrack(this.m_cacheTrackRef);
+                                                    DateTime d2 = dtrack.GetTimeAtDistanceMeters(time);
+                                                    refDist = this.getDistResult(d2);
                                                 }
                                                 else
                                                 {
-                                                    try {
-                                                        d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
-                                                          trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
-                                                    }
-                                                    catch {
-                                                        //This seem to occur if offset extends the time after the activity end (and external pauses isset)
-                                                        d2 = trRef.EndTime;
-                                                    }
-                                                }
-
-                                                int status = -1;
-                                                refDist = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack, d2, out status);
-                                                if (status != 0)
-                                                {
-                                                    refDist = null;
+                                                    //get diff from average
+                                                    refDist = time * this.AvgSpeed;
                                                 }
                                             }
                                             else
-                                            {} //Debug
-                                        }
-                                        //Only add if valid estimation
-                                        if (refDist != null && !float.IsNaN((float)refDist))
-                                        {
-                                            if (Settings.DiffUsingCommonStretches && prevCommonStreches)
                                             {
-                                                //TODO: Not implemented
-                                                diffOffset = (float)refDist - thisDist;
-                                                prevCommonStreches = false;
+                                                if (elapsed + refTimeOffset >= 0 && elapsed + refTimeOffset <= trRef.DistanceMetersTrack.TotalElapsedSeconds &&
+                                                    (!isTimeOfDayDiff || !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(d1, trRef.ExternalPauses)))
+                                                {
+                                                    DateTime d2;
+                                                    if (isTimeOfDayDiff)
+                                                    {
+                                                        d2 = d1;
+                                                    }
+                                                    else
+                                                    {
+                                                        try {
+                                                            d2 = ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.AddTimeAndPauses(
+                                                              trRef.StartTime, TimeSpan.FromSeconds(elapsed + refTimeOffset), trRef.Pauses);
+                                                        }
+                                                        catch {
+                                                            //This seem to occur if offset extends the time after the activity end (and external pauses isset)
+                                                            d2 = trRef.EndTime;
+                                                        }
+                                                    }
+
+                                                    int status = -1;
+                                                    refDist = TrackUtil.getValFromDateTime(trRef.DistanceMetersTrack, d2, out status);
+                                                    if (status != 0)
+                                                    {
+                                                        refDist = null;
+                                                    }
+                                                }
+                                                else
+                                                { } //Debug
                                             }
-                                            if (firstDifference == null)
+                                            //Only add if valid estimation
+                                            if (refDist != null && !float.IsNaN((float)refDist))
                                             {
-                                                firstDifference = -thisDist + (double)refDist;
+                                                if (Settings.DiffUsingCommonStretches && prevCommonStreches)
+                                                {
+                                                    //TODO: Not implemented
+                                                    diffOffset = (float)refDist - thisDist;
+                                                    prevCommonStreches = false;
+                                                }
+                                                if (firstDifference == null)
+                                                {
+                                                    firstDifference = -thisDist + (double)refDist;
+                                                }
+                                                double diff = thisDist - (double)refDist + diffOffset + (double)firstDifference;
+                                                lastValue = (float)convertFrom(diff, trRef.Activity);
+                                                m_DiffDistTrack0.Add(d1, lastValue);
+                                                oldElapsed = (int)elapsed;
+                                                prevDist = thisDist;
+                                                prevRefDist = (double)refDist;
                                             }
-                                            double diff = thisDist - (double)refDist + diffOffset + (double)firstDifference;
-                                            lastValue = (float)convertFrom(diff, trRef.Activity);
-                                            m_DiffDistTrack0.Add(d1, lastValue);
-                                            oldElapsed = (int)elapsed;
-                                            prevDist = thisDist;
-                                            prevRefDist = (double)refDist;
+                                            else
+                                            { } //Debug
                                         }
-                                        else
-                                        {} //Debug
                                     }
                                 }
                             }
                         }
-                    }
-                    //Add a point last in the track, to show the complete dist in the chart
-                    //Alternatively use lastvalue
-                    dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
-                    if (trRef != this &&
-                        !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndTime, Pauses) &&
-                        (Settings.ResyncDiffAtTrailPoints ||
-                        this.m_activityTrail != null && (this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated)) &&
-                        m_cacheTrackRef == trRef && //Otherwise will cache be cleared for splits...
-                        this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
-                        dateTrailPointIndex > 0 &&
-                        dateTrailPointIndex == trRef.TrailPointDateTime.Count - 1 &&
-                                this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
-                                trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
-                    {
-                        float refDist = trRef.TrailPointDist0(trRef)[dateTrailPointIndex];
-                        float trDist = this.TrailPointDist0(trRef)[dateTrailPointIndex];
-                        if (!float.IsNaN(refDist) && !float.IsNaN(trDist))
+                        //Add a point last in the track, to show the complete dist in the chart
+                        //Alternatively use lastvalue
+                        dateTrailPointIndex = this.TrailPointDateTime.Count - 1;
+                        if (trRef != this &&
+                            !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(EndTime, this.Pauses) &&
+                            (Settings.ResyncDiffAtTrailPoints ||
+                            this.m_activityTrail != null && (this.m_activityTrail.Trail.IsReference || !this.m_activityTrail.Trail.Generated)) &&
+                            m_cacheTrackRef == trRef && //Otherwise will cache be cleared for splits...
+                            this.TrailPointDateTime.Count == trRef.TrailPointDateTime.Count && //Splits etc
+                            dateTrailPointIndex > 0 &&
+                            dateTrailPointIndex == trRef.TrailPointDateTime.Count - 1 &&
+                                    this.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue &&
+                                    trRef.TrailPointDateTime[dateTrailPointIndex] > DateTime.MinValue)
                         {
-                            lastValue = (float)convertFrom(refDist - trDist + diffOffset, trRef.Activity);
-                            //TBD Disable this add, not so interesting?
-                            //m_DiffDistTrack0.Add(EndTime, lastValue);
+                            float refDist = trRef.TrailPointDist0(trRef)[dateTrailPointIndex];
+                            float trDist = this.TrailPointDist0(trRef)[dateTrailPointIndex];
+                            if (!float.IsNaN(refDist) && !float.IsNaN(trDist))
+                            {
+                                lastValue = (float)convertFrom(refDist - trDist + diffOffset, trRef.Activity);
+                                //TBD Disable this add, not so interesting?
+                                //m_DiffDistTrack0.Add(EndTime, lastValue);
+                            }
                         }
                     }
                 }
             }
+            catch (Exception e)
+            { }//Unknown exception appears when debugging
             return m_DiffDistTrack0;
         }
 
@@ -3930,9 +4032,7 @@ namespace TrailsPlugin.Data
                         DateTime dateTime = m_activity.GPSRoute.EntryDateTime(m_activity.GPSRoute[i]);
 
                         if (this.StartTime <= dateTime && dateTime <= this.EndTime &&
-                            (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, Pauses) ||
-                            //Special handling: Return GPS for the activity, to mark them
-                            this is PausedChildTrailResult))
+                            !ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                         {
                             IGPSPoint point = m_activity.GPSRoute[i].Value;
                             gpsTrack.Add(dateTime, point);

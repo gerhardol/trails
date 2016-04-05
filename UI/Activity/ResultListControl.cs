@@ -1011,16 +1011,16 @@ namespace TrailsPlugin.UI.Activity {
                         //{
                         //    TBD
                         //}
-                        else if (tr.Result.Activity != null && tr.Result is PausedChildTrailResult)
-                        {
-                            DialogResult popRes = MessageDialog.Show("Remove clicked pause from result?",
-                                  "Remove Pause", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-                            if (popRes == DialogResult.OK)
-                            {
-                                tr.Result.Pauses.Remove(new ValueRange<DateTime>(tr.Result.StartTime, tr.Result.EndTime));
-                                m_page.RefreshData(false);
-                            }
-                        }
+                        //else if (tr.Result.Activity != null && tr.Result is PausedChildTrailResult)
+                        //{
+                        //    DialogResult popRes = MessageDialog.Show("Remove clicked pause from result?",
+                        //          "Remove Pause", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                        //    if (popRes == DialogResult.OK)
+                        //    {
+                        //        tr.Result.Pauses.Remove(new ValueRange<DateTime>(tr.Result.StartTime, tr.Result.EndTime));
+                        //        m_page.RefreshData(false);
+                        //    }
+                        //}
                         else if (tr.Result.Activity != null && tr.Result is ParentTrailResult)
                         {
                             Guid view = GUIDs.DailyActivityView;
@@ -1650,7 +1650,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == (Keys.Control | Keys.Shift))
                 {
                     //Unofficial
-                    DialogResult popRes = MessageDialog.Show("Set marked pauses as rest laps?",
+                    DialogResult popRes = MessageDialog.Show("Set marked timer pauses as rest laps?",
                         "Remove Pauses", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                     if (popRes == DialogResult.OK)
                     {
@@ -1662,7 +1662,7 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 if (tr.Result is ChildTrailResult)
                                 {
-                                    if (tr.Result is PausedChildTrailResult)
+                                    if (tr.Result is PausedChildTrailResult && (tr.Result as PausedChildTrailResult).pauseType == PauseType.Timer)
                                     {
                                         TrackUtil.removePause(tr.Result.Activity.TimerPauses, tr.Result.StartTime, tr.Result.EndTime);
                                         TrackUtil.removePause(tr.Result.Pauses, tr.Result.StartTime, tr.Result.EndTime);

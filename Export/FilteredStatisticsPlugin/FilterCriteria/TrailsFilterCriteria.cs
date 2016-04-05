@@ -160,7 +160,10 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     {
                         foreach (Data.TrailResultWrapper tr in trail.Results)
                         {
-                            namedZones.Add(new TrailResultNamedZone(trail, tr.Result));
+                            if (!(tr.Result is Data.PausedChildTrailResult))
+                            {
+                                namedZones.Add(new TrailResultNamedZone(trail, tr.Result));
+                            }
                         }
                     }
                 }

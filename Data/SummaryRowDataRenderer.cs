@@ -52,12 +52,26 @@ namespace TrailsPlugin.Data
                     }
                     return System.Drawing.FontStyle.Italic;
                 }
+                else if (wrapper.Result is PausedChildTrailResult)
+                {
+                    PausedChildTrailResult pause = wrapper.Result as PausedChildTrailResult;
+                    System.Drawing.FontStyle res = System.Drawing.FontStyle.Strikeout;
+                    if (pause.pauseType == PauseType.Stopped)
+                    {
+                        res |= FontStyle.Italic;
+                    }
+                    if (pause.pauseType == PauseType.Timer)
+                    {
+                        res |= FontStyle.Bold;
+                    }
+                    return res;
+                }
                 else
                 {
                     if (Controller.TrailController.Instance.ReferenceResult != null &&
                         wrapper.Result == Controller.TrailController.Instance.ReferenceResult.Result)
                     {
-                            return System.Drawing.FontStyle.Italic;
+                        return System.Drawing.FontStyle.Italic;
                     }
                 }
             }

@@ -126,41 +126,9 @@ namespace TrailsPlugin.Data
                 }
                 if (Data.Settings.ShowPausesAsResults)
                 {
-                    int maxChildIndex = splits.Count - 1;
-                    foreach (IValueRange<DateTime> v in this.Pauses)
-                    {
-                        TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
-                        DateTime lower = v.Lower;
-                        if(lower == DateTime.MinValue)
-                        {
-                            lower = m_subResultInfo.Points[0].Time;
-                        }
-                        DateTime upper = v.Upper;
-                        if (upper == DateTime.MaxValue)
-                        {
-                            upper = m_subResultInfo.Points[m_subResultInfo.Points.Count-1].Time;
-                        }
-                        TimeSpan duration = upper - lower;
-                        if(duration < TimeSpan.FromSeconds(2) && 
-                            (this.StartTime - lower < TimeSpan.FromSeconds(1) ||
-                            upper - this.EndTime < TimeSpan.FromSeconds(1)))
-                        {
-                            continue;
-                        }
-                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), lower, duration));
-                        t.Points.Add(new TrailResultPoint(new TrailGPSLocation("Pause", false), upper, TimeSpan.Zero));
-                        PausedChildTrailResult tr = new PausedChildTrailResult(this, -1, t);
-                        for(int j = 0; j <= maxChildIndex; j++)
-                        {
-                            if (j == maxChildIndex || lower < splits[j].StartTime || 
-                                splits[j].StartTime <= lower && lower < splits[j+1].StartTime)
-                            {
-                                tr.RelatedChildResult = splits[j];
-                                break;
-                            }
-                        }
-                        splits.Add(tr);
-                    }
+                    addPausesAsResults(splits, this.TimerPauses, PauseType.Timer);
+                    addPausesAsResults(splits, this.LapPauses, PauseType.RestLap);
+                    addPausesAsResults(splits, this.StoppedPauses, PauseType.Stopped);
                 }
                 TimeSpan sp = TimeSpan.Zero;
                 bool ok = true;
@@ -187,6 +155,53 @@ namespace TrailsPlugin.Data
                 this.m_PoolLengthInfo = this.SubResultInfo.Points[0].PoolLengthInfo;
             }
             return splits;
+        }
+
+        private void addPausesAsResults(IList<ChildTrailResult> splits, IValueRangeSeries<DateTime> pauses, PauseType pauseType)
+        {
+            foreach (IValueRange<DateTime> v in pauses)
+            {
+                DateTime lower = v.Lower;
+                if (lower == DateTime.MinValue)
+                {
+                    lower = m_subResultInfo.Points[0].Time;
+                }
+                DateTime upper = v.Upper;
+                if (upper == DateTime.MaxValue)
+                {
+                    upper = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
+                }
+
+                for (int j = 0; j < splits.Count; j++)
+                {
+                    if (splits[j] is PausedChildTrailResult)
+                    {
+                        //All normal splits checked
+                        break;
+                    }
+                    if (m_subResultInfo.Points[j].Time <= lower && lower < m_subResultInfo.Points[j+1].Time ||
+                        //First lap
+                        m_subResultInfo.Points[j].Time <= upper && upper < m_subResultInfo.Points[j+1].Time)
+                    {
+                        TimeSpan duration = upper - lower;
+                        if (duration < TimeSpan.FromSeconds(2) &&
+                            (this.StartTime - lower < TimeSpan.FromSeconds(1) ||
+                            upper - this.EndTime < TimeSpan.FromSeconds(1)))
+                        {
+                            continue;
+                        }
+
+                        TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
+                        TrailGPSLocation tl = new TrailGPSLocation(PausedChildTrailResult.PauseName(pauseType), false);
+                        t.Points.Add(new TrailResultPoint(tl, lower, duration));
+                        t.Points.Add(new TrailResultPoint(tl, upper, TimeSpan.Zero));
+
+                        PausedChildTrailResult tr = new PausedChildTrailResult(this, splits[j], -1, t, pauseType);
+                        splits.Add(tr);
+                        break;
+                    }
+                }
+            }
         }
     }
 }

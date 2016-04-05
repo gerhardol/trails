@@ -36,9 +36,12 @@ namespace TrailsPlugin.Export
                 var activityTrail = new ActivityTrail(trail);
 
                 List<ITrailResult> trailResults = new List<ITrailResult>();
-                foreach (var result in TrailResultWrapper.TrailResults(activityTrail.Results))
+                foreach (TrailResult tr in TrailResultWrapper.TrailResults(activityTrail.Results))
                 {
-                    trailResults.Add(new CFTrailResult(result));
+                    if (!(tr is Data.PausedChildTrailResult))
+                    {
+                        trailResults.Add(new CFTrailResult(tr));
+                    }
                 }
 
                 results.Add(trail.Name, trailResults);

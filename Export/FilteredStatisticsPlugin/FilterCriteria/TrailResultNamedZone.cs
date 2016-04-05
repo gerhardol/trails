@@ -125,9 +125,12 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     TrailsPlugin.Controller.TrailController.Instance.SetActivities(new List<IActivity> { m_Activity }, false);
                     foreach (Data.TrailResultWrapper tr in m_ActivityTrail.Results)
                     {
-                        foreach(IValueRange<DateTime> t in tr.Result.getSelInfo(false))
+                        if (!(tr.Result is Data.PausedChildTrailResult))
                         {
-                            m_ValidTimes.Add(t);
+                            foreach (IValueRange<DateTime> t in tr.Result.getSelInfo(false))
+                            {
+                                m_ValidTimes.Add(t);
+                            }
                         }
                     }
                 }

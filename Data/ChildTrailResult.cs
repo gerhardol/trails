@@ -40,13 +40,31 @@ namespace TrailsPlugin.Data
         }
     }
 
+    public enum PauseType { Timer, RestLap, Stopped };
+
     public class PausedChildTrailResult : ChildTrailResult
     {
-        public PausedChildTrailResult(ParentTrailResult par, int order, TrailResultInfo indexes) :
+        public PausedChildTrailResult(ParentTrailResult par, ChildTrailResult ctr, int order, TrailResultInfo indexes, PauseType pauseType) :
             base(par, order, indexes, 0)
         {
+            this.RelatedChildResult = ctr;
+            this.pauseType = pauseType;
         }
-        public ChildTrailResult RelatedChildResult = null;
+        public ChildTrailResult RelatedChildResult;
+        public PauseType pauseType;
+
+        public static string PauseName(PauseType pauseType)
+        {
+            switch (pauseType)
+            {
+                case PauseType.Timer:
+                    return Properties.Resources.List_TimerPause;
+                case PauseType.RestLap:
+                    return Properties.Resources.List_RestLap;
+                default:
+                    return ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelStoppedTime;
+            }
+        }
     }
 
     public class SubChildTrailResult : ChildTrailResult

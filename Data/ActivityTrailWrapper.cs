@@ -66,7 +66,7 @@ namespace TrailsPlugin.Data
 
         public TrailNameWrapper(IList<ActivityTrail> allActivityTrails, IList<ActivityTrail> selectedActivityTrails)
         {
-            if(selectedActivityTrails != null && selectedActivityTrails.Count > 0)
+            if (selectedActivityTrails != null && selectedActivityTrails.Count > 0)
             {
                 this.SelectedItems = new object[selectedActivityTrails.Count];
             }
@@ -76,6 +76,7 @@ namespace TrailsPlugin.Data
             IList<ActivityTrailWrapper> exps = new List<ActivityTrailWrapper>();
             IList<ActivityTrailWrapper> rows = new List<ActivityTrailWrapper>();
             int selIndex = 0;
+            ActivityTrailWrapper split = null;
 
             foreach (ActivityTrail at in allActivityTrails)
             {
@@ -99,6 +100,16 @@ namespace TrailsPlugin.Data
                 {
                     this.SelectedItems[selIndex++] = atw;
                 }
+                if (at.Trail.IsSplits)
+                {
+                    split = atw;
+                }
+            }
+            if (split != null)
+            {
+                //Show first in list
+                rows.Remove(split);
+                rows.Insert(0, split);
             }
 
             foreach (ActivityTrailWrapper atw in children)

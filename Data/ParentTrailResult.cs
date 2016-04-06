@@ -179,9 +179,10 @@ namespace TrailsPlugin.Data
                         //All normal splits checked
                         break;
                     }
-                    if (m_subResultInfo.Points[j].Time <= lower && lower < m_subResultInfo.Points[j+1].Time ||
+                    if (splits[j].m_subResultInfo.Points[0].Time > DateTime.MinValue &&
+                        splits[j].m_subResultInfo.Points[0].Time <= lower && lower < splits[j].m_subResultInfo.Points[1].Time ||
                         //First lap
-                        m_subResultInfo.Points[j].Time <= upper && upper < m_subResultInfo.Points[j+1].Time)
+                        splits[j].m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time)
                     {
                         TimeSpan duration = upper - lower;
                         if (duration < TimeSpan.FromSeconds(2) &&

@@ -47,7 +47,7 @@ namespace TrailsPlugin.Data
         private string m_name;
         protected bool m_reverse;
 
-        protected TrailResultInfo m_subResultInfo;
+        internal TrailResultInfo m_subResultInfo;
 
         private bool? m_includeStopped;
         private DateTime? m_startTime;

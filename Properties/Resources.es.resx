@@ -407,6 +407,18 @@ http://www.gnu.org/licenses/lgpl.html</value>
     <value>Ocultar herramientas gráficas</value>
   </data>
   <data name="UI_Chart_PaceInverted" xml:space="preserve">
-    <value>Paso</value>
+    <value>Ritmo invertido</value>
+  </data>
+  <data name="UI_Chart_FitToWindow" xml:space="preserve">
+    <value>Ajustar a ventana</value>
+  </data>
+  <data name="UI_Chart_PickerOffset" xml:space="preserve">
+    <value>Desplazamiento</value>
+  </data>
+  <data name="UI_Chart_PickerSmoothing" xml:space="preserve">
+    <value>Suavizado</value>
+  </data>
+  <data name="List_TimerPause" xml:space="preserve">
+    <value>Pausa del reloj</value>
   </data>
 </root>

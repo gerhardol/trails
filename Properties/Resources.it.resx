@@ -415,4 +415,16 @@ http://www.gnu.org/licenses/lgpl.html.&quot;</value>
   <data name="UI_Chart_PaceInverted" xml:space="preserve">
     <value>Passo invertito</value>
   </data>
+  <data name="UI_Chart_FitToWindow" xml:space="preserve">
+    <value>Adatta il grafico alla finestra</value>
+  </data>
+  <data name="UI_Chart_PickerOffset" xml:space="preserve">
+    <value>Offset di selezione del grafico</value>
+  </data>
+  <data name="UI_Chart_PickerSmoothing" xml:space="preserve">
+    <value>Smussamento di selezione del grafico</value>
+  </data>
+  <data name="List_TimerPause" xml:space="preserve">
+    <value>Pausa cronometro</value>
+  </data>
 </root>

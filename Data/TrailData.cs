@@ -19,8 +19,7 @@ using System;
 using System.Collections.Generic;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using System.Xml;
-using System.Xml.Serialization;
-using ZoneFiveSoftware.Common.Data.GPS;
+using System.Text.RegularExpressions;
 
 namespace TrailsPlugin.Data
 {
@@ -116,6 +115,14 @@ namespace TrailsPlugin.Data
             return null;
         }
 
+        //"Normalize" the name, to check for duplicates
+        private static string normName(string s)
+        {
+            string pattern = @"\s*:+\s*";
+            string a = (new Regex(pattern)).Replace(s, ": ");
+            return a;
+        }
+
         private static void RefreshChildren()
         {
             foreach (Trail t in m_AllTrails.Values)
@@ -124,31 +131,44 @@ namespace TrailsPlugin.Data
                 t.Parent = null;
             }
 
+            //Traverse over originalTrails, it cannot be modified
+            IDictionary<string, Trail> originalTrails = new Dictionary<string, Trail>();
+            IDictionary<string, Trail> allTrails = new Dictionary<string, Trail>();
             foreach (Trail t in m_AllTrails.Values)
             {
-                foreach (Trail t2 in m_AllTrails.Values)
+                originalTrails[normName(t.Name)] = t;
+                allTrails[normName(t.Name)] = t;
+            }
+            //Make sure all parents exist
+            foreach (string child0 in originalTrails.Keys)
+            {
+                string child = child0;
+                while (child.IndexOf(':') >= 0)
                 {
-                    if (t != t2 && t.IsNameParentTo(t2))
+                    string parent = child.Substring(0, child.LastIndexOf(':'));
+                    if (!allTrails.ContainsKey(parent))
                     {
-                        //TBD: Review this code, is it working for more than two levels? 
-                        if (!t.AllChildren.Contains(t2))
-                        {
-                            //not appearing in subchilds, remove from parents
-                            foreach (Trail tp in t.AllParents)
-                            {
-                                tp.Children.Remove(t);
-                            }
-                            t.Children.Add(t2);
-                        }
-                        if (!t2.AllParents.Contains(t))
-                        {
-                            foreach (Trail tp in t.AllChildren)
-                            {
-                                tp.Children.Remove(t);
-                            }
-                            t2.Parent = t;
-                        }
+                        //Add empty placeholder, deleted when exiting
+                        Trail trail = new Data.Trail();
+                        trail.Name = parent;
+                        trail.IsTemporary = true;
+                        trail.TrailPriority = -9999;
+                        m_AllTrails.Add(trail.Id, trail);
+                        Controller.TrailController.Instance.NewTrail(trail, false, null);
+                        allTrails[parent] = trail;
                     }
+                    child = parent;
+                }
+            }
+            //Add the child/parents links, from the children
+            foreach (string child in allTrails.Keys)
+            {
+                if (child.IndexOf(':') >= 0)
+                {
+                    string parent = child.Substring(0, child.LastIndexOf(':'));
+                    System.Diagnostics.Debug.Assert(allTrails.ContainsKey(parent), "Parent to " + child + " not added");
+                    allTrails[parent].Children.Add(allTrails[child]);
+                    allTrails[child].Parent = allTrails[parent];
                 }
             }
         }
@@ -157,7 +177,7 @@ namespace TrailsPlugin.Data
         {
             foreach (Trail t in m_AllTrails.Values)
             {
-                if (t.Name == trail.Name)
+                if (t.Name == trail.Name || normName(t.Name) == normName(trail.Name))
                 {
                     return false;
                 }
@@ -232,7 +252,7 @@ namespace TrailsPlugin.Data
                     isUnique = true;
                     foreach (Trail t in m_AllTrails.Values)
                     {
-                        if (t.Name == name)
+                        if (t.Name == name || normName(t.Name) == normName(name))
                         {
                             isUnique = false;
                             extraId += 1;

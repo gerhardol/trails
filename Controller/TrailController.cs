@@ -801,15 +801,18 @@ namespace TrailsPlugin.Controller
 
         /***********************************************************/
 
-        private void NewTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
+        public void NewTrail(Trail trail, bool select, System.Windows.Forms.ProgressBar progressBar)
         {
             ActivityTrail at = new ActivityTrail(trail);
             this.m_CurrentOrderedTrails.Add(at);
 
-            //Select this trail
             this.m_currentActivityTrails.Clear();
-            this.m_currentActivityTrails.Add(at);
-            this.SetCurrentActivityTrail(this.m_currentActivityTrails, true, progressBar);
+            if (select)
+            {
+                //Select this trail
+                this.m_currentActivityTrails.Add(at);
+                this.SetCurrentActivityTrail(this.m_currentActivityTrails, true, progressBar);
+            }
         }
 
         public bool AddTrail(Trail trail, System.Windows.Forms.ProgressBar progressBar)
@@ -817,7 +820,7 @@ namespace TrailsPlugin.Controller
             bool result = false;
             if (TrailData.InsertTrail(trail))
             {
-                NewTrail(trail, progressBar);
+                NewTrail(trail, true, progressBar);
                 result = true;
             } 
             else

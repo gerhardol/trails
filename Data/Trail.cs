@@ -443,21 +443,6 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public bool IsNameParentTo(Trail t)
-        {
-            bool result;
-            if (t.Name.StartsWith(this.Name + ":") ||
-                t.Name.StartsWith(this.Name + " :"))
-            {
-                result = true;
-            }
-            else
-            {
-                result = false;
-            }
-            return result;
-        }
-
         public static IList<TrailGPSLocation> TrailGpsPointsFromGps(IList<IGPSLocation> gps, float radius)
         {
             IList<Data.TrailGPSLocation> results = new List<Data.TrailGPSLocation>();

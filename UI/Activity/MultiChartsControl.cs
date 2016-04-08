@@ -331,9 +331,8 @@ namespace TrailsPlugin.UI.Activity {
                 bool isData = Controller.TrailController.Instance.CurrentActivityTrailIsSelected;
 
                 IList<Data.TrailResult> selectedPresentableResults =
-                    TrailResultWrapper.TrailResults(
-                    TrailResultWrapper.UnpausedResults(Controller.TrailController.Instance.SelectedResults));
-                if(selectedPresentableResults.Count > Data.Settings.MaxChartResults)
+                    TrailResultWrapper.TrailResults(Controller.TrailController.Instance.SelectedResults);
+                if (selectedPresentableResults.Count > Data.Settings.MaxChartResults)
                 {
                     //Move summary first, so it is not truncated
                     for(int i= 0; i < selectedPresentableResults.Count; i++)

@@ -93,11 +93,6 @@ namespace TrailsPlugin.Data
         {
             updateIndexes(indexes);
             this.m_parentResult = par;
-            if (this is PausedChildTrailResult/* indexes.Count == 2*/)
-            {
-                //Always overwrite the (possibly) calculated data
-                this.m_duration = indexes.Points[0].Duration;
-            }
         }
 
         protected ChildTrailResult(ChildTrailResult cpar, int order, TrailResultInfo indexes) :

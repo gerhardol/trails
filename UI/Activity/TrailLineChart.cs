@@ -967,291 +967,296 @@ namespace TrailsPlugin.UI.Activity {
 
         virtual protected void SetupDataSeries()
         {
-            MainChart.DataSeries.Clear();
-            MainChart.XAxis.Markers.Clear();
-            if (m_visible)
+            try
             {
-                IList<TrailResult> chartResults = new List<TrailResult>();
-                foreach (TrailResult tr in m_trailResults)
+                MainChart.DataSeries.Clear();
+                MainChart.XAxis.Markers.Clear();
+                if (m_visible)
                 {
-                    chartResults.Add(tr);
-                }
-
-                //Special handling for summary, needs graphs for all results
-                bool summarySpecialColor = false;
-                SummaryTrailResult summaryResult = null;
-                foreach (TrailResult tr in m_trailResults)
-                {
-                    if (tr is SummaryTrailResult)
+                    IList<TrailResult> chartResults = new List<TrailResult>();
+                    foreach (TrailResult tr in m_trailResults)
                     {
-                        if (summaryResult != null)
-                        {
-                            //total or average already selected, use one of them
-                            continue;
-                        }
-                        summaryResult = (tr as SummaryTrailResult);
-                        if (m_trailResults.Count == 2)
-                        {
-                            summarySpecialColor = true;
-                        }
-                        foreach (TrailResult tr2 in summaryResult.Results)
-                        {
-                            if (!m_trailResults.Contains(tr2))
-                            {
-                                chartResults.Add(tr2);
-                            }
-                        }
-                        break;
+                        chartResults.Add(tr);
                     }
-                }
 
-                //Find if ReferenceTrailResult is in the results - needed when displaying data
-                TrailResult leftRefTr = null;
-                if (m_trailResults.Count > 0)
-                {
-                    leftRefTr = m_trailResults[0];
-                    for (int i = 0; i < m_trailResults.Count; i++)
+                    //Special handling for summary, needs graphs for all results
+                    bool summarySpecialColor = false;
+                    SummaryTrailResult summaryResult = null;
+                    foreach (TrailResult tr in m_trailResults)
                     {
-                        if (m_trailResults[i] == ReferenceTrailResult)
+                        if (tr is SummaryTrailResult)
                         {
-                            leftRefTr = ReferenceTrailResult;
+                            if (summaryResult != null)
+                            {
+                                //total or average already selected, use one of them
+                                continue;
+                            }
+                            summaryResult = (tr as SummaryTrailResult);
+                            if (m_trailResults.Count == 2)
+                            {
+                                summarySpecialColor = true;
+                            }
+                            foreach (TrailResult tr2 in summaryResult.Results)
+                            {
+                                if (!m_trailResults.Contains(tr2))
+                                {
+                                    chartResults.Add(tr2);
+                                }
+                            }
                             break;
                         }
                     }
-                }
 
-                float syncGraphOffsetSum = 0;
-                int syncGraphOffsetCount = 0;
-                LineChartTypes syncGraphOffsetChartType = LineChartTypes.Speed;
-                if (m_ChartTypes.Count > 0)
-                {
-                    syncGraphOffsetChartType = m_ChartTypes[0];
-                    if (syncGraphOffsetChartType != LineChartUtil.ChartToAxis(syncGraphOffsetChartType) && m_ChartTypes.Contains(LineChartUtil.ChartToAxis(syncGraphOffsetChartType)))
+                    //Find if ReferenceTrailResult is in the results - needed when displaying data
+                    TrailResult leftRefTr = null;
+                    if (m_trailResults.Count > 0)
                     {
-                        syncGraphOffsetChartType = LineChartUtil.ChartToAxis(syncGraphOffsetChartType);
-                    }
-                }
-                //The ST standard order is to draw the Fill chart latest, so it covers others (Insert)
-                //The order in Trails paints left to right, so the fill graph is in the bottom (Add)
-                IList<LineChartTypes> chartTypes = m_ChartTypes;
-                if (m_trailResults.Count == 1)
-                {
-                    chartTypes = new List<LineChartTypes>();
-                    foreach (LineChartTypes chartType in m_ChartTypes)
-                    {
-                        chartTypes.Add(chartType);
-                    }
-                }
-                foreach (LineChartTypes chartType in chartTypes)
-                {
-                    LineChartTypes axisType = LineChartUtil.ChartToAxis(chartType);
-                    if (!m_axisCharts.ContainsKey(axisType))
-                    {
-                        //Race condition?
-                        return;
-                    }
-                    ChartDataSeries summaryDataLine = null;
-                    IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
-                    INumericTimeDataSeries refGraphPoints = null;
-                    LineChartTypes refChartType = chartType;
-
-                    if (SyncGraph != SyncGraphMode.None)
-                    {
-                        if (chartType != LineChartUtil.ChartToAxis(chartType) && m_ChartTypes.Contains(LineChartUtil.ChartToAxis(chartType)))
+                        leftRefTr = m_trailResults[0];
+                        for (int i = 0; i < m_trailResults.Count; i++)
                         {
-                            refChartType = LineChartUtil.ChartToAxis(chartType);
-                        }
-                        if (refChartType == syncGraphOffsetChartType && ReferenceTrailResult != null)
-                        {
-                            refGraphPoints = LineChartUtil.GetSmoothedActivityTrack(ReferenceTrailResult, refChartType, ReferenceTrailResult);
-                        }
-                    }
-
-                    //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
-                    for (int i = 0; i < chartResults.Count; i++)
-                    {
-                        TrailResult tr = chartResults[i];
-
-                        ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
-
-                        //Add to the chart only if result is visible. "summary" results are only for calculation
-                        if (m_trailResults.Contains(tr))
-                        {
-                            //Note: Add empty Dataseries even if no graphpoints. index must match results
-                            MainChart.DataSeries.Add(dataLine);
-                            
-                            //Update display only data
-                            //It could be possible to add basis for dataseries in .Data, to only recalc the points. Not so much gain
-                            dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
-
-                            //Set colors
+                            if (m_trailResults[i] == ReferenceTrailResult)
                             {
-                                ChartColors chartColor;
-                                //Color for the graph - keep standard color if only one result displayed
-                                if (m_trailResults.Count <= 1 || summarySpecialColor ||
-                                    Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
+                                leftRefTr = ReferenceTrailResult;
+                                break;
+                            }
+                        }
+                    }
+
+                    float syncGraphOffsetSum = 0;
+                    int syncGraphOffsetCount = 0;
+                    LineChartTypes syncGraphOffsetChartType = LineChartTypes.Speed;
+                    if (m_ChartTypes.Count > 0)
+                    {
+                        syncGraphOffsetChartType = m_ChartTypes[0];
+                        if (syncGraphOffsetChartType != LineChartUtil.ChartToAxis(syncGraphOffsetChartType) && m_ChartTypes.Contains(LineChartUtil.ChartToAxis(syncGraphOffsetChartType)))
+                        {
+                            syncGraphOffsetChartType = LineChartUtil.ChartToAxis(syncGraphOffsetChartType);
+                        }
+                    }
+                    //The ST standard order is to draw the Fill chart latest, so it covers others (Insert)
+                    //The order in Trails paints left to right, so the fill graph is in the bottom (Add)
+                    IList<LineChartTypes> chartTypes = m_ChartTypes;
+                    if (m_trailResults.Count == 1)
+                    {
+                        chartTypes = new List<LineChartTypes>();
+                        foreach (LineChartTypes chartType in m_ChartTypes)
+                        {
+                            chartTypes.Add(chartType);
+                        }
+                    }
+                    foreach (LineChartTypes chartType in chartTypes)
+                    {
+                        LineChartTypes axisType = LineChartUtil.ChartToAxis(chartType);
+                        if (!m_axisCharts.ContainsKey(axisType))
+                        {
+                            //Race condition?
+                            return;
+                        }
+                        ChartDataSeries summaryDataLine = null;
+                        IList<ChartDataSeries> summarySeries = new List<ChartDataSeries>();
+                        INumericTimeDataSeries refGraphPoints = null;
+                        LineChartTypes refChartType = chartType;
+
+                        if (SyncGraph != SyncGraphMode.None)
+                        {
+                            if (chartType != LineChartUtil.ChartToAxis(chartType) && m_ChartTypes.Contains(LineChartUtil.ChartToAxis(chartType)))
+                            {
+                                refChartType = LineChartUtil.ChartToAxis(chartType);
+                            }
+                            if (refChartType == syncGraphOffsetChartType && ReferenceTrailResult != null)
+                            {
+                                refGraphPoints = LineChartUtil.GetSmoothedActivityTrack(ReferenceTrailResult, refChartType, ReferenceTrailResult);
+                            }
+                        }
+
+                        //Note: If the add order changes, the dataseries to result lookup in MainChart_SelectData is affected too
+                        for (int i = 0; i < chartResults.Count; i++)
+                        {
+                            TrailResult tr = chartResults[i];
+
+                            ChartDataSeries dataLine = new ChartDataSeries(MainChart, m_axisCharts[chartType]);
+
+                            //Add to the chart only if result is visible. "summary" results are only for calculation
+                            if (m_trailResults.Contains(tr))
+                            {
+                                //Note: Add empty Dataseries even if no graphpoints. index must match results
+                                MainChart.DataSeries.Add(dataLine);
+
+                                //Update display only data
+                                //It could be possible to add basis for dataseries in .Data, to only recalc the points. Not so much gain
+                                dataLine.ValueAxisLabel = ChartDataSeries.ValueAxisLabelType.Average;
+
+                                //Set colors
                                 {
-                                    chartColor = ColorUtil.ChartColor[chartType];
+                                    ChartColors chartColor;
+                                    //Color for the graph - keep standard color if only one result displayed
+                                    if (m_trailResults.Count <= 1 || summarySpecialColor ||
+                                        Data.Settings.OnlyReferenceRight && (m_axisCharts[chartType] is RightVerticalAxis))
+                                    {
+                                        chartColor = ColorUtil.ChartColor[chartType];
+                                    }
+                                    else
+                                    {
+                                        //TBD? other color for children (at least if only one selected)
+                                        chartColor = tr.ResultColor;
+                                    }
+
+                                    dataLine.LineColor = chartColor.LineNormal;
+                                    dataLine.FillColor = chartColor.FillNormal;
+                                    dataLine.SelectedColor = chartColor.FillSelected; //The selected fill color only
+
+                                    //Decrease alpha for many activities for fill (but not selected)
+                                    if (m_trailResults.Count > 1)
+                                    {
+                                        int alpha = chartColor.FillNormal.A - m_trailResults.Count * 2;
+                                        alpha = Math.Min(alpha, 0x77);
+                                        alpha = Math.Max(alpha, 0x10);
+                                        dataLine.FillColor = Color.FromArgb(alpha, chartColor.FillNormal.R, chartColor.FillNormal.G, chartColor.FillNormal.B);
+                                    }
+                                }
+
+                                //Set chart type to Fill similar to ST for first result (not charttype), only summary if selected
+                                if (m_ChartTypes[0] == chartType /*&& i==0/* || summaryResult == tr*/)
+                                {
+                                    dataLine.ChartType = ChartDataSeries.Type.Fill;
                                 }
                                 else
                                 {
-                                    //TBD? other color for children (at least if only one selected)
-                                    chartColor = tr.ResultColor;
+                                    dataLine.ChartType = ChartDataSeries.Type.Line;
                                 }
+                            }
 
-                                dataLine.LineColor = chartColor.LineNormal;
-                                dataLine.FillColor = chartColor.FillNormal;
-                                dataLine.SelectedColor = chartColor.FillSelected; //The selected fill color only
-
-                                //Decrease alpha for many activities for fill (but not selected)
+                            if (tr is SummaryTrailResult)
+                            {
+                                //The data is calculated from the normal results
+                                //If both total and average selected, only one of them is used
+                                summaryDataLine = dataLine;
                                 if (m_trailResults.Count > 1)
                                 {
-                                    int alpha = chartColor.FillNormal.A - m_trailResults.Count * 2;
-                                    alpha = Math.Min(alpha, 0x77);
-                                    alpha = Math.Max(alpha, 0x10);
-                                    dataLine.FillColor = Color.FromArgb(alpha, chartColor.FillNormal.R, chartColor.FillNormal.G, chartColor.FillNormal.B);
+                                    dataLine.LineWidth *= 2;
                                 }
-                            }
-
-                            //Set chart type to Fill similar to ST for first result (not charttype), only summary if selected
-                            if (m_ChartTypes[0] == chartType /*&& i==0/* || summaryResult == tr*/)
-                            {
-                                dataLine.ChartType = ChartDataSeries.Type.Fill;
                             }
                             else
                             {
-                                dataLine.ChartType = ChartDataSeries.Type.Line;
-                            }
-                        }
+                                INumericTimeDataSeries graphPoints;
 
-                        if (tr is SummaryTrailResult)
-                        {
-                            //The data is calculated from the normal results
-                            //If both total and average selected, only one of them is used
-                            summaryDataLine = dataLine;
-                            if (m_trailResults.Count > 1)
-                            {
-                                dataLine.LineWidth *= 2;
-                            }
-                        }
-                        else
-                        {
-                            INumericTimeDataSeries graphPoints;
-
-                            //Hide right column graph in some situations
-                            //Note that the results may be needed if only ref right also should show average...
-                            if ((1 >= m_trailResults.Count ||
-                                !Data.Settings.OnlyReferenceRight ||
-                                !(m_axisCharts[chartType] is RightVerticalAxis) ||
-                                tr == leftRefTr))
-                            {
-                                TrailResult refTr = ReferenceTrailResult;
-                                if (refIsSelf || null == ReferenceTrailResult)
+                                //Hide right column graph in some situations
+                                //Note that the results may be needed if only ref right also should show average...
+                                if ((1 >= m_trailResults.Count ||
+                                    !Data.Settings.OnlyReferenceRight ||
+                                    !(m_axisCharts[chartType] is RightVerticalAxis) ||
+                                    tr == leftRefTr))
                                 {
-                                    refTr = tr;
+                                    TrailResult refTr = ReferenceTrailResult;
+                                    if (refIsSelf || null == ReferenceTrailResult)
+                                    {
+                                        refTr = tr;
+                                    }
+                                    graphPoints = LineChartUtil.GetSmoothedActivityTrack(tr, chartType, refTr);
                                 }
-                                graphPoints = LineChartUtil.GetSmoothedActivityTrack(tr, chartType, refTr);
+                                else
+                                {
+                                    //No data
+                                    graphPoints = new TrackUtil.NumericTimeDataSeries();
+                                }
+
+                                if (graphPoints.Count > 1)
+                                {
+                                    //Get the actual graph for all displayed
+                                    float syncGraphOffset = GetDataLine(tr, graphPoints, dataLine, refGraphPoints);
+                                    if (refChartType == LineChartUtil.ChartToAxis(chartType) && (refChartType != chartType || ReferenceTrailResult != tr))
+                                    {
+                                        syncGraphOffsetSum += syncGraphOffset;
+                                        syncGraphOffsetCount++;
+                                    }
+
+                                    //Add as graph for summary
+                                    if (dataLine.Points.Count > 1 && summaryResult != null &&
+                                        summaryResult.Results.Contains(tr)//&&
+                                                                          //Ignore ref for diff time/dist graphs
+                                                                          //(pair.Key != LineChartTypes.DiffDist || pair.Key != LineChartTypes.DiffTime ||
+                                            )
+                                    {
+                                        summarySeries.Add(dataLine);
+                                    }
+                                }
+                            }
+                        }
+                        ////All results for this axis
+                        //Create list summary from resulting datalines
+                        if (summaryDataLine != null)
+                        {
+                            if (summarySeries.Count == 1)
+                            {
+                                //Cannot create a summary from one line, just copy the original
+                                foreach (KeyValuePair<float, PointF> kv in summarySeries[0].Points)
+                                {
+                                    summaryDataLine.Points.Add(kv.Key, kv.Value);
+                                }
                             }
                             else
                             {
-                                //No data
-                                graphPoints = new TrackUtil.NumericTimeDataSeries();
+                                //Only add if more than one one result
+                                this.getCategoryAverage(summaryDataLine, summarySeries);
                             }
 
-                            if (graphPoints.Count > 1)
-                            {
-                                //Get the actual graph for all displayed
-                                float syncGraphOffset = GetDataLine(tr, graphPoints, dataLine, refGraphPoints);
-                                if (refChartType == LineChartUtil.ChartToAxis(chartType) && (refChartType != chartType || ReferenceTrailResult != tr))
-                                {
-                                    syncGraphOffsetSum += syncGraphOffset;
-                                    syncGraphOffsetCount++;
-                                }
-
-                                //Add as graph for summary
-                                if (dataLine.Points.Count > 1 && summaryResult != null &&
-                                    summaryResult.Results.Contains(tr)//&&
-                                    //Ignore ref for diff time/dist graphs
-                                    //(pair.Key != LineChartTypes.DiffDist || pair.Key != LineChartTypes.DiffTime ||
-                                        )
-                                {
-                                    summarySeries.Add(dataLine);
-                                }
-                            }
                         }
-                    }
-                    ////All results for this axis
-                    //Create list summary from resulting datalines
-                    if (summaryDataLine != null)
+                    }  //for all axis
+
+                    //tooltip for "offset"
+                    if (SyncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
                     {
-                        if (summarySeries.Count == 1)
-                        {
-                            //Cannot create a summary from one line, just copy the original
-                            foreach (KeyValuePair<float, PointF> kv in summarySeries[0].Points)
-                            {
-                                summaryDataLine.Points.Add(kv.Key, kv.Value);
-                            }
-                        }
-                        else
-                        {
-                            //Only add if more than one one result
-                            this.getCategoryAverage(summaryDataLine, summarySeries);
-                        }
-
+                        ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
                     }
-                }  //for all axis
+                    if (this.m_axisCharts.Count > 0)
+                    {
+                        int val = GetSmooth();
+                        setSmoothingPicker(val);
+                    }
 
-                //tooltip for "offset"
-                if (SyncGraph != SyncGraphMode.None && syncGraphOffsetCount > 0)
-                {
-                    ShowGeneralToolTip(SyncGraph.ToString() + ": " + syncGraphOffsetSum / syncGraphOffsetCount); //TODO: Translate
-                }
-                if (this.m_axisCharts.Count > 0)
-                {
-                    int val = GetSmooth();
-                    setSmoothingPicker(val);
-                }
+                    ///////TrailPoints
+                    Data.TrailResult trailPointResult = TrailPointResult();
 
-                ///////TrailPoints
-                Data.TrailResult trailPointResult = TrailPointResult();
-
-                if (Data.Settings.ShowTrailPointsOnChart && trailPointResult != null)
-                {
-                    Image icon =
+                    if (Data.Settings.ShowTrailPointsOnChart && trailPointResult != null)
+                    {
+                        Image icon =
 #if ST_2_1
                         CommonResources.Images.Information16;
 #else
                         new Bitmap(TrailsPlugin.CommonIcons.fileCircle(11, 11, trailPointResult.ResultColor.LineNormal));
 #endif
-                    double oldElapsed = double.MinValue;
-                    foreach (DateTime t in trailPointResult.TrailPointDateTime)
-                    {
-                        double elapsed;
-                        if (XAxisReferential == XAxisValue.Time)
+                        double oldElapsed = double.MinValue;
+                        foreach (DateTime t in trailPointResult.TrailPointDateTime)
                         {
-                            elapsed = trailPointResult.getTimeResult(t);
-                        }
-                        else
-                        {
-                            elapsed = trailPointResult.getDistResult(t);
-                        }
-                        elapsed += trailPointResult.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
-                        if (XAxisReferential != XAxisValue.Time)
-                        {
-                            //No ReSync for trailpoints
-                            elapsed = TrackUtil.DistanceConvertFrom(elapsed, this.ReferenceTrailResult);
-                        }
-                        if (!double.IsNaN(elapsed) && elapsed > oldElapsed)
-                        {
-                            AxisMarker a = new AxisMarker(elapsed, icon);
-                                                    a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
-                            a.Line1Color = Color.Goldenrod;
-                            MainChart.XAxis.Markers.Add(a);
+                            double elapsed;
+                            if (XAxisReferential == XAxisValue.Time)
+                            {
+                                elapsed = trailPointResult.getTimeResult(t);
+                            }
+                            else
+                            {
+                                elapsed = trailPointResult.getDistResult(t);
+                            }
+                            elapsed += trailPointResult.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
+                            if (XAxisReferential != XAxisValue.Time)
+                            {
+                                //No ReSync for trailpoints
+                                elapsed = TrackUtil.DistanceConvertFrom(elapsed, this.ReferenceTrailResult);
+                            }
+                            if (!double.IsNaN(elapsed) && elapsed > oldElapsed)
+                            {
+                                AxisMarker a = new AxisMarker(elapsed, icon);
+                                a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
+                                a.Line1Color = Color.Goldenrod;
+                                MainChart.XAxis.Markers.Add(a);
+                            }
                         }
                     }
                 }
+                UpdateSelectedResultRegions();
             }
-            UpdateSelectedResultRegions();
+            catch (Exception e)
+            { } //Exception when debugging
         }
 
         private TrailResult TrailPointResult()

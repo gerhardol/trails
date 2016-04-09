@@ -1111,10 +1111,11 @@ namespace TrailsPlugin.Data
         //Distance
         private void getDistanceTrack()
         {
-            if (null == m_distanceMetersTrack || null == m_activityDistanceMetersTrack || float.IsNaN(m_startDistance))
+            if (null == m_distanceMetersTrack || float.IsNaN(m_startDistance))
             {
                 m_distanceMetersTrack = new TrackUtil.DistanceDataTrack();
                 m_distanceMetersTrack.AllowMultipleAtSameTime = false;
+                IDistanceDataTrack activityDistanceMetersTrack = null;
 
                 if (this is SummaryTrailResult)
                 {
@@ -1124,8 +1125,9 @@ namespace TrailsPlugin.Data
                 }
                 else if (this is ChildTrailResult && (this as ChildTrailResult).PartOfParent)
                 {
-                        //Use parent track, activity distance is without pauses
-                    m_activityDistanceMetersTrack = (this as ChildTrailResult).ParentResult.ActivityDistanceMetersTrack;
+                    //Use parent track, activity distance is without pauses
+                    //No need to set m_activityDistanceMetersTrack
+                    activityDistanceMetersTrack = (this as ChildTrailResult).ParentResult.ActivityDistanceMetersTrack;
                     //m_distanceMetersTrack could be created from parent too (if second rounding is disregarded),
                     //but it is simpler and not heavier to use same code-path as parent
                 }
@@ -1139,11 +1141,12 @@ namespace TrailsPlugin.Data
                         source = this.Activity.DistanceMetersTrack;
                         //This can be incorrect for Pool Swimming
                     }
-                    else if (Data.Settings.UseGpsFilter != GpsFilterType.None && m_activityDistanceMetersTrack == null)
+                    else if (Data.Settings.UseGpsFilter != GpsFilterType.None)
                     {
                         //Try getting m_activityDistanceMetersTrack and gps with filter
                         getGps();
                         //Do not set source, nothing to insert from
+                        activityDistanceMetersTrack = m_activityDistanceMetersTrack;
                     }
                     if (source == null && m_activityDistanceMetersTrack == null)
                     {
@@ -1153,9 +1156,9 @@ namespace TrailsPlugin.Data
                     if (source != null && source.Count > 0)
                     {
                         //Make a copy, as we insert values
-                        m_activityDistanceMetersTrack = new TrackUtil.DistanceDataTrack(source);
-                        TrackUtil.setCapacity(m_activityDistanceMetersTrack, source.Count);
-                        m_activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
+                        activityDistanceMetersTrack = new TrackUtil.DistanceDataTrack(source);
+                        TrackUtil.setCapacity(activityDistanceMetersTrack, source.Count);
+                        activityDistanceMetersTrack.AllowMultipleAtSameTime = false;
                         //There are occasional 0 or decreasing distance values, that disrupt insertion
                         for (int i = 0; i < source.Count; i++)
                         {
@@ -1163,47 +1166,48 @@ namespace TrailsPlugin.Data
                             if (i == 0 || t.Value < source[i - 1].Value)
                             {
                                 DateTime d = source.EntryDateTime(t);
-                                m_activityDistanceMetersTrack.Add(d, t.Value);
+                                activityDistanceMetersTrack.Add(d, t.Value);
                             }
                         }
                                 //insert points at borders in m_activityDistanceMetersTrack
                                 //Less special handling when transversing the activity track
                                 (new InsertValues<float>(this)).
-                                    insertValues(m_activityDistanceMetersTrack, source);
+                                    insertValues(activityDistanceMetersTrack, source);
                     }
+                    m_activityDistanceMetersTrack = activityDistanceMetersTrack;
                 }
 
-                if (m_activityDistanceMetersTrack != null && m_activityDistanceMetersTrack.Count > 0)
+                if (activityDistanceMetersTrack != null && activityDistanceMetersTrack.Count > 0)
                 {
                     int i = 0;
                     float distance = 0;
                     uint oldElapsed = 0;
 
-                    while (i < m_activityDistanceMetersTrack.Count &&
-                        this.StartTime >= m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]))
+                    while (i < activityDistanceMetersTrack.Count &&
+                        this.StartTime >= activityDistanceMetersTrack.EntryDateTime(activityDistanceMetersTrack[i]))
                     {
                         i++;
                     }
 
                     //Add a point at result start, also if no Dist point is set
                     this.m_distanceMetersTrack.Add(this.StartTime, distance);
-                    this.m_startDistance = TrackUtil.getValFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.StartTime, i);
+                    this.m_startDistance = TrackUtil.getValFromDateTimeIndex(activityDistanceMetersTrack, this.StartTime, i);
 
 #if !NO_ST_INSERT_START_TIME
                     //There is a bug if a second point is added at the same second as starttime
-                    while (i < m_activityDistanceMetersTrack.Count &&
-                        (m_activityDistanceMetersTrack.EntryDateTime(m_activityDistanceMetersTrack[i]) - this.StartTime).TotalSeconds < 1)
+                    while (i < activityDistanceMetersTrack.Count &&
+                        (activityDistanceMetersTrack.EntryDateTime(activityDistanceMetersTrack[i]) - this.StartTime).TotalSeconds < 1)
                     {
                         i++;
                     }
 #endif
 
                     float prevDist = this.m_startDistance;
-                    while (i < this.m_activityDistanceMetersTrack.Count &&
-                        this.EndTime > this.m_activityDistanceMetersTrack.EntryDateTime(this.m_activityDistanceMetersTrack[i]))
+                    while (i < activityDistanceMetersTrack.Count &&
+                        this.EndTime > activityDistanceMetersTrack.EntryDateTime(activityDistanceMetersTrack[i]))
                     {
-                        ITimeValueEntry<float> timeValue = m_activityDistanceMetersTrack[i];
-                        DateTime dateTime = m_activityDistanceMetersTrack.EntryDateTime(timeValue);
+                        ITimeValueEntry<float> timeValue = activityDistanceMetersTrack[i];
+                        DateTime dateTime = activityDistanceMetersTrack.EntryDateTime(timeValue);
                         if (!ZoneFiveSoftware.Common.Data.Algorithm.DateTimeRangeSeries.IsPaused(dateTime, this.Pauses))
                         {
                             uint elapsed = timeValue.ElapsedSeconds;
@@ -1231,7 +1235,7 @@ namespace TrailsPlugin.Data
                     //Set real last distance, override if elapsedSec is set
                     if (!float.IsNaN(prevDist))
                     {
-                        float dist = TrackUtil.getValFromDateTimeIndex(this.m_activityDistanceMetersTrack, this.EndTime, i);
+                        float dist = TrackUtil.getValFromDateTimeIndex(activityDistanceMetersTrack, this.EndTime, i);
                         distance += dist - prevDist;
                         TrackUtil.trackAdd(this.m_distanceMetersTrack, this.EndTime, distance);
                     }
@@ -1259,6 +1263,7 @@ namespace TrailsPlugin.Data
                     return (this as ChildTrailResult).ParentResult.ActivityDistanceMetersTrack;
                 }
                 getDistanceTrack();
+                Debug.Assert(null != m_activityDistanceMetersTrack, "ActivityDistanceTrack unexpectedly null");
                 return m_activityDistanceMetersTrack;
             }
         }

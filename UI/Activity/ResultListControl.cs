@@ -1853,7 +1853,6 @@ namespace TrailsPlugin.UI.Activity {
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation + ": " +
                         Data.Settings.UseTrailElevationAdjust);
                     this.m_page.RefreshData(true);
-                    this.m_page.RefreshChart();
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
@@ -1868,7 +1867,6 @@ namespace TrailsPlugin.UI.Activity {
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " +
                         Data.Settings.DeviceElevationFromOther);
                     this.m_page.RefreshData(true);
-                    this.m_page.RefreshChart();
                 }
                 else if (e.Modifiers == Keys.Shift)
                 {
@@ -1877,7 +1875,6 @@ namespace TrailsPlugin.UI.Activity {
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + ": " +
                         Data.Settings.UseDeviceElevationForCalc);
                     this.m_page.RefreshData(true);
-                    this.m_page.RefreshChart();
                 }
             }
 
@@ -1909,7 +1906,6 @@ namespace TrailsPlugin.UI.Activity {
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelCadence + ": " +
                         TrailResult.CalculateGradeInCadence);
                     m_page.RefreshData(true);
-                    this.m_page.RefreshChart();
                 }
             }
 
@@ -2049,7 +2045,6 @@ namespace TrailsPlugin.UI.Activity {
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelCadence + ": " + Data.Settings.CadenceFromOther);
                     this.m_page.RefreshData(true);
-                    this.m_page.RefreshChart();
                 }
             }
 
@@ -2276,6 +2271,7 @@ namespace TrailsPlugin.UI.Activity {
                     Data.Settings.OverlappingResultShareSplitTime = !Data.Settings.OverlappingResultShareSplitTime;
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelTime + ": " +
                         Data.Settings.OverlappingResultShareSplitTime);
+                    //The overlapping is set when calculating the trail
                     this.m_page.RefreshData(true, true);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt | Keys.Shift))
@@ -2591,7 +2587,7 @@ namespace TrailsPlugin.UI.Activity {
                 TrailResultWrapper prev = Controller.TrailController.Instance.ReferenceResult;
                 Controller.TrailController.Instance.ReferenceResult = tr;
                 this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr, prev });
-                this.m_page.RefreshChart();
+                this.m_page.RefreshData(true);
             }
         }
 

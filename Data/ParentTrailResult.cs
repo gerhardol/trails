@@ -157,7 +157,7 @@ namespace TrailsPlugin.Data
             return splits;
         }
 
-        private void addPausesAsResults(IList<ChildTrailResult> splits, IValueRangeSeries<DateTime> pauses, PauseType pauseType)
+        private void addPausesAsResults(IList<ChildTrailResult> splits, ICollection<IValueRange<DateTime>> pauses, PauseType pauseType)
         {
             foreach (IValueRange<DateTime> v in pauses)
             {
@@ -198,6 +198,13 @@ namespace TrailsPlugin.Data
                         t.Points.Add(new TrailResultPoint(tl, upper, TimeSpan.Zero));
 
                         PausedChildTrailResult tr = new PausedChildTrailResult(this, splits[j], -1, t, pauseType);
+                        if (pauseType == PauseType.RestLap)
+                        {
+                            if (this.m_lapPauseMapping.ContainsKey(v))
+                            {
+                                tr.m_LapInfo = this.m_lapPauseMapping[v];
+                            }
+                        }
                         splits.Add(tr);
                         break;
                     }

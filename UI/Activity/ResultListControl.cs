@@ -1000,12 +1000,17 @@ namespace TrailsPlugin.UI.Activity {
                             {
                                 tr.Result.LapInfo.Rest = !tr.Result.LapInfo.Rest;
                                 this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
+                                tr.RefreshChildren();
+                                m_page.RefreshData(true);
                             }
                         }
                         else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && tr.Result.Activity != null)
                         {
-                            setMetaImportSource(tr.Result.Activity);
-                            this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
+                            if (DialogResult.OK == setMetaImportSource(tr.Result.Activity))
+                            {
+                                this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
+                                m_page.RefreshData(true, true);
+                            }
                         }
                         //else if (selectedColumn.Id == TrailResultColumnIds.StartTime)
                         //{
@@ -1241,7 +1246,7 @@ namespace TrailsPlugin.UI.Activity {
             return res;
         }
 
-        private void setMetaImportSource(IActivity activity)
+        private DialogResult setMetaImportSource(IActivity activity)
         {
             STForm form = new STForm(m_visualTheme, 410, 105);
             ZoneFiveSoftware.Common.Visuals.TextBox textBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
@@ -1260,6 +1265,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 activity.Metadata.Source = textBox.Text;
             }
+            return r;
         }
 
         private enum SplitTimesPopup { AdjustDiff, PandolfTerrain }

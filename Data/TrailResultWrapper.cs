@@ -42,6 +42,16 @@ namespace TrailsPlugin.Data
             getChildren();
         }
 
+        public void RefreshChildren()
+        {
+            if (this.Element != null && this.Element is ParentTrailResult)
+            {
+                this.Children.Clear();
+                this.m_allChildren.Clear();
+                this.getChildren();
+            }
+        }
+
         private void getChildren()
         {
             //TODO This should be lazy (calculated if children visible), 

@@ -41,7 +41,7 @@ namespace TrailsPlugin.Data
         internal TrailResultWrapper Wrapper;
         private ActivityTrail m_activityTrail;
         private IActivity m_activity;
-        private ILapInfo m_LapInfo = null;
+        internal ILapInfo m_LapInfo = null;
         protected IPoolLengthInfo m_PoolLengthInfo = null;
         protected int m_order;
         private string m_name;
@@ -71,7 +71,8 @@ namespace TrailsPlugin.Data
         private static int nextTrailColor = 0;
 
         private IValueRangeSeries<DateTime> m_pauses;
-        private IValueRangeSeries<DateTime> m_lapPauses;
+        private IList<IValueRange<DateTime>> m_lapPauses;
+        protected IDictionary<IValueRange<DateTime>, ILapInfo> m_lapPauseMapping = new Dictionary<IValueRange<DateTime>, ILapInfo>();
         private IDistanceDataTrack m_distanceMetersTrack;
         private IDistanceDataTrack m_activityDistanceMetersTrack;
         //private INumericTimeDataSeries m_elevationMetersTrack;
@@ -862,7 +863,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public IValueRangeSeries<DateTime> LapPauses
+        public IList<IValueRange<DateTime>> LapPauses
         {
             get
             {
@@ -902,7 +903,7 @@ namespace TrailsPlugin.Data
             {
                 TrailResultWrapper refTr = Controller.TrailController.Instance.ReferenceResult;
                 this.m_pauses = new ValueRangeSeries<DateTime>();
-                this.m_lapPauses = new ValueRangeSeries<DateTime>();
+                this.m_lapPauses = new List<IValueRange<DateTime>>();
 
                 if (this is SummaryTrailResult)
                 {
@@ -1040,8 +1041,10 @@ namespace TrailsPlugin.Data
                                     {
                                         upper = this.Info.EndTime.AddSeconds(1);
                                     }
-                                    this.m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                                    this.m_lapPauses.Add(new ValueRange<DateTime>(lower, upper));
+                                    IValueRange<DateTime> v = new ValueRange<DateTime>(lower, upper);
+                                    this.m_pauses.Add(v);
+                                    this.m_lapPauses.Add(v);
+                                    this.m_lapPauseMapping[v] = lap;
                                 }
                             }
                         }
@@ -1069,8 +1072,9 @@ namespace TrailsPlugin.Data
                                     {
                                         upper = this.TrailPointDateTime[i];
                                     }
-                                    this.m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                                    this.m_lapPauses.Add(new ValueRange<DateTime>(lower, upper));
+                                    IValueRange<DateTime> v = new ValueRange<DateTime>(lower, upper);
+                                    this.m_pauses.Add(v);
+                                    this.m_lapPauses.Add(v);
                                 }
                             }
                             //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
@@ -3793,6 +3797,9 @@ namespace TrailsPlugin.Data
                                                 }
                                             }
                                         }
+                                        if (m_DiffDistTrack0 == null)
+                                        {//Debug
+                                        }
                                     }
 
                                     if (Settings.DiffUsingCommonStretches &&
@@ -3871,6 +3878,11 @@ namespace TrailsPlugin.Data
                                                 }
                                                 double diff = thisDist - (double)refDist + diffOffset + (double)firstDifference;
                                                 lastValue = (float)convertFrom(diff, trRef.Activity);
+                                                Debug.Assert(m_DiffDistTrack0 != null, "m_DiffDistTrack0 unexpected null");
+                                                if(m_DiffDistTrack0 == null)
+                                                {
+                                                    m_DiffDistTrack0 = new TrackUtil.NumericTimeDataSeries();
+                                                }
                                                 m_DiffDistTrack0.Add(d1, lastValue);
                                                 oldElapsed = (int)elapsed;
                                                 prevDist = thisDist;

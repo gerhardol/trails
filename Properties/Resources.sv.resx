@@ -383,4 +383,10 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="List_TimerPause" xml:space="preserve">
     <value>Klockpaus</value>
   </data>
+  <data name="List_NonRequired" xml:space="preserve">
+    <value>Inte obligatorisk</value>
+  </data>
+  <data name="UI_Activity_List_SetNonRequiredAsPauses" xml:space="preserve">
+    <value>Hantera inte obligatoriska trail punkter som pauser</value>
+  </data>
 </root>

@@ -3718,6 +3718,7 @@ namespace TrailsPlugin.Data
                     }
                 }
             }
+#pragma warning disable 0168
             catch (Exception e)
             { }//Unknown exception appears when debugging
             return m_DiffTimeTrack0;

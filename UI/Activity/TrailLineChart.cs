@@ -1255,6 +1255,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 UpdateSelectedResultRegions();
             }
+#pragma warning disable 0168
             catch (Exception e)
             { } //Exception when debugging
         }

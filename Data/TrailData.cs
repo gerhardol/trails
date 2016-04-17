@@ -38,7 +38,6 @@ namespace TrailsPlugin.Data
             trail = new Data.Trail(GUIDs.SplitsTrail, true);
             trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
             trail.IsSplits = true;
-            trail.IsCompleteActivity = true;
             trail.TrailType = Trail.CalcType.Splits;
             trail.TrailPriority = -11;
             allTrails.Add(trail.Id, trail);
@@ -47,7 +46,8 @@ namespace TrailsPlugin.Data
             trail = new Data.Trail(GUIDs.ReferenceTrail, true);
             trail.Name = Properties.Resources.Trail_Reference_Name;
             trail.IsReference = true;
-            trail.IsCompleteActivity = true;
+            //RefTrail is using the trail points, the points are limiting, not extending
+            //trail.IsCompleteActivity = false;
             trail.TrailPriority = -10;
             allTrails.Add(trail.Id, trail);
 

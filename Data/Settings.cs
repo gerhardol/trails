@@ -377,7 +377,7 @@ namespace TrailsPlugin.Data
                     && !TrailResultColumnIds.ObsoleteFields.Contains(value))
                 {
                     m_SummaryViewSortColumns.Remove(value);
-                    if (m_SummaryViewSortColumns.Count > 2)
+                    if (m_SummaryViewSortColumns.Count >= ((List < string > )m_SummaryViewSortColumns).Capacity)
                     {
                         m_SummaryViewSortColumns.RemoveAt(m_SummaryViewSortColumns.Count - 1);
                     }

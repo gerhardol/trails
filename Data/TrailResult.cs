@@ -73,6 +73,7 @@ namespace TrailsPlugin.Data
         private IValueRangeSeries<DateTime> m_pauses;
         private IList<IValueRange<DateTime>> m_lapPauses;
         protected IDictionary<IValueRange<DateTime>, ILapInfo> m_lapPauseMapping = new Dictionary<IValueRange<DateTime>, ILapInfo>();
+        private IList<IValueRange<DateTime>> m_nonRequiredPauses;
         private IDistanceDataTrack m_distanceMetersTrack;
         private IDistanceDataTrack m_activityDistanceMetersTrack;
         //private INumericTimeDataSeries m_elevationMetersTrack;
@@ -227,13 +228,10 @@ namespace TrailsPlugin.Data
                 this.m_offsetDist = null;
 
                 m_activityDistanceMetersTrack = null;
-                if (!(this is ChildTrailResult) || !(this as ChildTrailResult).PartOfParent)
-                {
-                    //TBD
-                    //m_ActivityInfo = null;
-                    m_pauses = null;
-                    m_lapPauses = null;
-                }
+
+                m_pauses = null;
+                m_lapPauses = null;
+                m_nonRequiredPauses = null;
             }
         }
 
@@ -375,6 +373,7 @@ namespace TrailsPlugin.Data
                     }
                     else if (Data.Settings.UseDeviceDistance && this.LapInfo != null && this.LapInfo.TotalTime > TimeSpan.Zero)
                     {
+                        //Dont care if pauses are added
                         m_duration = this.LapInfo.TotalTime;
                     }
                     else if (!(this is ChildTrailResult) &&
@@ -830,7 +829,7 @@ namespace TrailsPlugin.Data
         {
             get
             {
-                if(TrackPartOfParent())
+                if (TrackPartOfParent())
                 {
                     return (this as ChildTrailResult).ParentResult.Pauses;
                 }
@@ -876,6 +875,19 @@ namespace TrailsPlugin.Data
             }
         }
 
+        public IList<IValueRange<DateTime>> NonRequiredPauses
+        {
+            get
+            {
+                if (TrackPartOfParent())
+                {
+                    return (this as ChildTrailResult).ParentResult.NonRequiredPauses;
+                }
+                calcPauses();
+                return this.m_nonRequiredPauses;
+            }
+        }
+
         public IValueRangeSeries<DateTime> StoppedPauses
         {
             get
@@ -904,6 +916,7 @@ namespace TrailsPlugin.Data
                 TrailResultWrapper refTr = Controller.TrailController.Instance.ReferenceResult;
                 this.m_pauses = new ValueRangeSeries<DateTime>();
                 this.m_lapPauses = new List<IValueRange<DateTime>>();
+                this.m_nonRequiredPauses = new List<IValueRange<DateTime>>();
 
                 if (this is SummaryTrailResult)
                 {
@@ -924,13 +937,21 @@ namespace TrailsPlugin.Data
                     else
                     {
                         this.m_lapPauses = (this as ChildTrailResult).ParentResult.m_lapPauses;
+                        this.m_nonRequiredPauses = (this as ChildTrailResult).ParentResult.m_nonRequiredPauses;
                         foreach (IValueRange<DateTime> v in this.TimerPauses)
                         {
                             this.m_pauses.Add(v);
                         }
-                        foreach (IValueRange<DateTime> v in this.LapPauses)
+                        foreach (IValueRange<DateTime> v in this.m_lapPauses)
                         {
                             this.m_pauses.Add(v);
+                        }
+                        if (tr.pauseType != PauseType.NonReqPoint)
+                        {
+                            foreach (IValueRange<DateTime> v in this.m_nonRequiredPauses)
+                            {
+                                this.m_pauses.Add(v);
+                            }
                         }
                     }
                 }
@@ -939,6 +960,7 @@ namespace TrailsPlugin.Data
                     Debug.Assert(false, "Unexpectedly requesting pauses for child result");
                     this.m_pauses = (this as ChildTrailResult).ParentResult.Pauses;
                     this.m_lapPauses = (this as ChildTrailResult).ParentResult.m_lapPauses;
+                    this.m_nonRequiredPauses = (this as ChildTrailResult).ParentResult.m_nonRequiredPauses;
                 }
                 else
                 {
@@ -1048,22 +1070,26 @@ namespace TrailsPlugin.Data
                                 }
                             }
                         }
+                    }
 
+                    if (Settings.NonReqIsPause)
+                    {
                         if (!overlap)
                         {
-                            //Non required trail points
                             for (int i = 0; i < this.m_subResultInfo.Points.Count - 1; i++)
                             {
                                 if (i < this.m_subResultInfo.Points.Count &&
+                                    this.m_subResultInfo.Points[i].LapInfo == null &&
                                     !this.m_subResultInfo.Points[i].Required &&
                                     this.TrailPointDateTime[i] > DateTime.MinValue)
                                 {
                                     DateTime lower = this.TrailPointDateTime[i];
+                                    //End time for pause is start of next required (or end of result if no more results)
                                     DateTime upper = this.EndTime;
+                                    i++;
                                     while (i < this.TrailPointDateTime.Count &&
                                         i < this.m_subResultInfo.Points.Count &&
-                                        (!this.m_subResultInfo.Points[i].Required ||
-                                        this.TrailPointDateTime[i] == DateTime.MinValue))
+                                        this.TrailPointDateTime[i] == DateTime.MinValue)
                                     {
                                         i++;
                                     }
@@ -1074,37 +1100,9 @@ namespace TrailsPlugin.Data
                                     }
                                     IValueRange<DateTime> v = new ValueRange<DateTime>(lower, upper);
                                     this.m_pauses.Add(v);
-                                    this.m_lapPauses.Add(v);
+                                    this.m_nonRequiredPauses.Add(v);
                                 }
                             }
-                            //IList<TrailGPSLocation> trailLocations = m_activityTrail.Trail.TrailLocations;
-                            //if (m_activityTrail.Trail.IsSplits)
-                            //{
-                            //    trailLocations = Trail.TrailGpsPointsFromSplits(this.m_activity);
-                            //}
-                            //for (int i = 0; i < this.TrailPointDateTime.Count - 1; i++)
-                            //{
-                            //    if (i < trailLocations.Count &&
-                            //        !trailLocations[i].Required &&
-                            //        this.TrailPointDateTime[i] > DateTime.MinValue)
-                            //    {
-                            //        DateTime lower = this.TrailPointDateTime[i];
-                            //        DateTime upper = this.EndTime;
-                            //        while (i < this.TrailPointDateTime.Count &&
-                            //            i < trailLocations.Count &&
-                            //            (!trailLocations[i].Required ||
-                            //            this.TrailPointDateTime[i] == DateTime.MinValue))
-                            //        {
-                            //            i++;
-                            //        }
-                            //        if (i < this.TrailPointDateTime.Count &&
-                            //            this.TrailPointDateTime[i] > DateTime.MinValue)
-                            //        {
-                            //            upper = this.TrailPointDateTime[i];
-                            //        }
-                            //        m_pauses.Add(new ValueRange<DateTime>(lower, upper));
-                            //    }
-                            //}
                         }
                     }
                 }

@@ -130,10 +130,7 @@ namespace TrailsPlugin.Data
                 this.Children.Clear();
                 foreach (TrailResultWrapper tn in m_allChildren)
                 {
-                    if (!TrailsPlugin.Data.Settings.RestIsPause || tn.Result.Duration.TotalSeconds > 1)
-                    {
-                        this.Children.Add(tn);
-                    }
+                    this.Children.Add(tn);
                 }
             }
         }

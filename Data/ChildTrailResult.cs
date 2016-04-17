@@ -40,7 +40,7 @@ namespace TrailsPlugin.Data
         }
     }
 
-    public enum PauseType { Timer, RestLap, Stopped };
+    public enum PauseType { Timer, RestLap, NonReqPoint, Stopped };
 
     public class PausedChildTrailResult : ChildTrailResult
     {
@@ -61,6 +61,8 @@ namespace TrailsPlugin.Data
                     return Properties.Resources.List_TimerPause;
                 case PauseType.RestLap:
                     return Properties.Resources.List_RestLap;
+                case PauseType.NonReqPoint:
+                    return Properties.Resources.List_NonRequired;
                 default:
                     return ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelStoppedTime;
             }

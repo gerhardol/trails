@@ -79,7 +79,7 @@ namespace TrailsPlugin.Data
                 for (i = 0; i < m_subResultInfo.Count - 1; i++)
                 {
                     if (m_subResultInfo.Points[i].Time != DateTime.MinValue &&
-                                (!this.Trail.IsSplits || !Settings.RestIsPause || m_subResultInfo.Points[i].Required))
+                        (m_subResultInfo.Points[i].Required || !Data.Settings.NonReqIsPause))
                     {
                         int j; //end time index
                         for (j = i + 1; j < m_subResultInfo.Points.Count; j++)
@@ -128,6 +128,7 @@ namespace TrailsPlugin.Data
                 {
                     addPausesAsResults(splits, this.TimerPauses, PauseType.Timer);
                     addPausesAsResults(splits, this.LapPauses, PauseType.RestLap);
+                    addPausesAsResults(splits, this.NonRequiredPauses, PauseType.NonReqPoint);
                     addPausesAsResults(splits, this.StoppedPauses, PauseType.Stopped);
                 }
                 TimeSpan sp = TimeSpan.Zero;
@@ -161,6 +162,7 @@ namespace TrailsPlugin.Data
         {
             foreach (IValueRange<DateTime> v in pauses)
             {
+                //Pauses could extend outside the borders
                 DateTime lower = v.Lower;
                 if (lower == DateTime.MinValue)
                 {
@@ -172,6 +174,16 @@ namespace TrailsPlugin.Data
                     upper = m_subResultInfo.Points[m_subResultInfo.Points.Count - 1].Time;
                 }
 
+                //skip very short pauses
+                TimeSpan duration = upper - lower;
+                if (duration < TimeSpan.FromSeconds(2) &&
+                    (this.StartTime - lower < TimeSpan.FromSeconds(1) ||
+                    upper - this.EndTime < TimeSpan.FromSeconds(1)))
+                {
+                    continue;
+                }
+
+                int lastNormalSplit = 0;
                 for (int j = 0; j < splits.Count; j++)
                 {
                     if (splits[j] is PausedChildTrailResult)
@@ -179,19 +191,23 @@ namespace TrailsPlugin.Data
                         //All normal splits checked
                         break;
                     }
-                    if (splits[j].m_subResultInfo.Points[0].Time > DateTime.MinValue &&
-                        splits[j].m_subResultInfo.Points[0].Time <= lower && lower < splits[j].m_subResultInfo.Points[1].Time ||
-                        //First lap
-                        splits[j].m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time)
-                    {
-                        TimeSpan duration = upper - lower;
-                        if (duration < TimeSpan.FromSeconds(2) &&
-                            (this.StartTime - lower < TimeSpan.FromSeconds(1) ||
-                            upper - this.EndTime < TimeSpan.FromSeconds(1)))
-                        {
-                            continue;
-                        }
+                    lastNormalSplit = j;
+                }
 
+                //Match the pause to a split
+                for (int j = 0; j <= lastNormalSplit; j++)
+                {
+                    if (splits[j].m_subResultInfo.Points[0].Time > DateTime.MinValue &&
+                        splits[j].m_subResultInfo.Points[1].Time > DateTime.MinValue &&
+                        //pause is started within this split
+                        (splits[j].m_subResultInfo.Points[0].Time <= lower && lower < splits[j].m_subResultInfo.Points[1].Time ||
+                        //(First) lap, ends in the split
+                        splits[j].m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time ||
+                        //For splits we want pauses also before after first normal split
+                        this.Trail.IsSplits && (
+                        j == 0 && upper < splits[j].m_subResultInfo.Points[0].Time ||
+                        j == lastNormalSplit && splits[j].m_subResultInfo.Points[1].Time < lower)))
+                    {
                         TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);
                         TrailGPSLocation tl = new TrailGPSLocation(PausedChildTrailResult.PauseName(pauseType), false);
                         t.Points.Add(new TrailResultPoint(tl, lower, duration));

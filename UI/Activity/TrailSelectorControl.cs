@@ -183,8 +183,7 @@ namespace TrailsPlugin.UI.Activity
                     TrailName.Text += " (" + Controller.TrailController.Instance.CurrentActivityTrails.Count + ": "+s+")";
                 }
                 TrailName.Enabled = (m_editTrail == null);
-                if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.TrailPoints &&
-                    Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
+                if (IsSettingsIcon())
                 {
                     btnEdit.CenterImage = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.Settings16;
                 }
@@ -214,6 +213,12 @@ namespace TrailsPlugin.UI.Activity
 
 
         /************************************************************/
+        private bool IsSettingsIcon()
+        {
+            return Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated &&
+                    Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints;
+        }
+
         private void btnAdd_Click(object sender, EventArgs e)
         {
 #if ST_2_1
@@ -295,8 +300,7 @@ namespace TrailsPlugin.UI.Activity
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, false, Controller.TrailController.Instance.ReferenceTrailResult);
                 showEditDialog(dialog);
             }
-            else if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Generated &&
-                Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints)
+            else if (IsSettingsIcon())
             {
                 Guid pageId;
 

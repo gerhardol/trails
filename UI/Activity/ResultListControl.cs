@@ -989,27 +989,40 @@ namespace TrailsPlugin.UI.Activity {
                 object row = this.summaryList.RowHitTest(e2.Location, out hit);
                 if (row != null && hit == TreeList.RowHitState.Row && row is TrailResultWrapper)
                 {
-                    TrailResultWrapper tr = row as TrailResultWrapper;
-                    if (tr != null)
+                    TrailResultWrapper trw = row as TrailResultWrapper;
+                    if (trw != null)
                     {
                         TreeList.Column selectedColumn = getColumn(l, e2.X + l.HScrollBar.Value);
-                        if (selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest && tr.Result.LapInfo != null)
+                        if (selectedColumn.Id == TrailResultColumnIds.Order)
                         {
-                            DialogResult popRes = MessageDialog.Show(string.Format("Set to {0}?", !tr.Result.LapInfo.Rest),
+                            TrailResultWrapper parent = trw.GetParent();
+                            if (parent != null)
+                            {
+                                parent.RefreshChildren();
+                            }
+                            m_page.RefreshData(true);
+                        }
+                        else if (selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest && trw.Result.LapInfo != null)
+                        {
+                            DialogResult popRes = MessageDialog.Show(string.Format("Set to {0}?", !trw.Result.LapInfo.Rest),
                                   "Toggle rest on lap", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                             if (popRes == DialogResult.OK)
                             {
-                                tr.Result.LapInfo.Rest = !tr.Result.LapInfo.Rest;
-                                this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
-                                tr.RefreshChildren();
+                                trw.Result.LapInfo.Rest = !trw.Result.LapInfo.Rest;
+                                //this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
+                                TrailResultWrapper parent = trw.GetParent();
+                                if (parent != null)
+                                {
+                                    parent.RefreshChildren();
+                                }
                                 m_page.RefreshData(true);
                             }
                         }
-                        else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && tr.Result.Activity != null)
+                        else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && trw.Result.Activity != null)
                         {
-                            if (DialogResult.OK == setMetaImportSource(tr.Result.Activity))
+                            if (DialogResult.OK == setMetaImportSource(trw.Result.Activity))
                             {
-                                this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
+                                this.summaryList.RefreshElements(new List<TrailResultWrapper> { trw });
                                 m_page.RefreshData(true, true);
                             }
                         }
@@ -1027,11 +1040,11 @@ namespace TrailsPlugin.UI.Activity {
                         //        m_page.RefreshData(false);
                         //    }
                         //}
-                        else if (tr.Result.Activity != null && tr.Result is ParentTrailResult)
+                        else if (trw.Result.Activity != null && trw.Result is ParentTrailResult)
                         {
                             Guid view = GUIDs.DailyActivityView;
-                            Controller.TrailController.Instance.ReferenceResult = tr;
-                            string bookmark = "id=" + tr.Result.Activity;
+                            Controller.TrailController.Instance.ReferenceResult = trw;
+                            string bookmark = "id=" + trw.Result.Activity;
                             Plugin.GetApplication().ShowView(view, bookmark);
                         }
                     }
@@ -1713,14 +1726,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else
                 {
-                    if (e.Modifiers == Keys.Shift)
-                    {
-                        Data.Settings.RestIsPause = false;
-                    }
-                    else
-                    {
-                        Data.Settings.RestIsPause = true;
-                    }
+                    Data.Settings.RestIsPause = !(e.Modifiers == Keys.Shift);
                     ShowToolTip(Properties.Resources.UI_Activity_List_SetRestLapsAsPauses + ": " + Data.Settings.RestIsPause);
                     Controller.TrailController.Instance.CurrentReset(false); //TBD
                     this.m_page.RefreshData(true);
@@ -2075,14 +2081,7 @@ namespace TrailsPlugin.UI.Activity {
 
             else if (e.KeyCode == Keys.N)
             {
-                if (e.Modifiers == Keys.Shift)
-                {
-                    Data.Settings.NonReqIsPause = false;
-                }
-                else
-                {
-                    Data.Settings.NonReqIsPause = true;
-                }
+                Data.Settings.NonReqIsPause = !(e.Modifiers == Keys.Shift);
                 ShowToolTip(Properties.Resources.Required + ": " +
                     Data.Settings.NonReqIsPause);
                 this.m_page.RefreshData(true);

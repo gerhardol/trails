@@ -42,9 +42,22 @@ namespace TrailsPlugin.Data
             getChildren();
         }
 
+        public TrailResultWrapper GetParent()
+        {
+            if (this.Result is ParentTrailResult)
+            {
+                return this;
+            }
+            if (this.Parent != null && (this.Parent as TrailResultWrapper).Result is ParentTrailResult)
+            {
+                return this.Parent as TrailResultWrapper;
+            }
+            return null;
+        }
+
         public void RefreshChildren()
         {
-            if (this.Element != null && this.Element is ParentTrailResult)
+            if (this.Element != null && this.Result is ParentTrailResult)
             {
                 this.Children.Clear();
                 this.m_allChildren.Clear();

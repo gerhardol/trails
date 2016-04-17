@@ -205,7 +205,7 @@ namespace TrailsPlugin.Data
                         splits[j].m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time ||
                         //For splits we want pauses also before after first normal split
                         this.Trail.IsSplits && (
-                        j == 0 && upper < splits[j].m_subResultInfo.Points[0].Time ||
+                        upper < splits[j].m_subResultInfo.Points[0].Time ||
                         j == lastNormalSplit && splits[j].m_subResultInfo.Points[1].Time < lower)))
                     {
                         TrailResultInfo t = new TrailResultInfo(this.m_subResultInfo.Activity, this.m_subResultInfo.Reverse);

@@ -61,6 +61,7 @@ namespace TrailsPlugin.Data
             {
                 this.Children.Clear();
                 this.m_allChildren.Clear();
+                this.Result.Clear(false);
                 this.getChildren();
             }
         }

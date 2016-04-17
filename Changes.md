@@ -2,16 +2,23 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-2.0.9 2016-04-
-  * Updated Italian translation
-  * Added tooltips on buttons missing
+2.0.9 2016-04-18
+  * Possible to configure "Set Non Required Trail Points as Pauses" in the menu (previously only as keyboard shortcut).
+  * Updates to Pauses as results
+   - Timer Pauses, Rest Laps, Non Required Trail Points and Stopped Time are listed separately in the list. The results are over stricken with bold font for timer pauses and italics for stopped time.
+   - The averages and summaries are listed for the pauses in the list.
+   - If pauses are selected, they are displayed in the Chart
+  * Trail Selector
+   - Multi-select (right click to add) did not work for hierarchical
+   - Empty trails do not have to be created manually for "base" levels. For instance for trail _Country: City: Place_ no Trail is needed for _Country_ and _Country: City_.
+   - List all selected trail in multi selections
+  * Updated Italian, Spanish and Swedish translation
+  * Added tooltips on toolbar buttons that were missing
   * Popup forms are now themed as other SportTracks popups
-  * Added filter for GPS distances, (Keyboard shortcut Alt-d), using time and distance (previously time or distance only).
-  * Multi-select (right click to add) did not work for hierarchichal TrailSelectorControl
-  * List all selected trail in multi selections
+  * Added filter for GPS distances, (Keyboard shortcut Alt-d), using time _and_ distance (previously time _or_ distance only).
   * Set Trail name at import also for obvious timestamp names
   * The default reference activity was added as an activity for all trails, so always set as at least one result
-  * Varios bugfixes
+  * Various bugfixes
 
 2.0.6 2016-02-02 (Plugin Catalog)
   * Popup form from Analyze menu for Activity Reports.
@@ -36,7 +43,7 @@ This page describes the changes between plugin releases. The change log may cont
 	* "Pace - Inverted" axis, to show faster pace upwards as for speed.
   * Trails
     * [Multiple Trails](http://github.com/gerhardol/trails/wiki/Features#multiple-trails) is enhanced to group Trails. If the trail name (for instance _BaseName_) followed by a ":" is a prefix for other trail names (for instance _BaseName: Specific_), selecting _BaseName_ selects _BaseName: Specific_ too. This is visible in the trail selection menu.
-    * SplitPoints - view on map. Previously only single selected activities displaed points for _Splits_ trail, this adds the option for multi-selected activity results too.
+    * SplitPoints - view on map. Previously only single selected activities displayed points for _Splits_ trail, this adds the option for multi-selected activity results too.
     * _Splits_: Swim information displayed, to analyze swim activities (primarily for Garmin 910XT and later)
   * Analyze multiple data sources: It is intended to compare different data sources for the same activity (covering the same time). The time-of-day split times for the reference activity is used also for the other activities.
   * Result list

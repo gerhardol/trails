@@ -175,6 +175,15 @@ namespace TrailsPlugin.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Non Required.
+        /// </summary>
+        internal static string List_NonRequired {
+            get {
+                return ResourceManager.GetString("List_NonRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rest Lap.
         /// </summary>
         internal static string List_RestLap {
@@ -695,6 +704,15 @@ namespace TrailsPlugin.Properties {
         internal static string UI_Activity_List_ResultSummaryStdDev {
             get {
                 return ResourceManager.GetString("UI_Activity_List_ResultSummaryStdDev", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Non Required Trail Points As Pauses.
+        /// </summary>
+        internal static string UI_Activity_List_SetNonRequiredAsPauses {
+            get {
+                return ResourceManager.GetString("UI_Activity_List_SetNonRequiredAsPauses", resourceCulture);
             }
         }
         

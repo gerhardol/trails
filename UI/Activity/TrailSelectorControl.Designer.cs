@@ -36,6 +36,7 @@
             this.selectSimilarSplitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useDeviceDistanceMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setRestLapsAsPausesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nonReqIsPauseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ShowPausesAsResultsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResultSummaryStdDevMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showSummaryTotalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -202,6 +203,7 @@
             this.ResultSummaryStdDevMenuItem,
             this.useDeviceDistanceMenuItem,
             this.setRestLapsAsPausesMenuItem,
+            this.nonReqIsPauseMenuItem,
             this.ShowPausesAsResultsMenuItem,
             this.showOnlyMarkedResultsOnMapMenuItem,
             this.trailPointsMenuItem,
@@ -233,6 +235,13 @@
             this.setRestLapsAsPausesMenuItem.Size = new System.Drawing.Size(198, 22);
             this.setRestLapsAsPausesMenuItem.Text = "<setRestLapsAsPausesMenuItem...";
             this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.setRestLapsAsPausesMenuItem_Click);
+            // 
+            // nonReqIsPauseMenuItem
+            // 
+            this.nonReqIsPauseMenuItem.Name = "nonReqIsPauseMenuItem";
+            this.nonReqIsPauseMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.nonReqIsPauseMenuItem.Text = "<nonReqIsPauseMenuItem...";
+            this.nonReqIsPauseMenuItem.Click += new System.EventHandler(this.nonReqIsPauseMenuItem_Click);
             // 
             // ShowPausesAsResultsMenuItem
             // 
@@ -325,6 +334,7 @@
         private System.Windows.Forms.ContextMenuStrip chartPanelMenu;
         private System.Windows.Forms.ToolStripMenuItem runGradeAdjustMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setRestLapsAsPausesMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nonReqIsPauseMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ResultSummaryStdDevMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showSummaryTotalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showSummaryAverageMenuItem;

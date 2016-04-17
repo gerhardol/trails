@@ -112,6 +112,7 @@ namespace TrailsPlugin.UI.Activity
             this.selectSimilarSplitsMenuItem.Text = Properties.Resources.UI_Activity_List_Splits;
             this.useDeviceDistanceMenuItem.Text = Properties.Resources.UI_Activity_List_UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Text = Properties.Resources.UI_Activity_List_SetRestLapsAsPauses;
+            this.nonReqIsPauseMenuItem.Text = Properties.Resources.UI_Activity_List_SetNonRequiredAsPauses;
             this.ShowPausesAsResultsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowPausesAsResults;
             this.showOnlyMarkedResultsOnMapMenuItem.Text = Properties.Resources.UI_Activity_List_ShowOnlyMarkedResultsOnMap;
             this.trailPointsMenuItem.Text = Properties.Resources.UI_Activity_List_ShowSplitPointsOnMap;
@@ -196,6 +197,7 @@ namespace TrailsPlugin.UI.Activity
             btnDelete.Enabled = enabled;
             this.useDeviceDistanceMenuItem.Checked = Data.Settings.UseDeviceDistance;
             this.setRestLapsAsPausesMenuItem.Checked = Data.Settings.RestIsPause;
+            this.nonReqIsPauseMenuItem.Checked = Data.Settings.NonReqIsPause;
             this.ShowPausesAsResultsMenuItem.Checked = Data.Settings.ShowPausesAsResults;
             this.ResultSummaryStdDevMenuItem.Checked = !Data.Settings.ResultSummaryTotal;
             this.showSummaryTotalMenuItem.Checked = Data.Settings.ShowSummaryTotal;
@@ -390,6 +392,14 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(true);
         }
 
+        void nonReqIsPauseMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Data.Settings.NonReqIsPause = !Data.Settings.NonReqIsPause;
+            this.RefreshControlState();
+            Controller.TrailController.Instance.CurrentReset(false); //TBD
+            m_page.RefreshData(true);
+        }
+        
         void ShowPausesAsResultsMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.ShowPausesAsResults = !Data.Settings.ShowPausesAsResults;

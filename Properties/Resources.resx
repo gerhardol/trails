@@ -533,4 +533,10 @@ http://www.gnu.org/licenses/lgpl.html.</value>
   <data name="List_TimerPause" xml:space="preserve">
     <value>Timer Pause</value>
   </data>
+  <data name="List_NonRequired" xml:space="preserve">
+    <value>Non Required</value>
+  </data>
+  <data name="UI_Activity_List_SetNonRequiredAsPauses" xml:space="preserve">
+    <value>Set Non Required Trail Points As Pauses</value>
+  </data>
 </root>

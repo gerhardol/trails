@@ -3680,6 +3680,10 @@ namespace TrailsPlugin.Data
                                                 firstDifference = thisTime - (double)refTime;
                                             }
                                             lastValue = (float)refTime - thisTime + diffOffset + (float)firstDifference;
+                                            if (m_DiffTimeTrack0 == null)
+                                            {
+                                                m_DiffTimeTrack0 = new TrackUtil.NumericTimeDataSeries();
+                                            }
                                             m_DiffTimeTrack0.Add(d1, lastValue);
                                             oldElapsed = (int)elapsed;
                                             refPrevTime = (float)refTime;
@@ -4436,8 +4440,13 @@ namespace TrailsPlugin.Data
         public override string ToString()
         {
             return (this.m_startTime != null ? m_startTime.ToString() : "") + " " +
-                ((this.TrailPointDateTime.Count == 0) ? "" : this.TrailPointDateTime[0].ToShortTimeString()) +
-                " " + this.TrailPointDateTime.Count;
+                ((this.TrailPointDateTime.Count == 0) ? "" : this.TrailPointDateTime[0].ToShortTimeString()) + " " +
+                this.TrailPointDateTime.Count + " " + 
+                this.ActivityTrail.Trail.Name + " " + 
+                this.GetType().Name.Substring(0, this.GetType().Name.Length - "TrailResult".Length) +
+                (this is PausedChildTrailResult ? " " + (this as PausedChildTrailResult).pauseType.ToString() :
+                (this is SummaryTrailResult ? " " + (this as SummaryTrailResult).IsTotal.ToString() :
+                ""));
         }
     }
 }

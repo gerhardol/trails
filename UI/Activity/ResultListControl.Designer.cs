@@ -415,5 +415,6 @@
         private System.Windows.Forms.ToolStripMenuItem addTopCategoryMenuItem;
         private System.Windows.Forms.ToolTip summaryListToolTip = new System.Windows.Forms.ToolTip();
         private System.Windows.Forms.Timer summaryListToolTipTimer = new System.Windows.Forms.Timer();
+        private System.Windows.Forms.Timer summaryListToolTipDisableTimer = new System.Windows.Forms.Timer();
     }
 }

@@ -112,6 +112,7 @@ namespace TrailsPlugin.UI.Activity {
             this.limitURMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.markCommonStretchesMenuItem.Enabled = Integration.UniqueRoutes.UniqueRouteIntegrationEnabled;
             this.summaryListToolTipTimer.Tick += new System.EventHandler(ToolTipTimer_Tick);
+            this.summaryListToolTipDisableTimer.Tick += new System.EventHandler(ToolTipDisableTimer_Tick);
             ShowListToolBar();
         }
 
@@ -2394,6 +2395,11 @@ namespace TrailsPlugin.UI.Activity {
 
         private void ShowToolTip(string s)
         {
+            this.summaryListToolTipTimer.Stop();
+            this.summaryListToolTipDisableTimer.Interval = 2000;
+            this.summaryListToolTipDisableTimer.Start();
+            this.summaryListTooltipDisabled = true;
+
             this.summaryListToolTip.Show(s,
                 this.summaryList,
                 new System.Drawing.Point(this.summaryListCursorLocationAtMouseMove.X +
@@ -2413,9 +2419,13 @@ namespace TrailsPlugin.UI.Activity {
             TreeList.RowHitState rowHitState;
             TrailResultWrapper entry = (TrailResultWrapper)this.summaryList.RowHitTest(e.Location, out rowHitState);
             if (entry == this.summaryListLastEntryAtMouseMove)
+            {
                 return;
-            else
+            }
+            else if (!this.summaryListTooltipDisabled)
+            {
                 this.summaryListToolTip.Hide(this.summaryList);
+            }
             this.summaryListLastEntryAtMouseMove = entry;
             this.summaryListCursorLocationAtMouseMove = e.Location;
 
@@ -2439,6 +2449,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryListCursorLocationAtMouseMove != null &&
                 !this.summaryListTooltipDisabled)
             {
+                this.summaryListToolTip.ReshowDelay = 100; //Default
                 string tt = this.summaryListLastEntryAtMouseMove.Result.ToolTip;
                 this.summaryListToolTip.Show(tt,
                               this.summaryList,
@@ -2447,6 +2458,12 @@ namespace TrailsPlugin.UI.Activity {
                                         this.summaryListCursorLocationAtMouseMove.Y),
                               this.summaryListToolTip.AutoPopDelay);
             }
+        }
+
+        private void ToolTipDisableTimer_Tick(object sender, EventArgs e)
+        {
+            this.summaryListToolTipDisableTimer.Stop();
+            this.summaryListTooltipDisabled = false;
         }
 
         private TrailResultWrapper getMouseResult()

@@ -421,4 +421,10 @@ http://www.gnu.org/licenses/lgpl.html</value>
   <data name="List_TimerPause" xml:space="preserve">
     <value>Pausa del reloj</value>
   </data>
+  <data name="List_NonRequired" xml:space="preserve">
+    <value>No requerido</value>
+  </data>
+  <data name="UI_Activity_List_SetNonRequiredAsPauses" xml:space="preserve">
+    <value>Ajustar los puntos del sendero no requeridos como pausas</value>
+  </data>
 </root>

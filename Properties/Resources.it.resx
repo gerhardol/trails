@@ -427,4 +427,10 @@ http://www.gnu.org/licenses/lgpl.html.&quot;</value>
   <data name="List_TimerPause" xml:space="preserve">
     <value>Pausa cronometro</value>
   </data>
+  <data name="List_NonRequired" xml:space="preserve">
+    <value>Non richiesto</value>
+  </data>
+  <data name="UI_Activity_List_SetNonRequiredAsPauses" xml:space="preserve">
+    <value>Imposta i punti di Trails non richiesti come pause</value>
+  </data>
 </root>

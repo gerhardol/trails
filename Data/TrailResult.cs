@@ -1086,17 +1086,16 @@ namespace TrailsPlugin.Data
                                     DateTime lower = this.TrailPointDateTime[i];
                                     //End time for pause is start of next required (or end of result if no more results)
                                     DateTime upper = this.EndTime;
-                                    i++;
-                                    while (i < this.TrailPointDateTime.Count &&
-                                        i < this.m_subResultInfo.Points.Count &&
-                                        this.TrailPointDateTime[i] == DateTime.MinValue)
+                                    while (i+1 < this.TrailPointDateTime.Count &&
+                                        i+1 < this.m_subResultInfo.Points.Count &&
+                                        this.TrailPointDateTime[i+1] == DateTime.MinValue)
                                     {
                                         i++;
                                     }
-                                    if (i < this.TrailPointDateTime.Count &&
-                                        this.TrailPointDateTime[i] > DateTime.MinValue)
+                                    if (i+1 < this.TrailPointDateTime.Count &&
+                                        this.TrailPointDateTime[i+1] > DateTime.MinValue)
                                     {
-                                        upper = this.TrailPointDateTime[i];
+                                        upper = this.TrailPointDateTime[i+1];
                                     }
                                     IValueRange<DateTime> v = new ValueRange<DateTime>(lower, upper);
                                     this.m_pauses.Add(v);

@@ -126,10 +126,21 @@ namespace TrailsPlugin.Data
                 }
                 if (Data.Settings.ShowPausesAsResults)
                 {
-                    addPausesAsResults(splits, this.TimerPauses, PauseType.Timer);
-                    addPausesAsResults(splits, this.LapPauses, PauseType.RestLap);
-                    addPausesAsResults(splits, this.NonRequiredPauses, PauseType.NonReqPoint);
-                    addPausesAsResults(splits, this.StoppedPauses, PauseType.Stopped);
+                    int lastNormalSplit = -1;
+                    for (int j = 0; j < splits.Count; j++)
+                    {
+                        if (splits[j] is PausedChildTrailResult)
+                        {
+                            //All normal splits checked
+                            break;
+                        }
+                        lastNormalSplit = j;
+                    }
+
+                    addPausesAsResults(splits, lastNormalSplit, this.TimerPauses, PauseType.Timer);
+                    addPausesAsResults(splits, lastNormalSplit, this.LapPauses, PauseType.RestLap);
+                    addPausesAsResults(splits, lastNormalSplit, this.NonRequiredPauses, PauseType.NonReqPoint);
+                    addPausesAsResults(splits, lastNormalSplit, this.StoppedPauses, PauseType.Stopped);
                 }
                 TimeSpan sp = TimeSpan.Zero;
                 bool ok = true;
@@ -158,7 +169,7 @@ namespace TrailsPlugin.Data
             return splits;
         }
 
-        private void addPausesAsResults(IList<ChildTrailResult> splits, ICollection<IValueRange<DateTime>> pauses, PauseType pauseType)
+        private void addPausesAsResults(IList<ChildTrailResult> splits, int lastNormalSplit, ICollection<IValueRange<DateTime>> pauses, PauseType pauseType)
         {
             foreach (IValueRange<DateTime> v in pauses)
             {
@@ -176,22 +187,11 @@ namespace TrailsPlugin.Data
 
                 //skip very short pauses
                 TimeSpan duration = upper - lower;
-                if (duration < TimeSpan.FromSeconds(2) &&
+                if (duration < TimeSpan.FromSeconds(1) &&
                     (this.StartTime - lower < TimeSpan.FromSeconds(1) ||
                     upper - this.EndTime < TimeSpan.FromSeconds(1)))
                 {
                     continue;
-                }
-
-                int lastNormalSplit = 0;
-                for (int j = 0; j < splits.Count; j++)
-                {
-                    if (splits[j] is PausedChildTrailResult)
-                    {
-                        //All normal splits checked
-                        break;
-                    }
-                    lastNormalSplit = j;
                 }
 
                 //Match the pause to a split
@@ -202,7 +202,7 @@ namespace TrailsPlugin.Data
                         //pause is started within this split
                         (splits[j].m_subResultInfo.Points[0].Time <= lower && lower < splits[j].m_subResultInfo.Points[1].Time ||
                         //(First) lap, ends in the split
-                        splits[j].m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time ||
+                        /*splits[j].*/m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time ||
                         //For splits we want pauses also before after first normal split
                         this.Trail.IsSplits && (
                         upper < splits[j].m_subResultInfo.Points[0].Time ||

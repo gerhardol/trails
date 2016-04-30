@@ -1080,7 +1080,7 @@ namespace TrailsPlugin.Data
                 trailResults.Add(resultInfo);
             }
             ///////////////////////////////////////
-            //Possible last incomple result
+            //Possible last incomplete result
             //InBoundMatchPartial updated for all incomplete results
             if (currResult.CurrMatches > 0 && !reverse || currResult.CurrMatches > 1)
             {

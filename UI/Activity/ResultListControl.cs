@@ -1002,7 +1002,8 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             m_page.RefreshData(true);
                         }
-                        else if (selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest && trw.Result.LapInfo != null)
+                        else if ((selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest || selectedColumn.Id == TrailResultColumnIds.Order)
+                            && trw.Result.LapInfo != null)
                         {
                             DialogResult popRes = MessageDialog.Show(string.Format("Set to {0}?", !trw.Result.LapInfo.Rest),
                                   "Toggle rest on lap", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);

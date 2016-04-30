@@ -248,7 +248,7 @@ namespace TrailsPlugin.Data {
 
         public static bool IsColumn(string id)
         {
-            if (m_allColumnDict.Contains(id))
+            if (m_allColumnDict.Contains(id) || m_custColumnDict.ContainsKey(id))
             {
                 return true;
             }

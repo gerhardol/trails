@@ -431,6 +431,6 @@ http://www.gnu.org/licenses/lgpl.html.&quot;</value>
     <value>Non richiesto</value>
   </data>
   <data name="UI_Activity_List_SetNonRequiredAsPauses" xml:space="preserve">
-    <value>Imposta i punti di Trails non richiesti come pause</value>
+    <value>Imposta i punti del percorso non richiesti come pause</value>
   </data>
 </root>

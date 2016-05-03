@@ -51,6 +51,7 @@ namespace TrailsPlugin.UI.Activity {
         private TrailResultWrapper m_summaryAverage;
         private TrailResultWrapper m_lastClickedResult = null;
         private IList<TrailResultWrapper> m_PersistentSelectionResults = new List<TrailResultWrapper>();
+        private IList<IItemTrackSelectionInfo> lastSTselectionWhenClick;
 
 #if !ST_2_1
         private IDailyActivityView m_view = null;
@@ -938,6 +939,9 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             if (clickSelected)
                             {
+                                lastSTselectionWhenClick = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionFromST(
+                                    m_view.RouteSelectionProvider.SelectedItems, new List<IActivity> { tr.Result.Activity });
+
                                 IList<TrailResult> aTr = new List<TrailResult>();
                                 //if (Data.Settings.SelectSimilarResults)
                                 {
@@ -949,6 +953,7 @@ namespace TrailsPlugin.UI.Activity {
                                 //    //The user can control what is selected - mark all
                                 //    aTr = new List<TrailResult>{tr};
                                 //}
+
                                 bool markChart = false;
                                 if (this.m_lastClickedResult != null &&
                                     tr.CompareTo(this.m_lastClickedResult) == 0 &&
@@ -993,31 +998,22 @@ namespace TrailsPlugin.UI.Activity {
                     if (trw != null)
                     {
                         TreeList.Column selectedColumn = getColumn(l, e2.X + l.HScrollBar.Value);
-                        if (selectedColumn.Id == TrailResultColumnIds.Order)
+                        if (selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest && trw.Result.LapInfo != null)
                         {
+                            //Unofficial, see also Order below
+                            DialogResult popRes = MessageDialog.Show(string.Format("Set to {0}?", !trw.Result.LapInfo.Rest),
+                                  "Toggle rest on lap", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                            if (popRes == DialogResult.OK)
+                            {
+                                trw.Result.LapInfo.Rest = !trw.Result.LapInfo.Rest;
+                            }
+
                             TrailResultWrapper parent = trw.GetParent();
                             if (parent != null)
                             {
                                 parent.RefreshChildren();
                             }
                             m_page.RefreshData(true);
-                        }
-                        else if ((selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest || selectedColumn.Id == TrailResultColumnIds.Order)
-                            && trw.Result.LapInfo != null)
-                        {
-                            DialogResult popRes = MessageDialog.Show(string.Format("Set to {0}?", !trw.Result.LapInfo.Rest),
-                                  "Toggle rest on lap", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-                            if (popRes == DialogResult.OK)
-                            {
-                                trw.Result.LapInfo.Rest = !trw.Result.LapInfo.Rest;
-                                //this.summaryList.RefreshElements(new List<TrailResultWrapper> { tr });
-                                TrailResultWrapper parent = trw.GetParent();
-                                if (parent != null)
-                                {
-                                    parent.RefreshChildren();
-                                }
-                                m_page.RefreshData(true);
-                            }
                         }
                         else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && trw.Result.Activity != null)
                         {
@@ -1031,16 +1027,91 @@ namespace TrailsPlugin.UI.Activity {
                         //{
                         //    TBD
                         //}
-                        //else if (tr.Result.Activity != null && tr.Result is PausedChildTrailResult)
-                        //{
-                        //    DialogResult popRes = MessageDialog.Show("Remove clicked pause from result?",
-                        //          "Remove Pause", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-                        //    if (popRes == DialogResult.OK)
-                        //    {
-                        //        tr.Result.Pauses.Remove(new ValueRange<DateTime>(tr.Result.StartTime, tr.Result.EndTime));
-                        //        m_page.RefreshData(false);
-                        //    }
-                        //}
+                        else if (selectedColumn.Id == TrailResultColumnIds.Order)
+                        {
+                            //Unofficial(?)
+                            if (trw.Result.Activity != null)
+                            {
+                                if (trw.Result is PausedChildTrailResult && (trw.Result as PausedChildTrailResult).pauseType == PauseType.Timer)
+                                {
+                                    DialogResult popRes = MessageDialog.Show(
+                                        string.Format("To remove timer pause select {0}, to set as rest lap select {1}", CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
+                                       "Remove Pause", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                                    if (popRes == DialogResult.Yes || popRes == DialogResult.No)
+                                    {
+                                        TrackUtil.removePause(trw.Result.Activity.TimerPauses, trw.Result.StartTime, trw.Result.EndTime);
+                                        TrackUtil.removePause(trw.Result.Pauses, trw.Result.StartTime, trw.Result.EndTime);
+                                        if (popRes == DialogResult.No)
+                                        {
+                                            InsertRestLap(trw.Result.Activity.Laps, trw.Result.StartTime, trw.Result.Duration);
+                                        }
+                                    }
+                                }
+                                else if (trw.Result.LapInfo != null)
+                                {
+                                    DialogResult popRes = MessageDialog.Show(
+                                         string.Format("To set split as timer pause select {0}, to set rest to {2} select {1}", 
+                                         CommonResources.Text.ActionYes, CommonResources.Text.ActionNo, !trw.Result.LapInfo.Rest),
+                                          "Update Split", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                                    if (popRes == DialogResult.Yes)
+                                    {
+                                        trw.Result.Activity.TimerPauses.Add(new ValueRange<DateTime>(trw.Result.StartTime, trw.Result.EndTime));
+                                    }
+                                    else if (popRes == DialogResult.No)
+                                    {
+                                        trw.Result.LapInfo.Rest = !trw.Result.LapInfo.Rest;
+                                    }
+                                }
+                                else if (trw.Result is ChildTrailResult)
+                                {
+                                    DialogResult popRes = MessageDialog.Show(
+                                         string.Format("To set result as timer pause select {0}, to set as split select {1}",
+                                         CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
+                                          "Update Result", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                                    if (popRes == DialogResult.Yes)
+                                    {
+                                        trw.Result.Activity.TimerPauses.Add(new ValueRange<DateTime>(trw.Result.StartTime, trw.Result.EndTime));
+                                    }
+                                    else if (popRes == DialogResult.No)
+                                    {
+                                        InsertRestLap(trw.Result.Activity.Laps, trw.Result.StartTime, trw.Result.Duration);
+                                    }
+                                }
+                                else if (trw.Result is ParentTrailResult)
+                                {
+                                    //TBD last selection?
+                                    //IList<IItemTrackSelectionInfo> selectedGPS = TrailsItemTrackSelectionInfo.SetAndAdjustFromSelectionFromST(
+                                    //    m_view.RouteSelectionProvider.SelectedItems, new List<IActivity> { trw.Result.Activity });
+                                    if (TrailsItemTrackSelectionInfo.ContainsData(lastSTselectionWhenClick))
+                                    {
+                                        DialogResult popRes = MessageDialog.Show(
+                                            string.Format("To set selection as timer pause select {0}, to set as split select {1}",
+                                            CommonResources.Text.ActionYes, CommonResources.Text.ActionNo),
+                                            "Update Result", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                                        foreach (IValueRange<DateTime> v in lastSTselectionWhenClick[0].MarkedTimes)
+                                        {
+                                            if (popRes == DialogResult.Yes)
+                                            {
+                                                trw.Result.Activity.TimerPauses.Add(v);
+                                            }
+                                            else if (popRes == DialogResult.No)
+                                            {
+                                                InsertRestLap(trw.Result.Activity.Laps, v.Lower, v.Upper - v.Lower);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    { }
+                                }
+                            }
+
+                            TrailResultWrapper parent = trw.GetParent();
+                            if (parent != null)
+                            {
+                                parent.RefreshChildren();
+                            }
+                            m_page.RefreshData(true);
+                        }
                         else if (trw.Result.Activity != null && trw.Result is ParentTrailResult)
                         {
                             Guid view = GUIDs.DailyActivityView;
@@ -1681,15 +1752,12 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             foreach (TrailResultWrapper tr in atr)
                             {
-                                if (tr.Result is ChildTrailResult)
+                                if (tr.Result is PausedChildTrailResult && (tr.Result as PausedChildTrailResult).pauseType == PauseType.Timer)
                                 {
-                                    if (tr.Result is PausedChildTrailResult && (tr.Result as PausedChildTrailResult).pauseType == PauseType.Timer)
-                                    {
-                                        TrackUtil.removePause(tr.Result.Activity.TimerPauses, tr.Result.StartTime, tr.Result.EndTime);
-                                        TrackUtil.removePause(tr.Result.Pauses, tr.Result.StartTime, tr.Result.EndTime);
-                                        InsertRestLap(tr.Result.Activity.Laps, tr.Result.StartTime, tr.Result.Duration);
-                                        res++;
-                                    }
+                                    TrackUtil.removePause(tr.Result.Activity.TimerPauses, tr.Result.StartTime, tr.Result.EndTime);
+                                    TrackUtil.removePause(tr.Result.Pauses, tr.Result.StartTime, tr.Result.EndTime);
+                                    InsertRestLap(tr.Result.Activity.Laps, tr.Result.StartTime, tr.Result.Duration);
+                                    res++;
                                 }
                             }
                         }
@@ -1700,7 +1768,7 @@ namespace TrailsPlugin.UI.Activity {
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
                 {
                     //Unofficial
-                    DialogResult popRes = MessageDialog.Show("Set marked laps as pauses?",
+                    DialogResult popRes = MessageDialog.Show("Set marked results as pauses?",
                         "Add Pause", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                     if (popRes == DialogResult.OK)
                     {

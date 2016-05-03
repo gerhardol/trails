@@ -240,7 +240,7 @@ namespace TrailsPlugin.Data
                             try
                             {
                                 AddMarkedOrSelectedTime(tmpSel, singleSelection, sel.SelectedTime.Lower, sel.SelectedTime.Upper);
-                                tmpSel.SelectedTime = null;
+                                //tmpSel.SelectedTime = null;
                             }
                             catch { }
                         }
@@ -444,7 +444,7 @@ namespace TrailsPlugin.Data
             return string.Empty;
         }
 
-        private TrailsItemTrackSelectionInfo FirstSelection()
+        public TrailsItemTrackSelectionInfo FirstSelection()
         {
             //Many commands can only handle one selection - this will set only one of them
             TrailsItemTrackSelectionInfo res = new TrailsItemTrackSelectionInfo();

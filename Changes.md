@@ -2,14 +2,16 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
-2.0.9 2016-04-18
+2.0.10 2016-05-03 (Plugin Catalog)
   * Possible to configure "Set Non Required Trail Points as Pauses" in the menu (previously only as keyboard shortcut).
   * Updates to Pauses as results
-   - Timer Pauses, Rest Laps, Non Required Trail Points and Stopped Time are listed separately in the list. The results are over stricken with bold font for timer pauses and italics for stopped time.
+   - Timer Pauses, Rest Laps, Non Required Trail Points and Stopped Time are listed separately in the list. The results are over stricken, with bold font for timer pauses and italics for stopped time.
    - The averages and summaries are listed for the pauses in the list.
-   - If pauses are selected, they are displayed in the Chart
+   - If pauses are selected, they are displayed in the Chart and Route
+   - Double clicking the Order column for a result will open a popup to modify both paused an normal results to timer pauses, splits or remove pauses (depending on the result type).
+   - Selecting a section in the chart or route and double clicking will open a popup to add a pause or split.
   * Trail Selector
-   - Multi-select (right click to add) did not work for hierarchical
+   - Multi-select (right click to add) did not work for hierarchical trails
    - Empty trails do not have to be created manually for "base" levels. For instance for trail _Country: City: Place_ no Trail is needed for _Country_ and _Country: City_.
    - List all selected trail in multi selections
   * Updated Italian, Spanish and Swedish translation
@@ -20,6 +22,7 @@ This page describes the changes between plugin releases. The change log may cont
   * The default reference activity was added as an activity for all trails, so always set as at least one result
   * Various bugfixes
 
+  
 2.0.6 2016-02-02 (Plugin Catalog)
   * Popup form from Analyze menu for Activity Reports.
   * Result list shortcut Shift-F11 to expand only result List

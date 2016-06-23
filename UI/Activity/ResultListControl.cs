@@ -395,15 +395,31 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        public void EnsureVisible(IList<TrailResult> atr)
+        public void EnsureVisible(IList<TrailResult> atr, bool selectList)
         {
-            EnsureVisible(TrailResultWrapper.Results((atr)));
+            EnsureVisible(TrailResultWrapper.Results((atr)), selectList);
         }
 
-        public void EnsureVisible(IList<TrailResultWrapper> atr)
+        public void EnsureVisible(IList<TrailResultWrapper> atr, bool selectList)
         {
             if (atr != null && atr.Count > 0)
             {
+                if(selectList)
+                {
+                    IList<TrailResultWrapper> sels = new List<TrailResultWrapper>();
+                    foreach (TrailResultWrapper trw in this.SelectedResults)
+                    {
+                        sels.Add(trw);
+                    }
+                    foreach (TrailResultWrapper trw in atr)
+                    {
+                        if (!sels.Contains(trw))
+                        {
+                            sels.Add(trw);
+                        }
+                    }
+                    this.SelectedResults = sels;
+                }
                 this.summaryList.EnsureVisible(atr[0]);
             }
         }

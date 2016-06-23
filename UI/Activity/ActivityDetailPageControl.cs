@@ -588,7 +588,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_currentSelectedMapResult != m.TrailRes)
                 {
                     IList<TrailResult> result = new List<TrailResult> { m.TrailRes };
-                    this.EnsureVisible(result, false);
+                    this.EnsureVisible(result, false, true);
                     //Could be new selection start
                     this.ClearCurrentSelectedOnRoute();
                 }
@@ -691,9 +691,9 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //Ensure that activities are visible in list and chart (but not on route, handled when marking)
-        public void EnsureVisible(IList<TrailResult> atr, bool chart)
+        public void EnsureVisible(IList<TrailResult> atr, bool chart, bool selectList)
         {
-            ResultList.EnsureVisible(atr);
+            ResultList.EnsureVisible(atr, selectList);
             if (chart)
             {
                 MultiCharts.EnsureVisible(atr);
@@ -862,7 +862,7 @@ namespace TrailsPlugin.UI.Activity {
                 if (m_currentSelectedMapResult != null && trSel != null && m_currentSelectedMapResult != trSel)
                 {
                     IList<TrailResult> result = new List<TrailResult> { trSel };
-                    this.EnsureVisible(result, false);
+                    this.EnsureVisible(result, false, false);
                     //Could be new selection start
                     this.ClearCurrentSelectedOnRoute();
                 }

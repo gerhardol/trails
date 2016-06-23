@@ -579,7 +579,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 //Scroll list
-                m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false);
+                m_page.EnsureVisible(new List<Data.TrailResult> { tr }, false, false);
 
                 int resultIndex;
                 if (markAll)

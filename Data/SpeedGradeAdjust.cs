@@ -67,7 +67,8 @@ namespace TrailsPlugin.Data
             }
             if (float.IsNaN(q) || float.IsInfinity(q) || q <= 0)
             {
-                Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString() + " " + q + " " + g + " " + time + " " + prevTime + " " + dist + " " + prevDist + " " + activity);
+                Debug.Assert(false, TrailsPlugin.Data.Settings.RunningGradeAdjustMethod.ToString() + " " +
+                    q + " " + g + " " + time + " " + prevTime + " " + dist + " " + prevDist + " " + activity);
                 q = 0;
             }
 
@@ -401,6 +402,11 @@ namespace TrailsPlugin.Data
         //This is the same as in PerformancePredictor PredictTime.getTimeFactorFromAdjVdot() (except that 1/vdot here)
         private static float energyTimeAdjust(float q)
         {
+            if (q <= 0)
+            {
+                //likely bad data, steep downhill?
+                return 0;
+            }
             return (float)Math.Pow(q, 0.83);
         }
     }

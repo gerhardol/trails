@@ -1979,20 +1979,24 @@ namespace TrailsPlugin.UI.Activity {
             else if (e.KeyCode == Keys.F)
             {
                 //Unofficial shortcuts
-                if (e.Modifiers == Keys.Control)
+                if (e.Modifiers == Keys.Control || e.Modifiers == (Keys.Shift | Keys.Control))
                 {
                     //Set "Device elevation" (possibly in other activity) as ST normal (GPS) elevation
                     IList<TrailResultWrapper> atr = this.SelectedResults;
                     if (atr != null && atr.Count > 0 &&
                         Controller.TrailController.Instance.Results.Count > 0)
                     {
+                        int c = 0;
                         foreach (TrailResultWrapper trw in atr)
                         {
-                            trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust);
+                            if (trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust, (e.Modifiers & Keys.Shift) != 0))
+                            {
+                                c++;
+                            }
                         }
                         ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation + " " +
                             ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + ": " +
-                            Data.Settings.UseTrailElevationAdjust + " " + atr.Count);
+                            Data.Settings.UseTrailElevationAdjust + " " + c + "/" + atr.Count);
                         m_page.RefreshData(true);
                     }
                 }

@@ -1231,11 +1231,11 @@ namespace TrailsPlugin.UI.Activity {
                             double elapsed;
                             if (XAxisReferential == XAxisValue.Time)
                             {
-                                elapsed = trailPointResult.getTimeResult(t);
+                                elapsed = trailPointResult.GetTimeResult(t);
                             }
                             else
                             {
-                                elapsed = trailPointResult.getDistResult(t);
+                                elapsed = trailPointResult.GetDistResult(t);
                             }
                             elapsed += trailPointResult.GetXOffset(XAxisReferential == XAxisValue.Time, this.ReferenceTrailResult);
                             if (XAxisReferential != XAxisValue.Time)
@@ -1337,7 +1337,7 @@ namespace TrailsPlugin.UI.Activity {
                 float xValue;
                 if (XAxisReferential == XAxisValue.Time)
                 {
-                    xValue = (float)tr.getTimeResult(time);
+                    xValue = (float)tr.GetTimeResult(time);
                 }
                 else
                 {
@@ -2001,12 +2001,12 @@ namespace TrailsPlugin.UI.Activity {
 
                     if (d2 > d1)
                     {
-                        double t1 = tr.getDistResult(d1);
-                        double t2 = tr.getDistResult(d2);
+                        double t1 = tr.GetDistResult(d1);
+                        double t2 = tr.GetDistResult(d2);
                         dist += (float)(t2 - t1);
 
-                        t1 = tr.getTimeResult(d1);
-                        t2 = tr.getTimeResult(d2);
+                        t1 = tr.GetTimeResult(d1);
+                        t2 = tr.GetTimeResult(d2);
                         time += (float)(t2 - t1);
                     }
                 }

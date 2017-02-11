@@ -93,14 +93,14 @@ namespace TrailsPlugin.Data
         protected ChildTrailResult(ParentTrailResult par, int order, TrailResultInfo indexes, float distDiff) :
             base(par.ActivityTrail, order, indexes, distDiff)
         {
-            updateIndexes(indexes);
+            UpdateIndexes(indexes);
             this.m_parentResult = par;
         }
 
         protected ChildTrailResult(ChildTrailResult cpar, int order, TrailResultInfo indexes) :
             base(cpar.ActivityTrail, order, indexes, 0)
         {
-            updateIndexes(indexes);
+            UpdateIndexes(indexes);
             //Let this point to main parent, no ref to (parent) child (can be derived too)
             this.m_parentResult = cpar.ParentResult;
         }

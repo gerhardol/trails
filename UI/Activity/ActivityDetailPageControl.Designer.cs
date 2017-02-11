@@ -141,7 +141,7 @@
             this.MultiCharts.ShowPage = false;
             this.MultiCharts.Size = new System.Drawing.Size(400, 192);
             this.MultiCharts.TabIndex = 0;
-            this.MultiCharts.Expand += new System.EventHandler(this.btnExpand_Click);
+            this.MultiCharts.Expand += new System.EventHandler(this.BtnExpand_Click);
             this.MultiCharts.Collapse += new System.EventHandler(this.MultiCharts_Collapse);
             // 
             // ActivityDetailPageControl

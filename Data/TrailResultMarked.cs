@@ -48,7 +48,7 @@ namespace TrailsPlugin.Data {
             }
             else
             {
-                this.selInfo.MarkedTimes = tr.getSelInfo(true);
+                this.selInfo.MarkedTimes = tr.GetSelInfo(true);
                 this.selInfo.Activity = tr.Activity;
             }
         }

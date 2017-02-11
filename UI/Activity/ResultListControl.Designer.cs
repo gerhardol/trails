@@ -162,7 +162,7 @@
             this.listSettingsBtn.TextLeftMargin = 2;
             this.listSettingsBtn.TextRightMargin = 2;
             this.listSettingsBtn.Visible = false;
-            this.listSettingsBtn.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
+            this.listSettingsBtn.Click += new System.EventHandler(this.ListSettingsToolStripMenuItem_Click);
             // 
             // insertActivitiesBtn
             // 
@@ -184,7 +184,7 @@
             this.insertActivitiesBtn.TextAlign = System.Drawing.StringAlignment.Center;
             this.insertActivitiesBtn.TextLeftMargin = 2;
             this.insertActivitiesBtn.TextRightMargin = 2;
-            this.insertActivitiesBtn.Click += new System.EventHandler(this.insertActivitiesBtn_Click);
+            this.insertActivitiesBtn.Click += new System.EventHandler(this.InsertActivitiesBtn_Click);
             // 
             // summaryList
             // 
@@ -217,11 +217,11 @@
             this.summaryList.Size = new System.Drawing.Size(400, 35);
             this.summaryList.TabIndex = 11;
             this.summaryList.ColumnResized += new ZoneFiveSoftware.Common.Visuals.TreeList.ColumnEventHandler(this.SummaryList_ColumnResized);
-            this.summaryList.Click += new System.EventHandler(this.summaryList_Click);
-            this.summaryList.DoubleClick += new System.EventHandler(this.summaryList_DoubleClick);
-            this.summaryList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.summaryList_KeyDown);
-            this.summaryList.MouseLeave += new System.EventHandler(this.summaryList_MouseLeave);
-            this.summaryList.MouseMove += new System.Windows.Forms.MouseEventHandler(this.summaryList_MouseMove);
+            this.summaryList.Click += new System.EventHandler(this.SummaryList_Click);
+            this.summaryList.DoubleClick += new System.EventHandler(this.SummaryList_DoubleClick);
+            this.summaryList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SummaryList_KeyDown);
+            this.summaryList.MouseLeave += new System.EventHandler(this.SummaryList_MouseLeave);
+            this.summaryList.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SummaryList_MouseMove);
             // 
             // listMenu
             // 
@@ -234,28 +234,28 @@
             this.advancedMenuItem});
             this.listMenu.Name = "listContextMenuStrip";
             this.listMenu.Size = new System.Drawing.Size(207, 136);
-            this.listMenu.Opening += new System.ComponentModel.CancelEventHandler(this.listMenu_Opening);
+            this.listMenu.Opening += new System.ComponentModel.CancelEventHandler(this.ListMenu_Opening);
             // 
             // copyTableMenuItem
             // 
             this.copyTableMenuItem.Name = "copyTableMenuItem";
             this.copyTableMenuItem.Size = new System.Drawing.Size(206, 22);
             this.copyTableMenuItem.Text = "<Copy table to clipboard";
-            this.copyTableMenuItem.Click += new System.EventHandler(this.copyTableMenu_Click);
+            this.copyTableMenuItem.Click += new System.EventHandler(this.CopyTableMenu_Click);
             // 
             // listSettingsMenuItem
             // 
             this.listSettingsMenuItem.Name = "listSettingsMenuItem";
             this.listSettingsMenuItem.Size = new System.Drawing.Size(206, 22);
             this.listSettingsMenuItem.Text = "List Settings...";
-            this.listSettingsMenuItem.Click += new System.EventHandler(this.listSettingsToolStripMenuItem_Click);
+            this.listSettingsMenuItem.Click += new System.EventHandler(this.ListSettingsToolStripMenuItem_Click);
             // 
             // referenceResultMenuItem
             // 
             this.referenceResultMenuItem.Name = "referenceResultMenuItem";
             this.referenceResultMenuItem.Size = new System.Drawing.Size(206, 22);
             this.referenceResultMenuItem.Text = "<Set reference trail...";
-            this.referenceResultMenuItem.Click += new System.EventHandler(this.referenceResultMenuItem_Click);
+            this.referenceResultMenuItem.Click += new System.EventHandler(this.ReferenceResultMenuItem_Click);
             // 
             // insertActivitiesMenuItem
             // 
@@ -272,21 +272,21 @@
             this.selectWithURMenuItem.Name = "selectWithURMenuItem";
             this.selectWithURMenuItem.Size = new System.Drawing.Size(270, 22);
             this.selectWithURMenuItem.Text = "<Select with UR to current activities...";
-            this.selectWithURMenuItem.Click += new System.EventHandler(this.selectWithURMenuItem_Click);
+            this.selectWithURMenuItem.Click += new System.EventHandler(this.SelectWithURMenuItem_Click);
             // 
             // addCurrentCategoryMenuItem
             // 
             this.addCurrentCategoryMenuItem.Name = "addCurrentCategoryMenuItem";
             this.addCurrentCategoryMenuItem.Size = new System.Drawing.Size(270, 22);
             this.addCurrentCategoryMenuItem.Text = "<addCurrentCategoryMenuItem...";
-            this.addCurrentCategoryMenuItem.Click += new System.EventHandler(this.addCurrentCategoryMenuItem_Click);
+            this.addCurrentCategoryMenuItem.Click += new System.EventHandler(this.AddCurrentCategoryMenuItem_Click);
             // 
             // addTopCategoryMenuItem
             // 
             this.addTopCategoryMenuItem.Name = "addTopCategoryMenuItem";
             this.addTopCategoryMenuItem.Size = new System.Drawing.Size(270, 22);
             this.addTopCategoryMenuItem.Text = "<addTopCategoryMenuItem...";
-            this.addTopCategoryMenuItem.Click += new System.EventHandler(this.addTopCategoryMenuItem_Click);
+            this.addTopCategoryMenuItem.Click += new System.EventHandler(this.AddTopCategoryMenuItem_Click);
             // 
             // analyzeMenuItem
             // 
@@ -296,21 +296,21 @@
             this.analyzeMenuItem.Name = "analyzeMenuItem";
             this.analyzeMenuItem.Size = new System.Drawing.Size(206, 22);
             this.analyzeMenuItem.Text = "<Analyze";
-            this.analyzeMenuItem.DropDownOpened += new System.EventHandler(this.analyzeMenuItem_DropDownOpened);
+            this.analyzeMenuItem.DropDownOpened += new System.EventHandler(this.AnalyzeMenuItem_DropDownOpened);
             // 
             // highScoreMenuItem
             // 
             this.highScoreMenuItem.Name = "highScoreMenuItem";
             this.highScoreMenuItem.Size = new System.Drawing.Size(207, 22);
             this.highScoreMenuItem.Text = "<highScore...";
-            this.highScoreMenuItem.Click += new System.EventHandler(this.highScoreMenuItem_Click);
+            this.highScoreMenuItem.Click += new System.EventHandler(this.HighScoreMenuItem_Click);
             // 
             // performancePredictorMenuItem
             // 
             this.performancePredictorMenuItem.Name = "performancePredictorMenuItem";
             this.performancePredictorMenuItem.Size = new System.Drawing.Size(207, 22);
             this.performancePredictorMenuItem.Text = "<PerformancePredictor...";
-            this.performancePredictorMenuItem.Click += new System.EventHandler(this.performancePredictorMenuItem_Click);
+            this.performancePredictorMenuItem.Click += new System.EventHandler(this.PerformancePredictorMenuItem_Click);
             // 
             // advancedMenuItem
             // 
@@ -329,35 +329,35 @@
             this.addInBoundActivitiesMenuItem.Name = "addInBoundActivitiesMenuItem";
             this.addInBoundActivitiesMenuItem.Size = new System.Drawing.Size(316, 22);
             this.addInBoundActivitiesMenuItem.Text = "<addInBoundActivities...";
-            this.addInBoundActivitiesMenuItem.Click += new System.EventHandler(this.addInBoundActivitiesMenuItem_Click);
+            this.addInBoundActivitiesMenuItem.Click += new System.EventHandler(this.AddInBoundActivitiesMenuItem_Click);
             // 
             // excludeResultsMenuItem
             // 
             this.excludeResultsMenuItem.Name = "excludeResultsMenuItem";
             this.excludeResultsMenuItem.Size = new System.Drawing.Size(316, 22);
             this.excludeResultsMenuItem.Text = "<Exclude results from list...";
-            this.excludeResultsMenuItem.Click += new System.EventHandler(this.excludeResultsMenuItem_Click);
+            this.excludeResultsMenuItem.Click += new System.EventHandler(this.ExcludeResultsMenuItem_Click);
             // 
             // limitActivityMenuItem
             // 
             this.limitActivityMenuItem.Name = "limitActivityMenuItem";
             this.limitActivityMenuItem.Size = new System.Drawing.Size(316, 22);
             this.limitActivityMenuItem.Text = "<Limit selection to current activities...";
-            this.limitActivityMenuItem.Click += new System.EventHandler(this.limitActivityMenuItem_Click);
+            this.limitActivityMenuItem.Click += new System.EventHandler(this.LimitActivityMenuItem_Click);
             // 
             // limitURMenuItem
             // 
             this.limitURMenuItem.Name = "limitURMenuItem";
             this.limitURMenuItem.Size = new System.Drawing.Size(316, 22);
             this.limitURMenuItem.Text = "<Limit selection with UR to current activities...";
-            this.limitURMenuItem.Click += new System.EventHandler(this.limitURMenuItem_Click);
+            this.limitURMenuItem.Click += new System.EventHandler(this.LimitURMenuItem_Click);
             // 
             // markCommonStretchesMenuItem
             // 
             this.markCommonStretchesMenuItem.Name = "markCommonStretchesMenuItem";
             this.markCommonStretchesMenuItem.Size = new System.Drawing.Size(316, 22);
             this.markCommonStretchesMenuItem.Text = "<Mark common stretches...";
-            this.markCommonStretchesMenuItem.Click += new System.EventHandler(this.markCommonStretchesMenuItem_Click);
+            this.markCommonStretchesMenuItem.Click += new System.EventHandler(this.MarkCommonStretchesMenuItem_Click);
             // 
             // progressBar
             // 

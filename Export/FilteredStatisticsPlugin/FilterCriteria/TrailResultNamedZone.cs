@@ -117,7 +117,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
 
                 if (m_TrailResult != null)
                 {
-                    m_ValidTimes = m_TrailResult.getSelInfo(false);
+                    m_ValidTimes = m_TrailResult.GetSelInfo(false);
                 }
                 else if (m_Activity != null)
                 {
@@ -127,7 +127,7 @@ namespace TrailsPlugin.Export //FilteredStatisticsPlugin
                     {
                         if (!(tr.Result is Data.PausedChildTrailResult))
                         {
-                            foreach (IValueRange<DateTime> t in tr.Result.getSelInfo(false))
+                            foreach (IValueRange<DateTime> t in tr.Result.GetSelInfo(false))
                             {
                                 m_ValidTimes.Add(t);
                             }

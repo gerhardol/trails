@@ -16,9 +16,8 @@ License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
+using FlimFlan.IconEncoder;
 using ZoneFiveSoftware.Common.Visuals;
 
 namespace TrailsPlugin.Utils
@@ -33,7 +32,7 @@ namespace TrailsPlugin.Utils
         {
             this.m_visualTheme = m_visualTheme;
 
-            this.Icon = Icon.FromHandle(TrailsPlugin.Properties.Resources.trails.GetHicon());
+            this.Icon = Converter.BitmapToIcon(TrailsPlugin.Properties.Resources.trails);
             this.BackColor = this.m_visualTheme.Control;
             this.Size = new System.Drawing.Size(width, height);
 
@@ -53,11 +52,11 @@ namespace TrailsPlugin.Utils
             okButton.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionOk;
             cancelButton.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionCancel;
 
-            okButton.Click += new EventHandler(btn_Click);
-            cancelButton.Click += new EventHandler(btn_Click);
+            okButton.Click += new EventHandler(Btn_Click);
+            cancelButton.Click += new EventHandler(Btn_Click);
         }
 
-        void btn_Click(object sender, EventArgs e)
+        void Btn_Click(object sender, EventArgs e)
         {
             this.DialogResult = ((ZoneFiveSoftware.Common.Visuals.Button)sender).DialogResult;
             Close();

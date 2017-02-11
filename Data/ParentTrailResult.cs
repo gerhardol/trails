@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
             : base(activityTrail, order, indexes, distDiff)
         {
             this.m_reverse = reverse;
-            this.updateIndexes(indexes);
+            this.UpdateIndexes(indexes);
         }
     }
 
@@ -48,7 +48,7 @@ namespace TrailsPlugin.Data
         public SplitsParentTrailResult(ActivityTrail activityTrail, int order, TrailResultInfo indexes) :
             base(activityTrail, order, indexes, 0)
         {
-            this.updateIndexes(indexes);
+            this.UpdateIndexes(indexes);
         }
     }
 
@@ -58,7 +58,7 @@ namespace TrailsPlugin.Data
             : base(activityTrail, order, indexes, 0)
         {
             this.m_toolTip = toolTip;
-            this.updateIndexes(indexes);
+            this.UpdateIndexes(indexes);
         }
     }
 

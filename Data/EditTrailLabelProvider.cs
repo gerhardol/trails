@@ -74,9 +74,9 @@ namespace TrailsPlugin.Data
                 try
                 {
                     //Elapsed time/distance is for the activity
-                    m_distance = UnitUtil.Distance.ConvertFrom(tr.getDistActivity(d1), tr.Activity);
-                    m_time = tr.getTimeActivity(d1);
-                    m_elevation = tr.getElevation(d1);
+                    m_distance = UnitUtil.Distance.ConvertFrom(tr.GetDistActivity(d1), tr.Activity);
+                    m_time = tr.GetTimeActivity(d1);
+                    m_elevation = tr.GetElevation(d1);
                 }
                 catch 
                 { }

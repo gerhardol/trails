@@ -300,7 +300,7 @@ namespace TrailsPlugin.Utils
 
         private static float GetTimeChartResultFromDateTime(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1)
         {
-            float x1 = (float)(tr.getTimeResult(d1));
+            float x1 = (float)(tr.GetTimeResult(d1));
             if (isOffset)
             {
                 float nextElapsed;
@@ -312,7 +312,7 @@ namespace TrailsPlugin.Utils
 
         private static float GetDistChartResultFromDateTime(bool isOffset, TrailResult tr, TrailResult ReferenceTrailResult, DateTime d1)
         {
-            float x1 = (float)(tr.getDistResult(d1));
+            float x1 = (float)(tr.GetDistResult(d1));
             return GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, x1);
         }
 
@@ -356,8 +356,8 @@ namespace TrailsPlugin.Utils
             }
             else
             {
-                double t1 = tr.getDistResult(d1);
-                double t2 = tr.getDistResult(d2);
+                double t1 = tr.GetDistResult(d1);
+                double t2 = tr.GetDistResult(d2);
                 return GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, t1, t2);
             }
         }
@@ -367,14 +367,14 @@ namespace TrailsPlugin.Utils
             //Note: Selecting in Route gives unpaused distance, but this should be handled in the selection
             if (xIsTime)
             {
-                DateTime d1 = tr.getDateTimeFromDistActivity(v.Lower);
-                DateTime d2 = tr.getDateTimeFromDistActivity(v.Upper);
+                DateTime d1 = tr.GetDateTimeFromDistActivity(v.Lower);
+                DateTime d2 = tr.GetDateTimeFromDistActivity(v.Upper);
                 return GetTimeChartResultFromDateTime(isOffset, tr, ReferenceTrailResult, d1, d2);
             }
             else
             {
-                double t1 = tr.getDistResultFromDistActivity(v.Lower);
-                double t2 = tr.getDistResultFromDistActivity(v.Upper);
+                double t1 = tr.GetDistResultFromDistActivity(v.Lower);
+                double t2 = tr.GetDistResultFromDistActivity(v.Upper);
                 return GetDistChartResultFromDistResult(isOffset, tr, ReferenceTrailResult, t1, t2);
             }
         }
@@ -507,11 +507,11 @@ namespace TrailsPlugin.Utils
             }
             if (xIsTime)
             {
-                dateTime = tr.getDateTimeFromTimeResult(t);
+                dateTime = tr.GetDateTimeFromTimeResult(t);
             }
             else
             {
-                dateTime = tr.getDateTimeFromDistResult(TrackUtil.DistanceConvertTo(t, ReferenceTrailResult));
+                dateTime = tr.GetDateTimeFromDistResult(TrackUtil.DistanceConvertTo(t, ReferenceTrailResult));
             }
             return dateTime;
         }

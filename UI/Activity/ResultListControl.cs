@@ -77,7 +77,7 @@ namespace TrailsPlugin.UI.Activity {
 #if ST_2_1
             this.summaryList.SelectedChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
 #else
-            this.summaryList.SelectedItemsChanged += new System.EventHandler(this.summaryList_SelectedItemsChanged);
+            this.summaryList.SelectedItemsChanged += new System.EventHandler(this.SummaryList_SelectedItemsChanged);
 #endif
             Controller.TrailController.Instance.SelectedResults = null;
         }
@@ -240,7 +240,7 @@ namespace TrailsPlugin.UI.Activity {
                     //Avoid sort on some fields that are heavy to calculate at auto updates
                     Controller.TrailController.Instance.AutomaticUpdate = true;
                 }
-                summaryList_Sort();
+                SummaryList_Sort();
                 Controller.TrailController.Instance.AutomaticUpdate = false;
                 ((TrailResultLabelProvider)this.summaryList.LabelProvider).MultipleActivities = MultiActivity();
 
@@ -254,9 +254,9 @@ namespace TrailsPlugin.UI.Activity {
                 summaryList.RowData = null;
                 this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
-                this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+                this.summaryList.SelectedItemsChanged -= new System.EventHandler(SummaryList_SelectedItemsChanged);
                 this.summaryList.RowData = null;
-                this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+                this.summaryList.SelectedItemsChanged += new System.EventHandler(SummaryList_SelectedItemsChanged);
 #endif
             }
             SummaryPanel_HandleCreated(this.summaryList, null);
@@ -358,11 +358,11 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.Selected  = (List<TrailResultWrapper>)setValue;
                 this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
-                this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+                this.summaryList.SelectedItemsChanged -= new System.EventHandler(SummaryList_SelectedItemsChanged);
                 this.summaryList.SelectedItems = (List<TrailResultWrapper>)setValue;
-                this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+                this.summaryList.SelectedItemsChanged += new System.EventHandler(SummaryList_SelectedItemsChanged);
 #endif
-                this.updateSelectedItems(this.SelectedResults);
+                this.UpdateSelectedItems(this.SelectedResults);
             }
             get
             {
@@ -446,7 +446,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*********************************************************/
-        private void summaryList_Sort()
+        private void SummaryList_Sort()
         {
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
@@ -502,9 +502,9 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryList.RowData = atr;
                 this.summaryList.SelectedChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
 #else
-                this.summaryList.SelectedItemsChanged -= new System.EventHandler(summaryList_SelectedItemsChanged);
+                this.summaryList.SelectedItemsChanged -= new System.EventHandler(SummaryList_SelectedItemsChanged);
                 this.summaryList.RowData = atr;
-                this.summaryList.SelectedItemsChanged += new System.EventHandler(summaryList_SelectedItemsChanged);
+                this.summaryList.SelectedItemsChanged += new System.EventHandler(SummaryList_SelectedItemsChanged);
 #endif
                 if ((this.summaryList.Expanded == null || this.summaryList.Expanded.Count == 0)
                     && resultsInList == 1)
@@ -641,7 +641,7 @@ namespace TrailsPlugin.UI.Activity {
             return null;
         }
 
-        internal bool selectSimilarSplits()
+        internal bool SelectSimilarSplits()
         {
             bool isChange = false;
             IList<TrailResultWrapper> atr = this.SelectedResults;
@@ -722,7 +722,7 @@ namespace TrailsPlugin.UI.Activity {
             return isChange;
         }
 
-        private int excludeSelectedResults(bool invertSelection)
+        private int ExcludeSelectedResults(bool invertSelection)
         {
             IList<TrailResultWrapper> atr = this.SelectedResults;
             if (atr != null && atr.Count > 0 &&
@@ -763,7 +763,7 @@ namespace TrailsPlugin.UI.Activity {
             return atr.Count;
         }
 
-        void selectAll()
+        void SelectAll()
         {
             IList<TrailResultWrapper> all = new List<TrailResultWrapper>();
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
@@ -779,12 +779,12 @@ namespace TrailsPlugin.UI.Activity {
             this.SelectedResults = all;
         }
 
-        void copyTable()
+        void CopyTable()
         {
             this.summaryList.CopyTextToClipboard(true, System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
         }
 
-        private int selectWithUR()
+        private int SelectWithUR()
         {
             int res = 0;
             if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled && Controller.TrailController.Instance.ReferenceActivity != null)
@@ -834,7 +834,7 @@ namespace TrailsPlugin.UI.Activity {
             return res;
         }
 
-        void markCommonStretches()
+        void MarkCommonStretches()
         {
             if (Integration.UniqueRoutes.UniqueRouteIntegrationEnabled && Controller.TrailController.Instance.ReferenceActivity != null)
             {
@@ -868,7 +868,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private static TreeList.Column getColumn(TreeList l, int eX)
+        private static TreeList.Column GetColumn(TreeList l, int eX)
         {
             int epos = 0;
             int colSelected = 0; //Select first by default
@@ -885,7 +885,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /************************************************************/
-        void summaryList_Click(object sender, System.EventArgs e)
+        void SummaryList_Click(object sender, System.EventArgs e)
         {
             //SelectTrack, for ST3
             if (sender is TreeList)
@@ -893,16 +893,15 @@ namespace TrailsPlugin.UI.Activity {
                 TreeList l = sender as TreeList;
                 MouseEventArgs e2 = (MouseEventArgs)e;
                 int xScrolled = e2.X + l.HScrollBar.Value;
-                TreeList.Column selectedColumn = getColumn(l, xScrolled);
+                TreeList.Column selectedColumn = GetColumn(l, xScrolled);
                 //Check if header. ColumnHeaderClicked will not fire if Click enabled
                 if (l.HeaderRowHeight >= e2.Y)
                 {
-                    summaryList_ColumnHeaderMouseClick(sender, selectedColumn);
+                    SummaryList_ColumnHeaderMouseClick(sender, selectedColumn);
                 }
                 else
                 {
-                    TreeList.RowHitState hit;
-                    object row = this.summaryList.RowHitTest(e2.Location, out hit);
+                    object row = this.summaryList.RowHitTest(e2.Location, out TreeList.RowHitState hit);
                     if (row != null && row is TrailResultWrapper)
                     {
                         TrailResultWrapper tr = row as TrailResultWrapper;
@@ -929,14 +928,16 @@ namespace TrailsPlugin.UI.Activity {
                         if (selectedColumn.Id == TrailResultColumnIds.ResultColor && hit == TreeList.RowHitState.Row &&
                            (xScrolled > 18 || !(tr.Result is ParentTrailResult)))
                         {
-                            ColorSelectorPopup cs = new ColorSelectorPopup();
-                            cs.Width = 70;
+                            ColorSelectorPopup cs = new ColorSelectorPopup()
+                            {
+                                Width = 70,
+                                DesktopLocation = ((Control)sender).PointToScreen(e2.Location),
+                                Selected = tr.Result.ResultColor.LineNormal
+                            };
                             cs.ThemeChanged(m_visualTheme);
-                            cs.DesktopLocation = ((Control)sender).PointToScreen(e2.Location);
-                            cs.Selected = tr.Result.ResultColor.LineNormal;
-                            m_ColorSelectorResult = tr.Result;
-                            cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(cs_ItemSelected);
-                            cs.Show();
+                            cs.ItemSelected += new ColorSelectorPopup.ItemSelectedEventHandler(CS_ItemSelected);
+                        m_ColorSelectorResult = tr.Result;
+                        cs.Show();
                         }
                         else
                         {
@@ -1000,20 +1001,19 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void summaryList_DoubleClick(object sender, System.EventArgs e)
+        void SummaryList_DoubleClick(object sender, System.EventArgs e)
         {
             if (sender is TreeList)
             {
                 TreeList l = sender as TreeList;
                 MouseEventArgs e2 = (MouseEventArgs)e;
-                TreeList.RowHitState hit;
-                object row = this.summaryList.RowHitTest(e2.Location, out hit);
+                object row = this.summaryList.RowHitTest(e2.Location, out TreeList.RowHitState hit);
                 if (row != null && hit == TreeList.RowHitState.Row && row is TrailResultWrapper)
                 {
                     TrailResultWrapper trw = row as TrailResultWrapper;
                     if (trw != null)
                     {
-                        TreeList.Column selectedColumn = getColumn(l, e2.X + l.HScrollBar.Value);
+                        TreeList.Column selectedColumn = GetColumn(l, e2.X + l.HScrollBar.Value);
                         if (selectedColumn.Id == TrailResultColumnIds.LapInfo_Rest && trw.Result.LapInfo != null)
                         {
                             //Unofficial, see also Order below
@@ -1033,7 +1033,7 @@ namespace TrailsPlugin.UI.Activity {
                         }
                         else if (selectedColumn.Id == TrailResultColumnIds.MetaData_Source && trw.Result.Activity != null)
                         {
-                            if (DialogResult.OK == setMetaImportSource(trw.Result.Activity))
+                            if (DialogResult.OK == SetMetaImportSource(trw.Result.Activity))
                             {
                                 this.summaryList.RefreshElements(new List<TrailResultWrapper> { trw });
                                 m_page.RefreshData(true, true);
@@ -1141,7 +1141,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         private TrailResult m_ColorSelectorResult = null;
-        void cs_ItemSelected(object sender, ColorSelectorPopup.ItemSelectedEventArgs e)
+        void CS_ItemSelected(object sender, ColorSelectorPopup.ItemSelectedEventArgs e)
         {
             if (sender is ColorSelectorPopup && m_ColorSelectorResult != null)
             {
@@ -1172,12 +1172,12 @@ namespace TrailsPlugin.UI.Activity {
         //    }
         //}
 
-        private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.ColumnEventArgs e)
+        private void SummaryList_ColumnHeaderMouseClick(object sender, TreeList.ColumnEventArgs e)
         {
-            this.summaryList_ColumnHeaderMouseClick(sender, e.Column);
+            this.SummaryList_ColumnHeaderMouseClick(sender, e.Column);
         }
 
-        private void summaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
+        private void SummaryList_ColumnHeaderMouseClick(object sender, TreeList.Column e)
         {
             if (Data.Settings.SummaryViewSortColumns[0] == e.Id)
             {
@@ -1185,29 +1185,29 @@ namespace TrailsPlugin.UI.Activity {
                        ListSortDirection.Descending : ListSortDirection.Ascending;
             }
             Data.Settings.UpdateSummaryViewSortColumn = e.Id;
-            this.summaryList_Sort();
+            this.SummaryList_Sort();
         }
 
-        void summaryList_SelectedItemsChanged(object sender, System.EventArgs e)
+        void SummaryList_SelectedItemsChanged(object sender, System.EventArgs e)
         {
             bool updated = false;
             if (Data.Settings.SelectSimilarSplits)
             {
                 //At changes: Updates m_lastSelectedItems too, but clears ExplicitSelection
-                updated = this.selectSimilarSplits();
+                updated = this.SelectSimilarSplits();
             }
 
             if (!updated)
             {
                 //Explicit selection of results
                 this.m_lastSelectedItems = this.SelectedResults;
-                this.updateSelectedItems(this.SelectedResults);
+                this.UpdateSelectedItems(this.SelectedResults);
                 Controller.TrailController.Instance.ExplicitSelection = true;
             }
         }
 
         //Summary list updated (possibly by mouse selection), other related changes
-        private void updateSelectedItems(IList<TrailResultWrapper> setValue)
+        private void UpdateSelectedItems(IList<TrailResultWrapper> setValue)
         {
             Controller.TrailController.Instance.ExplicitSelection = false;
             Controller.TrailController.Instance.SelectedResults = setValue;
@@ -1233,16 +1233,16 @@ namespace TrailsPlugin.UI.Activity {
             return IsCurrentCategory(activityCat.Parent, filterCat);
         }
 
-        public void addCurrentCategoryCheck()
+        public void AddCurrentCategoryCheck()
         {
             if (this.addCurrentCategoryMenuItem.Checked &&
                 Controller.TrailController.Instance.ReferenceResult != null)
             {
-                this.addActivityFromCategory(this.getCurrentCategory(InsertCategoryTypes.CurrentCategory));
+                this.AddActivityFromCategory(this.GetCurrentCategory(InsertCategoryTypes.CurrentCategory));
             }
         }
 
-        private void selectResultsWithDeviceElevation()
+        private void SelectResultsWithDeviceElevation()
         {
             IList<TrailResultWrapper> selected = new List<TrailResultWrapper>();
             foreach (TrailResultWrapper trw in Controller.TrailController.Instance.Results)
@@ -1256,7 +1256,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         private enum InsertCategoryTypes { CurrentCategory, SelectedTree, All };
-        IActivityCategory getCurrentCategory(InsertCategoryTypes addAll)
+        IActivityCategory GetCurrentCategory(InsertCategoryTypes addAll)
         {
             IActivityCategory cat = null;
             if (addAll == InsertCategoryTypes.SelectedTree && Controller.TrailController.Instance.ReferenceActivity != null)
@@ -1287,7 +1287,7 @@ namespace TrailsPlugin.UI.Activity {
             return cat;
         }
 
-        private int addActivityFromCategory(IActivityCategory cat)
+        private int AddActivityFromCategory(IActivityCategory cat)
         {
             int res = 0;
             IList<IActivity> allActivities = new List<IActivity>();
@@ -1312,7 +1312,7 @@ namespace TrailsPlugin.UI.Activity {
             return res;
         }
 
-        private int addCurrentTime()
+        private int AddCurrentTime()
         {
             int res = 0;
             IList<TrailResultWrapper> srw = this.SpecialSelectionResults;
@@ -1348,7 +1348,7 @@ namespace TrailsPlugin.UI.Activity {
             return res;
         }
 
-        private DialogResult setMetaImportSource(IActivity activity)
+        private DialogResult SetMetaImportSource(IActivity activity)
         {
             STForm form = new STForm(m_visualTheme, 410, 105);
             ZoneFiveSoftware.Common.Visuals.TextBox textBox = new ZoneFiveSoftware.Common.Visuals.TextBox();
@@ -1371,7 +1371,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         private enum SplitTimesPopup { AdjustDiff, PandolfTerrain }
-        private void setAdjustSplitTimesPopup(SplitTimesPopup splitTimesPopup)
+        private void SetAdjustSplitTimesPopup(SplitTimesPopup splitTimesPopup)
         {
             STForm form = new STForm(m_visualTheme, 410, 105);
 
@@ -1677,18 +1677,18 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*************************************************************************/
-        void summaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        void SummaryList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
             {
-                int c = this.excludeSelectedResults(e.Modifiers == Keys.Shift);
+                int c = this.ExcludeSelectedResults(e.Modifiers == Keys.Shift);
                 ShowToolTip(this.excludeResultsMenuItem + ": " + c);
             }
 
             else if (e.KeyCode == Keys.Space)
             {
                 ShowToolTip(Properties.Resources.UI_Activity_List_Splits + ": " + Data.Settings.SelectSimilarSplits);
-                this.selectSimilarSplits();
+                this.SelectSimilarSplits();
             }
 
             else if (e.KeyCode == Keys.Escape)
@@ -1807,7 +1807,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Control)
                 {
-                    this.selectAll();
+                    this.SelectAll();
                 }
                 else
                 {
@@ -1832,7 +1832,7 @@ namespace TrailsPlugin.UI.Activity {
             {
                 if (e.Modifiers == Keys.Control)
                 {
-                    this.copyTable();
+                    this.CopyTable();
                 }
                 else if (e.Modifiers == (Keys.Shift | Keys.Control))
                 {
@@ -1861,7 +1861,7 @@ namespace TrailsPlugin.UI.Activity {
                 else
                 {
                     ShowToolTip(Properties.Resources.UI_Activity_List_URCommon + "...");
-                    this.markCommonStretches();
+                    this.MarkCommonStretches();
                 }
             }
 
@@ -1956,7 +1956,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelDevice + " " +
                         ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation);
-                    this.selectResultsWithDeviceElevation();
+                    this.SelectResultsWithDeviceElevation();
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
@@ -1989,7 +1989,8 @@ namespace TrailsPlugin.UI.Activity {
                         int c = 0;
                         foreach (TrailResultWrapper trw in atr)
                         {
-                            if (trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust, (e.Modifiers & Keys.Shift) != 0))
+                            //TBD if (trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust, (e.Modifiers & Keys.Shift) != 0))
+                            if (trw.Result.SetDeviceElevation(Data.Settings.UseTrailElevationAdjust))
                             {
                                 c++;
                             }
@@ -2134,7 +2135,7 @@ namespace TrailsPlugin.UI.Activity {
                     c = InsertCategoryTypes.SelectedTree;
                 }
 
-                int res = this.addActivityFromCategory(this.getCurrentCategory(c));
+                int res = this.AddActivityFromCategory(this.GetCurrentCategory(c));
                 ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.ActionAdd + " " +
                     ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelActivity + ": " + c + " " + res);
             }
@@ -2204,11 +2205,11 @@ namespace TrailsPlugin.UI.Activity {
                     {
                         if (Data.Settings.PopupUpdatedBySelection)
                         {
-                            m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(m_page.popupForm_OnViewSelectedItemsChanged);
+                            m_view.SelectionProvider.SelectedItemsChanged += new EventHandler(m_page.PopupForm_OnViewSelectedItemsChanged);
                         }
                         else
                         {
-                            m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(m_page.popupForm_OnViewSelectedItemsChanged);
+                            m_view.SelectionProvider.SelectedItemsChanged -= new EventHandler(m_page.PopupForm_OnViewSelectedItemsChanged);
                         }
                     }
                 }
@@ -2239,11 +2240,11 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if (e.Modifiers == Keys.Alt)
                 {
-                    this.setAdjustSplitTimesPopup(SplitTimesPopup.AdjustDiff);
+                    this.SetAdjustSplitTimesPopup(SplitTimesPopup.AdjustDiff);
                 }
                 else if (e.Modifiers == (Keys.Control | Keys.Alt)) //AltGr
                 {
-                    this.setAdjustSplitTimesPopup(SplitTimesPopup.PandolfTerrain);
+                    this.SetAdjustSplitTimesPopup(SplitTimesPopup.PandolfTerrain);
                 }
                 else
                 {
@@ -2358,7 +2359,7 @@ namespace TrailsPlugin.UI.Activity {
                     Data.Settings.OverlappingResultUseReferencePauses = true;
                     Data.Settings.OverlappingResultShareSplitTime =
                         (Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType == Trail.CalcType.Splits);
-                    int res = this.addCurrentTime();
+                    int res = this.AddCurrentTime();
                     ShowToolTip(ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelNumActivities + ": " + res);
                 }
                 else if (e.Modifiers == (Keys.Alt | Keys.Shift))
@@ -2400,7 +2401,7 @@ namespace TrailsPlugin.UI.Activity {
 
             else if (e.KeyCode == Keys.U)
             {
-                int res = this.selectWithUR();
+                int res = this.SelectWithUR();
                 ShowToolTip(string.Format(Properties.Resources.UI_Activity_List_URSelect, res));
             }
 
@@ -2501,11 +2502,10 @@ namespace TrailsPlugin.UI.Activity {
         System.Drawing.Point summaryListCursorLocationAtMouseMove;
         TrailResultWrapper summaryListLastEntryAtMouseMove = null;
 
-        private void summaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void SummaryList_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             m_mouseClickArgs = e;
-            TreeList.RowHitState rowHitState;
-            TrailResultWrapper entry = (TrailResultWrapper)this.summaryList.RowHitTest(e.Location, out rowHitState);
+            TrailResultWrapper entry = (TrailResultWrapper)this.summaryList.RowHitTest(e.Location, out TreeList.RowHitState rowHitState);
             if (entry == this.summaryListLastEntryAtMouseMove)
             {
                 return;
@@ -2523,7 +2523,7 @@ namespace TrailsPlugin.UI.Activity {
                 this.summaryListToolTipTimer.Stop();
         }
 
-        private void summaryList_MouseLeave(object sender, EventArgs e)
+        private void SummaryList_MouseLeave(object sender, EventArgs e)
         {
             this.summaryListToolTipTimer.Stop();
             this.summaryListToolTip.Hide(this.summaryList);
@@ -2554,13 +2554,12 @@ namespace TrailsPlugin.UI.Activity {
             this.summaryListTooltipDisabled = false;
         }
 
-        private TrailResultWrapper getMouseResult()
+        private TrailResultWrapper GetMouseResult()
         {
             TrailResultWrapper trw = null;
             if (m_mouseClickArgs != null)
             {
-                TreeList.RowHitState hitState;
-                object row = this.summaryList.RowHitTest(m_mouseClickArgs.Location, out hitState);
+                object row = this.summaryList.RowHitTest(m_mouseClickArgs.Location, out TreeList.RowHitState hitState);
                 if (row != null && row is TrailResultWrapper)
                 {
                     trw = row as TrailResultWrapper;
@@ -2570,10 +2569,10 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /*************************************************************************************************************/
-        void listMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        void ListMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             string currRes = "none"; //TBD
-            TrailResultWrapper tr = getMouseResult();
+            TrailResultWrapper tr = GetMouseResult();
             if (tr != null && !(tr.Result is SummaryTrailResult))
             {
                 currRes = tr.Result.StartTime.ToLocalTime().ToString();
@@ -2623,7 +2622,7 @@ namespace TrailsPlugin.UI.Activity {
             if (Controller.TrailController.Instance.ReferenceActivity != null)
             {
                 InsertCategoryTypes c = InsertCategoryTypes.SelectedTree;
-                IActivityCategory cat = this.getCurrentCategory(c);
+                IActivityCategory cat = this.GetCurrentCategory(c);
 
                 this.addTopCategoryMenuItem.Enabled = true;
                 this.addTopCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddTopCategory, 
@@ -2652,7 +2651,7 @@ namespace TrailsPlugin.UI.Activity {
             System.Diagnostics.Process.Start("https://github.com/gerhardol/trails/wiki/Features");
         }
 
-        private void insertActivitiesBtn_Click(object sender, EventArgs e)
+        private void InsertActivitiesBtn_Click(object sender, EventArgs e)
         {
             //Should probably just be the insert....
             ZoneFiveSoftware.Common.Visuals.Button btnSender = (ZoneFiveSoftware.Common.Visuals.Button)sender;
@@ -2661,12 +2660,12 @@ namespace TrailsPlugin.UI.Activity {
             listMenu.Show(ptLowerLeft);
         }
 
-        void copyTableMenu_Click(object sender, EventArgs e)
+        void CopyTableMenu_Click(object sender, EventArgs e)
         {
-            copyTable();
+            CopyTable();
         }
 
-        private void listSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ListSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 #if ST_2_1
             ListSettings dialog = new ListSettings();
@@ -2690,9 +2689,9 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void referenceResultMenuItem_Click(object sender, System.EventArgs e)
+        void ReferenceResultMenuItem_Click(object sender, System.EventArgs e)
         {
-            TrailResultWrapper tr = getMouseResult();
+            TrailResultWrapper tr = GetMouseResult();
             if (tr != Controller.TrailController.Instance.ReferenceResult)
             {
                 TrailResultWrapper prev = Controller.TrailController.Instance.ReferenceResult;
@@ -2702,7 +2701,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void analyzeMenuItem_DropDownOpened(object sender, System.EventArgs e)
+        void AnalyzeMenuItem_DropDownOpened(object sender, System.EventArgs e)
         {
             if (HighScore.HighScoreIntegrationEnabled)
             {
@@ -2723,22 +2722,22 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void highScoreMenuItem_Click(object sender, System.EventArgs e)
+        void HighScoreMenuItem_Click(object sender, System.EventArgs e)
         {
             HighScorePopup();
         }
 
-        void performancePredictorMenuItem_Click(object sender, System.EventArgs e)
+        void PerformancePredictorMenuItem_Click(object sender, System.EventArgs e)
         {
             PerformancePredictorPopup();
         }
 
-        void excludeResultsMenuItem_Click(object sender, System.EventArgs e)
+        void ExcludeResultsMenuItem_Click(object sender, System.EventArgs e)
         {
-            excludeSelectedResults(false);
+            ExcludeSelectedResults(false);
         }
 
-        void limitActivityMenuItem_Click(object sender, System.EventArgs e)
+        void LimitActivityMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
             IList<TrailResultWrapper> atr = this.SelectedResults;
@@ -2757,7 +2756,7 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        void addInBoundActivitiesMenuItem_Click(object sender, System.EventArgs e)
+        void AddInBoundActivitiesMenuItem_Click(object sender, System.EventArgs e)
         {
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
@@ -2773,24 +2772,24 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
         
-        void addCurrentCategoryMenuItem_Click(object sender, System.EventArgs e)
+        void AddCurrentCategoryMenuItem_Click(object sender, System.EventArgs e)
         {
             if (sender is ToolStripMenuItem)
             {
                 ToolStripMenuItem addCurrent = (ToolStripMenuItem)sender; //addCurrentCategoryMenuItem
                 addCurrent.Checked = !addCurrent.Checked;
                 Data.Settings.AddCurrentCategory = addCurrent.Checked;
-                addCurrentCategoryCheck();
+                AddCurrentCategoryCheck();
             }
         }
 
-        void addTopCategoryMenuItem_Click(object sender, System.EventArgs e)
+        void AddTopCategoryMenuItem_Click(object sender, System.EventArgs e)
         {
             InsertCategoryTypes c = InsertCategoryTypes.SelectedTree;
-            this.addActivityFromCategory(this.getCurrentCategory(c));
+            this.AddActivityFromCategory(this.GetCurrentCategory(c));
         }
 
-        void limitURMenuItem_Click(object sender, System.EventArgs e)
+        void LimitURMenuItem_Click(object sender, System.EventArgs e)
         {
 #if !ST_2_1
             try
@@ -2823,14 +2822,14 @@ namespace TrailsPlugin.UI.Activity {
 #endif
         }
 
-        void markCommonStretchesMenuItem_Click(object sender, System.EventArgs e)
+        void MarkCommonStretchesMenuItem_Click(object sender, System.EventArgs e)
         {
-            markCommonStretches();
+            MarkCommonStretches();
         }
 
-        void selectWithURMenuItem_Click(object sender, System.EventArgs e)
+        void SelectWithURMenuItem_Click(object sender, System.EventArgs e)
         {
-            selectWithUR();
+            SelectWithUR();
         }
 
         private void ChartTablePanel_SizeChanged(object sender, System.EventArgs e)

@@ -28,6 +28,7 @@ using ZoneFiveSoftware.Common.Data.GPS;
 using ZoneFiveSoftware.Common.Data.Fitness;
 using ZoneFiveSoftware.Common.Visuals;
 using ZoneFiveSoftware.Common.Visuals.Fitness;
+using FlimFlan.IconEncoder;
 
 #if ST_2_1
 using ZoneFiveSoftware.Common.Visuals.Fitness.GPS;
@@ -48,7 +49,6 @@ using ZoneFiveSoftware.Common.Visuals.Util;
 using TrailsPlugin.Data;
 using TrailsPlugin.Utils;
 using System.Drawing;
-using System.ComponentModel;
 
 namespace TrailsPlugin.UI.Activity {
     public partial class ActivityDetailPageControl : UserControl {
@@ -118,7 +118,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             if (Data.Settings.PopupUpdatedBySelection)
             {
-                view.SelectionProvider.SelectedItemsChanged += new EventHandler(popupForm_OnViewSelectedItemsChanged);
+                view.SelectionProvider.SelectedItemsChanged += new EventHandler(PopupForm_OnViewSelectedItemsChanged);
             }
 
             //Theme and Culture must be set manually
@@ -130,19 +130,21 @@ namespace TrailsPlugin.UI.Activity {
 
         public void ShowDialog()
         {
-            popupForm = new Form();
-            popupForm.Size = Data.Settings.PopupSize;
-            popupForm.Controls.Add(this);
+            popupForm = new Form()
+            {
+                Size = Data.Settings.PopupSize,
 
-            popupForm.StartPosition = FormStartPosition.CenterScreen;
+                StartPosition = FormStartPosition.CenterScreen,
+                Icon = Converter.BitmapToIcon(Properties.Resources.trails),
+                Text = Properties.Resources.PluginTitle
+            };
+
+            popupForm.Controls.Add(this);
             this.Size = new Size(Parent.Size.Width - 17, Parent.Size.Height - 38);
             this.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                     | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Bottom)));
-            popupForm.Icon = Icon.FromHandle(Properties.Resources.trails.GetHicon());
-            popupForm.Text = Properties.Resources.PluginTitle;
-
-            popupForm.SizeChanged += new EventHandler(popupForm_SizeChanged);
-            popupForm.FormClosed += new FormClosedEventHandler(popupForm_FormClosed);
+            popupForm.SizeChanged += new EventHandler(PopupForm_SizeChanged);
+            popupForm.FormClosed += new FormClosedEventHandler(PopupForm_FormClosed);
             this.LowerSplitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(LowerSplitContainer_SplitterMoved);
 
             popupForm.Show();
@@ -202,7 +204,7 @@ namespace TrailsPlugin.UI.Activity {
                 //RefreshChart();
                 if (value != null && value.Count == 1)
                 {
-                    this.ResultList.addCurrentCategoryCheck();
+                    this.ResultList.AddCurrentCategoryCheck();
                 }
             }
         }
@@ -318,9 +320,9 @@ namespace TrailsPlugin.UI.Activity {
             ResultList.ShowListToolBar();
         }
 
-        public void selectSimilarSplitsChanged()
+        public void SelectSimilarSplitsChanged()
         {
-            ResultList.selectSimilarSplits();
+            ResultList.SelectSimilarSplits();
         }
         //public IList<TrailResult> SelectedItems
         //{
@@ -352,7 +354,7 @@ namespace TrailsPlugin.UI.Activity {
         {
             //Refreh map when visible
             //for reports view, also the separate Map could be updated
-            if ((!m_isChartExpanded || isReportView)
+            if ((!m_isChartExpanded || IsReportView)
                 && Controller.TrailController.Instance.CurrentActivityTrailIsSelected)
             {
                 //m_layerPoints.HighlightRadius = Controller.TrailController.Instance.CurrentActivityTrail.Trail.Radius;
@@ -415,7 +417,7 @@ namespace TrailsPlugin.UI.Activity {
                         //Note: Possibly limit no of Trails shown, it slows down Gmaps some
                         foreach (TrailMapPolyline m in TrailMapPolyline.GetTrailMapPolyline(tr.Result))
                         {
-                            m.Click += new MouseEventHandler(mapPoly_Click);
+                            m.Click += new MouseEventHandler(MapPoly_Click);
                             if (!routes.ContainsKey(m.key))
                             {
                                 routes.Add(m.key, m);
@@ -467,7 +469,7 @@ namespace TrailsPlugin.UI.Activity {
             return (m_view == null) ? null : CollectionUtils.GetSingleItemOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }
 
-        private bool isReportView
+        private bool IsReportView
         {
             get
             {
@@ -528,7 +530,7 @@ namespace TrailsPlugin.UI.Activity {
                         {
                             if (!mresult.ContainsKey(m.key))
                             {
-                                m.Click += new MouseEventHandler(mapPoly_Click);
+                                m.Click += new MouseEventHandler(MapPoly_Click);
                                 mresult.Add(m.key, m);
                             }
                         }
@@ -580,7 +582,7 @@ namespace TrailsPlugin.UI.Activity {
             RouteSelectionProvider_SelectedItemsUpdate(this.m_currentItemTrackSelected);
         }
 
-        void mapPoly_Click(object sender, MouseEventArgs e)
+        void MapPoly_Click(object sender, MouseEventArgs e)
         {
             if (sender is TrailMapPolyline)
             {
@@ -717,7 +719,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 #endif
 
-        private void btnExpand_Click(object sender, EventArgs e)
+        private void BtnExpand_Click(object sender, EventArgs e)
         {
             if (!this.IsPopup)
             {
@@ -917,12 +919,12 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        internal void popupForm_OnViewSelectedItemsChanged(object sender, EventArgs e)
+        internal void PopupForm_OnViewSelectedItemsChanged(object sender, EventArgs e)
         {
             this.Activities = CollectionUtils.GetAllContainedItemsOfType<IActivity>(m_view.SelectionProvider.SelectedItems);
         }
 
-        private void popupForm_SizeChanged(object sender, EventArgs e)
+        private void PopupForm_SizeChanged(object sender, EventArgs e)
         {
             if (m_showPage)
             {
@@ -933,7 +935,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        void popupForm_FormClosed(object sender, FormClosedEventArgs e)
+        void PopupForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.HidePage();
         }

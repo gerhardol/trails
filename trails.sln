@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrailsPlugin", "TrailsPlugin.csproj", "{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}"
 EndProject
 Global
@@ -11,11 +13,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Debug|Any CPU.ActiveCfg = ST3.0Debug|Any CPU
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Debug|Any CPU.Build.0 = ST3.0Debug|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Profile|Any CPU.ActiveCfg = ST3.0Profile|Any CPU
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Profile|Any CPU.Build.0 = ST3.0Profile|Any CPU
 		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Release|Any CPU.ActiveCfg = ST3.0Release|Any CPU
-		{BCF88152-D342-4FC5-A4D1-BD80AEB3976B}.ST3.0Release|Any CPU.Build.0 = ST3.0Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

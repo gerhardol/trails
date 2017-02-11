@@ -86,7 +86,7 @@ namespace TrailsPlugin.Export
 
         INumericTimeDataSeries ITrailResult.CopyTrailTrack(INumericTimeDataSeries source)
         {
-            return this.m_tr.copyTrailTrack(source);
+            return this.m_tr.CopyTrailTrack(source);
         }
 
         string ITrailResult.Distance

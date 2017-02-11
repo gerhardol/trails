@@ -615,7 +615,7 @@ namespace TrailsPlugin.UI.Activity
                 try
                 {
                     double dist = UnitUtil.Distance.Parse(editBox.Text);
-                    DateTime d1 = this.m_trailResult.getDateTimeFromDistActivity((float)dist);
+                    DateTime d1 = this.m_trailResult.GetDateTimeFromDistActivity((float)dist);
                     t[this.m_rowDoubleClickSelected].UpdateRow(this.m_trailResult, d1);
                 }
                 catch { }
@@ -625,7 +625,7 @@ namespace TrailsPlugin.UI.Activity
                 try
                 {
                     double time = UnitUtil.Time.Parse(editBox.Text);
-                    DateTime d1 = this.m_trailResult.getDateTimeFromTimeActivity((float)time);
+                    DateTime d1 = this.m_trailResult.GetDateTimeFromTimeActivity((float)time);
                     t[this.m_rowDoubleClickSelected].UpdateRow(m_trailResult, d1);
                 }
                 catch { }

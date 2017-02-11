@@ -377,7 +377,7 @@ namespace TrailsPlugin.UI.Activity
             this.RefreshControlState();
             if (Data.Settings.SelectSimilarSplits)
             {
-                m_page.selectSimilarSplitsChanged();
+                m_page.SelectSimilarSplitsChanged();
             }
         }
 

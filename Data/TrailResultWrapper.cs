@@ -88,7 +88,7 @@ namespace TrailsPlugin.Data
         {
             this.Children.Clear();
             this.m_allChildren.Clear();
-            this.Result.updateIndexes(indexes);
+            this.Result.UpdateIndexes(indexes);
             this.getChildren();
         }
 

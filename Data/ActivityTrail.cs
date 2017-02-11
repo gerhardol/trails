@@ -485,7 +485,7 @@ namespace TrailsPlugin.Data
                             {
                                 TrailResultInfo indexes = refWrapper.Result.SubResultInfo.CopyFromReference(activity);
                                 SplitsParentTrailResult cstr = new SplitsParentTrailResult(this, m_results.Count + 1, indexes);
-                                cstr.updateOverlap(str);
+                                cstr.UpdateOverlap(str);
                                 TrailResultWrapper result = new TrailResultWrapper(cstr);
 
                                 m_results.Add(result);
@@ -584,7 +584,7 @@ namespace TrailsPlugin.Data
                            //Not using AnyOverlap (avoid multiple matches), just check first
                            Math.Abs((tr.Result.StartTime - trw.Result.StartTime).TotalSeconds) < 9)
                         {
-                            trw.Result.updateOverlap(tr.Result);
+                            trw.Result.UpdateOverlap(tr.Result);
                             TrailResultInfo indexes = tr.Result.SubResultInfo.CopyFromReference(trw.Result.Activity);
                             trw.updateIndexes(indexes);
                         }

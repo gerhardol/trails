@@ -142,7 +142,7 @@ namespace TrailsPlugin.UI.Activity {
             SetupAxes();
         }
 
-        private void precedeControl(Control a, Control b)
+        private void PrecedeControl(Control a, Control b)
         {
             a.Location = new Point(b.Location.X - a.Size.Width - 3, a.Location.Y);
         }
@@ -166,7 +166,7 @@ namespace TrailsPlugin.UI.Activity {
 
         /********************************************************************************/
 
-        private void copyCharts_Click(object sender, EventArgs e)
+        private void CopyCharts_Click(object sender, EventArgs e)
         {
             string fileName = Path.GetTempFileName();
             MainChart.SaveImage(MainChart.ChartDataRect.Size, fileName, System.Drawing.Imaging.ImageFormat.MemoryBmp);
@@ -238,7 +238,7 @@ namespace TrailsPlugin.UI.Activity {
             //MainChart.Refresh();
         }
 
-        private void moreCharts_Click(object sender, EventArgs e)
+        private void MoreCharts_Click(object sender, EventArgs e)
         {
             ListSettingsDialog dialog = new ListSettingsDialog();
             IList<IListColumnDefinition> cols;
@@ -284,7 +284,7 @@ namespace TrailsPlugin.UI.Activity {
             this.m_multiple.RefreshChart();
         }
 
-        private void smoothingPicker_LostFocus(object sender, EventArgs e)
+        private void SmoothingPicker_LostFocus(object sender, EventArgs e)
         {
             //There should be a brief delay here
             if (null != SetSmooth((int)smoothingPicker.Value, false, false))
@@ -294,7 +294,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private void setSmoothingPicker(int val)
+        private void SetSmoothingPicker(int val)
         {
             if (LineChartUtil.IsDiffType(m_lastSelectedType))
             {
@@ -316,7 +316,7 @@ namespace TrailsPlugin.UI.Activity {
             this.smoothingPicker.Value = val;
 
             smoothingLabel.Text = LineChartUtil.ChartTypeString(m_lastSelectedType);
-            precedeControl(smoothingLabel, smoothingPicker);
+            PrecedeControl(smoothingLabel, smoothingPicker);
         }
 
         //Fires about every 33ms when selecting
@@ -433,8 +433,7 @@ namespace TrailsPlugin.UI.Activity {
                 //Series must be added in order, so they can be resolved to result here
                 TrailResult tr = m_trailResults[this.SeriesIndexToResult(seriesIndex)];
 
-                IList<float[]> regions;
-                this.MainChart.DataSeries[seriesIndex].GetSelectedRegions(out regions);
+                this.MainChart.DataSeries[seriesIndex].GetSelectedRegions(out IList<float[]> regions);
 
                 if (selecting && range == null)
                 {
@@ -602,7 +601,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
 
                 int val = GetSmooth();
-                setSmoothingPicker(val);
+                SetSmoothingPicker(val);
             }
         }
 
@@ -840,7 +839,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private float getSelectedInterval()
+        private float GetSelectedInterval()
         {
             float res = 0;
             if (this.m_selectedDataSeries >= 0)
@@ -1197,7 +1196,7 @@ namespace TrailsPlugin.UI.Activity {
                             else
                             {
                                 //Only add if more than one one result
-                                this.getCategoryAverage(summaryDataLine, summarySeries);
+                                this.GetCategoryAverage(summaryDataLine, summarySeries);
                             }
 
                         }
@@ -1211,7 +1210,7 @@ namespace TrailsPlugin.UI.Activity {
                     if (this.m_axisCharts.Count > 0)
                     {
                         int val = GetSmooth();
-                        setSmoothingPicker(val);
+                        SetSmoothingPicker(val);
                     }
 
                     ///////TrailPoints
@@ -1245,9 +1244,11 @@ namespace TrailsPlugin.UI.Activity {
                             }
                             if (!double.IsNaN(elapsed) && elapsed > oldElapsed)
                             {
-                                AxisMarker a = new AxisMarker(elapsed, icon);
-                                a.Line1Style = System.Drawing.Drawing2D.DashStyle.Solid;
-                                a.Line1Color = Color.Goldenrod;
+                                AxisMarker a = new AxisMarker(elapsed, icon)
+                                {
+                                    Line1Style = System.Drawing.Drawing2D.DashStyle.Solid,
+                                    Line1Color = Color.Goldenrod
+                                };
                                 MainChart.XAxis.Markers.Add(a);
                             }
                         }
@@ -1314,7 +1315,7 @@ namespace TrailsPlugin.UI.Activity {
                     }
                 }
             }
-            float syncGraphOffset = LineChartUtil.getSyncGraphOffset(graphPoints, refGraphPoints, SyncGraph);
+            float syncGraphOffset = LineChartUtil.GetSyncGraphOffset(graphPoints, refGraphPoints, SyncGraph);
 
             int oldElapsedEntry = int.MinValue;
             float oldXvalue = float.MinValue;
@@ -1393,7 +1394,7 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         //From Overlay plugin
-        private ChartDataSeries getCategoryAverage(ChartDataSeries average,
+        private ChartDataSeries GetCategoryAverage(ChartDataSeries average,
                   IList<ChartDataSeries> list)
         {
             SortedList<float, bool> xs = new SortedList<float, bool>();
@@ -1702,7 +1703,7 @@ namespace TrailsPlugin.UI.Activity {
                 {
                     smoothStep = 0;
                     //resetSmooth = true;
-                    TrailResult tr = getLastSelectedDiffResult();
+                    TrailResult tr = GetLastSelectedDiffResult();
                     if (tr != null && 1 == this.m_trailResults.Count)
                     {
                         tr = this.m_trailResults[0];
@@ -1739,7 +1740,7 @@ namespace TrailsPlugin.UI.Activity {
                 }
                 else if ((e.Modifiers & Keys.Alt) > 0)
                 {
-                    smoothStep = (int)getSelectedInterval();
+                    smoothStep = (int)GetSelectedInterval();
                 }
                 else
                 {
@@ -1828,7 +1829,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private TrailResult getLastSelectedDiffResult()
+        private TrailResult GetLastSelectedDiffResult()
         {
             TrailResult tr = null;
             int index = m_trailResults.Count - 1;
@@ -1924,7 +1925,7 @@ namespace TrailsPlugin.UI.Activity {
             }
             else
             {
-                TrailResult tr = getLastSelectedDiffResult();
+                TrailResult tr = GetLastSelectedDiffResult();
 
                 if (tr != null)
                 {
@@ -1971,7 +1972,7 @@ namespace TrailsPlugin.UI.Activity {
         void ShowSmoothToolTip()
         {
             int val = GetSmooth();
-            setSmoothingPicker(val);
+            SetSmoothingPicker(val);
 
             if (!Data.Settings.ShowChartToolBar &&
                 m_cursorLocationAtMouseMove != null)

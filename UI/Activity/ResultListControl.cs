@@ -1428,7 +1428,7 @@ namespace TrailsPlugin.UI.Activity {
                         float f = 0;
                         if (!string.IsNullOrEmpty(column))
                         {
-                            f = Data.Settings.parseFloat(column);
+                            f = Data.Settings.ParseFloat(column);
                         }
                         if (i % 2 == 0)
                         {
@@ -2626,10 +2626,10 @@ namespace TrailsPlugin.UI.Activity {
 
                 this.addTopCategoryMenuItem.Enabled = true;
                 this.addTopCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddTopCategory, 
-                    Data.Settings.printFullCategoryPath(cat));
+                    Data.Settings.PrintFullCategoryPath(cat));
                 this.addCurrentCategoryMenuItem.Enabled = true;
                 this.addCurrentCategoryMenuItem.Text = string.Format(Properties.Resources.UI_Activity_List_AddReferenceCategory, 
-                    Data.Settings.printFullCategoryPath(Controller.TrailController.Instance.ReferenceActivity.Category));
+                    Data.Settings.PrintFullCategoryPath(Controller.TrailController.Instance.ReferenceActivity.Category));
             }
             else
             {

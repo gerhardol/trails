@@ -26,7 +26,7 @@ namespace TrailsPlugin.Data
     public enum RunningGradeAdjustMethodEnum { None, MervynDavies, GregMaclin, MervynDaviesSpeed, Kay, JackDaniels, AlbertoMinetti, ACSM, Pandolf, Last };
     public static class RunningGradeAdjustMethodClass
     {
-        public static float getGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist, IActivity activity)
+        public static float GetGradeFactor(float g/*grade*/, float time, float prevTime, float dist, float prevDist, IActivity activity)
         {
 
             float q;
@@ -35,27 +35,27 @@ namespace TrailsPlugin.Data
                 case RunningGradeAdjustMethodEnum.MervynDaviesSpeed:
                 case RunningGradeAdjustMethodEnum.MervynDavies:
                 case RunningGradeAdjustMethodEnum.GregMaclin:
-                    q = getMervynDavies(g, time, prevTime, dist, prevDist);
+                    q = GetMervynDavies(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.Kay:
-                    q = getKay(g, time, prevTime, dist, prevDist);
+                    q = GetKay(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.JackDaniels:
-                    q = getJackDaniels(g, time, prevTime, dist, prevDist);
+                    q = GetJackDaniels(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.AlbertoMinetti:
-                    q = getAlbertoMinetti(g, time, prevTime, dist, prevDist);
+                    q = GetAlbertoMinetti(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.ACSM:
-                    q = getACSM(g, time, prevTime, dist, prevDist);
+                    q = GetACSM(g, time, prevTime, dist, prevDist);
                     break;
 
                 case RunningGradeAdjustMethodEnum.Pandolf:
-                    q = getPandolf(g, time, prevTime, dist, prevDist, activity);
+                    q = GetPandolf(g, time, prevTime, dist, prevDist, activity);
                     break;
 
                 case RunningGradeAdjustMethodEnum.None:
@@ -76,7 +76,7 @@ namespace TrailsPlugin.Data
         }
 
         /***************************************************************************************************/
-        private static float getMervynDavies(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
+        private static float GetMervynDavies(float g/*grade*/, float time, float prevTime, float dist, float prevDist)
         {
             //Mervyn Davies, Greg Maclin http://runningtimes.com/Article.aspx?ArticleID=10507 
             /* First, I tried to find out if anyone had done any serious research into the subject and ran across this article from Running Times: http://runningtimes.com/Article.aspx?ArticleID=10507 
@@ -122,7 +122,7 @@ namespace TrailsPlugin.Data
                     //Kay is always bigger than MD, the value is adjusted to be (almost) continous
                     if (g > g0)
                     {
-                        q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - k0;
+                        q = GetKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - k0;
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace TrailsPlugin.Data
                 if (g < g0)
                 {
                     //normal Kay when steep, formulas cross here (about fast downhill)
-                    q = getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
+                    q = GetKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
                 }
                 else
                 {
@@ -176,7 +176,7 @@ namespace TrailsPlugin.Data
             {
                 //Fix: MD is not working well when steep, despite the workarounds
                 //The discontinuity is better than bad data
-                q = getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
+                q = GetKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
             }
 
             return q;
@@ -184,12 +184,12 @@ namespace TrailsPlugin.Data
 
         /***************************************************************************************************/
         private enum KayForce { Normal, MaxUp, MaxDown };
-        private static float getKay(float g, float time, float prevTime, float dist, float prevDist)
+        private static float GetKay(float g, float time, float prevTime, float dist, float prevDist)
         {
-            return getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
+            return GetKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
         }
 
-        private static float getKay(float g, float time, float prevTime, float dist, float prevDist, KayForce force)
+        private static float GetKay(float g, float time, float prevTime, float dist, float prevDist, KayForce force)
         {
             float q;
             //http://www.lboro.ac.uk/microsites/maths/research/preprints/papers11/11-38.pdf
@@ -233,7 +233,7 @@ namespace TrailsPlugin.Data
         }
 
         /***************************************************************************************************/
-        private static float getJackDaniels(float g, float time, float prevTime, float dist, float prevDist)
+        private static float GetJackDaniels(float g, float time, float prevTime, float dist, float prevDist)
         {
             float q;
             //Jack Daniels (jtupper)
@@ -264,12 +264,12 @@ namespace TrailsPlugin.Data
             }
             if (speedAdjust && g > g0)
             {
-                q = getKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - 0.1416f;
+                q = GetKay(g, time, prevTime, dist, prevDist, KayForce.MaxUp) - 0.1416f;
             }
             else if (!speedAdjust && g < g0)
             {
                 //normal Kay, formulas cross here (about fast downhill)
-                q = getKay(g, time, prevTime, dist, prevDist);
+                q = GetKay(g, time, prevTime, dist, prevDist);
             }
             else
             {
@@ -287,27 +287,27 @@ namespace TrailsPlugin.Data
             if (float.IsNaN(q) || float.IsInfinity(q) || q <= 0)
             {
                 //Fix: See MD
-                q = getKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
+                q = GetKay(g, time, prevTime, dist, prevDist, KayForce.Normal);
             }
 
             return q;
         }
 
         /***************************************************************************************************/
-        private static float getAlbertoMinetti(float g, float time, float prevTime, float dist, float prevDist)
+        private static float GetAlbertoMinetti(float g, float time, float prevTime, float dist, float prevDist)
         {
             //Energy cost of walking and running at extreme uphill and downhill slopes
             //Alberto E. Minetti, Christian Moia1, Giulio S. Roi, Davide Susta1 and Guido Ferretti
             //http://jap.physiology.org/content/93/3/1039.full
             //http://web.stanford.edu/~clint/Run_Walk2004a.rtf
             float vdotp = (float)(1 + (g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6);
-            float q = energyTimeAdjust(1 / vdotp);
+            float q = EnergyTimeAdjust(1 / vdotp);
 
             return q;
         }
 
         /***************************************************************************************************/
-        private static float getACSM(float g, float time, float prevTime, float dist, float prevDist)
+        private static float GetACSM(float g, float time, float prevTime, float dist, float prevDist)
         {
             //http://www.edulife.com.br/dados%5CArtigos%5CEducacao%20Fisica%5CFisiologia%20do%20Exercicio%5CEnergy%20expenditure%20of%20walking%20and%20running%20comparison%20with%20prrediction%20equations.pdf
             //http://blue.utb.edu/mbailey/handouts/MetCalEq.htm
@@ -315,7 +315,7 @@ namespace TrailsPlugin.Data
             //vflat=v*(1+4.5*g)
             double sp = (dist - prevDist) / (time - prevTime);
             float vdotp = (float)((0.2 * 60 * sp + 0.9 * g * 60 * sp + 3.5) / (0.2 * 60 * sp + 3.5));
-            float q = energyTimeAdjust(1 / vdotp);
+            float q = EnergyTimeAdjust(1 / vdotp);
 
             return q;
         }
@@ -327,7 +327,7 @@ namespace TrailsPlugin.Data
         private static float prevTime = 0;
         private static IActivity prevActivity = null;
         
-        static float getPandolfEnergy(float G, float V, float T, IActivity activity)
+        static float GetPandolfEnergy(float G, float V, float T, IActivity activity)
         {
             //Pandolf, adjusted for running by Epstein (has no impact without load)
             //http://ftp.rta.nato.int/public//PubFullText/RTO/TR/RTO-TR-HFM-080///TR-HFM-080-03.pdf
@@ -348,7 +348,7 @@ namespace TrailsPlugin.Data
             return Mr;
         }
 
-        private static float getPandolf(float g, float time, float prevTime, float dist, float prevDist, IActivity activity)
+        private static float GetPandolf(float g, float time, float prevTime, float dist, float prevDist, IActivity activity)
         {
             //Invalidate cache if time decreases (handle that settings are changed and recalc)
             if (time < RunningGradeAdjustMethodClass.prevTime) { prevActivity = null; }
@@ -382,10 +382,10 @@ namespace TrailsPlugin.Data
 
             }
             float v = (dist - prevDist) / (time - prevTime);
-            float Mr0 = getPandolfEnergy(0, v, T, activity);
-            float Mr = getPandolfEnergy(100*g, v, T, activity);
+            float Mr0 = GetPandolfEnergy(0, v, T, activity);
+            float Mr = GetPandolfEnergy(100*g, v, T, activity);
             float vdotp = Mr/Mr0;
-            float q = energyTimeAdjust(1 / vdotp);
+            float q = EnergyTimeAdjust(1 / vdotp);
 
             if (float.IsNaN(q) || float.IsInfinity(g))
             {
@@ -400,7 +400,7 @@ namespace TrailsPlugin.Data
         //Adjust the energy/vdot/v2max to time adjustment
         //Using Jack Daniels tables to convert (formula unknown)
         //This is the same as in PerformancePredictor PredictTime.getTimeFactorFromAdjVdot() (except that 1/vdot here)
-        private static float energyTimeAdjust(float q)
+        private static float EnergyTimeAdjust(float q)
         {
             if (q <= 0)
             {

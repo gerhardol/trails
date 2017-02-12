@@ -147,7 +147,7 @@
             this.btnCopy.TextLeftMargin = 2;
             this.btnCopy.TextRightMargin = 2;
             this.toolTip.SetToolTip(this.btnCopy, "<Copy Trail");
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            this.btnCopy.Click += new System.EventHandler(this.BtnCopy_Click);
             // 
             // btnExport
             // 
@@ -172,7 +172,7 @@
             this.btnExport.TextLeftMargin = 2;
             this.btnExport.TextRightMargin = 2;
             this.toolTip.SetToolTip(this.btnExport, "<Export to activity");
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            this.btnExport.Click += new System.EventHandler(this.BtnExport_Click);
             // 
             // btnRefresh
             // 
@@ -197,7 +197,7 @@
             this.btnRefresh.TextLeftMargin = 2;
             this.btnRefresh.TextRightMargin = 2;
             this.toolTip.SetToolTip(this.btnRefresh, "<Refresh");
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.btnRefresh.Click += new System.EventHandler(this.BtnRefresh_Click);
             // 
             // btnReverse
             // 
@@ -222,7 +222,7 @@
             this.btnReverse.TextLeftMargin = 2;
             this.btnReverse.TextRightMargin = 2;
             this.toolTip.SetToolTip(this.btnReverse, "<Reverse Trail");
-            this.btnReverse.Click += new System.EventHandler(this.btnReverse_Click);
+            this.btnReverse.Click += new System.EventHandler(this.BtnReverse_Click);
             // 
             // numericSortPrio
             // 
@@ -259,7 +259,7 @@
             this.btnOk.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnOk.TextLeftMargin = 2;
             this.btnOk.TextRightMargin = 2;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            this.btnOk.Click += new System.EventHandler(this.BtnOk_Click);
             // 
             // btnCancel
             // 
@@ -281,7 +281,7 @@
             this.btnCancel.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnCancel.TextLeftMargin = 2;
             this.btnCancel.TextRightMargin = 2;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // lblTrail
             // 
@@ -350,8 +350,8 @@
             this.editBox.TabIndex = 2;
             this.editBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
             this.editBox.Visible = false;
-            this.editBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.editBox_KeyDown);
-            this.editBox.LostFocus += new System.EventHandler(this.editBox_LostFocus);
+            this.editBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EditBox_KeyDown);
+            this.editBox.LostFocus += new System.EventHandler(this.EditBox_LostFocus);
             // 
             // lblRadius
             // 
@@ -445,7 +445,7 @@
             this.boxDefActivity.Size = new System.Drawing.Size(330, 18);
             this.boxDefActivity.TabIndex = 24;
             this.boxDefActivity.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            this.boxDefActivity.ButtonClick += new System.EventHandler(this.boxDefActivity_ButtonClick);
+            this.boxDefActivity.ButtonClick += new System.EventHandler(this.BoxDefActivity_ButtonClick);
             // 
             // btnAdd
             // 
@@ -468,7 +468,7 @@
             this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnAdd.TextLeftMargin = 2;
             this.btnAdd.TextRightMargin = 2;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
             // btnEdit
             // 
@@ -491,7 +491,7 @@
             this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnEdit.TextLeftMargin = 2;
             this.btnEdit.TextRightMargin = 2;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
+            this.btnEdit.Click += new System.EventHandler(this.BtnEdit_Click);
             // 
             // btnDelete
             // 
@@ -514,7 +514,7 @@
             this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnDelete.TextLeftMargin = 2;
             this.btnDelete.TextRightMargin = 2;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnDelete.Click += new System.EventHandler(this.BtnDelete_Click);
             // 
             // btnUp
             // 
@@ -537,7 +537,7 @@
             this.btnUp.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnUp.TextLeftMargin = 2;
             this.btnUp.TextRightMargin = 2;
-            this.btnUp.Click += new System.EventHandler(this.btnUp_Click);
+            this.btnUp.Click += new System.EventHandler(this.BtnUp_Click);
             // 
             // btnDown
             // 
@@ -560,7 +560,7 @@
             this.btnDown.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnDown.TextLeftMargin = 2;
             this.btnDown.TextRightMargin = 2;
-            this.btnDown.Click += new System.EventHandler(this.btnDown_Click);
+            this.btnDown.Click += new System.EventHandler(this.BtnDown_Click);
             // 
             // EditTrail
             // 

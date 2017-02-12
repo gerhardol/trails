@@ -219,7 +219,7 @@ namespace TrailsPlugin.UI.Activity
                     Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.TrailType != Trail.CalcType.ElevationPoints;
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void BtnAdd_Click(object sender, EventArgs e)
         {
 #if ST_2_1
             IMapControl mapControl = m_layer.MapControl;
@@ -272,10 +272,10 @@ namespace TrailsPlugin.UI.Activity
                 }
                 if (newTrail || !copyActivity)
                 {
-                    dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, getGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
+                    dialog.Trail.TrailLocations = Trail.MergeTrailLocations(dialog.Trail.TrailLocations, GetGPS(dialog.Trail, m_page.ViewActivities, selectedGPS));
                 }
 
-                showEditDialog(dialog);
+                ShowEditDialog(dialog);
 #endif
             }
             else
@@ -287,18 +287,18 @@ namespace TrailsPlugin.UI.Activity
 #else
                 //Add a copy of the current activity
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, true, Controller.TrailController.Instance.ReferenceTrailResult);
-                showEditDialog(dialog);
+                ShowEditDialog(dialog);
 #endif
             }
         }
 
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void BtnEdit_Click(object sender, EventArgs e)
         {
             if (Controller.TrailController.Instance.PrimaryCurrentActivityTrail == null)
             {
                 //nothing selected, new trail
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, true, false, Controller.TrailController.Instance.ReferenceTrailResult);
-                showEditDialog(dialog);
+                ShowEditDialog(dialog);
             }
             else if (IsSettingsIcon())
             {
@@ -326,22 +326,22 @@ namespace TrailsPlugin.UI.Activity
             {
                 //Do not care about marked points when editing, the user must select add then
                 EditTrail dialog = new EditTrail(m_visualTheme, m_culture, m_page, m_view, m_layer, false, false, Controller.TrailController.Instance.ReferenceTrailResult);
-                showEditDialog(dialog);
+                ShowEditDialog(dialog);
             }
         }
 
-        private void showEditDialog(EditTrail dialog)
+        private void ShowEditDialog(EditTrail dialog)
         {
             m_editTrail = dialog;
             m_layer.editTrail = dialog;
             m_page.RefreshControlState(); 
             
             dialog.TopMost = true;
-            dialog.FormClosed += new FormClosedEventHandler(editTrail_FormClosed);
+            dialog.FormClosed += new FormClosedEventHandler(EditTrail_FormClosed);
             dialog.Show();
         }
 
-        void editTrail_FormClosed(object sender, FormClosedEventArgs e)
+        void EditTrail_FormClosed(object sender, FormClosedEventArgs e)
         {
             //There is no need to check the sender or the result, edit form handles calculation and revert
             m_editTrail = null;
@@ -351,7 +351,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(false);
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private void BtnDelete_Click(object sender, EventArgs e)
         {
             if (Controller.TrailController.Instance.CurrentActivityTrailIsSelected &&
                 MessageDialog.Show(Properties.Resources.UI_Activity_Page_DeleteTrailConfirm, Controller.TrailController.Instance.PrimaryCurrentActivityTrail.Trail.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Question)
@@ -363,7 +363,7 @@ namespace TrailsPlugin.UI.Activity
             }
         }
 
-        private void btnMenu_Click(object sender, EventArgs e)
+        private void BtnMenu_Click(object sender, EventArgs e)
         {
             ZoneFiveSoftware.Common.Visuals.Button btnSender = (ZoneFiveSoftware.Common.Visuals.Button)sender;
             Point ptLowerLeft = new Point(btnSender.Width-chartPanelMenu.Width, btnSender.Height);
@@ -371,7 +371,7 @@ namespace TrailsPlugin.UI.Activity
             chartPanelMenu.Show(ptLowerLeft);
         }
 
-        void selectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
+        void SelectSimilarSplitsMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.SelectSimilarSplits = !Data.Settings.SelectSimilarSplits;
             this.RefreshControlState();
@@ -381,14 +381,14 @@ namespace TrailsPlugin.UI.Activity
             }
         }
 
-        void useDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)
+        void UseDeviceDistanceMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.UseDeviceDistance = !Data.Settings.UseDeviceDistance;
             this.RefreshControlState();
             m_page.RefreshData(true);
         }
 
-        void setRestLapsAsPausesMenuItem_Click(object sender, System.EventArgs e)
+        void SetRestLapsAsPausesMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.RestIsPause = !Data.Settings.RestIsPause;
             this.RefreshControlState();
@@ -396,7 +396,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(true);
         }
 
-        void nonReqIsPauseMenuItem_Click(object sender, System.EventArgs e)
+        void NonReqIsPauseMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.NonReqIsPause = !Data.Settings.NonReqIsPause;
             this.RefreshControlState();
@@ -419,7 +419,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshSummary();
         }
 
-        void showSummaryTotalMenuItem_Click(object sender, System.EventArgs e)
+        void ShowSummaryTotalMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.ShowSummaryTotal = !Data.Settings.ShowSummaryTotal;
             this.RefreshControlState();
@@ -427,7 +427,7 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(false);
         }
 
-        void showSummaryAverageMenuItem_Click(object sender, System.EventArgs e)
+        void ShowSummaryAverageMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.ShowSummaryAverage = !Data.Settings.ShowSummaryAverage;
             this.RefreshControlState();
@@ -435,41 +435,41 @@ namespace TrailsPlugin.UI.Activity
             m_page.RefreshData(false);
         }
 
-        void showOnlyMarkedResultsOnMapMenuItem_Click(object sender, System.EventArgs e)
+        void ShowOnlyMarkedResultsOnMapMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.ShowOnlyMarkedOnRoute = !Data.Settings.ShowOnlyMarkedOnRoute;
             this.RefreshControlState();
             m_page.RefreshData(false);
         }
 
-        void trailPointsMenuItem_Click(object sender, System.EventArgs e)
+        void TrailPointsMenuItem_Click(object sender, System.EventArgs e)
         {
             Data.Settings.ShowTrailPointsOnMap = !Data.Settings.ShowTrailPointsOnMap;
             this.RefreshControlState();
             m_page.RefreshData(false);
         }
 
-        private void runGradeAdjustMenuItem_Click(object sender, EventArgs e)
+        private void RunGradeAdjustMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.IncreaseRunningGradeCalcMethod(true);
             //Must reset calculations (if not refreshing)
             m_page.RefreshData(true);
         }
 
-        void chartPanelMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        void ChartPanelMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.runGradeAdjustMenuItem.Text = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelGrade + ": " + Data.Settings.RunningGradeAdjustMethod.ToString();
             e.Cancel = false;
         }
 
-        private void showToolBarMenuItem_Click(object sender, EventArgs e)
+        private void ShowToolBarMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.ShowListToolBar = !Data.Settings.ShowListToolBar;
             m_page.ShowListToolBar();
             RefreshControlState();
         }
 
-        private void settingsToolBarMenuItem_Click(object sender, EventArgs e)
+        private void SettingsToolBarMenuItem_Click(object sender, EventArgs e)
         {
             // go to Trails settings
             Guid view = GUIDs.SettingsView;
@@ -480,7 +480,7 @@ namespace TrailsPlugin.UI.Activity
         /*************************************************************************************************************/
         //ST3
         //TODO: Rewrite, using IItemTrackSelectionInfo help functions?
-        private static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
+        private static IList<TrailGPSLocation> GetGPS(Trail trail, IList<IActivity> activities, IValueRange<DateTime> ts, IValueRange<double> di, string id)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             IList<DateTime> dates = new List<DateTime>();
@@ -525,7 +525,7 @@ namespace TrailsPlugin.UI.Activity
             return result;
         }
 
-        public static IList<TrailGPSLocation> getGPS(Trail trail, IList<IActivity> activities,  IList<IItemTrackSelectionInfo> aSelectGPS)
+        public static IList<TrailGPSLocation> GetGPS(Trail trail, IList<IActivity> activities,  IList<IItemTrackSelectionInfo> aSelectGPS)
         {
             IList<TrailGPSLocation> result = new List<TrailGPSLocation>();
             for (int i = 0; i < aSelectGPS.Count; i++)
@@ -539,7 +539,7 @@ namespace TrailsPlugin.UI.Activity
                 {
                     foreach (IValueRange<DateTime> ts in tm)
                     {
-                        result2 = Trail.MergeTrailLocations(result2, getGPS(trail, activities, ts, null, aSelectGPS[i].ItemReferenceId));
+                        result2 = Trail.MergeTrailLocations(result2, GetGPS(trail, activities, ts, null, aSelectGPS[i].ItemReferenceId));
                     }
                 }
                 if (result2.Count == 0)
@@ -547,7 +547,7 @@ namespace TrailsPlugin.UI.Activity
                     if (result2.Count == 0)
                     {
                         //Selected
-                        result2 = getGPS(trail, activities, selectGPS.SelectedTime, null, aSelectGPS[i].ItemReferenceId);
+                        result2 = GetGPS(trail, activities, selectGPS.SelectedTime, null, aSelectGPS[i].ItemReferenceId);
                     }
                 }
                 result = Trail.MergeTrailLocations(result, result2);

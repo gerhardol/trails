@@ -205,7 +205,7 @@ namespace TrailsPlugin.UI.Activity
             this.MoreChartsButton.TextAlign = System.Drawing.StringAlignment.Center;
             this.MoreChartsButton.TextLeftMargin = 2;
             this.MoreChartsButton.TextRightMargin = 2;
-            this.MoreChartsButton.Click += new System.EventHandler(this.moreCharts_Click);
+            this.MoreChartsButton.Click += new System.EventHandler(this.MoreCharts_Click);
             // 
             // TrailPointsButton
             // 
@@ -246,8 +246,8 @@ namespace TrailsPlugin.UI.Activity
             this.smoothingPicker.Name = "smoothingPicker";
             this.smoothingPicker.Size = new System.Drawing.Size(39, 20);
             this.smoothingPicker.TabIndex = 7;
-            this.smoothingPicker.MouseUp += new System.Windows.Forms.MouseEventHandler(smoothingPicker_LostFocus);
-            this.smoothingPicker.LostFocus += new System.EventHandler(smoothingPicker_LostFocus);
+            this.smoothingPicker.MouseUp += new System.Windows.Forms.MouseEventHandler(SmoothingPicker_LostFocus);
+            this.smoothingPicker.LostFocus += new System.EventHandler(SmoothingPicker_LostFocus);
             // 
             // MainChart
             // 
@@ -287,7 +287,7 @@ namespace TrailsPlugin.UI.Activity
             this.copyChartMenuItem.Image = ZoneFiveSoftware.Common.Visuals.CommonResources.Images.DocumentCopy16;
             this.copyChartMenuItem.Size = new System.Drawing.Size(162, 22);
             this.copyChartMenuItem.Text = "<Copy>";
-            this.copyChartMenuItem.Click += new System.EventHandler(this.copyCharts_Click);
+            this.copyChartMenuItem.Click += new System.EventHandler(this.CopyCharts_Click);
             // 
             // moreChartsMenuItem
             // 
@@ -295,7 +295,7 @@ namespace TrailsPlugin.UI.Activity
             this.moreChartsMenuItem.Image = Properties.Resources.MoreCharts;
             this.moreChartsMenuItem.Size = new System.Drawing.Size(162, 22);
             this.moreChartsMenuItem.Text = "<more charts>";
-            this.moreChartsMenuItem.Click += new System.EventHandler(this.moreCharts_Click);
+            this.moreChartsMenuItem.Click += new System.EventHandler(this.MoreCharts_Click);
             // 
             // fitToWindowMenuItem
             // 

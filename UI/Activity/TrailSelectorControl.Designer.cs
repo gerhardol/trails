@@ -125,7 +125,7 @@
             this.btnAdd.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnAdd.TextLeftMargin = 2;
             this.btnAdd.TextRightMargin = 2;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
             // btnEdit
             // 
@@ -149,7 +149,7 @@
             this.btnEdit.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnEdit.TextLeftMargin = 2;
             this.btnEdit.TextRightMargin = 2;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
+            this.btnEdit.Click += new System.EventHandler(this.BtnEdit_Click);
             // 
             // btnDelete
             // 
@@ -173,7 +173,7 @@
             this.btnDelete.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnDelete.TextLeftMargin = 2;
             this.btnDelete.TextRightMargin = 2;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            this.btnDelete.Click += new System.EventHandler(this.BtnDelete_Click);
             // 
             // btnMenu
             // 
@@ -193,7 +193,7 @@
             this.btnMenu.Size = new System.Drawing.Size(22, 18);
             this.btnMenu.TabIndex = 13;
             this.btnMenu.Text = "M";
-            this.btnMenu.Click += new System.EventHandler(this.btnMenu_Click);
+            this.btnMenu.Click += new System.EventHandler(this.BtnMenu_Click);
             // 
             // chartPanelMenu
             // 
@@ -213,35 +213,35 @@
             this.settingsToolBarMenuItem});
             this.chartPanelMenu.Name = "chartPanelMenu";
             this.chartPanelMenu.Size = new System.Drawing.Size(199, 48);
-            this.chartPanelMenu.Opening += new System.ComponentModel.CancelEventHandler(chartPanelMenu_Opening);
+            this.chartPanelMenu.Opening += new System.ComponentModel.CancelEventHandler(ChartPanelMenu_Opening);
             // 
             // selectSimilarSplitsMenuItem
             // 
             this.selectSimilarSplitsMenuItem.Name = "selectSimilarSplitsMenuItem";
             this.selectSimilarSplitsMenuItem.Size = new System.Drawing.Size(206, 22);
             this.selectSimilarSplitsMenuItem.Text = "<Select similar splits...";
-            this.selectSimilarSplitsMenuItem.Click += new System.EventHandler(this.selectSimilarSplitsMenuItem_Click);
+            this.selectSimilarSplitsMenuItem.Click += new System.EventHandler(this.SelectSimilarSplitsMenuItem_Click);
             // 
             // useDeviceDistanceMenuItem
             // 
             this.useDeviceDistanceMenuItem.Name = "useDeviceDistanceMenuItem";
             this.useDeviceDistanceMenuItem.Size = new System.Drawing.Size(198, 22);
             this.useDeviceDistanceMenuItem.Text = "<useDeviceDistanceMenuItem...";
-            this.useDeviceDistanceMenuItem.Click += new System.EventHandler(this.useDeviceDistanceMenuItem_Click);
+            this.useDeviceDistanceMenuItem.Click += new System.EventHandler(this.UseDeviceDistanceMenuItem_Click);
             // 
             // setRestLapsAsPausesMenuItem
             // 
             this.setRestLapsAsPausesMenuItem.Name = "setRestLapsAsPausesMenuItem";
             this.setRestLapsAsPausesMenuItem.Size = new System.Drawing.Size(198, 22);
             this.setRestLapsAsPausesMenuItem.Text = "<setRestLapsAsPausesMenuItem...";
-            this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.setRestLapsAsPausesMenuItem_Click);
+            this.setRestLapsAsPausesMenuItem.Click += new System.EventHandler(this.SetRestLapsAsPausesMenuItem_Click);
             // 
             // nonReqIsPauseMenuItem
             // 
             this.nonReqIsPauseMenuItem.Name = "nonReqIsPauseMenuItem";
             this.nonReqIsPauseMenuItem.Size = new System.Drawing.Size(198, 22);
             this.nonReqIsPauseMenuItem.Text = "<nonReqIsPauseMenuItem...";
-            this.nonReqIsPauseMenuItem.Click += new System.EventHandler(this.nonReqIsPauseMenuItem_Click);
+            this.nonReqIsPauseMenuItem.Click += new System.EventHandler(this.NonReqIsPauseMenuItem_Click);
             // 
             // ShowPausesAsResultsMenuItem
             // 
@@ -262,49 +262,49 @@
             this.showSummaryTotalMenuItem.Name = "showSummaryTotalMenuItem";
             this.showSummaryTotalMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showSummaryTotalMenuItem.Text = "<showSummaryTotalMenuItem...";
-            this.showSummaryTotalMenuItem.Click += new System.EventHandler(this.showSummaryTotalMenuItem_Click);
+            this.showSummaryTotalMenuItem.Click += new System.EventHandler(this.ShowSummaryTotalMenuItem_Click);
             // 
             // showSummaryAverageMenuItem
             // 
             this.showSummaryAverageMenuItem.Name = "showSummaryAverageMenuItem";
             this.showSummaryAverageMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showSummaryAverageMenuItem.Text = "<showSummaryAverageMenuItem...";
-            this.showSummaryAverageMenuItem.Click += new System.EventHandler(this.showSummaryAverageMenuItem_Click);
+            this.showSummaryAverageMenuItem.Click += new System.EventHandler(this.ShowSummaryAverageMenuItem_Click);
             // 
             // showOnlyMarkedResultsOnMapMenuItem
             // 
             this.showOnlyMarkedResultsOnMapMenuItem.Name = "showOnlyMarkedResultsOnMapMenuItem";
             this.showOnlyMarkedResultsOnMapMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showOnlyMarkedResultsOnMapMenuItem.Text = "<showOnlyMarkedResultsOnMapMenuItem...";
-            this.showOnlyMarkedResultsOnMapMenuItem.Click += new System.EventHandler(this.showOnlyMarkedResultsOnMapMenuItem_Click);
+            this.showOnlyMarkedResultsOnMapMenuItem.Click += new System.EventHandler(this.ShowOnlyMarkedResultsOnMapMenuItem_Click);
             // 
             // trailPointsMenuItem
             // 
             this.trailPointsMenuItem.Name = "trailPointsMenuItem";
             this.trailPointsMenuItem.Size = new System.Drawing.Size(198, 22);
             this.trailPointsMenuItem.Text = "<trailPointsMenuItem...";
-            this.trailPointsMenuItem.Click += new System.EventHandler(this.trailPointsMenuItem_Click);
+            this.trailPointsMenuItem.Click += new System.EventHandler(this.TrailPointsMenuItem_Click);
             // 
             // runGradeAdjustMenuItem
             // 
             this.runGradeAdjustMenuItem.Name = "runGradeAdjustMenuItem";
             this.runGradeAdjustMenuItem.Size = new System.Drawing.Size(198, 22);
             this.runGradeAdjustMenuItem.Text = "<runGradeAdjustMenuItem";
-            this.runGradeAdjustMenuItem.Click += new System.EventHandler(this.runGradeAdjustMenuItem_Click);
+            this.runGradeAdjustMenuItem.Click += new System.EventHandler(this.RunGradeAdjustMenuItem_Click);
             // 
             // showToolBarMenuItem
             // 
             this.showToolBarMenuItem.Name = "showToolBarMenuItem";
             this.showToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showToolBarMenuItem.Text = "showToolBarMenuItem";
-            this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
+            this.showToolBarMenuItem.Click += new System.EventHandler(this.ShowToolBarMenuItem_Click);
             // 
             // settingsToolBarMenuItem
             // 
             this.settingsToolBarMenuItem.Name = "settingsToolBarMenuItem";
             this.settingsToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
             this.settingsToolBarMenuItem.Text = "settingsToolBarMenuItem";
-            this.settingsToolBarMenuItem.Click += new System.EventHandler(this.settingsToolBarMenuItem_Click);
+            this.settingsToolBarMenuItem.Click += new System.EventHandler(this.SettingsToolBarMenuItem_Click);
             // 
             // TrailSelectorControl
             // 

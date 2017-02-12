@@ -129,56 +129,56 @@
             this.speedPaceToolStripMenuItem.Name = "speedPaceToolStripMenuItem";
             this.speedPaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.speedPaceToolStripMenuItem.Text = "SpeedPace";
-            this.speedPaceToolStripMenuItem.Click += new System.EventHandler(this.speedPaceToolStripMenuItem_Click);
+            this.speedPaceToolStripMenuItem.Click += new System.EventHandler(this.SpeedPaceToolStripMenuItem_Click);
             // 
             // speedToolStripMenuItem
             // 
             this.speedToolStripMenuItem.Name = "speedToolStripMenuItem";
             this.speedToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.speedToolStripMenuItem.Text = "Speed";
-            this.speedToolStripMenuItem.Click += new System.EventHandler(this.speedToolStripMenuItem_Click);
+            this.speedToolStripMenuItem.Click += new System.EventHandler(this.SpeedToolStripMenuItem_Click);
             // 
             // paceToolStripMenuItem
             // 
             this.paceToolStripMenuItem.Name = "paceToolStripMenuItem";
             this.paceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.paceToolStripMenuItem.Text = "Pace";
-            this.paceToolStripMenuItem.Click += new System.EventHandler(this.paceToolStripMenuItem_Click);
+            this.paceToolStripMenuItem.Click += new System.EventHandler(this.PaceToolStripMenuItem_Click);
             // 
             // heartRateToolStripMenuItem
             // 
             this.heartRateToolStripMenuItem.Name = "heartRateToolStripMenuItem";
             this.heartRateToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.heartRateToolStripMenuItem.Text = "Heart Rate";
-            this.heartRateToolStripMenuItem.Click += new System.EventHandler(this.heartRateToolStripMenuItem_Click);
+            this.heartRateToolStripMenuItem.Click += new System.EventHandler(this.HeartRateToolStripMenuItem_Click);
             // 
             // cadenceToolStripMenuItem
             // 
             this.cadenceToolStripMenuItem.Name = "cadenceToolStripMenuItem";
             this.cadenceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.cadenceToolStripMenuItem.Text = "Cadence";
-            this.cadenceToolStripMenuItem.Click += new System.EventHandler(this.cadenceToolStripMenuItem_Click);
+            this.cadenceToolStripMenuItem.Click += new System.EventHandler(this.CadenceToolStripMenuItem_Click);
             // 
             // elevationToolStripMenuItem
             // 
             this.elevationToolStripMenuItem.Name = "elevationToolStripMenuItem";
             this.elevationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.elevationToolStripMenuItem.Text = "Elevation";
-            this.elevationToolStripMenuItem.Click += new System.EventHandler(this.elevationToolStripMenuItem_Click);
+            this.elevationToolStripMenuItem.Click += new System.EventHandler(this.ElevationToolStripMenuItem_Click);
             // 
             // gradeStripMenuItem
             // 
             this.gradeStripMenuItem.Name = "gradeStripMenuItem";
             this.gradeStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.gradeStripMenuItem.Text = "Grade";
-            this.gradeStripMenuItem.Click += new System.EventHandler(this.gradeToolStripMenuItem_Click);
+            this.gradeStripMenuItem.Click += new System.EventHandler(this.GradeToolStripMenuItem_Click);
             // 
             // powerToolStripMenuItem
             // 
             this.powerToolStripMenuItem.Name = "powerToolStripMenuItem";
             this.powerToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.powerToolStripMenuItem.Text = "Power";
-            this.powerToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.powerToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -190,42 +190,42 @@
             this.PowerBalanceToolStripMenuItem.Name = "PowerBalanceToolStripMenuItem";
             this.PowerBalanceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.PowerBalanceToolStripMenuItem.Text = "<PowerBalance";
-            this.PowerBalanceToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.PowerBalanceToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // TemperatureToolStripMenuItem
             // 
             this.TemperatureToolStripMenuItem.Name = "TemperatureToolStripMenuItem";
             this.TemperatureToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.TemperatureToolStripMenuItem.Text = "<Temperature";
-            this.TemperatureToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.TemperatureToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // GroundContactTimeToolStripMenuItem
             // 
             this.GroundContactTimeToolStripMenuItem.Name = "GroundContactTimeToolStripMenuItem";
             this.GroundContactTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.GroundContactTimeToolStripMenuItem.Text = "<GroundContactTime";
-            this.GroundContactTimeToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.GroundContactTimeToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // VerticalOscillationToolStripMenuItem
             // 
             this.VerticalOscillationToolStripMenuItem.Name = "VerticalOscillationToolStripMenuItem";
             this.VerticalOscillationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.VerticalOscillationToolStripMenuItem.Text = "<VerticalOscillation";
-            this.VerticalOscillationToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.VerticalOscillationToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // SaturatedHemoglobinToolStripMenuItem
             // 
             this.SaturatedHemoglobinToolStripMenuItem.Name = "SaturatedHemoglobinToolStripMenuItem";
             this.SaturatedHemoglobinToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.SaturatedHemoglobinToolStripMenuItem.Text = "<SaturatedHemoglobin";
-            this.SaturatedHemoglobinToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.SaturatedHemoglobinToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // TotalHemoglobinConcentrationToolStripMenuItem
             // 
             this.TotalHemoglobinConcentrationToolStripMenuItem.Name = "TotalHemoglobinConcentrationToolStripMenuItem";
             this.TotalHemoglobinConcentrationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.TotalHemoglobinConcentrationToolStripMenuItem.Text = "<TotalHemoglobinConcentration";
-            this.TotalHemoglobinConcentrationToolStripMenuItem.Click += new System.EventHandler(this.powerToolStripMenuItem_Click);
+            this.TotalHemoglobinConcentrationToolStripMenuItem.Click += new System.EventHandler(this.PowerToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -237,21 +237,21 @@
             this.diffTimeToolStripMenuItem.Name = "diffTimeToolStripMenuItem";
             this.diffTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.diffTimeToolStripMenuItem.Text = "diffTime";
-            this.diffTimeToolStripMenuItem.Click += new System.EventHandler(this.diffTimeToolStripMenuItem_Click);
+            this.diffTimeToolStripMenuItem.Click += new System.EventHandler(this.DiffTimeToolStripMenuItem_Click);
             // 
             // diffDistToolStripMenuItem
             // 
             this.diffDistToolStripMenuItem.Name = "diffDistToolStripMenuItem";
             this.diffDistToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.diffDistToolStripMenuItem.Text = "diffDist";
-            this.diffDistToolStripMenuItem.Click += new System.EventHandler(this.diffDistToolStripMenuItem_Click);
+            this.diffDistToolStripMenuItem.Click += new System.EventHandler(this.DiffDistToolStripMenuItem_Click);
             // 
             // diffDistTimeToolStripMenuItem
             // 
             this.diffDistTimeToolStripMenuItem.Name = "diffDistTimeToolStripMenuItem";
             this.diffDistTimeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.diffDistTimeToolStripMenuItem.Text = "diffDistTime";
-            this.diffDistTimeToolStripMenuItem.Click += new System.EventHandler(this.diffDistTimeToolStripMenuItem_Click);
+            this.diffDistTimeToolStripMenuItem.Click += new System.EventHandler(this.DiffDistTimeToolStripMenuItem_Click);
             // 
             // deviceToolStripMenuItem
             // 
@@ -277,21 +277,21 @@
             this.deviceSpeedPaceToolStripMenuItem.Name = "deviceSpeedPaceToolStripMenuItem";
             this.deviceSpeedPaceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.deviceSpeedPaceToolStripMenuItem.Text = "deviceSpeedPace";
-            this.deviceSpeedPaceToolStripMenuItem.Click += new System.EventHandler(this.deviceSpeedPaceToolStripMenuItem_Click);
+            this.deviceSpeedPaceToolStripMenuItem.Click += new System.EventHandler(this.DeviceSpeedPaceToolStripMenuItem_Click);
             // 
             // elevationDeviceToolStripMenuItem
             // 
             this.deviceElevationToolStripMenuItem.Name = "deviceElevationToolStripMenuItem";
             this.deviceElevationToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.deviceElevationToolStripMenuItem.Text = "deviceElevation";
-            this.deviceElevationToolStripMenuItem.Click += new System.EventHandler(this.deviceElevationToolStripMenuItem_Click);
+            this.deviceElevationToolStripMenuItem.Click += new System.EventHandler(this.DeviceElevationToolStripMenuItem_Click);
             // 
             // deviceDiffToolStripMenuItem
             // 
             this.deviceDiffToolStripMenuItem.Name = "deviceDiffToolStripMenuItem";
             this.deviceDiffToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.deviceDiffToolStripMenuItem.Text = "deviceDiffDist";
-            this.deviceDiffToolStripMenuItem.Click += new System.EventHandler(this.deviceDiffToolStripMenuItem_Click);
+            this.deviceDiffToolStripMenuItem.Click += new System.EventHandler(this.DeviceDiffToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -303,14 +303,14 @@
             this.distanceToolStripMenuItem.Name = "distanceToolStripMenuItem";
             this.distanceToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.distanceToolStripMenuItem.Text = "Distance";
-            this.distanceToolStripMenuItem.Click += new System.EventHandler(this.distanceToolStripMenuItem_Click);
+            this.distanceToolStripMenuItem.Click += new System.EventHandler(this.DistanceToolStripMenuItem_Click);
             // 
             // timeToolStripMenuItem
             // 
             this.timeToolStripMenuItem.Name = "timeToolStripMenuItem";
             this.timeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.timeToolStripMenuItem.Text = "Time";
-            this.timeToolStripMenuItem.Click += new System.EventHandler(this.timeToolStripMenuItem_Click);
+            this.timeToolStripMenuItem.Click += new System.EventHandler(this.TimeToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -322,35 +322,35 @@
             this.resyncDiffAtTrailPointsToolStripMenuItem.Name = "resyncDiffAtTrailToolStripMenuItem";
             this.resyncDiffAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.resyncDiffAtTrailPointsToolStripMenuItem.Text = "resyncDiffAtTrailPoints";
-            this.resyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.resyncDiffAtTrailPointsToolStripMenuItem_Click);
+            this.resyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.ResyncDiffAtTrailPointsToolStripMenuItem_Click);
             // 
             // adjustResyncDiffAtTrailPointsToolStripMenuItem
             // 
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Name = "adjustResyncDiffAtTrailPointsToolStripMenuItem";
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Text = "adjustResyncDiffAtTrailPoints";
-            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.adjustResyncDiffAtTrailPointsToolStripMenuItem_Click);
+            this.adjustResyncDiffAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.AdjustResyncDiffAtTrailPointsToolStripMenuItem_Click);
             // 
             // syncChartAtTrailPointsToolStripMenuItem
             // 
             this.syncChartAtTrailPointsToolStripMenuItem.Name = "syncChartAtTrailPointsToolStripMenuItem";
             this.syncChartAtTrailPointsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.syncChartAtTrailPointsToolStripMenuItem.Text = "syncChartAtTrailPoints";
-            this.syncChartAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.syncChartAtTrailPointsToolStripMenuItem_Click);
+            this.syncChartAtTrailPointsToolStripMenuItem.Click += new System.EventHandler(this.SyncChartAtTrailPointsToolStripMenuItem_Click);
             // 
             // chartSmoothMenuItem
             // 
             this.chartSmoothMenuItem.Name = "chartSmoothMenuItem";
             this.chartSmoothMenuItem.Size = new System.Drawing.Size(198, 22);
             this.chartSmoothMenuItem.Text = "chartSmoothMenuItem";
-            this.chartSmoothMenuItem.Click += new System.EventHandler(this.chartSmoothMenuItem_Click);
+            this.chartSmoothMenuItem.Click += new System.EventHandler(this.ChartSmoothMenuItem_Click);
             // 
             // showToolBarMenuItem
             // 
             this.showToolBarMenuItem.Name = "showToolBarMenuItem";
             this.showToolBarMenuItem.Size = new System.Drawing.Size(198, 22);
             this.showToolBarMenuItem.Text = "showToolBarMenuItem";
-            this.showToolBarMenuItem.Click += new System.EventHandler(this.showToolBarMenuItem_Click);
+            this.showToolBarMenuItem.Click += new System.EventHandler(this.ShowToolBarMenuItem_Click);
             // 
             // btnExpand
             // 
@@ -373,7 +373,7 @@
             this.btnExpand.TextAlign = System.Drawing.StringAlignment.Center;
             this.btnExpand.TextLeftMargin = 2;
             this.btnExpand.TextRightMargin = 2;
-            this.btnExpand.Click += new System.EventHandler(this.btnExpand_Click);
+            this.btnExpand.Click += new System.EventHandler(this.BtnExpand_Click);
             // 
             // ChartPanel
             // 

@@ -103,10 +103,10 @@ namespace TrailsPlugin.Data
 
         static Settings()
         {
-            defaults();
+            Defaults();
         }
 
-        private static void defaults()
+        private static void Defaults()
         {
             m_activityPageColumns = TrailResultColumns.DefaultColumns();
             m_activityPageColumnSizes = new Dictionary<string, int>();
@@ -932,18 +932,18 @@ namespace TrailsPlugin.Data
         /******************************************************/
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            defaults();
+            Defaults();
             isHandlingXml = true;
             try
             {
                 String attr;
-                attr = pluginNode.GetAttribute(xmlTags.sDefaultRadius);
-                if (attr.Length > 0) { m_defaultRadius = Settings.parseFloat(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sNumFixedColumns);
+                attr = pluginNode.GetAttribute(XmlTags.sDefaultRadius);
+                if (attr.Length > 0) { m_defaultRadius = Settings.ParseFloat(attr); }
+                attr = pluginNode.GetAttribute(XmlTags.sNumFixedColumns);
                 if (attr.Length > 0) { m_activityPageNumFixedColumns = (Int16)XmlConvert.ToInt16(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sXAxis);
+                attr = pluginNode.GetAttribute(XmlTags.sXAxis);
                 if (attr.Length > 0) { m_xAxisValue = (XAxisValue)Enum.Parse(typeof(XAxisValue), attr, true); }
-                attr = pluginNode.GetAttribute(xmlTags.sChartType);
+                attr = pluginNode.GetAttribute(XmlTags.sChartType);
                 try
                 {
                     if (attr.Length > 0) { m_chartType = (LineChartTypes)Enum.Parse(typeof(LineChartTypes), attr, true); }
@@ -954,81 +954,81 @@ namespace TrailsPlugin.Data
                     }
                 }
                 catch { }
-                attr = pluginNode.GetAttribute(xmlTags.SelectSimilarSplits);
+                attr = pluginNode.GetAttribute(XmlTags.SelectSimilarSplits);
                 if (attr.Length > 0) { m_SelectSimilarSplits = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.AddCurrentActivity);
+                attr = pluginNode.GetAttribute(XmlTags.AddCurrentActivity);
                 if (attr.Length > 0) { m_AddCurrentCategory = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.ShowChartToolBar);
+                attr = pluginNode.GetAttribute(XmlTags.ShowChartToolBar);
                 if (attr.Length > 0) { m_ShowChartToolBar = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.ShowListToolBar);
+                attr = pluginNode.GetAttribute(XmlTags.ShowListToolBar);
                 if (attr.Length > 0) { m_ShowListToolBar = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.SetNameAtImport);
+                attr = pluginNode.GetAttribute(XmlTags.SetNameAtImport);
                 if (attr.Length > 0) { m_SetNameAtImport = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.SetAdjustElevationAtImport);
+                attr = pluginNode.GetAttribute(XmlTags.SetAdjustElevationAtImport);
                 if (attr.Length > 0) { m_SetAdjustElevationAtImport = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.RestLapIsPause);
+                attr = pluginNode.GetAttribute(XmlTags.RestLapIsPause);
                 if (attr.Length > 0) { m_RestLapIsPause = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sShowPausesAsResults);
+                attr = pluginNode.GetAttribute(XmlTags.sShowPausesAsResults);
                 if (attr.Length > 0) { m_ShowPausesAsResults = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.NonReqIsPause);
+                attr = pluginNode.GetAttribute(XmlTags.NonReqIsPause);
                 if (attr.Length > 0) { m_NonReqIsPause = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.ResyncDiffAtTrailPoints);
+                attr = pluginNode.GetAttribute(XmlTags.ResyncDiffAtTrailPoints);
                 if (attr.Length > 0) { m_ResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints);
+                attr = pluginNode.GetAttribute(XmlTags.AdjustResyncDiffAtTrailPoints);
                 if (attr.Length > 0) { m_AdjustResyncDiffAtTrailPoints = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.SyncChartAtTrailPoints);
+                attr = pluginNode.GetAttribute(XmlTags.SyncChartAtTrailPoints);
                 if (attr.Length > 0) { m_SyncChartAtTrailPoints = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.OnlyReferenceRight);
+                attr = pluginNode.GetAttribute(XmlTags.OnlyReferenceRight);
                 if (attr.Length > 0) { m_OnlyReferenceRight = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.ZoomToSelection);
+                attr = pluginNode.GetAttribute(XmlTags.ZoomToSelection);
                 if (attr.Length > 0) { m_ZoomToSelection = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.ShowOnlyMarkedOnRoute);
+                attr = pluginNode.GetAttribute(XmlTags.ShowOnlyMarkedOnRoute);
                 if (attr.Length > 0) { m_ShowOnlyMarkedOnRoute = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.ExcludeStoppedCategory);
+                attr = pluginNode.GetAttribute(XmlTags.ExcludeStoppedCategory);
                 if (attr.Length > 0) { SetExcludeStoppedCategory(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.BarometricDevices);
+                attr = pluginNode.GetAttribute(XmlTags.BarometricDevices);
                 if (attr.Length > 0) { SetBarometricDevices(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.SmoothOverTrailPoints);
+                attr = pluginNode.GetAttribute(XmlTags.SmoothOverTrailPoints);
                 try
                 {
                     if (attr.Length > 0) { m_SmoothOverTrailPoints = (SmoothOverTrailBorders)Enum.Parse(typeof(SmoothOverTrailBorders), attr, true); }
                 }
                 catch { }
-                attr = pluginNode.GetAttribute(xmlTags.PredictDistance);
-                if (attr.Length > 0) { m_PredictDistance = Settings.parseFloat(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sCadenceFromOther);
+                attr = pluginNode.GetAttribute(XmlTags.PredictDistance);
+                if (attr.Length > 0) { m_PredictDistance = Settings.ParseFloat(attr); }
+                attr = pluginNode.GetAttribute(XmlTags.sCadenceFromOther);
                 if (attr.Length > 0) { m_CadenceFromOther = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sDeviceElevationFromOther);
+                attr = pluginNode.GetAttribute(XmlTags.sDeviceElevationFromOther);
                 if (attr.Length > 0) { m_DeviceElevationFromOther = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sUseDeviceElevationForCalc);
+                attr = pluginNode.GetAttribute(XmlTags.sUseDeviceElevationForCalc);
                 if (attr.Length > 0) { m_UseDeviceElevationForCalc = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sUseDeviceDistance);
+                attr = pluginNode.GetAttribute(XmlTags.sUseDeviceDistance);
                 if (attr.Length > 0) { m_UseDeviceDistance = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sShowSummaryTotal);
+                attr = pluginNode.GetAttribute(XmlTags.sShowSummaryTotal);
                 if (attr.Length > 0) { m_ShowSummaryTotal = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sShowSummaryAverage);
+                attr = pluginNode.GetAttribute(XmlTags.sShowSummaryAverage);
                 if (attr.Length > 0) { m_ShowSummaryAverage = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sShowTrailPointsOnChart);
+                attr = pluginNode.GetAttribute(XmlTags.sShowTrailPointsOnChart);
                 if (attr.Length > 0) { m_ShowTrailPointsOnChart = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sShowTrailPointsOnMap);
+                attr = pluginNode.GetAttribute(XmlTags.sShowTrailPointsOnMap);
                 if (attr.Length > 0) { m_ShowTrailPointsOnMap = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sUseTrailElevationAdjust);
+                attr = pluginNode.GetAttribute(XmlTags.sUseTrailElevationAdjust);
                 if (attr.Length > 0) { m_UseTrailElevationAdjust = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sRunningGradeAdjustMethod);
+                attr = pluginNode.GetAttribute(XmlTags.sRunningGradeAdjustMethod);
                 try
                 {
                     if (attr.Length > 0) { m_RunningGradeAdjustMethod = (RunningGradeAdjustMethodEnum)Enum.Parse(typeof(RunningGradeAdjustMethodEnum), attr, true); }
                 }
                 catch { }
-                attr = pluginNode.GetAttribute(xmlTags.sMervynDaviesUp);
-                if (attr.Length > 0) { m_MervynDaviesUp = Settings.parseFloat(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sMervynDaviesDown);
-                if (attr.Length > 0) { m_MervynDaviesDown = Settings.parseFloat(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sJackDanielsUp);
-                if (attr.Length > 0) { m_JackDanielsUp = Settings.parseFloat(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sJackDanielsDown);
-                if (attr.Length > 0) { m_JackDanielsDown = Settings.parseFloat(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sRouteLineAlpha);
+                attr = pluginNode.GetAttribute(XmlTags.sMervynDaviesUp);
+                if (attr.Length > 0) { m_MervynDaviesUp = Settings.ParseFloat(attr); }
+                attr = pluginNode.GetAttribute(XmlTags.sMervynDaviesDown);
+                if (attr.Length > 0) { m_MervynDaviesDown = Settings.ParseFloat(attr); }
+                attr = pluginNode.GetAttribute(XmlTags.sJackDanielsUp);
+                if (attr.Length > 0) { m_JackDanielsUp = Settings.ParseFloat(attr); }
+                attr = pluginNode.GetAttribute(XmlTags.sJackDanielsDown);
+                if (attr.Length > 0) { m_JackDanielsDown = Settings.ParseFloat(attr); }
+                attr = pluginNode.GetAttribute(XmlTags.sRouteLineAlpha);
                 if (attr.Length > 0) { m_RouteLineAlpha = XmlConvert.ToByte(attr); }
                 //Not read or saved in preferences right now
                 //attr = pluginNode.GetAttribute(xmlTags.sAdjustDiffSplitTimes);
@@ -1052,42 +1052,42 @@ namespace TrailsPlugin.Data
                 //    }
                 //}
                 //catch { }
-                attr = pluginNode.GetAttribute(xmlTags.sResultSummaryStdDev);
+                attr = pluginNode.GetAttribute(XmlTags.sResultSummaryStdDev);
                 if (attr.Length > 0) { m_ResultSummaryStdDev = XmlConvert.ToBoolean(attr); }
 
-                attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesTrails);
+                attr = pluginNode.GetAttribute(XmlTags.MaxAutoCalcActivitiesTrails);
                 if (attr.Length > 0)
                 {
                     m_MaxAutoCalcActivitiesTrails = XmlConvert.ToInt32(attr);
                     //Change defaults without version number
                     if (m_MaxAutoCalcActivitiesTrails == 500) { m_MaxAutoCalcActivitiesTrails = 10000; }
                 }
-                attr = pluginNode.GetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail);
+                attr = pluginNode.GetAttribute(XmlTags.MaxAutoCalcActivitiesSingleTrail);
                 if (attr.Length > 0) {
                     m_MaxAutoCalcActivitiesSingleTrail = XmlConvert.ToInt32(attr);
                     if (m_MaxAutoCalcActivitiesSingleTrail == 200) { m_MaxAutoCalcActivitiesSingleTrail = 10000; }
                 }
-                attr = pluginNode.GetAttribute(xmlTags.sMaxChartResults);
+                attr = pluginNode.GetAttribute(XmlTags.sMaxChartResults);
                 if (attr.Length > 0) { m_MaxChartResults = XmlConvert.ToInt32(attr); }
 
                 int popupWidth = 0;
                 int popupHeight = 0;
-                attr = pluginNode.GetAttribute(xmlTags.sPopupSizeWidth);
+                attr = pluginNode.GetAttribute(XmlTags.sPopupSizeWidth);
                 if (attr.Length > 0) { popupWidth = XmlConvert.ToInt16(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sPopupSizeHeight);
+                attr = pluginNode.GetAttribute(XmlTags.sPopupSizeHeight);
                 if (attr.Length > 0) { popupHeight = XmlConvert.ToInt16(attr); }
                 if (popupWidth > 0 && popupHeight > 0)
                 {
                     m_PopupSize = new Size(popupWidth, popupHeight);
                 }
-                attr = pluginNode.GetAttribute(xmlTags.sPopupDivider);
+                attr = pluginNode.GetAttribute(XmlTags.sPopupDivider);
                 if (attr.Length > 0) { m_PopupDivider = XmlConvert.ToInt32(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sPopupInActionMenu);
+                attr = pluginNode.GetAttribute(XmlTags.sPopupInActionMenu);
                 if (attr.Length > 0) { m_PopupInActionMenu = XmlConvert.ToBoolean(attr); }
-                attr = pluginNode.GetAttribute(xmlTags.sPopupUpdatedBySelection);
+                attr = pluginNode.GetAttribute(XmlTags.sPopupUpdatedBySelection);
                 if (attr.Length > 0) { m_PopupUpdatedBySelection = XmlConvert.ToBoolean(attr); }
 
-                 attr = pluginNode.GetAttribute(xmlTags.sColumns);
+                 attr = pluginNode.GetAttribute(XmlTags.sColumns);
                 if (attr.Length > 0)
                 {
                     m_activityPageColumns.Clear();
@@ -1100,8 +1100,7 @@ namespace TrailsPlugin.Data
                         {
                             //The column has width appended
                             id = idWidth[0];
-                            int width;
-                            if (int.TryParse(idWidth[1], out width))
+                            if (int.TryParse(idWidth[1], out int width))
                             {
                                 ActivityPageColumnsSizeSet(id, width);
                             }
@@ -1118,7 +1117,7 @@ namespace TrailsPlugin.Data
                     }
                 }
                 m_SummaryViewSortColumns.Clear();
-                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortColumn);
+                attr = pluginNode.GetAttribute(XmlTags.summaryViewSortColumn);
                 if (attr.Length > 0) {
                     String[] values = attr.Split(',');
                     foreach (String column in values)
@@ -1129,23 +1128,23 @@ namespace TrailsPlugin.Data
                 if (m_SummaryViewSortColumns.Count == 0 && m_activityPageColumns != null && m_activityPageColumns.Count > 1)
                 { UpdateSummaryViewSortColumn = m_activityPageColumns[1]; }
 
-                attr = pluginNode.GetAttribute(xmlTags.summaryViewSortDirection);
+                attr = pluginNode.GetAttribute(XmlTags.summaryViewSortDirection);
                 if (attr.Length > 0) { m_SummaryViewSortDirection = (ListSortDirection)Enum.Parse(typeof(ListSortDirection), attr); }
 
-                attr = pluginNode.GetAttribute(xmlTags.sMultiChartType);
+                attr = pluginNode.GetAttribute(XmlTags.sMultiChartType);
                 if (attr.Length > 0)
                 {
                     String[] values = attr.Split(';');
                     SetMultiChartType = values;
                 }
 
-                attr = pluginNode.GetAttribute(xmlTags.sMultiGraphType);
+                attr = pluginNode.GetAttribute(XmlTags.sMultiGraphType);
                 if (attr.Length > 0)
                 {
                     String[] values = attr.Split(';');
                     SetMultiGraphType = values;
                 }
-                attr = pluginNode.GetAttribute(xmlTags.sSaveChartImagePath);
+                attr = pluginNode.GetAttribute(XmlTags.sSaveChartImagePath);
                 if (attr.Length > 0) { m_SaveChartImagePath = attr; }
             }
             catch { }
@@ -1155,46 +1154,46 @@ namespace TrailsPlugin.Data
         public static void WriteOptions(XmlDocument xmlDoc, XmlElement pluginNode)
         {
             isHandlingXml = true;
-            pluginNode.SetAttribute(xmlTags.sDefaultRadius, XmlConvert.ToString(m_defaultRadius));
-            pluginNode.SetAttribute(xmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
-            pluginNode.SetAttribute(xmlTags.sXAxis, m_xAxisValue.ToString());
-            pluginNode.SetAttribute(xmlTags.sChartType, m_chartType.ToString());
-            pluginNode.SetAttribute(xmlTags.summaryViewSortColumn, GetSummaryViewSortColumns);
-            pluginNode.SetAttribute(xmlTags.summaryViewSortDirection, m_SummaryViewSortDirection.ToString());
-            pluginNode.SetAttribute(xmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
-            pluginNode.SetAttribute(xmlTags.ShowListToolBar, XmlConvert.ToString(m_ShowListToolBar));
-            pluginNode.SetAttribute(xmlTags.SelectSimilarSplits, XmlConvert.ToString(m_SelectSimilarSplits));
-            pluginNode.SetAttribute(xmlTags.AddCurrentActivity, XmlConvert.ToString(m_AddCurrentCategory));
-            pluginNode.SetAttribute(xmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
-            pluginNode.SetAttribute(xmlTags.SetAdjustElevationAtImport, XmlConvert.ToString(m_SetAdjustElevationAtImport));
-            pluginNode.SetAttribute(xmlTags.RestLapIsPause, XmlConvert.ToString(m_RestLapIsPause));
-            pluginNode.SetAttribute(xmlTags.sShowPausesAsResults, XmlConvert.ToString(m_ShowPausesAsResults));
-            pluginNode.SetAttribute(xmlTags.NonReqIsPause, XmlConvert.ToString(m_NonReqIsPause));
-            pluginNode.SetAttribute(xmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_ResyncDiffAtTrailPoints));
-            pluginNode.SetAttribute(xmlTags.AdjustResyncDiffAtTrailPoints, XmlConvert.ToString(m_AdjustResyncDiffAtTrailPoints));
-            pluginNode.SetAttribute(xmlTags.SyncChartAtTrailPoints, XmlConvert.ToString(m_SyncChartAtTrailPoints));
-            pluginNode.SetAttribute(xmlTags.OnlyReferenceRight, XmlConvert.ToString(m_OnlyReferenceRight));
-            pluginNode.SetAttribute(xmlTags.ZoomToSelection, XmlConvert.ToString(m_ZoomToSelection));
-            pluginNode.SetAttribute(xmlTags.ShowOnlyMarkedOnRoute, XmlConvert.ToString(m_ShowOnlyMarkedOnRoute));
-            pluginNode.SetAttribute(xmlTags.ExcludeStoppedCategory, GetExcludeStoppedCategory);
-            pluginNode.SetAttribute(xmlTags.BarometricDevices, GetBarometricDevices);
-            pluginNode.SetAttribute(xmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
-            pluginNode.SetAttribute(xmlTags.PredictDistance, XmlConvert.ToString(m_PredictDistance));
-            pluginNode.SetAttribute(xmlTags.sCadenceFromOther, XmlConvert.ToString(m_CadenceFromOther));
-            pluginNode.SetAttribute(xmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_DeviceElevationFromOther));
-            pluginNode.SetAttribute(xmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_UseDeviceElevationForCalc));
-            pluginNode.SetAttribute(xmlTags.sUseDeviceDistance, XmlConvert.ToString(m_UseDeviceDistance));
-            pluginNode.SetAttribute(xmlTags.sShowSummaryTotal, XmlConvert.ToString(m_ShowSummaryTotal));
-            pluginNode.SetAttribute(xmlTags.sShowSummaryAverage, XmlConvert.ToString(m_ShowSummaryAverage));
-            pluginNode.SetAttribute(xmlTags.sShowTrailPointsOnChart, XmlConvert.ToString(m_ShowTrailPointsOnChart));
-            pluginNode.SetAttribute(xmlTags.sShowTrailPointsOnMap, XmlConvert.ToString(m_ShowTrailPointsOnMap));
-            pluginNode.SetAttribute(xmlTags.sUseTrailElevationAdjust, XmlConvert.ToString(m_UseTrailElevationAdjust));
-            pluginNode.SetAttribute(xmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
-            pluginNode.SetAttribute(xmlTags.sMervynDaviesUp, XmlConvert.ToString(m_MervynDaviesUp));
-            pluginNode.SetAttribute(xmlTags.sMervynDaviesDown, XmlConvert.ToString(m_MervynDaviesDown));
-            pluginNode.SetAttribute(xmlTags.sJackDanielsUp, XmlConvert.ToString(m_JackDanielsUp));
-            pluginNode.SetAttribute(xmlTags.sJackDanielsDown, XmlConvert.ToString(m_JackDanielsDown));
-            pluginNode.SetAttribute(xmlTags.sRouteLineAlpha, XmlConvert.ToString(m_RouteLineAlpha));
+            pluginNode.SetAttribute(XmlTags.sDefaultRadius, XmlConvert.ToString(m_defaultRadius));
+            pluginNode.SetAttribute(XmlTags.sNumFixedColumns, XmlConvert.ToString(m_activityPageNumFixedColumns));
+            pluginNode.SetAttribute(XmlTags.sXAxis, m_xAxisValue.ToString());
+            pluginNode.SetAttribute(XmlTags.sChartType, m_chartType.ToString());
+            pluginNode.SetAttribute(XmlTags.summaryViewSortColumn, GetSummaryViewSortColumns);
+            pluginNode.SetAttribute(XmlTags.summaryViewSortDirection, m_SummaryViewSortDirection.ToString());
+            pluginNode.SetAttribute(XmlTags.ShowChartToolBar, XmlConvert.ToString(m_ShowChartToolBar));
+            pluginNode.SetAttribute(XmlTags.ShowListToolBar, XmlConvert.ToString(m_ShowListToolBar));
+            pluginNode.SetAttribute(XmlTags.SelectSimilarSplits, XmlConvert.ToString(m_SelectSimilarSplits));
+            pluginNode.SetAttribute(XmlTags.AddCurrentActivity, XmlConvert.ToString(m_AddCurrentCategory));
+            pluginNode.SetAttribute(XmlTags.SetNameAtImport, XmlConvert.ToString(m_SetNameAtImport));
+            pluginNode.SetAttribute(XmlTags.SetAdjustElevationAtImport, XmlConvert.ToString(m_SetAdjustElevationAtImport));
+            pluginNode.SetAttribute(XmlTags.RestLapIsPause, XmlConvert.ToString(m_RestLapIsPause));
+            pluginNode.SetAttribute(XmlTags.sShowPausesAsResults, XmlConvert.ToString(m_ShowPausesAsResults));
+            pluginNode.SetAttribute(XmlTags.NonReqIsPause, XmlConvert.ToString(m_NonReqIsPause));
+            pluginNode.SetAttribute(XmlTags.ResyncDiffAtTrailPoints, XmlConvert.ToString(m_ResyncDiffAtTrailPoints));
+            pluginNode.SetAttribute(XmlTags.AdjustResyncDiffAtTrailPoints, XmlConvert.ToString(m_AdjustResyncDiffAtTrailPoints));
+            pluginNode.SetAttribute(XmlTags.SyncChartAtTrailPoints, XmlConvert.ToString(m_SyncChartAtTrailPoints));
+            pluginNode.SetAttribute(XmlTags.OnlyReferenceRight, XmlConvert.ToString(m_OnlyReferenceRight));
+            pluginNode.SetAttribute(XmlTags.ZoomToSelection, XmlConvert.ToString(m_ZoomToSelection));
+            pluginNode.SetAttribute(XmlTags.ShowOnlyMarkedOnRoute, XmlConvert.ToString(m_ShowOnlyMarkedOnRoute));
+            pluginNode.SetAttribute(XmlTags.ExcludeStoppedCategory, GetExcludeStoppedCategory);
+            pluginNode.SetAttribute(XmlTags.BarometricDevices, GetBarometricDevices);
+            pluginNode.SetAttribute(XmlTags.SmoothOverTrailPoints, m_SmoothOverTrailPoints.ToString());
+            pluginNode.SetAttribute(XmlTags.PredictDistance, XmlConvert.ToString(m_PredictDistance));
+            pluginNode.SetAttribute(XmlTags.sCadenceFromOther, XmlConvert.ToString(m_CadenceFromOther));
+            pluginNode.SetAttribute(XmlTags.sDeviceElevationFromOther, XmlConvert.ToString(m_DeviceElevationFromOther));
+            pluginNode.SetAttribute(XmlTags.sUseDeviceElevationForCalc, XmlConvert.ToString(m_UseDeviceElevationForCalc));
+            pluginNode.SetAttribute(XmlTags.sUseDeviceDistance, XmlConvert.ToString(m_UseDeviceDistance));
+            pluginNode.SetAttribute(XmlTags.sShowSummaryTotal, XmlConvert.ToString(m_ShowSummaryTotal));
+            pluginNode.SetAttribute(XmlTags.sShowSummaryAverage, XmlConvert.ToString(m_ShowSummaryAverage));
+            pluginNode.SetAttribute(XmlTags.sShowTrailPointsOnChart, XmlConvert.ToString(m_ShowTrailPointsOnChart));
+            pluginNode.SetAttribute(XmlTags.sShowTrailPointsOnMap, XmlConvert.ToString(m_ShowTrailPointsOnMap));
+            pluginNode.SetAttribute(XmlTags.sUseTrailElevationAdjust, XmlConvert.ToString(m_UseTrailElevationAdjust));
+            pluginNode.SetAttribute(XmlTags.sRunningGradeAdjustMethod, m_RunningGradeAdjustMethod.ToString());
+            pluginNode.SetAttribute(XmlTags.sMervynDaviesUp, XmlConvert.ToString(m_MervynDaviesUp));
+            pluginNode.SetAttribute(XmlTags.sMervynDaviesDown, XmlConvert.ToString(m_MervynDaviesDown));
+            pluginNode.SetAttribute(XmlTags.sJackDanielsUp, XmlConvert.ToString(m_JackDanielsUp));
+            pluginNode.SetAttribute(XmlTags.sJackDanielsDown, XmlConvert.ToString(m_JackDanielsDown));
+            pluginNode.SetAttribute(XmlTags.sRouteLineAlpha, XmlConvert.ToString(m_RouteLineAlpha));
             String colText = null;
             //if (m_AdjustDiffSplitTimes != null)
             //{
@@ -1210,17 +1209,17 @@ namespace TrailsPlugin.Data
             //    }
             //}
             //pluginNode.SetAttribute(xmlTags.sAdjustDiffSplitTimes, colText);
-            pluginNode.SetAttribute(xmlTags.sResultSummaryStdDev, XmlConvert.ToString(m_ResultSummaryStdDev));
+            pluginNode.SetAttribute(XmlTags.sResultSummaryStdDev, XmlConvert.ToString(m_ResultSummaryStdDev));
 
-            pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
-            pluginNode.SetAttribute(xmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
-            pluginNode.SetAttribute(xmlTags.sMaxChartResults, XmlConvert.ToString(m_MaxChartResults));
+            pluginNode.SetAttribute(XmlTags.MaxAutoCalcActivitiesTrails, XmlConvert.ToString(m_MaxAutoCalcActivitiesTrails));
+            pluginNode.SetAttribute(XmlTags.MaxAutoCalcActivitiesSingleTrail, XmlConvert.ToString(m_MaxAutoCalcActivitiesSingleTrail));
+            pluginNode.SetAttribute(XmlTags.sMaxChartResults, XmlConvert.ToString(m_MaxChartResults));
 
-            pluginNode.SetAttribute(xmlTags.sPopupSizeWidth, XmlConvert.ToString(m_PopupSize.Width));
-            pluginNode.SetAttribute(xmlTags.sPopupSizeHeight, XmlConvert.ToString(m_PopupSize.Height));
-            pluginNode.SetAttribute(xmlTags.sPopupDivider, XmlConvert.ToString(m_PopupDivider));
-            pluginNode.SetAttribute(xmlTags.sPopupInActionMenu, XmlConvert.ToString(m_PopupInActionMenu));
-            pluginNode.SetAttribute(xmlTags.sPopupUpdatedBySelection, XmlConvert.ToString(m_PopupUpdatedBySelection));
+            pluginNode.SetAttribute(XmlTags.sPopupSizeWidth, XmlConvert.ToString(m_PopupSize.Width));
+            pluginNode.SetAttribute(XmlTags.sPopupSizeHeight, XmlConvert.ToString(m_PopupSize.Height));
+            pluginNode.SetAttribute(XmlTags.sPopupDivider, XmlConvert.ToString(m_PopupDivider));
+            pluginNode.SetAttribute(XmlTags.sPopupInActionMenu, XmlConvert.ToString(m_PopupInActionMenu));
+            pluginNode.SetAttribute(XmlTags.sPopupUpdatedBySelection, XmlConvert.ToString(m_PopupUpdatedBySelection));
 
             colText = null;
             foreach (String column in m_activityPageColumns)
@@ -1239,7 +1238,7 @@ namespace TrailsPlugin.Data
                     System.Diagnostics.Debug.Assert(false, string.Format("Ignoring unknown column {0}", column));
                 }
             }
-            pluginNode.SetAttribute(xmlTags.sColumns, colText);
+            pluginNode.SetAttribute(XmlTags.sColumns, colText);
 
             colText = null;
             foreach (LineChartTypes column in m_MultiChartTypes)
@@ -1247,7 +1246,7 @@ namespace TrailsPlugin.Data
                 if (colText == null) { colText = column.ToString(); }
                 else { colText += ";" + column.ToString(); }
             }
-            pluginNode.SetAttribute(xmlTags.sMultiChartType, colText);
+            pluginNode.SetAttribute(XmlTags.sMultiChartType, colText);
 
             colText = null;
             foreach (LineChartTypes column in m_MultiGraphTypes)
@@ -1255,15 +1254,15 @@ namespace TrailsPlugin.Data
                 if (colText == null) { colText = column.ToString(); }
                 else { colText += ";" + column.ToString(); }
             }
-            pluginNode.SetAttribute(xmlTags.sMultiGraphType, colText);
+            pluginNode.SetAttribute(XmlTags.sMultiGraphType, colText);
             if (!String.IsNullOrEmpty(m_SaveChartImagePath))
             {
-                pluginNode.SetAttribute(xmlTags.sSaveChartImagePath, m_SaveChartImagePath);
+                pluginNode.SetAttribute(XmlTags.sSaveChartImagePath, m_SaveChartImagePath);
             }
             isHandlingXml = false;
         }
 
-        private class xmlTags
+        private class XmlTags
         {
             public const string sDefaultRadius = "sDefaultRadius";
             public const string sNumFixedColumns = "sNumFixedColumns";
@@ -1324,15 +1323,14 @@ namespace TrailsPlugin.Data
         }
 
         //Parse dont care how the information was stored
-        public static float parseFloat(string val)
+        public static float ParseFloat(string val)
         {
-            float result;
-            bool p = tryParseFloat(val, NumberStyles.Any, out result);
+            bool p = TryParseFloat(val, NumberStyles.Any, out float result);
             if (!p) { result = float.NaN; }
             return result;
         }
 
-        public static bool tryParseFloat(string val, NumberStyles style, out float result)
+        public static bool TryParseFloat(string val, NumberStyles style, out float result)
         {
             if (System.Globalization.CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator !=
                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat.CurrencyDecimalSeparator)
@@ -1343,17 +1341,18 @@ namespace TrailsPlugin.Data
             return float.TryParse(val, style, System.Globalization.NumberFormatInfo.InvariantInfo, out result);
         }
 
-        public static string printFullCategoryPath(IActivityCategory iActivityCategory)
+        public static string PrintFullCategoryPath(IActivityCategory iActivityCategory)
         {
-            return printFullCategoryPath(iActivityCategory, null, ": ");
+            return PrintFullCategoryPath(iActivityCategory, null, ": ");
         }
-        private static string printFullCategoryPath(IActivityCategory iActivityCategory, string p, string sep)
+
+        private static string PrintFullCategoryPath(IActivityCategory iActivityCategory, string p, string sep)
         {
             if (iActivityCategory == null) return p;
             if (p == null)
-                return printFullCategoryPath(iActivityCategory.Parent,
+                return PrintFullCategoryPath(iActivityCategory.Parent,
                              iActivityCategory.Name, sep);
-            return printFullCategoryPath(iActivityCategory.Parent,
+            return PrintFullCategoryPath(iActivityCategory.Parent,
                                 iActivityCategory.Name + sep + p, sep);
         }
     }

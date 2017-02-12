@@ -161,20 +161,22 @@ namespace TrailsPlugin.Data
 
         private Trail Copy(Guid id)
         {
-            Trail result = new Trail(id, false);
-            result.Name = this.Name;
+            Trail result = new Trail(id, false)
+            {
+                Name = this.Name,
 
-            //Do not copy "auto" attributes
-            result.m_radius = this.Radius;
-            result.MinDistance = this.MinDistance;
-            result.MaxRequiredMisses = this.MaxRequiredMisses;
-            result.BiDirectional = this.BiDirectional;
-            result.IsNameMatch = this.IsNameMatch;
-            result.IsCompleteActivity = this.IsCompleteActivity;
-            result.IsURFilter = this.IsURFilter;
-            //result.IsAutoTryAll = this.IsAutoTryAll;
-            result.IsTemporary = this.IsTemporary;
-            result.Parent = this.Parent;
+                //Do not copy "auto" attributes
+                m_radius = this.Radius,
+                MinDistance = this.MinDistance,
+                MaxRequiredMisses = this.MaxRequiredMisses,
+                BiDirectional = this.BiDirectional,
+                IsNameMatch = this.IsNameMatch,
+                IsCompleteActivity = this.IsCompleteActivity,
+                IsURFilter = this.IsURFilter,
+                //result.IsAutoTryAll = this.IsAutoTryAll;
+                IsTemporary = this.IsTemporary,
+                Parent = this.Parent
+            };
             foreach(Trail t in this.Children)
             {
                 result.Children.Add(t);
@@ -658,7 +660,7 @@ namespace TrailsPlugin.Data
         public static Trail ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement node)
         {
             Guid Id;
-            if (node.Attributes[xmlTags.sId] == null || String.IsNullOrEmpty(node.Attributes[xmlTags.sId].Value))
+            if (node.Attributes[XmlTags.sId] == null || String.IsNullOrEmpty(node.Attributes[XmlTags.sId].Value))
             {
                 Id = System.Guid.NewGuid();
             }
@@ -666,65 +668,67 @@ namespace TrailsPlugin.Data
             {
                 try
                 {
-                    Id = new Guid(node.Attributes[xmlTags.sId].Value.ToString());
+                    Id = new Guid(node.Attributes[XmlTags.sId].Value.ToString());
                 }
                 catch (Exception)
                 {
                     Id = System.Guid.NewGuid();
                 }
             }
-            Trail trail = new Trail(Id, false);
-            trail.Name = node.Attributes[xmlTags.sName].Value.ToString();
+            Trail trail = new Trail(Id, false)
+            {
+                Name = node.Attributes[XmlTags.sName].Value.ToString()
+            };
             //Hidden possibility to get trails matching everything while activities are seen
             //if (trail.Name.EndsWith("MatchAll"))
             //{
             //    trail.IsSplits = true;
             //}
-            if (node.Attributes[xmlTags.sRadius] != null)
+            if (node.Attributes[XmlTags.sRadius] != null)
             {
-                trail.Radius = Settings.parseFloat(node.Attributes[xmlTags.sRadius].Value);
+                trail.Radius = Settings.ParseFloat(node.Attributes[XmlTags.sRadius].Value);
             }
-            if (node.Attributes[xmlTags.sDefaultRefActivity] != null)
+            if (node.Attributes[XmlTags.sDefaultRefActivity] != null)
             {
-                trail.m_DefaultRefActivityString = node.Attributes[xmlTags.sDefaultRefActivity].Value;
+                trail.m_DefaultRefActivityString = node.Attributes[XmlTags.sDefaultRefActivity].Value;
             }
 
-            if (node.Attributes[xmlTags.sMinDistance] != null)
+            if (node.Attributes[XmlTags.sMinDistance] != null)
             {
-                trail.MinDistance = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMinDistance].Value);
+                trail.MinDistance = (Int16)XmlConvert.ToInt16(node.Attributes[XmlTags.sMinDistance].Value);
             }
-            if (node.Attributes[xmlTags.sMaxRequiredMisses] != null)
+            if (node.Attributes[XmlTags.sMaxRequiredMisses] != null)
             {
-                trail.MaxRequiredMisses = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sMaxRequiredMisses].Value);
+                trail.MaxRequiredMisses = (Int16)XmlConvert.ToInt16(node.Attributes[XmlTags.sMaxRequiredMisses].Value);
             }
-            if (node.Attributes[xmlTags.sBiDirectional] != null)
+            if (node.Attributes[XmlTags.sBiDirectional] != null)
             {
                 //Output prior to 1.0.604 is not xml parsable (only if trail modified manually)
-                trail.BiDirectional = XmlConvert.ToBoolean(node.Attributes[xmlTags.sBiDirectional].Value.ToLower());
+                trail.BiDirectional = XmlConvert.ToBoolean(node.Attributes[XmlTags.sBiDirectional].Value.ToLower());
             }
-            if (node.Attributes[xmlTags.sNameMatch] != null)
+            if (node.Attributes[XmlTags.sNameMatch] != null)
             {
-                trail.IsNameMatch = XmlConvert.ToBoolean(node.Attributes[xmlTags.sNameMatch].Value);
+                trail.IsNameMatch = XmlConvert.ToBoolean(node.Attributes[XmlTags.sNameMatch].Value);
             }
-            if (node.Attributes[xmlTags.sCompleteActivity] != null)
+            if (node.Attributes[XmlTags.sCompleteActivity] != null)
             {
-                trail.IsCompleteActivity = XmlConvert.ToBoolean(node.Attributes[xmlTags.sCompleteActivity].Value);
+                trail.IsCompleteActivity = XmlConvert.ToBoolean(node.Attributes[XmlTags.sCompleteActivity].Value);
             }
-            if (node.Attributes[xmlTags.sURFilter] != null)
+            if (node.Attributes[XmlTags.sURFilter] != null)
             {
-                trail.IsURFilter = XmlConvert.ToBoolean(node.Attributes[xmlTags.sURFilter].Value);
+                trail.IsURFilter = XmlConvert.ToBoolean(node.Attributes[XmlTags.sURFilter].Value);
             }
             //if (node.Attributes[xmlTags.sAutoTryAll] != null)
             //{
             //    trail.IsAutoTryAll = XmlConvert.ToBoolean(node.Attributes[xmlTags.sAutoTryAll].Value);
             //}
-            if (node.Attributes[xmlTags.sTrailPriority] != null)
+            if (node.Attributes[XmlTags.sTrailPriority] != null)
             {
-                trail.TrailPriority = (Int16)XmlConvert.ToInt16(node.Attributes[xmlTags.sTrailPriority].Value);
+                trail.TrailPriority = (Int16)XmlConvert.ToInt16(node.Attributes[XmlTags.sTrailPriority].Value);
             }
 
             trail.TrailLocations.Clear();
-            foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(xmlTags.sTrailGPSLocation)) {
+            foreach (XmlNode TrailGPSLocationNode in node.SelectNodes(XmlTags.sTrailGPSLocation)) {
                 trail.TrailLocations.Add(TrailGPSLocation.FromXml(TrailGPSLocationNode));
                 if (string.IsNullOrEmpty(trail.TrailLocations[trail.TrailLocations.Count-1].Name))
                 {
@@ -741,18 +745,18 @@ namespace TrailsPlugin.Data
 
         public void WriteOptions(XmlDocument doc, XmlElement trailNode)
         {
-            XmlAttribute a = doc.CreateAttribute(xmlTags.sId);
+            XmlAttribute a = doc.CreateAttribute(XmlTags.sId);
             a.Value = XmlConvert.ToString(this.Id);
             trailNode.Attributes.Append(a);
-            a = doc.CreateAttribute(xmlTags.sName);
+            a = doc.CreateAttribute(XmlTags.sName);
             a.Value = this.Name.ToString();
             trailNode.Attributes.Append(a);
-            a = doc.CreateAttribute(xmlTags.sRadius);
+            a = doc.CreateAttribute(XmlTags.sRadius);
             a.Value = XmlConvert.ToString(this.Radius);
             trailNode.Attributes.Append(a);
             if (this.DefaultRefActivity != null)
             {
-                a = doc.CreateAttribute(xmlTags.sDefaultRefActivity);
+                a = doc.CreateAttribute(XmlTags.sDefaultRefActivity);
                 a.Value = this.DefaultRefActivity.ReferenceId;
                 trailNode.Attributes.Append(a);
             }
@@ -760,37 +764,37 @@ namespace TrailsPlugin.Data
             //Undocumented non-GUI property
             if (this.MinDistance > 0)
             {
-                a = doc.CreateAttribute(xmlTags.sMinDistance);
+                a = doc.CreateAttribute(XmlTags.sMinDistance);
                 a.Value = XmlConvert.ToString(this.MinDistance);
                 trailNode.Attributes.Append(a);
             }
             if (this.MaxRequiredMisses > 0)
             {
-                a = doc.CreateAttribute(xmlTags.sMaxRequiredMisses);
+                a = doc.CreateAttribute(XmlTags.sMaxRequiredMisses);
                 a.Value = XmlConvert.ToString(this.MaxRequiredMisses);
                 trailNode.Attributes.Append(a);
             }
             if (this.BiDirectional)
             {
-                a = doc.CreateAttribute(xmlTags.sBiDirectional);
+                a = doc.CreateAttribute(XmlTags.sBiDirectional);
                 a.Value = XmlConvert.ToString(this.BiDirectional);
                 trailNode.Attributes.Append(a);
             }
             if (this.IsNameMatch)
             {
-                a = doc.CreateAttribute(xmlTags.sNameMatch);
+                a = doc.CreateAttribute(XmlTags.sNameMatch);
                 a.Value = XmlConvert.ToString(this.IsNameMatch);
                 trailNode.Attributes.Append(a);
             }
             if (this.IsCompleteActivity)
             {
-                a = doc.CreateAttribute(xmlTags.sCompleteActivity);
+                a = doc.CreateAttribute(XmlTags.sCompleteActivity);
                 a.Value = XmlConvert.ToString(this.IsCompleteActivity);
                 trailNode.Attributes.Append(a);
             }
             if (this.IsURFilter)
             {
-                a = doc.CreateAttribute(xmlTags.sURFilter);
+                a = doc.CreateAttribute(XmlTags.sURFilter);
                 a.Value = XmlConvert.ToString(this.IsURFilter);
                 trailNode.Attributes.Append(a);
             }
@@ -802,7 +806,7 @@ namespace TrailsPlugin.Data
             //}
             if (this.TrailPriority != 0)
             {
-                a = doc.CreateAttribute(xmlTags.sTrailPriority);
+                a = doc.CreateAttribute(XmlTags.sTrailPriority);
                 a.Value = XmlConvert.ToString(this.TrailPriority);
                 trailNode.Attributes.Append(a);
             }
@@ -813,7 +817,7 @@ namespace TrailsPlugin.Data
             }
         }
 
-        private class xmlTags
+        private class XmlTags
         {
             public const string sId = "id";
             public const string sName = "name";

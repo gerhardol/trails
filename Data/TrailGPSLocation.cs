@@ -223,21 +223,21 @@ namespace TrailsPlugin.Data
             if (null != node.Attributes[xmlTags.sElevation] &&
                 null != node.Attributes[xmlTags.sElevation].Value)
             {
-                elevation = Settings.parseFloat(node.Attributes[xmlTags.sElevation].Value);
+                elevation = Settings.ParseFloat(node.Attributes[xmlTags.sElevation].Value);
             }
 
             float lat = float.NaN;
             if (null != node.Attributes[xmlTags.sLatitude] &&
                 null != node.Attributes[xmlTags.sLatitude].Value)
             {
-                lat = Settings.parseFloat(node.Attributes[xmlTags.sLatitude].Value);
+                lat = Settings.ParseFloat(node.Attributes[xmlTags.sLatitude].Value);
             }
 
             float lon = float.NaN;
             if (null != node.Attributes[xmlTags.sLongitude] &&
                 null != node.Attributes[xmlTags.sLongitude].Value)
             {
-                lon = Settings.parseFloat(node.Attributes[xmlTags.sLongitude].Value);
+                lon = Settings.ParseFloat(node.Attributes[xmlTags.sLongitude].Value);
             }
 
             //Note that radius must be set from trail

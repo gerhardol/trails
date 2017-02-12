@@ -203,7 +203,7 @@ namespace TrailsPlugin.UI.Settings
             
             //Simple parsing, no check misaligned %
             val = val.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.PercentSymbol, "");
-            bool p = Data.Settings.tryParseFloat(val, NumberStyles.Any, out result);
+            bool p = Data.Settings.TryParseFloat(val, NumberStyles.Any, out result);
             if (p && !float.IsNaN(result) /*&& Math.Abs(result) < 100*/)
             {
                 if (sender == this.boxMervynDaviesUp)

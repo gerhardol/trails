@@ -25,52 +25,62 @@ namespace TrailsPlugin.Data
 {
     public static class TrailData
     {
-        private static IDictionary<Guid, Data.Trail> m_AllTrails = defaultTrails();
+        private static IDictionary<Guid, Data.Trail> m_AllTrails = DefaultTrails();
         public static Data.Trail ElevationPointsTrail;
 
-        private static IDictionary<Guid, Data.Trail> defaultTrails()
+        private static IDictionary<Guid, Data.Trail> DefaultTrails()
         {
             IDictionary<Guid, Data.Trail> allTrails = new Dictionary<Guid, Data.Trail>();
             //GUIDs could be dynamic or constants too
             Data.Trail trail;
 
             //Splits Trail
-            trail = new Data.Trail(GUIDs.SplitsTrail, true);
-            trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits;
-            trail.IsSplits = true;
-            trail.TrailType = Trail.CalcType.Splits;
-            trail.TrailPriority = -11;
+            trail = new Data.Trail(GUIDs.SplitsTrail, true)
+            {
+                Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelSplits,
+                IsSplits = true,
+                TrailType = Trail.CalcType.Splits,
+                TrailPriority = -11
+            };
             allTrails.Add(trail.Id, trail);
 
             //Reference Activity Trail
-            trail = new Data.Trail(GUIDs.ReferenceTrail, true);
-            trail.Name = Properties.Resources.Trail_Reference_Name;
-            trail.IsReference = true;
-            //RefTrail is using the trail points, the points are limiting, not extending
-            //trail.IsCompleteActivity = false;
-            trail.TrailPriority = -10;
+            trail = new Data.Trail(GUIDs.ReferenceTrail, true)
+            {
+                Name = Properties.Resources.Trail_Reference_Name,
+                IsReference = true,
+                //RefTrail is using the trail points, the points are limiting, not extending
+                //IsCompleteActivity = false;
+                TrailPriority = -10
+            };
             allTrails.Add(trail.Id, trail);
 
             //HighScore Trail
-            trail = new Data.Trail(GUIDs.HighScoreTrail, true);
-            trail.Name = Properties.Resources.HighScore_Trail;
-            trail.TrailType = Trail.CalcType.HighScore;
-            trail.TrailPriority = -100;
+            trail = new Data.Trail(GUIDs.HighScoreTrail, true)
+            {
+                Name = Properties.Resources.HighScore_Trail,
+                TrailType = Trail.CalcType.HighScore,
+                TrailPriority = -100
+            };
             allTrails.Add(trail.Id, trail);
 
             //UniqueRoutes Trail
-            trail = new Data.Trail(GUIDs.UniqueRoutesTrail, true);
-            trail.Name = Properties.Resources.UniqueRoutes_Trail;
-            trail.TrailType = Trail.CalcType.UniqueRoutes;
-            trail.TrailPriority = -101;
+            trail = new Data.Trail(GUIDs.UniqueRoutesTrail, true)
+            {
+                Name = Properties.Resources.UniqueRoutes_Trail,
+                TrailType = Trail.CalcType.UniqueRoutes,
+                TrailPriority = -101
+            };
             allTrails.Add(trail.Id, trail);
 
             //ElevationPoints Trail
-            trail = new Data.Trail(GUIDs.ElevationPointsTrail, true);
-            trail.Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation;
-            trail.TrailType = Trail.CalcType.ElevationPoints;
-            trail.TrailPriority = -102;
-            trail.TrailLocations = new List<TrailGPSLocation>();
+            trail = new Data.Trail(GUIDs.ElevationPointsTrail, true)
+            {
+                Name = ZoneFiveSoftware.Common.Visuals.CommonResources.Text.LabelElevation,
+                TrailType = Trail.CalcType.ElevationPoints,
+                TrailPriority = -102,
+                TrailLocations = new List<TrailGPSLocation>()
+            };
             allTrails.Add(trail.Id, trail);
             ElevationPointsTrail = trail;
 
@@ -116,7 +126,7 @@ namespace TrailsPlugin.Data
         }
 
         //"Normalize" the name, to check for duplicates
-        private static string normName(string s)
+        private static string NormName(string s)
         {
             string pattern = @"\s*:+\s*";
             string a = (new Regex(pattern)).Replace(s, ": ");
@@ -136,8 +146,8 @@ namespace TrailsPlugin.Data
             IDictionary<string, Trail> allTrails = new Dictionary<string, Trail>();
             foreach (Trail t in m_AllTrails.Values)
             {
-                originalTrails[normName(t.Name)] = t;
-                allTrails[normName(t.Name)] = t;
+                originalTrails[NormName(t.Name)] = t;
+                allTrails[NormName(t.Name)] = t;
             }
             //Make sure all parents exist
             foreach (string child0 in originalTrails.Keys)
@@ -149,10 +159,12 @@ namespace TrailsPlugin.Data
                     if (!allTrails.ContainsKey(parent))
                     {
                         //Add empty placeholder, deleted when exiting
-                        Trail trail = new Data.Trail();
-                        trail.Name = parent;
-                        trail.IsTemporary = true;
-                        trail.TrailPriority = -9999;
+                        Trail trail = new Data.Trail()
+                        {
+                            Name = parent,
+                            IsTemporary = true,
+                            TrailPriority = -9999
+                        };
                         m_AllTrails.Add(trail.Id, trail);
                         Controller.TrailController.Instance.NewTrail(trail, false, null);
                         allTrails[parent] = trail;
@@ -177,7 +189,7 @@ namespace TrailsPlugin.Data
         {
             foreach (Trail t in m_AllTrails.Values)
             {
-                if (t.Name == trail.Name || normName(t.Name) == normName(trail.Name))
+                if (t.Name == trail.Name || NormName(t.Name) == NormName(trail.Name))
                 {
                     return false;
                 }
@@ -240,8 +252,8 @@ namespace TrailsPlugin.Data
 
         public static void ReadOptions(XmlDocument xmlDoc, XmlNamespaceManager nsmgr, XmlElement pluginNode)
         {
-            m_AllTrails = defaultTrails();
-            foreach (XmlElement node in pluginNode.SelectNodes(xmlTags.sTrail))
+            m_AllTrails = DefaultTrails();
+            foreach (XmlElement node in pluginNode.SelectNodes(XmlTags.sTrail))
             {
                 Data.Trail trail = Data.Trail.ReadOptions(xmlDoc, nsmgr, node);
                 string name = trail.Name;
@@ -252,7 +264,7 @@ namespace TrailsPlugin.Data
                     isUnique = true;
                     foreach (Trail t in m_AllTrails.Values)
                     {
-                        if (t.Name == name || normName(t.Name) == normName(name))
+                        if (t.Name == name || NormName(t.Name) == NormName(name))
                         {
                             isUnique = false;
                             extraId += 1;
@@ -284,14 +296,14 @@ namespace TrailsPlugin.Data
             {
                 if (!trail.Generated && !trail.IsTemporary)
                 {
-                    XmlElement trailNode = doc.CreateElement(xmlTags.sTrail);
+                    XmlElement trailNode = doc.CreateElement(XmlTags.sTrail);
                     trail.WriteOptions(doc, trailNode);
                     pluginNode.AppendChild(trailNode);
                 }
             }
         }
 
-        private static class xmlTags
+        private static class XmlTags
         {
             public const string sTrail = "Trail";
         }

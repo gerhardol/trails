@@ -586,7 +586,7 @@ namespace TrailsPlugin.Data
                         {
                             trw.Result.UpdateOverlap(tr.Result);
                             TrailResultInfo indexes = tr.Result.SubResultInfo.CopyFromReference(trw.Result.Activity);
-                            trw.updateIndexes(indexes);
+                            trw.UpdateIndexes(indexes);
                         }
                     }
                 }
@@ -731,13 +731,13 @@ namespace TrailsPlugin.Data
                 indexes.Points.Add(mergeChildren[mergeChildren.Count - 1].Result.SubResultInfo.Points[1]);
 
                 int order = trw.Result.Order;
-                trw.updateIndexes(indexes);
+                trw.UpdateIndexes(indexes);
 
                 IActivity refAct = trw.Result.Activity;
                 foreach (TrailResult tr2 in trw.Result.Overlaps)
                 {
                     TrailResultInfo indexes2 = trw.Result.SubResultInfo.CopyFromReference(tr2.Activity);
-                    tr2.Wrapper.updateIndexes(indexes2);
+                    tr2.Wrapper.UpdateIndexes(indexes2);
                 }
             }
         }

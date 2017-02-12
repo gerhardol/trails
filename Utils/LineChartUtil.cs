@@ -804,7 +804,7 @@ namespace TrailsPlugin.Utils
             return track;
         }
 
-        public static float getSyncGraphOffset(INumericTimeDataSeries graphPoints, INumericTimeDataSeries refGraphPoints, SyncGraphMode syncGraph)
+        public static float GetSyncGraphOffset(INumericTimeDataSeries graphPoints, INumericTimeDataSeries refGraphPoints, SyncGraphMode syncGraph)
         {
             float syncGraphOffset = 0;
             if (graphPoints != refGraphPoints &&

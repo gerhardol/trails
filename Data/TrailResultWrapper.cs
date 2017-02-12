@@ -39,7 +39,7 @@ namespace TrailsPlugin.Data
         public TrailResultWrapper(ParentTrailResult element)
             : this(null, element)
         {
-            getChildren();
+            GetChildren();
         }
 
         public TrailResultWrapper GetParent()
@@ -62,11 +62,11 @@ namespace TrailsPlugin.Data
                 this.Children.Clear();
                 this.m_allChildren.Clear();
                 this.Result.Clear(false);
-                this.getChildren();
+                this.GetChildren();
             }
         }
 
-        private void getChildren()
+        private void GetChildren()
         {
             //TODO This should be lazy (calculated if children visible), 
             //requires overiding Children
@@ -84,12 +84,12 @@ namespace TrailsPlugin.Data
             }
         }
 
-        public void updateIndexes(TrailResultInfo indexes)
+        public void UpdateIndexes(TrailResultInfo indexes)
         {
             this.Children.Clear();
             this.m_allChildren.Clear();
             this.Result.UpdateIndexes(indexes);
-            this.getChildren();
+            this.GetChildren();
         }
 
         public TrailResultWrapper(HighScoreParentTrailResult element)

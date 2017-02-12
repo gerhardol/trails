@@ -472,7 +472,7 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private bool setLineChartChecked(LineChartTypes t)
+        private bool SetLineChartChecked(LineChartTypes t)
         {
             if (!m_expanded)
             {
@@ -487,29 +487,29 @@ namespace TrailsPlugin.UI.Activity {
         public void RefreshChartMenu()
         {
             //TODO: disable if track exists (or ref for diff). 
-            speedToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Speed);
-            paceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Pace);
-            speedPaceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.SpeedPace);
-            elevationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Elevation);
-            cadenceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Cadence);
-            heartRateToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.HeartRateBPM);
-            gradeStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Grade);
-            powerToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Power);
+            speedToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Speed);
+            paceToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Pace);
+            speedPaceToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.SpeedPace);
+            elevationToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Elevation);
+            cadenceToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Cadence);
+            heartRateToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.HeartRateBPM);
+            gradeStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Grade);
+            powerToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Power);
 
-            PowerBalanceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.PowerBalance);
-            TemperatureToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.Temperature);
-            GroundContactTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.GroundContactTime);
-            VerticalOscillationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.VerticalOscillation);
-            SaturatedHemoglobinToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.SaturatedHemoglobin);
-            TotalHemoglobinConcentrationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.TotalHemoglobinConcentration);
+            PowerBalanceToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.PowerBalance);
+            TemperatureToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.Temperature);
+            GroundContactTimeToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.GroundContactTime);
+            VerticalOscillationToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.VerticalOscillation);
+            SaturatedHemoglobinToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.SaturatedHemoglobin);
+            TotalHemoglobinConcentrationToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.TotalHemoglobinConcentration);
 
-            diffTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffTime);
-            diffDistToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDist);
-            diffDistTimeToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DiffDistTime);
+            diffTimeToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DiffTime);
+            diffDistToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DiffDist);
+            diffDistTimeToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DiffDistTime);
 
-            deviceSpeedPaceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
-            deviceElevationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
-            deviceDiffToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceDiffDist);
+            deviceSpeedPaceToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DeviceSpeedPace);
+            deviceElevationToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DeviceElevation);
+            deviceDiffToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DeviceDiffDist);
             if (Data.Settings.XAxisValue == XAxisValue.Distance)
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffTime);
@@ -518,13 +518,13 @@ namespace TrailsPlugin.UI.Activity {
             {
                 this.diffDistTimeToolStripMenuItem.Text = LineChartUtil.ChartTypeString(LineChartTypes.DiffDist);
             }
-            deviceSpeedPaceToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceSpeedPace);
-            deviceElevationToolStripMenuItem.Checked = setLineChartChecked(LineChartTypes.DeviceElevation);
+            deviceSpeedPaceToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DeviceSpeedPace);
+            deviceElevationToolStripMenuItem.Checked = SetLineChartChecked(LineChartTypes.DeviceElevation);
             //set as marker, for all subitems -not changable directly
             deviceToolStripMenuItem.Checked = 
-                setLineChartChecked(LineChartTypes.DeviceSpeedPace) ||
-                setLineChartChecked(LineChartTypes.DeviceElevation) || 
-                setLineChartChecked(LineChartTypes.DeviceDiffDist);
+                SetLineChartChecked(LineChartTypes.DeviceSpeedPace) ||
+                SetLineChartChecked(LineChartTypes.DeviceElevation) || 
+                SetLineChartChecked(LineChartTypes.DeviceDiffDist);
             deviceToolStripMenuItem.Enabled = true;
 
             resyncDiffAtTrailPointsToolStripMenuItem.Checked = Data.Settings.ResyncDiffAtTrailPoints;
@@ -617,42 +617,42 @@ namespace TrailsPlugin.UI.Activity {
         }
 
         /***************************************/
-        private void speedToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SpeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Speed);
         }
 
-        private void paceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Pace);
         }
 
-        private void speedPaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SpeedPaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.SpeedPace);
         }
 
-        private void elevationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ElevationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Elevation);
         }
 
-        private void heartRateToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HeartRateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.HeartRateBPM);
         }
 
-        private void cadenceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CadenceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Cadence);
         }
 
-        private void gradeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void GradeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.Grade);
         }
 
-        private void powerToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PowerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LineChartTypes t = LineChartTypes.Unknown;
             if (sender == powerToolStripMenuItem)
@@ -694,68 +694,68 @@ namespace TrailsPlugin.UI.Activity {
             }
         }
 
-        private void diffTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DiffTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DiffTime);
         }
 
-        private void diffDistToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DiffDistToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DiffDist);
         }
 
-        private void diffDistTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DiffDistTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DiffDistTime);
         }
 
-        private void deviceSpeedPaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeviceSpeedPaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceSpeedPace);
         }
 
-        private void deviceElevationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeviceElevationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceElevation);
         }
 
-        private void deviceDiffToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeviceDiffToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(LineChartTypes.DeviceDiffDist);
         }
 
-        private void distanceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DistanceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(XAxisValue.Distance);
         }
 
-        private void timeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void TimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RefreshChart(XAxisValue.Time);
         }
 
-        private void resyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.ResyncDiffAtTrailPoints = !Data.Settings.ResyncDiffAtTrailPoints;
             RefreshChartMenu();
             m_page.RefreshData(true);
         }
 
-        private void adjustResyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AdjustResyncDiffAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.AdjustResyncDiffAtTrailPoints = !Data.Settings.AdjustResyncDiffAtTrailPoints;
             RefreshChartMenu();
             m_page.RefreshData(true);
         }
 
-        private void syncChartAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SyncChartAtTrailPointsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.SyncChartAtTrailPoints = !Data.Settings.SyncChartAtTrailPoints;
             RefreshChartMenu();
             m_page.RefreshChart();
         }
 
-        private void chartSmoothMenuItem_Click(object sender, EventArgs e)
+        private void ChartSmoothMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.SmoothOverTrailPointsToggle();
             RefreshChartMenu();
@@ -763,14 +763,14 @@ namespace TrailsPlugin.UI.Activity {
             m_page.RefreshChart();
         }
 
-        private void showToolBarMenuItem_Click(object sender, EventArgs e)
+        private void ShowToolBarMenuItem_Click(object sender, EventArgs e)
         {
             Data.Settings.ShowChartToolBar = !Data.Settings.ShowChartToolBar;
             ShowChartToolBar = Data.Settings.ShowChartToolBar;
         }
 
         /***************************************/
-        private void btnExpand_Click(object sender, EventArgs e)
+        private void BtnExpand_Click(object sender, EventArgs e)
         {
             if (m_expanded)
             {

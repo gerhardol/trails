@@ -7,8 +7,10 @@
     <RootNamespace>TrailsPlugin</RootNamespace>
     <AssemblyName>TrailsPlugin</AssemblyName>
     <PluginId>d75393a2-4a95-4fe7-ace2-375ff7338b2c</PluginId>
+    <BaseRelativeDir>.\</BaseRelativeDir>
+    <CommonRelativeDir>$(BaseRelativeDir)Common\</CommonRelativeDir>
   </PropertyGroup>
-  <Import Project=".\Common\Common-References.csproj" />
+  <Import Project="$(CommonRelativeDir)Common-References.csproj" />
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);TRAILSPLUGIN</DefineConstants>
   </PropertyGroup>
@@ -217,5 +219,5 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project=".\Common\Common-Files.csproj" />
+  <Import Project="$(CommonRelativeDir)\Common-Files.csproj" />
 </Project>

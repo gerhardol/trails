@@ -11,6 +11,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>false</BootstrapperEnabled>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,24 +23,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
  
-  <PropertyGroup>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-
   <!-- variables from configurations, can be set from specific too -->
   <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST2.1Release') or ('$(Configuration)' == 'ST2.1Debug')) ">
-	<StPluginVersion>2</StPluginVersion>
+    <StPluginVersion>2</StPluginVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Profile') or ('$(Configuration)' == 'ST3.0Debug')) ">
-	<StPluginVersion>3</StPluginVersion>
+  
+  <PropertyGroup Condition=" ('$(PluginId)' != '') and (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0Profile') or ('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST3.0ReleaseSpoq')) ">
+    <StPluginVersion>3</StPluginVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST2.1Release')) ">
+  <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Release') or ('$(Configuration)' == 'ST3.0ReleaseSpoq') or ('$(Configuration)' == 'ST2.1Release')) ">
     <ConfigurationType>Release</ConfigurationType>
   </PropertyGroup>
+  
   <PropertyGroup Condition=" (('$(Configuration)' == 'ST3.0Debug') or ('$(Configuration)' == 'ST2.1Debug')) ">
     <ConfigurationType>Debug</ConfigurationType>
   </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)' == 'ST3.0Profile'">
     <ConfigurationType>Profile</ConfigurationType>
   </PropertyGroup>
@@ -47,7 +47,7 @@
   <!-- Version dependencies -->
   <PropertyGroup Condition="'$(StPluginVersion)' == '2'">
     <StartProgram>$(ProgramFiles)\Zone Five Software\SportTracks 2.1\SportTracks.exe</StartProgram>
-	<StPluginPath>ZoneFiveSoftware\SportTracks\2.0\Plugins</StPluginPath>
+    <StPluginPath>ZoneFiveSoftware\SportTracks\2.0\Plugins</StPluginPath>
     <DefineConstants>$(DefineConstants);ST_2_1</DefineConstants>
   </PropertyGroup>
 
@@ -95,13 +95,13 @@
 
   <!-- references to ST API 3.0 -->
   <ItemGroup Condition="'$(StPluginVersion)' == '3'">
-    <Reference Include="Common.Data, Version=3.1.4415.14933, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Common.Data, Version=3.1.5770.25747, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath Condition="'$(Platform)' == 'x64' and Exists('$(ProgramFiles) (x86)')">$(ProgramFiles) (x86)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
       <HintPath Condition="'$(HintPath)' == '' ">$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Data.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Common.Visuals, Version=3.1.4415.14940, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="Common.Visuals, Version=3.1.5770.25750, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath Condition="'$(Platform)' == 'x64' and Exists('$(ProgramFiles) (x86)')">$(ProgramFiles) (x86)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
       <HintPath Condition="'$(HintPath)' == '' ">$(ProgramFiles)\Zone Five Software\SportTracks 3\Common.Visuals.dll</HintPath>
@@ -160,13 +160,13 @@ IF exist "$(TargetPath)" MOVE "$(TargetPath)" "$(TargetPath)."%25date:~5,2%25%25
   
   <!-- Can be overridden -->
   <PropertyGroup Condition="'$(PluginName)' == ''">
-	<PluginName>$(ProjectName)</PluginName>
+    <PluginName>$(ProjectName)</PluginName>
   </PropertyGroup>
   
   <PropertyGroup>
     <PostBuildEvent>:: This part is in the Common part of the properties
 :: Avoid editing from VSE
-$(ProjectDir)\Common\build.bat $(PluginId) $(StPluginVersion) $(PluginName) $(ProjectDir) $(StPluginPath) $(TargetDir) $(ConfigurationType)
+$(ProjectDir)\$(CommonRelativeDir)\build.bat $(PluginId) $(StPluginVersion) $(PluginName) $(ProjectDir) $(StPluginPath) $(TargetDir) $(ConfigurationType)
 </PostBuildEvent>
   </PropertyGroup>
 

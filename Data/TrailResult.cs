@@ -242,7 +242,7 @@ namespace TrailsPlugin.Data
 
         private bool CheckCacheRef(TrailResult refRes)
         {
-            if (refRes == null || refRes != this.m_cacheTrackRef)
+            if (refRes == null || this.m_cacheTrackRef == null || refRes.CompareTo(this.m_cacheTrackRef) != 0)
             {
                 //Clear cache where ref (possibly null) has been used
                 this.Clear(true);
@@ -2117,7 +2117,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_elevationMetersTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.ElevationMetersTrack0(this.m_cacheTrackRef), false, 0,
+                    m_elevationMetersTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.ElevationMetersTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2142,7 +2142,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_gradeTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.GradeTrack0(this.m_cacheTrackRef), false, 0,
+                    m_gradeTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.GradeTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2201,7 +2201,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_cadencePerMinuteTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.CadencePerMinuteTrack0(this.m_cacheTrackRef), false, 0,
+                    m_cadencePerMinuteTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.CadencePerMinuteTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2257,7 +2257,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_heartRatePerMinuteTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.HeartRatePerMinuteTrack0(this.m_cacheTrackRef), false, 0,
+                    m_heartRatePerMinuteTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.HeartRatePerMinuteTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2280,7 +2280,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_powerWattsTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.PowerWattsTrack0(this.m_cacheTrackRef), false, 0,
+                    m_powerWattsTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.PowerWattsTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2303,7 +2303,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_PowerBalanceTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.PowerBalanceTrack0(this.m_cacheTrackRef), false, 0,
+                    m_PowerBalanceTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.PowerBalanceTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2326,7 +2326,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_TemperatureTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.TemperatureTrack0(this.m_cacheTrackRef), false, 0,
+                    m_TemperatureTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.TemperatureTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2349,7 +2349,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_GroundContactTimeTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.GroundContactTimeTrack0(this.m_cacheTrackRef), false, 0,
+                    m_GroundContactTimeTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.GroundContactTimeTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2377,7 +2377,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_VerticalOscillationTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.VerticalOscillationTrack0(this.m_cacheTrackRef), false, 0,
+                    m_VerticalOscillationTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.VerticalOscillationTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2400,7 +2400,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_SaturatedHemoglobinTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.SaturatedHemoglobinTrack0(this.m_cacheTrackRef), false, 0,
+                    m_SaturatedHemoglobinTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.SaturatedHemoglobinTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2423,7 +2423,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_TotalHemoglobinConcentrationTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.TotalHemoglobinConcentrationTrack0(this.m_cacheTrackRef), false, 0,
+                    m_TotalHemoglobinConcentrationTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.TotalHemoglobinConcentrationTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2446,7 +2446,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_speedTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(this.m_cacheTrackRef), false, 0,
+                    m_speedTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.SpeedTrack0(), false, 0,
                         UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
@@ -2469,7 +2469,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_paceTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.PaceTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                    m_paceTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.PaceTrack0(), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
                 {
@@ -2582,6 +2582,11 @@ namespace TrailsPlugin.Data
 
         /**********************************************************/
         #region device tracks
+        public INumericTimeDataSeries DeviceSpeedPaceTrack0(bool isPace)
+        {
+            return DeviceSpeedPaceTrack0(this.m_cacheTrackRef, isPace);
+        }
+
         public INumericTimeDataSeries DeviceSpeedPaceTrack0(TrailResult refRes, bool isPace)
         {
             CheckCacheRef(refRes);
@@ -2589,7 +2594,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_deviceSpeedPaceTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(this.m_cacheTrackRef, isPace), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                    m_deviceSpeedPaceTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.DeviceSpeedPaceTrack0(isPace), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
                 {
@@ -3030,6 +3035,11 @@ namespace TrailsPlugin.Data
         //    return 0;
         //}
 
+        public INumericTimeDataSeries DeviceDiffDistTrack0()
+        {
+            return DeviceDiffDistTrack0(this.m_cacheTrackRef);
+        }
+
         public INumericTimeDataSeries DeviceDiffDistTrack0(TrailResult refRes)
         {
             CheckCacheRef(refRes);
@@ -3037,7 +3047,7 @@ namespace TrailsPlugin.Data
             {
                 if (TrackPartOfParent())
                 {
-                    m_deviceDiffDistTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.DeviceDiffDistTrack0(this.m_cacheTrackRef), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
+                    m_deviceDiffDistTrack0 = CopySmoothTrack((this as ChildTrailResult).ParentResult.DeviceDiffDistTrack0(), false, 0, UnitUtil.ConvertNone, this.m_cacheTrackRef);
                 }
                 else
                 {
@@ -3194,7 +3204,7 @@ namespace TrailsPlugin.Data
                                     if (dist - prevDist > 0)
                                     {
                                         float g = (ele - prevEle) / (dist - prevDist); //grade
-                                        q = RunningGradeAdjustMethodClass.getGradeFactor(g, time, prevTime, dist, prevDist, this.Activity);
+                                        q = RunningGradeAdjustMethodClass.GetGradeFactor(g, time, prevTime, dist, prevDist, this.Activity);
                                     }
                                 }
                                 else

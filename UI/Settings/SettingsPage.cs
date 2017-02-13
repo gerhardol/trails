@@ -110,7 +110,16 @@ namespace TrailsPlugin.UI.Settings {
 
         public void Dispose()
         {
-            this.m_control.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.m_control.Dispose();
+            }
         }
     }
 }

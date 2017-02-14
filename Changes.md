@@ -2,6 +2,12 @@ This page describes the changes between plugin releases. The change log may cont
 
 ### Changes ###
 
+2.0.11 2017-02-14 (Plugin Catalog)
+  * Caching of results was ineffective when child results were displayed. For large activities, performance could we very sluggish.
+  * When clicking on tracks, make sure they are selected (not just visible)
+  * Various bugfixes
+  
+
 2.0.10 2016-05-03 (Plugin Catalog)
   * Possible to configure "Set Non Required Trail Points as Pauses" in the menu (previously only as keyboard shortcut).
   * Updates to Pauses as results

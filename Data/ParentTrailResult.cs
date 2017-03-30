@@ -200,7 +200,7 @@ namespace TrailsPlugin.Data
                     if (splits[j].m_subResultInfo.Points[0].Time > DateTime.MinValue &&
                         splits[j].m_subResultInfo.Points[1].Time > DateTime.MinValue &&
                         //pause is started within this split
-                        (splits[j].m_subResultInfo.Points[0].Time <= lower && lower < splits[j].m_subResultInfo.Points[1].Time ||
+                        (splits[j].m_subResultInfo.Points[0].Time <= lower && lower <= splits[j].m_subResultInfo.Points[1].Time ||
                         //(First) lap, ends in the split
                         /*splits[j].*/m_subResultInfo.Points[0].Time <= upper && upper < splits[j].m_subResultInfo.Points[1].Time ||
                         //For splits we want pauses also before after first normal split

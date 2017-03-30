@@ -495,22 +495,16 @@ namespace TrailsPlugin.Data {
             int result = 0;
 
             {
-                //The pause is compared to the normal result, always display after
+                //Paused results handling
+                //Keep the paused result close to the unpaused result by using the normal resul
+                //If two results to sort relate to the same normal result, use the start time to sort them
                 TrailResult x0 = x;
                 TrailResult y0 = y;
-                if (x is PausedChildTrailResult && y is PausedChildTrailResult)
-                {
-                    if ((x as PausedChildTrailResult).RelatedChildResult != (y as PausedChildTrailResult).RelatedChildResult)
-                    {
-                        x = (x as PausedChildTrailResult).RelatedChildResult;
-                        y = (y as PausedChildTrailResult).RelatedChildResult;
-                    }
-                }
-                else if (x is PausedChildTrailResult)
+                if (x is PausedChildTrailResult)
                 {
                     x = (x as PausedChildTrailResult).RelatedChildResult;
                 }
-                else if (y is PausedChildTrailResult)
+                if (y is PausedChildTrailResult)
                 {
                     y = (y as PausedChildTrailResult).RelatedChildResult;
                 }
@@ -518,13 +512,10 @@ namespace TrailsPlugin.Data {
                 if (x == y)
                 {
                     result = x0.StartTime.CompareTo(y0.StartTime);
-                    if(x0 is PausedChildTrailResult)
+                    if (TrailsPlugin.Data.Settings.SummaryViewSortColumns.Count>0 && TrailsPlugin.Data.Settings.SummaryViewSortColumns[0].Equals(TrailResultColumnIds.StartTime))
                     {
-                        result = Math.Abs(result);
-                    }
-                    else if (y0 is PausedChildTrailResult)
-                    {
-                        result = -Math.Abs(result);
+                        //Switch order when sorting on start time only
+                        result *= (TrailsPlugin.Data.Settings.SummaryViewSortDirection == ListSortDirection.Ascending ? 1 : -1);
                     }
                     return result;
                 }

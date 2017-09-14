@@ -302,7 +302,8 @@ namespace TrailsPlugin.Data
             //http://web.stanford.edu/~clint/Run_Walk2004a.rtf
             float vdotp = (float)(1 + (g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6);
             float q = EnergyTimeAdjust(1 / vdotp);
-
+            if (q < 0.1)
+            { q = 0.1f; }
             return q;
         }
 

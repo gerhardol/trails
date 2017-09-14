@@ -278,12 +278,17 @@ namespace TrailsPlugin.Data
                     }
                 }
                 trail.Name = name;
+                if (m_AllTrails.ContainsKey(trail.Id) && m_AllTrails[trail.Id].Generated)
+                {
+                    //http://www.zonefivesoftware.com/sporttracks/forums/viewtopic.php?f=76&t=17866
+                    trail.Id = new Guid();
+                }
                 if (!m_AllTrails.ContainsKey(trail.Id))
                 {
                     m_AllTrails.Add(trail.Id, trail);
                 }
                 else
-                { }
+                {}
                 AddElevationPoints(trail);
             }
 
